@@ -1,6 +1,6 @@
 // src/app/components/layout/Header/NavLinks.tsx
 import Link from "next/link";
-import Button from "../../ui/Button";
+import Button from "../../../../components/ui/Button";
 
 const links = [
   { name: "Why", href: "/" },

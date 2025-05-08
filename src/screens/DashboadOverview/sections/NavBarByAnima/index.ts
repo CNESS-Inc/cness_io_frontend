@@ -1,0 +1,1 @@
+export { NavBarByAnima } from "./NavBarByAnima";

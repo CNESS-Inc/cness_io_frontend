@@ -1,5 +1,5 @@
 // src/app/components/layout/Header/UserMenu.tsx
-'use client' // Needed for interactivity
+/*'use client' // Needed for interactivity
 
 import { useState } from 'react'
 import Button from '@/app/components/ui/Button'
@@ -55,3 +55,4 @@ export default function UserMenu() {
     </div>
   )
 }
+  */
