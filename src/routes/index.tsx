@@ -3,7 +3,7 @@ import { createBrowserRouter } from 'react-router-dom'
 import AppLayout from '../layout/AppLayout'
 
 const HomePage = lazy(() => import('../pages/Home'))
-const AboutPage = lazy(() => import('../pages/About'))
+const Dashboard = lazy(() => import('../pages/Dashboard'))
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 
 export const router = createBrowserRouter([
@@ -17,8 +17,8 @@ export const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: 'about',
-        element: <AboutPage />,
+        path: 'dashboard',
+        element: <Dashboard />,
       },
     ],
   },

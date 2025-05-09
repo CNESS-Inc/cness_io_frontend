@@ -6,18 +6,22 @@ import Platformsections from "../components/sections/PlatformsModule";
 import Stepper from "../components/sections/Stepper";
 import Testimonialsection from "../components/sections/Testimonial";
 import WhySection from "../components/sections/Whysection";
+import Footer from "../layout/Footer/Footer";
+import Header from "../layout/Header";
 
 const Home = () => {
   return (
     <>
+      <Header />
       <HeroSection />
       <WhySection />
       <Platformsections />
       <Plateformrootedsection />
       <Testimonialsection />
       <Stepper />
-      <AwarenessSection/>
-      <JoiningSection/>
+      <AwarenessSection />
+      <JoiningSection />
+      <Footer/>
     </>
   );
 };
