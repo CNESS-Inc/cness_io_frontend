@@ -28,7 +28,7 @@ export default function NavLinks({ className }: { className?: string }) {
         ))}
       </ul>
       <Button
-        className="bg-[#7077FE] hover:bg-transparent py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
+        className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
         variant="primary"
         withGradientOverlay
       >

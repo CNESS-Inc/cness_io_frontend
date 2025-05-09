@@ -30,7 +30,7 @@ export default function MobileMenu({ isOpen }: { isOpen: boolean }) {
           ))}
           <li>
             <Button
-              className="w-full bg-[#7077FE] hover:bg-transparent py-3 px-6 rounded-full transition-colors duration-500 ease-in-out"
+              className="w-full bg-[#7077FE] py-3 px-6 rounded-full transition-colors duration-500 ease-in-out"
               variant="primary"
               withGradientOverlay
             >

@@ -10,7 +10,7 @@ export default function Header() {
 
   return (
     <header 
-      className="bg-white  shadow-sm"
+      className="bg-white "
       role="banner"
       aria-label="Main navigation"
     >
@@ -22,7 +22,6 @@ export default function Header() {
               src="/logo.png"
               alt="Company Logo"
               width={120}
-              height={40}
               className="h-auto w-[144.16px]"
             />
           </Link>

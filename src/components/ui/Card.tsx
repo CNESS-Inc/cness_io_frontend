@@ -1,6 +1,6 @@
 // components/ui/Card.tsx
-//@ts-ignore
-import { ReactNode } from "react";
+
+import type { ReactNode } from "react";
 
 interface CardProps {
   children: ReactNode;
@@ -17,5 +17,5 @@ interface CardContentProps {
 }
 
 export function CardContent({ children, className }: CardContentProps) {
-  return <div className={`p-4 ${className}`}>{children}</div>;
+  return <div className={` ${className}`}>{children}</div>;
 }
