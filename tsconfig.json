@@ -1,25 +1,12 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "useDefineForClassFields": true,
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "jsx": "preserve",
-    "allowJs": true,
-    "noEmit": true,
-    "incremental": true,
-    "types": ["vite/client"],
-    "baseUrl": ".",                                  // ✅ Add this
-    "paths": {
-      "@/*": ["src/*"]                               // ✅ Add this
-    }
-  },
-  "include": ["src"],
-  "exclude": ["node_modules"]
-}
+    "files": [],
+    "references": [
+      {
+        "path": "./tsconfig.app.json"
+      },
+      {
+        "path": "./tsconfig.node.json"
+      }
+    ]
+  }
+  

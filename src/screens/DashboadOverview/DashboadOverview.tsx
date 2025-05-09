@@ -1,9 +1,8 @@
-import React from "react";
-import { FrameByAnima } from "./sections/FrameByAnima/FrameByAnima";
-import { HeaderByAnima } from "./sections/HeaderByAnima/HeaderByAnima";
+import { FrameByAnima } from "./sections/FrameByAnima";
+import { HeaderByAnima } from "./sections/HeaderByAnima";
 import { NavBarByAnima } from "./sections/NavBarByAnima";
 
-const DashboadOverview = () => {
+export const DashboadOverview = (): JSX.Element => {
   return (
     <div className="bg-[#f9f9f9] flex flex-row justify-center w-full min-h-screen">
       <div className="bg-[#f9f9f9] w-full max-w-[1440px] flex flex-col">
@@ -18,4 +17,3 @@ const DashboadOverview = () => {
     </div>
   );
 };
-export default DashboadOverview;

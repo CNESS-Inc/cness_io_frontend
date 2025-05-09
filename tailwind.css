@@ -1,14 +1,12 @@
-@import "tailwindcss/preflight";
+@tailwind components;
 @tailwind utilities;
 
-/* --- Optional: Custom Layer Styles --- */
 @layer components {
   .all-\[unset\] {
     all: unset;
   }
 }
 
-/* --- CSS Variables --- */
 :root {
   --base-medium-font-family: "Poppins", Helvetica;
   --base-medium-font-size: 14px;
@@ -19,7 +17,10 @@
   --primarydark-1: rgba(36, 39, 49, 1);
 }
 
-/* --- Tailwind Layer Overrides --- */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -50,6 +51,7 @@
     --destructive-foreground: 210 40% 98%;
 
     --ring: 215 20.2% 65.1%;
+
     --radius: 0.5rem;
   }
 
@@ -82,9 +84,12 @@
     --destructive-foreground: 210 40% 98%;
 
     --ring: 216 34% 17%;
+
     --radius: 0.5rem;
   }
+}
 
+@layer base {
   * {
     @apply border-border;
   }
