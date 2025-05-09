@@ -75,7 +75,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             Loading...
           </span>
         ) : (
-          <span className="relative z-10">{children}</span>
+          <span className="relative z-10 jakarta">{children}</span>
         )}
       </button>
     )

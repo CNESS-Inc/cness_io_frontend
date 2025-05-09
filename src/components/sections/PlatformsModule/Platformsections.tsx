@@ -7,10 +7,10 @@ export default function PlatformSections() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="pt-6 sm:pt-8 text-center">
-          <h2 className="font-poppins font-bold text-lg sm:text-xl lg:text-2xl leading-none tracking-wider uppercase text-[#7077FE] mb-3 sm:mb-4 lg:mb-6">
+          <h2 className="poppins font-bold text-lg sm:text-xl lg:text-2xl leading-none tracking-wider uppercase text-[#7077FE] mb-3 sm:mb-4 lg:mb-6">
             PLATFORM MODULES OVERVIEW
           </h2>
-          <p className="font-poppins font-medium text-2xl sm:text-3xl lg:text-[52px] leading-tight sm:leading-snug lg:leading-[69px] text-center text-[#222224] mb-4 sm:mb-5 lg:mb-6">
+          <p className="poppins font-medium text-2xl sm:text-3xl lg:text-[52px] leading-tight sm:leading-snug lg:leading-[69px] text-center text-[#222224] mb-4 sm:mb-5 lg:mb-6">
             Crafting a meaningful narrative is{" "}
             <br className="hidden sm:block" /> essential for engaging
             communication.
@@ -83,11 +83,11 @@ export default function PlatformSections() {
             {/* Content section */}
             <div className={`col-span-1 md:col-span-7 ${platform.order.replace('order-2', 'order-1').replace('order-2', 'order-1')}`}>
               <div className="max-w-2xl mx-auto">
-                <h2 className="font-poppins text-base sm:text-lg lg:text-xl tracking-normal leading-none text-[#D748EA] mb-3 sm:mb-4 lg:mb-6">
+                <h2 className="poppins text-base sm:text-lg lg:text-xl tracking-normal leading-none text-[#D748EA] mb-3 sm:mb-4 lg:mb-6">
                   {platform.title}
                 </h2>
 
-                <p className="font-poppins font-semibold text-xl sm:text-2xl lg:text-3xl xl:text-[36px] leading-snug sm:leading-normal lg:leading-tight tracking-normal text-[#222224] mb-3 sm:mb-4 lg:mb-6">
+                <p className="poppins font-semibold text-xl sm:text-2xl lg:text-3xl xl:text-[36px] leading-snug sm:leading-normal lg:leading-tight tracking-normal text-[#222224] mb-3 sm:mb-4 lg:mb-6">
                   {platform.tagline}
                 </p>
 
@@ -95,7 +95,7 @@ export default function PlatformSections() {
                   {platform.features.map((feature, i) => (
                     <li 
                       key={i}
-                      className="font-open_sans text-sm sm:text-base lg:text-lg xl:text-xl leading-tight tracking-normal text-black w-fit bg-[#F7F7F7] p-2 sm:p-3 rounded-full sm:rounded-[90px] text-center sm:text-left"
+                      className="openSans text-sm sm:text-base lg:text-lg xl:text-xl leading-tight tracking-normal text-black w-fit bg-[#F7F7F7] p-2 sm:p-3 rounded-full sm:rounded-[90px] text-center sm:text-left"
                     >
                       {feature}
                     </li>
@@ -103,7 +103,7 @@ export default function PlatformSections() {
                 </ul>
 
                 <Button
-                  className="bg-[#7077FE] hover:bg-transparent py-2 sm:py-3 lg:py-[16px] px-3 sm:px-4 lg:px-[24px] rounded-full text-xs sm:text-sm lg:text-base w-full sm:w-auto mx-auto sm:mx-0 text-center block"
+                  className="bg-[#7077FE] py-2 sm:py-3 lg:py-[16px] px-3 sm:px-4 lg:px-[24px] rounded-full text-xs sm:text-sm lg:text-base w-full sm:w-auto mx-auto sm:mx-0 text-center block"
                   variant="primary"
                   withGradientOverlay
                 >
