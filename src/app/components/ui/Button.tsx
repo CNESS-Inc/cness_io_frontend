@@ -1,4 +1,5 @@
 // src/app/components/ui/Button.tsx
+import { jakarta } from '@/app/layout'
 import React, { ButtonHTMLAttributes, forwardRef } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -69,7 +70,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             Loading...
           </span>
         ) : (
-          <span className="relative z-10">{children}</span>
+          <span className={`${jakarta.className} relative z-10`}>{children}</span>
         )}
       </button>
     )

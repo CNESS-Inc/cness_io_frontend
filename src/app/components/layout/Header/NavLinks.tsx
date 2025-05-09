@@ -1,6 +1,6 @@
-// src/app/components/layout/Header/NavLinks.tsx
 import Link from "next/link";
 import Button from "../../ui/Button";
+import { cn } from "@/lib/utils";
 
 const links = [
   { name: "Why", href: "/" },
@@ -8,21 +8,18 @@ const links = [
   { name: "About", href: "/" },
 ];
 
-export default function NavLinks() {
+export default function NavLinks({ className }: { className?: string }) {
   return (
-    <nav aria-label="Main navigation" className="flex items-center gap-8">
-      <ul className="hidden md:flex space-x-8">
+    <nav 
+      aria-label="Main navigation" 
+      className={cn("flex items-center gap-8", className)}
+    >
+      <ul className="flex space-x-8">
         {links.map((link) => (
           <li key={link.name}>
             <Link
               href={link.href}
               className="text-gray-700 hover:text-primary-600 transition-colors"
-              aria-current={
-                typeof window !== "undefined" &&
-                window.location.pathname === link.href
-                  ? "page"
-                  : undefined
-              }
             >
               {link.name}
             </Link>
