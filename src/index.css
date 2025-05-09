@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+.jakarta {
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+.openSans {
+  font-family: "Open Sans", sans-serif;
+}
+.poppins{
+    font-family: "Poppins", sans-serif;
+}
