@@ -1,5 +1,6 @@
 // components/ui/Card.tsx
-import React, { ReactNode } from "react";
+//@ts-ignore
+import { ReactNode } from "react";
 
 interface CardProps {
   children: ReactNode;
