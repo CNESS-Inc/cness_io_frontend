@@ -65,7 +65,70 @@ export const FrameByAnima = (): JSX.Element => {
           </div>
         </div>
       </header>
+    {/* Profile Completion and Journey Cards */}
+    <div className="flex w-full gap-3">
+        <Card className="flex-1 border-[#eceef2]">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-8">
+              <div className="flex items-center gap-[31.17px]">
+                <div className="relative w-[147px] h-[147px]">
+                  <div className="relative w-[147px] h-[123px] bg-[url(https://c.animaapp.com/magbsx1oc1vPoR/img/ellipse-20.svg)] bg-[100%_100%]">
+                    <img
+                      className="absolute w-[29px] h-[98px] top-[25px] left-0"
+                      alt="Ellipse"
+                      src="https://c.animaapp.com/magbsx1oc1vPoR/img/ellipse-19.svg"
+                    />
+                    <div className="absolute w-[84px] top-[52px] left-[42px] font-['DM_Sans',Helvetica] font-bold text-primarydark-1 text-[31.5px]">
+                      32%
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col items-start gap-5 flex-1">
+                <div className="flex flex-col items-start gap-3 w-full">
+                  <h2 className="font-['Poppins',Helvetica] font-semibold text-[#222224] text-xl">
+                    Complete Your Profile
+                  </h2>
+                  <p className="font-['Open_Sans',Helvetica] text-[#7a7a7a] text-base">
+                    Fill out your profile with all the necessary details.
+                  </p>
+                </div>
+                <div className="h-8 w-full">
+                  <Button className="w-[126px] h-full bg-gradient-to-r from-[rgba(112,119,254,1)] to-[rgba(151,71,255,1)] rounded-[70.94px] px-8 py-2">
+                    <span className="font-['Plus_Jakarta_Sans',Helvetica] font-medium text-white text-xs">
+                      Start
+                    </span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
+        <Card className="flex-1 border-none bg-gradient-to-br from-[rgba(151,71,255,0.1)] to-[rgba(240,126,255,0.1)]">
+          <CardContent className="p-6">
+            <div className="flex flex-col items-start gap-6 w-full">
+              <div className="flex flex-col items-start gap-3 w-full">
+                <h2 className="font-['Poppins',Helvetica] font-semibold text-[#222224] text-xl">
+                  Start Your Journey
+                </h2>
+                <p className="font-['Open_Sans',Helvetica] text-[#7a7a7a] text-base">
+                  Complete your profile by providing all the essential
+                  information to kickstart your journey and obtain
+                  certification.
+                </p>
+              </div>
+              <div className="h-8 w-full">
+                <Button className="w-[126px] h-full bg-gradient-to-r from-[rgba(112,119,254,1)] rounded-[70.94px] px-8 py-2">
+                  <span className="font-['Plus_Jakarta_Sans',Helvetica] font-medium text-white text-xs">
+                    Get Cerification
+                  </span>
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
       {/* Top Cards Row */}
       <div className="flex items-start gap-3 w-full flex-wrap md:flex-nowrap">
         {/* Assessment Progress Card */}
