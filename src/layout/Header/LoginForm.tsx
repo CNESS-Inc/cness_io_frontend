@@ -90,7 +90,6 @@ export default function LoginForm({
       }
     } catch (error: unknown) {
       console.error("Login error:", error);
-      toast.error("Login failed. Please try again.");
     }
   };
 
