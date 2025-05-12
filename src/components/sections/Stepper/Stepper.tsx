@@ -6,7 +6,7 @@ export default function Stepper() {
   const [activeStep, setActiveStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [isJourneyComplete, setIsJourneyComplete] = useState(false);
-  
+
   const journeySteps = [
     {
       id: 1,
@@ -44,53 +44,65 @@ export default function Stepper() {
       id: 3,
       steps: [
         {
-          icon: "https://c.animaapp.com/magbg19buoKwc2/img/frame.svg",
-          title: "Learn",
-          color: "from-[#7077FE] to-[#F07EFF]",
-        },
-        {
           icon: "https://c.animaapp.com/magbg19buoKwc2/img/frame-5.svg",
           title: "Unlock",
           color: "from-[#7077FE] to-[#F07EFF]",
         },
+        {
+          icon: "https://c.animaapp.com/magbg19buoKwc2/img/frame.svg",
+          title: "Learn",
+          color: "from-[#7077FE] to-[#F07EFF]",
+        },
       ],
+
       lineImg: "https://c.animaapp.com/magbg19buoKwc2/img/line-1.svg",
     },
   ];
 
   const totalSteps = journeySteps.length * 2;
 
-  // Auto-advance steps for demo purposes
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveStep((prev) => {
         const nextStep = prev + 1;
-        
+  
         if (nextStep >= totalSteps) {
-          // Journey complete - reset after a delay
+          // Mark the journey as complete
+          setIsJourneyComplete(true);
+  
+          // Mark all steps as completed including the last one
+          setCompletedSteps((prevCompleted) => {
+            const allSteps = Array.from({ length: totalSteps }, (_, i) => i);
+            return [...new Set([...prevCompleted, ...allSteps])];
+          });
+  
+          // Delay the reset to ensure the last step is visible
           setTimeout(() => {
             setCompletedSteps([]);
             setIsJourneyComplete(false);
-          }, 1000);
-          return 0;
+            setActiveStep(0); // Reset to the first step
+          }, 1000); // Adjust this delay as needed
+  
+          return prev; // Keep the last step active until reset
         }
-        
+  
         // Mark current step as completed
-        if (!completedSteps.includes(prev)) {
-          setCompletedSteps([...completedSteps, prev]);
-        }
-        
-        // Check if journey is complete (all steps done except last one)
-        if (nextStep === totalSteps - 1) {
-          setIsJourneyComplete(true);
-        }
-        
+        setCompletedSteps((prevCompleted) => {
+          if (!prevCompleted.includes(prev)) {
+            return [...prevCompleted, prev];
+          }
+          return prevCompleted;
+        });
+  
         return nextStep;
       });
     }, 2000);
-    
+  
     return () => clearInterval(timer);
-  }, [completedSteps]);
+  }, [totalSteps]);
+  
+  
+  
 
   const isStepActive = (stepNumber: number) => {
     return stepNumber === activeStep;
@@ -121,19 +133,30 @@ export default function Stepper() {
         {/* Journey map - mobile version */}
         <div className="md:hidden flex flex-col items-center gap-8 w-full">
           {journeySteps.map((group, groupIndex) => (
-            <div key={`mobile-group-${group.id}`} className="flex flex-col items-center gap-4 w-full">
+            <div
+              key={`mobile-group-${group.id}`}
+              className="flex flex-col items-center gap-4 w-full"
+            >
               <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
                 {group.steps.map((step, stepIndex) => {
                   const stepNumber = groupIndex * 2 + stepIndex;
                   const active = isStepActive(stepNumber);
                   const completed = isStepCompleted(stepNumber);
-                  
+
                   return (
-                    <React.Fragment key={`mobile-step-${group.id}-${stepIndex}`}>
-                      <Card className={`flex flex-col w-full sm:w-[140px] items-center gap-3 px-2 py-4 sm:py-6 rounded-[32px] border border-solid border-transparent 
-                        ${active ? `bg-gradient-to-br ${step.color} ` : 
-                          completed ? `bg-gradient-to-br ${step.color}` : 
-                          'bg-white'}`}>
+                    <React.Fragment
+                      key={`mobile-step-${group.id}-${stepIndex}`}
+                    >
+                      <Card
+                        className={`flex flex-col w-full sm:w-[140px] items-center gap-3 px-2 py-4 sm:py-6 rounded-[32px] border border-solid border-transparent 
+                        ${
+                          active
+                            ? `bg-gradient-to-br ${step.color} `
+                            : completed
+                            ? `bg-gradient-to-br ${step.color}`
+                            : "bg-white"
+                        }`}
+                      >
                         <CardContent className="p-0 flex flex-col items-center gap-3">
                           <img
                             className="relative w-8 h-8"
@@ -141,15 +164,19 @@ export default function Stepper() {
                             src={step.icon}
                           />
                           <div className="flex items-center justify-center gap-2.5 px-0 py-2.5 relative self-stretch w-full">
-                            <div className={`relative flex-1 mt-[-1.00px] jakarta font-medium ${
-                              active || completed ? 'text-white' : 'text-[#2a2a2a]'
-                            } text-base text-center tracking-[0] leading-[20.1px]`}>
+                            <div
+                              className={`relative flex-1 mt-[-1.00px] jakarta font-medium ${
+                                active || completed
+                                  ? "text-white"
+                                  : "text-[#2a2a2a]"
+                              } text-base text-center tracking-[0] leading-[20.1px]`}
+                            >
                               {step.title}
                             </div>
                           </div>
                         </CardContent>
                       </Card>
-                      
+
                       {stepIndex === 0 && (
                         <div className="hidden sm:block">
                           <img
@@ -163,7 +190,7 @@ export default function Stepper() {
                   );
                 })}
               </div>
-              
+
               {groupIndex < journeySteps.length - 1 && (
                 <div className="h-[50px] w-0.5 bg-gray-300 sm:hidden"></div>
               )}
@@ -206,13 +233,19 @@ export default function Stepper() {
                   const stepNumber = stepIndex;
                   const active = isStepActive(stepNumber);
                   const completed = isStepCompleted(stepNumber);
-                  
+
                   return (
                     <React.Fragment key={`desktop-step-1-${stepIndex}`}>
-                      <Card className={`flex flex-col w-[140px] items-center gap-3 px-2 py-6 rounded-[32px] border border-solid border-transparent 
-                        ${active ? `bg-gradient-to-br ${step.color} ` : 
-                          completed ? `bg-gradient-to-br ${step.color}` : 
-                          'bg-white'}`}>
+                      <Card
+                        className={`flex flex-col w-[140px] items-center gap-3 px-2 py-6 rounded-[32px] border border-solid border-transparent 
+                        ${
+                          active
+                            ? `bg-gradient-to-br ${step.color} `
+                            : completed
+                            ? `bg-gradient-to-br ${step.color}`
+                            : "bg-white"
+                        }`}
+                      >
                         <CardContent className="p-0 flex flex-col items-center gap-3">
                           <img
                             className="relative w-8 h-8"
@@ -220,15 +253,19 @@ export default function Stepper() {
                             src={step.icon}
                           />
                           <div className="flex items-center justify-center gap-2.5 px-0 py-2.5 relative self-stretch w-full">
-                            <div className={`relative flex-1 mt-[-1.00px] jakarta font-medium ${
-                              active || completed ? 'text-white' : 'text-[#2a2a2a]'
-                            } text-base text-center tracking-[0] leading-[20.1px]`}>
+                            <div
+                              className={`relative flex-1 mt-[-1.00px] jakarta font-medium ${
+                                active || completed
+                                  ? "text-white"
+                                  : "text-[#2a2a2a]"
+                              } text-base text-center tracking-[0] leading-[20.1px]`}
+                            >
                               {step.title}
                             </div>
                           </div>
                         </CardContent>
                       </Card>
-                      
+
                       {stepIndex === 0 && (
                         <img
                           className="w-[50px] lg:w-[190px]"
@@ -247,13 +284,19 @@ export default function Stepper() {
                   const stepNumber = 2 + stepIndex;
                   const active = isStepActive(stepNumber);
                   const completed = isStepCompleted(stepNumber);
-                  
+
                   return (
                     <React.Fragment key={`desktop-step-2-${stepIndex}`}>
-                      <Card className={`flex flex-col w-[140px] items-center gap-3 px-2 py-6 rounded-[32px] border border-solid border-transparent 
-                        ${active ? `bg-gradient-to-br ${step.color} ` : 
-                          completed ? `bg-gradient-to-br ${step.color}` : 
-                          'bg-white'}`}>
+                      <Card
+                        className={`flex flex-col w-[140px] items-center gap-3 px-2 py-6 rounded-[32px] border border-solid border-transparent 
+                        ${
+                          active
+                            ? `bg-gradient-to-br ${step.color} `
+                            : completed
+                            ? `bg-gradient-to-br ${step.color}`
+                            : "bg-white"
+                        }`}
+                      >
                         <CardContent className="p-0 flex flex-col items-center gap-3">
                           <img
                             className="relative w-8 h-8"
@@ -261,15 +304,19 @@ export default function Stepper() {
                             src={step.icon}
                           />
                           <div className="flex items-center justify-center gap-2.5 px-0 py-2.5 relative self-stretch w-full">
-                            <div className={`relative flex-1 mt-[-1.00px] jakarta font-medium ${
-                              active || completed ? 'text-white' : 'text-[#2a2a2a]'
-                            } text-base text-center tracking-[0] leading-[20.1px]`}>
+                            <div
+                              className={`relative flex-1 mt-[-1.00px] jakarta font-medium ${
+                                active || completed
+                                  ? "text-white"
+                                  : "text-[#2a2a2a]"
+                              } text-base text-center tracking-[0] leading-[20.1px]`}
+                            >
                               {step.title}
                             </div>
                           </div>
                         </CardContent>
                       </Card>
-                      
+
                       {stepIndex === 0 && (
                         <img
                           className="w-[50px] lg:w-[190px]"
@@ -288,13 +335,20 @@ export default function Stepper() {
                   const stepNumber = 4 + stepIndex;
                   const active = isStepActive(stepNumber);
                   const completed = isStepCompleted(stepNumber);
-                  
+
                   return (
                     <React.Fragment key={`desktop-step-3-${stepIndex}`}>
-                      <Card className={`flex flex-col w-[140px] items-center gap-3 px-2 py-6 rounded-[32px] border border-solid border-transparent 
-                        ${active ? `bg-gradient-to-br ${step.color} ` : 
-                          completed ? `bg-gradient-to-br ${step.color}` : 
-                          'bg-white'}`}>
+                      <Card
+                        className={`flex flex-col w-[140px] items-center gap-3 px-2 py-6 rounded-[32px] border border-solid border-transparent 
+            ${
+              active
+                ? `bg-gradient-to-br ${step.color}`
+                : completed
+                ? `bg-gradient-to-br ${step.color}`
+                : "bg-white"
+            } 
+            order-${journeySteps[2].steps.length - stepIndex}`}
+                      >
                         <CardContent className="p-0 flex flex-col items-center gap-3">
                           <img
                             className="relative w-8 h-8"
@@ -302,18 +356,22 @@ export default function Stepper() {
                             src={step.icon}
                           />
                           <div className="flex items-center justify-center gap-2.5 px-0 py-2.5 relative self-stretch w-full">
-                            <div className={`relative flex-1 mt-[-1.00px] jakarta font-medium ${
-                              active || completed ? 'text-white' : 'text-[#2a2a2a]'
-                            } text-base text-center tracking-[0] leading-[20.1px]`}>
+                            <div
+                              className={`relative flex-1 mt-[-1.00px] jakarta font-medium ${
+                                active || completed
+                                  ? "text-white"
+                                  : "text-[#2a2a2a]"
+                              } text-base text-center tracking-[0] leading-[20.1px]`}
+                            >
                               {step.title}
                             </div>
                           </div>
                         </CardContent>
                       </Card>
-                      
-                      {stepIndex === 0 && (
+
+                      {stepIndex === 1 && (
                         <img
-                          className="w-[50px] lg:w-[190px]"
+                          className="w-[50px] lg:w-[190px] order-1" // Adjust order to fit between reversed items
                           alt="Line"
                           src={journeySteps[2].lineImg}
                         />

@@ -9,7 +9,8 @@ import {
   CardTitle,
 } from "../../ui/DashboardCard";
 
-export default function DashboardSection() {
+export default function DashboardSection(userData:any) {
+  console.log("🚀 ~ DashboardSection ~ userData:", userData)
   // Data for modules
   const modules = [
     {
@@ -59,7 +60,7 @@ export default function DashboardSection() {
               <h1 className="font-['Poppins',Helvetica] text-2xl md:text-[32px] leading-8">
                 <span className="font-semibold text-[#222224]">Hello, </span>
                 <span className="font-semibold text-[#a392f2]">
-                  Company Name
+                  {userData?.userData?.first_name}
                 </span>
               </h1>
             </div>
