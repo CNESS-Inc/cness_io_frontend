@@ -1,7 +1,6 @@
-import { useState, type FormEvent } from "react";
+import { type FormEvent } from "react";
 import Button from "../../components/ui/Button";
 import { RegisterDetails } from "../../Common/ServerAPI";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 interface SignupFormProps {
@@ -25,11 +24,6 @@ export default function SignupForm({
   onSuccess,
   onSwitchToLogin,
 }: SignupFormProps) {
-  const navigate = useNavigate();
-
-  const [authenticated, setAuthenticated] = useState<boolean>(
-    localStorage.getItem("authenticated") === "true"
-  );
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
