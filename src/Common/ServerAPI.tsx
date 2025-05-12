@@ -35,8 +35,8 @@ export const ServerAPI = {
 };
 
 export const API = {
-  BaseUrl: "http://192.168.1.21:5025/api", //local
-  // BaseUrl: "https://1i5208zy27.execute-api.us-east-1.amazonaws.com/api", //live
+  // BaseUrl: "http://192.168.1.21:5025/api", //local
+  BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
 };
 
 export const EndPoint = {
