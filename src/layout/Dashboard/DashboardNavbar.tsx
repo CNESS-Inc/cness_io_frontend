@@ -4,7 +4,7 @@ import {
   SettingsIcon, UploadIcon, UserIcon, XIcon 
 } from "lucide-react";
 
-const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav,userData }:any) => {
+const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }:any) => {
   // Navigation items data
   const mainNavItems = [
     { icon: <LayoutDashboardIcon className="w-5 h-5" />, label: "Dashboard", active: true },

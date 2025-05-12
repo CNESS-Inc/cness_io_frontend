@@ -36,7 +36,7 @@ export default function LoginForm({
   onSwitchToSignup,
 }: LoginFormProps) {
   const navigate = useNavigate();
-  const [authenticated, setAuthenticated] = useState<boolean>(
+  const [, setAuthenticated] = useState<boolean>(
     localStorage.getItem("authenticated") === "true"
   );
   const [activeModal, setActiveModal] = useState<
@@ -132,14 +132,10 @@ export default function LoginForm({
     setIsSubmitting(true);
 
     try {
-      const response = await submitOrganizationDetails(organizationForm);
-
-      // For now, we'll just log the form data
-      console.log("Organization form submitted:", organizationForm);
-
+      await submitOrganizationDetails(organizationForm);
       setActiveModal(null);
       onSuccess();
-        navigate("/dashboard");
+      navigate("/dashboard");
     } catch (error) {
       console.error("Error submitting organization form:", error);
       toast.error("Failed to save organization information");
