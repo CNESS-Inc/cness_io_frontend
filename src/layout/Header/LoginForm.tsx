@@ -152,7 +152,7 @@ export default function LoginForm({
     <>
       <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 z-10 relative">
         <h1
-          className="jakarta text-xl sm:text-xl md:text-2xl text-center font-bold mb-6 
+          className="poppins text-xl sm:text-xl md:text-2xl text-center font-bold mb-6 
            bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
            text-transparent bg-clip-text"
         >
@@ -162,7 +162,7 @@ export default function LoginForm({
           <div className="mb-4">
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block openSans text-sm font-medium text-gray-700 mb-1"
             >
               Email
             </label>
@@ -178,7 +178,7 @@ export default function LoginForm({
           <div className="mb-4">
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block openSans text-sm font-medium text-gray-700 mb-1"
             >
               Password
             </label>
@@ -191,7 +191,7 @@ export default function LoginForm({
             />
           </div>
 
-          <div className="text-center text-sm text-gray-600 mb-4">
+          <div className="text-center openSans text-sm text-gray-600 mb-4">
             Don't have an account?{" "}
             <button
               type="button"
@@ -221,8 +221,8 @@ export default function LoginForm({
       {/* Type Selection Modal - only shows when activeModal is "type" */}
       <Modal isOpen={activeModal === "type"} onClose={closeModal}>
         <div className="bg-white p-6 rounded-lg z-10 relative">
-          <h2 className="text-xl font-bold mb-4">Select Account Type</h2>
-          <p className="mb-6">
+          <h2 className="text-xl poppins font-bold mb-4">Select Account Type</h2>
+          <p className="mb-6 openSans">
             Please choose whether you're signing up as an individual or an
             organization.
           </p>
@@ -251,11 +251,11 @@ export default function LoginForm({
       {/* Organization Form Modal - only shows when activeModal is "organization" */}
       <Modal isOpen={activeModal === "organization"} onClose={closeModal}>
         <div className="bg-white p-6 rounded-lg max-w-md mx-auto z-10 relative">
-          <h2 className="text-xl font-bold mb-4">Organization Information</h2>
+          <h2 className="text-xl poppins font-bold mb-4">Organization Information</h2>
           <form onSubmit={handleOrganizationSubmit}>
             {/* Organization Name */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
                 Organization Name*
               </label>
               <input
@@ -271,7 +271,7 @@ export default function LoginForm({
 
             {/* Domain */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
                 Domain*
               </label>
               <input
@@ -287,7 +287,7 @@ export default function LoginForm({
 
             {/* Sub Domain */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
                 Sub Domain
               </label>
               <input
@@ -302,7 +302,7 @@ export default function LoginForm({
 
             {/* Employees Size */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
                 Employees Size*
               </label>
               <select
@@ -324,7 +324,7 @@ export default function LoginForm({
 
             {/* Revenue */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
                 Revenue*
               </label>
               <select
@@ -346,7 +346,7 @@ export default function LoginForm({
 
             {/* Statement */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
                 Mission Statement
               </label>
               <textarea

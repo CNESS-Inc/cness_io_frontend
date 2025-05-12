@@ -2,6 +2,10 @@
 
 import { Link } from "react-router-dom";
 import Button from "../../components/ui/Button";
+import { useState } from "react";
+import Modal from "../../components/ui/Modal";
+import SignupForm from "./SignupForm";
+import LoginForm from "./LoginForm";
 
 const links = [
   { name: "Why", href: "/" },
@@ -10,35 +14,57 @@ const links = [
 ];
 
 export default function MobileMenu({ isOpen }: { isOpen: boolean }) {
+  const [activeModal, setActiveModal] = useState<"signup" | "login" | null>(
+    null
+  );
+
+  const openSignupModal = () => setActiveModal("signup");
+  const closeModal = () => setActiveModal(null);
   return (
-    <div
-      className={`md:hidden bg-white transition-all duration-300 ease-in-out overflow-hidden ${
-        isOpen ? "max-h-96 py-4" : "max-h-0 py-0"
-      }`}
-    >
-      <nav aria-label="Mobile navigation" className="px-4">
-        <ul className="flex flex-col space-y-4">
-          {links.map((link) => (
-            <li key={link.name}>
-              <Link
-                to={link.href}
-                className="block text-gray-700 hover:text-primary-600 transition-colors py-2 px-4"
+    <>
+      <div
+        className={`md:hidden bg-white transition-all duration-300 ease-in-out overflow-hidden ${
+          isOpen ? "max-h-96 py-4" : "max-h-0 py-0"
+        }`}
+      >
+        <nav aria-label="Mobile navigation" className="px-4">
+          <ul className="flex flex-col space-y-4">
+            {links.map((link) => (
+              <li key={link.name}>
+                <Link
+                  to={link.href}
+                  className="block text-gray-700 hover:text-primary-600 transition-colors py-2 px-4"
+                >
+                  {link.name}
+                </Link>
+              </li>
+            ))}
+            <li>
+              <Button
+                className="w-full bg-[#7077FE] py-3 px-6 rounded-full transition-colors duration-500 ease-in-out"
+                variant="primary"
+                withGradientOverlay
+                onClick={openSignupModal}
               >
-                {link.name}
-              </Link>
+                Sign Up
+              </Button>
             </li>
-          ))}
-          <li>
-            <Button
-              className="w-full bg-[#7077FE] py-3 px-6 rounded-full transition-colors duration-500 ease-in-out"
-              variant="primary"
-              withGradientOverlay
-            >
-              Sign Up
-            </Button>
-          </li>
-        </ul>
-      </nav>
-    </div>
+          </ul>
+        </nav>
+      </div>
+      <Modal isOpen={activeModal === "signup"} onClose={closeModal}>
+        <SignupForm
+          onSuccess={closeModal}
+          onSwitchToLogin={() => setActiveModal("login")}
+        />
+      </Modal>
+
+      <Modal isOpen={activeModal === "login"} onClose={closeModal}>
+        <LoginForm
+          onSuccess={closeModal}
+          onSwitchToSignup={() => setActiveModal("signup")}
+        />
+      </Modal>
+    </>
   );
 }

@@ -58,7 +58,7 @@ export default function SignupForm({
   return (
     <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 z-10 relative">
       <h1
-        className="jakarta text-xl sm:text-xl md:text-2xl text-center font-bold mb-6 
+        className="popins text-xl sm:text-xl md:text-2xl text-center font-bold mb-6 
            bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
            text-transparent bg-clip-text"
       >
@@ -68,7 +68,7 @@ export default function SignupForm({
         <div className="mb-4">
           <label
             htmlFor="username"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block openSans text-sm font-medium text-gray-700 mb-1"
           >
             Username
           </label>
@@ -84,7 +84,7 @@ export default function SignupForm({
         <div className="mb-4">
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block openSans text-sm font-medium text-gray-700 mb-1"
           >
             Email
           </label>
@@ -100,7 +100,7 @@ export default function SignupForm({
         <div className="mb-4">
           <label
             htmlFor="password"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block openSans text-sm font-medium text-gray-700 mb-1"
           >
             Password
           </label>
@@ -116,7 +116,7 @@ export default function SignupForm({
         <div className="mb-4">
           <label
             htmlFor="confirmPassword"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block openSans text-sm font-medium text-gray-700 mb-1"
           >
             Confirm Password
           </label>
@@ -129,7 +129,7 @@ export default function SignupForm({
           />
         </div>
 
-        <div className="text-center text-sm text-gray-600 mb-4">
+        <div className="text-center openSans text-sm text-gray-600 mb-4">
           Already have an account?{" "}
           <button
             type="button"
