@@ -235,7 +235,7 @@ export default function Stepper() {
             <div className="relative w-full h-[451px]">
               {/* Connecting lines between steps */}
               <svg
-                className="absolute hidden lg:block transition-colors duration-1000 ease-in-out"
+                className="absolute hidden lg:block transition-colors duration-[2000ms] ease-in-out"
                 viewBox="0 0 154 123"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -268,7 +268,7 @@ export default function Stepper() {
                   d="M1.50464 1H87.7812C91.6472 1 94.7812 4.13401 94.7812 8V115C94.7812 118.866 97.9152 122 101.781 122H152.657"
                   style={{
                     stroke: "var(--stroke-color)",
-                    transition: "stroke 1s ease-in-out",
+                    transition: "stroke 2s ease-in-out", // Changed from 1s to 2s
                   }}
                   strokeWidth="3"
                   strokeLinecap="round"
@@ -276,7 +276,7 @@ export default function Stepper() {
               </svg>
 
               <svg
-                className="absolute hidden lg:block transition-colors duration-1000 ease-in-out"
+                className="absolute hidden lg:block transition-colors duration-[2000ms] ease-in-out"
                 viewBox="0 0 293 161"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -309,7 +309,7 @@ export default function Stepper() {
                   d="M1 160H33C36.866 160 40 156.866 40 153V112.142V71.2836C40 67.4176 43.134 64.2836 47 64.2836H285C288.866 64.2836 292 61.1496 292 57.2836V1.00001"
                   style={{
                     stroke: "var(--stroke-color)",
-                    transition: "stroke 1s ease-in-out",
+                    transition: "stroke 2s ease-in-out", // Changed from 1s to 2s
                   }}
                   strokeWidth="3"
                   strokeLinecap="round"
@@ -329,7 +329,7 @@ export default function Stepper() {
                       <React.Fragment key={`desktop-step-1-${stepIndex}`}>
                         <Card
                           className={`flex flex-col w-[150px] items-center gap-3 px-2 py-6 rounded-3xl border border-solid border-transparent 
-                            transition-colors duration-500 ease-in-out
+                            transition-colors duration-[2000ms] ease-in-out
                         ${
                           active
                             ? `bg-gradient-to-br ${step.color} `
@@ -349,7 +349,7 @@ export default function Stepper() {
                             />
                             <div className="flex items-center justify-center gap-2.5 px-0 py-2.5 relative self-stretch w-full">
                               <div
-                                className={`relative flex-1 mt-[-1.00px] jakarta font-medium transition-colors duration-500 ease-in-out ${
+                                className={`relative flex-1 mt-[-1.00px] jakarta font-medium transition-colors duration-[1000ms] ease-in-out ${
                                   active || completed
                                     ? "text-white"
                                     : "text-[#2a2a2a]"
@@ -368,7 +368,7 @@ export default function Stepper() {
                             viewBox="0 0 166 2"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
-                            className={`w-[50px] lg:w-[190px] transition-colors duration-initial ease-in-out ${
+                            className={`w-[50px] lg:w-[190px] transition-colors duration-[2000ms] ease-in-out ${
                               active
                                 ? `bg-gradient-to-br ${step.color} `
                                 : completed
@@ -380,7 +380,7 @@ export default function Stepper() {
                               d="M1.78125 1H164.781"
                               strokeWidth="3"
                               strokeLinecap="round"
-                              className={`transition-colors duration-initial ease-in-out ${
+                              className={`transition-colors duration-[2000ms] ease-in-out ${
                                 active
                                   ? `stroke-${step.color}`
                                   : completed
@@ -406,7 +406,7 @@ export default function Stepper() {
                       <React.Fragment key={`desktop-step-2-${stepIndex}`}>
                         <Card
                           className={`flex flex-col w-[140px] items-center gap-3 px-2 py-6 rounded-[32px] border border-solid border-transparent 
-                            transition-colors duration-500 ease-in-out    
+                            transition-colors duration-[2000ms] ease-in-out    
                             ${
                               active
                                 ? `bg-gradient-to-br ${step.color} `
@@ -426,7 +426,7 @@ export default function Stepper() {
                             />
                             <div className="flex items-center justify-center gap-2.5 px-0 py-2.5 relative self-stretch w-full">
                               <div
-                                className={`relative flex-1 mt-[-1.00px] jakarta font-medium transition-colors duration-500 ease-in-out ${
+                                className={`relative flex-1 mt-[-1.00px] jakarta font-medium transition-colors duration-[1000ms] ease-in-out ${
                                   active || completed
                                     ? "text-white"
                                     : "text-[#2a2a2a]"
@@ -445,7 +445,7 @@ export default function Stepper() {
                             viewBox="0 0 166 2"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
-                            className={`w-[50px] lg:w-[190px]  ${
+                            className={`w-[50px] lg:w-[190px] transition-colors duration-[2000ms] ease-in-out  ${
                               active
                                 ? `bg-gradient-to-br ${step.color} `
                                 : completed
@@ -457,7 +457,7 @@ export default function Stepper() {
                               d="M1.78125 1H164.781"
                               stroke-width="3"
                               stroke-linecap="round"
-                              className={`transition-colors duration-initial ease-in-out ${
+                              className={`transition-colors duration-[2000ms] ease-in-out ${
                                 active
                                   ? `stroke-${step.color}`
                                   : completed
@@ -483,7 +483,7 @@ export default function Stepper() {
                       <React.Fragment key={`desktop-step-3-${stepIndex}`}>
                         <Card
                           className={`flex flex-col w-[140px] items-center gap-3 px-2 py-6 rounded-[32px] border border-solid border-transparent 
-                            transition-colors duration-500 ease-in-out
+                            transition-colors duration-[2000ms] ease-in-out
                             ${
                               active
                                 ? `bg-gradient-to-br ${step.color}`
@@ -505,7 +505,7 @@ export default function Stepper() {
                             <div className="flex items-center justify-center gap-2.5 px-0 py-2.5 relative self-stretch w-full">
                               <div
                                 className={`relative flex-1 mt-[-1.00px] jakarta font-medium 
-                            transition-colors duration-500 ease-in-out
+                            transition-colors duration-[1000ms] ease-in-out
                                   ${
                                     active || completed
                                       ? "text-white"
@@ -526,7 +526,7 @@ export default function Stepper() {
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
                             className={`w-[50px] lg:w-[190px] order-1 
-                            transition-colors duration-1000 ease-in-out
+                            transition-colors duration-[2000ms] ease-in-out
                               ${
                                 isStepActive(4) || isStepCompleted(4)
                                   ? `bg-gradient-to-br ${step.color} `
@@ -537,7 +537,7 @@ export default function Stepper() {
                               d="M1.78125 1H164.781"
                               stroke-width="3"
                               stroke-linecap="round"
-                              className={`transition-colors duration-initial ease-in-out ${
+                              className={`transition-colors duration-[2000ms] ease-in-out ${
                                 isStepActive(4)
                                   ? `stroke-${step.color}`
                                   : isStepCompleted(4)
