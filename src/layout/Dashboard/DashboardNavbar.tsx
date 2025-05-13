@@ -3,14 +3,16 @@ import {
   GraduationCapIcon, HelpCircleIcon, LayoutDashboardIcon, 
   SettingsIcon, UploadIcon, UserIcon, XIcon 
 } from "lucide-react";
+import { NavLink } from "react-router-dom";
+
 
 const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }:any) => {
   // Navigation items data
   const mainNavItems = [
-    { icon: <LayoutDashboardIcon className="w-5 h-5" />, label: "Dashboard", active: true },
+    { icon: <LayoutDashboardIcon className="w-5 h-5" />, label: "Dashboard", active: true,path: "/dashboard"  },
     { icon: <AwardIcon className="w-5 h-5" />, label: "Get Certified", active: false },
     { icon: <UploadIcon className="w-5 h-5" />, label: "Upload Proof", active: false },
-    { icon: <FileBarChartIcon className="w-5 h-5" />, label: "Score & Results", active: false },
+    { icon: <FileBarChartIcon className="w-5 h-5" />, label: "Score & Results", active: true, path: "/score-result"  },
     { icon: <GraduationCapIcon className="w-5 h-5" />, label: "Learning Lab (LMS)", active: false },
     { icon: <BadgePlusIcon className="w-5 h-5" />, label: "Upgrade Badge", active: false },
     { icon: <UserIcon className="w-5 h-5" />, label: "Directory Profile", active: false },
@@ -87,25 +89,37 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }:any) => {
 };
 
 // Extracted NavItem component for cleaner code
-const NavItem = ({ item, onClick }:any) => (
-  <div
-    className={`flex items-center gap-3 px-4 py-3 w-full rounded-xl cursor-pointer hover:bg-[#cdc1ff33] ${
-      item.active ? "bg-[#cdc1ff33]" : "rounded-[99px]"
-    }`}
-    onClick={!item.active ? onClick : undefined}
-  >
-    <div className="flex items-start gap-3 w-full relative">
+const NavItem = ({ item, onClick }: any) => {
+  const baseClasses =
+    "flex items-center gap-3 px-4 py-3 w-full rounded-xl cursor-pointer";
+  const activeClasses = "bg-[#f3e8ff] text-[#9747FF] font-semibold";
+  const inactiveClasses = "text-slate-500 hover:bg-[#f3e8ff]";
+
+    const content = (
+    <>
       <div className="inline-flex items-start gap-2.5">{item.icon}</div>
-      <div className={`font-medium text-sm ${
-        item.active ? "text-indigo-600" : "text-slate-500"
-      }`}>
-        {item.label}
-      </div>
+      <div className="font-medium text-sm">{item.label}</div>
       {item.hasNotification && (
         <div className="absolute w-2 h-2 top-[13px] -left-px bg-orange-500 rounded-full border border-white" />
       )}
+    </>
+  );
+
+  return item.path ? (
+    <NavLink
+      to={item.path}
+      onClick={onClick}
+      className={({ isActive }) =>
+        `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`
+      }
+    >
+      <div className="flex items-start gap-3 w-full relative">{content}</div>
+    </NavLink>
+  ) : (
+    <div className={`${baseClasses} ${inactiveClasses}`} onClick={onClick}>
+      <div className="flex items-start gap-3 w-full relative">{content}</div>
     </div>
-  </div>
-);
+  );
+};
 
 export default DashboardNavbar;
