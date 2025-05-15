@@ -9,3 +9,19 @@
 .poppins{
     font-family: "Poppins", sans-serif;
 }
+
+/* Custom easing curve */
+.ease-smooth {
+  transition-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Card hover effects */
+.card-transition {
+  transition: all 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+  transform-origin: center;
+}
+
+/* SVG path transitions */
+.svg-path-transition {
+  transition: stroke 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+}

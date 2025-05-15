@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "../../ui/DashboardCard";
 
+
 import {
   CircularProgressbar,
   buildStyles,
@@ -16,6 +17,7 @@ import {
 import 'react-circular-progressbar/dist/styles.css';
 
 export default function DashboardSection() {
+
   // Data for modules
   const modules = [
     {
@@ -86,7 +88,7 @@ const filledBlocks = Math.floor(Assessmentpercentage / (100 / totalBlocks));
               <h1 className="font-['Poppins',Helvetica] text-2xl md:text-[32px] leading-8">
                 <span className="font-semibold text-[#222224]">Hello, </span>
                 <span className="font-semibold text-[#a392f2]">
-                  Company Name
+                  {userData?.userData?.first_name}
                 </span>
               </h1>
             </div>

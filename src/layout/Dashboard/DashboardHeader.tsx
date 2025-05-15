@@ -2,7 +2,8 @@ import { BellIcon, SearchIcon, SettingsIcon, MenuIcon } from "lucide-react"
 import { Input } from "../../components/ui/input"
 import { Avatar, AvatarImage } from "@radix-ui/react-avatar"
 
-const DashboardHeader = ({ toggleMobileNav }:any) => {
+const DashboardHeader = ({ toggleMobileNav,userData }:any) => {
+  console.log("🚀 ~ DashboardHeader ~ userData:", userData)
   return (
     <header className="flex w-full items-center justify-between px-4 md:px-8 py-[18px] bg-white border-b border-[#0000001a]">
       {/* Left side - Hamburger (mobile) and Search */}
@@ -53,7 +54,7 @@ const DashboardHeader = ({ toggleMobileNav }:any) => {
           <div className="flex flex-col items-start">
             <div className="px-2 py-0.5 flex items-center">
               <div className="font-['Poppins',Helvetica] font-medium text-[#222224] text-sm">
-                Company Name
+                {userData?.first_name}
               </div>
             </div>
 
