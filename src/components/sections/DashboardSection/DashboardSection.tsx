@@ -9,8 +9,15 @@ import {
   CardTitle,
 } from "../../ui/DashboardCard";
 
-export default function DashboardSection(userData:any) {
-  console.log("🚀 ~ DashboardSection ~ userData:", userData)
+
+import {
+  CircularProgressbar,
+  buildStyles,
+} from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+
+export default function DashboardSection() {
+
   // Data for modules
   const modules = [
     {
@@ -21,6 +28,7 @@ export default function DashboardSection(userData:any) {
       image: "https://c.animaapp.com/magahlmqpONVZN/img/frame-1707481273.png",
       buttonText: "Start",
       buttonColor: "bg-gradient-to-r from-[#707AFE] to-[#F07EFF]",
+       locked: true,
     },
     {
       id: 2,
@@ -30,6 +38,7 @@ export default function DashboardSection(userData:any) {
       image: "https://c.animaapp.com/magahlmqpONVZN/img/frame-1707481273-1.png",
       buttonText: "Resume",
       buttonColor: "bg-[#897aff]",
+       locked: true,
     },
     {
       id: 3,
@@ -39,19 +48,38 @@ export default function DashboardSection(userData:any) {
       image: "https://c.animaapp.com/magahlmqpONVZN/img/frame-1707481273-2.png",
       buttonText: "Resume",
       buttonColor: "bg-[#897aff]",
+       locked: true,
     },
   ];
 
   // Data for tasks
-  const tasks = [
-    { id: 1, name: "Task Name" },
-    { id: 2, name: "Task Name" },
-    { id: 3, name: "Task Name" },
-    { id: 4, name: "Task Name" },
-  ];
+  //const tasks = [
+    //{ id: 1, name: "Task Name" },
+   // { id: 2, name: "Task Name" },
+   // { id: 3, name: "Task Name" },
+   // { id: 4, name: "Task Name" },
+ // ];
+ //for complete your profile 
+const percentage = 32;
 
+//Assessment progress
+const Assessmentpercentage = 70;
+const totalBlocks = 6;
+const filledBlocks = Math.floor(Assessmentpercentage / (100 / totalBlocks));
   return (
     <>
+   <div className="max-w-[1200px] mx-auto "></div>
+<div className=" mx-5   bg-[rgba(255,204,0,0.05)] 5% text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
+  <div className="flex items-center gap-2">
+    <span className="text-yellow-500">💡</span>
+    <span>
+      Take practice tests to familiarize yourself with the exam format.{" "}
+      <a href="#" className="text-blue-600 underline">Click here</a>
+    </span>
+  </div>
+  <button className="text-gray-400 hover:text-gray-700 text-lg">×</button>
+</div>
+
       <section className="flex flex-col w-full items-start gap-3 p-4 md:p-5">
         {/* Header Section */}
         <header className="flex flex-col md:flex-row items-start md:items-center justify-between w-full gap-2 md:gap-0">
@@ -72,6 +100,94 @@ export default function DashboardSection(userData:any) {
           </div>
         </header>
 
+ {/* Profile Completion and Journey Cards */}
+
+    <div className="flex w-full gap-3">
+        <Card className="flex-1 border-[#eceef2]">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-8">
+              <div className="flex items-center gap-[31.17px]">
+                <div className="relative w-[147px] h-[147px]">
+                <div className="w-[147px] h-[147px]">
+  <CircularProgressbar
+    value={percentage}
+   
+    strokeWidth={10}
+    styles={buildStyles({
+      rotation: 0.60,
+      pathColor: 'url(#gradient)',
+      trailColor: '#f5f5f5',
+      textColor: '#242731',
+       pathTransitionDuration: 0.5,
+
+    })}
+  />
+  {/* Custom-styled text overlaid manually */}
+  <div className="absolute inset-0 flex items-center justify-center">
+    <span className="font-['open sans'] font-bold text-[31.51px] text-[#242731]">
+      {percentage}%
+    </span>
+  </div>
+
+  {/* Gradient definition */}
+  <svg style={{ height: 0 }}>
+    <defs>
+      <linearGradient id="gradient" x1="1" y1="0" x2="0" y2="1">
+        <stop offset="50%" stopColor="#A162F7" />
+        <stop offset="100%" stopColor="#F07EFF" />
+      </linearGradient>
+    </defs>
+  </svg>
+</div>
+                </div>
+              </div>
+              <div className="flex flex-col items-start gap-5 flex-1">
+                <div className="flex flex-col items-start gap-3 w-full">
+                  <h2 className="font-['Poppins',Helvetica] font-semibold text-[#222224] text-xl">
+                    Complete Your Profile
+                  </h2>
+                  <p className="font-['Open_Sans',Helvetica] text-[#7a7a7a] text-base">
+                    Fill out your profile with all the necessary details.
+                  </p>
+                </div>
+                <div className="h-8 w-full">
+<Button className="w-[126px] h-full bg-gradient-to-r from-[rgba(112,119,254,1)] to-[rgba(151,71,255,1)] hover:brightness-120 active:scale-95  transition-all duration-300 rounded-full px-4 py-0 flex justify-center items-center">
+  <span className="font-['Plus_Jakarta_Sans',Helvetica] font-medium text-[12px] leading-none tracking-[0px] text-white text-center">
+    Start
+  </span>
+</Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="flex-1 border-none bg-gradient-to-br from-[rgba(151,71,255,0.1)] to-[rgba(240,126,255,0.1)]">
+          <CardContent className="p-6">
+            <div className="flex flex-col items-start gap-6 w-full">
+              <div className="flex flex-col items-start gap-3 w-full">
+                <h2 className="font-['Poppins',Helvetica] font-semibold text-[#222224] text-xl">
+                  Start Your Journey
+                </h2>
+                <p className="font-['Open_Sans',Helvetica] text-[#7a7a7a] text-base">
+                  Complete your profile by providing all the essential
+                  information to kickstart your journey and obtain
+                  certification.
+                </p>
+              </div>
+              <div className="h-8 w-full">
+                   <Button className="w-[160px] h-8 bg-[#7077FE] hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#F07EFF] transition-all duration-300 rounded-full px-4 py-0 flex justify-center items-center">
+    <span className="font-['Plus_Jakarta_Sans',Helvetica] font-medium text-[12px] leading-none tracking-[0px] text-white text-center">
+      Get Certification
+    </span>
+  </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+
         {/* Top Cards Row */}
         <div className="flex flex-col md:flex-row items-start gap-3 w-full">
           {/* Assessment Progress Card */}
@@ -91,33 +207,36 @@ export default function DashboardSection(userData:any) {
               </div>
             </CardHeader>
             <CardContent className="pt-4 pb-4 md:pt-6 md:pb-6">
-              <div className="flex items-center justify-between mb-3 md:mb-4">
-                <div className="font-['Poppins',Helvetica] font-medium text-[#222224] text-xl md:text-2xl">
-                  70%
-                </div>
-                <div className="font-['Poppins',Helvetica] font-medium text-[#9747ff] text-sm md:text-base">
-                  In Progress
-                </div>
-              </div>
-              <div className="flex items-center gap-1 w-full">
-                {[1, 2, 3, 4].map((i) => (
-                  <div
-                    key={i}
-                    className="flex-1 h-5 md:h-[27px] rounded bg-gradient-to-b from-[rgba(79,70,229,1)] to-[rgba(151,71,255,1)]"
-                  />
-                ))}
-                {[5, 6].map((i) => (
-                  <div
-                    key={i}
-                    className="flex-1 h-5 md:h-[27px] bg-[#897aff33] rounded"
-                  />
-                ))}
-              </div>
+  <div className="flex items-center justify-between mb-3 md:mb-4">
+    <div className="font-['Poppins',Helvetica] font-medium text-[#222224] text-xl md:text-2xl">
+      {Assessmentpercentage}%
+    </div>
+    <div className="font-['Poppins',Helvetica] font-medium text-[#9747ff] text-sm md:text-base">
+      In Progress
+    </div>
+  </div>
+
+   {/* Segmented Progress Bar */}
+  <div className="flex items-center gap-1 w-full">
+    {[...Array(totalBlocks)].map((_, index) => (
+      <div
+        key={index}
+        className={`flex-1 h-5 md:h-[24px] rounded ${
+          index < filledBlocks
+            ? 'bg-gradient-to-b from-[rgba(79,70,229,1)] to-[rgba(151,71,255,1)]'
+            : 'bg-[#EDEAFF]'
+        }`}
+      />
+    ))}
+  </div>
+
+
             </CardContent>
           </Card>
 
           {/* CIS Score Card */}
-          <Card className="w-full md:w-[197px] border-[#eceef2]">
+          <div className="relative w-full md:w-[272px] md:h-[199px]">
+          <Card className="w-full md:w-[272px] md:h-[199px] border-[#eceef2] ">
             <CardHeader className="flex-row items-center justify-between border-b border-[#0000001a] pb-2 md:pb-3">
               <div className="flex items-center gap-2 md:gap-3.5">
                 <div className="bg-[#e8cdfd33] w-8 h-8 md:w-[38px] md:h-[38px] flex items-center justify-center rounded-full">
@@ -147,9 +266,30 @@ export default function DashboardSection(userData:any) {
               </div>
             </CardContent>
           </Card>
+{/* 🔒 Lock Overlay */}
+  <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/40 rounded-[10px] shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
+    <svg
+      className="w-8 h-8 text-gray-700 opacity-80 mb-2"
+      fill="currentColor"
+      viewBox="0 0 20 20"
+    >
+      <path fill="#4F46E5" d="M10 2a4 4 0 00-4 4v3H5a1 1 0 000 2h10a1 1 0 000-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v3H8V6z" />
+      <path fill="#4F46E5" d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z" />
+    </svg>
+    <p className="text-sm text-gray-700 font-medium">
+      CIS Score Locked
+    </p>
+    <p className="text-xs text-gray-500 mt-1">
+      
+    </p>
+  </div>
+</div>
 
-          {/* Badge Card */}
-          <Card className="w-full md:flex-1 border-[#eceef2]">
+{/* Badge Card */}
+<div className="relative w-full md:w-[272px] md:h-[199px]">
+
+       <Card className="w-full h-full border-[#eceef2] rounded-[10px] overflow-hidden">
+
             <CardHeader className="flex-row items-center justify-between border-b border-[#0000001a] pb-2 md:pb-3">
               <div className="flex items-center gap-2 md:gap-3.5">
                 <div className="bg-[#e8cdfd33] w-8 h-8 md:w-[38px] md:h-[38px] flex items-center justify-center rounded-full">
@@ -181,7 +321,28 @@ export default function DashboardSection(userData:any) {
               </div>
             </CardContent>
           </Card>
-        </div>
+        {/* 🔒 Lock overlay only for badge */}
+ <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-[10px] shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
+  <svg
+    className="w-8 h-8 text-gray-700 opacity-80 mb-2"
+    fill="currentColor"
+    viewBox="0 0 20 20"
+  >
+    <path fill="#4F46E5"  d="M10 2a4 4 0 00-4 4v3H5a1 1 0 000 2h10a1 1 0 000-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v3H8V6z" />
+    <path fill="#4F46E5"  d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z" />
+  </svg>
+  <p className="text-sm text-gray-700 font-medium">
+    Badge Locked
+  </p>
+  <p className="text-xs text-gray-500 mt-1">
+
+  </p>
+</div>
+</div>
+</div>
+
+
+
 
         {/* Learning Lab Section */}
         <Card className="w-full border-[#eceef2]">
@@ -202,10 +363,30 @@ export default function DashboardSection(userData:any) {
           <CardContent className="pt-4 pb-4 md:pt-6 md:pb-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-[11px]">
               {modules.map((module) => (
+                
+                
                 <Card
-                  key={module.id}
-                  className="w-full border-[#eceef2] overflow-hidden"
+  key={module.id}
+  className="w-full border-[#eceef2] overflow-hidden relative rounded-lg"
                 >
+
+                    {/* 🔒 Lock Overlay if locked */}
+  {module.locked && (
+    <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/40 shadow-inner z-10 flex flex-col items-center justify-center px-4 text-center">
+      <svg
+        className="w-8 h-8 text-gray-700 opacity-80 mb-2"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path fill="#4F46E5"  d="M10 2a4 4 0 00-4 4v3H5a1 1 0 000 2h10a1 1 0 000-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v3H8V6z" />
+        <path fill="#4F46E5"  d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z" />
+      </svg>
+      <p className="text-sm text-gray-700 font-medium">Module Locked</p>
+      <p className="text-xs text-gray-500 mt-1">
+        
+      </p>
+    </div>
+  )}
                   <CardContent className="p-0">
                     <div
                       className="relative h-24 md:h-[135px] rounded-lg overflow-hidden"
@@ -250,6 +431,7 @@ export default function DashboardSection(userData:any) {
                         <h3 className="font-['Poppins',Helvetica] font-semibold text-[#222224] text-sm md:text-base">
                           {module.title}
                         </h3>
+{!module.locked && (
                         <Button
                           className="bg-[#7077FE] py-1 px-2 md:py-[8px] md:px-[20.5px] w-fit rounded-full text-xs md:text-base"
                           variant="primary"
@@ -257,6 +439,9 @@ export default function DashboardSection(userData:any) {
                         >
                           {module.buttonText}
                         </Button>
+)}
+
+
                       </div>
                     </div>
                   </CardContent>
@@ -266,7 +451,7 @@ export default function DashboardSection(userData:any) {
           </CardContent>
         </Card>
 
-        {/* Next Suggested Steps Section */}
+        {/*Next Suggested Steps Section 
         <Card className="w-full bg-[#f7f2ff80] border-[#eceef2]">
           <CardContent className="p-4 md:p-6">
             <div className="flex items-center justify-between mb-4 md:mb-6">
@@ -307,8 +492,9 @@ export default function DashboardSection(userData:any) {
               ))}
             </div>
           </CardContent>
-        </Card>
+        </Card>*/}
       </section>
     </>
+  
   );
 }
