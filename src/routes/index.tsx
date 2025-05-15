@@ -6,7 +6,8 @@ const HomePage = lazy(() => import('../pages/Home'))
 const Dashboard = lazy(() => import('../pages/Dashboard'))
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 const ScoreResult = lazy(() => import('../components/sections/DashboardSection/Scoreresult'))
-
+const UserProfilePage=lazy(()=>import('../components/sections/DashboardSection/UserProfilePage'))
+const OrganaizationProfilepage=lazy(()=>import('../components/sections/DashboardSection/OrganizationProfile'))
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -24,6 +25,15 @@ export const router = createBrowserRouter([
       {
         path: 'score-result',
         element: <ScoreResult />,
+      },
+      {
+        path: 'user-profile',
+        element: <UserProfilePage />,
+      },
+
+       {
+        path: 'company-profile',
+        element: <OrganaizationProfilepage />,
       },
     ],
   },

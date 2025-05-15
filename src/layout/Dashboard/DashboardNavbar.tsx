@@ -1,12 +1,14 @@
+import React, { useState } from "react";
 import { 
   AwardIcon, BadgePlusIcon, BellIcon, FileBarChartIcon, 
   GraduationCapIcon, HelpCircleIcon, LayoutDashboardIcon, 
-  SettingsIcon, UploadIcon, UserIcon, XIcon 
+  SettingsIcon, UploadIcon, UserIcon, XIcon ,ChevronDownIcon, ChevronUpIcon 
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 
 const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }:any) => {
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   // Navigation items data
   const mainNavItems = [
     { icon: <LayoutDashboardIcon className="w-5 h-5" />, label: "Dashboard", active: true,path: "/dashboard"  },
@@ -66,6 +68,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }:any) => {
               <NavItem key={index} item={item} onClick={toggleMobileNav} />
             ))}
           </div>
+          
 
           {/* Divider */}
           <div className="w-full h-px">
@@ -75,6 +78,52 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }:any) => {
               src="https://c.animaapp.com/magahlmqpONVZN/img/line-1.svg"
             />
           </div>
+
+{/* Profile Dropdown (tight, clean layout) */}
+<div className="w-full px-3">
+  <button
+    onClick={() => setIsProfileOpen(!isProfileOpen)}
+    className="flex items-center justify-between w-full px-4 py-[10px] rounded-xl cursor-pointer text-slate-500 hover:bg-[#f3e8ff] transition"
+  >
+    <div className="flex items-center gap-3">
+      <UserIcon className="w-5 h-5" />
+      <span className="text-sm font-medium">Profile</span>
+    </div>
+    {isProfileOpen ? (
+      <ChevronUpIcon className="w-4 h-4" />
+    ) : (
+      <ChevronDownIcon className="w-4 h-4" />
+    )}
+  </button>
+
+  {isProfileOpen && (
+    <div className="flex flex-col gap-[2px] mt-[2px] ml-[52px]">
+      <NavLink
+        to="/user-profile"
+        onClick={toggleMobileNav}
+        className={({ isActive }) =>
+          `text-sm px-3 py-[6px] rounded-lg w-full transition ${
+            isActive ? "bg-[#f3e8ff] text-[#9747FF] font-semibold" : "text-slate-500 hover:bg-[#f9f9f9]"
+          }`
+        }
+      >
+        My Profile
+      </NavLink>
+      <NavLink
+        to="/company-profile"
+        onClick={toggleMobileNav}
+        className={({ isActive }) =>
+          `text-sm px-3 py-[6px] rounded-lg w-full transition ${
+            isActive ? "bg-[#f3e8ff] text-[#9747FF] font-semibold" : "text-slate-500 hover:bg-[#f9f9f9]"
+          }`
+        }
+      >
+        Company Profile
+      </NavLink>
+    </div>
+  )}
+</div>
+
 
           {/* Secondary Menu Items */}
           <div className="flex flex-col items-start gap-1 px-3 w-full">
