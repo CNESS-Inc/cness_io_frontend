@@ -1,9 +1,14 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Button from "../../components/ui/Button";
 import {
   AccountDetails,
+  GetAllFormDetails,
+  GetDomainDetails,
+  GetReadinessQuestionDetails,
+  GetSubDomainDetails,
   LoginDetails,
   submitOrganizationDetails,
+  submitPersonDetails,
 } from "../../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -13,6 +18,23 @@ interface LoginFormProps {
   onSuccess: () => void;
   onSwitchToSignup: () => void;
 }
+
+interface SubDomain {
+  id: string;
+  name: string;
+}
+interface OrganizationForm {
+  organization_name: string;
+  domain: string;
+  sub_domain: string;
+  employee_size: string;
+  revenue: string;
+  question: Array<{
+    question_id: string;
+    answer: string;
+  }>;
+}
+type PartialOrganizationFormData = Partial<OrganizationForm>;
 
 interface AuthResponse {
   data: {
@@ -25,6 +47,10 @@ interface AuthResponse {
       };
     };
   };
+}
+interface QuestionAnswer {
+  question_id: string;
+  answer: string;
 }
 
 interface AccountFormData {
@@ -40,18 +66,26 @@ export default function LoginForm({
     localStorage.getItem("authenticated") === "true"
   );
   const [activeModal, setActiveModal] = useState<
-    "type" | "organization" | null
+    | "type"
+    | "organization"
+    | "person"
+    | "personPricing"
+    | "organizationPricing"
+    | null
   >(null);
-  const [organizationForm, setOrganizationForm] = useState({
+  console.log("🚀 ~ activeModal:", activeModal);
+  const [organizationForm, setOrganizationForm] = useState<OrganizationForm>({
     organization_name: "",
     domain: "",
     sub_domain: "",
     employee_size: "",
     revenue: "",
-    statement: "",
+    question: [], // Changed from 'question' to 'questions' to match interface
   });
+  console.log("🚀 ~ organizationForm:", organizationForm);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [subDomain, setsubDomain] = useState<SubDomain[] | null>();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -77,10 +111,11 @@ export default function LoginForm({
           setActiveModal("type");
         } else if (completionStatus === 1) {
           // Complete, proceed to dashboard
-          onSuccess();
-          setTimeout(() => {
-            navigate("/dashboard");
-          }, 2000);
+          // onSuccess();
+          // setTimeout(() => {
+          //   navigate("/dashboard");
+          // }, 2000);
+          setActiveModal("person");
         } else if (completionStatus === 2) {
           // Show organization form
           setActiveModal("organization");
@@ -105,9 +140,11 @@ export default function LoginForm({
       // Handle successful response
       if (type === 2) {
         setActiveModal("organization");
+      } else if (type === 1) {
+        setActiveModal("person");
       } else {
         setActiveModal(null);
-        navigate("/dashboard");
+        // navigate("/dashboard");
       }
     } catch (error) {
       console.error("Error setting account type:", error);
@@ -115,27 +152,107 @@ export default function LoginForm({
     }
   };
 
-  const handleOrganizationFormChange = (
+  const handleOrganizationFormChange = async (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
     const { name, value } = e.target;
-    setOrganizationForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+
+    if (name.startsWith("question_")) {
+      // Handle question answers
+      const questionId = name.replace("question_", "");
+      setOrganizationForm((prev) => {
+        const existingQuestionIndex = prev.question.findIndex(
+          (q) => q.question_id === questionId
+        );
+
+        if (existingQuestionIndex >= 0) {
+          // Update existing answer
+          const updatedQuestions = [...prev.question];
+          updatedQuestions[existingQuestionIndex] = {
+            question_id: questionId,
+            answer: value,
+          };
+          return { ...prev, question: updatedQuestions };
+        } else {
+          // Add new question answer
+          return {
+            ...prev,
+            question: [
+              ...prev.question,
+              { question_id: questionId, answer: value },
+            ],
+          };
+        }
+      });
+    } else {
+      // Handle other fields normally
+      setOrganizationForm((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+
+      if (name === "domain" && value) {
+        try {
+          const response = await GetSubDomainDetails(value);
+          setsubDomain(response?.data?.data);
+        } catch (error) {
+          console.error("Error calling API:", error);
+        }
+      }
+    }
   };
 
+    const [isAnnual, setIsAnnual] = useState(false);
+  const [personPricing, setPersonPricing] = useState([]);
+  const [organizationpricingPlans, setorganizationpricingPlans] = useState([]);
   const handleOrganizationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      await submitOrganizationDetails(organizationForm);
-      setActiveModal(null);
-      onSuccess();
-      navigate("/dashboard");
+      const res = await submitOrganizationDetails(organizationForm);
+      const plansByRange: Record<string, any> = {};
+      res?.data?.data?.plan.forEach((plan: any) => {
+        if (!plansByRange[plan.plan_range]) {
+          plansByRange[plan.plan_range] = {};
+        }
+        plansByRange[plan.plan_range][plan.plan_type] = plan;
+      });
+      console.log("🚀 ~ handleOrganizationSubmit ~ plansByRange:", plansByRange)
+
+      // Create combined plan objects with both monthly and yearly data
+      const updatedPlans = Object.values(plansByRange).map((planGroup: any) => {
+        const monthlyPlan = planGroup.monthly;
+        const yearlyPlan = planGroup.yearly;
+
+        return {
+          id: monthlyPlan?.id || yearlyPlan?.id,
+          title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+          description: "Customized pricing based on your selection",
+          monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
+          yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+          period: isAnnual ? "/year" : "/month",
+          billingNote: yearlyPlan
+            ? isAnnual
+              ? `billed annually ($${yearlyPlan.amount})`
+              : `or $${monthlyPlan?.amount}/month`
+            : undefined,
+          features: [], // Add any features you need here
+          buttonText: "Get Started",
+          buttonClass: yearlyPlan
+            ? ""
+            : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+          borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
+          popular: !!yearlyPlan,
+        };
+      });
+
+      setorganizationpricingPlans(updatedPlans);
+      setActiveModal("organizationPricing");
+      // onSuccess();
+      // navigate("/dashboard");
     } catch (error) {
       console.error("Error submitting organization form:", error);
       toast.error("Failed to save organization information");
@@ -144,13 +261,114 @@ export default function LoginForm({
     }
   };
 
+
+
+  const handlePersonSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const question_payload: PartialOrganizationFormData = {
+        question: organizationForm.question,
+      };
+      const res = await submitPersonDetails(
+        question_payload as any
+      );
+
+      // Group plans by their range (Basic Plan, Pro Plan, etc.)
+      const plansByRange: Record<string, any> = {};
+      res?.data?.data?.plan.forEach((plan: any) => {
+        if (!plansByRange[plan.plan_range]) {
+          plansByRange[plan.plan_range] = {};
+        }
+        plansByRange[plan.plan_range][plan.plan_type] = plan;
+      });
+      console.log("🚀 ~ handlePersonSubmit ~ plansByRange:", plansByRange)
+
+      // Create combined plan objects with both monthly and yearly data
+      const updatedPlans = Object.values(plansByRange).map((planGroup: any) => {
+        const monthlyPlan = planGroup.monthly;
+        const yearlyPlan = planGroup.yearly;
+
+        return {
+          id: monthlyPlan?.id || yearlyPlan?.id,
+          title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+          description: "Customized pricing based on your selection",
+          monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
+          yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+          period: isAnnual ? "/year" : "/month",
+          billingNote: yearlyPlan
+            ? isAnnual
+              ? `billed annually ($${yearlyPlan.amount})`
+              : `or $${monthlyPlan?.amount}/month`
+            : undefined,
+          features: [], // Add any features you need here
+          buttonText: "Get Started",
+          buttonClass: yearlyPlan
+            ? ""
+            : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+          borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
+          popular: !!yearlyPlan,
+        };
+      });
+
+      setPersonPricing(updatedPlans);
+      setActiveModal("personPricing");
+    } catch (error) {
+      console.error("Error submitting organization form:", error);
+      toast.error("Failed to save organization information");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Update pricing when isAnnual changes
+  useEffect(() => {
+    if (personPricing.length > 0) {
+      const updatedPlans = personPricing.map((plan: any) => ({
+        ...plan,
+        price: isAnnual
+          ? plan.yearlyPrice || plan.monthlyPrice
+          : plan.monthlyPrice,
+        period: isAnnual ? "/year" : "/month",
+        billingNote: plan.yearlyPrice
+          ? isAnnual
+            ? `billed annually (${plan.yearlyPrice})`
+            : `or ${plan.monthlyPrice}/month`
+          : undefined,
+      }));
+      setPersonPricing(updatedPlans);
+    }
+  }, [isAnnual]);
+
   const closeModal = () => {
     setActiveModal(null);
   };
 
+  const [domains, setDomains] = useState([]);
+  const [revenue, setRevenue] = useState([]);
+  const [OrganizationSize, setOrganizationSize] = useState([]);
+  const [readlineQuestion, setReadlineQuestion] = useState([]);
+  const fetchAllDataDetails = async () => {
+    try {
+      const response = await GetAllFormDetails()
+      setDomains((response as any)?.data?.data?.domain);
+      setReadlineQuestion(response?.data?.data?.questions);
+      setOrganizationSize(response?.data?.data?.organization_size);
+      setRevenue(response?.data?.data?.revenue);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    if (activeModal === "organization" ||  activeModal === "person") {
+      fetchAllDataDetails()
+    }
+  }, [activeModal]);
+
+
   return (
     <>
-      <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 z-10 relative">
+      <div className=" px-4 pt-5 pb-4 sm:p-6 sm:pb-4 z-10 relative">
         <h1
           className="poppins text-xl sm:text-xl md:text-2xl text-center font-bold mb-6 
            bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
@@ -162,7 +380,7 @@ export default function LoginForm({
           <div className="mb-4">
             <label
               htmlFor="email"
-              className="block openSans text-sm font-medium text-gray-700 mb-1"
+              className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
             >
               Email
             </label>
@@ -171,14 +389,15 @@ export default function LoginForm({
               id="email"
               name="email"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+              placeholder="Enter your email"
+              className="w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
 
           <div className="mb-4">
             <label
               htmlFor="password"
-              className="block openSans text-sm font-medium text-gray-700 mb-1"
+              className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
             >
               Password
             </label>
@@ -187,7 +406,8 @@ export default function LoginForm({
               id="password"
               name="password"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+              placeholder="Enter your Password"
+              className="w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
 
@@ -220,8 +440,10 @@ export default function LoginForm({
 
       {/* Type Selection Modal - only shows when activeModal is "type" */}
       <Modal isOpen={activeModal === "type"} onClose={closeModal}>
-        <div className="bg-white p-6 rounded-lg z-10 relative">
-          <h2 className="text-xl poppins font-bold mb-4">Select Account Type</h2>
+        <div className=" p-6 rounded-lg z-10 relative">
+          <h2 className="text-xl poppins font-bold mb-4">
+            Select Account Type
+          </h2>
           <p className="mb-6 openSans">
             Please choose whether you're signing up as an individual or an
             organization.
@@ -250,8 +472,10 @@ export default function LoginForm({
 
       {/* Organization Form Modal - only shows when activeModal is "organization" */}
       <Modal isOpen={activeModal === "organization"} onClose={closeModal}>
-        <div className="bg-white p-6 rounded-lg max-w-md mx-auto z-10 relative">
-          <h2 className="text-xl poppins font-bold mb-4">Organization Information</h2>
+        <div className=" p-6 rounded-lg z-10 relative">
+          <h2 className="text-xl poppins font-bold mb-4">
+            Organization Information
+          </h2>
           <form onSubmit={handleOrganizationSubmit}>
             {/* Organization Name */}
             <div className="mb-4">
@@ -269,20 +493,26 @@ export default function LoginForm({
               />
             </div>
 
-            {/* Domain */}
             <div className="mb-4">
               <label className="block openSans text-sm font-medium text-gray-700 mb-1">
                 Domain*
               </label>
-              <input
-                type="text"
+              <select
                 name="domain"
                 value={organizationForm.domain}
                 onChange={handleOrganizationFormChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="Enter domain"
                 required
-              />
+              >
+                <>
+                  <option value="">Select domain</option>
+                  {domains?.map((domain: any) => (
+                    <option key={domain.id} value={domain.id}>
+                      {domain.name}
+                    </option>
+                  ))}
+                </>
+              </select>
             </div>
 
             {/* Sub Domain */}
@@ -290,14 +520,22 @@ export default function LoginForm({
               <label className="block openSans text-sm font-medium text-gray-700 mb-1">
                 Sub Domain
               </label>
-              <input
-                type="text"
+              <select
                 name="sub_domain"
                 value={organizationForm.sub_domain}
                 onChange={handleOrganizationFormChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="Enter sub domain"
-              />
+                required
+              >
+                <>
+                  <option value="">Select Sub domain</option>
+                  {subDomain?.map((subdomain: any) => (
+                    <option key={subdomain.id} value={subdomain.id}>
+                      {subdomain.name}
+                    </option>
+                  ))}
+                </>
+              </select>
             </div>
 
             {/* Employees Size */}
@@ -312,13 +550,14 @@ export default function LoginForm({
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 required
               >
-                <option value="">Select size</option>
-                <option value="1-10">1-10</option>
-                <option value="11-50">11-50</option>
-                <option value="51-200">51-200</option>
-                <option value="201-500">201-500</option>
-                <option value="501-1000">501-1000</option>
-                <option value="1000+">1000+</option>
+                <>
+                  <option value="">Select Sub domain</option>
+                  {OrganizationSize?.map((orgsize: any) => (
+                    <option key={orgsize.id} value={orgsize.id}>
+                      {orgsize.name}
+                    </option>
+                  ))}
+                </>
               </select>
             </div>
 
@@ -334,29 +573,42 @@ export default function LoginForm({
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 required
               >
-                <option value="">Select revenue range</option>
-                <option value="Less than $1M">Less than $1M</option>
-                <option value="$1M-$10M">$1M-$10M</option>
-                <option value="$10M-$50M">$10M-$50M</option>
-                <option value="$50M-$100M">$50M-$100M</option>
-                <option value="$100M-$1B">$100M-$1B</option>
-                <option value="Over $1B">Over $1B</option>
+                <>
+                  <option value="">Select Sub domain</option>
+                  {revenue?.map((revenue: any) => (
+                    <option key={revenue.id} value={revenue.id}>
+                      {revenue.revenue_range}
+                    </option>
+                  ))}
+                </>
               </select>
             </div>
 
             {/* Statement */}
-            <div className="mb-4">
-              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
-                Mission Statement
-              </label>
-              <textarea
-                name="statement"
-                value={organizationForm.statement}
-                onChange={handleOrganizationFormChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="Enter your organization's mission statement"
-                rows={3}
-              />
+            <div className="space-y-4">
+              {readlineQuestion?.map((question: any) => {
+                // TypeScript now knows the shape of questions array elements
+                const existingAnswer =
+                  organizationForm.question.find(
+                    (q: QuestionAnswer) => q.question_id === question.id
+                  )?.answer || "";
+
+                return (
+                  <div key={question.id} className="mb-4">
+                    <label className="block openSans text-sm font-medium text-gray-700 mb-1">
+                      {question.question}
+                    </label>
+                    <textarea
+                      name={`question_${question.id}`}
+                      value={existingAnswer}
+                      onChange={handleOrganizationFormChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      placeholder={`Enter your answer`}
+                      rows={3}
+                    />
+                  </div>
+                );
+              })}
             </div>
 
             <div className="flex justify-end mt-6 gap-3">
@@ -370,7 +622,6 @@ export default function LoginForm({
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                onClick={() => handleTypeSelection(1)}
                 className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
                 variant="primary"
                 withGradientOverlay
@@ -381,6 +632,215 @@ export default function LoginForm({
           </form>
         </div>
       </Modal>
+
+      <Modal isOpen={activeModal === "person"} onClose={closeModal}>
+        <div className=" p-6 rounded-lg w-full mx-auto z-10 relative">
+          <h2 className="text-xl poppins font-bold mb-4">Person Information</h2>
+          <form onSubmit={handlePersonSubmit}>
+            {/* Statement */}
+            {readlineQuestion.map((question: any) => {
+              // TypeScript now knows the shape of questions array elements
+              const existingAnswer =
+                organizationForm.question.find(
+                  (q: QuestionAnswer) => q.question_id === question.id
+                )?.answer || "";
+
+              return (
+                <div key={question.id} className="mb-4">
+                  <label className="block openSans text-sm font-medium text-gray-700 mb-1">
+                    {question.question}
+                  </label>
+                  <textarea
+                    name={`question_${question.id}`}
+                    value={existingAnswer}
+                    onChange={handleOrganizationFormChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder={`Enter your answer`}
+                    rows={3}
+                  />
+                </div>
+              );
+            })}
+
+            <div className="flex justify-end mt-6 gap-3">
+              <Button
+                type="button"
+                onClick={closeModal}
+                variant="white-outline"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
+                variant="primary"
+                withGradientOverlay
+              >
+                {isSubmitting ? "Submitting..." : "Submit"}
+              </Button>
+            </div>
+          </form>
+        </div>
+      </Modal>
+
+      <Modal isOpen={activeModal === "personPricing"} onClose={closeModal}>
+        <div className=" p-6 rounded-lg w-full mx-auto z-10 relative">
+          <h2 className="text-xl poppins font-bold mb-4 text-center">
+            Person Pricing Plan
+          </h2>
+
+          <div className="flex justify-center">
+            {personPricing.map((plan) => (
+              <div
+                key={plan.id}
+                className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
+              >
+                {plan.popular && (
+                  <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
+                    Popular
+                  </div>
+                )}
+                <h3 className="font-semibold text-lg mb-2 mt-2">
+                  {plan.title}
+                </h3>
+                <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
+                <div className="mb-4">
+                  <span className="text-3xl font-bold">
+                    {isAnnual
+                      ? plan.yearlyPrice || plan.monthlyPrice
+                      : plan.monthlyPrice}
+                  </span>
+                  <span className="text-gray-500">
+                    /month
+                  </span>
+                  {plan.billingNote && (
+                    <p className="text-sm text-gray-500 mt-1">
+                      {plan.billingNote}
+                    </p>
+                  )}
+                </div>
+                <Button
+                  className={`bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out ${plan.buttonClass}`}
+                  variant="primary"
+                  withGradientOverlay
+                >
+                  {plan.buttonText}
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 text-center">
+            <label className="inline-flex items-center cursor-pointer">
+              <span className="mr-3 text-sm font-medium text-gray-700">
+                Monthly billing
+              </span>
+              <div className="relative">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={isAnnual}
+                  onChange={() => setIsAnnual(!isAnnual)}
+                />
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+              </div>
+              <span className="ml-3 text-sm font-medium text-gray-700">
+                Annual billing
+              </span>
+            </label>
+          </div>
+
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="text-gray-500 hover:text-gray-700 font-medium text-sm underline focus:outline-none"
+            >
+              Skip for now, go to Dashboard
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+
+      <Modal isOpen={activeModal === "organizationPricing"} onClose={closeModal}>
+        <div className=" p-6 rounded-lg w-full mx-auto z-10 relative">
+          <h2 className="text-xl poppins font-bold mb-4 text-center">
+            Person Pricing Plan
+          </h2>
+
+          <div className="flex justify-center">
+            {organizationpricingPlans.map((plan) => (
+              <div
+                key={plan.id}
+                className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
+              >
+                {plan.popular && (
+                  <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
+                    Popular
+                  </div>
+                )}
+                <h3 className="font-semibold text-lg mb-2 mt-2">
+                  {plan.title}
+                </h3>
+                <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
+                <div className="mb-4">
+                  <span className="text-3xl font-bold">
+                    {isAnnual
+                      ? plan.yearlyPrice || plan.monthlyPrice
+                      : plan.monthlyPrice}
+                  </span>
+                  <span className="text-gray-500">
+                    /month
+                  </span>
+                  {plan.billingNote && (
+                    <p className="text-sm text-gray-500 mt-1">
+                      {plan.billingNote}
+                    </p>
+                  )}
+                </div>
+                <Button
+                  className={`bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out ${plan.buttonClass}`}
+                  variant="primary"
+                  withGradientOverlay
+                >
+                  {plan.buttonText}
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 text-center">
+            <label className="inline-flex items-center cursor-pointer">
+              <span className="mr-3 text-sm font-medium text-gray-700">
+                Monthly billing
+              </span>
+              <div className="relative">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={isAnnual}
+                  onChange={() => setIsAnnual(!isAnnual)}
+                />
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+              </div>
+              <span className="ml-3 text-sm font-medium text-gray-700">
+                Annual billing
+              </span>
+            </label>
+          </div>
+
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="text-gray-500 hover:text-gray-700 font-medium text-sm underline focus:outline-none"
+            >
+              Skip for now, go to Dashboard
+            </button>
+          </div>
+        </div>
+      </Modal>
+
     </>
   );
 }

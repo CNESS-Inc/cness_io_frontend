@@ -66,25 +66,26 @@ export default function SignupForm({
       </h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label
-            htmlFor="username"
-            className="block openSans text-sm font-medium text-gray-700 mb-1"
-          >
-            Username
-          </label>
+        <label
+          htmlFor="username"
+          className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
+        >
+          Username
+        </label>
           <input
             type="text"
             id="username"
             name="username"
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+            placeholder="Enter Your Username"
+            className="w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500"
           />
         </div>
 
         <div className="mb-4">
           <label
             htmlFor="email"
-            className="block openSans text-sm font-medium text-gray-700 mb-1"
+            className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
           >
             Email
           </label>
@@ -93,14 +94,15 @@ export default function SignupForm({
             id="email"
             name="email"
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+            placeholder="Enter Your Email"
+            className="w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500"
           />
         </div>
 
         <div className="mb-4">
           <label
             htmlFor="password"
-            className="block openSans text-sm font-medium text-gray-700 mb-1"
+            className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
           >
             Password
           </label>
@@ -109,14 +111,15 @@ export default function SignupForm({
             id="password"
             name="password"
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+            placeholder="Enter Your Password"
+            className="w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500"
           />
         </div>
 
         <div className="mb-4">
           <label
             htmlFor="confirmPassword"
-            className="block openSans text-sm font-medium text-gray-700 mb-1"
+            className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
           >
             Confirm Password
           </label>
@@ -125,7 +128,8 @@ export default function SignupForm({
             id="confirmPassword"
             name="confirmPassword"
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+            placeholder="Enter Your ConfirmPassword"
+            className="w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500"
           />
         </div>
 

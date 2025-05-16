@@ -1,9 +1,14 @@
 
 import { useEffect, useState } from "react";
 import DashboardSection from "../components/sections/DashboardSection";
-import DashboardHeader from "../layout/Dashboard/DashboardHeader";
-import DashboardNavbar from "../layout/Dashboard/DashboardNavbar";
 import { DashboardDetails } from "../Common/ServerAPI";
+import DashboardLayout from "../layout/Dashboard/dashboardlayout";
+
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+  isMobileNavOpen?: boolean;  // Make it optional if needed
+  toggleMobileNav?: () => void;  // Make it optional if needed
+}
 
 interface UserData {
   id: number;
@@ -46,7 +51,7 @@ const Dashboard = () => {
       isMobileNavOpen={isMobileNavOpen}
       toggleMobileNav={toggleMobileNav}
     >
-      <DashboardSection />
+      <DashboardSection user={user}/>
     </DashboardLayout>
 
   );

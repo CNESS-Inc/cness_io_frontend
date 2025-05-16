@@ -16,12 +16,16 @@ type AccountFormData = {
   person_organization_complete: number;
 };
 type OrganizationFormData = {
-  organization_name : string,
-  domain : string,
-  sub_domain : string,
-  employee_size : string,
-  revenue : string,
-  statement : string,
+  sub_domain: string | undefined;
+  domain: string | undefined;
+  revenue: string | undefined;
+  employee_size: string | undefined;
+  organization_name: string;
+  domain_id: string;
+  sub_domain_id: string;
+  organization_type_id: string;
+  revenue_range_id: string;
+  question: any;
 };
 type ApiResponse<T = any> = Promise<T>;
 
@@ -35,16 +39,21 @@ export const ServerAPI = {
 };
 
 export const API = {
-  // BaseUrl: "http://192.168.1.21:5025/api", //local
+  // BaseUrl: "http://192.168.1.11:5025/api", //local
   BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
 };
 
 export const EndPoint = {
   login: "/auth/login",
   register: "/auth/sign-up",
-  organization_profile: "/organization-profile",
+  organization_profile: "/readiness-question/organization/answer",
+  person_profile: "/readiness-question/person/answer",
   acount_type: "/auth/update/person",
   dashboard: "/dashboard",
+  domain: "/domain",
+  subdomain: "/sub-domain/by-domain",
+  readinessQuestion: "/readiness-question",
+  allFormData:"/readiness-question/get-formdata"
 };
 
 export const LoginDetails = (formData: LoginFormData): ApiResponse => {
@@ -69,25 +78,65 @@ export const AccountDetails = (formData: AccountFormData): ApiResponse => {
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.acount_type);
 };
-export const submitOrganizationDetails = (formData: OrganizationFormData): ApiResponse => {
+export const submitOrganizationDetails = (
+  formData: OrganizationFormData
+): ApiResponse => {
+  console.log("🚀 ~ formData:", formData)
   const data: Partial<OrganizationFormData> = {
-    organization_name : formData?.organization_name,
-    domain : formData?.domain,
-    sub_domain : formData?.sub_domain,
-    employee_size : formData?.employee_size,
-    revenue : formData?.revenue,
-    statement : formData?.statement,
+    organization_name: formData?.organization_name,
+    domain_id: formData?.domain,
+    sub_domain_id: formData?.sub_domain,
+    organization_type_id: formData?.employee_size,
+    revenue_range_id: formData?.revenue,
+    question: formData?.question,
+
   };
-  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.organization_profile);
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.organization_profile
+  );
+};
+export const submitPersonDetails = (
+  formData: OrganizationFormData
+): ApiResponse => {
+  console.log("🚀 ~ formData:", formData)
+  const data: Partial<OrganizationFormData> = {
+    question: formData?.question,
+  };
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.person_profile
+  );
 };
 
 export const DashboardDetails = (): ApiResponse => {
-  const data = {
-  };
+  const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.dashboard);
 };
+export const GetDomainDetails = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.domain);
+};
+export const GetReadinessQuestionDetails = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.readinessQuestion);
+};
+export const GetAllFormDetails = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.allFormData);
+};
+export const GetSubDomainDetails = (formData: string): ApiResponse => {
+  const data = {};
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.subdomain}/${formData}`
+  );
+};
 
-export const executeAPI = async <T = any>(
+export const executeAPI = async <T = any,>(
   method: ApiMethod,
   data: any,
   endpoint: string,
