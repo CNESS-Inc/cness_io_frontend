@@ -1,5 +1,5 @@
 import Button from "../../ui/Button";
-import joinImage from "../../../../public/join.png";
+import joinImage from "../../../assets/join.png";
 
 export default function JoiningSection() {
   return (

@@ -3,8 +3,6 @@ import Button from "../../components/ui/Button";
 import {
   AccountDetails,
   GetAllFormDetails,
-  GetDomainDetails,
-  GetReadinessQuestionDetails,
   GetSubDomainDetails,
   LoginDetails,
   submitOrganizationDetails,
@@ -24,6 +22,10 @@ interface SubDomain {
   name: string;
 }
 interface OrganizationForm {
+  domain_id:string;
+  sub_domain_id:string;
+  organization_type_id:string;
+  revenue_range_id:string;
   organization_name: string;
   domain: string;
   sub_domain: string;
@@ -56,6 +58,34 @@ interface QuestionAnswer {
 interface AccountFormData {
   person_organization_complete: 1 | 2;
 }
+type OrgPricingPlan = {
+  id: any;
+  title: any;
+  description: string;
+  monthlyPrice?: string;
+  yearlyPrice?: string;
+  period: string;
+  billingNote?: string;
+  features: string[];
+  buttonText: string;
+  buttonClass: string;
+  borderClass: string;
+  popular: boolean;
+};
+type PersPricingPlan = {
+  id: any;
+  title: any;
+  description: string;
+  monthlyPrice?: string;
+  yearlyPrice?: string;
+  period: string;
+  billingNote?: string;
+  features: string[]; // Instead of never[]
+  buttonText: string;
+  buttonClass: string;
+  borderClass: string;
+  popular: boolean;
+};
 
 export default function LoginForm({
   onSuccess,
@@ -75,6 +105,10 @@ export default function LoginForm({
   >(null);
   console.log("🚀 ~ activeModal:", activeModal);
   const [organizationForm, setOrganizationForm] = useState<OrganizationForm>({
+    domain_id:"",
+    sub_domain_id:"",
+    organization_type_id:"",
+    revenue_range_id:"",
     organization_name: "",
     domain: "",
     sub_domain: "",
@@ -205,8 +239,8 @@ export default function LoginForm({
   };
 
     const [isAnnual, setIsAnnual] = useState(false);
-  const [personPricing, setPersonPricing] = useState([]);
-  const [organizationpricingPlans, setorganizationpricingPlans] = useState([]);
+  const [personPricing, setPersonPricing] = useState<PersPricingPlan[]>([]);
+  const [organizationpricingPlans, setorganizationpricingPlans] = useState<OrgPricingPlan[]>([]);
   const handleOrganizationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
