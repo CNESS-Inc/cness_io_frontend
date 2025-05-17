@@ -166,7 +166,7 @@ export default function Stepper() {
                 key={`mobile-group-${group.id}`}
                 className="flex flex-col items-center gap-4 w-full"
               >
-                <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
+                <div className="flex flex-col sm:flex-row items-center sm:justify-center gap-4 w-full">
                   {group.steps.map((step, stepIndex) => {
                     const stepNumber = groupIndex * 2 + stepIndex;
                     const active = isStepActive(stepNumber);

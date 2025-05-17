@@ -5,7 +5,7 @@ import AppLayout from '../layout/AppLayout'
 const HomePage = lazy(() => import('../pages/Home'))
 const Dashboard = lazy(() => import('../pages/Dashboard'))
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
-const ScoreResult = lazy(() => import('../components/sections/DashboardSection/Scoreresult'))
+const ScoreResult = lazy(() => import('../components/sections/DashboardSection/ScoreResult'))
 
 export const router = createBrowserRouter([
   {

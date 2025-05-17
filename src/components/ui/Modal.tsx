@@ -23,27 +23,17 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      <div className="flex items-center justify-center min-h-screen p-4 sm:p-0">
         {/* Background overlay */}
         <div 
-          className="fixed inset-0 transition-opacity" 
+          className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
           onClick={onClose}
           aria-hidden="true"
-        >
-          <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-        </div>
-
-        {/* Modal positioning trick for centering */}
-        <span 
-          className="hidden sm:inline-block sm:align-middle sm:h-screen" 
-          aria-hidden="true"
-        >
-          &#8203;
-        </span>
+        />
 
         {/* Modal content */}
         <div 
-          className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-t-lg shadow-xl sm:rounded-lg sm:align-middle sm:max-w-lg"
+          className="relative w-full max-w-lg mx-auto my-8 overflow-hidden bg-white rounded-lg shadow-xl transition-all transform"
           style={{
             maxHeight: "90vh",
             overflowY: "auto"
@@ -51,10 +41,10 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
           role="dialog"
           aria-modal="true"
         >
-          {/* Close button for mobile */}
+          {/* Close button */}
           <button
             type="button"
-            className="absolute top-4 right-4 text-white sm:top-6 sm:right-6"
+            className="absolute top-2 right-2 p-2 text-gray-500 hover:text-gray-700 focus:outline-none z-50"
             onClick={onClose}
             aria-label="Close modal"
           >
@@ -73,7 +63,10 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
             </svg>
           </button>
           
-          {children}
+          {/* Modal content */}
+          <div className="p-4 sm:p-6">
+            {children}
+          </div>
         </div>
       </div>
     </div>
