@@ -4,11 +4,11 @@ import DashboardSection from "../components/sections/DashboardSection";
 import { DashboardDetails } from "../Common/ServerAPI";
 import DashboardLayout from "../layout/Dashboard/dashboardlayout";
 
-interface DashboardLayoutProps {
-  children: React.ReactNode;
-  isMobileNavOpen?: boolean;  // Make it optional if needed
-  toggleMobileNav?: () => void;  // Make it optional if needed
-}
+// interface DashboardLayoutProps {
+//   children: React.ReactNode;
+//   isMobileNavOpen?: boolean;  // Make it optional if needed
+//   toggleMobileNav?: () => void;  // Make it optional if needed
+// }
 
 interface UserData {
   id: number;

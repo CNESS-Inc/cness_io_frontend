@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Button from "../../ui/Button";
 import { Card, CardContent } from "../../ui/Card";
-import actionImgOne from "../../../../public/Group.png";
-import actionImgTwo from "../../../../public/Group-1.png";
+import actionImgOne from "../../../assets/Group.png";
+import actionImgTwo from "../../../assets/Group-1.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faClipboardList,
@@ -455,8 +455,8 @@ export default function Stepper() {
                           >
                             <path
                               d="M1.78125 1H164.781"
-                              stroke-width="3"
-                              stroke-linecap="round"
+                              strokeWidth="3"
+                              strokeLinecap="round"
                               className={`transition-colors duration-[2000ms] ease-in-out ${
                                 active
                                   ? `stroke-${step.color}`
@@ -535,8 +535,8 @@ export default function Stepper() {
                           >
                             <path
                               d="M1.78125 1H164.781"
-                              stroke-width="3"
-                              stroke-linecap="round"
+                              strokeWidth="3"
+                              strokeLinecap="round"
                               className={`transition-colors duration-[2000ms] ease-in-out ${
                                 isStepActive(4)
                                   ? `stroke-${step.color}`

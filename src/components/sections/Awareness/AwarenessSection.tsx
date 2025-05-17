@@ -2,9 +2,9 @@ import Button from "../../ui/Button";
 import { Card, CardContent } from "../../ui/Card";
 
 // Import your images (adjust the paths as needed)
-import IndividualImage from "../../../../public/aware_1.jpg";
-import OrganizationImage from "../../../../public/aware_2.jpg";
-import MentorImage from "../../../../public/aware_3.jpg";
+import IndividualImage from "../../../assets/aware_1.jpg";
+import OrganizationImage from "../../../assets/aware_2.jpg";
+import MentorImage from "../../../assets/aware_3.jpg";
 
 export default function AwarenessSection() {
   const cards = [
