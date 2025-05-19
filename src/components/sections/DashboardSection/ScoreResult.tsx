@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import DashboardLayout from "../../../layout/Dashboard/dashboardlayout";
 
 import "react-circular-progressbar/dist/styles.css";
@@ -150,95 +150,95 @@ const ScoreResult = () => {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 mb-6">
-  {/* Overall CIS Score Card - will take full width on mobile, 2 cols on larger screens */}
-  <div
-    className="min-h-[208px] p-4 rounded-[12px] border border-[#eceef2] shadow-sm sm:col-span-2 lg:col-span-2"
-    style={{
-      background: "linear-gradient(135deg, #f5f2fc 0%, #fef3f8 100%)",
-    }}
-  >
-    <div className="flex items-center gap-3 mb-2">
-      <div className="w-6 h-6 bg-[#e3d1f6] rounded-full flex items-center justify-center">
-        <img
-          src="./cis score.png"
-          alt="Lightning Icon"
-          className="w-8 h-6"
-        />
-      </div>
-      <span className="text-sm font-medium text-[#222224]">
-        Overall CIS Score
-      </span>
-    </div>
-    <hr className="border-t border-[#DADCE0] mb-3" />
+          {/* Overall CIS Score Card - will take full width on mobile, 2 cols on larger screens */}
+          <div
+            className="min-h-[208px] p-4 rounded-[12px] border border-[#eceef2] shadow-sm sm:col-span-2 lg:col-span-2"
+            style={{
+              background: "linear-gradient(135deg, #f5f2fc 0%, #fef3f8 100%)",
+            }}
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-6 h-6 bg-[#e3d1f6] rounded-full flex items-center justify-center">
+                <img
+                  src="./cis score.png"
+                  alt="Lightning Icon"
+                  className="w-8 h-6"
+                />
+              </div>
+              <span className="text-sm font-medium text-[#222224]">
+                Overall CIS Score
+              </span>
+            </div>
+            <hr className="border-t border-[#DADCE0] mb-3" />
 
-    <div className="flex items-end gap-2 mb-3">
-      <span className="text-[32px] font-bold text-[#9747FF] leading-none">
-        72
-      </span>
-      <span className="text-sm font-semibold text-[#222224] mb-[2px]">
-        /100
-      </span>
-    </div>
-    <div className="w-full h-2 rounded-full bg-[#f3f3f3] overflow-hidden mb-1">
-      <div className="w-[72%] h-2 rounded-full bg-gradient-to-r from-[#a392f2] to-[#f07eff]"></div>
-    </div>
-    <div className="flex justify-end text-xs text-[#222224] font-medium mb-1">
-      100%
-    </div>
-    <div className="text-xs font-medium text-[#818181]">
-      Above 70 is considered inspired
-    </div>
-  </div>
+            <div className="flex items-end gap-2 mb-3">
+              <span className="text-[32px] font-bold text-[#9747FF] leading-none">
+                72
+              </span>
+              <span className="text-sm font-semibold text-[#222224] mb-[2px]">
+                /100
+              </span>
+            </div>
+            <div className="w-full h-2 rounded-full bg-[#f3f3f3] overflow-hidden mb-1">
+              <div className="w-[72%] h-2 rounded-full bg-gradient-to-r from-[#a392f2] to-[#f07eff]"></div>
+            </div>
+            <div className="flex justify-end text-xs text-[#222224] font-medium mb-1">
+              100%
+            </div>
+            <div className="text-xs font-medium text-[#818181]">
+              Above 70 is considered inspired
+            </div>
+          </div>
 
-  {/* Badge Card - will stack below on mobile */}
-  <div className="h-[208px] p-3 rounded-[12px] border border-[#eceef2] shadow-sm bg-white">
-    <div className="flex items-center justify-between mb-2">
-      <div className="flex items-center gap-2">
-        <div className="w-6 h-6 bg-[#fff3c4] rounded-full flex items-center justify-center">
-          <span className="text-xs font-bold text-[#FFCC00]">⚡</span>
+          {/* Badge Card - will stack below on mobile */}
+          <div className="h-[208px] p-3 rounded-[12px] border border-[#eceef2] shadow-sm bg-white">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 bg-[#fff3c4] rounded-full flex items-center justify-center">
+                  <span className="text-xs font-bold text-[#FFCC00]">⚡</span>
+                </div>
+                <span className="text-sm font-medium text-[#222224]">
+                  Badge
+                </span>
+              </div>
+              <div className="text-xl text-[#999] leading-none cursor-pointer">
+                ⋯
+              </div>
+            </div>
+
+            <hr className="border-t border-[#dadce0] mb-2" />
+
+            <div className="flex justify-center items-center h-full">
+              <img
+                src="/Inspired _ Badge.png"
+                alt="CNESS Inspired"
+                className="h-[87px] object-contain"
+              />
+            </div>
+          </div>
+
+          {/* Certification Level Card - will stack below on mobile */}
+          <div className="h-[208px] bg-white rounded-[12px] p-3 shadow-sm border border-[#eceef2]">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-6 h-6 bg-[#e2f2ff] rounded-full flex items-center justify-center">
+                <img
+                  src="../public/Vector.png"
+                  alt="icon"
+                  className="w-[12px] h-[12px]"
+                />
+              </div>
+              <span className="text-sm font-semibold text-[#222224]">
+                Certification Level
+              </span>
+            </div>
+            <div className="border-t border-[#e6e6e6] mb-8"></div>
+            <div className="flex justify-center items-center">
+              <span className="px-18 py-4 bg-[#eaf9f5] text-[#00bfa5] text-sm font-semibold rounded-[12px] inline-block">
+                Inspired
+              </span>
+            </div>
+          </div>
         </div>
-        <span className="text-sm font-medium text-[#222224]">
-          Badge
-        </span>
-      </div>
-      <div className="text-xl text-[#999] leading-none cursor-pointer">
-        ⋯
-      </div>
-    </div>
-
-    <hr className="border-t border-[#dadce0] mb-2" />
-
-    <div className="flex justify-center items-center h-full">
-      <img
-        src="/Inspired _ Badge.png"
-        alt="CNESS Inspired"
-        className="h-[87px] object-contain"
-      />
-    </div>
-  </div>
-
-  {/* Certification Level Card - will stack below on mobile */}
-  <div className="h-[208px] bg-white rounded-[12px] p-3 shadow-sm border border-[#eceef2]">
-    <div className="flex items-center gap-2 mb-2">
-      <div className="w-6 h-6 bg-[#e2f2ff] rounded-full flex items-center justify-center">
-        <img
-          src="../public/Vector.png"
-          alt="icon"
-          className="w-[12px] h-[12px]"
-        />
-      </div>
-      <span className="text-sm font-semibold text-[#222224]">
-        Certification Level
-      </span>
-    </div>
-    <div className="border-t border-[#e6e6e6] mb-8"></div>
-    <div className="flex justify-center items-center">
-      <span className="px-18 py-4 bg-[#eaf9f5] text-[#00bfa5] text-sm font-semibold rounded-[12px] inline-block">
-        Inspired
-      </span>
-    </div>
-  </div>
-</div>
 
         {/* Metric Scores */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">

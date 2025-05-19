@@ -1,12 +1,13 @@
-import { type FormEvent } from "react";
+import { type FormEvent, useCallback, useState } from "react";
 import Button from "../../components/ui/Button";
 import { RegisterDetails } from "../../Common/ServerAPI";
 import { toast } from "react-toastify";
 
 interface SignupFormProps {
   onSuccess: () => void;
-  onSwitchToLogin: () => void; // New prop to handle switching to login modal
+  onSwitchToLogin: () => void;
 }
+
 interface AuthResponse {
   success: any;
   data: {
@@ -20,68 +21,180 @@ interface AuthResponse {
     };
   };
 }
+
+interface FormErrors {
+  username?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+}
+
 export default function SignupForm({
   onSuccess,
   onSwitchToLogin,
 }: SignupFormProps) {
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const username = form.username.value.trim();
-    const email = form.email.value.trim();
-    const password = form.password.value.trim();
-    const confirmPassword = form.confirmPassword.value.trim();
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiMessage, setApiMessage] = useState<string | null>(null);
+  console.log("🚀 ~ apiMessage:", apiMessage)
 
-    if (password !== confirmPassword) {
-      alert("Passwords do not match.");
+  const handleInputChange = useCallback((fieldName: keyof FormErrors) => {
+    setErrors((prevErrors) => {
+      if (prevErrors[fieldName]) {
+        const newErrors = { ...prevErrors };
+        delete newErrors[fieldName];
+        return newErrors;
+      }
+      return prevErrors;
+    });
+  }, []);
+
+  const validateForm = (formData: {
+    username: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+  }) => {
+    const newErrors: FormErrors = {};
+
+    // Username validation
+    if (!formData.username.trim()) {
+      newErrors.username = "Username is required";
+    } else if (formData.username.length < 3) {
+      newErrors.username = "Username must be at least 3 characters";
+    } else if (formData.username.length > 20) {
+      newErrors.username = "Username must be less than 20 characters";
+    }
+
+    // Email validation
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    // Password validation
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
+    } else if (!/[A-Z]/.test(formData.password)) {
+      newErrors.password =
+        "Password must contain at least one uppercase letter";
+    } else if (!/[0-9]/.test(formData.password)) {
+      newErrors.password = "Password must contain at least one number";
+    } else if (!/[^A-Za-z0-9]/.test(formData.password)) {
+      newErrors.password =
+        "Password must contain at least one special character";
+    }
+
+    // Confirm password validation
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = "Please confirm your password";
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setApiMessage(null); 
+
+    const form = e.currentTarget;
+    const formData = {
+      username: form.username.value.trim(),
+      email: form.email.value.trim(),
+      password: form.password.value.trim(),
+      confirmPassword: form.confirmPassword.value.trim(),
+    };
+
+    if (!validateForm(formData)) {
+      setIsSubmitting(false);
       return;
     }
 
-    // Handle form submission logic here (e.g., API call)
-    console.log({ username, email, password });
-
     try {
-      const payload = { username, email, password };
+      const payload = {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+      };
       const response = (await RegisterDetails(payload)) as AuthResponse;
+      console.log("🚀 ~ handleSubmit ~ response:", response)
 
       if (response) {
-        onSuccess();
-        toast.success(response?.success?.message)
+        setApiMessage(response?.success?.message || "Registration successful");
+        setTimeout(() => {
+          onSuccess();
+        }, 1000);
       } else {
-        toast.error("Invalid email or password");
+        setApiMessage("Registration failed");
       }
-    } catch (error: unknown) {
-      console.error("Login error:", error);
+    } catch (error: any) {
+
+      if (error?.response?.data?.error) {
+        const serverErrors = error.response.data.error;
+        const formattedErrors: FormErrors = {};
+
+        if (serverErrors.username) {
+          formattedErrors.username = serverErrors.username.join(", ");
+        }
+        if (serverErrors.email) {
+          formattedErrors.email = serverErrors.email.join(", ");
+        }
+        if (serverErrors.password) {
+          formattedErrors.password = serverErrors.password.join(", ");
+        }
+
+        setErrors(formattedErrors);
+        setApiMessage(serverErrors.message);
+      } else {
+        setApiMessage(error.message || "An error occurred during registration");
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 z-10 relative">
-      <h1
-        className="popins text-xl sm:text-xl md:text-2xl text-center font-bold mb-6 
-           bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
-           text-transparent bg-clip-text"
-      >
+      <h1 className="popins text-xl sm:text-xl md:text-2xl text-center font-bold mb-6 bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text">
         Sign Up
       </h1>
+      {apiMessage && (
+        <div className={`text-center mb-4 ${apiMessage.includes("verification") ? "text-green-500" : "text-red-500"}`}>
+          {apiMessage}
+        </div>
+      )}
       <form onSubmit={handleSubmit}>
+        {/* Username field */}
         <div className="mb-4">
-        <label
-          htmlFor="username"
-          className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
-        >
-          Username
-        </label>
+          <label
+            htmlFor="username"
+            className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
+          >
+            Username
+          </label>
           <input
             type="text"
             id="username"
             name="username"
-            required
             placeholder="Enter Your Username"
-            className="w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+            onChange={() => handleInputChange("username")}
+            className={`w-full px-3 py-2 rounded-[12px] border ${
+              errors.username ? "border-red-500" : "border-[#CBD5E1]"
+            } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
           />
+          {errors.username && (
+            <p className="mt-1 text-sm text-red-600">{errors.username}</p>
+          )}
         </div>
 
+        {/* Email field */}
         <div className="mb-4">
           <label
             htmlFor="email"
@@ -93,12 +206,18 @@ export default function SignupForm({
             type="email"
             id="email"
             name="email"
-            required
             placeholder="Enter Your Email"
-            className="w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+            onChange={() => handleInputChange("email")}
+            className={`w-full px-3 py-2 rounded-[12px] border ${
+              errors.email ? "border-red-500" : "border-[#CBD5E1]"
+            } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
           />
+          {errors.email && (
+            <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+          )}
         </div>
 
+        {/* Password field */}
         <div className="mb-4">
           <label
             htmlFor="password"
@@ -110,12 +229,23 @@ export default function SignupForm({
             type="password"
             id="password"
             name="password"
-            required
             placeholder="Enter Your Password"
-            className="w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+            onChange={() => handleInputChange("password")}
+            className={`w-full px-3 py-2 rounded-[12px] border ${
+              errors.password ? "border-red-500" : "border-[#CBD5E1]"
+            } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
           />
+          {errors.password ? (
+            <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+          ) : (
+            <p className="mt-1 text-xs text-gray-500">
+              Password must be at least 8 characters with uppercase, number, and
+              special character
+            </p>
+          )}
         </div>
 
+        {/* Confirm Password field */}
         <div className="mb-4">
           <label
             htmlFor="confirmPassword"
@@ -127,10 +257,17 @@ export default function SignupForm({
             type="password"
             id="confirmPassword"
             name="confirmPassword"
-            required
-            placeholder="Enter Your ConfirmPassword"
-            className="w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+            placeholder="Confirm Your Password"
+            onChange={() => handleInputChange("confirmPassword")}
+            className={`w-full px-3 py-2 rounded-[12px] border ${
+              errors.confirmPassword ? "border-red-500" : "border-[#CBD5E1]"
+            } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
           />
+          {errors.confirmPassword && (
+            <p className="mt-1 text-sm text-red-600">
+              {errors.confirmPassword}
+            </p>
+          )}
         </div>
 
         <div className="text-center openSans text-sm text-gray-600 mb-4">
@@ -145,15 +282,23 @@ export default function SignupForm({
         </div>
 
         <div className="flex justify-end gap-3 mt-6">
-          <Button variant="white-outline" size="md" onClick={onSuccess}>
+          <Button
+            type="button"
+            variant="white-outline"
+            size="md"
+            onClick={onSuccess}
+            disabled={isSubmitting}
+          >
             Cancel
           </Button>
           <Button
+            type="submit"
             className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
             variant="primary"
             withGradientOverlay
+            disabled={isSubmitting}
           >
-            Sign Up
+            {isSubmitting ? "Signing Up..." : "Sign Up"}
           </Button>
         </div>
       </form>
