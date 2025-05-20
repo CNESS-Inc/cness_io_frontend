@@ -1,5 +1,4 @@
 import axios, { type AxiosResponse } from "axios";
-import { toast } from "react-toastify";
 
 // Define types for your API
 type ApiMethod = "GET" | "POST" | "PUT" | "DELETE";
