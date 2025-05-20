@@ -1,7 +1,6 @@
 import { type FormEvent, useCallback, useState } from "react";
 import Button from "../../components/ui/Button";
 import { RegisterDetails } from "../../Common/ServerAPI";
-import { toast } from "react-toastify";
 
 interface SignupFormProps {
   onSuccess: () => void;

@@ -16,6 +16,12 @@ type AccountFormData = {
   plan_id: string;
   plan_type: string;
 };
+type AccountData = {
+  person_organization_complete: number;
+};
+type EmailVerifyData = {
+  token: any;
+};
 type OrganizationFormData = {
   sub_domain: string | undefined;
   domain: string | undefined;
@@ -76,8 +82,8 @@ export const RegisterDetails = (formData: RegisterFormData): ApiResponse => {
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.register);
 };
-export const AccountDetails = (formData: AccountFormData): ApiResponse => {
-  const data: Partial<AccountFormData> = {
+export const AccountDetails = (formData: AccountData): ApiResponse => {
+  const data: Partial<AccountData> = {
     person_organization_complete: formData?.person_organization_complete,
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.acount_type);
@@ -141,8 +147,8 @@ export const GetAllPlanDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.allPlanData);
 };
-export const GetEmailVerify = (formData: string): ApiResponse => {
-   const data: Partial<OrganizationFormData> = {
+export const GetEmailVerify = (formData: EmailVerifyData): ApiResponse => {
+   const data: Partial<EmailVerifyData> = {
     token: formData?.token,
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.emailverify);
@@ -177,9 +183,9 @@ export const executeAPI = async <T = any,>(
     return response.data;
   } catch (error: any) {
     if (axios.isAxiosError(error) && error.response) {
-      toast.error(error.response.data.error.message);
+      // toast.error(error.response.data.error.message);
     } else {
-      toast.error("An unexpected error occurred");
+      // toast.error("An unexpected error occurred");
     }
     throw error; // Re-throw the error if you want calling code to handle it
   }
