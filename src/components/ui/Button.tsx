@@ -3,7 +3,7 @@ import type { ButtonHTMLAttributes } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'white-outline'
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'white-outline' | 'gradient-primary'
   size?: 'sm' | 'md' | 'lg'
   isLoading?: boolean
   withGradientOverlay?: boolean
@@ -24,13 +24,15 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const baseClasses = 'rounded-full font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none relative overflow-hidden'
 
-    const variantClasses = {
-      primary: 'bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500',
-      secondary: 'bg-purple-600 text-white hover:bg-purple-700 focus-visible:ring-purple-500',
-      outline: 'border border-gray-300 bg-transparent hover:bg-gray-50 focus-visible:ring-gray-500',
-      ghost: 'bg-transparent hover:bg-gray-100 focus-visible:ring-gray-500',
-      'white-outline': 'bg-white border border-gray-200 hover:bg-gray-50 focus-visible:ring-gray-300',
-    }
+const variantClasses = {
+  primary: 'bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500',
+  secondary: 'bg-purple-600 text-white hover:bg-purple-700 focus-visible:ring-purple-500',
+  outline: 'border border-gray-300 bg-transparent hover:bg-gray-50 focus-visible:ring-gray-500',
+  ghost: 'bg-transparent hover:bg-gray-100 focus-visible:ring-gray-500',
+  'white-outline': 'bg-white border border-gray-200 hover:bg-gray-50 focus-visible:ring-gray-300',
+  'gradient-primary': 'bg-gradient-to-r from-[#7077FE] to-[#9747FF] hover:from-[#7077FE] hover:to-[#7077FE] text-white',
+}
+
 
     const sizeClasses = {
       sm: 'px-3 py-1.5 text-sm',

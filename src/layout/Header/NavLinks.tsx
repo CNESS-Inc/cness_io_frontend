@@ -13,16 +13,18 @@ const links = [
 ];
 
 export default function NavLinks({ className }: { className?: string }) {
-  const [activeModal, setActiveModal] = useState<"signup" | "login" | null>(null);
-  console.log("🚀 ~ NavLinks ~ activeModal:", activeModal)
+  const [activeModal, setActiveModal] = useState<"signup" | "login" | null>(
+    null
+  );
 
   const openSignupModal = () => setActiveModal("signup");
+  const openLoginModal = () => setActiveModal("login");
   const closeModal = () => setActiveModal(null);
 
   return (
     <>
-      <nav 
-        aria-label="Main navigation" 
+      <nav
+        aria-label="Main navigation"
         className={cn("flex items-center gap-8", className)}
       >
         <ul className="flex space-x-8">
@@ -37,27 +39,31 @@ export default function NavLinks({ className }: { className?: string }) {
             </li>
           ))}
         </ul>
-        <Button
-          className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
-          variant="primary"
-          withGradientOverlay
-          onClick={openSignupModal}
-        >
-          Sign Up
-        </Button>
+        <div className="flex gap-4">
+          <Button variant="white-outline" size="md" onClick={openSignupModal}>
+            Sign Up
+          </Button>
+         <Button
+  variant="gradient-primary"
+  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+  onClick={openLoginModal}
+>
+  Login
+</Button>
+        </div>
       </nav>
 
       <Modal isOpen={activeModal === "signup"} onClose={closeModal}>
-        <SignupForm 
-          onSuccess={closeModal} 
-          onSwitchToLogin={() => setActiveModal("login")} 
+        <SignupForm
+          onSuccess={closeModal}
+          onSwitchToLogin={() => setActiveModal("login")}
         />
       </Modal>
 
       <Modal isOpen={activeModal === "login"} onClose={closeModal}>
-        <LoginForm 
-          onSuccess={closeModal} 
-          onSwitchToSignup={() => setActiveModal("signup")} 
+        <LoginForm
+          onSuccess={closeModal}
+          onSwitchToSignup={() => setActiveModal("signup")}
         />
       </Modal>
     </>

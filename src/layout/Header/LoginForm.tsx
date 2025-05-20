@@ -383,6 +383,8 @@ export default function LoginForm({
             );
             setPersonPricing(updatedPlans);
             setActiveModal("personPricing");
+          }else{
+            navigate("/dashboard")
           }
         } else if (completionStatus === 2) {
           if (completed_step === 0) {
@@ -429,6 +431,8 @@ export default function LoginForm({
             );
             setorganizationpricingPlans(updatedPlans);
             setActiveModal("organizationPricing");
+          }else{
+            navigate("/dashboard")
           }
         }
       } else {
@@ -671,6 +675,7 @@ export default function LoginForm({
   }, [isAnnual]);
 
   const closeModal = () => {
+    onSuccess()
     setActiveModal(null);
   };
 

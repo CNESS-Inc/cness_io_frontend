@@ -557,9 +557,8 @@ export default function Stepper() {
 
           {/* CTA Button */}
           <Button
-            className="bg-[#7077FE] py-2 sm:py-3 lg:py-[16px] px-3 sm:px-4 lg:px-[24px] rounded-full text-xs sm:text-sm lg:text-base w-full sm:w-auto mx-auto sm:mx-0 text-center block hover:bg-[#5f66e5] transition-colors"
-            variant="primary"
-            withGradientOverlay
+            className="rounded-[100px] py-2 sm:py-3 lg:py-[16px] px-3 sm:px-4 lg:px-[24px] text-xs sm:text-sm lg:text-base w-full sm:w-auto mx-auto sm:mx-0 text-center block transition-colors duration-500 ease-in-out"
+            variant="gradient-primary"
             // onClick={() => {
             //   const nextStep = activeStep + 1;
             //   if (nextStep >= totalSteps) {

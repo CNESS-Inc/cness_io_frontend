@@ -33,9 +33,9 @@ const [serviceInput, setServiceInput] = useState("");
   mode: "onBlur", // or "onChange"
 });
 
-  const onSubmit = (data: any) => {
-    console.log("Form submitted:", data);
-  };
+  // const onSubmit = (data: any) => {
+  //   console.log("Form submitted:", data);
+  // };
 
   const handleImageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
