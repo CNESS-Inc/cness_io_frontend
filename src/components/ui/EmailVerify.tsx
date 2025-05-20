@@ -28,6 +28,7 @@ const EmailVerify = () => {
       
       const decodedToken = decodeURIComponent(token);
       
+      // Create the proper data structure expected by the API
       const verifyData: EmailVerifyData = {
         token: decodedToken
       };

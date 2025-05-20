@@ -1,6 +1,7 @@
 import { type FormEvent, useCallback, useState } from "react";
 import Button from "../../components/ui/Button";
 import { RegisterDetails } from "../../Common/ServerAPI";
+import Modal from "../../components/ui/Modal";
 
 interface SignupFormProps {
   onSuccess: () => void;
@@ -8,7 +9,7 @@ interface SignupFormProps {
 }
 
 interface AuthResponse {
-  success: any;
+  success: { message: string };
   data: {
     data: {
       jwt: string;
@@ -20,6 +21,7 @@ interface AuthResponse {
     };
   };
 }
+
 
 interface FormErrors {
   username?: string;
@@ -35,18 +37,28 @@ export default function SignupForm({
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiMessage, setApiMessage] = useState<string | null>(null);
-  console.log("🚀 ~ apiMessage:", apiMessage)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formValues, setFormValues] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
-  const handleInputChange = useCallback((fieldName: keyof FormErrors) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    setFormValues((prev) => ({ ...prev, [name]: value }));
+
     setErrors((prevErrors) => {
-      if (prevErrors[fieldName]) {
+      if (prevErrors[name as keyof FormErrors]) {
         const newErrors = { ...prevErrors };
-        delete newErrors[fieldName];
+        delete newErrors[name as keyof FormErrors];
         return newErrors;
       }
       return prevErrors;
     });
-  }, []);
+  };
 
   const validateForm = (formData: {
     username: string;
@@ -101,7 +113,7 @@ export default function SignupForm({
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setApiMessage(null); 
+    setApiMessage(null);
 
     const form = e.currentTarget;
     const formData = {
@@ -123,18 +135,20 @@ export default function SignupForm({
         password: formData.password,
       };
       const response = (await RegisterDetails(payload)) as AuthResponse;
-      console.log("🚀 ~ handleSubmit ~ response:", response)
+      console.log("🚀 ~ handleSubmit ~ response:", response);
 
       if (response) {
         setApiMessage(response?.success?.message || "Registration successful");
         setTimeout(() => {
-          onSuccess();
+          // onSuccess();
+        }, 500);
+        setTimeout(() => {
+          setIsModalOpen(true);
         }, 1000);
       } else {
         setApiMessage("Registration failed");
       }
     } catch (error: any) {
-
       if (error?.response?.data?.error) {
         const serverErrors = error.response.data.error;
         const formattedErrors: FormErrors = {};
@@ -159,148 +173,204 @@ export default function SignupForm({
     }
   };
 
+  const closeModal = () => {
+    onSuccess();
+    setIsModalOpen(false);
+  };
+
   return (
-    <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 z-10 relative">
-      <h1 className="popins text-xl sm:text-xl md:text-2xl text-center font-bold mb-6 bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text">
-        Sign Up
-      </h1>
-      {apiMessage && (
-        <div className={`text-center mb-4 ${apiMessage.includes("verification") ? "text-green-500" : "text-red-500"}`}>
-          {apiMessage}
-        </div>
-      )}
-      <form onSubmit={handleSubmit}>
-        {/* Username field */}
-        <div className="mb-4">
-          <label
-            htmlFor="username"
-            className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
+    <>
+      <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 z-10 relative">
+        <h1 className="popins text-xl sm:text-xl md:text-2xl text-center font-bold mb-6 bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text">
+          Sign Up
+        </h1>
+        {apiMessage && (
+          <div
+            className={`text-center mb-4 ${
+              apiMessage.includes("verification")
+                ? "text-green-500"
+                : "text-red-500"
+            }`}
           >
-            Username
-          </label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            placeholder="Enter Your Username"
-            onChange={() => handleInputChange("username")}
-            className={`w-full px-3 py-2 rounded-[12px] border ${
-              errors.username ? "border-red-500" : "border-[#CBD5E1]"
-            } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
-          />
-          {errors.username && (
-            <p className="mt-1 text-sm text-red-600">{errors.username}</p>
+            {apiMessage}
+          </div>
+        )}
+        <form onSubmit={handleSubmit}>
+          {/* Username field */}
+          <div className="mb-4">
+            <label
+              htmlFor="username"
+              className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
+            >
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Enter Your Username"
+              value={formValues.username}
+              onChange={handleInputChange}
+              className={`w-full px-3 py-2 rounded-[12px] border ${
+                errors.username ? "border-red-500" : "border-[#CBD5E1]"
+              } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+            />
+            {errors.username && (
+              <p className="mt-1 text-sm text-red-600">{errors.username}</p>
+            )}
+          </div>
+
+          {/* Email field */}
+          <div className="mb-4">
+            <label
+              htmlFor="email"
+              className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter Your Email"
+              value={formValues.email}
+              onChange={handleInputChange}
+              className={`w-full px-3 py-2 rounded-[12px] border ${
+                errors.email ? "border-red-500" : "border-[#CBD5E1]"
+              } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+            />
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+            )}
+          </div>
+
+          {/* Password field */}
+          <div className="mb-4">
+            <label
+              htmlFor="password"
+              className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter Your Password"
+              value={formValues.password}
+              onChange={handleInputChange}
+              className={`w-full px-3 py-2 rounded-[12px] border ${
+                errors.password ? "border-red-500" : "border-[#CBD5E1]"
+              } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+            />
+            {errors.password ? (
+              <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+            ) : (
+              <p className="mt-1 text-xs text-gray-500">
+                Password must be at least 8 characters with uppercase, number,
+                and special character
+              </p>
+            )}
+          </div>
+
+          {/* Confirm Password field */}
+          <div className="mb-4">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
+            >
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              placeholder="Confirm Your Password"
+              value={formValues.confirmPassword}
+              onChange={handleInputChange}
+              className={`w-full px-3 py-2 rounded-[12px] border ${
+                errors.confirmPassword ? "border-red-500" : "border-[#CBD5E1]"
+              } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+            />
+            {errors.confirmPassword && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.confirmPassword}
+              </p>
+            )}
+          </div>
+
+          <div className="text-center openSans text-sm text-gray-600 mb-4">
+            Already have an account?{" "}
+            <button
+              type="button"
+              onClick={onSwitchToLogin}
+              className="text-[#7077FE] hover:underline focus:outline-none"
+            >
+              Login
+            </button>
+          </div>
+
+          <div className="flex justify-end gap-3 mt-6">
+            <Button
+              type="button"
+              variant="white-outline"
+              size="md"
+              onClick={onSuccess}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
+              variant="primary"
+              withGradientOverlay
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Signing Up..." : "Sign Up"}
+            </Button>
+          </div>
+        </form>
+      </div>
+      <Modal isOpen={isModalOpen} onClose={closeModal}>
+        <div className="text-center p-6 max-w-md">
+          <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-green-100 ">
+            <svg
+              className="h-6 w-6 text-green-600 animate-bounce"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+          {apiMessage && (
+            <div
+              className={`text-center p-4 ${
+                apiMessage.includes("verification")
+                  ? "text-green-500"
+                  : "text-red-500"
+              }`}
+            >
+              {apiMessage}
+            </div>
           )}
+          <div className="mt-6">
+            <Button
+              onClick={closeModal}
+              className="bg-[#7077FE] py-3 sm:py-[16px] px-6 sm:px-[24px] rounded-full text-sm sm:text-base w-full sm:w-auto text-center mt-3"
+              withGradientOverlay
+            >
+              Got it!
+            </Button>
+          </div>
         </div>
-
-        {/* Email field */}
-        <div className="mb-4">
-          <label
-            htmlFor="email"
-            className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
-          >
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="Enter Your Email"
-            onChange={() => handleInputChange("email")}
-            className={`w-full px-3 py-2 rounded-[12px] border ${
-              errors.email ? "border-red-500" : "border-[#CBD5E1]"
-            } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
-          />
-          {errors.email && (
-            <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-          )}
-        </div>
-
-        {/* Password field */}
-        <div className="mb-4">
-          <label
-            htmlFor="password"
-            className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
-          >
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="Enter Your Password"
-            onChange={() => handleInputChange("password")}
-            className={`w-full px-3 py-2 rounded-[12px] border ${
-              errors.password ? "border-red-500" : "border-[#CBD5E1]"
-            } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
-          />
-          {errors.password ? (
-            <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-          ) : (
-            <p className="mt-1 text-xs text-gray-500">
-              Password must be at least 8 characters with uppercase, number, and
-              special character
-            </p>
-          )}
-        </div>
-
-        {/* Confirm Password field */}
-        <div className="mb-4">
-          <label
-            htmlFor="confirmPassword"
-            className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
-          >
-            Confirm Password
-          </label>
-          <input
-            type="password"
-            id="confirmPassword"
-            name="confirmPassword"
-            placeholder="Confirm Your Password"
-            onChange={() => handleInputChange("confirmPassword")}
-            className={`w-full px-3 py-2 rounded-[12px] border ${
-              errors.confirmPassword ? "border-red-500" : "border-[#CBD5E1]"
-            } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
-          />
-          {errors.confirmPassword && (
-            <p className="mt-1 text-sm text-red-600">
-              {errors.confirmPassword}
-            </p>
-          )}
-        </div>
-
-        <div className="text-center openSans text-sm text-gray-600 mb-4">
-          Already have an account?{" "}
-          <button
-            type="button"
-            onClick={onSwitchToLogin}
-            className="text-[#7077FE] hover:underline focus:outline-none"
-          >
-            Login
-          </button>
-        </div>
-
-        <div className="flex justify-end gap-3 mt-6">
-          <Button
-            type="button"
-            variant="white-outline"
-            size="md"
-            onClick={onSuccess}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
-            variant="primary"
-            withGradientOverlay
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Signing Up..." : "Sign Up"}
-          </Button>
-        </div>
-      </form>
-    </div>
+      </Modal>
+    </>
   );
 }

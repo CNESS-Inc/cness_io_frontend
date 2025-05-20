@@ -48,6 +48,7 @@ interface AuthResponse {
       user: {
         id: number;
         person_organization_complete: number;
+        completed_step: any;
         [key: string]: any;
       };
     };
@@ -327,13 +328,15 @@ export default function LoginForm({
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);
         localStorage.setItem("Id", response?.data?.data?.user.id.toString());
+        localStorage.setItem(
+          "completed_step",
+          response?.data?.data?.user.completed_step === 1 ? "true" : "false"
+        );
 
-        const completionStatus =
-          response.data.data.user.person_organization_complete;
+        const completionStatus = response.data.data.user.person_organization_complete;
         const completed_step = response.data.data.user.completed_step;
 
-        if (completionStatus === 0) {
-          // Show type selection modal
+        if (completionStatus === 0 || completed_step === 0) {
           setActiveModal("type");
         } else if (completionStatus === 1) {
           if (completed_step === 0) {
@@ -347,7 +350,6 @@ export default function LoginForm({
               }
               plansByRange[plan.plan_range][plan.plan_type] = plan;
             });
-            // Create combined plan objects with both monthly and yearly data
             const updatedPlans = Object.values(plansByRange).map(
               (planGroup: any) => {
                 const monthlyPlan = planGroup.monthly;
@@ -379,7 +381,6 @@ export default function LoginForm({
                 };
               }
             );
-
             setPersonPricing(updatedPlans);
             setActiveModal("personPricing");
           }
@@ -395,8 +396,6 @@ export default function LoginForm({
               }
               plansByRange[plan.plan_range][plan.plan_type] = plan;
             });
-
-            // Create combined plan objects with both monthly and yearly data
             const updatedPlans = Object.values(plansByRange).map(
               (planGroup: any) => {
                 const monthlyPlan = planGroup.monthly;
@@ -428,18 +427,17 @@ export default function LoginForm({
                 };
               }
             );
-
             setorganizationpricingPlans(updatedPlans);
             setActiveModal("organizationPricing");
           }
         }
       } else {
-      setIsSubmitting(false);
+        setIsSubmitting(false);
         setApiMessage("Login failed");
       }
     } catch (error: any) {
       if (error?.response?.data?.error) {
-      setIsSubmitting(false);
+        setIsSubmitting(false);
         const serverErrors = error.response.data.error;
         const formattedErrors: FormErrors = {};
 
@@ -700,7 +698,7 @@ export default function LoginForm({
 
       const res = await PaymentDetails(payload);
       if (res?.data?.data?.url) {
-        window.open(res.data.data.url, "_blank"); 
+        window.open(res.data.data.url, "_blank");
       } else {
         console.error("URL not found in response");
       }
@@ -801,7 +799,7 @@ export default function LoginForm({
               type="submit"
               className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
               variant="primary"
-                disabled={isSubmitting}
+              disabled={isSubmitting}
               withGradientOverlay
             >
               {isSubmitting ? "Loging..." : "Login"}
