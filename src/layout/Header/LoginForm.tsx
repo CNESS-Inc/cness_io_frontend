@@ -347,11 +347,6 @@ export default function LoginForm({
               }
               plansByRange[plan.plan_range][plan.plan_type] = plan;
             });
-            console.log(
-              "🚀 ~ handlePersonSubmit ~ plansByRange:",
-              plansByRange
-            );
-
             // Create combined plan objects with both monthly and yearly data
             const updatedPlans = Object.values(plansByRange).map(
               (planGroup: any) => {
@@ -439,10 +434,12 @@ export default function LoginForm({
           }
         }
       } else {
+      setIsSubmitting(false);
         setApiMessage("Login failed");
       }
     } catch (error: any) {
       if (error?.response?.data?.error) {
+      setIsSubmitting(false);
         const serverErrors = error.response.data.error;
         const formattedErrors: FormErrors = {};
 
@@ -804,9 +801,10 @@ export default function LoginForm({
               type="submit"
               className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
               variant="primary"
+                disabled={isSubmitting}
               withGradientOverlay
             >
-              Login
+              {isSubmitting ? "Loging..." : "Login"}
             </Button>
           </div>
         </form>
