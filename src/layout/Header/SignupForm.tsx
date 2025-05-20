@@ -186,7 +186,7 @@ export default function SignupForm({
         </h1>
         {apiMessage && (
           <div
-            className={`text-center mb-4 ${
+            className={`poppins text-center mb-4 ${
               apiMessage.includes("verification")
                 ? "text-green-500"
                 : "text-red-500"
