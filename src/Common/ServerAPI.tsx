@@ -13,7 +13,8 @@ type RegisterFormData = {
   password: string;
 };
 type AccountFormData = {
-  person_organization_complete: number;
+  plan_id: string;
+  plan_type: string;
 };
 type OrganizationFormData = {
   sub_domain: string | undefined;
@@ -39,7 +40,7 @@ export const ServerAPI = {
 };
 
 export const API = {
-  // BaseUrl: "http://192.168.1.11:5025/api", //local
+  // BaseUrl: "http://localhost:5025/api", //local
   BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
 };
 
@@ -49,11 +50,14 @@ export const EndPoint = {
   organization_profile: "/readiness-question/organization/answer",
   person_profile: "/readiness-question/person/answer",
   acount_type: "/auth/update/person",
+  payment: "/payment",
   dashboard: "/dashboard",
   domain: "/domain",
   subdomain: "/sub-domain/by-domain",
   readinessQuestion: "/readiness-question",
-  allFormData:"/readiness-question/get-formdata"
+  allFormData:"/readiness-question/get-formdata",
+  allPlanData:"/person-plan/user/plan",
+  emailverify:"/auth/email-verify",
 };
 
 export const LoginDetails = (formData: LoginFormData): ApiResponse => {
@@ -78,10 +82,16 @@ export const AccountDetails = (formData: AccountFormData): ApiResponse => {
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.acount_type);
 };
+export const PaymentDetails = (formData: AccountFormData): ApiResponse => {
+  const data: Partial<AccountFormData> = {
+    plan_id: formData?.plan_id,
+    plan_type: formData?.plan_type,
+  };
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.payment);
+};
 export const submitOrganizationDetails = (
   formData: OrganizationFormData
 ): ApiResponse => {
-  console.log("🚀 ~ formData:", formData)
   const data: Partial<OrganizationFormData> = {
     organization_name: formData?.organization_name,
     domain_id: formData?.domain,
@@ -126,6 +136,16 @@ export const GetReadinessQuestionDetails = (): ApiResponse => {
 export const GetAllFormDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.allFormData);
+};
+export const GetAllPlanDetails = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.allPlanData);
+};
+export const GetEmailVerify = (formData: string): ApiResponse => {
+   const data: Partial<OrganizationFormData> = {
+    token: formData?.token,
+  };
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.emailverify);
 };
 export const GetSubDomainDetails = (formData: string): ApiResponse => {
   const data = {};

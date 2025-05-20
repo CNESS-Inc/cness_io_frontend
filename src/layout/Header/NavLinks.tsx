@@ -14,6 +14,7 @@ const links = [
 
 export default function NavLinks({ className }: { className?: string }) {
   const [activeModal, setActiveModal] = useState<"signup" | "login" | null>(null);
+  console.log("🚀 ~ NavLinks ~ activeModal:", activeModal)
 
   const openSignupModal = () => setActiveModal("signup");
   const closeModal = () => setActiveModal(null);
