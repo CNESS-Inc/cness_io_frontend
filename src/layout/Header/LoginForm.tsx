@@ -3,8 +3,10 @@ import Button from "../../components/ui/Button";
 import {
   AccountDetails,
   GetAllFormDetails,
+  GetAllPlanDetails,
   GetSubDomainDetails,
   LoginDetails,
+  PaymentDetails,
   submitOrganizationDetails,
   submitPersonDetails,
 } from "../../Common/ServerAPI";
@@ -22,10 +24,10 @@ interface SubDomain {
   name: string;
 }
 interface OrganizationForm {
-  domain_id:string;
-  sub_domain_id:string;
-  organization_type_id:string;
-  revenue_range_id:string;
+  domain_id: string;
+  sub_domain_id: string;
+  organization_type_id: string;
+  revenue_range_id: string;
   organization_name: string;
   domain: string;
   sub_domain: string;
@@ -39,12 +41,14 @@ interface OrganizationForm {
 type PartialOrganizationFormData = Partial<OrganizationForm>;
 
 interface AuthResponse {
+  success: any;
   data: {
     data: {
       jwt: string;
       user: {
         id: number;
         person_organization_complete: number;
+        completed_step: any;
         [key: string]: any;
       };
     };
@@ -87,6 +91,25 @@ type PersPricingPlan = {
   popular: boolean;
 };
 
+interface FormErrors {
+  email?: string;
+  password?: string;
+  organization_name?: string;
+  domain?: string;
+  sub_domain?: string;
+  employee_size?: string;
+  revenue?: string;
+  [key: string]: string | undefined; // For dynamic question errors
+}
+
+interface ValidationRules {
+  required?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  pattern?: RegExp;
+  custom?: (value: string) => string | undefined;
+}
+
 export default function LoginForm({
   onSuccess,
   onSwitchToSignup,
@@ -103,12 +126,11 @@ export default function LoginForm({
     | "organizationPricing"
     | null
   >(null);
-  console.log("🚀 ~ activeModal:", activeModal);
   const [organizationForm, setOrganizationForm] = useState<OrganizationForm>({
-    domain_id:"",
-    sub_domain_id:"",
-    organization_type_id:"",
-    revenue_range_id:"",
+    domain_id: "",
+    sub_domain_id: "",
+    organization_type_id: "",
+    revenue_range_id: "",
     organization_name: "",
     domain: "",
     sub_domain: "",
@@ -116,16 +138,184 @@ export default function LoginForm({
     revenue: "",
     question: [], // Changed from 'question' to 'questions' to match interface
   });
-  console.log("🚀 ~ organizationForm:", organizationForm);
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [subDomain, setsubDomain] = useState<SubDomain[] | null>();
+  const [isAnnual, setIsAnnual] = useState(false);
+  const [personPricing, setPersonPricing] = useState<PersPricingPlan[]>([]);
+  const [organizationpricingPlans, setorganizationpricingPlans] = useState<
+    OrgPricingPlan[]
+  >([]);
+  const [domains, setDomains] = useState([]);
+  const [revenue, setRevenue] = useState([]);
+  const [OrganizationSize, setOrganizationSize] = useState([]);
+  const [readlineQuestion, setReadlineQuestion] = useState([]);
+
+  const [loginErrors, setLoginErrors] = useState<FormErrors>({});
+  const [organizationErrors, setOrganizationErrors] = useState<FormErrors>({});
+  console.log("🚀 ~ organizationErrors:", organizationErrors);
+  const [personErrors, setPersonErrors] = useState<FormErrors>({});
+  const [apiMessage, setApiMessage] = useState<string | null>(null);
+
+  const validatePassword = (password: string): string | undefined => {
+    if (!password) return "Password is required";
+    if (password.length < 8) return "Password must be at least 8 characters";
+    if (!/[A-Z]/.test(password))
+      return "Password must contain at least one uppercase letter";
+    if (!/[0-9]/.test(password))
+      return "Password must contain at least one number";
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password))
+      return "Password must contain at least one special character";
+    return undefined;
+  };
+
+  const validateField = (
+    name: string,
+    value: string,
+    rules: ValidationRules
+  ): string | undefined => {
+    if (name === "password") {
+      return validatePassword(value);
+    }
+
+    if (rules.required && !value.trim()) {
+      return `${name.replace("_", " ")} is required`;
+    }
+
+    if (rules.minLength && value.length < rules.minLength) {
+      return `${name.replace("_", " ")} must be at least ${
+        rules.minLength
+      } characters`;
+    }
+
+    if (rules.maxLength && value.length > rules.maxLength) {
+      return `${name.replace("_", " ")} must be less than ${
+        rules.maxLength
+      } characters`;
+    }
+
+    if (rules.pattern && !rules.pattern.test(value)) {
+      return `Invalid ${name.replace("_", " ")} format`;
+    }
+
+    if (rules.custom) {
+      return rules.custom(value);
+    }
+
+    return undefined;
+  };
+
+  const validateForm = (
+    formData: any,
+    formType: "login" | "organization" | "person"
+  ): boolean => {
+    let isValid = true;
+    const newErrors: FormErrors = {};
+
+    if (formType === "login") {
+      // Validate email
+      const emailError = validateField("email", formData.email, {
+        required: true,
+        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      });
+      if (emailError) {
+        newErrors.email = emailError;
+        isValid = false;
+      }
+
+      // Validate password
+      const passwordError = validateField("password", formData.password, {
+        required: true,
+        minLength: 6,
+      });
+      if (passwordError) {
+        newErrors.password = passwordError;
+        isValid = false;
+      }
+
+      setLoginErrors(newErrors);
+    } else if (formType === "organization") {
+      // Validate organization fields
+      const requiredFields = [
+        "organization_name",
+        "domain",
+        "sub_domain",
+        "employee_size",
+        "revenue",
+      ];
+
+      requiredFields.forEach((field) => {
+        const error = validateField(
+          field,
+          organizationForm[field as keyof OrganizationForm] as string,
+          {
+            required: true,
+          }
+        );
+        if (error) {
+          newErrors[field] = error;
+          isValid = false;
+        }
+      });
+
+      // Validate questions
+      readlineQuestion.forEach((question: any, index) => {
+        const answer =
+          organizationForm.question.find(
+            (q: QuestionAnswer) => q.question_id === question.id
+          )?.answer || "";
+
+        const error = validateField(`question_${index + 1}`, answer, {
+          required: true,
+        });
+
+        if (error) {
+          newErrors[`question_${index + 1}`] = error;
+          isValid = false;
+        }
+      });
+
+      setOrganizationErrors(newErrors);
+    } else if (formType === "person") {
+      // Validate person questions
+      readlineQuestion.forEach((question: any, index) => {
+        const answer =
+          organizationForm.question.find(
+            (q: QuestionAnswer) => q.question_id === question.id
+          )?.answer || "";
+
+        const error = validateField(`question_${index + 1}`, answer, {
+          required: true,
+        });
+
+        if (error) {
+          newErrors[`question_${index + 1}`] = error;
+          isValid = false;
+        }
+      });
+
+      setPersonErrors(newErrors);
+    }
+
+    return isValid;
+  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setApiMessage(null);
+
     const form = e.currentTarget;
     const email = form.email.value.trim();
     const password = form.password.value.trim();
+    const formData = {
+      email: form.email.value.trim(),
+      password: form.password.value.trim(),
+    };
+
+    if (!validateForm(formData, "login")) {
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       const payload = { email, password };
@@ -133,32 +323,137 @@ export default function LoginForm({
 
       if (response) {
         setAuthenticated(true);
+        setApiMessage(response?.success?.message || "Registration successful");
+        setIsSubmitting(false);
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);
         localStorage.setItem("Id", response?.data?.data?.user.id.toString());
+        localStorage.setItem(
+          "completed_step",
+          response?.data?.data?.user.completed_step === 1 ? "true" : "false"
+        );
 
-        const completionStatus =
-          response.data.data.user.person_organization_complete;
+        const completionStatus = response.data.data.user.person_organization_complete;
+        const completed_step = response.data.data.user.completed_step;
 
-        if (completionStatus === 0) {
-          // Show type selection modal
+        if (completionStatus === 0 || completed_step === 0) {
           setActiveModal("type");
         } else if (completionStatus === 1) {
-          // Complete, proceed to dashboard
-          // onSuccess();
-          // setTimeout(() => {
-          //   navigate("/dashboard");
-          // }, 2000);
-          setActiveModal("person");
+          if (completed_step === 0) {
+            setActiveModal("person");
+          } else if (completed_step === 1) {
+            const res = await GetAllPlanDetails();
+            const plansByRange: Record<string, any> = {};
+            res?.data?.data?.forEach((plan: any) => {
+              if (!plansByRange[plan.plan_range]) {
+                plansByRange[plan.plan_range] = {};
+              }
+              plansByRange[plan.plan_range][plan.plan_type] = plan;
+            });
+            const updatedPlans = Object.values(plansByRange).map(
+              (planGroup: any) => {
+                const monthlyPlan = planGroup.monthly;
+                const yearlyPlan = planGroup.yearly;
+
+                return {
+                  id: monthlyPlan?.id || yearlyPlan?.id,
+                  title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+                  description: "Customized pricing based on your selection",
+                  monthlyPrice: monthlyPlan
+                    ? `$${monthlyPlan.amount}`
+                    : undefined,
+                  yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+                  period: isAnnual ? "/year" : "/month",
+                  billingNote: yearlyPlan
+                    ? isAnnual
+                      ? `billed annually ($${yearlyPlan.amount})`
+                      : `or $${monthlyPlan?.amount}/month`
+                    : undefined,
+                  features: [], // Add any features you need here
+                  buttonText: "Get Started",
+                  buttonClass: yearlyPlan
+                    ? ""
+                    : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+                  borderClass: yearlyPlan
+                    ? "border-2 border-[#F07EFF]"
+                    : "border",
+                  popular: !!yearlyPlan,
+                };
+              }
+            );
+            setPersonPricing(updatedPlans);
+            setActiveModal("personPricing");
+          }
         } else if (completionStatus === 2) {
-          // Show organization form
-          setActiveModal("organization");
+          if (completed_step === 0) {
+            setActiveModal("organization");
+          } else if (completed_step === 1) {
+            const res = await GetAllPlanDetails();
+            const plansByRange: Record<string, any> = {};
+            res?.data?.data?.forEach((plan: any) => {
+              if (!plansByRange[plan.plan_range]) {
+                plansByRange[plan.plan_range] = {};
+              }
+              plansByRange[plan.plan_range][plan.plan_type] = plan;
+            });
+            const updatedPlans = Object.values(plansByRange).map(
+              (planGroup: any) => {
+                const monthlyPlan = planGroup.monthly;
+                const yearlyPlan = planGroup.yearly;
+
+                return {
+                  id: monthlyPlan?.id || yearlyPlan?.id,
+                  title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+                  description: "Customized pricing based on your selection",
+                  monthlyPrice: monthlyPlan
+                    ? `$${monthlyPlan.amount}`
+                    : undefined,
+                  yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+                  period: isAnnual ? "/year" : "/month",
+                  billingNote: yearlyPlan
+                    ? isAnnual
+                      ? `billed annually ($${yearlyPlan.amount})`
+                      : `or $${monthlyPlan?.amount}/month`
+                    : undefined,
+                  features: [], // Add any features you need here
+                  buttonText: "Get Started",
+                  buttonClass: yearlyPlan
+                    ? ""
+                    : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+                  borderClass: yearlyPlan
+                    ? "border-2 border-[#F07EFF]"
+                    : "border",
+                  popular: !!yearlyPlan,
+                };
+              }
+            );
+            setorganizationpricingPlans(updatedPlans);
+            setActiveModal("organizationPricing");
+          }
         }
       } else {
-        toast.error("Invalid email or password");
+        setIsSubmitting(false);
+        setApiMessage("Login failed");
       }
-    } catch (error: unknown) {
-      console.error("Login error:", error);
+    } catch (error: any) {
+      if (error?.response?.data?.error) {
+        setIsSubmitting(false);
+        const serverErrors = error.response.data.error;
+        const formattedErrors: FormErrors = {};
+
+        if (serverErrors.username) {
+          formattedErrors.username = serverErrors.username.join(", ");
+        }
+        if (serverErrors.email) {
+          formattedErrors.email = serverErrors.email.join(", ");
+        }
+        if (serverErrors.password) {
+          formattedErrors.password = serverErrors.password.join(", ");
+        }
+        setApiMessage(serverErrors.message);
+      } else {
+        setApiMessage(error.message || "An error occurred during login");
+      }
     }
   };
 
@@ -238,11 +533,13 @@ export default function LoginForm({
     }
   };
 
-    const [isAnnual, setIsAnnual] = useState(false);
-  const [personPricing, setPersonPricing] = useState<PersPricingPlan[]>([]);
-  const [organizationpricingPlans, setorganizationpricingPlans] = useState<OrgPricingPlan[]>([]);
   const handleOrganizationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateForm(organizationForm, "organization")) {
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -254,7 +551,6 @@ export default function LoginForm({
         }
         plansByRange[plan.plan_range][plan.plan_type] = plan;
       });
-      console.log("🚀 ~ handleOrganizationSubmit ~ plansByRange:", plansByRange)
 
       // Create combined plan objects with both monthly and yearly data
       const updatedPlans = Object.values(plansByRange).map((planGroup: any) => {
@@ -295,19 +591,20 @@ export default function LoginForm({
     }
   };
 
-
-
   const handlePersonSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    if (!validateForm(organizationForm, "person")) {
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       const question_payload: PartialOrganizationFormData = {
         question: organizationForm.question,
       };
-      const res = await submitPersonDetails(
-        question_payload as any
-      );
+      const res = await submitPersonDetails(question_payload as any);
 
       // Group plans by their range (Basic Plan, Pro Plan, etc.)
       const plansByRange: Record<string, any> = {};
@@ -317,7 +614,6 @@ export default function LoginForm({
         }
         plansByRange[plan.plan_range][plan.plan_type] = plan;
       });
-      console.log("🚀 ~ handlePersonSubmit ~ plansByRange:", plansByRange)
 
       // Create combined plan objects with both monthly and yearly data
       const updatedPlans = Object.values(plansByRange).map((planGroup: any) => {
@@ -356,7 +652,6 @@ export default function LoginForm({
     }
   };
 
-  // Update pricing when isAnnual changes
   useEffect(() => {
     if (personPricing.length > 0) {
       const updatedPlans = personPricing.map((plan: any) => ({
@@ -379,13 +674,9 @@ export default function LoginForm({
     setActiveModal(null);
   };
 
-  const [domains, setDomains] = useState([]);
-  const [revenue, setRevenue] = useState([]);
-  const [OrganizationSize, setOrganizationSize] = useState([]);
-  const [readlineQuestion, setReadlineQuestion] = useState([]);
   const fetchAllDataDetails = async () => {
     try {
-      const response = await GetAllFormDetails()
+      const response = await GetAllFormDetails();
       setDomains((response as any)?.data?.data?.domain);
       setReadlineQuestion(response?.data?.data?.questions);
       setOrganizationSize(response?.data?.data?.organization_size);
@@ -394,11 +685,27 @@ export default function LoginForm({
   };
 
   useEffect(() => {
-    if (activeModal === "organization" ||  activeModal === "person") {
-      fetchAllDataDetails()
+    if (activeModal === "organization" || activeModal === "person") {
+      fetchAllDataDetails();
     }
   }, [activeModal]);
+  const handlePlanSelection = async (plan: any) => {
+    try {
+      const payload = {
+        plan_id: plan.id,
+        plan_type: isAnnual ? "Yearly" : "Monthly",
+      };
 
+      const res = await PaymentDetails(payload);
+      if (res?.data?.data?.url) {
+        window.open(res.data.data.url, "_blank");
+      } else {
+        console.error("URL not found in response");
+      }
+    } catch (error) {
+      console.error("Error in handlePlanSelection:", error);
+    }
+  };
 
   return (
     <>
@@ -410,6 +717,17 @@ export default function LoginForm({
         >
           Login
         </h1>
+        {apiMessage && (
+          <div
+            className={`text-center mb-4 ${
+              apiMessage.includes("Successfully")
+                ? "text-green-500"
+                : "text-red-500"
+            }`}
+          >
+            {apiMessage}
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
@@ -424,8 +742,13 @@ export default function LoginForm({
               name="email"
               required
               placeholder="Enter your email"
-              className="w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+              className={`w-full px-3 py-2 rounded-[12px] border ${
+                loginErrors.email ? "border-red-500" : "border-[#CBD5E1]"
+              } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
             />
+            {loginErrors.email && (
+              <p className="mt-1 text-sm text-red-600">{loginErrors.email}</p>
+            )}
           </div>
 
           <div className="mb-4">
@@ -441,8 +764,15 @@ export default function LoginForm({
               name="password"
               required
               placeholder="Enter your Password"
-              className="w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+              className={`w-full px-3 py-2 rounded-[12px] border ${
+                loginErrors.password ? "border-red-500" : "border-[#CBD5E1]"
+              } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
             />
+            {loginErrors.password && (
+              <p className="mt-1 text-sm text-red-600">
+                {loginErrors.password}
+              </p>
+            )}
           </div>
 
           <div className="text-center openSans text-sm text-gray-600 mb-4">
@@ -457,16 +787,22 @@ export default function LoginForm({
           </div>
 
           <div className="flex justify-end gap-3 mt-6">
-            <Button variant="white-outline" size="md" onClick={onSuccess}>
+            <Button
+              type="button"
+              variant="white-outline"
+              size="md"
+              onClick={onSuccess}
+            >
               Cancel
             </Button>
             <Button
               type="submit"
               className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
               variant="primary"
+              disabled={isSubmitting}
               withGradientOverlay
             >
-              Login
+              {isSubmitting ? "Loging..." : "Login"}
             </Button>
           </div>
         </form>
@@ -521,10 +857,18 @@ export default function LoginForm({
                 name="organization_name"
                 value={organizationForm.organization_name}
                 onChange={handleOrganizationFormChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                className={`w-full px-3 py-2 border ${
+                  organizationErrors.organization_name
+                    ? "border-red-500"
+                    : "border-gray-300"
+                } rounded-md`}
                 placeholder="Enter organization name"
-                required
               />
+              {organizationErrors.organization_name && (
+                <p className="mt-1 text-sm text-red-600">
+                  {organizationErrors.organization_name}
+                </p>
+              )}
             </div>
 
             <div className="mb-4">
@@ -535,18 +879,24 @@ export default function LoginForm({
                 name="domain"
                 value={organizationForm.domain}
                 onChange={handleOrganizationFormChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                required
+                className={`w-full px-3 py-2 border ${
+                  organizationErrors.domain
+                    ? "border-red-500"
+                    : "border-gray-300"
+                } rounded-md`}
               >
-                <>
-                  <option value="">Select domain</option>
-                  {domains?.map((domain: any) => (
-                    <option key={domain.id} value={domain.id}>
-                      {domain.name}
-                    </option>
-                  ))}
-                </>
+                <option value="">Select domain</option>
+                {domains?.map((domain: any) => (
+                  <option key={domain.id} value={domain.id}>
+                    {domain.name}
+                  </option>
+                ))}
               </select>
+              {organizationErrors.domain && (
+                <p className="mt-1 text-sm text-red-600">
+                  {organizationErrors.domain}
+                </p>
+              )}
             </div>
 
             {/* Sub Domain */}
@@ -559,7 +909,6 @@ export default function LoginForm({
                 value={organizationForm.sub_domain}
                 onChange={handleOrganizationFormChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                required
               >
                 <>
                   <option value="">Select Sub domain</option>
@@ -570,6 +919,11 @@ export default function LoginForm({
                   ))}
                 </>
               </select>
+              {organizationErrors.sub_domain && (
+                <p className="mt-1 text-sm text-red-600">
+                  {organizationErrors.sub_domain}
+                </p>
+              )}
             </div>
 
             {/* Employees Size */}
@@ -582,7 +936,6 @@ export default function LoginForm({
                 value={organizationForm.employee_size}
                 onChange={handleOrganizationFormChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                required
               >
                 <>
                   <option value="">Select Sub domain</option>
@@ -593,6 +946,11 @@ export default function LoginForm({
                   ))}
                 </>
               </select>
+              {organizationErrors.employee_size && (
+                <p className="mt-1 text-sm text-red-600">
+                  {organizationErrors.employee_size}
+                </p>
+              )}
             </div>
 
             {/* Revenue */}
@@ -605,7 +963,6 @@ export default function LoginForm({
                 value={organizationForm.revenue}
                 onChange={handleOrganizationFormChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                required
               >
                 <>
                   <option value="">Select Sub domain</option>
@@ -616,12 +973,16 @@ export default function LoginForm({
                   ))}
                 </>
               </select>
+              {organizationErrors.revenue && (
+                <p className="mt-1 text-sm text-red-600">
+                  {organizationErrors.revenue}
+                </p>
+              )}
             </div>
 
             {/* Statement */}
             <div className="space-y-4">
-              {readlineQuestion?.map((question: any) => {
-                // TypeScript now knows the shape of questions array elements
+              {readlineQuestion?.map((question: any, index) => {
                 const existingAnswer =
                   organizationForm.question.find(
                     (q: QuestionAnswer) => q.question_id === question.id
@@ -636,10 +997,19 @@ export default function LoginForm({
                       name={`question_${question.id}`}
                       value={existingAnswer}
                       onChange={handleOrganizationFormChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      className={`w-full px-3 py-2 border ${
+                        organizationErrors[`question_${index + 1}`]
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      } rounded-md`}
                       placeholder={`Enter your answer`}
                       rows={3}
                     />
+                    {organizationErrors[`question_${index + 1}`] && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {organizationErrors[`question_${index + 1}`]}
+                      </p>
+                    )}
                   </div>
                 );
               })}
@@ -672,8 +1042,7 @@ export default function LoginForm({
           <h2 className="text-xl poppins font-bold mb-4">Person Information</h2>
           <form onSubmit={handlePersonSubmit}>
             {/* Statement */}
-            {readlineQuestion.map((question: any) => {
-              // TypeScript now knows the shape of questions array elements
+            {readlineQuestion.map((question: any, index) => {
               const existingAnswer =
                 organizationForm.question.find(
                   (q: QuestionAnswer) => q.question_id === question.id
@@ -688,10 +1057,19 @@ export default function LoginForm({
                     name={`question_${question.id}`}
                     value={existingAnswer}
                     onChange={handleOrganizationFormChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    className={`w-full px-3 py-2 border ${
+                      personErrors[`question_${index + 1}`]
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    } rounded-md`}
                     placeholder={`Enter your answer`}
                     rows={3}
                   />
+                  {personErrors[`question_${index + 1}`] && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {personErrors[`question_${index + 1}`]}
+                    </p>
+                  )}
                 </div>
               );
             })}
@@ -745,9 +1123,7 @@ export default function LoginForm({
                       ? plan.yearlyPrice || plan.monthlyPrice
                       : plan.monthlyPrice}
                   </span>
-                  <span className="text-gray-500">
-                    /month
-                  </span>
+                  <span className="text-gray-500">/month</span>
                   {plan.billingNote && (
                     <p className="text-sm text-gray-500 mt-1">
                       {plan.billingNote}
@@ -758,6 +1134,7 @@ export default function LoginForm({
                   className={`bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out ${plan.buttonClass}`}
                   variant="primary"
                   withGradientOverlay
+                  onClick={() => handlePlanSelection(plan)}
                 >
                   {plan.buttonText}
                 </Button>
@@ -796,8 +1173,10 @@ export default function LoginForm({
         </div>
       </Modal>
 
-
-      <Modal isOpen={activeModal === "organizationPricing"} onClose={closeModal}>
+      <Modal
+        isOpen={activeModal === "organizationPricing"}
+        onClose={closeModal}
+      >
         <div className=" p-6 rounded-lg w-full mx-auto z-10 relative">
           <h2 className="text-xl poppins font-bold mb-4 text-center">
             Person Pricing Plan
@@ -824,9 +1203,7 @@ export default function LoginForm({
                       ? plan.yearlyPrice || plan.monthlyPrice
                       : plan.monthlyPrice}
                   </span>
-                  <span className="text-gray-500">
-                    /month
-                  </span>
+                  <span className="text-gray-500">/month</span>
                   {plan.billingNote && (
                     <p className="text-sm text-gray-500 mt-1">
                       {plan.billingNote}
@@ -874,7 +1251,6 @@ export default function LoginForm({
           </div>
         </div>
       </Modal>
-
     </>
   );
 }

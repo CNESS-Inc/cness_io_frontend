@@ -1,5 +1,4 @@
 import axios, { type AxiosResponse } from "axios";
-import { toast } from "react-toastify";
 
 // Define types for your API
 type ApiMethod = "GET" | "POST" | "PUT" | "DELETE";
@@ -13,7 +12,14 @@ type RegisterFormData = {
   password: string;
 };
 type AccountFormData = {
+  plan_id: string;
+  plan_type: string;
+};
+type AccountData = {
   person_organization_complete: number;
+};
+type EmailVerifyData = {
+  token: any;
 };
 type OrganizationFormData = {
   sub_domain: string | undefined;
@@ -39,7 +45,7 @@ export const ServerAPI = {
 };
 
 export const API = {
-  // BaseUrl: "http://192.168.1.11:5025/api", //local
+  // BaseUrl: "http://localhost:5025/api", //local
   BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
 };
 
@@ -49,11 +55,14 @@ export const EndPoint = {
   organization_profile: "/readiness-question/organization/answer",
   person_profile: "/readiness-question/person/answer",
   acount_type: "/auth/update/person",
+  payment: "/payment",
   dashboard: "/dashboard",
   domain: "/domain",
   subdomain: "/sub-domain/by-domain",
   readinessQuestion: "/readiness-question",
-  allFormData:"/readiness-question/get-formdata"
+  allFormData:"/readiness-question/get-formdata",
+  allPlanData:"/person-plan/user/plan",
+  emailverify:"/auth/email-verify",
 };
 
 export const LoginDetails = (formData: LoginFormData): ApiResponse => {
@@ -72,16 +81,22 @@ export const RegisterDetails = (formData: RegisterFormData): ApiResponse => {
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.register);
 };
-export const AccountDetails = (formData: AccountFormData): ApiResponse => {
-  const data: Partial<AccountFormData> = {
+export const AccountDetails = (formData: AccountData): ApiResponse => {
+  const data: Partial<AccountData> = {
     person_organization_complete: formData?.person_organization_complete,
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.acount_type);
 };
+export const PaymentDetails = (formData: AccountFormData): ApiResponse => {
+  const data: Partial<AccountFormData> = {
+    plan_id: formData?.plan_id,
+    plan_type: formData?.plan_type,
+  };
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.payment);
+};
 export const submitOrganizationDetails = (
   formData: OrganizationFormData
 ): ApiResponse => {
-  console.log("🚀 ~ formData:", formData)
   const data: Partial<OrganizationFormData> = {
     organization_name: formData?.organization_name,
     domain_id: formData?.domain,
@@ -127,6 +142,16 @@ export const GetAllFormDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.allFormData);
 };
+export const GetAllPlanDetails = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.allPlanData);
+};
+export const GetEmailVerify = (formData: EmailVerifyData): ApiResponse => {
+   const data: Partial<EmailVerifyData> = {
+    token: formData?.token,
+  };
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.emailverify);
+};
 export const GetSubDomainDetails = (formData: string): ApiResponse => {
   const data = {};
   return executeAPI(
@@ -157,9 +182,9 @@ export const executeAPI = async <T = any,>(
     return response.data;
   } catch (error: any) {
     if (axios.isAxiosError(error) && error.response) {
-      toast.error(error.response.data.error.message);
+      // toast.error(error.response.data.error.message);
     } else {
-      toast.error("An unexpected error occurred");
+      // toast.error("An unexpected error occurred");
     }
     throw error; // Re-throw the error if you want calling code to handle it
   }

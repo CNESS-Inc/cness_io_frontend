@@ -11,9 +11,30 @@ import {
 
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { useState } from "react";
+import Modal from "../../ui/Modal";
+import { GetAllPlanDetails, PaymentDetails } from "../../../Common/ServerAPI";
 
-export default function DashboardSection(user:any) {
-  console.log("🚀 ~ DashboardSection ~ user:", user)
+type PersPricingPlan = {
+  id: any;
+  title: any;
+  description: string;
+  monthlyPrice?: string;
+  yearlyPrice?: string;
+  period: string;
+  billingNote?: string;
+  features: string[]; // Instead of never[]
+  buttonText: string;
+  buttonClass: string;
+  borderClass: string;
+  popular: boolean;
+};
+
+export default function DashboardSection(user: any) {
+  const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [isAnnual, setIsAnnual] = useState(false);
+  const [personPricing, setPersonPricing] = useState<PersPricingPlan[]>([]);
+
   // Data for modules
   const modules = [
     {
@@ -62,6 +83,65 @@ export default function DashboardSection(user:any) {
   const Assessmentpercentage = 70;
   const totalBlocks = 6;
   const filledBlocks = Math.floor(Assessmentpercentage / (100 / totalBlocks));
+
+  const openPricingModal = async () => {
+    setActiveModal("PricingModal");
+    const res = await GetAllPlanDetails();
+    const plansByRange: Record<string, any> = {};
+    res?.data?.data?.forEach((plan: any) => {
+      if (!plansByRange[plan.plan_range]) {
+        plansByRange[plan.plan_range] = {};
+      }
+      plansByRange[plan.plan_range][plan.plan_type] = plan;
+    });
+    // Create combined plan objects with both monthly and yearly data
+    const updatedPlans = Object.values(plansByRange).map((planGroup: any) => {
+      const monthlyPlan = planGroup.monthly;
+      const yearlyPlan = planGroup.yearly;
+
+      return {
+        id: monthlyPlan?.id || yearlyPlan?.id,
+        title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+        description: "Customized pricing based on your selection",
+        monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
+        yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+        period: isAnnual ? "/year" : "/month",
+        billingNote: yearlyPlan
+          ? isAnnual
+            ? `billed annually ($${yearlyPlan.amount})`
+            : `or $${monthlyPlan?.amount}/month`
+          : undefined,
+        features: [], // Add any features you need here
+        buttonText: "Get Started",
+        buttonClass: yearlyPlan
+          ? ""
+          : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+        borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
+        popular: !!yearlyPlan,
+      };
+    });
+
+    setPersonPricing(updatedPlans);
+  };
+  const closeModal = () => setActiveModal(null);
+const handlePlanSelection = async (plan: any) => {
+    try {
+      const payload = {
+        plan_id: plan.id,
+        plan_type: isAnnual ? "Yearly" : "Monthly",
+      };
+
+      const res = await PaymentDetails(payload);
+      if (res?.data?.data?.url) {
+        window.open(res.data.data.url, "_blank"); 
+      } else {
+        console.error("URL not found in response");
+      }
+    } catch (error) {
+      console.error("Error in handlePlanSelection:", error);
+    }
+  };
+
   return (
     <>
       <div className="max-w-[1200px] mx-auto "></div>
@@ -69,8 +149,16 @@ export default function DashboardSection(user:any) {
         <div className="flex items-center gap-2">
           <span className="text-yellow-500">💡</span>
           <span>
-            Take practice tests to familiarize yourself with the exam format.{" "}
-            <a href="#" className="text-blue-600 underline">
+            To start the certification journey into our platform, please
+            complete the payment here. click here for pricing.
+            <a
+              href="#"
+              className="text-blue-600 underline"
+              onClick={(e) => {
+                e.preventDefault();
+                openPricingModal();
+              }}
+            >
               Click here
             </a>
           </span>
@@ -502,6 +590,74 @@ export default function DashboardSection(user:any) {
           </CardContent>
         </Card>*/}
       </section>
+
+      <Modal isOpen={activeModal === "PricingModal"} onClose={closeModal}>
+        <div className="p-6 rounded-lg w-full mx-auto z-10 relative">
+          <h2 className="text-xl poppins font-bold mb-4 text-center">
+            Person Pricing Plan
+          </h2>
+
+          <div className="flex justify-center">
+            {personPricing.map((plan) => (
+              <div
+                key={plan.id}
+                className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
+              >
+                {plan.popular && (
+                  <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
+                    Popular
+                  </div>
+                )}
+                <h3 className="font-semibold text-lg mb-2 mt-2">
+                  {plan.title}
+                </h3>
+                <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
+                <div className="mb-4">
+                  <span className="text-3xl font-bold">
+                    {isAnnual
+                      ? plan.yearlyPrice || plan.monthlyPrice
+                      : plan.monthlyPrice}
+                  </span>
+                  <span className="text-gray-500">/month</span>
+                  {plan.billingNote && (
+                    <p className="text-sm text-gray-500 mt-1">
+                      {plan.billingNote}
+                    </p>
+                  )}
+                </div>
+                <Button
+                  className={`w-full bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out ${plan.buttonClass}`}
+                  variant="primary"
+                  withGradientOverlay
+                  onClick={() => handlePlanSelection(plan)}
+                >
+                  {plan.buttonText}
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 text-center">
+            <label className="inline-flex items-center cursor-pointer">
+              <span className="mr-3 text-sm font-medium text-gray-700">
+                Monthly billing
+              </span>
+              <div className="relative">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={isAnnual}
+                  onChange={() => setIsAnnual(!isAnnual)}
+                />
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+              </div>
+              <span className="ml-3 text-sm font-medium text-gray-700">
+                Annual billing
+              </span>
+            </label>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }
