@@ -1,4 +1,4 @@
-import { type FormEvent, useCallback, useState } from "react";
+import { type FormEvent, useState } from "react";
 import Button from "../../components/ui/Button";
 import { RegisterDetails } from "../../Common/ServerAPI";
 import Modal from "../../components/ui/Modal";
