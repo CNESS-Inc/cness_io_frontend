@@ -1,4 +1,4 @@
-import { BellIcon, SearchIcon, SettingsIcon, MenuIcon, LogOutIcon, UserIcon } from "lucide-react";
+import { BellIcon, SearchIcon, SettingsIcon, MenuIcon, LogOutIcon } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { useState, useRef, useEffect } from "react";

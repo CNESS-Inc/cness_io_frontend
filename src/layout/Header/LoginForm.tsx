@@ -4,7 +4,6 @@ import {
   AccountDetails,
   ForgotPasswordDetails,
   GetAllFormDetails,
-  GetAllPlanDetails,
   GetSubDomainDetails,
   LoginDetails,
   PaymentDetails,
@@ -113,7 +112,6 @@ interface ValidationRules {
 
 export default function LoginForm({
   onSuccess,
-  onSwitchToSignup,
 }: LoginFormProps) {
   const navigate = useNavigate();
   const [, setAuthenticated] = useState<boolean>(
@@ -157,7 +155,7 @@ export default function LoginForm({
   const [organizationErrors, setOrganizationErrors] = useState<FormErrors>({});
   console.log("🚀 ~ organizationErrors:", organizationErrors);
   const [personErrors, setPersonErrors] = useState<FormErrors>({});
-  const [resetPasswordErrors, setResetPasswordErrors] = useState<FormErrors>(
+  const [resetPasswordErrors] = useState<FormErrors>(
     {}
   );
   const [apiMessage, setApiMessage] = useState<string | null>(null);
