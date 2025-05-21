@@ -42,9 +42,8 @@ export default function WhySection() {
             </ul>
 
             <Button
-              className="bg-[#7077FE] py-2 sm:py-3 md:py-[16px] px-3 sm:px-4 md:px-[24px] rounded-full text-xs sm:text-sm md:text-base"
-              variant="primary"
-              withGradientOverlay
+variant="gradient-primary"
+  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
             >
               Why Now
             </Button>

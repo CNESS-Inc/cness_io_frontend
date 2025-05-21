@@ -1,5 +1,5 @@
 import Button from "../../ui/Button";
-import joinImage from "../../../../public/join.png";
+import joinImage from "../../../assets/join.png";
 
 export default function JoiningSection() {
   return (
@@ -14,7 +14,7 @@ export default function JoiningSection() {
 
         {/* Background image - now using next/image for optimization */}
         <div className="absolute inset-0">
-        <img
+          <img
             className="absolute h-full right-0"
             src={joinImage}
             alt=""
@@ -26,20 +26,20 @@ export default function JoiningSection() {
         <div className="relative flex flex-col items-center sm:items-start gap-6 sm:gap-8 p-6 sm:p-0 sm:absolute sm:top-[93px] sm:left-[119px] w-full max-w-2xl mx-auto sm:mx-0">
           <div className="flex flex-col items-center sm:items-start gap-3 w-full text-center sm:text-left">
             <h1 className="poppins font-semibold text-[#2a2a2a] text-2xl sm:text-3xl md:text-[32px] tracking-normal sm:tracking-[0] leading-[1.3] sm:leading-[50px]">
-              We&apos;re not building another platform. <br className="hidden sm:block" />
+              We&apos;re not building another platform.{" "}
+              <br className="hidden sm:block" />
               We&apos;re redesigning trust for the conscious era.
             </h1>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-[15px] w-full sm:w-auto">
             <Button
-              className="bg-[#7077FE] py-3 sm:py-[16px] px-6 sm:px-[24px] rounded-full text-sm sm:text-base w-full sm:w-auto text-center"
-              variant="primary"
-              withGradientOverlay
+              variant="gradient-primary"
+              className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
             >
               Get Started
             </Button>
-            
+
             <Button
               variant="outline"
               className="bg-white border-[#2222241a] px-4 sm:px-6 py-3 sm:py-4 rounded-[100px] text-[#222224] font-medium text-base sm:text-lg w-full sm:w-auto"

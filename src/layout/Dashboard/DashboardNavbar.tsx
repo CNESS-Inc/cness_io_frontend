@@ -1,16 +1,20 @@
+import React, { useState } from "react";
 import { 
   AwardIcon, BadgePlusIcon, BellIcon, FileBarChartIcon, 
   GraduationCapIcon, HelpCircleIcon, LayoutDashboardIcon, 
-  SettingsIcon, UploadIcon, UserIcon, XIcon 
+  SettingsIcon, UploadIcon, UserIcon, XIcon ,ChevronDownIcon, ChevronUpIcon 
 } from "lucide-react";
+import { NavLink } from "react-router-dom";
+
 
 const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }:any) => {
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   // Navigation items data
   const mainNavItems = [
-    { icon: <LayoutDashboardIcon className="w-5 h-5" />, label: "Dashboard", active: true },
+    { icon: <LayoutDashboardIcon className="w-5 h-5" />, label: "Dashboard", active: true,path: "/dashboard"  },
     { icon: <AwardIcon className="w-5 h-5" />, label: "Get Certified", active: false },
     { icon: <UploadIcon className="w-5 h-5" />, label: "Upload Proof", active: false },
-    { icon: <FileBarChartIcon className="w-5 h-5" />, label: "Score & Results", active: false },
+    { icon: <FileBarChartIcon className="w-5 h-5" />, label: "Score & Results", active: true, path: "/score-result"  },
     { icon: <GraduationCapIcon className="w-5 h-5" />, label: "Learning Lab (LMS)", active: false },
     { icon: <BadgePlusIcon className="w-5 h-5" />, label: "Upgrade Badge", active: false },
     { icon: <UserIcon className="w-5 h-5" />, label: "Directory Profile", active: false },
@@ -64,6 +68,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }:any) => {
               <NavItem key={index} item={item} onClick={toggleMobileNav} />
             ))}
           </div>
+          
 
           {/* Divider */}
           <div className="w-full h-px">
@@ -73,6 +78,52 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }:any) => {
               src="https://c.animaapp.com/magahlmqpONVZN/img/line-1.svg"
             />
           </div>
+
+{/* Profile Dropdown (tight, clean layout) */}
+<div className="w-full px-3">
+  <button
+    onClick={() => setIsProfileOpen(!isProfileOpen)}
+    className="flex items-center justify-between w-full px-4 py-[10px] rounded-xl cursor-pointer text-slate-500 hover:bg-[#f3e8ff] transition"
+  >
+    <div className="flex items-center gap-3">
+      <UserIcon className="w-5 h-5" />
+      <span className="text-sm font-medium">Profile</span>
+    </div>
+    {isProfileOpen ? (
+      <ChevronUpIcon className="w-4 h-4" />
+    ) : (
+      <ChevronDownIcon className="w-4 h-4" />
+    )}
+  </button>
+
+  {isProfileOpen && (
+    <div className="flex flex-col gap-[2px] mt-[2px] ml-[52px]">
+      <NavLink
+        to="/user-profile"
+        onClick={toggleMobileNav}
+        className={({ isActive }) =>
+          `text-sm px-3 py-[6px] rounded-lg w-full transition ${
+            isActive ? "bg-[#f3e8ff] text-[#9747FF] font-semibold" : "text-slate-500 hover:bg-[#f9f9f9]"
+          }`
+        }
+      >
+        My Profile
+      </NavLink>
+      <NavLink
+        to="/company-profile"
+        onClick={toggleMobileNav}
+        className={({ isActive }) =>
+          `text-sm px-3 py-[6px] rounded-lg w-full transition ${
+            isActive ? "bg-[#f3e8ff] text-[#9747FF] font-semibold" : "text-slate-500 hover:bg-[#f9f9f9]"
+          }`
+        }
+      >
+        Company Profile
+      </NavLink>
+    </div>
+  )}
+</div>
+
 
           {/* Secondary Menu Items */}
           <div className="flex flex-col items-start gap-1 px-3 w-full">
@@ -87,25 +138,37 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }:any) => {
 };
 
 // Extracted NavItem component for cleaner code
-const NavItem = ({ item, onClick }:any) => (
-  <div
-    className={`flex items-center gap-3 px-4 py-3 w-full rounded-xl cursor-pointer hover:bg-[#cdc1ff33] ${
-      item.active ? "bg-[#cdc1ff33]" : "rounded-[99px]"
-    }`}
-    onClick={!item.active ? onClick : undefined}
-  >
-    <div className="flex items-start gap-3 w-full relative">
+const NavItem = ({ item, onClick }: any) => {
+  const baseClasses =
+    "flex items-center gap-3 px-4 py-3 w-full rounded-xl cursor-pointer";
+  const activeClasses = "bg-[#f3e8ff] text-[#9747FF] font-semibold";
+  const inactiveClasses = "text-slate-500 hover:bg-[#f3e8ff]";
+
+    const content = (
+    <>
       <div className="inline-flex items-start gap-2.5">{item.icon}</div>
-      <div className={`font-medium text-sm ${
-        item.active ? "text-indigo-600" : "text-slate-500"
-      }`}>
-        {item.label}
-      </div>
+      <div className="font-medium text-sm">{item.label}</div>
       {item.hasNotification && (
         <div className="absolute w-2 h-2 top-[13px] -left-px bg-orange-500 rounded-full border border-white" />
       )}
+    </>
+  );
+
+  return item.path ? (
+    <NavLink
+      to={item.path}
+      onClick={onClick}
+      className={({ isActive }) =>
+        `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`
+      }
+    >
+      <div className="flex items-start gap-3 w-full relative">{content}</div>
+    </NavLink>
+  ) : (
+    <div className={`${baseClasses} ${inactiveClasses}`} onClick={onClick}>
+      <div className="flex items-start gap-3 w-full relative">{content}</div>
     </div>
-  </div>
-);
+  );
+};
 
 export default DashboardNavbar;
