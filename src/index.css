@@ -9,3 +9,29 @@
 .poppins{
     font-family: "Poppins", sans-serif;
 }
+
+@keyframes bounceLeft {
+  0%, 100% {
+    transform: translateX(0%);
+  }
+  50% {
+    transform: translateX(30%);
+  }
+}
+
+@keyframes bounceRight {
+  0%, 100% {
+    transform: translateX(0%);
+  }
+  50% {
+    transform: translateX(-30%);
+  }
+}
+
+.animate-bounce-x-left {
+  animation: bounceLeft 12s ease-in-out infinite;
+}
+
+.animate-bounce-x-right {
+  animation: bounceRight 12s ease-in-out infinite;
+}

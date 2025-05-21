@@ -4,9 +4,10 @@ import Button from "../../components/ui/Button";
 import { cn } from "../../lib/utils";
 
 const links = [
-  { name: "Why", href: "/" },
-  { name: "What", href: "/" },
-  { name: "About", href: "/" },
+  { name: "Why", href: "/why" },
+  { name: "What", href: "/what" },
+  { name: "About", href: "/about" },
+  { name: "Directory", href: "/directory" } 
 ];
 
 export default function NavLinks({ className }: { className?: string }) {
