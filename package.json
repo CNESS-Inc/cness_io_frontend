@@ -10,11 +10,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+<<<<<<< HEAD
+=======
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+>>>>>>> back_merge_vite_js
     "@headlessui/react": "^2.2.3",
     "@heroicons/react": "^2.2.0",
     "@radix-ui/react-avatar": "^1.1.9",
     "@tailwindcss/vite": "^4.1.5",
     "@types/react-router-dom": "^5.3.3",
+    "axios": "^1.9.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "lodash": "^4.17.21",
@@ -22,14 +29,26 @@
     "react": "^19.1.0",
     "react-circular-progressbar": "^2.2.0",
     "react-dom": "^19.1.0",
+<<<<<<< HEAD
     "react-hook-form": "^7.56.3",
+=======
+    "react-hook-form": "^7.56.4",
+>>>>>>> back_merge_vite_js
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.6.0",
+    "react-toastify": "^11.0.5",
     "tailwind-merge": "^3.2.0",
     "tailwindcss": "^4.1.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
+    "@types/babel__core": "^7.20.5",
+    "@types/babel__generator": "^7.27.0",
+    "@types/babel__template": "^7.4.4",
+    "@types/babel__traverse": "^7.20.7",
+    "@types/estree": "^1.0.7",
+    "@types/history": "^4.7.11",
+    "@types/json-schema": "^7.0.15",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.4.1",

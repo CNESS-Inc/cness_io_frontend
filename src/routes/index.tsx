@@ -1,7 +1,8 @@
+
 import { lazy } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import AppLayout from '../layout/AppLayout'
-
+import EmailVerify from '../components/ui/EmailVerify';
 const HomePage = lazy(() => import('../pages/Home'))
 const DirectoryPage= lazy(()=> import('../pages/DirectoryPage'))
 const Dashboard = lazy(() => import('../pages/Dashboard'))
@@ -43,4 +44,8 @@ export const router = createBrowserRouter([
       },
     ],
   },
-])
+  {
+    path: '/email-verify',
+    element: <EmailVerify />,
+  },
+]);
