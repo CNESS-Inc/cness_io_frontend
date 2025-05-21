@@ -22,7 +22,6 @@ interface AuthResponse {
   };
 }
 
-
 interface FormErrors {
   username?: string;
   email?: string;
@@ -322,9 +321,8 @@ export default function SignupForm({
             </Button>
             <Button
               type="submit"
-              className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
-              variant="primary"
-              withGradientOverlay
+              variant="gradient-primary"
+              className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Signing Up..." : "Sign Up"}
@@ -334,9 +332,9 @@ export default function SignupForm({
       </div>
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <div className="text-center p-6 max-w-md">
-          <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-green-100 ">
+          <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] ">
             <svg
-              className="h-6 w-6 text-green-600 animate-bounce"
+              className="h-30 w-30 text-white animate-bounce"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -351,7 +349,7 @@ export default function SignupForm({
           </div>
           {apiMessage && (
             <div
-              className={`text-center p-4 ${
+              className={`openSans text-center p-4 ${
                 apiMessage.includes("verification")
                   ? "text-green-500"
                   : "text-red-500"
@@ -363,8 +361,8 @@ export default function SignupForm({
           <div className="mt-6">
             <Button
               onClick={closeModal}
-              className="bg-[#7077FE] py-3 sm:py-[16px] px-6 sm:px-[24px] rounded-full text-sm sm:text-base w-full sm:w-auto text-center mt-3"
-              withGradientOverlay
+              variant="gradient-primary"
+              className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
             >
               Got it!
             </Button>

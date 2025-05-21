@@ -43,13 +43,13 @@ export default function NavLinks({ className }: { className?: string }) {
           <Button variant="white-outline" size="md" onClick={openSignupModal}>
             Sign Up
           </Button>
-         <Button
-  variant="gradient-primary"
-  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
-  onClick={openLoginModal}
->
-  Login
-</Button>
+          <Button
+            variant="gradient-primary"
+            className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+            onClick={openLoginModal}
+          >
+            Login
+          </Button>
         </div>
       </nav>
 

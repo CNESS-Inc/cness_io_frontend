@@ -333,7 +333,8 @@ export default function LoginForm({
           response?.data?.data?.user.completed_step === 1 ? "true" : "false"
         );
 
-        const completionStatus = response.data.data.user.person_organization_complete;
+        const completionStatus =
+          response.data.data.user.person_organization_complete;
         const completed_step = response.data.data.user.completed_step;
 
         if (completionStatus === 0 || completed_step === 0) {
@@ -383,8 +384,8 @@ export default function LoginForm({
             );
             setPersonPricing(updatedPlans);
             setActiveModal("personPricing");
-          }else{
-            navigate("/dashboard")
+          } else {
+            navigate("/dashboard");
           }
         } else if (completionStatus === 2) {
           if (completed_step === 0) {
@@ -431,8 +432,8 @@ export default function LoginForm({
             );
             setorganizationpricingPlans(updatedPlans);
             setActiveModal("organizationPricing");
-          }else{
-            navigate("/dashboard")
+          } else {
+            navigate("/dashboard");
           }
         }
       } else {
@@ -675,7 +676,7 @@ export default function LoginForm({
   }, [isAnnual]);
 
   const closeModal = () => {
-    onSuccess()
+    onSuccess();
     setActiveModal(null);
   };
 
@@ -801,11 +802,9 @@ export default function LoginForm({
               Cancel
             </Button>
             <Button
-              type="submit"
-              className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
-              variant="primary"
+              variant="gradient-primary"
+              className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
               disabled={isSubmitting}
-              withGradientOverlay
             >
               {isSubmitting ? "Loging..." : "Login"}
             </Button>
@@ -1030,10 +1029,9 @@ export default function LoginForm({
               </Button>
               <Button
                 type="submit"
+                variant="gradient-primary"
+                className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                 disabled={isSubmitting}
-                className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
-                variant="primary"
-                withGradientOverlay
               >
                 {isSubmitting ? "Submitting..." : "Submit"}
               </Button>
@@ -1089,10 +1087,9 @@ export default function LoginForm({
               </Button>
               <Button
                 type="submit"
+                variant="gradient-primary"
+                className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                 disabled={isSubmitting}
-                className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
-                variant="primary"
-                withGradientOverlay
               >
                 {isSubmitting ? "Submitting..." : "Submit"}
               </Button>
@@ -1136,9 +1133,8 @@ export default function LoginForm({
                   )}
                 </div>
                 <Button
-                  className={`bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out ${plan.buttonClass}`}
-                  variant="primary"
-                  withGradientOverlay
+            variant="gradient-primary"
+            className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                   onClick={() => handlePlanSelection(plan)}
                 >
                   {plan.buttonText}
@@ -1159,7 +1155,7 @@ export default function LoginForm({
                   checked={isAnnual}
                   onChange={() => setIsAnnual(!isAnnual)}
                 />
-                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
               </div>
               <span className="ml-3 text-sm font-medium text-gray-700">
                 Annual billing
@@ -1184,7 +1180,7 @@ export default function LoginForm({
       >
         <div className=" p-6 rounded-lg w-full mx-auto z-10 relative">
           <h2 className="text-xl poppins font-bold mb-4 text-center">
-            Person Pricing Plan
+            Organization Pricing Plan
           </h2>
 
           <div className="flex justify-center">
@@ -1216,9 +1212,9 @@ export default function LoginForm({
                   )}
                 </div>
                 <Button
-                  className={`bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out ${plan.buttonClass}`}
-                  variant="primary"
-                  withGradientOverlay
+                  variant="gradient-primary"
+                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                  onClick={() => handlePlanSelection(plan)}
                 >
                   {plan.buttonText}
                 </Button>
@@ -1238,7 +1234,7 @@ export default function LoginForm({
                   checked={isAnnual}
                   onChange={() => setIsAnnual(!isAnnual)}
                 />
-                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
               </div>
               <span className="ml-3 text-sm font-medium text-gray-700">
                 Annual billing
