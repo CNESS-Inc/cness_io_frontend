@@ -7,9 +7,10 @@ import SignupForm from "./SignupForm";
 import LoginForm from "./LoginForm.tsx";
 
 const links = [
-  { name: "Why", href: "/" },
-  { name: "What", href: "/" },
-  { name: "About", href: "/" },
+  { name: "Why", href: "/why" },
+  { name: "What", href: "/what" },
+  { name: "About", href: "/about" },
+  { name: "Directory", href: "/directory" } 
 ];
 
 export default function NavLinks({ className }: { className?: string }) {

@@ -26,16 +26,16 @@ const [serviceInput, setServiceInput] = useState("");
 
   const {
     register,
- 
+    handleSubmit,
     formState: { errors },
     reset,
   } = useForm( {
   mode: "onBlur", // or "onChange"
 });
 
-  // const onSubmit = (data: any) => {
-  //   console.log("Form submitted:", data);
-  // };
+  const onSubmit = (data: any) => {
+    console.log("Form submitted:", data);
+  };
 
   const handleImageChange = (
     e: React.ChangeEvent<HTMLInputElement>,

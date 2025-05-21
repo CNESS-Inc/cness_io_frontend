@@ -10,18 +10,28 @@
     font-family: "Poppins", sans-serif;
 }
 
-/* Custom easing curve */
-.ease-smooth {
-  transition-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+@keyframes bounceLeft {
+  0%, 100% {
+    transform: translateX(0%);
+  }
+  50% {
+    transform: translateX(30%);
+  }
 }
 
-/* Card hover effects */
-.card-transition {
-  transition: all 0.5s cubic-bezier(0.65, 0, 0.35, 1);
-  transform-origin: center;
+@keyframes bounceRight {
+  0%, 100% {
+    transform: translateX(0%);
+  }
+  50% {
+    transform: translateX(-30%);
+  }
 }
 
-/* SVG path transitions */
-.svg-path-transition {
-  transition: stroke 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+.animate-bounce-x-left {
+  animation: bounceLeft 12s ease-in-out infinite;
+}
+
+.animate-bounce-x-right {
+  animation: bounceRight 12s ease-in-out infinite;
 }

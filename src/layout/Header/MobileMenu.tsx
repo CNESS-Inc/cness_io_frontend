@@ -11,6 +11,7 @@ const links = [
   { name: "Why", href: "/" },
   { name: "What", href: "/" },
   { name: "About", href: "/" },
+{ name: "Directory", href: "/directory" } 
 ];
 
 export default function MobileMenu({ isOpen }: { isOpen: boolean }) {

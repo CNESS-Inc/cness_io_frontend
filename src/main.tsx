@@ -1,25 +1,12 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import './index.css';
 
+import { RouterProvider } from 'react-router-dom'; // ✅ add this
+import { router } from './routes'; // ✅ this must point to your router config
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
-    <ToastContainer
-        position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-  </StrictMode>,
-)
+    <RouterProvider router={router} /> {/* ✅ this enables /directory route */}
+  </StrictMode>
+);
