@@ -1,4 +1,4 @@
-import React, { useState, type ChangeEvent, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "./Button";
 import { ForgotPasswordDetailsSubmit } from "../../Common/ServerAPI";
@@ -6,10 +6,15 @@ import { ForgotPasswordDetailsSubmit } from "../../Common/ServerAPI";
 interface QueryParams {
   token: string | null;
 }
+interface ResetPasswordForm {
+  new_password: string;
+  confirm_password: string;
+}
+
 
 const ResetPassword = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<ResetPasswordForm>({
     new_password: "",
     confirm_password: "",
   });
@@ -26,19 +31,26 @@ const ResetPassword = () => {
   const { token } = getQueryParams();
 
   const makeResetPasswordRequest = async (e: FormEvent) => {
-    e.preventDefault();
-    try {
-      const formattedData = {
-        token: token,
-        password: formData?.new_password,
-      };
-      const res = await ForgotPasswordDetailsSubmit(formattedData);
-      setTimeout(() => {
-        navigate("/");
-      }, 2000);
-    } catch {}
-    setFormData({ new_password: "", confirm_password: "" });
-  };
+  e.preventDefault();
+  
+  if (!token) {
+    alert("Invalid or missing token");
+    return;
+  }
+
+  try {
+    const formattedData = {
+      token: token, 
+      password: formData.new_password,
+    };
+    await ForgotPasswordDetailsSubmit(formattedData);
+    setTimeout(() => {
+      navigate("/");
+    }, 2000);
+  } catch (error) {
+  }
+  setFormData({ new_password: "", confirm_password: "" });
+};
   return (
     <>
       <div className="flex justify-center items-center ">

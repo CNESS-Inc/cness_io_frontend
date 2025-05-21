@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { GetEmailVerify, GetPaymentVerify } from "../../Common/ServerAPI";
+import { GetPaymentVerify } from "../../Common/ServerAPI";
 import Button from "./Button";
 
 interface PaymentVerifyData {
