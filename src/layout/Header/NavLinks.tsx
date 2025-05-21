@@ -7,9 +7,10 @@ import SignupForm from "./SignupForm";
 import LoginForm from "./LoginForm.tsx";
 
 const links = [
-  { name: "Why", href: "/" },
-  { name: "What", href: "/" },
-  { name: "About", href: "/" },
+  { name: "Why", href: "/why" },
+  { name: "What", href: "/what" },
+  { name: "About", href: "/about" },
+  { name: "Directory", href: "/directory" } 
 ];
 
 export default function NavLinks({ className }: { className?: string }) {
@@ -20,6 +21,9 @@ export default function NavLinks({ className }: { className?: string }) {
   const openSignupModal = () => setActiveModal("signup");
   const openLoginModal = () => setActiveModal("login");
   const closeModal = () => setActiveModal(null);
+
+  const completed_step = localStorage.getItem("completed_step"); 
+  const showDashboardButton = completed_step === "1" || completed_step === "2";
 
   return (
     <>
@@ -40,16 +44,29 @@ export default function NavLinks({ className }: { className?: string }) {
           ))}
         </ul>
         <div className="flex gap-4">
-          <Button variant="white-outline" size="md" onClick={openSignupModal}>
-            Sign Up
-          </Button>
-         <Button
-  variant="gradient-primary"
-  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
-  onClick={openLoginModal}
->
-  Login
-</Button>
+          {showDashboardButton ? (
+            <Link to="/dashboard">
+              <Button
+                variant="gradient-primary"
+                className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+              >
+                Go to Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <>
+              <Button variant="white-outline" size="md" onClick={openSignupModal}>
+                Sign Up
+              </Button>
+              <Button
+                variant="gradient-primary"
+                className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                onClick={openLoginModal}
+              >
+                Login
+              </Button>
+            </>
+          )}
         </div>
       </nav>
 

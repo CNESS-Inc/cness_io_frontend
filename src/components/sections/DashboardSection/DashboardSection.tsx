@@ -124,47 +124,53 @@ export default function DashboardSection(user: any) {
     setPersonPricing(updatedPlans);
   };
   const closeModal = () => setActiveModal(null);
-const handlePlanSelection = async (plan: any) => {
-    try {
-      const payload = {
-        plan_id: plan.id,
-        plan_type: isAnnual ? "Yearly" : "Monthly",
-      };
+  const handlePlanSelection = async (plan: any) => {
+  try {
+    const payload = {
+      plan_id: plan.id,
+      plan_type: isAnnual ? "Yearly" : "Monthly",
+    };
 
-      const res = await PaymentDetails(payload);
-      if (res?.data?.data?.url) {
-        window.open(res.data.data.url, "_blank"); 
-      } else {
-        console.error("URL not found in response");
-      }
-    } catch (error) {
-      console.error("Error in handlePlanSelection:", error);
+    const res = await PaymentDetails(payload);
+
+    if (res?.data?.data?.url) {
+      const url = res.data.data.url;
+      console.log("Redirecting to:", url); // Log the actual URL
+      window.location.href = url; // Redirect in the same tab
+    } else {
+      console.error("URL not found in response");
     }
-  };
+  } catch (error) {
+    console.error("Error in handlePlanSelection:", error);
+  }
+};
 
+const completedStep = localStorage.getItem('completed_step');
   return (
     <>
       <div className="max-w-[1200px] mx-auto "></div>
-      <div className=" mx-5   bg-[rgba(255,204,0,0.05)] 5% text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
-        <div className="flex items-center gap-2">
-          <span className="text-yellow-500">💡</span>
-          <span>
-            To start the certification journey into our platform, please
-            complete the payment here. click here for pricing.
-            <a
-              href="#"
-              className="text-blue-600 underline"
-              onClick={(e) => {
-                e.preventDefault();
-                openPricingModal();
-              }}
-            >
-              Click here
-            </a>
-          </span>
+      {completedStep !== '2' && (
+        <div className="mx-5 bg-[rgba(255,204,0,0.05)] 5% text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
+          <div className="flex items-center gap-2">
+            <span className="text-yellow-500">💡</span>
+            <span>
+              To start the certification journey into our platform, please
+              complete the payment here.{" "}
+              <a
+                href="#"
+                className="text-blue-600 underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  openPricingModal();
+                }}
+              >
+                Click here
+              </a>
+            </span>
+          </div>
+          <button className="text-gray-400 hover:text-gray-700 text-lg">×</button>
         </div>
-        <button className="text-gray-400 hover:text-gray-700 text-lg">×</button>
-      </div>
+      )}
 
       <section className="flex flex-col w-full items-start gap-3 p-4 md:p-5">
         {/* Header Section */}
@@ -242,8 +248,11 @@ const handlePlanSelection = async (plan: any) => {
                       Fill out your profile with all the necessary details.
                     </p>
                   </div>
-                  <div className="h-8 w-full flex justify-center sm:justify-start">
-                    <Button className="w-[126px] h-full bg-gradient-to-r from-[rgba(112,119,254,1)] to-[rgba(151,71,255,1)] hover:brightness-120 active:scale-95 transition-all duration-300 rounded-full px-4 py-0 flex justify-center items-center">
+                  <div className="w-full ">
+                    <Button
+                      variant="gradient-primary"
+                      className="rounded-[100px] py-2 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                    >
                       <span className="font-['Plus_Jakarta_Sans',Helvetica] font-medium text-[12px] leading-none tracking-[0px] text-white text-center">
                         Start
                       </span>
@@ -268,8 +277,11 @@ const handlePlanSelection = async (plan: any) => {
                     certification.
                   </p>
                 </div>
-                <div className="h-8 w-full flex justify-center sm:justify-start">
-                  <Button className="w-[160px] h-8 bg-[#7077FE] hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#F07EFF] transition-all duration-300 rounded-full px-4 py-0 flex justify-center items-center">
+                <div className="w-full">
+                  <Button
+                    variant="gradient-primary"
+                    className="rounded-[100px] py-2 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                  >
                     <span className="font-['Plus_Jakarta_Sans',Helvetica] font-medium text-[12px] leading-none tracking-[0px] text-white text-center">
                       Get Certification
                     </span>
@@ -594,7 +606,7 @@ const handlePlanSelection = async (plan: any) => {
       <Modal isOpen={activeModal === "PricingModal"} onClose={closeModal}>
         <div className="p-6 rounded-lg w-full mx-auto z-10 relative">
           <h2 className="text-xl poppins font-bold mb-4 text-center">
-            Person Pricing Plan
+            Pricing Plan
           </h2>
 
           <div className="flex justify-center">
@@ -604,7 +616,7 @@ const handlePlanSelection = async (plan: any) => {
                 className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
               >
                 {plan.popular && (
-                  <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
+                  <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
                     Popular
                   </div>
                 )}
@@ -626,9 +638,8 @@ const handlePlanSelection = async (plan: any) => {
                   )}
                 </div>
                 <Button
-                  className={`w-full bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out ${plan.buttonClass}`}
-                  variant="primary"
-                  withGradientOverlay
+                  variant="gradient-primary"
+                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                   onClick={() => handlePlanSelection(plan)}
                 >
                   {plan.buttonText}
@@ -649,7 +660,7 @@ const handlePlanSelection = async (plan: any) => {
                   checked={isAnnual}
                   onChange={() => setIsAnnual(!isAnnual)}
                 />
-                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
               </div>
               <span className="ml-3 text-sm font-medium text-gray-700">
                 Annual billing

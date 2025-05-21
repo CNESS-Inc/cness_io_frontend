@@ -1,15 +1,57 @@
-import { BellIcon, SearchIcon, SettingsIcon, MenuIcon } from "lucide-react"
-import { Input } from "../../components/ui/input"
-import { Avatar, AvatarImage } from "@radix-ui/react-avatar"
+import { BellIcon, SearchIcon, SettingsIcon, MenuIcon, LogOutIcon, UserIcon } from "lucide-react";
+import { Input } from "../../components/ui/input";
+import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-const DashboardHeader = ({ toggleMobileNav,userData }:any) => {
-  console.log("🚀 ~ DashboardHeader ~ userData:", userData)
+const DashboardHeader = ({ toggleMobileNav, userData }: any) => {
+  const navigate = useNavigate()
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+const handleLogout = () => {
+  try {
+    localStorage.clear();
+    setIsDropdownOpen(false);
+    navigate('/');
+  } catch (error) {
+    console.error('Logout failed:', error);
+  }
+};
+
+  // const handleProfile = () => {
+  //   // Add your profile navigation logic here
+  //   console.log("Navigating to profile...")
+  //   setIsDropdownOpen(false)
+  // }
+
   return (
-    <header className="flex w-full items-center justify-between px-4 md:px-8 py-[18px] bg-white border-b border-[#0000001a]">
+    <header className="flex w-full items-center justify-between px-4 md:px-8 py-[18px] bg-white border-b border-[#0000001a] relative">
       {/* Left side - Hamburger (mobile) and Search */}
       <div className="flex items-center gap-4">
         {/* Hamburger menu - visible only on mobile */}
-        <button 
+        <button
           onClick={toggleMobileNav}
           className="md:hidden p-2 rounded-md hover:bg-gray-100"
         >
@@ -43,41 +85,88 @@ const DashboardHeader = ({ toggleMobileNav,userData }:any) => {
           <SettingsIcon className="w-6 h-6" />
         </div>
 
-        <div className="hidden md:flex items-center">
-          <Avatar className="w-[44.25px] h-[44.25px]">
-            <AvatarImage
-              src="https://c.animaapp.com/magahlmqpONVZN/img/ellipse-3279.svg"
-              alt="User avatar"
-            />
-          </Avatar>
+        <div className="hidden md:flex items-center relative" ref={dropdownRef}>
+          <button
+            onClick={toggleDropdown}
+            className="flex items-center focus:outline-none"
+          >
+            <Avatar className="w-[44.25px] h-[44.25px]">
+              <AvatarImage
+                src="https://c.animaapp.com/magahlmqpONVZN/img/ellipse-3279.svg"
+                alt="User avatar"
+              />
+            </Avatar>
 
-          <div className="flex flex-col items-start">
-            <div className="px-2 py-0.5 flex items-center">
-              <div className="font-['Poppins',Helvetica] font-medium text-[#222224] text-sm">
-                {userData?.first_name}
+            <div className="flex flex-col items-start">
+              <div className="px-2 py-0.5 flex items-center">
+                <div className="font-['Poppins',Helvetica] font-medium text-[#222224] text-sm">
+                  {userData?.first_name}
+                </div>
+              </div>
+
+              <div className="px-2 py-0.5">
+                <div className="font-['Open_Sans',Helvetica] font-normal text-[#7a7a7a] text-[10px]">
+                  Margaret
+                </div>
               </div>
             </div>
+          </button>
 
-            <div className="px-2 py-0.5">
-              <div className="font-['Open_Sans',Helvetica] font-normal text-[#7a7a7a] text-[10px]">
-                Margaret
-              </div>
+          {/* Dropdown Menu */}
+          {isDropdownOpen && (
+            <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+              {/* <button
+                onClick={handleProfile}
+                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+              >
+                <UserIcon className="w-4 h-4 mr-3 text-gray-500" />
+                Profile
+              </button> */}
+              <button
+                onClick={handleLogout}
+                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+              >
+                <LogOutIcon className="w-4 h-4 mr-3 text-gray-500" />
+                Logout
+              </button>
             </div>
-          </div>
+          )}
         </div>
 
-        {/* Mobile-only avatar icon */}
-        <div className="md:hidden flex items-center">
-          <Avatar className="w-[36px] h-[36px]">
-            <AvatarImage
-              src="https://c.animaapp.com/magahlmqpONVZN/img/ellipse-3279.svg"
-              alt="User avatar"
-            />
-          </Avatar>
+        {/* Mobile-only avatar icon with dropdown */}
+        <div className="md:hidden flex items-center relative" ref={dropdownRef}>
+          <button onClick={toggleDropdown} className="focus:outline-none">
+            <Avatar className="w-[36px] h-[36px]">
+              <AvatarImage
+                src="https://c.animaapp.com/magahlmqpONVZN/img/ellipse-3279.svg"
+                alt="User avatar"
+              />
+            </Avatar>
+          </button>
+
+          {/* Mobile Dropdown Menu */}
+          {isDropdownOpen && (
+            <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+              {/* <button
+                onClick={handleProfile}
+                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+              >
+                <UserIcon className="w-4 h-4 mr-3 text-gray-500" />
+                Profile
+              </button> */}
+              <button
+                onClick={handleLogout}
+                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+              >
+                <LogOutIcon className="w-4 h-4 mr-3 text-gray-500" />
+                Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>
-  )
-}
+  );
+};
 
-export default DashboardHeader
+export default DashboardHeader;
