@@ -6,6 +6,13 @@ type LoginFormData = {
   email: string;
   password: string;
 };
+type ForgotFormData = {
+  email: string;
+};
+type ResetFormData = {
+  token: string;
+  password: string;
+};
 type RegisterFormData = {
   username: string;
   email: string;
@@ -20,6 +27,9 @@ type AccountData = {
 };
 type EmailVerifyData = {
   token: any;
+};
+type PaymentVerifyData = {
+  session_id: any;
 };
 type OrganizationFormData = {
   sub_domain: string | undefined;
@@ -45,12 +55,14 @@ export const ServerAPI = {
 };
 
 export const API = {
-  // BaseUrl: "http://localhost:5025/api", //local
+  // BaseUrl: "http://192.168.1.5:5025/api", //local
   BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
 };
 
 export const EndPoint = {
   login: "/auth/login",
+  forgot: "/auth/forgot-password",
+  reset: "/auth/reset-password",
   register: "/auth/sign-up",
   organization_profile: "/readiness-question/organization/answer",
   person_profile: "/readiness-question/person/answer",
@@ -63,6 +75,7 @@ export const EndPoint = {
   allFormData:"/readiness-question/get-formdata",
   allPlanData:"/person-plan/user/plan",
   emailverify:"/auth/email-verify",
+  paymentverify:"/payment/payment-confirm",
 };
 
 export const LoginDetails = (formData: LoginFormData): ApiResponse => {
@@ -71,6 +84,19 @@ export const LoginDetails = (formData: LoginFormData): ApiResponse => {
     password: formData?.password,
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.login);
+};
+export const ForgotPasswordDetails = (formData: ForgotFormData): ApiResponse => {
+  const data: Partial<ForgotFormData> = {
+    email: formData?.email,
+  };
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.forgot);
+};
+export const ForgotPasswordDetailsSubmit = (formData: ResetFormData): ApiResponse => {
+  const data: Partial<ResetFormData> = {
+    token: formData?.token,
+    password: formData?.password,
+  };
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.reset);
 };
 
 export const RegisterDetails = (formData: RegisterFormData): ApiResponse => {
@@ -151,6 +177,12 @@ export const GetEmailVerify = (formData: EmailVerifyData): ApiResponse => {
     token: formData?.token,
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.emailverify);
+};
+export const GetPaymentVerify = (formData: PaymentVerifyData): ApiResponse => {
+  const params: Partial<PaymentVerifyData> = {
+    session_id: formData?.session_id,
+  };
+  return executeAPI(ServerAPI.APIMethod.GET, null, EndPoint.paymentverify, params);
 };
 export const GetSubDomainDetails = (formData: string): ApiResponse => {
   const data = {};

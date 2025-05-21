@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import Button from "../../components/ui/Button";
 import {
   AccountDetails,
+  ForgotPasswordDetails,
   GetAllFormDetails,
   GetAllPlanDetails,
   GetSubDomainDetails,
@@ -124,6 +125,8 @@ export default function LoginForm({
     | "person"
     | "personPricing"
     | "organizationPricing"
+    | "forgotpassword"
+    | "success"
     | null
   >(null);
   const [organizationForm, setOrganizationForm] = useState<OrganizationForm>({
@@ -154,6 +157,9 @@ export default function LoginForm({
   const [organizationErrors, setOrganizationErrors] = useState<FormErrors>({});
   console.log("🚀 ~ organizationErrors:", organizationErrors);
   const [personErrors, setPersonErrors] = useState<FormErrors>({});
+  const [resetPasswordErrors, setResetPasswordErrors] = useState<FormErrors>(
+    {}
+  );
   const [apiMessage, setApiMessage] = useState<string | null>(null);
 
   const validatePassword = (password: string): string | undefined => {
@@ -206,7 +212,7 @@ export default function LoginForm({
 
   const validateForm = (
     formData: any,
-    formType: "login" | "organization" | "person"
+    formType: "login" | "organization" | "person" | "forgotpassword"
   ): boolean => {
     let isValid = true;
     const newErrors: FormErrors = {};
@@ -294,6 +300,15 @@ export default function LoginForm({
       });
 
       setPersonErrors(newErrors);
+    } else if (formType === "forgotpassword") {
+      const emailError = validateField("email", formData.email, {
+        required: true,
+        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      });
+      if (emailError) {
+        newErrors.email = emailError;
+        isValid = false;
+      }
     }
 
     return isValid;
@@ -323,14 +338,14 @@ export default function LoginForm({
 
       if (response) {
         setAuthenticated(true);
-        setApiMessage(response?.success?.message || "Registration successful");
+        setApiMessage(response?.success?.message || "Login successful");
         setIsSubmitting(false);
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);
         localStorage.setItem("Id", response?.data?.data?.user.id.toString());
         localStorage.setItem(
           "completed_step",
-          response?.data?.data?.user.completed_step === 1 ? "true" : "false"
+          response?.data?.data?.user.completed_step
         );
 
         const completionStatus =
@@ -343,47 +358,48 @@ export default function LoginForm({
           if (completed_step === 0) {
             setActiveModal("person");
           } else if (completed_step === 1) {
-            const res = await GetAllPlanDetails();
-            const plansByRange: Record<string, any> = {};
-            res?.data?.data?.forEach((plan: any) => {
-              if (!plansByRange[plan.plan_range]) {
-                plansByRange[plan.plan_range] = {};
-              }
-              plansByRange[plan.plan_range][plan.plan_type] = plan;
-            });
-            const updatedPlans = Object.values(plansByRange).map(
-              (planGroup: any) => {
-                const monthlyPlan = planGroup.monthly;
-                const yearlyPlan = planGroup.yearly;
+            // const res = await GetAllPlanDetails();
+            // const plansByRange: Record<string, any> = {};
+            // res?.data?.data?.forEach((plan: any) => {
+            //   if (!plansByRange[plan.plan_range]) {
+            //     plansByRange[plan.plan_range] = {};
+            //   }
+            //   plansByRange[plan.plan_range][plan.plan_type] = plan;
+            // });
+            // const updatedPlans = Object.values(plansByRange).map(
+            //   (planGroup: any) => {
+            //     const monthlyPlan = planGroup.monthly;
+            //     const yearlyPlan = planGroup.yearly;
 
-                return {
-                  id: monthlyPlan?.id || yearlyPlan?.id,
-                  title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-                  description: "Customized pricing based on your selection",
-                  monthlyPrice: monthlyPlan
-                    ? `$${monthlyPlan.amount}`
-                    : undefined,
-                  yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-                  period: isAnnual ? "/year" : "/month",
-                  billingNote: yearlyPlan
-                    ? isAnnual
-                      ? `billed annually ($${yearlyPlan.amount})`
-                      : `or $${monthlyPlan?.amount}/month`
-                    : undefined,
-                  features: [], // Add any features you need here
-                  buttonText: "Get Started",
-                  buttonClass: yearlyPlan
-                    ? ""
-                    : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-                  borderClass: yearlyPlan
-                    ? "border-2 border-[#F07EFF]"
-                    : "border",
-                  popular: !!yearlyPlan,
-                };
-              }
-            );
-            setPersonPricing(updatedPlans);
-            setActiveModal("personPricing");
+            //     return {
+            //       id: monthlyPlan?.id || yearlyPlan?.id,
+            //       title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+            //       description: "Customized pricing based on your selection",
+            //       monthlyPrice: monthlyPlan
+            //         ? `$${monthlyPlan.amount}`
+            //         : undefined,
+            //       yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+            //       period: isAnnual ? "/year" : "/month",
+            //       billingNote: yearlyPlan
+            //         ? isAnnual
+            //           ? `billed annually ($${yearlyPlan.amount})`
+            //           : `or $${monthlyPlan?.amount}/month`
+            //         : undefined,
+            //       features: [], // Add any features you need here
+            //       buttonText: "Get Started",
+            //       buttonClass: yearlyPlan
+            //         ? ""
+            //         : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+            //       borderClass: yearlyPlan
+            //         ? "border-2 border-[#F07EFF]"
+            //         : "border",
+            //       popular: !!yearlyPlan,
+            //     };
+            //   }
+            // );
+            // setPersonPricing(updatedPlans);
+            // setActiveModal("personPricing");
+            navigate("/dashboard");
           } else {
             navigate("/dashboard");
           }
@@ -391,47 +407,48 @@ export default function LoginForm({
           if (completed_step === 0) {
             setActiveModal("organization");
           } else if (completed_step === 1) {
-            const res = await GetAllPlanDetails();
-            const plansByRange: Record<string, any> = {};
-            res?.data?.data?.forEach((plan: any) => {
-              if (!plansByRange[plan.plan_range]) {
-                plansByRange[plan.plan_range] = {};
-              }
-              plansByRange[plan.plan_range][plan.plan_type] = plan;
-            });
-            const updatedPlans = Object.values(plansByRange).map(
-              (planGroup: any) => {
-                const monthlyPlan = planGroup.monthly;
-                const yearlyPlan = planGroup.yearly;
+            // const res = await GetAllPlanDetails();
+            // const plansByRange: Record<string, any> = {};
+            // res?.data?.data?.forEach((plan: any) => {
+            //   if (!plansByRange[plan.plan_range]) {
+            //     plansByRange[plan.plan_range] = {};
+            //   }
+            //   plansByRange[plan.plan_range][plan.plan_type] = plan;
+            // });
+            // const updatedPlans = Object.values(plansByRange).map(
+            //   (planGroup: any) => {
+            //     const monthlyPlan = planGroup.monthly;
+            //     const yearlyPlan = planGroup.yearly;
 
-                return {
-                  id: monthlyPlan?.id || yearlyPlan?.id,
-                  title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-                  description: "Customized pricing based on your selection",
-                  monthlyPrice: monthlyPlan
-                    ? `$${monthlyPlan.amount}`
-                    : undefined,
-                  yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-                  period: isAnnual ? "/year" : "/month",
-                  billingNote: yearlyPlan
-                    ? isAnnual
-                      ? `billed annually ($${yearlyPlan.amount})`
-                      : `or $${monthlyPlan?.amount}/month`
-                    : undefined,
-                  features: [], // Add any features you need here
-                  buttonText: "Get Started",
-                  buttonClass: yearlyPlan
-                    ? ""
-                    : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-                  borderClass: yearlyPlan
-                    ? "border-2 border-[#F07EFF]"
-                    : "border",
-                  popular: !!yearlyPlan,
-                };
-              }
-            );
-            setorganizationpricingPlans(updatedPlans);
-            setActiveModal("organizationPricing");
+            //     return {
+            //       id: monthlyPlan?.id || yearlyPlan?.id,
+            //       title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+            //       description: "Customized pricing based on your selection",
+            //       monthlyPrice: monthlyPlan
+            //         ? `$${monthlyPlan.amount}`
+            //         : undefined,
+            //       yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+            //       period: isAnnual ? "/year" : "/month",
+            //       billingNote: yearlyPlan
+            //         ? isAnnual
+            //           ? `billed annually ($${yearlyPlan.amount})`
+            //           : `or $${monthlyPlan?.amount}/month`
+            //         : undefined,
+            //       features: [], // Add any features you need here
+            //       buttonText: "Get Started",
+            //       buttonClass: yearlyPlan
+            //         ? ""
+            //         : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+            //       borderClass: yearlyPlan
+            //         ? "border-2 border-[#F07EFF]"
+            //         : "border",
+            //       popular: !!yearlyPlan,
+            //     };
+            //   }
+            // );
+            // setorganizationpricingPlans(updatedPlans);
+            // setActiveModal("organizationPricing");
+            navigate("/dashboard");
           } else {
             navigate("/dashboard");
           }
@@ -713,6 +730,60 @@ export default function LoginForm({
     }
   };
 
+  const onForgotPassword = () => {
+    setActiveModal("forgotpassword");
+  };
+
+  const handleforgot = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setApiMessage(null);
+
+    const form = e.currentTarget;
+    const email = form.email.value.trim();
+    const formData = {
+      email: form.email.value.trim(),
+    };
+
+    if (!validateForm(formData, "forgotpassword")) {
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const payload = { email };
+      const response = (await ForgotPasswordDetails(payload)) as AuthResponse;
+
+      if (response) {
+        setApiMessage(response?.success?.message);
+        setIsSubmitting(false);
+        setActiveModal("success");
+      } else {
+        setIsSubmitting(false);
+        setApiMessage("Forgot Password failed");
+      }
+    } catch (error: any) {
+      if (error?.response?.data?.error) {
+        setIsSubmitting(false);
+        const serverErrors = error.response.data.error;
+        const formattedErrors: FormErrors = {};
+
+        if (serverErrors.username) {
+          formattedErrors.username = serverErrors.username.join(", ");
+        }
+        if (serverErrors.email) {
+          formattedErrors.email = serverErrors.email.join(", ");
+        }
+        if (serverErrors.password) {
+          formattedErrors.password = serverErrors.password.join(", ");
+        }
+        setApiMessage(serverErrors.message);
+      } else {
+        setApiMessage(error.message || "An error occurred during login");
+      }
+    }
+  };
+
   return (
     <>
       <div className=" px-4 pt-5 pb-4 sm:p-6 sm:pb-4 z-10 relative">
@@ -782,13 +853,13 @@ export default function LoginForm({
           </div>
 
           <div className="text-center openSans text-sm text-gray-600 mb-4">
-            Don't have an account?{" "}
+            Trouble logging in?{" "}
             <button
               type="button"
-              onClick={onSwitchToSignup}
+              onClick={onForgotPassword}
               className="text-[#7077FE] hover:underline focus:outline-none"
             >
-              Sign Up
+              Reset password
             </button>
           </div>
 
@@ -1133,8 +1204,8 @@ export default function LoginForm({
                   )}
                 </div>
                 <Button
-            variant="gradient-primary"
-            className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                  variant="gradient-primary"
+                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                   onClick={() => handlePlanSelection(plan)}
                 >
                   {plan.buttonText}
@@ -1249,6 +1320,109 @@ export default function LoginForm({
             >
               Skip for now, go to Dashboard
             </button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={activeModal === "forgotpassword"} onClose={closeModal}>
+        <div className=" p-6 rounded-lg w-full mx-auto z-10 relative">
+          <h2 className="text-xl poppins font-bold mb-4 text-center">
+            Forgot Password
+          </h2>
+          {apiMessage && (
+            <div
+              className={`text-center mb-4 ${
+                apiMessage.includes("A Forgot Password Email Has Been Sent")
+                  ? "text-green-500"
+                  : "text-red-500"
+              }`}
+            >
+              {apiMessage}
+            </div>
+          )}
+          <form onSubmit={handleforgot}>
+            <div className="mb-4">
+              <label
+                htmlFor="email"
+                className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                placeholder="Enter your email"
+                className={`w-full px-3 py-2 rounded-[12px] border ${
+                  resetPasswordErrors.email
+                    ? "border-red-500"
+                    : "border-[#CBD5E1]"
+                } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+              />
+              {resetPasswordErrors.email && (
+                <p className="mt-1 text-sm text-red-600">
+                  {resetPasswordErrors.email}
+                </p>
+              )}
+            </div>
+            <div className="flex justify-end gap-3 mt-6">
+              <Button
+                type="button"
+                variant="white-outline"
+                size="md"
+                onClick={onSuccess}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="gradient-primary"
+                className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+              >
+                Forgot Password
+              </Button>
+            </div>
+          </form>
+        </div>
+      </Modal>
+
+      <Modal isOpen={activeModal === "success"} onClose={closeModal}>
+        <div className="text-center p-6 max-w-md">
+          <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] ">
+            <svg
+              className="h-30 w-30 text-white animate-bounce"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+          {apiMessage && (
+            <div
+              className={`openSans text-center p-4 ${
+              apiMessage.includes("A Forgot Password Email Has Been Sent")
+                  ? "text-green-500"
+                  : "text-red-500"
+              }`}
+            >
+              {apiMessage}
+            </div>
+          )}
+          <div className="mt-6">
+            <Button
+              onClick={closeModal}
+              variant="gradient-primary"
+              className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+            >
+              Got it!
+            </Button>
           </div>
         </div>
       </Modal>

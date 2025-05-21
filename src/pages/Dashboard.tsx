@@ -24,12 +24,7 @@ interface ApiResponse<T> {
 }
 
 const Dashboard = () => {
-  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [user, setUser] = useState<UserData | null>(null);
-
-  const toggleMobileNav = () => {
-    setIsMobileNavOpen(!isMobileNavOpen);
-  };
 
   const fetchDashboard = async () => {
     try {
@@ -47,10 +42,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <DashboardLayout
-      isMobileNavOpen={isMobileNavOpen}
-      toggleMobileNav={toggleMobileNav}
-    >
+    <DashboardLayout>
       <DashboardSection user={user}/>
     </DashboardLayout>
 

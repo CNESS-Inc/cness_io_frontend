@@ -3,6 +3,8 @@ import { lazy } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import AppLayout from '../layout/AppLayout'
 import EmailVerify from '../components/ui/EmailVerify';
+import PaymentVerify from '../components/ui/PaymentVerify';
+import ResetPassword from '../components/ui/ResetPassword';
 const HomePage = lazy(() => import('../pages/Home'))
 const DirectoryPage= lazy(()=> import('../pages/DirectoryPage'))
 const Dashboard = lazy(() => import('../pages/Dashboard'))
@@ -47,5 +49,13 @@ export const router = createBrowserRouter([
   {
     path: '/email-verify',
     element: <EmailVerify />,
+  },
+  {
+    path: '/payment-confirmation',
+    element: <PaymentVerify />,
+  },
+  {
+    path: '/reset-password',
+    element: <ResetPassword />,
   },
 ]);

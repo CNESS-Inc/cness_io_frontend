@@ -1,19 +1,21 @@
 // dashboardlayout.tsx
-import React from "react";
+import React, { useState } from "react";
 import DashboardHeader from "./DashboardHeader";
 import DashboardNavbar from "./DashboardNavbar";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
-  isMobileNavOpen?: boolean;  // Make it optional if needed
-  toggleMobileNav?: () => void;  // Make it optional if needed
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ 
   children, 
-  isMobileNavOpen, 
-  toggleMobileNav 
 }) => {
+
+    const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  
+    const toggleMobileNav = () => {
+    setIsMobileNavOpen(!isMobileNavOpen);
+  };
 
 
   return (

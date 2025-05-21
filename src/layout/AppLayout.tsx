@@ -8,12 +8,10 @@ const AppLayout = () => {
 
   useEffect(() => {
     const checkAuth = () => {
-      const token = localStorage.getItem('jwt'); // or your specific token key
-      console.log("🚀 ~ checkAuth ~ token:", token)
-      const completed_step = localStorage.getItem('completed_step'); // or your specific token key
-      console.log("🚀 ~ checkAuth ~ completed_step:", completed_step)
-      if (!token  || completed_step === 'false') {
-        navigate('/'); 
+      const token = localStorage.getItem("jwt"); 
+      const completed_step = localStorage.getItem("completed_step"); 
+      if (!token || completed_step === "0" || completed_step === null) {
+        navigate("/");
       }
       setIsCheckingAuth(false);
     };
