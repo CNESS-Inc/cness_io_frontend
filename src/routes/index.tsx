@@ -9,6 +9,10 @@ const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 const ScoreResult = lazy(() => import('../components/sections/DashboardSection/ScoreResult'))
 const UserProfilePage=lazy(()=>import('../components/sections/DashboardSection/UserProfilePage'))
 const OrganaizationProfilepage=lazy(()=>import('../components/sections/DashboardSection/OrganizationProfile'))
+const PublicCompanyProfile =lazy(()=>import('../pages/PublicCompanyProfile'))
+const UserProfileView =lazy(()=>import('../pages/UserProfileView'))
+
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -41,6 +45,18 @@ export const router = createBrowserRouter([
         path: 'company-profile',
         element: <OrganaizationProfilepage />,
       },
+
+{
+  path:'public_companyprofile',
+  element:<PublicCompanyProfile />,
+},
+
+{
+  path:'user_profileview',
+  element:<UserProfileView />,
+},
+
+
     ],
   },
 ])

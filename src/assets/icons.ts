@@ -25,6 +25,7 @@ import aspcompany2 from './aspcom2.png';
 import herosection from './Hero section.png'
 
 
+
 export const iconMap: Record<string, string> = {
   leftimg:leftimage,
   verified: verifiedIcon,
