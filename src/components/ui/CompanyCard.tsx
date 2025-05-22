@@ -24,31 +24,31 @@ interface CompanyCardProps {
   isCertified?: boolean;
 }
 
-const StarRating = ({ rating }: { rating: number }) => {
-  const totalStars = 5;
+// const StarRating = ({ rating }: { rating: number }) => {
+//   const totalStars = 5;
 
-  return (
-    <div className="flex items-center gap-[2px]">
-      {[...Array(totalStars)].map((_, i) => (
-        <svg
-          key={i}
-          xmlns="http://www.w3.org/2000/svg"
-          fill={i < rating ? "#FFA500" : "none"}
-          stroke="#FFA500"
-          viewBox="0 0 24 24"
-          className="w-4 h-4"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.5}
-            d="M12 17.25l-6.16 3.88 1.64-7.03-5.48-4.73 7.19-.61L12 2.25l2.81 6.51 7.19.61-5.48 4.73 1.64 7.03L12 17.25z"
-          />
-        </svg>
-      ))}
-    </div>
-  );
-};
+//   return (
+//     <div className="flex items-center gap-[2px]">
+//       {[...Array(totalStars)].map((_, i) => (
+//         <svg
+//           key={i}
+//           xmlns="http://www.w3.org/2000/svg"
+//           fill={i < rating ? "#FFA500" : "none"}
+//           stroke="#FFA500"
+//           viewBox="0 0 24 24"
+//           className="w-4 h-4"
+//         >
+//           <path
+//             strokeLinecap="round"
+//             strokeLinejoin="round"
+//             strokeWidth={1.5}
+//             d="M12 17.25l-6.16 3.88 1.64-7.03-5.48-4.73 7.19-.61L12 2.25l2.81 6.51 7.19.61-5.48 4.73 1.64 7.03L12 17.25z"
+//           />
+//         </svg>
+//       ))}
+//     </div>
+//   );
+// };
 
 export default function CompanyCard({
   name,
