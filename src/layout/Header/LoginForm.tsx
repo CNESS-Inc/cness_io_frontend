@@ -47,7 +47,7 @@ interface AuthResponse {
       jwt: string;
       user: {
         id: number;
-        person_organization_complete: number;
+        person_organization_complete: any;
         completed_step: any;
         [key: string]: any;
       };
@@ -340,6 +340,7 @@ export default function LoginForm({
         setIsSubmitting(false);
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);
+        localStorage.setItem("person_organization", response?.data?.data?.user.person_organization_complete);
         localStorage.setItem("Id", response?.data?.data?.user.id.toString());
         localStorage.setItem(
           "completed_step",
