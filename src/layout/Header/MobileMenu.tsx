@@ -11,7 +11,7 @@ const links = [
   { name: "Why", href: "/" },
   { name: "What", href: "/" },
   { name: "About", href: "/" },
-{ name: "Directory", href: "/directory" } 
+  { name: "Directory", href: "/directory" },
 ];
 
 export default function MobileMenu({ isOpen }: { isOpen: boolean }) {
@@ -20,7 +20,11 @@ export default function MobileMenu({ isOpen }: { isOpen: boolean }) {
   );
 
   const openSignupModal = () => setActiveModal("signup");
+  const openLoginModal = () => setActiveModal("login");
   const closeModal = () => setActiveModal(null);
+
+  const completed_step = localStorage.getItem("completed_step");
+  const showDashboardButton = completed_step === "1" || completed_step === "2";
   return (
     <>
       <div
@@ -40,7 +44,43 @@ export default function MobileMenu({ isOpen }: { isOpen: boolean }) {
                 </Link>
               </li>
             ))}
-            <li>
+            {showDashboardButton ? (
+              <>
+                <li>
+                  <Link to="/dashboard">
+                    <Button
+                      variant="gradient-primary"
+                      className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                    >
+                      Go to Dashboard
+                    </Button>
+                  </Link>
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <Button
+                    variant="white-outline"
+                    className="w-full"
+                    size="md"
+                    onClick={openSignupModal}
+                  >
+                    Sign Up
+                  </Button>
+                </li>
+                <li>
+                  <Button
+                    variant="gradient-primary"
+                    className="rounded-[100px] py-3 px-8 w-full transition-colors duration-500 ease-in-out"
+                    onClick={openLoginModal}
+                  >
+                    Login
+                  </Button>
+                </li>
+              </>
+            )}
+            {/* <li>
               <Button
                 className="w-full bg-[#7077FE] py-3 px-6 rounded-full transition-colors duration-500 ease-in-out"
                 variant="primary"
@@ -50,6 +90,16 @@ export default function MobileMenu({ isOpen }: { isOpen: boolean }) {
                 Sign Up
               </Button>
             </li>
+            <li>
+              <Button
+                className="w-full bg-[#7077FE] py-3 px-6 rounded-full transition-colors duration-500 ease-in-out"
+                variant="primary"
+                withGradientOverlay
+                onClick={openSignupModal}
+              >
+                Sign Up
+              </Button>
+            </li> */}
           </ul>
         </nav>
       </div>

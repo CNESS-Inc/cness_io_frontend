@@ -162,7 +162,7 @@
 
   export default function DirectoryPage() {
     const [selectedDomain, setSelectedDomain] = useState("");
-    const [searchTerm, setSearchTerm] = useState('');
+    // const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
   const filteredCompanies = selectedDomain

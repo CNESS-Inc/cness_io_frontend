@@ -125,46 +125,52 @@ export default function DashboardSection(user: any) {
   };
   const closeModal = () => setActiveModal(null);
   const handlePlanSelection = async (plan: any) => {
-    try {
-      const payload = {
-        plan_id: plan.id,
-        plan_type: isAnnual ? "Yearly" : "Monthly",
-      };
+  try {
+    const payload = {
+      plan_id: plan.id,
+      plan_type: isAnnual ? "Yearly" : "Monthly",
+    };
 
-      const res = await PaymentDetails(payload);
-      if (res?.data?.data?.url) {
-        window.open(res.data.data.url, "_blank");
-      } else {
-        console.error("URL not found in response");
-      }
-    } catch (error) {
-      console.error("Error in handlePlanSelection:", error);
+    const res = await PaymentDetails(payload);
+
+    if (res?.data?.data?.url) {
+      const url = res.data.data.url;
+      console.log("Redirecting to:", url); // Log the actual URL
+      window.location.href = url; // Redirect in the same tab
+    } else {
+      console.error("URL not found in response");
     }
-  };
+  } catch (error) {
+    console.error("Error in handlePlanSelection:", error);
+  }
+};
 
+const completedStep = localStorage.getItem('completed_step');
   return (
     <>
       <div className="max-w-[1200px] mx-auto "></div>
-      <div className=" mx-5   bg-[rgba(255,204,0,0.05)] 5% text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
-        <div className="flex items-center gap-2">
-          <span className="text-yellow-500">💡</span>
-          <span>
-            To start the certification journey into our platform, please
-            complete the payment here. click here for pricing.
-            <a
-              href="#"
-              className="text-blue-600 underline"
-              onClick={(e) => {
-                e.preventDefault();
-                openPricingModal();
-              }}
-            >
-              Click here
-            </a>
-          </span>
+      {completedStep !== '2' && (
+        <div className="mx-5 bg-[rgba(255,204,0,0.05)] 5% text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
+          <div className="flex items-center gap-2">
+            <span className="text-yellow-500">💡</span>
+            <span>
+              To start the certification journey into our platform, please
+              complete the payment here.{" "}
+              <a
+                href="#"
+                className="text-blue-600 underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  openPricingModal();
+                }}
+              >
+                Click here
+              </a>
+            </span>
+          </div>
+          <button className="text-gray-400 hover:text-gray-700 text-lg">×</button>
         </div>
-        <button className="text-gray-400 hover:text-gray-700 text-lg">×</button>
-      </div>
+      )}
 
       <section className="flex flex-col w-full items-start gap-3 p-4 md:p-5">
         {/* Header Section */}
