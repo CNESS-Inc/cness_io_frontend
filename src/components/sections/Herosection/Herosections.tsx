@@ -36,9 +36,8 @@ export default function HeroSection() {
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button
-              className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
-              variant="primary"
-              withGradientOverlay
+              variant="gradient-primary"
+              className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
             >
               Get Started
             </Button>
