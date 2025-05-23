@@ -1,3 +1,4 @@
+
 import { lazy } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import AppLayout from "../layout/AppLayout";
@@ -21,6 +22,8 @@ const PublicCompanyProfile = lazy(
   () => import("../pages/PublicCompanyProfile")
 );
 const UserProfileView = lazy(() => import("../pages/UserProfileView"));
+  const TechnologyAndAIPage= lazy(()=> import('../pages/TechnologyandAI'))
+
 
 export const router = createBrowserRouter([
   {
@@ -37,6 +40,7 @@ export const router = createBrowserRouter([
         path: "dashboard",
         element: <Dashboard />,
       },
+      
       {
         path: "score-result",
         element: <ScoreResult />,
@@ -51,10 +55,28 @@ export const router = createBrowserRouter([
         element: <OrganaizationProfilepage />,
       },
 
+
+{
+  path:'public_companyprofile',
+  element:<PublicCompanyProfile />,
+},
+
+{
+  path:'user_profileview',
+  element:<UserProfileView />,
+},
+
+{
+  path:'directory/technology_ai',
+  element:<TechnologyAndAIPage />,
+},
+
+
       {
         path: "company-profile",
         element: <PublicCompanyProfile />,
       },
+
 
       {
         path: "user-profile",
@@ -77,3 +99,4 @@ export const router = createBrowserRouter([
     element: <ResetPassword />,
   },
 ]);
+
