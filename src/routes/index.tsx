@@ -2,8 +2,6 @@ import { lazy } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import AppLayout from '../layout/AppLayout'
 import EmailVerify from '../components/ui/EmailVerify';
-import PaymentVerify from '../components/ui/PaymentVerify';
-import ResetPassword from '../components/ui/ResetPassword';
 const HomePage = lazy(() => import('../pages/Home'))
 const DirectoryPage= lazy(()=> import('../pages/DirectoryPage'))
 const Dashboard = lazy(() => import('../pages/Dashboard'))
@@ -13,6 +11,7 @@ const UserProfilePage=lazy(()=>import('../components/sections/DashboardSection/U
 const OrganaizationProfilepage=lazy(()=>import('../components/sections/DashboardSection/OrganizationProfile'))
 const PublicCompanyProfile =lazy(()=>import('../pages/PublicCompanyProfile'))
 const UserProfileView =lazy(()=>import('../pages/UserProfileView'))
+const TechnologyAndAIPage= lazy(()=> import('../pages/TechnologyandAI'))
 
 
 export const router = createBrowserRouter([
@@ -34,6 +33,7 @@ export const router = createBrowserRouter([
         path: 'dashboard',
         element: <Dashboard />,
       },
+      
       {
         path: 'score-result',
         element: <ScoreResult />,
@@ -58,6 +58,12 @@ export const router = createBrowserRouter([
   element:<UserProfileView />,
 },
 
+{
+  path:'directory/technology_ai',
+  element:<TechnologyAndAIPage />,
+},
+
+
 
     ],
 
@@ -66,13 +72,5 @@ export const router = createBrowserRouter([
   {
     path: '/email-verify',
     element: <EmailVerify />,
-  },
-  {
-    path: '/payment-confirmation',
-    element: <PaymentVerify />,
-  },
-  {
-    path: '/reset-password',
-    element: <ResetPassword />,
   },
 ]);
