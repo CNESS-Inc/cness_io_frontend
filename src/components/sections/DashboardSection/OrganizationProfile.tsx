@@ -260,7 +260,7 @@ const OrganaizationProfilepage = () => {
     console.log("Public View submitted:", data);
 
     // Transform services array to just IDs
-    const serviceIds = services.map((service) => service.id);
+    const serviceIds = services?.map((service) => service);
 
     const payload = {
       notify_email_address: data.email || null,
