@@ -86,6 +86,9 @@ export const EndPoint = {
   country:"/country",
   service:"/service",
   state:"/state",
+  company_profile:"/organization-profile/company-profile",
+  user_profile:"/profile/user-profile",
+  directory_search_profile:"/profile/public-directory",
 };
 
 export const LoginDetails = (formData: LoginFormData): ApiResponse => {
@@ -292,6 +295,30 @@ export const GetStateDetails = (id:any): ApiResponse => {
     ServerAPI.APIMethod.GET,
     data,
     `${EndPoint.state}/${id}`
+  );
+};
+export const GetCompanyProfileDetails = (id:any): ApiResponse => {
+  const data = {}
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.company_profile}/${id}`
+  );
+};
+export const GetUserProfileDetails = (id:any): ApiResponse => {
+  const data = {}
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.user_profile}/${id}`
+  );
+};
+export const GetUsersearchProfileDetails = (selectedDomain:any,searchQuery:any): ApiResponse => {
+  const data = {}
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.directory_search_profile
   );
 };
 

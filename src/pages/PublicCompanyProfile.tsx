@@ -1,10 +1,7 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import Header from "../layout/Header/Header";
 import Footer from "../layout/Footer/Footer";
-
-import companyBg from "../assets/companycard1.png";
-import profilelogo from "../assets/profilelogo.png";
 import inspiredbadge from "../assets/Inspired _ Badge.png";
 import bestprac from "../assets/bestprac.png";
 import bcard1 from "../assets/Bcard1.png";
@@ -19,20 +16,50 @@ import aboutus from "../assets/aboutus.png";
 import tag from "../assets/tags.png";
 import review from "../assets/review.png";
 import { useParams } from "react-router-dom";
+import { GetCompanyProfileDetails } from "../Common/ServerAPI";
+
+interface Organization {
+    organization_name: string;
+    core_values: string;
+    user_id: string;
+    official_email_address: string;
+    primary_contact_person_name: string;
+    profile_url: string;
+    banner_url: string;
+    organazation_tags: string[];
+    organazation_service: string[];
+    id: string;
+    contact_number: string;
+    official_address: string;
+}
 
 export default function PublicCompanyProfile() {
   const { id } = useParams();
 
   console.log(id);
 
-  const BackArrow = () => (
-    <button
-      onClick={() => window.history.back()}
-      className="absolute top-4 left-4 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition"
-    >
-      <ArrowLeftIcon className="h-5 w-5 text-[#7077FE]" />
-    </button>
-  );
+  const [companyDetails, setCompanyDetails] = useState<Organization>();
+  console.log("🚀 ~ PublicCompanyProfile ~ companyDetails:", companyDetails);
+
+  const fetchCompanyDetails = async () => {
+    try {
+      const res = await GetCompanyProfileDetails(id);
+      setCompanyDetails(res?.data?.data);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    fetchCompanyDetails();
+  }, []);
+
+  // const BackArrow = () => (
+  //   <button
+  //     onClick={() => window.history.back()}
+  //     className="absolute top-4 left-4 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition"
+  //   >
+  //     <ArrowLeftIcon className="h-5 w-5 text-[#7077FE]" />
+  //   </button>
+  // );
 
   return (
     <>
@@ -42,7 +69,7 @@ export default function PublicCompanyProfile() {
         {/* Header Banner */}
         <div
           className="relative w-full h-[150px] mt-[1px] bg-cover bg-center"
-          style={{ backgroundImage: `url(${companyBg})` }}
+          style={{ backgroundImage: `url(${companyDetails?.banner_url})` }}
         >
           <button
             onClick={() => window.history.back()}
@@ -62,7 +89,7 @@ export default function PublicCompanyProfile() {
           <div className="absolute -top-20 left-6 md:left-60 z-20">
             <div className="w-[200px] h-[200px] rounded-full border-[7.73px] border-white shadow-lg bg-white overflow-hidden">
               <img
-                src={profilelogo}
+                src={companyDetails?.profile_url}
                 alt="Logo"
                 className="w-full h-full object-cover rounded-full"
               />
@@ -78,7 +105,7 @@ export default function PublicCompanyProfile() {
             <div className="bg-white rounded-xl shadow-sm p-6 pt-40 relative">
               <div className="text-center -mt-13">
                 <h2 className="text-lg font-semibold text-gray-800">
-                  Stellar Innovation
+                  {companyDetails?.organization_name}
                 </h2>
                 <p className="text-sm text-gray-500">Micro Organisation</p>
               </div>
@@ -90,22 +117,29 @@ export default function PublicCompanyProfile() {
               {/* Contact Info Block */}
               <div className="w-[375px] h-[252px] mt-6 flex flex-col justify-between gap-[24px] text-sm text-gray-800">
                 <div>
-                  <p className="font-medium">Margaret</p>
+                  <p className="font-medium">
+                    {companyDetails?.primary_contact_person_name ||
+                      "unknown person"}
+                  </p>
                   <p className="text-xs text-gray-400">User Name</p>
                 </div>
                 <div>
-                  <p className="font-medium">margaret@gmail.com</p>
+                  <p className="font-medium">
+                    {companyDetails?.official_email_address}
+                  </p>
                   <p className="text-xs text-gray-400">Official mail</p>
                 </div>
                 <div>
-                  <p className="font-medium">9087896778</p>
+                  <p className="font-medium">
+                    {companyDetails?.contact_number}
+                  </p>
                   <p className="text-xs text-gray-400">
                     Official Contact Number
                   </p>
                 </div>
                 <div>
                   <p className="font-medium">
-                    123 Maple Avenue, Springfield, IL 62704
+                    {companyDetails?.official_address}
                   </p>
                   <p className="text-xs text-gray-400">Address</p>
                 </div>
@@ -144,17 +178,7 @@ export default function PublicCompanyProfile() {
               />
 
               <p className="text-sm text-gray-700 leading-relaxed">
-                Welcome to Stellar Innovations, where we transform innovative
-                ideas into tangible realities. Our mission is to deliver
-                cutting-edge technology solutions that not only empower
-                businesses to thrive in a rapidly evolving digital world but
-                also enhance their operational efficiency and drive sustainable
-                growth. We believe in harnessing the power of technology to
-                create customized solutions that meet the unique needs of each
-                client, ensuring they stay ahead of the competition and achieve
-                their strategic goals. Join us on this exciting journey as we
-                explore new horizons and redefine the future of business
-                together.
+                {companyDetails?.core_values}
               </p>
             </div>
 
@@ -175,30 +199,27 @@ export default function PublicCompanyProfile() {
                   style={{ borderColor: "#0000001A" }}
                 />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-gray-700">
-                  {/* Column 1: Service List */}
-                  <div>
-                    <h4 className="text-sm font-semibold text-gray-800 mb-2">
+                {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-gray-700"> */}
+                {/* Column 1: Service List */}
+                <div>
+                  {/* <h4 className="text-sm font-semibold text-gray-800 mb-2">
                       Service List
-                    </h4>
-                    <ul className="space-y-2 list-none">
-                      <li className="flex items-start gap-2">
-                        <span className="text-[#B855FF]">✔</span> Digital
-                        Strategy
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-[#B855FF]">✔</span> Operational
-                        Efficiency
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-[#B855FF]">✔</span> Sustainable
-                        Solutions
-                      </li>
-                    </ul>
-                  </div>
+                    </h4> */}
+                  <ul className="space-y-2 list-none">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-gray-700">
+                      {companyDetails?.organazation_service?.map(
+                        (service: any, index: any) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <span className="text-[#B855FF]">✔</span> {service}
+                          </li>
+                        )
+                      )}
+                    </div>
+                  </ul>
+                </div>
 
-                  {/* Column 2: Service Category */}
-                  <div>
+                {/* Column 2: Service Category */}
+                {/* <div>
                     <h4 className="text-sm font-semibold text-gray-800 mb-2">
                       Service Category
                     </h4>
@@ -214,8 +235,8 @@ export default function PublicCompanyProfile() {
                         <span className="text-[#B855FF]">✔</span> Simple Service
                       </li>
                     </ul>
-                  </div>
-                </div>
+                  </div> */}
+                {/* </div> */}
               </div>
             </div>
 
@@ -236,15 +257,14 @@ export default function PublicCompanyProfile() {
                   style={{ borderColor: "#0000001A" }}
                 />
                 <div className="flex flex-wrap gap-5">
-                  <span className="bg-[#EEF3FF] text-[#7077FE] text-xs font-medium px-7 py-2 semi rounded">
-                    Tag 1
-                  </span>
-                  <span className="bg-[#EEF3FF] text-[#7077FE] text-xs font-medium px-7 py-2 semi rounded">
-                    Tag 2
-                  </span>
-                  <span className="bg-[#EEF3FF] text-[#7077FE] text-xs font-medium px-7 py-2 semi rounded">
-                    Tag 3
-                  </span>
+                  {companyDetails?.organazation_tags?.map((tag:any, index:any) => (
+                    <span
+                      key={index}
+                      className="bg-[#EEF3FF] text-[#7077FE] text-xs font-medium px-7 py-2 semi rounded"
+                    >
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>

@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CompanyCard from "../components/ui/CompanyCard";
 import Header from "../layout/Header/Header";
 import Footer from "../layout/Footer/Footer";
 import { iconMap } from "../assets/icons";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
+import { GetDomainDetails } from "../Common/ServerAPI";
+import { useNavigate } from "react-router-dom";
 
 const itemsPerPage = 6;
 
@@ -184,8 +186,11 @@ type Company = {
 }
 
 export default function DirectoryPage() {
+  const navigate = useNavigate();
   const [selectedDomain, setSelectedDomain] = useState("");
-  // const [searchTerm, setSearchTerm] = useState('');
+
+  const [searchText, setSearchText] = useState("");
+  const [Domain, setDomain] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
 
   const filteredCompanies = selectedDomain
@@ -214,6 +219,40 @@ export default function DirectoryPage() {
   const topRow = domains.slice(0, 7);
   const bottomRow = domains.slice(7);
 
+  const fetchDomain = async () => {
+    try {
+      const res = await GetDomainDetails();
+      setDomain(res?.data?.data);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    fetchDomain();
+  }, []);
+
+  const handleSearch = () => {
+    if (selectedDomain || searchText) {
+      const domainSlug = selectedDomain || "technology-ai";
+      navigate(`/directory/technology-ai?search=${encodeURIComponent(searchText)}&domain=${domainSlug}`);
+    }
+  };
+
+  const handleDomainChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newDomain = e.target.value;
+    setSelectedDomain(newDomain);
+
+    if (searchText) {
+      const domainSlug = newDomain || "technology-ai";
+      navigate(`/directory/technology-ai?search=${encodeURIComponent(searchText)}&domain=${domainSlug}`);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   return (
     <>
       <Header />
@@ -241,14 +280,19 @@ export default function DirectoryPage() {
           {/* Dropdown + Search */}
           <div className="w-full max-w-3xl mx-auto bg-white border border-gray-200 rounded-full flex items-center px-2 py-2 shadow-sm">
             <div className="relative">
-              <select className="bg-[#7077FE] text-white font-medium rounded-full px-5 py-2 appearance-none focus:outline-none cursor-pointer">
-                <option>Explore</option>
-                <option>Domain 1</option>
-                <option>Domain 2</option>
-                <option>Domain 3</option>
-                <option>Domain 4</option>
-                <option>Domain 5</option>
-                <option>Domain 6</option>
+              <select
+                className="bg-[#7077FE] text-white font-medium rounded-full px-5 py-2 appearance-none focus:outline-none cursor-pointer"
+                value={selectedDomain}
+                onChange={handleDomainChange}
+              >
+                <option value="" disabled>
+                  Explore
+                </option>
+                {Domain.map((domain: any) => (
+                  <option key={domain.id} value={domain.slug}>
+                    {domain.name}
+                  </option>
+                ))}
               </select>
               <div className="absolute top-3 right-3 text-white text-xs pointer-events-none">
                 ▼
@@ -259,9 +303,17 @@ export default function DirectoryPage() {
               type="text"
               placeholder="Find & Choose your perfect organization"
               className="flex-1 px-4 bg-transparent text-gray-700 placeholder:text-gray-400 outline-none border-none"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              onKeyDown={handleKeyPress}
             />
 
-            <button className="text-gray-500 hover:text-black p-2">🔍</button>
+            <button
+              className="text-gray-500 hover:text-black p-2"
+              onClick={handleSearch}
+            >
+              🔍
+            </button>
           </div>
 
           <p className="text-gray-700 text-18px mt-6">

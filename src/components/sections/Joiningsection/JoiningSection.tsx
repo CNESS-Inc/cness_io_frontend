@@ -6,7 +6,7 @@ export default function JoiningSection() {
     <section className="flex flex-col items-center relative w-full ">
       <div className="relative w-full max-w-[1488px] h-auto sm:h-[363px] overflow-hidden rounded-xl">
         {/* Gradient orbs background - positioned differently for mobile */}
-        <div className="hidden sm:flex gap-[53.5px] top-2 left-0 inline-flex items-center absolute opacity-50">
+        <div className="sm:flex gap-[53.5px] top-2 left-0 inline-flex items-center absolute opacity-50">
           <div className="bg-[#00d1ff] relative w-[365px] h-[365px] rounded-[182.5px] blur-[175px]" />
           <div className="bg-[#623fff] relative w-[365px] h-[365px] rounded-[182.5px] blur-[175px]" />
           <div className="bg-[#ff994a] relative w-[365px] h-[365px] rounded-[182.5px] blur-[175px]" />

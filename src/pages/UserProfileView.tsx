@@ -20,16 +20,33 @@ import ui from "../assets/UI.png";
 import google from "../assets/google.png";
 import userbanner from "../assets/userbanner.jpg";
 import review from "../assets/review.png";
+import { useEffect, useState } from "react";
+import { GetUserProfileDetails } from "../Common/ServerAPI";
+import { useParams } from "react-router-dom";
 
 export default function UserProfileView() {
-  const BackArrow = () => (
-    <button
-      onClick={() => window.history.back()}
-      className="absolute top-4 left-4 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition"
-    >
-      <ArrowLeftIcon className="h-5 w-5 text-[#7077FE]" />
-    </button>
-  );
+  const { id } = useParams();
+  const [userDetails, setUserDetails] = useState<any>();
+  console.log("🚀 ~ UserProfileView ~ userDetails:", userDetails);
+
+  const fetchUserDetails = async () => {
+    try {
+      const res = await GetUserProfileDetails(id);
+      setUserDetails(res?.data?.data);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    fetchUserDetails();
+  }, []);
+  // const BackArrow = () => (
+  //   <button
+  //     onClick={() => window.history.back()}
+  //     className="absolute top-4 left-4 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition"
+  //   >
+  //     <ArrowLeftIcon className="h-5 w-5 text-[#7077FE]" />
+  //   </button>
+  // );
 
   return (
     <>
@@ -39,7 +56,7 @@ export default function UserProfileView() {
         {/* Header Banner */}
         <div
           className="relative w-full h-[150px] mt-[1px] bg-cover bg-center"
-          style={{ backgroundImage: `url(${userbanner})` }}
+          style={{ backgroundImage: `url(${userDetails?.profile_banner})` }}
         >
           <button
             onClick={() => window.history.back()}
@@ -59,7 +76,7 @@ export default function UserProfileView() {
           <div className="absolute -top-20 left-6 md:left-60 z-20">
             <div className="w-[200px] h-[200px] rounded-full border-[7.73px] border-white shadow-lg bg-white overflow-hidden">
               <img
-                src={userprofile}
+                src={userDetails?.profile_picture}
                 alt="Logo"
                 className="w-full h-full object-cover rounded-full"
               />
@@ -75,7 +92,7 @@ export default function UserProfileView() {
             <div className="bg-white rounded-xl shadow-sm p-6 pt-40 relative">
               <div className="text-center -mt-13">
                 <h2 className="text-lg font-semibold text-gray-800">
-                  Chris James
+                  {userDetails?.first_name} {userDetails?.last_name}
                 </h2>
                 <p className="text-sm text-gray-500">Stella Innovation</p>
               </div>
@@ -87,23 +104,23 @@ export default function UserProfileView() {
               {/* Contact Info Block */}
               <div className="w-[375px] h-[252px] mt-6 flex flex-col justify-between gap-[24px] text-sm text-gray-800">
                 <div>
-                  <p className="font-medium">Chris James</p>
+                  <p className="font-medium">
+                    {userDetails?.first_name} {userDetails?.last_name}
+                  </p>
                   <p className="text-xs text-gray-400">User Name</p>
                 </div>
                 <div>
-                  <p className="font-medium">cj@gmail.com</p>
+                  <p className="font-medium">{userDetails?.email}</p>
                   <p className="text-xs text-gray-400">Official mail</p>
                 </div>
                 <div>
-                  <p className="font-medium">9087896778</p>
+                  <p className="font-medium">{userDetails?.phone_no}</p>
                   <p className="text-xs text-gray-400">
                     Official Contact Number
                   </p>
                 </div>
                 <div>
-                  <p className="font-medium">
-                    123 Maple Avenue, Springfield, IL 62704
-                  </p>
+                  <p className="font-medium">{userDetails?.address}</p>
                   <p className="text-xs text-gray-400">Address</p>
                 </div>
               </div>
@@ -149,13 +166,7 @@ export default function UserProfileView() {
                 About
               </h3>
               <p className="text-sm text-gray-700 leading-relaxed">
-                Welcome to Stellar Innovations, where I, as a UI/UX Designer
-                with two years of experience, bring creative ideas to life. My
-                goal is to craft user-centered designs that not only elevate the
-                user experience but also help businesses adapt and flourish in
-                the fast-paced digital landscape. I am passionate about
-                leveraging design principles to create tailored solutions that
-                enhance usability and foster growth.
+                {userDetails?.bio}
               </p>
             </div>
 
@@ -177,19 +188,28 @@ export default function UserProfileView() {
                   style={{ borderColor: "#0000001A" }}
                 />
 
-                <div className="flex items-center gap-4">
-                  <img
-                    src={msc}
-                    alt="education Icon"
-                    className="w-5 h-5 object-contain"
-                  />
-                  <div>
-                    <p className="text-sm font-medium text-gray-800">
-                      Master of Computer Application
-                    </p>
-                    <p className="text-xs text-gray-500">University Name</p>
+                {userDetails?.education?.map((edu: any) => (
+                  <div key={edu.id} className="flex items-center gap-4">
+                    <img
+                      src={msc}
+                      alt="Education Icon"
+                      className="w-5 h-5 object-contain"
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">
+                        {edu.degree}
+                      </p>
+                      <p className="text-xs text-gray-500">{edu.institution}</p>
+                      {/* Optional: Display dates if available */}
+                      {(edu.start_date || edu.end_date) && (
+                        <p className="text-xs text-gray-400 mt-1">
+                          {edu.start_date} -{" "}
+                          {edu.currently_studying ? "Present" : edu.end_date}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
 
               {/* Work Experience Section */}
@@ -210,34 +230,25 @@ export default function UserProfileView() {
                 />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {/* Job 1 */}
-                  <div className="flex items-center gap-4">
-                    <img
-                      src={ui}
-                      alt="ui Icon"
-                      className="w-5 h-14 object-contain"
-                    />
-                    <div>
-                      <p className="text-sm font-medium text-gray-800">
-                        UI/UX Designer
-                      </p>
-                      <p className="text-xs text-gray-500">Microsoft</p>
+                  {userDetails?.work_experience.map((job:any) => (
+                    <div key={job.id} className="flex items-center gap-4">
+                      <img
+                        src={google}
+                        alt={`${job.company} Icon`}
+                        className="w-5 h-5 object-contain"
+                      />
+                      <div>
+                        <p className="text-sm font-medium text-gray-800">
+                          {job.position}
+                        </p>
+                        <p className="text-xs text-gray-500">{job.company}</p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          {job.start_date} -{" "}
+                          {job.currently_working ? "Present" : job.end_date}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  {/* Job 2 */}
-                  <div className="flex items-center gap-4">
-                    <img
-                      src={google}
-                      alt="google Icon"
-                      className="w-5 h-5 object-contain"
-                    />
-                    <div>
-                      <p className="text-sm font-medium text-gray-800">
-                        UI/UX Designer
-                      </p>
-                      <p className="text-xs text-gray-500">Google</p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Tab } from "@headlessui/react";
 import { useForm } from "react-hook-form";
 import { PhotoIcon, TrashIcon } from "@heroicons/react/24/solid";
@@ -347,7 +347,12 @@ const OrganaizationProfilepage = () => {
 
       // Set services and tags from API data
       if (profileData.organization_service) {
-        setServices(profileData.organization_service);
+        // Extract just the id values from each object in the array
+        const serviceIds = profileData.organization_service.map(
+          (service: any) => service.id
+        );
+        console.log("🚀 ~ GetOrganizationListingProfile ~ serviceIds:", serviceIds)
+        setServices(serviceIds);
       }
       if (profileData.tags) {
         setTags(profileData.tags);
@@ -375,12 +380,16 @@ const OrganaizationProfilepage = () => {
       console.error("Error fetching profile:", error);
     }
   };
+  const hasFetched = useRef(false);
 
   useEffect(() => {
-    GetIndustry();
-    GetOrganizationProfile();
-    GetOrganizationListingProfile();
-    GetService();
+    if (!hasFetched.current) {
+      GetIndustry();
+      GetOrganizationProfile();
+      GetOrganizationListingProfile();
+      GetService();
+      hasFetched.current = true;
+    }
   }, []);
 
   return (

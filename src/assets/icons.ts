@@ -23,8 +23,8 @@ import companylogo2 from './comlogo2.png';
 import aspcompany1 from './aspcom1.png';
 import aspcompany2 from './aspcom2.png';
 import herosection from './Hero section.png'
-import companycard3 from './companycard3.jpg';
-import companylogo3 from  './companylogo3.jpg';
+// import companycard3 from './companycard3.jpg';
+// import companylogo3 from  './companylogo3.jpg';
 
 
 
@@ -50,12 +50,12 @@ heroimg: herosection,
 inslogo,
 companycard1,
 companycard2,
-companycard3,
+// companycard3,
 companylogo2,
 companylogo1,
 aspcompany1,
 aspcompany2,
-companylogo3
+// companylogo3
 
 
 };

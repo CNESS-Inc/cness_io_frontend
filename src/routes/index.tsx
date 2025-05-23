@@ -76,8 +76,17 @@ export const router = createBrowserRouter([
         element: <UserProfileView />,
       },
       {
-        path: "technology_ai",
-        element: <TechnologyAndAIPage />,
+        path: "technology-ai",
+        children: [
+          {
+            index: true,
+            element: <TechnologyAndAIPage />,
+          },
+          {
+            path: ":subcategory", // dynamic subcategory
+            element: <TechnologyAndAIPage />, // same component
+          },
+        ],
       },
     ],
   },

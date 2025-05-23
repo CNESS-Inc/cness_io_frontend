@@ -78,10 +78,10 @@ export default function DashboardSection(user: any) {
   // { id: 4, name: "Task Name" },
   // ];
   //for complete your profile
-  const percentage = 32;
+  // const percentage = 32;
 
   //Assessment progress
-  const Assessmentpercentage = 70;
+  // const Assessmentpercentage = 70;
   const totalBlocks = 6;
   const filledBlocks = Math.floor(user?.user?.assesment_progress / (100 / totalBlocks));
 
@@ -261,9 +261,9 @@ export default function DashboardSection(user: any) {
                         );
 
                         if (personOrganization === "2") {
-                          navigate("/company-profile");
+                          navigate("/dashboard/company-profile");
                         } else if (personOrganization === "1") {
-                          navigate("/user-profile");
+                          navigate("/dashboard/user-profile");
                         }
                       }}
                     >
