@@ -309,8 +309,8 @@ const UserProfilePage = () => {
           workExperienceForm.reset({
             company: response.data.data.work_experience[0].company || "",
             position: response.data.data.work_experience[0].position || "",
-            startDate: response.data.data.work_experience[0].start_date || "",
-            endDate: response.data.data.work_experience[0].end_date || "",
+            start_date: response.data.data.work_experience[0].start_date || "",
+            end_date: response.data.data.work_experience[0].end_date || "",
           });
         }
 

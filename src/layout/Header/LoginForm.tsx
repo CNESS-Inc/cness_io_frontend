@@ -565,6 +565,7 @@ export default function LoginForm({
 
     try {
       const res = await submitOrganizationDetails(organizationForm);
+      localStorage.setItem("person_organization", "2");
       const plansByRange: Record<string, any> = {};
       res?.data?.data?.plan.forEach((plan: any) => {
         if (!plansByRange[plan.plan_range]) {
@@ -626,7 +627,7 @@ export default function LoginForm({
         question: organizationForm.question,
       };
       const res = await submitPersonDetails(question_payload as any);
-
+      localStorage.setItem("person_organization", "1");
       // Group plans by their range (Basic Plan, Pro Plan, etc.)
       const plansByRange: Record<string, any> = {};
       res?.data?.data?.plan.forEach((plan: any) => {

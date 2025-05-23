@@ -56,7 +56,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
       icon: <FileBarChartIcon className="w-5 h-5" />,
       label: "Score & Results",
       active: true,
-      path: "/score-result",
+      path: "/dashboard/score-result",
     },
     {
       icon: <GraduationCapIcon className="w-5 h-5" />,
@@ -174,7 +174,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
             {isProfileOpen && (
               <div className="flex flex-col gap-[2px] mt-[2px] ml-[52px]">
                 <NavLink
-                  to="/user-profile"
+                  to="/dashboard/user-profile"
                   onClick={toggleMobileNav}
                   className={({ isActive }) =>
                     `text-sm px-3 py-[6px] rounded-lg w-full transition ${
@@ -187,7 +187,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
                   My Profile
                 </NavLink>
                 <NavLink
-                  to="/company-profile"
+                  to="/dashboard/company-profile"
                   onClick={toggleMobileNav}
                   className={({ isActive }) =>
                     `text-sm px-3 py-[6px] rounded-lg w-full transition ${
