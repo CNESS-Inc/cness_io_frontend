@@ -3,7 +3,6 @@ import { Tab } from "@headlessui/react";
 import { useForm } from "react-hook-form";
 import { PhotoIcon, TrashIcon } from "@heroicons/react/24/solid";
 import DashboardLayout from "../../../layout/Dashboard/dashboardlayout";
-import axios from "axios"; // or your preferred HTTP client
 import {
   GetCountryDetails,
   GetInterestsDetails,
@@ -23,16 +22,6 @@ const tabNames = [
   "Work Experience",
   "Public Profile Fields",
 ];
-
-// API endpoints (replace with your actual endpoints)
-const API_ENDPOINTS = {
-  BASIC_INFO: "/api/profile/basic",
-  CONTACT_INFO: "/api/profile/contact",
-  SOCIAL_LINKS: "/api/profile/social",
-  EDUCATION: "/api/profile/education",
-  WORK_EXPERIENCE: "/api/profile/work",
-  PUBLIC_PROFILE: "/api/profile/public",
-};
 
 const UserProfilePage = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);

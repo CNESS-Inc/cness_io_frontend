@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import CompanyCard from "../components/ui/CompanyCard";
 import { iconMap } from "../assets/icons";
 import { Filter, SortAsc, SortDesc } from "lucide-react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import {
   GetDomainDetails,
   GetUsersearchProfileDetails,
@@ -24,7 +24,6 @@ interface Company {
 }
 
 export default function TechnologyAndAIPage() {
-  const { subcategory } = useParams();
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search");
   const domain = searchParams.get("domain");
@@ -48,31 +47,30 @@ export default function TechnologyAndAIPage() {
     setError(null);
     try {
       const res = await GetUsersearchProfileDetails(
-        selectedDomain, 
+        selectedDomain,
         searchQuery,
         page,
         itemsPerPage
       );
-      
+
       if (res?.data) {
         setTotalCount(res.data.data.count);
-        
-        const transformedCompanies = res.data.data.rows
-          .map((company: any) => ({
-            id: company.id,
-            name: company.name,
-            domain: selectedDomain || "Technology and AI",
-            logoUrl: company.profile_picture || iconMap["comlogo"],
-            bannerUrl: company.profile_banner || iconMap["companycard1"],
-            location: company.location || "Unknown location",
-            description: company.bio || "No description available",
-            tags: company.tags || [],
-            rating: Math.floor(Math.random() * 5) + 1,
-            isCertified: Math.random() > 0.5,
-            is_organization:company?.is_organization,
-            is_person:company?.is_person,
-          }));
-        
+
+        const transformedCompanies = res.data.data.rows.map((company: any) => ({
+          id: company.id,
+          name: company.name,
+          domain: selectedDomain || "Technology and AI",
+          logoUrl: company.profile_picture || iconMap["comlogo"],
+          bannerUrl: company.profile_banner || iconMap["companycard1"],
+          location: company.location || "Unknown location",
+          description: company.bio || "No description available",
+          tags: company.tags || [],
+          rating: Math.floor(Math.random() * 5) + 1,
+          isCertified: Math.random() > 0.5,
+          is_organization: company?.is_organization,
+          is_person: company?.is_person,
+        }));
+
         setCompanies(transformedCompanies);
       }
     } catch (err: any) {
@@ -105,14 +103,13 @@ export default function TechnologyAndAIPage() {
   }, [currentPage]);
 
   useEffect(() => {
-    // Reset to page 1 when search or sort changes
     setCurrentPage(1);
     fetchUsersearchProfileDetails(1);
   }, [searchQuery, sort, selectedDomain]);
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -193,13 +190,13 @@ export default function TechnologyAndAIPage() {
           <div>
             <h3 className="text-sm font-semibold text-gray-900 mb-5">Sort</h3>
             <ul className="space-y-7 text-sm text-gray-700">
-              <li 
+              <li
                 className="flex items-center gap-2 cursor-pointer"
                 onClick={() => setSort("az")}
               >
                 <SortAsc size={16} /> Sort A-Z
               </li>
-              <li 
+              <li
                 className="flex items-center gap-2 cursor-pointer"
                 onClick={() => setSort("za")}
               >
@@ -291,7 +288,9 @@ export default function TechnologyAndAIPage() {
               )}
 
               <button
-                onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
+                onClick={() =>
+                  handlePageChange(Math.min(currentPage + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
                 className="px-3 py-1 rounded-r-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
               >
@@ -301,7 +300,8 @@ export default function TechnologyAndAIPage() {
           </div>
           <div className="text-center mt-2 text-sm text-gray-500">
             Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-            {Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount} companies
+            {Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount}{" "}
+            companies
           </div>
         </div>
       )}
