@@ -83,7 +83,9 @@ export default function DashboardSection(user: any) {
   //Assessment progress
   // const Assessmentpercentage = 70;
   const totalBlocks = 6;
-  const filledBlocks = Math.floor(user?.user?.assesment_progress / (100 / totalBlocks));
+  const filledBlocks = Math.floor(
+    user?.user?.assesment_progress / (100 / totalBlocks)
+  );
 
   const openPricingModal = async () => {
     setActiveModal("PricingModal");
@@ -181,9 +183,10 @@ export default function DashboardSection(user: any) {
           <div className="flex flex-col items-start">
             <div className="px-2 py-1 md:px-3 md:py-2 flex items-center gap-2.5">
               <h1 className="font-['Poppins',Helvetica] text-2xl md:text-[32px] leading-8">
-                <span className="font-semibold text-[#222224]">Hello, </span>
+                <span className="font-semibold text-[#222224]">Hello</span>
                 <span className="font-semibold text-[#a392f2]">
-                  {user?.user?.name}
+                  {user?.user?.name?.charAt(0)?.toUpperCase() +
+                    user?.user?.name?.slice(1) || ""}
                 </span>
               </h1>
             </div>

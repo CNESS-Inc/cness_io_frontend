@@ -479,7 +479,7 @@ const OrganaizationProfilepage = () => {
                       <Tab
                         key={index}
                         className={({ selected }) =>
-                          `px-4 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 ${
+                          `px-4 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 focus-visible:outline-none ${
                             selected
                               ? "text-purple-600 bg-white shadow-md border-t-2 border-x-2 border-purple-600 -mb-[1px]"
                               : "text-gray-500 bg-transparent hover:text-purple-500"
@@ -1647,7 +1647,7 @@ const OrganaizationProfilepage = () => {
                             type="submit"
                             className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition"
                           >
-                            Save Mission & Vision
+                            Save Public View
                           </button>
                         </div>
                       </form>

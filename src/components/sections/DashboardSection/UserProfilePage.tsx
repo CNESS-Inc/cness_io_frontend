@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Tab } from "@headlessui/react";
 import { useForm } from "react-hook-form";
 import { PhotoIcon, TrashIcon } from "@heroicons/react/24/solid";
@@ -9,8 +9,10 @@ import {
   GetInterestsDetails,
   GetProfessionalDetails,
   GetProfileDetails,
+  GetPublicProfileDetails,
   GetStateDetails,
   SubmitProfileDetails,
+  SubmitPublicProfileDetails,
 } from "../../../Common/ServerAPI";
 
 const tabNames = [
@@ -40,7 +42,7 @@ const UserProfilePage = () => {
   const [inputValue, setInputValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState<Record<string, boolean>>({});
   const [profileData, setProfileData] = useState<any>(null);
-  console.log("🚀 ~ UserProfilePage ~ profileData:", profileData)
+  console.log("🚀 ~ UserProfilePage ~ profileData:", profileData);
   const [intereset, setInterestData] = useState<any>(null);
   const [professional, setProfessionalData] = useState<any>(null);
   const [Country, setCountry] = useState<any>(null);
@@ -157,7 +159,7 @@ const UserProfilePage = () => {
       state: data.state || null,
       city: data.city || null,
       postal_code: data.postalCode || null,
-      communication_preferences: [
+      communication: [
         ...(data.communication?.sms ? ["sms"] : []),
         ...(data.communication?.email ? ["email"] : []),
         ...(data.communication?.whatsapp ? ["whatsapp"] : []),
@@ -230,11 +232,23 @@ const UserProfilePage = () => {
 
   const handlePublicProfileSubmit = async (data: any) => {
     setIsSubmitting((prev) => ({ ...prev, public: true }));
+
     try {
-      const response = await axios.post(API_ENDPOINTS.PUBLIC_PROFILE, {
-        ...data,
-        tags, // Include tags in the submission
-      });
+      const formData = new FormData();
+
+      formData.append("service_offered", data.services);
+      formData.append("tags", JSON.stringify(tags));
+      formData.append("notify_email", data.notifyEmail);
+      formData.append("title", data.title);
+
+      const email = data.emailAddress || data.notifyEmail;
+      formData.append("email_address", email);
+
+      if (data.featuredImage && data.featuredImage[0]) {
+        formData.append("file", data.featuredImage[0]);
+      }
+
+      const response = await SubmitPublicProfileDetails(formData);
       console.log("Public profile saved:", response.data);
     } catch (error) {
       console.error("Error saving public profile:", error);
@@ -279,7 +293,11 @@ const UserProfilePage = () => {
           state: response.data.data.state_id || "",
           city: response.data.data.location?.city || "",
           postalCode: response.data.data.location?.postal_code || "",
-          // Assuming communication preferences aren't in the response
+          communication: {
+            sms: response.data.data.communication_sms || false,
+            email: response.data.data.communication_email || false,
+            whatsapp: response.data.data.communication_whatsapp || false,
+          },
         });
         console.log(
           "🚀 ~ GetProfile ~ response.data.data.state_id:",
@@ -330,6 +348,25 @@ const UserProfilePage = () => {
     }
   };
 
+  const GetPublicProfile = async () => {
+    try {
+      const response = await GetPublicProfileDetails();
+      const profileData = response.data.data;
+
+      publicProfileForm.reset({
+        title: profileData.title || "",
+        services: profileData.service_offered || "",
+        notifyEmail: profileData.notify_email || "",
+        emailAddress: profileData.email_address || "",
+      });
+      if (profileData.tags) {
+        setTags(profileData.tags);
+      }
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+    }
+  };
+
   const GetInterest = async () => {
     try {
       const response = await GetInterestsDetails();
@@ -363,11 +400,17 @@ const UserProfilePage = () => {
     }
   };
 
+  const hasFetched = useRef(false);
+
   useEffect(() => {
-    GetProfile();
-    GetInterest();
-    GetProfessional();
-    GetCountry();
+    if (!hasFetched.current) {
+      GetProfile();
+      GetPublicProfile();
+      GetInterest();
+      GetProfessional();
+      GetCountry();
+      hasFetched.current = true;
+    }
   }, []);
 
   useEffect(() => {
@@ -464,7 +507,7 @@ const UserProfilePage = () => {
                       <Tab
                         key={index}
                         className={({ selected }) =>
-                          `px-4 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 ${
+                          `px-4 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 focus-visible:outline-none ${
                             selected
                               ? "text-purple-600 bg-white shadow-md border-t-2 border-x-2 border-purple-600 -mb-[1px]"
                               : "text-gray-500 bg-transparent hover:text-purple-500"

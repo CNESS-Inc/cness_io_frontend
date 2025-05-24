@@ -1,7 +1,6 @@
 import Header from "../layout/Header/Header";
 import Footer from "../layout/Footer/Footer";
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import CompanyCard from "../components/ui/CompanyCard";
 import { iconMap } from "../assets/icons";
 import { Filter, SortAsc, SortDesc } from "lucide-react";
@@ -12,7 +11,7 @@ import {
 } from "../Common/ServerAPI";
 
 interface Company {
-  id: number;
+  id: string;
   name: string;
   domain: string;
   logoUrl: string;
@@ -29,164 +28,92 @@ export default function TechnologyAndAIPage() {
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search");
   const domain = searchParams.get("domain");
-  console.log("🚀 ~ TechnologyAndAIPage ~ query:", search);
-  console.log("🚀 ~ TechnologyAndAIPage ~ isBaseRoute:", domain);
-
-  const companyListMock: Company[] = [
-    {
-      id: 1,
-      name: "Stellar Innovation",
-      domain: "Technology and AI",
-      logoUrl: iconMap["companylogo1"],
-      bannerUrl: iconMap["companycard1"],
-      location: "Hyderabad",
-      description: "We transform innovative ideas into tangible realities.",
-      tags: ["Tag 1", "Tag 2", "Tag 3"],
-      rating: 4,
-      isCertified: true,
-    },
-    {
-      id: 2,
-      name: "Innovative Solutions",
-      domain: "Technology and AI",
-      logoUrl: iconMap["companylogo2"],
-      bannerUrl: iconMap["companycard2"],
-      location: "Bangalore",
-      description: "We deliver cutting-edge technology solutions globally.",
-      tags: ["Tag 4", "Tag 2", "Tag 5"],
-      rating: 5,
-      isCertified: true,
-    },
-    {
-      id: 3,
-      name: "Info Tech",
-      domain: "Technology and AI",
-      logoUrl: iconMap["companylogo1"],
-      bannerUrl: iconMap["companycard1"],
-      location: "Chennai",
-      description: "Driving creativity with advanced tech tools.",
-      tags: ["Tag 3", "Tag 6"],
-      rating: 4,
-      isCertified: true,
-    },
-
-    {
-      id: 4,
-      name: "Tech innovations",
-      domain: "Technology and AI",
-      logoUrl: iconMap["comlogo"],
-      bannerUrl: iconMap["companycard2"],
-      location: "Chennai",
-      description: "Driving creativity with advanced tech tools.",
-      tags: ["Tag 3", "Tag 6"],
-      rating: 4,
-      isCertified: true,
-    },
-
-    {
-      id: 5,
-      name: "Stellar Innovation",
-      domain: "Technology and AI",
-      logoUrl: iconMap["companylogo1"],
-      bannerUrl: iconMap["companycard1"],
-      location: "Hyderabad",
-      description: "We transform innovative ideas into tangible realities.",
-      tags: ["Tag 1", "Tag 2", "Tag 3"],
-      rating: 4,
-      isCertified: true,
-    },
-
-    {
-      id: 6,
-      name: "Innovative Solutions",
-      domain: "Technology and AI",
-      logoUrl: iconMap["companylogo2"],
-      bannerUrl: iconMap["companycard2"],
-      location: "Bangalore",
-      description: "We deliver cutting-edge technology solutions globally.",
-      tags: ["Tag 4", "Tag 2", "Tag 5"],
-      rating: 5,
-      isCertified: true,
-    },
-    // Add more entries as needed
-  ];
 
   const [Domain, setDomain] = useState([]);
-  const [selectedDomain, setSelectedDomain] = useState("");
-
+  const [selectedDomain, setSelectedDomain] = useState<any>(domain);
+  const hasFetched = useRef(false);
   const [searchQuery, setSearchQuery] = useState<any>(search);
   const [sort, setSort] = useState<"az" | "za">("az");
-  const [page, setPage] = useState(1);
-  const [filteredCompanies, setFilteredCompanies] =
-    useState<Company[]>(companyListMock);
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const itemsPerPage = 6;
-  const totalPages = Math.ceil(filteredCompanies.length / itemsPerPage);
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
 
-  const fetchUsersearchProfileDetails = async () => {
+  const fetchUsersearchProfileDetails = async (page: number = 1) => {
+    setIsLoading(true);
+    setError(null);
     try {
-      const res = await GetUsersearchProfileDetails(selectedDomain,searchQuery);
-      console.log("🚀 ~ fetchUsersearchProfileDetails ~ res:", res)
-    } catch (error) {
-
+      const res = await GetUsersearchProfileDetails(
+        selectedDomain, 
+        searchQuery,
+        page,
+        itemsPerPage
+      );
+      
+      if (res?.data) {
+        setTotalCount(res.data.data.count);
+        
+        const transformedCompanies = res.data.data.rows
+          .map((company: any) => ({
+            id: company.id,
+            name: company.name,
+            domain: selectedDomain || "Technology and AI",
+            logoUrl: company.profile_picture || iconMap["comlogo"],
+            bannerUrl: company.profile_banner || iconMap["companycard1"],
+            location: company.location || "Unknown location",
+            description: company.bio || "No description available",
+            tags: company.tags || [],
+            rating: Math.floor(Math.random() * 5) + 1,
+            isCertified: Math.random() > 0.5,
+            is_organization:company?.is_organization,
+            is_person:company?.is_person,
+          }));
+        
+        setCompanies(transformedCompanies);
+      }
+    } catch (err: any) {
+      setError(err.message || "Failed to fetch companies");
+      console.error("Error fetching companies:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    let results = [...companyListMock];
-
-    if (search) {
-      results = results.filter((company) =>
-        company.name.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-    fetchUsersearchProfileDetails()
-
-    results.sort((a, b) =>
-      sort === "az"
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name)
-    );
-
-    setFilteredCompanies(results);
-  }, [search, sort]);
-
-  const paginated = filteredCompanies.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, sort]);
 
   const fetchDomain = async () => {
     try {
       const res = await GetDomainDetails();
       setDomain(res?.data?.data);
       const foundDomain = res?.data?.data?.find((d: any) => d.slug === domain);
-      console.log("🚀 ~ useEffect ~ Domain:", Domain);
       if (foundDomain) {
         setSelectedDomain(foundDomain.slug);
       }
-    } catch (error) {}
+    } catch (err) {
+      console.error("Error fetching domains:", err);
+    }
   };
 
   useEffect(() => {
-    fetchDomain();
-  }, []);
+    if (!hasFetched.current) {
+      fetchDomain();
+      hasFetched.current = true;
+    }
+    fetchUsersearchProfileDetails(currentPage);
+  }, [currentPage]);
 
-  // useEffect(() => {
-  //   if (domain) {
-  //     // Find the domain in your Domains array that matches the slug
-  //     const foundDomain = Domain.find((d: any) => d.slug === domain);
-  //     console.log("🚀 ~ useEffect ~ Domain:", Domain);
-  //     if (foundDomain) {
-  //       setSelectedDomain(foundDomain.slug);
-  //     }
-  //   }
-  // }, [domain]);
+  useEffect(() => {
+    // Reset to page 1 when search or sort changes
+    setCurrentPage(1);
+    fetchUsersearchProfileDetails(1);
+  }, [searchQuery, sort, selectedDomain]);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <>
@@ -197,7 +124,7 @@ export default function TechnologyAndAIPage() {
           Technology and AI
         </h1>
 
-        <div className="flex items-center w-full max-w-2xl rounded-full bg-white overflow-hidden shadow-sm border border-[#CBD5E1]  ">
+        <div className="flex items-center w-full max-w-2xl rounded-full bg-white overflow-hidden shadow-sm border border-[#CBD5E1]">
           <div className="relative">
             <select
               className="bg-[#7077FE] text-white font-medium rounded-full px-5 py-2 appearance-none focus:outline-none cursor-pointer"
@@ -218,7 +145,7 @@ export default function TechnologyAndAIPage() {
 
           <input
             type="text"
-            value={searchQuery}
+            value={searchQuery || ""}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Find & Choose your perfect organization"
             className="flex-1 px-4 py-2 text-sm text-gray-500 placeholder-gray-400 outline-none"
@@ -266,10 +193,16 @@ export default function TechnologyAndAIPage() {
           <div>
             <h3 className="text-sm font-semibold text-gray-900 mb-5">Sort</h3>
             <ul className="space-y-7 text-sm text-gray-700">
-              <li className="flex items-center gap-2 cursor-pointer">
+              <li 
+                className="flex items-center gap-2 cursor-pointer"
+                onClick={() => setSort("az")}
+              >
                 <SortAsc size={16} /> Sort A-Z
               </li>
-              <li className="flex items-center gap-2 cursor-pointer">
+              <li 
+                className="flex items-center gap-2 cursor-pointer"
+                onClick={() => setSort("za")}
+              >
                 <SortDesc size={16} /> Sort Z-A
               </li>
             </ul>
@@ -278,53 +211,100 @@ export default function TechnologyAndAIPage() {
 
         {/* Right Content (Company Grid) */}
         <main className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-2 gap-y-7 items-stretch">
-          {paginated.map((company) => (
-            <CompanyCard key={company.id} {...company} />
-          ))}
+          {isLoading ? (
+            <div className="col-span-4 flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+            </div>
+          ) : error ? (
+            <div className="col-span-4 text-center py-10 text-red-500">
+              {error}
+            </div>
+          ) : companies.length === 0 ? (
+            <div className="col-span-4 text-center py-10 text-gray-500">
+              No companies found
+            </div>
+          ) : (
+            companies.map((company) => (
+              <CompanyCard key={company.id} {...company} />
+            ))
+          )}
         </main>
       </div>
 
-      {/* pagination */}
-      <div className="mt-8">
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-1 flex justify-end">
-          <nav
-            className="inline-flex rounded-md shadow-sm -space-x-px text-sm"
-            aria-label="Pagination"
-          >
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-3 py-1 rounded-l-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
+      {/* Pagination */}
+      {!isLoading && !error && totalCount > 0 && (
+        <div className="mt-8 mb-12">
+          <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-1 flex justify-center">
+            <nav
+              className="inline-flex rounded-md shadow-sm -space-x-px text-sm"
+              aria-label="Pagination"
             >
-              «
-            </button>
-
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1 border border-gray-300 ${
-                  page === currentPage
-                    ? "bg-indigo-500 text-white"
-                    : "bg-white text-gray-700 hover:bg-gray-100"
-                }`}
+                onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 rounded-l-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
               >
-                {page}
+                «
               </button>
-            ))}
 
-            <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
-              disabled={currentPage === totalPages}
-              className="px-3 py-1 rounded-r-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
-            >
-              »
-            </button>
-          </nav>
+              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                // Show limited pages with ellipsis
+                let pageNum;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => handlePageChange(pageNum)}
+                    className={`px-3 py-1 border border-gray-300 ${
+                      pageNum === currentPage
+                        ? "bg-indigo-500 text-white"
+                        : "bg-white text-gray-700 hover:bg-gray-100"
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+
+              {totalPages > 5 && currentPage < totalPages - 2 && (
+                <span className="px-3 py-1 border border-gray-300 bg-white">
+                  ...
+                </span>
+              )}
+
+              {totalPages > 5 && currentPage < totalPages - 2 && (
+                <button
+                  onClick={() => handlePageChange(totalPages)}
+                  className="px-3 py-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
+                >
+                  {totalPages}
+                </button>
+              )}
+
+              <button
+                onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 rounded-r-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
+              >
+                »
+              </button>
+            </nav>
+          </div>
+          <div className="text-center mt-2 text-sm text-gray-500">
+            Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
+            {Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount} companies
+          </div>
         </div>
-      </div>
+      )}
 
       <Footer />
     </>

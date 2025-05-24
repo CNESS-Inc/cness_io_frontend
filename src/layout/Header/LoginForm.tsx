@@ -723,7 +723,9 @@ export default function LoginForm({
 
       const res = await PaymentDetails(payload);
       if (res?.data?.data?.url) {
-        window.open(res.data.data.url, "_blank");
+        const url = res.data.data.url;
+        console.log("Redirecting to:", url); // Log the actual URL
+        window.location.href = url; // Redirect in the same tab
       } else {
         console.error("URL not found in response");
       }
