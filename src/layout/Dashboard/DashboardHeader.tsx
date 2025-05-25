@@ -11,7 +11,6 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const DashboardHeader = ({ toggleMobileNav, user }: any) => {
-  console.log("🚀 ~ DashboardHeader ~ userData:", user);
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);

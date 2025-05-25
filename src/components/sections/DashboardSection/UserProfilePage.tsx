@@ -36,7 +36,6 @@ const UserProfilePage = () => {
   const [professional, setProfessionalData] = useState<any>(null);
   const [Country, setCountry] = useState<any>(null);
   const [states, setStates] = useState<any[]>([]);
-
   const public_organization = localStorage.getItem("person_organization");
 
   // Separate form handlers for each tab
@@ -50,7 +49,7 @@ const UserProfilePage = () => {
   const handleImageChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
     setter: React.Dispatch<React.SetStateAction<string | null>>,
-    formKey: string // "profile" or "banner"
+    formKey: string 
   ) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -107,7 +106,6 @@ const UserProfilePage = () => {
     console.log("🚀 ~ handleBasicInfoSubmit ~ raw form data:", data);
     setIsSubmitting((prev) => ({ ...prev, basic: true }));
 
-    // Normalize health and profession to arrays of strings
     const normalizeToArray = (input: any) => {
       if (Array.isArray(input)) {
         return input.map(String);
@@ -131,7 +129,6 @@ const UserProfilePage = () => {
       await SubmitProfileDetails(payload);
     } catch (error) {
       console.error("Error saving basic info:", error);
-      // Error handling
     } finally {
       setIsSubmitting((prev) => ({ ...prev, basic: false }));
     }
@@ -179,10 +176,8 @@ const UserProfilePage = () => {
 
     try {
       await SubmitProfileDetails(payload);
-      // Handle success (e.g. toast notification or UI update)
     } catch (error) {
       console.error("Error saving social links:", error);
-      // Handle error (e.g. show error message to user)
     } finally {
       setIsSubmitting((prev) => ({ ...prev, social: false }));
     }
@@ -190,7 +185,6 @@ const UserProfilePage = () => {
   const handleEducationSubmit = async (data: any) => {
     setIsSubmitting((prev) => ({ ...prev, education: true }));
 
-    // Wrap the single education object inside an array
     const payload = { education: [data] };
 
     try {
@@ -206,7 +200,6 @@ const UserProfilePage = () => {
   const handleWorkExperienceSubmit = async (data: any) => {
     setIsSubmitting((prev) => ({ ...prev, work: true }));
 
-    // Wrap single work experience inside an array
     const payload = { work_experience: [data] };
 
     try {
@@ -251,7 +244,6 @@ const UserProfilePage = () => {
       const response = await GetProfileDetails();
       setProfileData(response.data.data);
 
-      // Set default values for each form
       if (response.data.data) {
         // Basic Info
         basicInfoForm.reset({
@@ -262,7 +254,7 @@ const UserProfilePage = () => {
           gender: response.data.data.gender || "",
           dob: response.data.data.dob
             ? response.data.data.dob.split("T")[0]
-            : "", // Format date if needed
+            : "",
           quote: response.data.data.opinion_on_counsciouness || "",
           // For interests and professions, since they're arrays in the response
           interests: response.data.data.interests?.[0].id || "",
@@ -328,9 +320,6 @@ const UserProfilePage = () => {
         if (response.data.data.profile_banner) {
           setBanner(response.data.data.profile_banner);
         }
-
-        // Set tags if available (assuming tags are in the response)
-        // setTags(response.data.tags || []);
       }
     } catch (error) {
       console.error("Error fetching profile:", error);
