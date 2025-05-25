@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DashboardSection from "../components/sections/DashboardSection";
 import { DashboardDetails } from "../Common/ServerAPI";
 import DashboardLayout from "../layout/Dashboard/dashboardlayout";
@@ -26,6 +26,8 @@ interface ApiResponse<T> {
 const Dashboard = () => {
   const [user, setUser] = useState<UserData | null>(null);
 
+  const hasFetched = useRef(false);
+
   const fetchDashboard = async () => {
     try {
       const response: ApiResponse<UserData> = await DashboardDetails();
@@ -38,7 +40,10 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    fetchDashboard();
+    if (!hasFetched.current) {
+      fetchDashboard();
+      hasFetched.current = true;
+    }
   }, []);
 
   return (

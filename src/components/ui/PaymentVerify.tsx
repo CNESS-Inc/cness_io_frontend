@@ -62,7 +62,7 @@ const PaymentVerify = () => {
             <h1 className="text-lg font-semibold">
               {loginShow 
                 ? "Your Payment is confirmed. Click on Go to Dashboard button to continue."
-                : "Verifying your email..."}
+                : "Verifying your payment..."}
             </h1>
             {loginShow && (
               <Button

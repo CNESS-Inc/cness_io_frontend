@@ -1,11 +1,18 @@
-import { BellIcon, SearchIcon, SettingsIcon, MenuIcon, LogOutIcon } from "lucide-react";
+import {
+  BellIcon,
+  SearchIcon,
+  SettingsIcon,
+  MenuIcon,
+  LogOutIcon,
+} from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const DashboardHeader = ({ toggleMobileNav, userData }: any) => {
-  const navigate = useNavigate()
+const DashboardHeader = ({ toggleMobileNav, user }: any) => {
+  console.log("🚀 ~ DashboardHeader ~ userData:", user);
+  const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -26,19 +33,15 @@ const DashboardHeader = ({ toggleMobileNav, userData }: any) => {
     };
   }, []);
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
+  const handleLogout = () => {
+    try {
+      localStorage.clear();
+      setIsDropdownOpen(false);
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
-
-const handleLogout = () => {
-  try {
-    localStorage.clear();
-    setIsDropdownOpen(false);
-    navigate('/');
-  } catch (error) {
-    console.error('Logout failed:', error);
-  }
-};
 
   // const handleProfile = () => {
   //   // Add your profile navigation logic here
@@ -87,7 +90,7 @@ const handleLogout = () => {
 
         <div className="hidden md:flex items-center relative" ref={dropdownRef}>
           <button
-            onClick={toggleDropdown}
+            // onClick={toggleDropdown}
             className="flex items-center focus:outline-none"
           >
             <Avatar className="w-[44.25px] h-[44.25px]">
@@ -100,7 +103,7 @@ const handleLogout = () => {
             <div className="flex flex-col items-start">
               <div className="px-2 py-0.5 flex items-center">
                 <div className="font-['Poppins',Helvetica] font-medium text-[#222224] text-sm">
-                  {userData?.first_name}
+                  {user}
                 </div>
               </div>
 
@@ -135,7 +138,10 @@ const handleLogout = () => {
 
         {/* Mobile-only avatar icon with dropdown */}
         <div className="md:hidden flex items-center relative" ref={dropdownRef}>
-          <button onClick={toggleDropdown} className="focus:outline-none">
+          <button
+            // onClick={toggleDropdown}
+            className="focus:outline-none"
+          >
             <Avatar className="w-[36px] h-[36px]">
               <AvatarImage
                 src="https://c.animaapp.com/magahlmqpONVZN/img/ellipse-3279.svg"

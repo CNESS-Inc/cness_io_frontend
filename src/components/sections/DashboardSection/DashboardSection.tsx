@@ -14,6 +14,7 @@ import "react-circular-progressbar/dist/styles.css";
 import { useState } from "react";
 import Modal from "../../ui/Modal";
 import { GetAllPlanDetails, PaymentDetails } from "../../../Common/ServerAPI";
+import { useNavigate } from "react-router-dom";
 
 type PersPricingPlan = {
   id: any;
@@ -34,7 +35,7 @@ export default function DashboardSection(user: any) {
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [isAnnual, setIsAnnual] = useState(false);
   const [personPricing, setPersonPricing] = useState<PersPricingPlan[]>([]);
-
+  const navigate = useNavigate();
   // Data for modules
   const modules = [
     {
@@ -77,12 +78,14 @@ export default function DashboardSection(user: any) {
   // { id: 4, name: "Task Name" },
   // ];
   //for complete your profile
-  const percentage = 32;
+  // const percentage = 32;
 
   //Assessment progress
-  const Assessmentpercentage = 70;
+  // const Assessmentpercentage = 70;
   const totalBlocks = 6;
-  const filledBlocks = Math.floor(Assessmentpercentage / (100 / totalBlocks));
+  const filledBlocks = Math.floor(
+    user?.user?.assesment_progress / (100 / totalBlocks)
+  );
 
   const openPricingModal = async () => {
     setActiveModal("PricingModal");
@@ -125,31 +128,31 @@ export default function DashboardSection(user: any) {
   };
   const closeModal = () => setActiveModal(null);
   const handlePlanSelection = async (plan: any) => {
-  try {
-    const payload = {
-      plan_id: plan.id,
-      plan_type: isAnnual ? "Yearly" : "Monthly",
-    };
+    try {
+      const payload = {
+        plan_id: plan.id,
+        plan_type: isAnnual ? "Yearly" : "Monthly",
+      };
 
-    const res = await PaymentDetails(payload);
+      const res = await PaymentDetails(payload);
 
-    if (res?.data?.data?.url) {
-      const url = res.data.data.url;
-      console.log("Redirecting to:", url); // Log the actual URL
-      window.location.href = url; // Redirect in the same tab
-    } else {
-      console.error("URL not found in response");
+      if (res?.data?.data?.url) {
+        const url = res.data.data.url;
+        console.log("Redirecting to:", url); // Log the actual URL
+        window.location.href = url; // Redirect in the same tab
+      } else {
+        console.error("URL not found in response");
+      }
+    } catch (error) {
+      console.error("Error in handlePlanSelection:", error);
     }
-  } catch (error) {
-    console.error("Error in handlePlanSelection:", error);
-  }
-};
+  };
 
-const completedStep = localStorage.getItem('completed_step');
+  const completedStep = localStorage.getItem("completed_step");
   return (
     <>
       <div className="max-w-[1200px] mx-auto "></div>
-      {completedStep !== '2' && (
+      {completedStep !== "2" && (
         <div className="mx-5 bg-[rgba(255,204,0,0.05)] 5% text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-2">
             <span className="text-yellow-500">💡</span>
@@ -168,7 +171,9 @@ const completedStep = localStorage.getItem('completed_step');
               </a>
             </span>
           </div>
-          <button className="text-gray-400 hover:text-gray-700 text-lg">×</button>
+          <button className="text-gray-400 hover:text-gray-700 text-lg">
+            ×
+          </button>
         </div>
       )}
 
@@ -178,9 +183,10 @@ const completedStep = localStorage.getItem('completed_step');
           <div className="flex flex-col items-start">
             <div className="px-2 py-1 md:px-3 md:py-2 flex items-center gap-2.5">
               <h1 className="font-['Poppins',Helvetica] text-2xl md:text-[32px] leading-8">
-                <span className="font-semibold text-[#222224]">Hello, </span>
+                <span className="font-semibold text-[#222224]">Hello</span>
                 <span className="font-semibold text-[#a392f2]">
-                  {user?.user?.first_name} {user?.user?.last_name}
+                  {user?.user?.name?.charAt(0)?.toUpperCase() +
+                    user?.user?.name?.slice(1) || ""}
                 </span>
               </h1>
             </div>
@@ -203,7 +209,7 @@ const completedStep = localStorage.getItem('completed_step');
                 <div className="flex justify-center sm:justify-start">
                   <div className="relative w-[120px] h-[120px] sm:w-[147px] sm:h-[147px]">
                     <CircularProgressbar
-                      value={percentage}
+                      value={user?.user?.profile_progress}
                       strokeWidth={10}
                       styles={buildStyles({
                         rotation: 0.6,
@@ -216,7 +222,7 @@ const completedStep = localStorage.getItem('completed_step');
                     {/* Custom-styled text overlaid manually */}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <span className="font-['open sans'] font-bold text-[28px] sm:text-[31.51px] text-[#242731]">
-                        {percentage}%
+                        {user?.user?.profile_progress}%
                       </span>
                     </div>
 
@@ -248,10 +254,21 @@ const completedStep = localStorage.getItem('completed_step');
                       Fill out your profile with all the necessary details.
                     </p>
                   </div>
-                  <div className="w-full ">
+                  <div className="w-full">
                     <Button
                       variant="gradient-primary"
-                      className="rounded-[100px] py-2 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                      className="rounded-[100px] cursor-pointer py-2 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                      onClick={() => {
+                        const personOrganization = localStorage.getItem(
+                          "person_organization"
+                        );
+
+                        if (personOrganization === "2") {
+                          navigate("/dashboard/company-profile");
+                        } else if (personOrganization === "1") {
+                          navigate("/dashboard/user-profile");
+                        }
+                      }}
                     >
                       <span className="font-['Plus_Jakarta_Sans',Helvetica] font-medium text-[12px] leading-none tracking-[0px] text-white text-center">
                         Start
@@ -313,7 +330,7 @@ const completedStep = localStorage.getItem('completed_step');
             <CardContent className="pt-4 pb-4 md:pt-6 md:pb-6">
               <div className="flex items-center justify-between mb-3 md:mb-4">
                 <div className="font-['Poppins',Helvetica] font-medium text-[#222224] text-xl md:text-2xl">
-                  {Assessmentpercentage}%
+                  {user?.user?.assesment_progress}%
                 </div>
                 <div className="font-['Poppins',Helvetica] font-medium text-[#9747ff] text-sm md:text-base">
                   In Progress
@@ -418,32 +435,37 @@ const completedStep = localStorage.getItem('completed_step');
                     />
                     <div className="w-full md:w-[118.96px]">
                       <p className="w-full py-1 bg-[#9747ff1a] rounded-[8px] text-center text-[#9747FF] font-['Poppins',Helvetica] font-medium text-sm">
-                        Inspired
+                        {user?.user?.level}
                       </p>
                     </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
-            {/* 🔒 Lock overlay only for badge */}
-            <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-[10px] shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
-              <svg
-                className="w-8 h-8 text-gray-700 opacity-80 mb-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fill="#4F46E5"
-                  d="M10 2a4 4 0 00-4 4v3H5a1 1 0 000 2h10a1 1 0 000-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v3H8V6z"
-                />
-                <path
-                  fill="#4F46E5"
-                  d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"
-                />
-              </svg>
-              <p className="text-sm text-gray-700 font-medium">Badge Locked</p>
-              <p className="text-xs text-gray-500 mt-1"></p>
-            </div>
+
+            {/* 🔒 Show lock overlay only if user level is missing */}
+            {!user?.user?.level && (
+              <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-[10px] shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
+                <svg
+                  className="w-8 h-8 text-gray-700 opacity-80 mb-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill="#4F46E5"
+                    d="M10 2a4 4 0 00-4 4v3H5a1 1 0 000 2h10a1 1 0 000-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v3H8V6z"
+                  />
+                  <path
+                    fill="#4F46E5"
+                    d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"
+                  />
+                </svg>
+                <p className="text-sm text-gray-700 font-medium">
+                  Badge Locked
+                </p>
+                <p className="text-xs text-gray-500 mt-1"></p>
+              </div>
+            )}
           </div>
         </div>
 

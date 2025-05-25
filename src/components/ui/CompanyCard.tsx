@@ -10,9 +10,11 @@ import {
 } from '../ui/DashboardCard';
 
 import { iconMap } from '../../assets/icons';
+import { useNavigate } from 'react-router-dom';
 
 
 interface CompanyCardProps {
+  id: string;
   name: string;
   domain: string;
   logoUrl: string;
@@ -22,6 +24,8 @@ interface CompanyCardProps {
   tags: string[];
   rating?: number;
   isCertified?: boolean;
+  is_person?: boolean;
+  is_organization?: boolean;
 }
 
 // const StarRating = ({ rating }: { rating: number }) => {
@@ -51,6 +55,7 @@ interface CompanyCardProps {
 // };
 
 export default function CompanyCard({
+  id,
   name,
   location,
   logoUrl,
@@ -58,10 +63,22 @@ export default function CompanyCard({
   description,
   tags,
   rating,
+  is_person,
+  is_organization,
 }: CompanyCardProps) {
+
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    if (is_person) {
+      navigate(`/directory/user-profile/${id}`);
+    } else if (is_organization) {
+      navigate(`/directory/company-profile/${id}`);
+    }
+  };
   return (
     
- <Card className="bg-white max-w-sm rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40">
+ <Card className="bg-white max-w-sm rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40" onClick={handleCardClick}>
   <CardHeader className="px-4 pt-4 pb-0">
     <div className="flex justify-between items-start">
         <div className="flex items-center gap-2">

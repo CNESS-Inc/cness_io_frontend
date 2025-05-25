@@ -10,7 +10,7 @@ const AppLayout = () => {
     const checkAuth = () => {
       const token = localStorage.getItem("jwt"); 
       const completed_step = localStorage.getItem("completed_step"); 
-      if (!token || completed_step === "0" || completed_step === null) {
+      if (!token || completed_step === "0") {
         navigate("/");
       }
       setIsCheckingAuth(false);
