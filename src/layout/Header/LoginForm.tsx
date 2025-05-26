@@ -110,9 +110,7 @@ interface ValidationRules {
   custom?: (value: string) => string | undefined;
 }
 
-export default function LoginForm({
-  onSuccess,
-}: LoginFormProps) {
+export default function LoginForm({ onSuccess }: LoginFormProps) {
   const navigate = useNavigate();
   const [, setAuthenticated] = useState<boolean>(
     localStorage.getItem("authenticated") === "true"
@@ -155,9 +153,7 @@ export default function LoginForm({
   const [organizationErrors, setOrganizationErrors] = useState<FormErrors>({});
   console.log("🚀 ~ organizationErrors:", organizationErrors);
   const [personErrors, setPersonErrors] = useState<FormErrors>({});
-  const [resetPasswordErrors] = useState<FormErrors>(
-    {}
-  );
+  const [resetPasswordErrors] = useState<FormErrors>({});
   const [apiMessage, setApiMessage] = useState<string | null>(null);
 
   const validatePassword = (password: string): string | undefined => {
@@ -340,7 +336,14 @@ export default function LoginForm({
         setIsSubmitting(false);
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);
-        localStorage.setItem("person_organization", response?.data?.data?.user.person_organization_complete);
+        localStorage.setItem(
+          "is_disqualify",
+          response?.data?.data?.user?.is_disqualify
+        );
+        localStorage.setItem(
+          "person_organization",
+          response?.data?.data?.user.person_organization_complete
+        );
         localStorage.setItem("Id", response?.data?.data?.user.id.toString());
         localStorage.setItem(
           "completed_step",
@@ -350,107 +353,112 @@ export default function LoginForm({
         const completionStatus =
           response.data.data.user.person_organization_complete;
         const completed_step = response.data.data.user.completed_step;
+        const is_disqualify = response.data.data.user.is_disqualify;
 
-        if (completionStatus === 0 || completed_step === 0) {
-          setActiveModal("type");
-        } else if (completionStatus === 1) {
-          if (completed_step === 0) {
-            setActiveModal("person");
-          } else if (completed_step === 1) {
-            // const res = await GetAllPlanDetails();
-            // const plansByRange: Record<string, any> = {};
-            // res?.data?.data?.forEach((plan: any) => {
-            //   if (!plansByRange[plan.plan_range]) {
-            //     plansByRange[plan.plan_range] = {};
-            //   }
-            //   plansByRange[plan.plan_range][plan.plan_type] = plan;
-            // });
-            // const updatedPlans = Object.values(plansByRange).map(
-            //   (planGroup: any) => {
-            //     const monthlyPlan = planGroup.monthly;
-            //     const yearlyPlan = planGroup.yearly;
+        if (!is_disqualify) {
+          if (completionStatus === 0 || completed_step === 0) {
+            setActiveModal("type");
+          } else if (completionStatus === 1) {
+            if (completed_step === 0) {
+              setActiveModal("person");
+            } else if (completed_step === 1) {
+              // const res = await GetAllPlanDetails();
+              // const plansByRange: Record<string, any> = {};
+              // res?.data?.data?.forEach((plan: any) => {
+              //   if (!plansByRange[plan.plan_range]) {
+              //     plansByRange[plan.plan_range] = {};
+              //   }
+              //   plansByRange[plan.plan_range][plan.plan_type] = plan;
+              // });
+              // const updatedPlans = Object.values(plansByRange).map(
+              //   (planGroup: any) => {
+              //     const monthlyPlan = planGroup.monthly;
+              //     const yearlyPlan = planGroup.yearly;
 
-            //     return {
-            //       id: monthlyPlan?.id || yearlyPlan?.id,
-            //       title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-            //       description: "Customized pricing based on your selection",
-            //       monthlyPrice: monthlyPlan
-            //         ? `$${monthlyPlan.amount}`
-            //         : undefined,
-            //       yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-            //       period: isAnnual ? "/year" : "/month",
-            //       billingNote: yearlyPlan
-            //         ? isAnnual
-            //           ? `billed annually ($${yearlyPlan.amount})`
-            //           : `or $${monthlyPlan?.amount}/month`
-            //         : undefined,
-            //       features: [], // Add any features you need here
-            //       buttonText: "Get Started",
-            //       buttonClass: yearlyPlan
-            //         ? ""
-            //         : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-            //       borderClass: yearlyPlan
-            //         ? "border-2 border-[#F07EFF]"
-            //         : "border",
-            //       popular: !!yearlyPlan,
-            //     };
-            //   }
-            // );
-            // setPersonPricing(updatedPlans);
-            // setActiveModal("personPricing");
-            navigate("/dashboard");
-          } else {
-            navigate("/dashboard");
+              //     return {
+              //       id: monthlyPlan?.id || yearlyPlan?.id,
+              //       title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+              //       description: "Customized pricing based on your selection",
+              //       monthlyPrice: monthlyPlan
+              //         ? `$${monthlyPlan.amount}`
+              //         : undefined,
+              //       yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+              //       period: isAnnual ? "/year" : "/month",
+              //       billingNote: yearlyPlan
+              //         ? isAnnual
+              //           ? `billed annually ($${yearlyPlan.amount})`
+              //           : `or $${monthlyPlan?.amount}/month`
+              //         : undefined,
+              //       features: [], // Add any features you need here
+              //       buttonText: "Get Started",
+              //       buttonClass: yearlyPlan
+              //         ? ""
+              //         : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+              //       borderClass: yearlyPlan
+              //         ? "border-2 border-[#F07EFF]"
+              //         : "border",
+              //       popular: !!yearlyPlan,
+              //     };
+              //   }
+              // );
+              // setPersonPricing(updatedPlans);
+              // setActiveModal("personPricing");
+              navigate("/dashboard");
+            } else {
+              navigate("/dashboard");
+            }
+          } else if (completionStatus === 2) {
+            if (completed_step === 0) {
+              setActiveModal("organization");
+            } else if (completed_step === 1) {
+              // const res = await GetAllPlanDetails();
+              // const plansByRange: Record<string, any> = {};
+              // res?.data?.data?.forEach((plan: any) => {
+              //   if (!plansByRange[plan.plan_range]) {
+              //     plansByRange[plan.plan_range] = {};
+              //   }
+              //   plansByRange[plan.plan_range][plan.plan_type] = plan;
+              // });
+              // const updatedPlans = Object.values(plansByRange).map(
+              //   (planGroup: any) => {
+              //     const monthlyPlan = planGroup.monthly;
+              //     const yearlyPlan = planGroup.yearly;
+
+              //     return {
+              //       id: monthlyPlan?.id || yearlyPlan?.id,
+              //       title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+              //       description: "Customized pricing based on your selection",
+              //       monthlyPrice: monthlyPlan
+              //         ? `$${monthlyPlan.amount}`
+              //         : undefined,
+              //       yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+              //       period: isAnnual ? "/year" : "/month",
+              //       billingNote: yearlyPlan
+              //         ? isAnnual
+              //           ? `billed annually ($${yearlyPlan.amount})`
+              //           : `or $${monthlyPlan?.amount}/month`
+              //         : undefined,
+              //       features: [], // Add any features you need here
+              //       buttonText: "Get Started",
+              //       buttonClass: yearlyPlan
+              //         ? ""
+              //         : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+              //       borderClass: yearlyPlan
+              //         ? "border-2 border-[#F07EFF]"
+              //         : "border",
+              //       popular: !!yearlyPlan,
+              //     };
+              //   }
+              // );
+              // setorganizationpricingPlans(updatedPlans);
+              // setActiveModal("organizationPricing");
+              navigate("/dashboard");
+            } else {
+              navigate("/dashboard");
+            }
           }
-        } else if (completionStatus === 2) {
-          if (completed_step === 0) {
-            setActiveModal("organization");
-          } else if (completed_step === 1) {
-            // const res = await GetAllPlanDetails();
-            // const plansByRange: Record<string, any> = {};
-            // res?.data?.data?.forEach((plan: any) => {
-            //   if (!plansByRange[plan.plan_range]) {
-            //     plansByRange[plan.plan_range] = {};
-            //   }
-            //   plansByRange[plan.plan_range][plan.plan_type] = plan;
-            // });
-            // const updatedPlans = Object.values(plansByRange).map(
-            //   (planGroup: any) => {
-            //     const monthlyPlan = planGroup.monthly;
-            //     const yearlyPlan = planGroup.yearly;
-
-            //     return {
-            //       id: monthlyPlan?.id || yearlyPlan?.id,
-            //       title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-            //       description: "Customized pricing based on your selection",
-            //       monthlyPrice: monthlyPlan
-            //         ? `$${monthlyPlan.amount}`
-            //         : undefined,
-            //       yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-            //       period: isAnnual ? "/year" : "/month",
-            //       billingNote: yearlyPlan
-            //         ? isAnnual
-            //           ? `billed annually ($${yearlyPlan.amount})`
-            //           : `or $${monthlyPlan?.amount}/month`
-            //         : undefined,
-            //       features: [], // Add any features you need here
-            //       buttonText: "Get Started",
-            //       buttonClass: yearlyPlan
-            //         ? ""
-            //         : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-            //       borderClass: yearlyPlan
-            //         ? "border-2 border-[#F07EFF]"
-            //         : "border",
-            //       popular: !!yearlyPlan,
-            //     };
-            //   }
-            // );
-            // setorganizationpricingPlans(updatedPlans);
-            // setActiveModal("organizationPricing");
-            navigate("/dashboard");
-          } else {
-            navigate("/dashboard");
-          }
+        } else {
+          navigate("/dashboard");
         }
       } else {
         setIsSubmitting(false);
@@ -560,50 +568,57 @@ export default function LoginForm({
     if (!validateForm(organizationForm, "organization")) {
       return;
     }
-
+    
     setIsSubmitting(true);
-
+    console.log("🚀 ~ handleOrganizationSubmit ~ organizationForm:", organizationForm)
     try {
       const res = await submitOrganizationDetails(organizationForm);
       localStorage.setItem("person_organization", "2");
-      localStorage.setItem("completed_step","1");
-      const plansByRange: Record<string, any> = {};
-      res?.data?.data?.plan.forEach((plan: any) => {
-        if (!plansByRange[plan.plan_range]) {
-          plansByRange[plan.plan_range] = {};
-        }
-        plansByRange[plan.plan_range][plan.plan_type] = plan;
-      });
+      localStorage.setItem("completed_step", "1");
+      if (res.success.statusCode === 200) {
+        const plansByRange: Record<string, any> = {};
+        res?.data?.data?.plan.forEach((plan: any) => {
+          if (!plansByRange[plan.plan_range]) {
+            plansByRange[plan.plan_range] = {};
+          }
+          plansByRange[plan.plan_range][plan.plan_type] = plan;
+        });
 
-      // Create combined plan objects with both monthly and yearly data
-      const updatedPlans = Object.values(plansByRange).map((planGroup: any) => {
-        const monthlyPlan = planGroup.monthly;
-        const yearlyPlan = planGroup.yearly;
+        // Create combined plan objects with both monthly and yearly data
+        const updatedPlans = Object.values(plansByRange).map(
+          (planGroup: any) => {
+            const monthlyPlan = planGroup.monthly;
+            const yearlyPlan = planGroup.yearly;
 
-        return {
-          id: monthlyPlan?.id || yearlyPlan?.id,
-          title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-          description: "Customized pricing based on your selection",
-          monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
-          yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-          period: isAnnual ? "/year" : "/month",
-          billingNote: yearlyPlan
-            ? isAnnual
-              ? `billed annually ($${yearlyPlan.amount})`
-              : `or $${monthlyPlan?.amount}/month`
-            : undefined,
-          features: [], // Add any features you need here
-          buttonText: "Get Started",
-          buttonClass: yearlyPlan
-            ? ""
-            : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-          borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
-          popular: !!yearlyPlan,
-        };
-      });
+            return {
+              id: monthlyPlan?.id || yearlyPlan?.id,
+              title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+              description: "Customized pricing based on your selection",
+              monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
+              yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+              period: isAnnual ? "/year" : "/month",
+              billingNote: yearlyPlan
+                ? isAnnual
+                  ? `billed annually ($${yearlyPlan.amount})`
+                  : `or $${monthlyPlan?.amount}/month`
+                : undefined,
+              features: [], // Add any features you need here
+              buttonText: "Get Started",
+              buttonClass: yearlyPlan
+                ? ""
+                : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+              borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
+              popular: !!yearlyPlan,
+            };
+          }
+        );
 
-      setorganizationpricingPlans(updatedPlans);
-      setActiveModal("organizationPricing");
+        setorganizationpricingPlans(updatedPlans);
+        setActiveModal("organizationPricing");
+      } else if (res.success.statusCode === 201) {
+        navigate("/dashboard");
+        localStorage.setItem("is_disqualify", "true");
+      }
       // onSuccess();
       // navigate("/dashboard");
     } catch (error) {
@@ -629,45 +644,52 @@ export default function LoginForm({
       };
       const res = await submitPersonDetails(question_payload as any);
       localStorage.setItem("person_organization", "1");
-      localStorage.setItem("completed_step","1");
+      localStorage.setItem("completed_step", "1");
       // Group plans by their range (Basic Plan, Pro Plan, etc.)
-      const plansByRange: Record<string, any> = {};
-      res?.data?.data?.plan.forEach((plan: any) => {
-        if (!plansByRange[plan.plan_range]) {
-          plansByRange[plan.plan_range] = {};
-        }
-        plansByRange[plan.plan_range][plan.plan_type] = plan;
-      });
+      if (res.success.statusCode === 200) {
+        const plansByRange: Record<string, any> = {};
+        res?.data?.data?.plan.forEach((plan: any) => {
+          if (!plansByRange[plan.plan_range]) {
+            plansByRange[plan.plan_range] = {};
+          }
+          plansByRange[plan.plan_range][plan.plan_type] = plan;
+        });
 
-      // Create combined plan objects with both monthly and yearly data
-      const updatedPlans = Object.values(plansByRange).map((planGroup: any) => {
-        const monthlyPlan = planGroup.monthly;
-        const yearlyPlan = planGroup.yearly;
+        // Create combined plan objects with both monthly and yearly data
+        const updatedPlans = Object.values(plansByRange).map(
+          (planGroup: any) => {
+            const monthlyPlan = planGroup.monthly;
+            const yearlyPlan = planGroup.yearly;
 
-        return {
-          id: monthlyPlan?.id || yearlyPlan?.id,
-          title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-          description: "Customized pricing based on your selection",
-          monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
-          yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-          period: isAnnual ? "/year" : "/month",
-          billingNote: yearlyPlan
-            ? isAnnual
-              ? `billed annually ($${yearlyPlan.amount})`
-              : `or $${monthlyPlan?.amount}/month`
-            : undefined,
-          features: [], // Add any features you need here
-          buttonText: "Get Started",
-          buttonClass: yearlyPlan
-            ? ""
-            : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-          borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
-          popular: !!yearlyPlan,
-        };
-      });
+            return {
+              id: monthlyPlan?.id || yearlyPlan?.id,
+              title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+              description: "Customized pricing based on your selection",
+              monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
+              yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+              period: isAnnual ? "/year" : "/month",
+              billingNote: yearlyPlan
+                ? isAnnual
+                  ? `billed annually ($${yearlyPlan.amount})`
+                  : `or $${monthlyPlan?.amount}/month`
+                : undefined,
+              features: [], // Add any features you need here
+              buttonText: "Get Started",
+              buttonClass: yearlyPlan
+                ? ""
+                : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+              borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
+              popular: !!yearlyPlan,
+            };
+          }
+        );
 
-      setPersonPricing(updatedPlans);
-      setActiveModal("personPricing");
+        setPersonPricing(updatedPlans);
+        setActiveModal("personPricing");
+      } else if (res.success.statusCode === 201) {
+        navigate("/dashboard");
+        localStorage.setItem("is_disqualify", "true");
+      }
     } catch (error) {
       console.error("Error submitting organization form:", error);
       toast.error("Failed to save organization information");
@@ -1017,7 +1039,7 @@ export default function LoginForm({
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
               >
                 <>
-                  <option value="">Select Sub domain</option>
+                  <option value="">Select Employee Size</option>
                   {OrganizationSize?.map((orgsize: any) => (
                     <option key={orgsize.id} value={orgsize.id}>
                       {orgsize.name}
@@ -1044,7 +1066,7 @@ export default function LoginForm({
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
               >
                 <>
-                  <option value="">Select Sub domain</option>
+                  <option value="">Select Revenue Range</option>
                   {revenue?.map((revenue: any) => (
                     <option key={revenue.id} value={revenue.id}>
                       {revenue.revenue_range}
@@ -1059,7 +1081,7 @@ export default function LoginForm({
               )}
             </div>
 
-            {/* Statement */}
+            {/* Questions with options as radio buttons */}
             <div className="space-y-4">
               {readlineQuestion?.map((question: any, index) => {
                 const existingAnswer =
@@ -1072,18 +1094,44 @@ export default function LoginForm({
                     <label className="block openSans text-sm font-medium text-gray-700 mb-1">
                       {question.question}
                     </label>
-                    <textarea
-                      name={`question_${question.id}`}
-                      value={existingAnswer}
-                      onChange={handleOrganizationFormChange}
-                      className={`w-full px-3 py-2 border ${
-                        organizationErrors[`question_${index + 1}`]
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      } rounded-md`}
-                      placeholder={`Enter your answer`}
-                      rows={3}
-                    />
+
+                    {question.options && question.options.length > 0 ? (
+                      <div className="space-y-2">
+                        {question.options.map((option: any) => (
+                          <div key={option.id} className="flex items-center">
+                            <input
+                              type="radio"
+                              id={`question_${question.id}_${option.id}`}
+                              name={`question_${question.id}`}
+                              value={option.option}
+                              checked={existingAnswer === option.option}
+                              onChange={handleOrganizationFormChange}
+                              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                            />
+                            <label
+                              htmlFor={`question_${question.id}_${option.id}`}
+                              className="ml-3 block openSans text-sm text-gray-700"
+                            >
+                              {option.option}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <textarea
+                        name={`question_${question.id}`}
+                        value={existingAnswer}
+                        onChange={handleOrganizationFormChange}
+                        className={`w-full px-3 py-2 border ${
+                          organizationErrors[`question_${index + 1}`]
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        } rounded-md`}
+                        placeholder={`Enter your answer`}
+                        rows={3}
+                      />
+                    )}
+
                     {organizationErrors[`question_${index + 1}`] && (
                       <p className="mt-1 text-sm text-red-600">
                         {organizationErrors[`question_${index + 1}`]}
@@ -1116,10 +1164,10 @@ export default function LoginForm({
       </Modal>
 
       <Modal isOpen={activeModal === "person"} onClose={closeModal}>
-        <div className=" p-6 rounded-lg w-full mx-auto z-10 relative">
+        <div className="p-6 rounded-lg w-full mx-auto z-10 relative">
           <h2 className="text-xl poppins font-bold mb-4">Person Information</h2>
           <form onSubmit={handlePersonSubmit}>
-            {/* Statement */}
+            {/* Questions */}
             {readlineQuestion.map((question: any, index) => {
               const existingAnswer =
                 organizationForm.question.find(
@@ -1131,18 +1179,45 @@ export default function LoginForm({
                   <label className="block openSans text-sm font-medium text-gray-700 mb-1">
                     {question.question}
                   </label>
-                  <textarea
-                    name={`question_${question.id}`}
-                    value={existingAnswer}
-                    onChange={handleOrganizationFormChange}
-                    className={`w-full px-3 py-2 border ${
-                      personErrors[`question_${index + 1}`]
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    } rounded-md`}
-                    placeholder={`Enter your answer`}
-                    rows={3}
-                  />
+
+                  {/* Render radio buttons if options exist, otherwise render textarea */}
+                  {question.options && question.options.length > 0 ? (
+                    <div className="space-y-2">
+                      {question.options.map((option: any) => (
+                        <div key={option.id} className="flex items-center">
+                          <input
+                            type="radio"
+                            id={`option_${option.id}`}
+                            name={`question_${question.id}`}
+                            value={option.option}
+                            checked={existingAnswer === option.option}
+                            onChange={handleOrganizationFormChange}
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                          />
+                          <label
+                            htmlFor={`option_${option.id}`}
+                            className="ml-3 block text-sm font-medium text-gray-700"
+                          >
+                            {option.option}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <textarea
+                      name={`question_${question.id}`}
+                      value={existingAnswer}
+                      onChange={handleOrganizationFormChange}
+                      className={`w-full px-3 py-2 border ${
+                        personErrors[`question_${index + 1}`]
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      } rounded-md`}
+                      placeholder={`Enter your answer`}
+                      rows={3}
+                    />
+                  )}
+
                   {personErrors[`question_${index + 1}`] && (
                     <p className="mt-1 text-sm text-red-600">
                       {personErrors[`question_${index + 1}`]}
@@ -1411,7 +1486,7 @@ export default function LoginForm({
           {apiMessage && (
             <div
               className={`openSans text-center p-4 ${
-              apiMessage.includes("A Forgot Password Email Has Been Sent")
+                apiMessage.includes("A Forgot Password Email Has Been Sent")
                   ? "text-green-500"
                   : "text-red-500"
               }`}
