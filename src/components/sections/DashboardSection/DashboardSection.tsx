@@ -149,27 +149,36 @@ export default function DashboardSection(user: any) {
   };
 
   const completedStep = localStorage.getItem("completed_step");
+  const is_disqualify = localStorage.getItem("is_disqualify");
   return (
     <>
       <div className="max-w-[1200px] mx-auto "></div>
       {completedStep !== "2" && (
         <div className="mx-5 bg-[rgba(255,204,0,0.05)] 5% text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-2">
-            <span className="text-yellow-500">💡</span>
-            <span>
-              To start the certification journey into our platform, please
-              complete the payment here.{" "}
-              <a
-                href="#"
-                className="text-blue-600 underline"
-                onClick={(e) => {
-                  e.preventDefault();
-                  openPricingModal();
-                }}
-              >
-                Click here
-              </a>
-            </span>
+            {is_disqualify ? (
+              <span className="text-red-500">
+                You Are Not Eligible For Inspire. Try After 1 Month!
+              </span>
+            ) : (
+              <>
+                <span className="text-yellow-500">💡</span>
+                <span>
+                  To start the certification journey into our platform, please
+                  complete the payment here.{" "}
+                  <a
+                    href="#"
+                    className="text-blue-600 underline"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      openPricingModal();
+                    }}
+                  >
+                    Click here
+                  </a>
+                </span>
+              </>
+            )}
           </div>
           <button className="text-gray-400 hover:text-gray-700 text-lg">
             ×
