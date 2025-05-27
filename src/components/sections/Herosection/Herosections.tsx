@@ -1,7 +1,14 @@
 "use client";
 import Button from "../../ui/Button";
 
+import CountdownTimer from "./CountDownTimer";
+
 export default function HeroSection() {
+  const launchDate = new Date();
+  launchDate.setDate(launchDate.getDate() + 10); // Launching in 10 days
+  
+  
+ 
   return (
     <section className="relative h-[692px] rounded-[12px] overflow-hidden lg:mx-[12px]">
       {/* Background image with overlay */}
@@ -24,7 +31,7 @@ export default function HeroSection() {
                bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
                text-transparent bg-clip-text"
           >
-            Build with Consciousness
+            Build with Consciousness <br /> Website is Launching soon! <br />
           </h1>
 
           {/* Description */}
@@ -41,10 +48,15 @@ export default function HeroSection() {
             >
               Get Started
             </Button>
-            <Button variant="white-outline" size="md">
+            <Button variant="white-outline" size="md" onClick={() => window.location.href = "https://visionary.cness.io"}>
               Join the Visionary Council
             </Button>
+            
           </div>
+         
+          <CountdownTimer targetDate={launchDate} />
+        
+          
         </div>
       </div>
     </section>
