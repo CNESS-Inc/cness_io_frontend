@@ -1,7 +1,7 @@
 'use client'
 //import NavLinks from './NavLinks'
 //import { useState } from 'react'
-import MobileMenu from './MobileMenu'
+//import MobileMenu from './MobileMenu'
 import { Link } from 'react-router-dom'
 import Image from '../../components/ui/Image'
 
