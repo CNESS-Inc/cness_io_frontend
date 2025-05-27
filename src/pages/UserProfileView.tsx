@@ -1,5 +1,4 @@
 
- import React from 'react';
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
  import Header from "../layout/Header/Header";
   import Footer from "../layout/Footer/Footer";
@@ -7,7 +6,7 @@ import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 
 
 
-  import companyBg from '../assets/companycard1.png';
+  // import companyBg from '../assets/companycard1.png';
 import inspiredbadge from '../assets/Inspired _ Badge.png';
 import bestprac from '../assets/bestprac.png';
 import bcard1 from '../assets/Bcard1.png';
@@ -34,14 +33,14 @@ import review from '../assets/review.png';
 
 export default function UserProfileView() {
 
- const BackArrow = () => (
-    <button
-      onClick={() => window.history.back()}
-      className="absolute top-4 left-4 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition"
-    >
-      <ArrowLeftIcon className="h-5 w-5 text-[#7077FE]" />
-    </button>
-  );
+//  const BackArrow = () => (
+//     <button
+//       onClick={() => window.history.back()}
+//       className="absolute top-4 left-4 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition"
+//     >
+//       <ArrowLeftIcon className="h-5 w-5 text-[#7077FE]" />
+//     </button>
+//   );
 
 
  return (
