@@ -105,8 +105,8 @@ export const router = createBrowserRouter([
             element: <TechnologyAndAIPage />,
           },
           {
-            path: ":subcategory", // dynamic subcategory
-            element: <TechnologyAndAIPage />, // same component
+            path: ":subcategory",
+            element: <TechnologyAndAIPage />,
           },
         ],
       },

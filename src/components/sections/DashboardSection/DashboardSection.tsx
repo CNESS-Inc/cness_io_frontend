@@ -83,7 +83,9 @@ export default function DashboardSection(user: any) {
   //Assessment progress
   // const Assessmentpercentage = 70;
   const totalBlocks = 6;
-  const filledBlocks = Math.floor(user?.user?.assesment_progress / (100 / totalBlocks));
+  const filledBlocks = Math.floor(
+    user?.user?.assesment_progress / (100 / totalBlocks)
+  );
 
   const openPricingModal = async () => {
     setActiveModal("PricingModal");
@@ -147,27 +149,36 @@ export default function DashboardSection(user: any) {
   };
 
   const completedStep = localStorage.getItem("completed_step");
+  const is_disqualify = localStorage.getItem("is_disqualify");
   return (
     <>
       <div className="max-w-[1200px] mx-auto "></div>
       {completedStep !== "2" && (
         <div className="mx-5 bg-[rgba(255,204,0,0.05)] 5% text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-2">
-            <span className="text-yellow-500">💡</span>
-            <span>
-              To start the certification journey into our platform, please
-              complete the payment here.{" "}
-              <a
-                href="#"
-                className="text-blue-600 underline"
-                onClick={(e) => {
-                  e.preventDefault();
-                  openPricingModal();
-                }}
-              >
-                Click here
-              </a>
-            </span>
+            {is_disqualify ? (
+              <span className="text-red-500">
+                You Are Not Eligible For Inspire. Try After {user?.user?.daysRemaining} days!
+              </span>
+            ) : (
+              <>
+                <span className="text-yellow-500">💡</span>
+                <span>
+                  To start the certification journey into our platform, please
+                  complete the payment here.{" "}
+                  <a
+                    href="#"
+                    className="text-blue-600 underline"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      openPricingModal();
+                    }}
+                  >
+                    Click here
+                  </a>
+                </span>
+              </>
+            )}
           </div>
           <button className="text-gray-400 hover:text-gray-700 text-lg">
             ×
@@ -181,9 +192,10 @@ export default function DashboardSection(user: any) {
           <div className="flex flex-col items-start">
             <div className="px-2 py-1 md:px-3 md:py-2 flex items-center gap-2.5">
               <h1 className="font-['Poppins',Helvetica] text-2xl md:text-[32px] leading-8">
-                <span className="font-semibold text-[#222224]">Hello, </span>
+                <span className="font-semibold text-[#222224]">Hello</span>
                 <span className="font-semibold text-[#a392f2]">
-                  {user?.user?.name}
+                  {user?.user?.name?.charAt(0)?.toUpperCase() +
+                    user?.user?.name?.slice(1) || ""}
                 </span>
               </h1>
             </div>

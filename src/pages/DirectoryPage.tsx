@@ -155,7 +155,7 @@ const sampleCompanies: Company[] = [
 ];
 
 type Company = {
-  id: number;
+  id: any;
   name: string;
   location: string;
   domain: string;
@@ -171,6 +171,7 @@ type Company = {
 {
   sampleCompanies.map((company: Company) => (
     <CompanyCard
+      id={company.id}
       key={company.id}
       name={company.name}
       domain={company.domain}
@@ -232,7 +233,7 @@ export default function DirectoryPage() {
 
   const handleSearch = () => {
     if (selectedDomain || searchText) {
-      const domainSlug = selectedDomain || "technology-ai";
+      const domainSlug = selectedDomain || "";
       navigate(`/directory/technology-ai?search=${encodeURIComponent(searchText)}&domain=${domainSlug}`);
     }
   };
@@ -242,7 +243,7 @@ export default function DirectoryPage() {
     setSelectedDomain(newDomain);
 
     if (searchText) {
-      const domainSlug = newDomain || "technology-ai";
+      const domainSlug = newDomain || "";
       navigate(`/directory/technology-ai?search=${encodeURIComponent(searchText)}&domain=${domainSlug}`);
     }
   };
@@ -281,7 +282,7 @@ export default function DirectoryPage() {
           <div className="w-full max-w-3xl mx-auto bg-white border border-gray-200 rounded-full flex items-center px-2 py-2 shadow-sm">
             <div className="relative">
               <select
-                className="bg-[#7077FE] text-white font-medium rounded-full px-5 py-2 appearance-none focus:outline-none cursor-pointer"
+                className="bg-[#7077FE] text-white font-medium rounded-full px-5 py-2 appearance-none focus:outline-none cursor-pointer w-[150px]"
                 value={selectedDomain}
                 onChange={handleDomainChange}
               >
@@ -480,6 +481,7 @@ export default function DirectoryPage() {
             {paginatedPopular.length > 0 ? (
               paginatedPopular.map((company) => (
                 <CompanyCard
+                  id={company.id}
                   key={company.id}
                   name={company.name}
                   domain={company.domain}
@@ -549,6 +551,7 @@ export default function DirectoryPage() {
             {paginatedAspiring.length > 0 ? (
               paginatedAspiring.map((company) => (
                 <CompanyCard
+                  id={company.id}
                   key={company.id}
                   name={company.name}
                   domain={company.domain}

@@ -1,14 +1,17 @@
-import { BellIcon, SearchIcon, SettingsIcon, MenuIcon, LogOutIcon } from "lucide-react";
+import {
+  BellIcon,
+  SearchIcon,
+  SettingsIcon,
+  MenuIcon,
+  LogOutIcon,
+} from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const DashboardHeader = ({ toggleMobileNav, user }: any) => {
-
-  
-  console.log("🚀 ~ DashboardHeader ~ userData:", user)
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -29,19 +32,15 @@ const DashboardHeader = ({ toggleMobileNav, user }: any) => {
     };
   }, []);
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
+  const handleLogout = () => {
+    try {
+      localStorage.clear();
+      setIsDropdownOpen(false);
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
-
-const handleLogout = () => {
-  try {
-    localStorage.clear();
-    setIsDropdownOpen(false);
-    navigate('/');
-  } catch (error) {
-    console.error('Logout failed:', error);
-  }
-};
 
   // const handleProfile = () => {
   //   // Add your profile navigation logic here
@@ -138,9 +137,10 @@ const handleLogout = () => {
 
         {/* Mobile-only avatar icon with dropdown */}
         <div className="md:hidden flex items-center relative" ref={dropdownRef}>
-          <button 
-          // onClick={toggleDropdown} 
-          className="focus:outline-none">
+          <button
+            // onClick={toggleDropdown}
+            className="focus:outline-none"
+          >
             <Avatar className="w-[36px] h-[36px]">
               <AvatarImage
                 src="https://c.animaapp.com/magahlmqpONVZN/img/ellipse-3279.svg"

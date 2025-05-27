@@ -20,14 +20,13 @@ import { NavLink, useNavigate } from "react-router-dom";
 const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-
   const navigate = useNavigate();
 
   const handleLogout = () => {
     try {
       localStorage.clear();
-      setIsProfileOpen(false); // if dropdown open, close it
-      toggleMobileNav(); // close sidebar on mobile
+      setIsProfileOpen(false);
+      toggleMobileNav();
       navigate("/");
     } catch (error) {
       console.error("Logout failed:", error);
@@ -217,8 +216,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
 
 // Extracted NavItem component for cleaner code
 const NavItem = ({ item, onClick }: any) => {
-  const baseClasses =
-    "flex items-center gap-3 px-4 py-3 w-full rounded-xl cursor-pointer";
+  const baseClasses ="flex items-center gap-3 px-4 py-3 w-full rounded-xl cursor-pointer";
   const activeClasses = "bg-[#f3e8ff] text-[#9747FF] font-semibold";
   const inactiveClasses = "text-slate-500 hover:bg-[#f3e8ff]";
 
@@ -234,7 +232,7 @@ const NavItem = ({ item, onClick }: any) => {
 
   const handleClick = () => {
     if (item.customAction) {
-      item.customAction(); 
+      item.customAction();
     } else {
       onClick();
     }
@@ -243,6 +241,7 @@ const NavItem = ({ item, onClick }: any) => {
   return item.path ? (
     <NavLink
       to={item.path}
+      end={item.path === "/dashboard"}
       onClick={handleClick}
       className={({ isActive }) =>
         `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`

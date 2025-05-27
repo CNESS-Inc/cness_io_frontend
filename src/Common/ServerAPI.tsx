@@ -55,8 +55,9 @@ export const ServerAPI = {
 };
 
 export const API = {
-  BaseUrl: "http://192.168.1.5:5025/api", //local
-  // BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
+  // BaseUrl: "http://192.168.1.3:5025/api", //local
+  // BaseUrl: "http://localhost:5025/api", //local
+  BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
 };
 
 export const EndPoint = {
@@ -89,6 +90,7 @@ export const EndPoint = {
   company_profile:"/organization-profile/company-profile",
   user_profile:"/profile/user-profile",
   directory_search_profile:"/profile/public-directory",
+  public_user_profile:"/profile/public-user-profile",
 };
 
 export const LoginDetails = async (formData: LoginFormData): ApiResponse => {
@@ -246,6 +248,13 @@ export const SubmitProfileDetails = (formData: any): ApiResponse => {
     EndPoint.profile
   );
 };
+export const SubmitPublicProfileDetails = (formData: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.public_user_profile
+  );
+};
 export const SubmitOrganizationDetails = (formData: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
@@ -265,6 +274,13 @@ export const GetOrganizationListingDetails = (): ApiResponse => {
     ServerAPI.APIMethod.GET,
     null,
     EndPoint.organization_Listing_profile_create
+  );
+};
+export const GetPublicProfileDetails = (): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.public_user_profile
   );
 };
 export const GetProfileDetails = (): ApiResponse => {
@@ -347,8 +363,14 @@ export const GetUserProfileDetails = (id:any): ApiResponse => {
     `${EndPoint.user_profile}/${id}`
   );
 };
-export const GetUsersearchProfileDetails = (selectedDomain:any,searchQuery:any): ApiResponse => {
-  const data = {}
+export const GetUsersearchProfileDetails = (selectedDomain:any,searchQuery:any,page:any,limit:any): ApiResponse => {
+console.log("🚀 ~ GetUsersearchProfileDetails ~ selectedDomain:", selectedDomain)
+const data: Partial<any> = {
+    domain: selectedDomain,
+    text: searchQuery,
+    page_no: page,
+    limit: limit,
+  };
   return executeAPI(
     ServerAPI.APIMethod.POST,
     data,
