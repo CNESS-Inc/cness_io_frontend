@@ -14,14 +14,14 @@ const Home = () => {
     <>
       <Header />
       <HeroSection />
-      <WhySection />
+      {/* <WhySection />
       <Platformsections />
       <Plateformrootedsection />
       <Testimonialsection />
       <Stepper />
       <AwarenessSection />
       <JoiningSection />
-      <Footer/>
+      <Footer/> */}
     </>
   );
 };
