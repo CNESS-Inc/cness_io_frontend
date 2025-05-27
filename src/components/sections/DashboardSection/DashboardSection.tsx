@@ -188,7 +188,7 @@ export default function DashboardSection(user: any) {
               </h1>
             </div>
             <div className="inline-flex items-center pt-1 pb-2 px-2 md:pt-2 md:pb-3 md:px-3">
-              <p className="font-['Open_Sans',Helvetica] text-[#7a7a7a] text-xs md:text-sm">
+              <p className="font-['Open_Sans',Helvetica] text-[#7a7a7a] text-xs sm:text-sm md:text-base">
                 Welcome to your CNESS Dashboard, Margaret!
               </p>
             </div>
@@ -197,14 +197,14 @@ export default function DashboardSection(user: any) {
 
         {/* Profile Completion and Journey Cards */}
 
-        <div className="flex flex-col md:flex-row w-full gap-3">
-          {/* First Card */}
+<div className="flex flex-col lg:flex-row gap-3 w-full">
+            {/* First Card */}
           <Card className="flex-1 border-[#eceef2]">
             <CardContent className="p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
                 {/* Circular Progress */}
                 <div className="flex justify-center sm:justify-start">
-                  <div className="relative w-[120px] h-[120px] sm:w-[147px] sm:h-[147px]">
+                  <div className="relative w-[90px] h-[90px] sm:w-[120px] sm:h-[120px] md:w-[147px] md:h-[147px]">
                     <CircularProgressbar
                       value={user?.user?.profile_progress}
                       strokeWidth={10}
@@ -240,6 +240,9 @@ export default function DashboardSection(user: any) {
                     </svg>
                   </div>
                 </div>
+
+
+
 
                 {/* Content */}
                 <div className="flex flex-col items-center sm:items-start gap-3 sm:gap-5 flex-1">
@@ -306,165 +309,144 @@ export default function DashboardSection(user: any) {
           </Card>
         </div>
 
-        {/* Top Cards Row */}
-        <div className="flex flex-col md:flex-row items-start gap-3 w-full">
-          {/* Assessment Progress Card */}
-          <Card className="w-full md:flex-1 border-[#eceef2]">
-            <CardHeader className="flex-row items-center justify-between border-b border-[#0000001a] pb-2 md:pb-3">
-              <div className="flex items-center gap-2 md:gap-3.5">
-                <div className="bg-[#ff708a33] w-8 h-8 md:w-[38px] md:h-[38px] flex items-center justify-center rounded-full">
-                  <img
-                    className="w-5 h-5 md:w-6 md:h-6"
-                    alt="Assessment icon"
-                    src="https://c.animaapp.com/magahlmqpONVZN/img/frame-2.svg"
-                  />
-                </div>
-                <CardTitle className="font-['Poppins',Helvetica] font-medium text-[#222224] text-sm md:text-base">
-                  Assessment Progress
-                </CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-4 pb-4 md:pt-6 md:pb-6">
-              <div className="flex items-center justify-between mb-3 md:mb-4">
-                <div className="font-['Poppins',Helvetica] font-medium text-[#222224] text-xl md:text-2xl">
-                  {user?.user?.assesment_progress}%
-                </div>
-                <div className="font-['Poppins',Helvetica] font-medium text-[#9747ff] text-sm md:text-base">
-                  In Progress
-                </div>
-              </div>
 
-              {/* Segmented Progress Bar */}
-              <div className="flex items-center gap-1 w-full">
-                {[...Array(totalBlocks)].map((_, index) => (
-                  <div
-                    key={index}
-                    className={`flex-1 h-5 md:h-[24px] rounded ${
-                      index < filledBlocks
-                        ? "bg-gradient-to-b from-[rgba(79,70,229,1)] to-[rgba(151,71,255,1)]"
-                        : "bg-[#EDEAFF]"
-                    }`}
-                  />
-                ))}
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* CIS Score Card */}
-          <div className="relative w-full md:w-[272px] md:h-[199px]">
-            <Card className="w-full md:w-[272px] md:h-[199px] border-[#eceef2] ">
-              <CardHeader className="flex-row items-center justify-between border-b border-[#0000001a] pb-2 md:pb-3">
-                <div className="flex items-center gap-2 md:gap-3.5">
-                  <div className="bg-[#e8cdfd33] w-8 h-8 md:w-[38px] md:h-[38px] flex items-center justify-center rounded-full">
-                    <img
-                      className="w-4 h-4 md:w-[21.71px] md:h-[21.71px]"
-                      alt="CIS Score icon"
-                      src="https://c.animaapp.com/magahlmqpONVZN/img/frame-1.svg"
-                    />
-                  </div>
-                  <CardTitle className="font-['Poppins',Helvetica] font-medium text-[#222224] text-sm md:text-base">
-                    CIS Score
-                  </CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="flex justify-center items-center pt-4 pb-4 md:pt-6 md:pb-6">
-                <div className="relative w-16 h-14 md:w-[85px] md:h-[71px]">
-                  <div className="relative w-full h-full bg-[url(https://c.animaapp.com/magahlmqpONVZN/img/ellipse-20.svg)] bg-[100%_100%]">
-                    <img
-                      className="absolute w-[calc(100%-3px)] h-full top-0 left-0"
-                      alt="Ellipse"
-                      src="https://c.animaapp.com/magahlmqpONVZN/img/ellipse-19.svg"
-                    />
-                    <div className="absolute top-[20px] left-[22px] md:top-[27px] md:left-6 font-['DM_Sans',Helvetica] font-bold text-primarydark-1 text-base md:text-[18.2px]">
-                      72%
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            {/* 🔒 Lock Overlay */}
-            <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/40 rounded-[10px] shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
-              <svg
-                className="w-8 h-8 text-gray-700 opacity-80 mb-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fill="#4F46E5"
-                  d="M10 2a4 4 0 00-4 4v3H5a1 1 0 000 2h10a1 1 0 000-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v3H8V6z"
-                />
-                <path
-                  fill="#4F46E5"
-                  d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"
-                />
-              </svg>
-              <p className="text-sm text-gray-700 font-medium">
-                CIS Score Locked
-              </p>
-              <p className="text-xs text-gray-500 mt-1"></p>
-            </div>
+        <div className="flex flex-col lg:flex-row gap-3 w-full">
+  {/* Assessment Card */}
+  <div className="w-full lg:flex-[2] relative">
+    <Card className="w-full h-full border-[#eceef2]">
+      <CardHeader className="flex-row items-center justify-between border-b border-[#0000001a] pb-2 md:pb-3">
+        <div className="flex items-center gap-2 md:gap-3.5">
+          <div className="bg-[#ff708a33] w-8 h-8 md:w-[38px] md:h-[38px] flex items-center justify-center rounded-full">
+            <img
+              className="w-5 h-5 md:w-6 md:h-6"
+              alt="Assessment icon"
+              src="https://c.animaapp.com/magahlmqpONVZN/img/frame-2.svg"
+            />
           </div>
-
-          {/* Badge Card */}
-          <div className="relative w-full md:w-[272px] md:h-[199px]">
-            <Card className="w-full h-full border-[#eceef2] rounded-[10px] overflow-hidden">
-              <CardHeader className="flex-row items-center justify-between border-b border-[#0000001a] pb-2 md:pb-3">
-                <div className="flex items-center gap-2 md:gap-3.5">
-                  <div className="bg-[#e8cdfd33] w-8 h-8 md:w-[38px] md:h-[38px] flex items-center justify-center rounded-full">
-                    <img
-                      className="w-4 h-4 md:w-[21.71px] md:h-[21.71px]"
-                      alt="Badge icon"
-                      src="https://c.animaapp.com/magahlmqpONVZN/img/frame-1.svg"
-                    />
-                  </div>
-                  <CardTitle className="font-['Poppins',Helvetica] font-medium text-[#222224] text-sm md:text-base">
-                    Badge
-                  </CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="py-3 md:py-[17px]">
-                <div className="flex flex-col md:flex-row items-center justify-around gap-2">
-                  <div className="flex flex-col md:flex-row items-center gap-2 md:gap-[42px]">
-                    <img
-                      className="w-24 md:w-[137.96px] h-auto md:h-[61.4px]"
-                      alt="Badge vector"
-                      src="https://c.animaapp.com/magahlmqpONVZN/img/vector.svg"
-                    />
-                    <div className="w-full md:w-[118.96px]">
-                      <p className="w-full py-1 bg-[#9747ff1a] rounded-[8px] text-center text-[#9747FF] font-['Poppins',Helvetica] font-medium text-sm">
-                        {user?.user?.level}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* 🔒 Show lock overlay only if user level is missing */}
-            {!user?.user?.level && (
-              <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-[10px] shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
-                <svg
-                  className="w-8 h-8 text-gray-700 opacity-80 mb-2"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fill="#4F46E5"
-                    d="M10 2a4 4 0 00-4 4v3H5a1 1 0 000 2h10a1 1 0 000-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v3H8V6z"
-                  />
-                  <path
-                    fill="#4F46E5"
-                    d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"
-                  />
-                </svg>
-                <p className="text-sm text-gray-700 font-medium">
-                  Badge Locked
-                </p>
-                <p className="text-xs text-gray-500 mt-1"></p>
-              </div>
-            )}
+          <CardTitle className="font-['Poppins',Helvetica] font-medium text-[#222224] text-sm md:text-base">
+            Assessment Progress
+          </CardTitle>
+        </div>
+      </CardHeader>
+      <CardContent className="pt-4 pb-4 md:pt-6 md:pb-6">
+        <div className="flex items-center justify-between mb-3 md:mb-4">
+          <div className="text-xl md:text-2xl text-[#222224] font-medium">
+            {user?.user?.assesment_progress || 0}%
+          </div>
+          <div className="text-sm md:text-base text-[#9747ff] font-medium">
+            In Progress
           </div>
         </div>
+        <div className="flex items-center gap-1 w-full">
+          {[...Array(6)].map((_, index) => (
+            <div
+              key={index}
+              className={`flex-1 h-5 md:h-[24px] rounded ${
+                index < Math.floor((user?.user?.assesment_progress || 0) / (100 / 6))
+                  ? "bg-gradient-to-b from-[rgba(79,70,229,1)] to-[rgba(151,71,255,1)]"
+                  : "bg-[#EDEAFF]"
+              }`}
+            />
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  </div>
+  
+
+  {/* CIS Score & Badge Cards */}
+  <div className="w-full lg:flex-1 flex flex-col sm:flex-row gap-3">
+    {/* CIS Score Card */}
+    <div className="w-full sm:w-1/2 relative">
+      <Card className="w-full h-full border-[#eceef2] rounded-[10px] overflow-hidden">
+        <CardHeader className="flex-row items-center justify-between border-b border-[#0000001a] pb-2 md:pb-3">
+          <div className="flex items-center gap-2 md:gap-3.5">
+            <div className="bg-[#e8cdfd33] w-8 h-8 md:w-[38px] md:h-[38px] flex items-center justify-center rounded-full">
+              <img
+                className="w-4 h-4 md:w-[21.71px] md:h-[21.71px]"
+                alt="CIS Score icon"
+                src="https://c.animaapp.com/magahlmqpONVZN/img/frame-1.svg"
+              />
+            </div>
+            <CardTitle className="text-sm md:text-base font-medium text-[#222224]">
+              CIS Score
+            </CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="flex justify-center items-center pt-4 pb-4 md:pt-6 md:pb-6">
+          <div className="relative w-16 h-14 md:w-[85px] md:h-[71px]">
+            <div className="relative w-full h-full bg-[url(https://c.animaapp.com/magahlmqpONVZN/img/ellipse-20.svg)] bg-[100%_100%]">
+              <img
+                className="absolute w-[calc(100%-3px)] h-full top-0 left-0"
+                alt="Ellipse"
+                src="https://c.animaapp.com/magahlmqpONVZN/img/ellipse-19.svg"
+              />
+              <div className="absolute top-[20px] left-[22px] md:top-[27px] md:left-6 text-base md:text-[18.2px] font-bold text-primarydark-1">
+                72%
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      {(user?.user?.assesment_progress || 0) < 100 && (
+        <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/40 rounded-[10px] shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
+          <svg className="w-8 h-8 text-gray-700 opacity-80 mb-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill="#4F46E5" d="M10 2a4 4 0 00-4 4v3H5a1 1 0 000 2h10a1 1 0 000-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v3H8V6z" />
+            <path fill="#4F46E5" d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z" />
+          </svg>
+          <p className="text-sm text-gray-700 font-medium">CIS Score Locked</p>
+        </div>
+      )}
+    </div>
+
+    {/* Badge Card */}
+    <div className="w-full sm:w-1/2 relative">
+      <Card className="w-full h-full border-[#eceef2] rounded-[10px] overflow-hidden">
+        <CardHeader className="flex-row items-center justify-between border-b border-[#0000001a] pb-2 md:pb-3">
+          <div className="flex items-center gap-2 md:gap-3.5">
+            <div className="bg-[#e8cdfd33] w-8 h-8 md:w-[38px] md:h-[38px] flex items-center justify-center rounded-full">
+              <img
+                className="w-4 h-4 md:w-[21.71px] md:h-[21.71px]"
+                alt="Badge icon"
+                src="https://c.animaapp.com/magahlmqpONVZN/img/frame-1.svg"
+              />
+            </div>
+            <CardTitle className="text-sm md:text-base font-medium text-[#222224]">
+              Badge
+            </CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="py-3 md:py-[17px]">
+          <div className="flex flex-col md:flex-row items-center justify-around gap-2">
+            <div className="flex flex-col md:flex-row items-center gap-2 md:gap-[42px]">
+              <img
+                className="w-24 md:w-[137.96px] h-auto md:h-[61.4px]"
+                alt="Badge vector"
+                src="https://c.animaapp.com/magahlmqpONVZN/img/vector.svg"
+              />
+              <div className="w-full md:w-[118.96px]">
+                <p className="w-full py-1 bg-[#9747ff1a] rounded-[8px] text-center text-[#9747FF] font-medium text-sm">
+                  {user?.user?.level}
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      {!user?.user?.level && (
+        <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-[10px] shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
+          <svg className="w-8 h-8 text-gray-700 opacity-80 mb-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill="#4F46E5" d="M10 2a4 4 0 00-4 4v3H5a1 1 0 000 2h10a1 1 0 000-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v3H8V6z" />
+            <path fill="#4F46E5" d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z" />
+          </svg>
+          <p className="text-sm text-gray-700 font-medium">Badge Locked</p>
+        </div>
+      )}
+    </div>
+  </div>
+</div>
+
 
         {/* Learning Lab Section */}
         <Card className="w-full border-[#eceef2]">
@@ -483,7 +465,7 @@ export default function DashboardSection(user: any) {
             </div>
           </CardHeader>
           <CardContent className="pt-4 pb-4 md:pt-6 md:pb-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-[11px]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-5 md:gap-[11px]">
               {modules.map((module) => (
                 <Card
                   key={module.id}
@@ -522,7 +504,7 @@ export default function DashboardSection(user: any) {
                       }}
                     >
                       <Badge
-                        className={`absolute top-2 right-2 md:top-2.5 md:right-3 ${
+                        className={`absolute top-2 right-2 md:top-2.5 md:right-2 ${
                           module.status === "Completed"
                             ? "bg-[#b4b7ff]"
                             : "bg-[#f3ccf3]"
@@ -562,7 +544,7 @@ export default function DashboardSection(user: any) {
                         </h3>
                         {!module.locked && (
                           <Button
-                            className="bg-[#7077FE] py-1 px-2 md:py-[8px] md:px-[20.5px] w-fit rounded-full text-xs md:text-base"
+                            className="bg-[#7077FE] py-1 px-2 sm:py-2 sm:px-4 md:py-[8px] md:px-[20.5px] w-fit rounded-full text-xs md:text-base"
                             variant="primary"
                             withGradientOverlay
                           >

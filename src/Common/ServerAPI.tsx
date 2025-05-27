@@ -91,12 +91,27 @@ export const EndPoint = {
   directory_search_profile:"/profile/public-directory",
 };
 
-export const LoginDetails = (formData: LoginFormData): ApiResponse => {
-  const data: Partial<LoginFormData> = {
-    email: formData?.email,
-    password: formData?.password,
-  };
-  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.login);
+export const LoginDetails = async (formData: LoginFormData): ApiResponse => {
+  console.log("MOCK LoginDetails CALLED:", formData);
+
+  // Simulate login success
+  return Promise.resolve({
+    success: { message: "Mock login successful!" },
+    data: {
+      data: {
+        jwt: "mock-jwt-token",
+        user: {
+          id: 999,
+          name: "Mock User",
+          email: formData.email,
+          person_organization_complete: 1,
+          profile_progress: 60,
+          assesment_progress: 85,
+          level: "CNESS Inspired",
+        },
+      },
+    },
+  });
 };
 export const ForgotPasswordDetails = (formData: ForgotFormData): ApiResponse => {
   const data: Partial<ForgotFormData> = {
@@ -112,14 +127,33 @@ export const ForgotPasswordDetailsSubmit = (formData: ResetFormData): ApiRespons
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.reset);
 };
 
+
+
 export const RegisterDetails = (formData: RegisterFormData): ApiResponse => {
-  const data: Partial<RegisterFormData> = {
-    username: formData?.username,
-    email: formData?.email,
-    password: formData?.password,
-  };
-  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.register);
+  console.log("MOCK RegisterDetails CALLED:", formData);
+
+  return Promise.resolve({
+    success: { message: "Mock registration successful!" },
+    data: {
+      data: {
+        jwt: "mock-jwt-token",
+        user: {
+          id: 999,
+          name: formData.username,
+          email: formData.email,
+          person_organization_complete: 1,
+          profile_progress: 50,
+          assesment_progress: 75,
+          level: "CNESS Inspired",
+        },
+      },
+    },
+  });
 };
+
+
+
+
 export const AccountDetails = (formData: AccountData): ApiResponse => {
   const data: Partial<AccountData> = {
     person_organization_complete: formData?.person_organization_complete,
