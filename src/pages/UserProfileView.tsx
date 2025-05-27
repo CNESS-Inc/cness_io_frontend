@@ -3,10 +3,6 @@ import { ArrowLeftIcon } from '@heroicons/react/24/solid';
  import Header from "../layout/Header/Header";
   import Footer from "../layout/Footer/Footer";
   import '@fortawesome/fontawesome-free/css/all.min.css';
-
-
-
-  // import companyBg from '../assets/companycard1.png';
 import inspiredbadge from '../assets/Inspired _ Badge.png';
 import bestprac from '../assets/bestprac.png';
 import bcard1 from '../assets/Bcard1.png';
