@@ -158,7 +158,7 @@ export default function DashboardSection(user: any) {
           <div className="flex items-center gap-2">
             {is_disqualify ? (
               <span className="text-red-500">
-                You Are Not Eligible For Inspire. Try After 1 Month!
+                You Are Not Eligible For Inspire. Try After {user?.user?.daysRemaining} days!
               </span>
             ) : (
               <>
