@@ -37,6 +37,7 @@ const UserProfilePage = () => {
   const [Country, setCountry] = useState<any>(null);
   const [states, setStates] = useState<any[]>([]);
   const public_organization = localStorage.getItem("person_organization");
+  const is_disqualify = localStorage.getItem("is_disqualify");
 
   // Separate form handlers for each tab
   const basicInfoForm = useForm();
@@ -49,7 +50,7 @@ const UserProfilePage = () => {
   const handleImageChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
     setter: React.Dispatch<React.SetStateAction<string | null>>,
-    formKey: string 
+    formKey: string
   ) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -405,972 +406,1035 @@ const UserProfilePage = () => {
     <>
       <DashboardLayout>
         {public_organization === "1" ? (
-          <div className="max-w-6xl mx-auto mt-0 bg-white rounded-xl shadow overflow-hidden">
-            <div className="relative h-[300px] bg-gray-100">
-              <img
-                src={banner || "/default-banner.jpg"}
-                alt="Banner"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute top-3 right-3 flex gap-2 z-10">
-                <label className="cursor-pointer bg-white p-2 rounded-full shadow hover:bg-gray-200">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => handleImageChange(e, setBanner, "banner")}
-                  />
-                  <PhotoIcon className="w-5 h-5 text-gray-600" />
-                </label>
-                {banner && (
-                  <button
-                    onClick={() => setBanner(null)}
-                    className="bg-white p-2 rounded-full shadow hover:bg-red-100"
+          is_disqualify === "true" ? (
+            <div className="max-w-6xl mt-0 shadow overflow-hidden p-8 text-center">
+              <div className="py-12">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                  User Profile Access Restricted
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  You can access your profile after completing your assessment.
+                </p>
+                <div className="flex justify-center">
+                  <svg
+                    className="w-24 h-24 text-purple-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <TrashIcon className="w-5 h-5 text-red-600" />
-                  </button>
-                )}
-              </div>
-
-              <div className="absolute -bottom-0 left-6 z-20 group">
-                <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100">
-                  <img
-                    src={logoPreview || "/default-logo.jpg"}
-                    alt="Profile"
-                    className="object-cover w-full h-full"
-                  />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="flex gap-2">
-                      <label
-                        className="bg-white p-1.5 rounded-full shadow cursor-pointer hover:bg-gray-100"
-                        title="Upload Photo"
-                      >
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) =>
-                            handleImageChange(e, setLogoPreview, "profile")
-                          }
-                        />
-                        <PhotoIcon className="w-4 h-4 text-gray-600" />
-                      </label>
-                      {logoPreview && (
-                        <button
-                          onClick={() => setLogoPreview(null)}
-                          className="bg-white p-1.5 rounded-full shadow hover:bg-red-100"
-                          title="Remove Photo"
-                        >
-                          <TrashIcon className="w-4 h-4 text-red-600" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    />
+                  </svg>
                 </div>
               </div>
             </div>
-            <div className="max-w-6xl mx-auto px-6 py-10">
-              <h2 className="text-[22px] font-bold text-[#9747FF] mb-6">
-                My Profile
-              </h2>
-
-              <Tab.Group
-                selectedIndex={selectedIndex}
-                onChange={setSelectedIndex}
-              >
-                <div className="px-6 pt-6">
-                  {/* Tab Header - remains the same */}
-                  <Tab.List className="flex gap-3">
-                    {tabNames.map((tab, index) => (
-                      <Tab
-                        key={index}
-                        className={({ selected }) =>
-                          `px-4 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 focus-visible:outline-none ${
-                            selected
-                              ? "text-purple-600 bg-white shadow-md border-t-2 border-x-2 border-purple-600 -mb-[1px]"
-                              : "text-gray-500 bg-transparent hover:text-purple-500"
-                          }`
+          ) : (
+            <div className="max-w-6xl mx-auto mt-0 bg-white rounded-xl shadow overflow-hidden">
+              <div className="max-w-6xl mx-auto mt-0 bg-white rounded-xl shadow overflow-hidden">
+                <div className="relative h-[300px] bg-gray-100">
+                  <img
+                    src={banner || "/default-banner.jpg"}
+                    alt="Banner"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-3 right-3 flex gap-2 z-10">
+                    <label className="cursor-pointer bg-white p-2 rounded-full shadow hover:bg-gray-200">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) =>
+                          handleImageChange(e, setBanner, "banner")
                         }
+                      />
+                      <PhotoIcon className="w-5 h-5 text-gray-600" />
+                    </label>
+                    {banner && (
+                      <button
+                        onClick={() => setBanner(null)}
+                        className="bg-white p-2 rounded-full shadow hover:bg-red-100"
                       >
-                        {tab}
-                      </Tab>
-                    ))}
-                  </Tab.List>
+                        <TrashIcon className="w-5 h-5 text-red-600" />
+                      </button>
+                    )}
+                  </div>
 
-                  {/* Tab Content Panel */}
-                  <Tab.Panels className="pt-6">
-                    {/* Basic Information Tab */}
-                    <Tab.Panel>
-                      <form
-                        onSubmit={basicInfoForm.handleSubmit(
-                          handleBasicInfoSubmit
-                        )}
-                      >
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {/* First Name */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              First Name <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              {...basicInfoForm.register("firstName", {
-                                required: true,
-                              })}
-                              placeholder="Enter your First Name"
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                            {basicInfoForm.formState.errors.firstName && (
-                              <p className="text-sm text-red-500 mt-1">
-                                First name is required
-                              </p>
-                            )}
-                          </div>
-
-                          {/* Last Name */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Last Name <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              {...basicInfoForm.register("lastName", {
-                                required: true,
-                              })}
-                              placeholder="Enter your Last Name"
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                            {basicInfoForm.formState.errors.lastName && (
-                              <p className="text-sm text-red-500 mt-1">
-                                Last name is required
-                              </p>
-                            )}
-                          </div>
-
-                          {/* Interests */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Interests <span className="text-red-500">*</span>
-                            </label>
-                            <select
-                              {...basicInfoForm.register("interests", {
-                                required: true,
-                              })}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            >
-                              <option value="">Select your Interest</option>
-
-                              {intereset?.map((interest: any) => (
-                                <option key={interest.id} value={interest.id}>
-                                  {interest.name}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-
-                          {/* Profession */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Profession <span className="text-red-500">*</span>
-                            </label>
-                            <select
-                              {...basicInfoForm.register("profession", {
-                                required: true,
-                              })}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            >
-                              <option value="">Select your profession</option>
-                              {professional?.map((profession: any) => (
-                                <option
-                                  key={profession.id}
-                                  value={profession.id}
-                                >
-                                  {profession.title}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-
-                          {/* Gender */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Gender <span className="text-red-500">*</span>
-                            </label>
-                            <select
-                              {...basicInfoForm.register("gender", {
-                                required: true,
-                              })}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            >
-                              <option value="">Select your gender</option>
-                              <option value="Male">Male</option>
-                              <option value="Female">Female</option>
-                              <option value="Non-binary">Non-binary</option>
-                            </select>
-                          </div>
-
-                          {/* Date of Birth */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Date of Birth{" "}
-                              <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="date"
-                              {...basicInfoForm.register("dob", {
-                                required: true,
-                              })}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                          </div>
-
-                          {/* Quote on Consciousness */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Your Quote on Consciousness
-                            </label>
-                            <input
-                              type="text"
-                              {...basicInfoForm.register("quote")}
-                              placeholder="Enter your quote"
-                              className="w-full px-4 py-2 border border-purple-400 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                          </div>
-
-                          {/* Professional Bio */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Professional Bio{" "}
-                              <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              {...basicInfoForm.register("bio", {
-                                required: true,
-                              })}
-                              placeholder="Add a short professional bio"
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                          </div>
-
-                          {/* Vision Statement - Full Width */}
-                          <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Personal Vision Statement
-                            </label>
-                            <textarea
-                              rows={4}
-                              {...basicInfoForm.register("vision")}
-                              placeholder="What is your conscious vision?"
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-
-                            {/*contact info */}
-                          </div>
-
-                          <div className="md:col-span-2 flex justify-end gap-4 mt-6">
-                            <button
-                              type="button"
-                              onClick={() => basicInfoForm.reset()}
-                              className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
-                            >
-                              Reset
-                            </button>
-                            <button
-                              type="submit"
-                              disabled={isSubmitting.basic}
-                              className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
-                            >
-                              {isSubmitting.basic
-                                ? "Saving..."
-                                : "Save Basic Info"}
-                            </button>
-                          </div>
-                        </div>
-                      </form>
-                    </Tab.Panel>
-
-                    {/* Contact Information Tab */}
-                    <Tab.Panel>
-                      <form
-                        onSubmit={contactInfoForm.handleSubmit(
-                          handleContactInfoSubmit
-                        )}
-                      >
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {/* Phone Number */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Phone Number{" "}
-                              <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="tel"
-                              {...contactInfoForm.register("phone", {
-                                required: "Phone number is required",
-                                pattern: {
-                                  value: /^[0-9]{10}$/,
-                                  message: "Phone must be 10 digits",
-                                },
-                              })}
-                              onKeyDown={(e) => {
-                                if (
-                                  !/[0-9]/.test(e.key) &&
-                                  e.key !== "Backspace" &&
-                                  e.key !== "Tab"
-                                ) {
-                                  e.preventDefault();
-                                }
-                              }}
-                              className={`w-full px-4 py-2 border ${
-                                contactInfoForm.formState.errors.phone
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              } rounded-xl focus:outline-none focus:ring-2 ${
-                                contactInfoForm.formState.errors.phone
-                                  ? "focus:ring-red-500"
-                                  : "focus:ring-purple-500"
-                              }`}
-                            />
-                            {contactInfoForm.formState.errors.phone && (
-                              <p className="text-sm text-red-500 mt-1">
-                                {
-                                  contactInfoForm.formState.errors.phone
-                                    .message as string
-                                }
-                              </p>
-                            )}
-                          </div>
-
-                          {/* Email */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Email <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="email"
-                              {...contactInfoForm.register("email", {
-                                required: "Email is required",
-                                pattern: {
-                                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                  message: "Enter a valid email",
-                                },
-                              })}
-                              className={`w-full px-4 py-2 border ${
-                                contactInfoForm.formState.errors.email
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              } rounded-xl focus:outline-none focus:ring-2 ${
-                                contactInfoForm.formState.errors.email
-                                  ? "focus:ring-red-500"
-                                  : "focus:ring-purple-500"
-                              }`}
-                            />
-                            {contactInfoForm.formState.errors.email && (
-                              <p className="text-sm text-red-500 mt-1">
-                                {
-                                  contactInfoForm.formState.errors.email
-                                    .message as string
-                                }
-                              </p>
-                            )}
-                          </div>
-
-                          {/* Address */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Address <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              {...contactInfoForm.register("address", {
-                                required: "Address is required",
-                              })}
-                              placeholder="Enter your address"
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                            {contactInfoForm.formState.errors.address && (
-                              <p className="text-sm text-red-500 mt-1">
-                                {
-                                  contactInfoForm.formState.errors.address
-                                    .message as string
-                                }
-                              </p>
-                            )}
-                          </div>
-
-                          {/* Country */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Country <span className="text-red-500">*</span>
-                            </label>
-                            <select
-                              {...contactInfoForm.register("country", {
-                                required: "Country is required",
-                              })}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            >
-                              <option value="">Select your country</option>
-                              Country
-                              {Country?.map((country: any) => (
-                                <option key={country.id} value={country.id}>
-                                  {country.name}
-                                </option>
-                              ))}
-                            </select>
-                            {contactInfoForm.formState.errors.country && (
-                              <p className="text-sm text-red-500 mt-1">
-                                {
-                                  contactInfoForm.formState.errors.country
-                                    .message as string
-                                }
-                              </p>
-                            )}
-                          </div>
-
-                          {/* State */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              State <span className="text-red-500">*</span>
-                            </label>
-                            <select
-                              {...contactInfoForm.register("state", {
-                                required: "State is required",
-                              })}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            >
-                              <option value="">Select your state</option>
-                              {states?.map((state: any) => (
-                                <option key={state.id} value={state.id}>
-                                  {state.name}
-                                </option>
-                              ))}
-                            </select>
-                            {contactInfoForm.formState.errors.state && (
-                              <p className="text-sm text-red-500 mt-1">
-                                {
-                                  contactInfoForm.formState.errors.state
-                                    .message as string
-                                }
-                              </p>
-                            )}
-                          </div>
-
-                          {/* City */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              City
-                            </label>
-                            <input
-                              type="text"
-                              {...contactInfoForm.register("city")}
-                              placeholder="Enter city"
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                          </div>
-
-                          {/* Postal Code */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Postal Code{" "}
-                              <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="number"
-                              {...contactInfoForm.register("postalCode", {
-                                required: "Postal code is required",
-                              })}
-                              placeholder="Enter postal code"
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                            {contactInfoForm.formState.errors.postalCode && (
-                              <p className="text-sm text-red-500 mt-1">
-                                {
-                                  contactInfoForm.formState.errors.postalCode
-                                    .message as string
-                                }
-                              </p>
-                            )}
-                          </div>
-
-                          {/* Communication Preferences */}
-                          <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Preferred Method of Communication{" "}
-                              <span className="text-red-500">*</span>
-                            </label>
-                            <div className="flex gap-6">
-                              <label className="inline-flex items-center gap-2">
-                                <input
-                                  type="checkbox"
-                                  {...contactInfoForm.register(
-                                    "communication.sms"
-                                  )}
-                                  className="accent-[#9747FF]"
-                                />
-                                <span className="text-sm text-gray-700">
-                                  SMS
-                                </span>
-                              </label>
-                              <label className="inline-flex items-center gap-2">
-                                <input
-                                  type="checkbox"
-                                  {...contactInfoForm.register(
-                                    "communication.email"
-                                  )}
-                                  className="accent-[#9747FF]"
-                                />
-                                <span className="text-sm text-gray-700">
-                                  Email
-                                </span>
-                              </label>
-                              <label className="inline-flex items-center gap-2">
-                                <input
-                                  type="checkbox"
-                                  {...contactInfoForm.register(
-                                    "communication.whatsapp"
-                                  )}
-                                  className="accent-[#9747FF]"
-                                />
-                                <span className="text-sm text-gray-700">
-                                  WhatsApp
-                                </span>
-                              </label>
-                            </div>
-                          </div>
-
-                          <div className="md:col-span-2 flex justify-end gap-4 mt-6">
-                            <button
-                              type="button"
-                              onClick={() => contactInfoForm.reset()}
-                              className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
-                            >
-                              Reset
-                            </button>
-                            <button
-                              type="submit"
-                              disabled={isSubmitting.contact}
-                              className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
-                            >
-                              {isSubmitting.contact
-                                ? "Saving..."
-                                : "Save Contact Info"}
-                            </button>
-                          </div>
-                        </div>
-                      </form>
-                    </Tab.Panel>
-
-                    {/* Social Links Tab */}
-                    <Tab.Panel>
-                      <form
-                        onSubmit={socialLinksForm.handleSubmit(
-                          handleSocialLinksSubmit
-                        )}
-                      >
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {/* Facebook */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Facebook
-                            </label>
-                            <input
-                              type="url"
-                              {...socialLinksForm.register("facebook")}
-                              placeholder="Enter Facebook profile URL"
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                          </div>
-
-                          {/* Twitter */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Twitter
-                            </label>
-                            <input
-                              type="url"
-                              {...socialLinksForm.register("twitter")}
-                              placeholder="Enter Twitter profile URL"
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                          </div>
-
-                          {/* LinkedIn */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              LinkedIn
-                            </label>
-                            <input
-                              type="url"
-                              {...socialLinksForm.register("linkedin")}
-                              placeholder="Enter LinkedIn profile URL"
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                          </div>
-
-                          {/* Instagram */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Instagram
-                            </label>
-                            <input
-                              type="url"
-                              {...socialLinksForm.register("instagram")}
-                              placeholder="Enter Instagram profile URL"
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                          </div>
-
-                          <div className="md:col-span-2 flex justify-end gap-4 mt-6">
-                            <button
-                              type="button"
-                              onClick={() => socialLinksForm.reset()}
-                              className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
-                            >
-                              Reset
-                            </button>
-                            <button
-                              type="submit"
-                              disabled={isSubmitting.social}
-                              className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
-                            >
-                              {isSubmitting.social
-                                ? "Saving..."
-                                : "Save Social Links"}
-                            </button>
-                          </div>
-                        </div>
-                      </form>
-                    </Tab.Panel>
-
-                    {/* Education Tab */}
-                    <Tab.Panel>
-                      <form
-                        onSubmit={educationForm.handleSubmit(
-                          handleEducationSubmit
-                        )}
-                      >
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {/* Degree */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Degree <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              {...educationForm.register("degree", {
-                                required: true,
-                              })}
-                              placeholder="Enter your degree"
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                            {educationForm.formState.errors.degree && (
-                              <p className="text-sm text-red-500 mt-1">
-                                Degree is required
-                              </p>
-                            )}
-                          </div>
-
-                          {/* Institution */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Institution{" "}
-                              <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              {...educationForm.register("institution")}
-                              placeholder="Enter institution name"
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                          </div>
-
-                          {/* Start Date */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Start Date <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="date"
-                              {...educationForm.register("startDate")}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                          </div>
-
-                          {/* End Date */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              End Date <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="date"
-                              {...educationForm.register("endDate")}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                          </div>
-
-                          <div className="md:col-span-2 flex justify-end gap-4 mt-6">
-                            <button
-                              type="button"
-                              onClick={() => educationForm.reset()}
-                              className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
-                            >
-                              Reset
-                            </button>
-                            <button
-                              type="submit"
-                              disabled={isSubmitting.education}
-                              className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
-                            >
-                              {isSubmitting.education
-                                ? "Saving..."
-                                : "Save Education"}
-                            </button>
-                          </div>
-                        </div>
-                      </form>
-                    </Tab.Panel>
-
-                    {/* Work Experience Tab */}
-                    <Tab.Panel>
-                      <form
-                        onSubmit={workExperienceForm.handleSubmit(
-                          handleWorkExperienceSubmit
-                        )}
-                      >
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {/* Company */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Company <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              {...workExperienceForm.register("company", {
-                                required: true,
-                              })}
-                              placeholder="Enter Company Name"
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                            {workExperienceForm.formState.errors.company && (
-                              <p className="text-sm text-red-500 mt-1">
-                                Company is required
-                              </p>
-                            )}
-                          </div>
-
-                          {/* Position */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Position <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              {...workExperienceForm.register("position")}
-                              placeholder="Enter your Designation"
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                          </div>
-
-                          {/* Start Date */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Start Date <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="date"
-                              {...workExperienceForm.register("start_date")}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                          </div>
-
-                          {/* End Date */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              End Date <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="date"
-                              {...workExperienceForm.register("end_date")}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                          </div>
-
-                          <div className="md:col-span-2 flex justify-end gap-4 mt-6">
-                            <button
-                              type="button"
-                              onClick={() => workExperienceForm.reset()}
-                              className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
-                            >
-                              Reset
-                            </button>
-                            <button
-                              type="submit"
-                              disabled={isSubmitting.work}
-                              className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
-                            >
-                              {isSubmitting.work
-                                ? "Saving..."
-                                : "Save Work Experience"}
-                            </button>
-                          </div>
-                        </div>
-                      </form>
-                    </Tab.Panel>
-
-                    {/* Public Profile Fields Tab */}
-                    <Tab.Panel>
-                      <form
-                        onSubmit={publicProfileForm.handleSubmit(
-                          handlePublicProfileSubmit
-                        )}
-                      >
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {/* Title */}
-                          <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Title <span className="text-red-500">*</span>
-                            </label>
-                            <textarea
-                              {...publicProfileForm.register("title", {
-                                required: true,
-                              })}
-                              rows={3}
-                              placeholder="Enter a brief title or role"
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                            {publicProfileForm.formState.errors.title && (
-                              <p className="text-sm text-red-500 mt-1">
-                                Title is required
-                              </p>
-                            )}
-                          </div>
-
-                          {/* Featured Image Upload */}
-                          <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Featured Image{" "}
-                              <span className="text-gray-500 text-xs">
-                                (Upload an image that represents your service)
-                              </span>
-                            </label>
+                  <div className="absolute -bottom-0 left-6 z-20 group">
+                    <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100">
+                      <img
+                        src={logoPreview || "/default-logo.jpg"}
+                        alt="Profile"
+                        className="object-cover w-full h-full"
+                      />
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="flex gap-2">
+                          <label
+                            className="bg-white p-1.5 rounded-full shadow cursor-pointer hover:bg-gray-100"
+                            title="Upload Photo"
+                          >
                             <input
                               type="file"
                               accept="image/*"
-                              {...publicProfileForm.register("featuredImage")}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              className="hidden"
+                              onChange={(e) =>
+                                handleImageChange(e, setLogoPreview, "profile")
+                              }
                             />
-                          </div>
-
-                          {/* Services Offered */}
-                          <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Services Offered
-                            </label>
-                            <input
-                              type="text"
-                              {...publicProfileForm.register("services")}
-                              placeholder="Enter a service you offer"
-                              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                          </div>
-
-                          {/* Tags Field */}
-                          <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Tags <span className="text-red-500">*</span>
-                            </label>
-                            <div className="w-full border border-gray-300 rounded-xl px-3 py-2">
-                              <div className="flex flex-wrap gap-2 mb-1">
-                                {tags.map((tag, idx) => (
-                                  <span
-                                    key={idx}
-                                    className="flex items-center bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs"
-                                  >
-                                    {tag}
-                                    <button
-                                      onClick={() => removeTag(idx)}
-                                      className="ml-1 text-purple-600 hover:text-red-500 font-bold"
-                                    >
-                                      ×
-                                    </button>
-                                  </span>
-                                ))}
-                              </div>
-                              <input
-                                type="text"
-                                className="w-full text-sm focus:outline-none placeholder-gray-400"
-                                placeholder="Add tags (e.g. therapy, online, free-consult)"
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                onKeyDown={handleTagKeyDown}
-                              />
-                            </div>
-                          </div>
-
-                          {/* Notify Email */}
-                          <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Notify Email{" "}
-                              <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="email"
-                              {...publicProfileForm.register("notifyEmail", {
-                                required: "Email is required",
-                                pattern: {
-                                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                  message: "Enter a valid email",
-                                },
-                              })}
-                              className={`w-full px-4 py-2 border ${
-                                publicProfileForm.formState.errors.notifyEmail
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              } rounded-xl focus:outline-none focus:ring-2 ${
-                                publicProfileForm.formState.errors.notifyEmail
-                                  ? "focus:ring-red-500"
-                                  : "focus:ring-purple-500"
-                              }`}
-                            />
-                            {publicProfileForm.formState.errors.notifyEmail && (
-                              <p className="text-sm text-red-500 mt-1">
-                                {
-                                  publicProfileForm.formState.errors.notifyEmail
-                                    .message as string
-                                }
-                              </p>
-                            )}
-                          </div>
-
-                          <div className="md:col-span-2 flex justify-end gap-4 mt-6">
+                            <PhotoIcon className="w-4 h-4 text-gray-600" />
+                          </label>
+                          {logoPreview && (
                             <button
-                              type="button"
-                              onClick={() => publicProfileForm.reset()}
-                              className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
+                              onClick={() => setLogoPreview(null)}
+                              className="bg-white p-1.5 rounded-full shadow hover:bg-red-100"
+                              title="Remove Photo"
                             >
-                              Reset
+                              <TrashIcon className="w-4 h-4 text-red-600" />
                             </button>
-                            <button
-                              type="submit"
-                              disabled={isSubmitting.public}
-                              className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
-                            >
-                              {isSubmitting.public
-                                ? "Saving..."
-                                : "Save Public Profile"}
-                            </button>
-                          </div>
+                          )}
                         </div>
-                      </form>
-                    </Tab.Panel>
-                  </Tab.Panels>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </Tab.Group>
+                <div className="max-w-6xl mx-auto px-6 py-10">
+                  <h2 className="text-[22px] font-bold text-[#9747FF] mb-6">
+                    My Profile
+                  </h2>
+
+                  <Tab.Group
+                    selectedIndex={selectedIndex}
+                    onChange={setSelectedIndex}
+                  >
+                    <div className="px-6 pt-6">
+                      {/* Tab Header - remains the same */}
+                      <Tab.List className="flex gap-3">
+                        {tabNames.map((tab, index) => (
+                          <Tab
+                            key={index}
+                            className={({ selected }) =>
+                              `px-4 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 focus-visible:outline-none ${
+                                selected
+                                  ? "text-purple-600 bg-white shadow-md border-t-2 border-x-2 border-purple-600 -mb-[1px]"
+                                  : "text-gray-500 bg-transparent hover:text-purple-500"
+                              }`
+                            }
+                          >
+                            {tab}
+                          </Tab>
+                        ))}
+                      </Tab.List>
+
+                      {/* Tab Content Panel */}
+                      <Tab.Panels className="pt-6">
+                        {/* Basic Information Tab */}
+                        <Tab.Panel>
+                          <form
+                            onSubmit={basicInfoForm.handleSubmit(
+                              handleBasicInfoSubmit
+                            )}
+                          >
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              {/* First Name */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  First Name{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  {...basicInfoForm.register("firstName", {
+                                    required: true,
+                                  })}
+                                  placeholder="Enter your First Name"
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                                {basicInfoForm.formState.errors.firstName && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    First name is required
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Last Name */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Last Name{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  {...basicInfoForm.register("lastName", {
+                                    required: true,
+                                  })}
+                                  placeholder="Enter your Last Name"
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                                {basicInfoForm.formState.errors.lastName && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    Last name is required
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Interests */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Interests{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                  {...basicInfoForm.register("interests", {
+                                    required: true,
+                                  })}
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                >
+                                  <option value="">Select your Interest</option>
+
+                                  {intereset?.map((interest: any) => (
+                                    <option
+                                      key={interest.id}
+                                      value={interest.id}
+                                    >
+                                      {interest.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+
+                              {/* Profession */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Profession{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                  {...basicInfoForm.register("profession", {
+                                    required: true,
+                                  })}
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                >
+                                  <option value="">
+                                    Select your profession
+                                  </option>
+                                  {professional?.map((profession: any) => (
+                                    <option
+                                      key={profession.id}
+                                      value={profession.id}
+                                    >
+                                      {profession.title}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+
+                              {/* Gender */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Gender <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                  {...basicInfoForm.register("gender", {
+                                    required: true,
+                                  })}
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                >
+                                  <option value="">Select your gender</option>
+                                  <option value="Male">Male</option>
+                                  <option value="Female">Female</option>
+                                  <option value="Non-binary">Non-binary</option>
+                                </select>
+                              </div>
+
+                              {/* Date of Birth */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Date of Birth{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="date"
+                                  {...basicInfoForm.register("dob", {
+                                    required: true,
+                                  })}
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
+
+                              {/* Quote on Consciousness */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Your Quote on Consciousness
+                                </label>
+                                <input
+                                  type="text"
+                                  {...basicInfoForm.register("quote")}
+                                  placeholder="Enter your quote"
+                                  className="w-full px-4 py-2 border border-purple-400 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
+
+                              {/* Professional Bio */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Professional Bio{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  {...basicInfoForm.register("bio", {
+                                    required: true,
+                                  })}
+                                  placeholder="Add a short professional bio"
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
+
+                              {/* Vision Statement - Full Width */}
+                              <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Personal Vision Statement
+                                </label>
+                                <textarea
+                                  rows={4}
+                                  {...basicInfoForm.register("vision")}
+                                  placeholder="What is your conscious vision?"
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+
+                                {/*contact info */}
+                              </div>
+
+                              <div className="md:col-span-2 flex justify-end gap-4 mt-6">
+                                <button
+                                  type="button"
+                                  onClick={() => basicInfoForm.reset()}
+                                  className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
+                                >
+                                  Reset
+                                </button>
+                                <button
+                                  type="submit"
+                                  disabled={isSubmitting.basic}
+                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                >
+                                  {isSubmitting.basic
+                                    ? "Saving..."
+                                    : "Save Basic Info"}
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        </Tab.Panel>
+
+                        {/* Contact Information Tab */}
+                        <Tab.Panel>
+                          <form
+                            onSubmit={contactInfoForm.handleSubmit(
+                              handleContactInfoSubmit
+                            )}
+                          >
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              {/* Phone Number */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Phone Number{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="tel"
+                                  {...contactInfoForm.register("phone", {
+                                    required: "Phone number is required",
+                                    pattern: {
+                                      value: /^[0-9]{10}$/,
+                                      message: "Phone must be 10 digits",
+                                    },
+                                  })}
+                                  onKeyDown={(e) => {
+                                    if (
+                                      !/[0-9]/.test(e.key) &&
+                                      e.key !== "Backspace" &&
+                                      e.key !== "Tab"
+                                    ) {
+                                      e.preventDefault();
+                                    }
+                                  }}
+                                  className={`w-full px-4 py-2 border ${
+                                    contactInfoForm.formState.errors.phone
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl focus:outline-none focus:ring-2 ${
+                                    contactInfoForm.formState.errors.phone
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {contactInfoForm.formState.errors.phone && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      contactInfoForm.formState.errors.phone
+                                        .message as string
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Email */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Email <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="email"
+                                  {...contactInfoForm.register("email", {
+                                    required: "Email is required",
+                                    pattern: {
+                                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                      message: "Enter a valid email",
+                                    },
+                                  })}
+                                  className={`w-full px-4 py-2 border ${
+                                    contactInfoForm.formState.errors.email
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl focus:outline-none focus:ring-2 ${
+                                    contactInfoForm.formState.errors.email
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {contactInfoForm.formState.errors.email && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      contactInfoForm.formState.errors.email
+                                        .message as string
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Address */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Address{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  {...contactInfoForm.register("address", {
+                                    required: "Address is required",
+                                  })}
+                                  placeholder="Enter your address"
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                                {contactInfoForm.formState.errors.address && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      contactInfoForm.formState.errors.address
+                                        .message as string
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Country */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Country{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                  {...contactInfoForm.register("country", {
+                                    required: "Country is required",
+                                  })}
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                >
+                                  <option value="">Select your country</option>
+                                  Country
+                                  {Country?.map((country: any) => (
+                                    <option key={country.id} value={country.id}>
+                                      {country.name}
+                                    </option>
+                                  ))}
+                                </select>
+                                {contactInfoForm.formState.errors.country && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      contactInfoForm.formState.errors.country
+                                        .message as string
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* State */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  State <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                  {...contactInfoForm.register("state", {
+                                    required: "State is required",
+                                  })}
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                >
+                                  <option value="">Select your state</option>
+                                  {states?.map((state: any) => (
+                                    <option key={state.id} value={state.id}>
+                                      {state.name}
+                                    </option>
+                                  ))}
+                                </select>
+                                {contactInfoForm.formState.errors.state && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      contactInfoForm.formState.errors.state
+                                        .message as string
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* City */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  City
+                                </label>
+                                <input
+                                  type="text"
+                                  {...contactInfoForm.register("city")}
+                                  placeholder="Enter city"
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
+
+                              {/* Postal Code */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Postal Code{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="number"
+                                  {...contactInfoForm.register("postalCode", {
+                                    required: "Postal code is required",
+                                  })}
+                                  placeholder="Enter postal code"
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                                {contactInfoForm.formState.errors
+                                  .postalCode && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      contactInfoForm.formState.errors
+                                        .postalCode.message as string
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Communication Preferences */}
+                              <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Preferred Method of Communication{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <div className="flex gap-6">
+                                  <label className="inline-flex items-center gap-2">
+                                    <input
+                                      type="checkbox"
+                                      {...contactInfoForm.register(
+                                        "communication.sms"
+                                      )}
+                                      className="accent-[#9747FF]"
+                                    />
+                                    <span className="text-sm text-gray-700">
+                                      SMS
+                                    </span>
+                                  </label>
+                                  <label className="inline-flex items-center gap-2">
+                                    <input
+                                      type="checkbox"
+                                      {...contactInfoForm.register(
+                                        "communication.email"
+                                      )}
+                                      className="accent-[#9747FF]"
+                                    />
+                                    <span className="text-sm text-gray-700">
+                                      Email
+                                    </span>
+                                  </label>
+                                  <label className="inline-flex items-center gap-2">
+                                    <input
+                                      type="checkbox"
+                                      {...contactInfoForm.register(
+                                        "communication.whatsapp"
+                                      )}
+                                      className="accent-[#9747FF]"
+                                    />
+                                    <span className="text-sm text-gray-700">
+                                      WhatsApp
+                                    </span>
+                                  </label>
+                                </div>
+                              </div>
+
+                              <div className="md:col-span-2 flex justify-end gap-4 mt-6">
+                                <button
+                                  type="button"
+                                  onClick={() => contactInfoForm.reset()}
+                                  className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
+                                >
+                                  Reset
+                                </button>
+                                <button
+                                  type="submit"
+                                  disabled={isSubmitting.contact}
+                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                >
+                                  {isSubmitting.contact
+                                    ? "Saving..."
+                                    : "Save Contact Info"}
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        </Tab.Panel>
+
+                        {/* Social Links Tab */}
+                        <Tab.Panel>
+                          <form
+                            onSubmit={socialLinksForm.handleSubmit(
+                              handleSocialLinksSubmit
+                            )}
+                          >
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              {/* Facebook */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Facebook
+                                </label>
+                                <input
+                                  type="url"
+                                  {...socialLinksForm.register("facebook")}
+                                  placeholder="Enter Facebook profile URL"
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
+
+                              {/* Twitter */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Twitter
+                                </label>
+                                <input
+                                  type="url"
+                                  {...socialLinksForm.register("twitter")}
+                                  placeholder="Enter Twitter profile URL"
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
+
+                              {/* LinkedIn */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  LinkedIn
+                                </label>
+                                <input
+                                  type="url"
+                                  {...socialLinksForm.register("linkedin")}
+                                  placeholder="Enter LinkedIn profile URL"
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
+
+                              {/* Instagram */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Instagram
+                                </label>
+                                <input
+                                  type="url"
+                                  {...socialLinksForm.register("instagram")}
+                                  placeholder="Enter Instagram profile URL"
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
+
+                              <div className="md:col-span-2 flex justify-end gap-4 mt-6">
+                                <button
+                                  type="button"
+                                  onClick={() => socialLinksForm.reset()}
+                                  className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
+                                >
+                                  Reset
+                                </button>
+                                <button
+                                  type="submit"
+                                  disabled={isSubmitting.social}
+                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                >
+                                  {isSubmitting.social
+                                    ? "Saving..."
+                                    : "Save Social Links"}
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        </Tab.Panel>
+
+                        {/* Education Tab */}
+                        <Tab.Panel>
+                          <form
+                            onSubmit={educationForm.handleSubmit(
+                              handleEducationSubmit
+                            )}
+                          >
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              {/* Degree */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Degree <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  {...educationForm.register("degree", {
+                                    required: true,
+                                  })}
+                                  placeholder="Enter your degree"
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                                {educationForm.formState.errors.degree && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    Degree is required
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Institution */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Institution{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  {...educationForm.register("institution")}
+                                  placeholder="Enter institution name"
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
+
+                              {/* Start Date */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Start Date{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="date"
+                                  {...educationForm.register("startDate")}
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
+
+                              {/* End Date */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  End Date{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="date"
+                                  {...educationForm.register("endDate")}
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
+
+                              <div className="md:col-span-2 flex justify-end gap-4 mt-6">
+                                <button
+                                  type="button"
+                                  onClick={() => educationForm.reset()}
+                                  className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
+                                >
+                                  Reset
+                                </button>
+                                <button
+                                  type="submit"
+                                  disabled={isSubmitting.education}
+                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                >
+                                  {isSubmitting.education
+                                    ? "Saving..."
+                                    : "Save Education"}
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        </Tab.Panel>
+
+                        {/* Work Experience Tab */}
+                        <Tab.Panel>
+                          <form
+                            onSubmit={workExperienceForm.handleSubmit(
+                              handleWorkExperienceSubmit
+                            )}
+                          >
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              {/* Company */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Company{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  {...workExperienceForm.register("company", {
+                                    required: true,
+                                  })}
+                                  placeholder="Enter Company Name"
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                                {workExperienceForm.formState.errors
+                                  .company && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    Company is required
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Position */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Position{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  {...workExperienceForm.register("position")}
+                                  placeholder="Enter your Designation"
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
+
+                              {/* Start Date */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Start Date{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="date"
+                                  {...workExperienceForm.register("start_date")}
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
+
+                              {/* End Date */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  End Date{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="date"
+                                  {...workExperienceForm.register("end_date")}
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
+
+                              <div className="md:col-span-2 flex justify-end gap-4 mt-6">
+                                <button
+                                  type="button"
+                                  onClick={() => workExperienceForm.reset()}
+                                  className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
+                                >
+                                  Reset
+                                </button>
+                                <button
+                                  type="submit"
+                                  disabled={isSubmitting.work}
+                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                >
+                                  {isSubmitting.work
+                                    ? "Saving..."
+                                    : "Save Work Experience"}
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        </Tab.Panel>
+
+                        {/* Public Profile Fields Tab */}
+                        <Tab.Panel>
+                          <form
+                            onSubmit={publicProfileForm.handleSubmit(
+                              handlePublicProfileSubmit
+                            )}
+                          >
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              {/* Title */}
+                              <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Title <span className="text-red-500">*</span>
+                                </label>
+                                <textarea
+                                  {...publicProfileForm.register("title", {
+                                    required: true,
+                                  })}
+                                  rows={3}
+                                  placeholder="Enter a brief title or role"
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                                {publicProfileForm.formState.errors.title && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    Title is required
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Featured Image Upload */}
+                              <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Featured Image{" "}
+                                  <span className="text-gray-500 text-xs">
+                                    (Upload an image that represents your
+                                    service)
+                                  </span>
+                                </label>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  {...publicProfileForm.register(
+                                    "featuredImage"
+                                  )}
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
+
+                              {/* Services Offered */}
+                              <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Services Offered
+                                </label>
+                                <input
+                                  type="text"
+                                  {...publicProfileForm.register("services")}
+                                  placeholder="Enter a service you offer"
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
+
+                              {/* Tags Field */}
+                              <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Tags <span className="text-red-500">*</span>
+                                </label>
+                                <div className="w-full border border-gray-300 rounded-xl px-3 py-2">
+                                  <div className="flex flex-wrap gap-2 mb-1">
+                                    {tags.map((tag, idx) => (
+                                      <span
+                                        key={idx}
+                                        className="flex items-center bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs"
+                                      >
+                                        {tag}
+                                        <button
+                                          onClick={() => removeTag(idx)}
+                                          className="ml-1 text-purple-600 hover:text-red-500 font-bold"
+                                        >
+                                          ×
+                                        </button>
+                                      </span>
+                                    ))}
+                                  </div>
+                                  <input
+                                    type="text"
+                                    className="w-full text-sm focus:outline-none placeholder-gray-400"
+                                    placeholder="Add tags (e.g. therapy, online, free-consult)"
+                                    value={inputValue}
+                                    onChange={(e) =>
+                                      setInputValue(e.target.value)
+                                    }
+                                    onKeyDown={handleTagKeyDown}
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Notify Email */}
+                              <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Notify Email{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="email"
+                                  {...publicProfileForm.register(
+                                    "notifyEmail",
+                                    {
+                                      required: "Email is required",
+                                      pattern: {
+                                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                        message: "Enter a valid email",
+                                      },
+                                    }
+                                  )}
+                                  className={`w-full px-4 py-2 border ${
+                                    publicProfileForm.formState.errors
+                                      .notifyEmail
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl focus:outline-none focus:ring-2 ${
+                                    publicProfileForm.formState.errors
+                                      .notifyEmail
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {publicProfileForm.formState.errors
+                                  .notifyEmail && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      publicProfileForm.formState.errors
+                                        .notifyEmail.message as string
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              <div className="md:col-span-2 flex justify-end gap-4 mt-6">
+                                <button
+                                  type="button"
+                                  onClick={() => publicProfileForm.reset()}
+                                  className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
+                                >
+                                  Reset
+                                </button>
+                                <button
+                                  type="submit"
+                                  disabled={isSubmitting.public}
+                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                >
+                                  {isSubmitting.public
+                                    ? "Saving..."
+                                    : "Save Public Profile"}
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        </Tab.Panel>
+                      </Tab.Panels>
+                    </div>
+                  </Tab.Group>
+                </div>
+              </div>
             </div>
-          </div>
+          )
         ) : (
-          <div className="max-w-6xl mt-0  shadow overflow-hidden p-8 text-center">
+          <div className="max-w-6xl mt-0 shadow overflow-hidden p-8 text-center">
             <div className="py-12">
               <h2 className="text-2xl font-bold text-gray-800 mb-4">
                 Person Profile Feature Coming Soon
