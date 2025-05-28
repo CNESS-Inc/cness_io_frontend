@@ -55,3 +55,41 @@
   transform: translateY(20px);
   transition: all 300ms ease-in-out;
 }
+
+
+
+
+
+
+@keyframes wave1 {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-25px); }
+}
+@keyframes wave2 {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+}
+@keyframes wave3 {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-wave1 {
+  animation: wave1 6s ease-in-out infinite;
+}
+.animate-wave2 {
+  animation: wave2 8s ease-in-out infinite;
+}
+.animate-wave3 {
+  animation: wave3 10s ease-in-out infinite;
+}
+
+.clip-wave1 {
+  clip-path: polygon(0 0, 100% 0, 100% 40%, 0% 100%);
+}
+.clip-wave2 {
+  clip-path: polygon(0 0, 100% 0, 100% 55%, 0% 100%);
+}
+.clip-wave3 {
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 0% 100%);
+}

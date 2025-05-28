@@ -399,7 +399,7 @@ const OrganaizationProfilepage = () => {
   return (
     <>
       <DashboardLayout>
-        {public_organization === "1" ? (
+        {public_organization === "2" ? (
           is_disqualify === "true" ? (
             <div className="max-w-6xl mt-0 shadow overflow-hidden p-8 text-center">
               <div className="py-12">
@@ -1721,7 +1721,7 @@ const OrganaizationProfilepage = () => {
           <div className="max-w-6xl mt-0 shadow overflow-hidden p-8 text-center">
             <div className="py-12">
               <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                Person Profile Feature Coming Soon
+                Organization Profile Feature Coming Soon
               </h2>
               <p className="text-gray-600 mb-6">
                 We're working hard to bring this feature to you. Please check
