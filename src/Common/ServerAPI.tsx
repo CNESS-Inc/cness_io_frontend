@@ -73,55 +73,44 @@ export const EndPoint = {
   domain: "/domain",
   subdomain: "/sub-domain/by-domain",
   readinessQuestion: "/readiness-question",
-  allFormData:"/readiness-question/get-formdata",
-  allPlanData:"/person-plan/user/plan",
-  emailverify:"/auth/email-verify",
-  paymentverify:"/payment/payment-confirm",
-  profile:"/profile",
-  organizationProfile:"/organization-profile",
-  organization_profile_create:"/organization-profile",
-  organization_Listing_profile_create:"/organization-listing",
-  interests:"/interests",
-  industry:"/industry",
-  profession:"/profession",
-  country:"/country",
-  service:"/service",
-  state:"/state",
-  company_profile:"/organization-profile/company-profile",
-  user_profile:"/profile/user-profile",
-  directory_search_profile:"/profile/public-directory",
-  public_user_profile:"/profile/public-user-profile",
+  allFormData: "/readiness-question/get-formdata",
+  allPlanData: "/person-plan/user/plan",
+  emailverify: "/auth/email-verify",
+  paymentverify: "/payment/payment-confirm",
+  profile: "/profile",
+  organizationProfile: "/organization-profile",
+  organization_profile_create: "/organization-profile",
+  organization_Listing_profile_create: "/organization-listing",
+  interests: "/interests",
+  industry: "/industry",
+  profession: "/profession",
+  country: "/country",
+  service: "/service",
+  state: "/state",
+  company_profile: "/organization-profile/company-profile",
+  user_profile: "/profile/user-profile",
+  directory_search_profile: "/profile/public-directory",
+  public_user_profile: "/profile/public-user-profile",
 };
 
 export const LoginDetails = async (formData: LoginFormData): ApiResponse => {
-  console.log("MOCK LoginDetails CALLED:", formData);
-
-  // Simulate login success
-  return Promise.resolve({
-    success: { message: "Mock login successful!" },
-    data: {
-      data: {
-        jwt: "mock-jwt-token",
-        user: {
-          id: 999,
-          name: "Mock User",
-          email: formData.email,
-          person_organization_complete: 1,
-          profile_progress: 60,
-          assesment_progress: 85,
-          level: "CNESS Inspired",
-        },
-      },
-    },
-  });
+  const data: Partial<LoginFormData> = {
+    email: formData?.email,
+    password: formData?.password,
+  };
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.login);
 };
-export const ForgotPasswordDetails = (formData: ForgotFormData): ApiResponse => {
+export const ForgotPasswordDetails = (
+  formData: ForgotFormData
+): ApiResponse => {
   const data: Partial<ForgotFormData> = {
     email: formData?.email,
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.forgot);
 };
-export const ForgotPasswordDetailsSubmit = (formData: ResetFormData): ApiResponse => {
+export const ForgotPasswordDetailsSubmit = (
+  formData: ResetFormData
+): ApiResponse => {
   const data: Partial<ResetFormData> = {
     token: formData?.token,
     password: formData?.password,
@@ -129,32 +118,14 @@ export const ForgotPasswordDetailsSubmit = (formData: ResetFormData): ApiRespons
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.reset);
 };
 
-
-
 export const RegisterDetails = (formData: RegisterFormData): ApiResponse => {
-  console.log("MOCK RegisterDetails CALLED:", formData);
-
-  return Promise.resolve({
-    success: { message: "Mock registration successful!" },
-    data: {
-      data: {
-        jwt: "mock-jwt-token",
-        user: {
-          id: 999,
-          name: formData.username,
-          email: formData.email,
-          person_organization_complete: 1,
-          profile_progress: 50,
-          assesment_progress: 75,
-          level: "CNESS Inspired",
-        },
-      },
-    },
-  });
+  const data: Partial<RegisterFormData> = {
+    username: formData?.username,
+    email: formData?.email,
+    password: formData?.password,
+  };
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.register);
 };
-
-
-
 
 export const AccountDetails = (formData: AccountData): ApiResponse => {
   const data: Partial<AccountData> = {
@@ -179,7 +150,6 @@ export const submitOrganizationDetails = (
     organization_type_id: formData?.employee_size,
     revenue_range_id: formData?.revenue,
     question: formData?.question,
-
   };
   return executeAPI(
     ServerAPI.APIMethod.POST,
@@ -190,15 +160,11 @@ export const submitOrganizationDetails = (
 export const submitPersonDetails = (
   formData: OrganizationFormData
 ): ApiResponse => {
-  console.log("🚀 ~ formData:", formData)
+  console.log("🚀 ~ formData:", formData);
   const data: Partial<OrganizationFormData> = {
     question: formData?.question,
   };
-  return executeAPI(
-    ServerAPI.APIMethod.POST,
-    data,
-    EndPoint.person_profile
-  );
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.person_profile);
 };
 
 export const DashboardDetails = (): ApiResponse => {
@@ -222,7 +188,7 @@ export const GetAllPlanDetails = (): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.allPlanData);
 };
 export const GetEmailVerify = (formData: EmailVerifyData): ApiResponse => {
-   const data: Partial<EmailVerifyData> = {
+  const data: Partial<EmailVerifyData> = {
     token: formData?.token,
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.emailverify);
@@ -231,7 +197,12 @@ export const GetPaymentVerify = (formData: PaymentVerifyData): ApiResponse => {
   const params: Partial<PaymentVerifyData> = {
     session_id: formData?.session_id,
   };
-  return executeAPI(ServerAPI.APIMethod.GET, null, EndPoint.paymentverify, params);
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.paymentverify,
+    params
+  );
 };
 export const GetSubDomainDetails = (formData: string): ApiResponse => {
   const data = {};
@@ -242,11 +213,7 @@ export const GetSubDomainDetails = (formData: string): ApiResponse => {
   );
 };
 export const SubmitProfileDetails = (formData: any): ApiResponse => {
-  return executeAPI(
-    ServerAPI.APIMethod.POST,
-    formData,
-    EndPoint.profile
-  );
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.profile);
 };
 export const SubmitPublicProfileDetails = (formData: any): ApiResponse => {
   return executeAPI(
@@ -262,7 +229,9 @@ export const SubmitOrganizationDetails = (formData: any): ApiResponse => {
     EndPoint.organization_profile_create
   );
 };
-export const SubmitOrganizationListingDetails = (formData: any): ApiResponse => {
+export const SubmitOrganizationListingDetails = (
+  formData: any
+): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
     formData,
@@ -284,15 +253,11 @@ export const GetPublicProfileDetails = (): ApiResponse => {
   );
 };
 export const GetProfileDetails = (): ApiResponse => {
-  const data = {}
-  return executeAPI(
-    ServerAPI.APIMethod.GET,
-    data,
-    EndPoint.profile
-  );
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.profile);
 };
 export const GetOrganiZationProfileDetails = (): ApiResponse => {
-  const data = {}
+  const data = {};
   return executeAPI(
     ServerAPI.APIMethod.GET,
     data,
@@ -300,72 +265,56 @@ export const GetOrganiZationProfileDetails = (): ApiResponse => {
   );
 };
 export const GetInterestsDetails = (): ApiResponse => {
-  const data = {}
-  return executeAPI(
-    ServerAPI.APIMethod.GET,
-    data,
-    EndPoint.interests
-  );
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.interests);
 };
 export const GetIndustryDetails = (): ApiResponse => {
-  const data = {}
-  return executeAPI(
-    ServerAPI.APIMethod.GET,
-    data,
-    EndPoint.industry
-  );
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.industry);
 };
 export const GetProfessionalDetails = (): ApiResponse => {
-  const data = {}
-  return executeAPI(
-    ServerAPI.APIMethod.GET,
-    data,
-    EndPoint.profession
-  );
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.profession);
 };
 export const GetCountryDetails = (): ApiResponse => {
-  const data = {}
-  return executeAPI(
-    ServerAPI.APIMethod.GET,
-    data,
-    EndPoint.country
-  );
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.country);
 };
 export const GetServiceDetails = (): ApiResponse => {
-  const data = {}
-  return executeAPI(
-    ServerAPI.APIMethod.GET,
-    data,
-    EndPoint.service
-  );
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.service);
 };
-export const GetStateDetails = (id:any): ApiResponse => {
-  const data = {}
-  return executeAPI(
-    ServerAPI.APIMethod.GET,
-    data,
-    `${EndPoint.state}/${id}`
-  );
+export const GetStateDetails = (id: any): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.state}/${id}`);
 };
-export const GetCompanyProfileDetails = (id:any): ApiResponse => {
-  const data = {}
+export const GetCompanyProfileDetails = (id: any): ApiResponse => {
+  const data = {};
   return executeAPI(
     ServerAPI.APIMethod.GET,
     data,
     `${EndPoint.company_profile}/${id}`
   );
 };
-export const GetUserProfileDetails = (id:any): ApiResponse => {
-  const data = {}
+export const GetUserProfileDetails = (id: any): ApiResponse => {
+  const data = {};
   return executeAPI(
     ServerAPI.APIMethod.GET,
     data,
     `${EndPoint.user_profile}/${id}`
   );
 };
-export const GetUsersearchProfileDetails = (selectedDomain:any,searchQuery:any,page:any,limit:any): ApiResponse => {
-console.log("🚀 ~ GetUsersearchProfileDetails ~ selectedDomain:", selectedDomain)
-const data: Partial<any> = {
+export const GetUsersearchProfileDetails = (
+  selectedDomain: any,
+  searchQuery: any,
+  page: any,
+  limit: any
+): ApiResponse => {
+  console.log(
+    "🚀 ~ GetUsersearchProfileDetails ~ selectedDomain:",
+    selectedDomain
+  );
+  const data: Partial<any> = {
     domain: selectedDomain,
     text: searchQuery,
     page_no: page,
@@ -378,8 +327,7 @@ const data: Partial<any> = {
   );
 };
 
-
-export const executeAPI = async <T = any>(
+export const executeAPI = async <T = any,>(
   method: ApiMethod,
   data: any,
   endpoint: string,
@@ -413,4 +361,3 @@ export const executeAPI = async <T = any>(
     throw error;
   }
 };
-

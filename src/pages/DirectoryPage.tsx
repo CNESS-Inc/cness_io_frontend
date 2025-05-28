@@ -4,7 +4,7 @@ import Header from "../layout/Header/Header";
 import Footer from "../layout/Footer/Footer";
 import { iconMap } from "../assets/icons";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
-import { GetDomainDetails } from "../Common/ServerAPI";
+import { GetDomainDetails, GetIndustryDetails } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
 
 const itemsPerPage = 6;
@@ -222,7 +222,7 @@ export default function DirectoryPage() {
 
   const fetchDomain = async () => {
     try {
-      const res = await GetDomainDetails();
+      const res = await GetIndustryDetails();
       setDomain(res?.data?.data);
     } catch (error) {}
   };

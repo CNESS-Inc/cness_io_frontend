@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import { cn } from "../../lib/utils";
 import { useState } from "react";
@@ -18,8 +18,10 @@ export default function NavLinks({ className }: { className?: string }) {
     null
   );
 
-  const openSignupModal = () => setActiveModal("signup");
-  const openLoginModal = () => setActiveModal("login");
+  const navigate = useNavigate()
+
+  const openSignupModal = () => navigate("/sign-up");
+  const openLoginModal = () => navigate("/log-in");
   const closeModal = () => setActiveModal(null);
 
   const completed_step = localStorage.getItem("completed_step"); 
