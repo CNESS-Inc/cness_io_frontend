@@ -750,9 +750,9 @@ export default function Login() {
     }
   };
 
-  const onForgotPassword = () => {
-    setActiveModal("forgotpassword");
-  };
+  // const onForgotPassword = () => {
+  //   setActiveModal("forgotpassword");
+  // };
 
   const handleforgot = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

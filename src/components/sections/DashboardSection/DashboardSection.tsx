@@ -83,10 +83,10 @@ export default function DashboardSection(user: any) {
 
   //Assessment progress
   // const Assessmentpercentage = 70;
-  const totalBlocks = 6;
-  const filledBlocks = Math.floor(
-    user?.user?.assesment_progress / (100 / totalBlocks)
-  );
+  // const totalBlocks = 6;
+  // const filledBlocks = Math.floor(
+  //   user?.user?.assesment_progress / (100 / totalBlocks)
+  // );
 
   const openPricingModal = async () => {
     setActiveModal("PricingModal");
@@ -153,7 +153,7 @@ export default function DashboardSection(user: any) {
   const is_disqualify = localStorage.getItem("is_disqualify");
 
 
-  const urldata = `https://test.cness.ai/profile/public`;
+  // const urldata = `https://test.cness.ai/profile/public`;
 
   return (
     <>
