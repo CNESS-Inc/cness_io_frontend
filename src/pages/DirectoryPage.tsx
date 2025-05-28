@@ -6,6 +6,7 @@ import { iconMap } from "../assets/icons";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
 import { GetDomainDetails } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
+import { Section } from "lucide-react";
 
 const itemsPerPage = 6;
 
@@ -259,211 +260,163 @@ export default function DirectoryPage() {
       <Header />
 
       {/* Hero Section */}
+<section className="relative h-auto md:h-[692px] rounded-[12px] overflow-hidden mx-4 md:mx-8 lg:mx-[12px]">
+  <AnimatedBackground />
 
-      <div className="w-full h-[650px]  relative overflow-hidden">
-        <AnimatedBackground />
-        {/* Building background image */}
-        <img
-          src={iconMap["heroimg"]} // adjust path if needed
-          alt="City Skyline"
-          className="absolute bottom-[-150px] left-0 w-full object-cover z-0 pointer-events-none"
-        />
+  {/* Building background image */}
+  <img
+    src={iconMap["heroimg"]}
+    alt="City Skyline"
+    className="absolute bottom-[-150px] left-0 w-full object-cover z-0 pointer-events-none"
+  />
 
-        {/* Hero Content */}
-        <div className="px-6 sm:px-8 lg:px-10 text-center py-25 relative z-10">
-          <p className="text-xl text-[#7077FE] font-bold mb-15">
-            Conscious Directory
-          </p>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-12">
-            Conscious Search Stops here.
-          </h1>
+  {/* Hero Content */}
+  <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 py-16 md:py-20 max-w-4xl mx-auto">
+    <p className="text-lg sm:text-xl text-[#7077FE] font-bold mb-4">
+      Conscious Directory
+    </p>
+    <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+      Conscious Search Stops here.
+    </h1>
 
-          {/* Dropdown + Search */}
-          <div className="w-full max-w-3xl mx-auto bg-white border border-gray-200 rounded-full flex items-center px-2 py-2 shadow-sm">
-            <div className="relative">
-              <select
-                className="bg-[#7077FE] text-white font-medium rounded-full px-5 py-2 appearance-none focus:outline-none cursor-pointer w-[150px]"
-                value={selectedDomain}
-                onChange={handleDomainChange}
-              >
-                <option value="" disabled>
-                  Explore
-                </option>
-                {Domain.map((domain: any) => (
-                  <option key={domain.id} value={domain.slug}>
-                    {domain.name}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute top-3 right-3 text-white text-xs pointer-events-none">
-                ▼
-              </div>
-            </div>
-
-            <input
-              type="text"
-              placeholder="Find & Choose your perfect organization"
-              className="flex-1 px-4 bg-transparent text-gray-700 placeholder:text-gray-400 outline-none border-none"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              onKeyDown={handleKeyPress}
-            />
-
-            <button
-              className="text-gray-500 hover:text-black p-2"
-              onClick={handleSearch}
-            >
-              🔍
-            </button>
-          </div>
-
-          <p className="text-gray-700 text-18px mt-6">
-            <span className="font-medium underline cursor-pointer">
-              List your company now
-            </span>{" "}
-            and connect with conscious audience
-          </p>
-
-          <div className="flex justify-center gap-4 mt-6 flex-wrap">
-            <span className="bg-white px-4 py-2 rounded-full shadow text-sm font-medium flex items-center gap-2">
-              <img
-                src={iconMap["verified"]}
-                alt="Verified"
-                className="w-5 h-5"
-              />{" "}
-              Get certified
-            </span>
-            <span className="bg-white px-4 py-2 rounded-full shadow text-sm font-medium flex items-center gap-2">
-              <img
-                src={iconMap["verified"]}
-                alt="Verified"
-                className="w-5 h-5"
-              />{" "}
-              Listed on the top
-            </span>
-            <span className="bg-white px-4 py-2 rounded-full shadow text-sm font-medium flex items-center gap-2">
-              <img
-                src={iconMap["verified"]}
-                alt="Verified"
-                className="w-5 h-5"
-              />{" "}
-              15+ Domains
-            </span>
-          </div>
+    {/* Dropdown + Search */}
+    <div className="w-full max-w-3xl mx-auto bg-white border border-gray-200 rounded-full flex flex-row items-center px-2 py-2 shadow-sm gap-2">
+      <div className="relative">
+        <select
+      className="bg-[#7077FE] text-white font-medium rounded-full px-4 py-2 appearance-none focus:outline-none cursor-pointer w-[110px] sm:w-[150px]"
+          value={selectedDomain}
+          onChange={handleDomainChange}
+        >
+          <option value="" disabled>
+            Explore
+          </option>
+          {Domain.map((domain: any) => (
+            <option key={domain.id} value={domain.slug}>
+              {domain.name}
+            </option>
+          ))}
+        </select>
+<div className="absolute top-3 right-3 text-white text-xs pointer-events-none">
+            ▼
         </div>
       </div>
+ <div className="relative flex-1">
+      <input
+       
 
-      {/* Marquee Section */}
-      {/* Marquee Section */}
+        type="text"
+        placeholder="Find & Choose your perfect organization"
+      className="w-full px-4 py-2 pr-10 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none border-none"
+        value={searchText}
+        onChange={(e) => setSearchText(e.target.value)}
+        onKeyDown={handleKeyPress}
+      />
+
+      <button
+      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE]"
+        onClick={handleSearch}
+      >
+        🔍
+      </button>
+    </div>
+    </div>
+
+    <p className="text-gray-700 text-sm mt-6">
+      <span className="font-medium underline cursor-pointer">
+        List your company now
+      </span>{" "}
+      and connect with conscious audience
+    </p>
+
+    {/* Info badges */}
+    <div className="flex justify-center gap-3 flex-wrap mt-6">
+      {["Get certified", "Listed on the top", "15+ Domains"].map((label, index) => (
+        <span
+          key={index}
+          className="bg-white px-4 py-2 rounded-full shadow text-sm font-medium flex items-center gap-2"
+        >
+          <img
+            src={iconMap["verified"]}
+            alt="Verified"
+            className="w-5 h-5"
+          />
+          {label}
+        </span>
+      ))}
+    </div>
+  </div>
+</section>
+
       {/* Marquee Section */}
       <div className="bg-white py-10">
-        <div className="max-w-screen-xl mx-auto px-2 sm:px-6 lg:px-8">
-          <div className="space-y-4">
-            {/* Top Row (Left ↔ Right) */}
-            <div className="overflow-hidden">
-              <div className="flex gap-6 animate-bounce-x-left w-max">
-                {topRow.map((domain, i) => {
-                  const key = domain.toLowerCase().replace(/\s/g, "");
-                  const icon = iconMap[key] ?? "/fallback-icon.svg"; // fallback if missing
-                  return (
-                    <div
-                      key={`top-${i}`}
-                      onClick={() => setSelectedDomain(domain)}
-                      className=" h-[48px] border border-purple-100 rounded-[24px] px-6 py-3 flex items-center gap-3 bg-white shadow-sm hover:shadow-md cursor-pointer transition"
-                    >
-                      <img
-                        src={icon}
-                        alt={domain}
-                        className="w-6 h-6 min-w-[24px] object-contain shrink-0"
-                      />
-                      <span className="text-sm font-medium text-gray-800 leading-none">
-                        {domain}
-                      </span>
-                    </div>
-                  );
-                })}
+        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="space-y-6">
+            {[topRow, bottomRow].map((row, rowIndex) => (
+              <div key={rowIndex} className="overflow-hidden">
+                <div className={`flex gap-4 sm:gap-6 w-max animate-bounce-x-${rowIndex === 0 ? "left" : "right"}`}>
+                  {row.map((domain, i) => {
+                    const key = domain.toLowerCase().replace(/\s/g, "");
+                    const icon = iconMap[key] ?? "/fallback-icon.svg";
+                    return (
+                      <div
+                        key={`${rowIndex}-${i}`}
+                        onClick={() => setSelectedDomain(domain)}
+                        className="h-[48px] border border-purple-100 rounded-[24px] px-5 py-2 sm:px-6 sm:py-3 flex items-center gap-2 sm:gap-3 bg-white shadow-sm hover:shadow-md cursor-pointer transition"
+                      >
+                        <img
+                          src={icon}
+                          alt={domain}
+                          className="w-6 h-6 min-w-[24px] object-contain shrink-0"
+                        />
+                        <span className="text-sm font-medium text-gray-800 leading-none">
+                          {domain}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-
-            {/* Bottom Row (Right ↔ Left) */}
-            <div className="overflow-hidden">
-              <div className="flex gap-6 animate-bounce-x-right w-max">
-                {bottomRow.map((domain, i) => {
-                  const key = domain.toLowerCase().replace(/\s/g, "");
-                  const icon = iconMap[key] ?? "/fallback-icon.svg";
-                  return (
-                    <div
-                      key={`bottom-${i}`}
-                      onClick={() => setSelectedDomain(domain)}
-                      className=" h-[48px] border border-purple-100 rounded-[24px] px-6 py-2 flex items-center gap-3 bg-white shadow-sm hover:shadow-md cursor-pointer transition"
-                    >
-                      <img
-                        src={icon}
-                        alt={domain}
-                        className="w-6 h-6 min-w-[24px] object-contain shrink-0"
-                      />
-
-                      <span className="text-sm font-medium text-gray-800 leading-none">
-                        {domain}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
-
       {/* Why List Section */}
       <section className="bg-[#FAFAFA] py-16">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-[#FAFAFA]  flex flex-col md:flex-row items-start gap-25 shadow-none">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-20">
             {/* Left Image */}
-            <img
-              src={iconMap["leftimg"]}
-              alt="Listing Benefits"
-              className="w-full max-w-sm rounded-sm shadow"
-            />
+            <div className="w-full md:w-auto flex justify-center">
+              <img
+                src={iconMap["leftimg"]}
+                alt="Listing Benefits"
+                className="w-full max-w-sm rounded-sm shadow"
+              />
+            </div>
 
             {/* Right Text Block */}
-            <div className="flex-1">
-              <h2 className="text-md font-bold text-[#7077FE] uppercase mb-6">
-                Why List in the Directory?
-              </h2>
+            <div className="flex-1 text-center md:text-left">
+  <h2 className="text-sm sm:text-md font-bold text-[#7077FE] uppercase mb-7">
+    Why List in the Directory?
+  </h2>
 
-              <ul className="list-disc list-inside space-y-5 text-gray-700 text-base leading-relaxed">
-                <li>
-                  <strong>Visibility:</strong> Showcase your conscious brand to
-                  a growing community.
-                </li>
-                <li>
-                  <strong>Credibility:</strong> Get CNESS certified to build
-                  trust with users and clients.
-                </li>
-                <li>
-                  <strong>Networking:</strong> Connect with like-minded
-                  individuals and organizations.
-                </li>
-                <li>
-                  <strong>Searchable by Industry:</strong> Make it easy for
-                  people to find your offering by sector.
-                </li>
-                <li>
-                  <strong>Impact:</strong> Lead the change and inspire others in
-                  the conscious ecosystem.
-                </li>
-              </ul>
-              <br></br>
-              <button
-                className="text-white px-6 py-2 rounded-full shadow transition font-medium"
-                style={{
-                  background:
-                    "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
-                }}
-              >
-                Register Now
-              </button>
+  <ul className="list-disc list-inside text-left md:text-left space-y-5 text-gray-700 text-base leading-relaxed px-4 sm:px-0">
+    <li><strong>Visibility:</strong> Showcase your conscious brand to a growing community.</li>
+    <li><strong>Credibility:</strong> Get CNESS certified to build trust with users and clients.</li>
+    <li><strong>Networking:</strong> Connect with like-minded individuals and organizations.</li>
+    <li><strong>Searchable by Industry:</strong> Make it easy for people to find your offering by sector.</li>
+    <li><strong>Impact:</strong> Lead the change and inspire others in the conscious ecosystem.</li>
+  </ul>
+
+  <div className="mt-6 flex justify-center md:justify-start">
+    <button
+      className="text-white px-6 py-2 rounded-full shadow transition font-medium"
+      style={{
+        background: "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
+      }}
+    >
+      Register Now
+    </button>
+    </div>
             </div>
           </div>
         </div>
@@ -471,13 +424,13 @@ export default function DirectoryPage() {
 
       {/* Section: Popular Companies */}
 
-      {/* Popular Companies Section */}
-      {/* Popular Companies Section */}
+   
+         {/* Popular Companies Section */}
       <section className="py-16 border-t border-gray-100">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-xl font-semibold mb-4">Popular Companies</h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {paginatedPopular.length > 0 ? (
               paginatedPopular.map((company) => (
                 <CompanyCard
@@ -544,10 +497,10 @@ export default function DirectoryPage() {
       </div>
 
       {/* Aspiring Companies Section */}
-      <section className="py-16 border-t border-gray-100">
+ <section className="py-16 border-t border-gray-100">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-xl font-semibold mb-4">Aspiring Companies</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <h2 className="text-xl font-semibold mb-4">Popular Companies</h2>
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {paginatedAspiring.length > 0 ? (
               paginatedAspiring.map((company) => (
                 <CompanyCard
