@@ -84,18 +84,18 @@ export default function PublicCompanyProfile() {
         </div>
 
         {/* Overlapping Logo - Left Aligned */}
-        <div className="w-full relative">
-          {/* Overlapping Logo */}
-          <div className="absolute -top-20 left-6 md:left-60 z-20">
-            <div className="w-[200px] h-[200px] rounded-full border-[7.73px] border-white shadow-lg bg-white overflow-hidden">
-              <img
-                src={companyDetails?.profile_url}
-                alt="Logo"
-                className="w-full h-full object-cover rounded-full"
-              />
-            </div>
-          </div>
-        </div>
+<div className="w-full md:w-1/3 space-y-6 relative">
+  {/* Overlapping Avatar */}
+  <div className="absolute -top-20 left-1/2 -translate-x-1/2 z-20">
+    <div className="w-40 h-40 md:w-52 md:h-52 rounded-full border-8 border-white shadow-lg bg-white overflow-hidden">
+      <img
+        src={companyDetails?.profile_url}
+        alt="Logo"
+        className="w-full h-full object-cover"
+      />
+    </div>
+  </div>
+  </div>
 
         {/* Content Body – Centered and aligned */}
         <div className="w-full px-6 md:px-5 mt-6 flex flex-col md:flex-row gap-4">
@@ -115,53 +115,51 @@ export default function PublicCompanyProfile() {
                 style={{ borderColor: "#0000001A" }}
               />
               {/* Contact Info Block */}
-              <div className="w-[375px] h-[252px] mt-6 flex flex-col justify-between gap-[24px] text-sm text-gray-800">
-                <div>
-                  <p className="font-medium">
-                    {companyDetails?.primary_contact_person_name ||
-                      "unknown person"}
-                  </p>
-                  <p className="text-xs text-gray-400">User Name</p>
-                </div>
-                <div>
-                  <p className="font-medium">
-                    {companyDetails?.official_email_address}
-                  </p>
-                  <p className="text-xs text-gray-400">Official mail</p>
-                </div>
-                <div>
-                  <p className="font-medium">
-                    {companyDetails?.contact_number}
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    Official Contact Number
-                  </p>
-                </div>
-                <div>
-                  <p className="font-medium">
-                    {companyDetails?.official_address}
-                  </p>
-                  <p className="text-xs text-gray-400">Address</p>
-                </div>
-              </div>
-            </div>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-1 mt-6 text-sm text-gray-800">
+  <div>
+    <p className="font-medium">
+      {companyDetails?.primary_contact_person_name || "Unknown Person"}
+    </p>
+    <p className="text-xs text-gray-400">User Name</p>
+  </div>
+  <div>
+    <p className="font-medium">
+      {companyDetails?.official_email_address }
+    </p>
+    <p className="text-xs text-gray-400">Official mail</p>
+  </div>
+  <div>
+    <p className="font-medium">
+      {companyDetails?.contact_number }
+    </p>
+    <p className="text-xs text-gray-400">Official Contact Number</p>
+  </div>
+  <div>
+    <p className="font-medium">
+      {companyDetails?.official_address }
+    </p>
+    <p className="text-xs text-gray-400">Address</p>
+  </div>
+</div>
+</div>
 
             {/* Badge Card */}
-            <div className=" flex flex-col  mt-[-5px]">
-              <div className="bg-white rounded-xl shadow-sm p-15 flex items-center gap-10">
-                <p className="text-sm font-medium min-w-max">CNESS Badge:</p>
-                <img
-                  src={inspiredbadge}
-                  alt="CNESS Badge"
-                  className="w-[150px] object-contain"
-                />
-              </div>
-            </div>
-          </div>
-
+<div className="flex flex-col mt-2">
+  <div className="bg-white rounded-xl shadow-sm px-4 py-4 md:py-6">
+    <div className="flex flex-row items-center justify-center gap-2 sm:gap-2 md:gap-20 text-center">
+      <p className="text-sm font-medium">CNESS Badge:</p>
+      <img
+        src={inspiredbadge}
+        alt="CNESS Badge"
+        className="w-[120px] md:w-[150px] object-contain"
+      />
+    </div>
+  </div>
+</div>
+</div>
           {/* RIGHT COLUMN */}
           <div className="md:w-2/3 flex flex-col gap-6">
-            <div className="bg-white rounded-xl shadow-sm p-6">
+<div className="bg-white rounded-xl shadow-sm px-6 py-8">
               <h3 className="text-lg font-semibold text-[#000000] mb-2 flex items-center gap-2">
                 <span className="bg-[#EEF3FF] p-2 rounded-full">
                   <img
@@ -176,11 +174,11 @@ export default function PublicCompanyProfile() {
                 className="border-t my-4"
                 style={{ borderColor: "#0000001A" }}
               />
-
               <p className="text-sm text-gray-700 leading-relaxed">
                 {companyDetails?.core_values}
               </p>
             </div>
+
 
             <div className="flex flex-col mt-[-15px]">
               <div className="bg-white rounded-xl shadow-sm px-6 py-9.5">
@@ -271,10 +269,12 @@ export default function PublicCompanyProfile() {
           </div>
         </div>
 
+
+
         <div className="w-full px-6 md:px-5 mt-2">
           {/* Section Title */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
+<div className="bg-white rounded-xl shadow-sm px-6 py-8">
+              <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
               <span className="bg-green-50 p-2 rounded-full">
                 <img
                   src={bestprac}
@@ -290,7 +290,7 @@ export default function PublicCompanyProfile() {
             />
 
             {/* Card Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<div className="grid grid-cols-2 2xl:grid-cols-4 gap-4">
               {/* Card 1 */}
               <div className="bg-white rounded-xl shadow border border-gray-100 p-3">
                 <div className="rounded-lg overflow-hidden">
@@ -394,91 +394,78 @@ export default function PublicCompanyProfile() {
         </div>
 
         {/* Overall Ratings */}
+<div className="w-full px-6 md:px-5 mt-2">
+  <div className="bg-white rounded-xl shadow-sm px-6 py-8">
+    {/* Title */}
+    <h3 className="text-lg font-semibold text-[#000000] mb-4 flex items-center gap-2">
+      <span className="bg-[#F5EDFF] p-2 rounded-full">
+        <img src={overallrating} alt="overallrating Icon" className="w-5 h-5 object-contain" />
+      </span>
+      Overall Ratings
+    </h3>
 
-        <div className="w-full px-10 md:px-5 mt-2  p-0.5">
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            {/* Title */}
-            <h3 className="text-lg font-semibold text-[#000000] mb-4 flex items-center gap-2">
-              <span className="bg-[#F5EDFF] p-2 rounded-full">
-                <img
-                  src={overallrating}
-                  alt="overallrating Icon"
-                  className="w-5 h-5 object-contain"
+    <div className="border-t my-4" style={{ borderColor: "#0000001A" }} />
+
+    {/* Ratings Overview (Score + Bars + Breakdown) */}
+<div className="flex flex-col 2xl:flex-row 2xl:gap-0 gap-6 w-full mt-5">
+      {/* Left: Score + Bars */}
+      <div className="flex flex-col items-center xl:items-start w-full lg:w-1/2 gap-4">
+        <div className="flex flex-col items-center xl:items-start">
+          <p className="text-4xl font-bold text-purple-500">4.5</p>
+          <div className="text-yellow-500 text-sm">★★★★★</div>
+          <p className="text-sm text-gray-500">2,256,896</p>
+        </div>
+
+        <div className="flex flex-col gap-2 w-full max-w-md">
+          {[5, 4, 3, 2, 1].map((star) => (
+            <div key={star} className="flex items-center gap-2">
+              <span className="text-sm text-gray-700 w-4 text-right">{star}</span>
+              <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-purple-500"
+                  style={{
+                    width: `${
+                      (star === 5 && 85) ||
+                      (star === 4 && 55) ||
+                      (star === 3 && 15) ||
+                      (star === 2 && 5) ||
+                      3
+                    }%`,
+                  }}
                 />
-              </span>
-              Overall Ratings
-            </h3>
-
-            <div
-              className="border-t my-4"
-              style={{ borderColor: "#0000001A" }}
-            />
-
-            {/* Grid Layout */}
-            <div className="flex flex-wrap items-start gap-x-32 w-full mt-2">
-              {/* Left: Score */}
-              <div className="flex flex-col items-center w-[100px] shrink-0">
-                <p className="text-4xl font-bold text-purple-500">4.5</p>
-                <div className="text-yellow-500 text-sm">★★★★★</div>
-                <p className="text-sm text-gray-500">2,256,896</p>
-              </div>
-
-              {/* Center: Rating Bars */}
-
-              <div className="flex flex-col gap-2">
-                {[5, 4, 3, 2, 1].map((star) => (
-                  <div key={star} className="flex items-center gap-2">
-                    <span className="text-sm text-gray-700 w-4 text-right">
-                      {star}
-                    </span>
-                    <div className="w-[200px] sm:w-[320px] md:w-[360px] h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-purple-500"
-                        style={{
-                          width: `${
-                            (star === 5 && 85) ||
-                            (star === 4 && 55) ||
-                            (star === 3 && 15) ||
-                            (star === 2 && 5) ||
-                            3
-                          }%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Right: Breakdown */}
-              {/* Right: Ratings Breakdown */}
-              <div className="ml-70 text-sm text-gray-800">
-                <p className="text-[#E57CFF] font-semibold mb-5">
-                  Ratings Break down
-                </p>
-                <div className="grid grid-cols-2 gap-y-8 gap-x-10 w-full max-w-[400px]  ">
-                  {[
-                    { label: "Breakdown 1", score: 4.1 },
-                    { label: "Breakdown 2", score: 4.0 },
-                    { label: "Breakdown 3", score: 3.9 },
-                    { label: "Breakdown 4", score: 4.0 },
-                    { label: "Breakdown 5", score: 4.0 },
-                  ].map((item, i) => (
-                    <div
-                      key={i}
-                      className="flex justify-between items-center w-full gap-4"
-                    >
-                      <span>{item.label}</span>
-                      <span className="flex items-center gap-2 text-sm text-gray-800 font-medium">
-                        <span className="text-yellow-500">⭐</span>
-                        {item.score.toFixed(1)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
               </div>
             </div>
-          </div>
+          ))}
         </div>
+      </div>
+
+      {/* Right: Breakdown */}
+      <div className="w-full xl:w-1/2 text-sm text-gray-800">
+        <p className="text-[#E57CFF] font-semibold mb-5 mt-5">Ratings Break down</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-10  w-full max-w-[400px]">
+          {[
+            { label: "Breakdown 1", score: 4.1 },
+            { label: "Breakdown 2", score: 4.0 },
+            { label: "Breakdown 3", score: 3.9 },
+            { label: "Breakdown 4", score: 4.0 },
+            { label: "Breakdown 5", score: 4.0 },
+          ].map((item, i) => (
+            <div
+              key={i}
+className="flex justify-between items-center w-full gap-1"
+            >
+              <span>{item.label}</span>
+              <span className="flex items-center gap-2 text-sm text-gray-800 font-medium">
+                <span className="text-yellow-500">⭐</span>
+                {item.score.toFixed(1)}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
         {/* Reviews & Ratings */}
         <div className="w-full px-10 md:px-5  bg-[#ECEEF2]  rounded-xl shadow-sm p-2 mt-2">

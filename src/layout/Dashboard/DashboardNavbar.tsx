@@ -113,7 +113,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
       <nav
         className={`
         fixed md:relative
-        h-full w-[280px]
+    h-full w-[220px] sm:w-[240px] md:w-[260px] lg:w-[280px]
         bg-white border-r border-[#0000001a]
         transition-all duration-300 ease-in-out
         z-50
@@ -129,7 +129,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
           </div>
 
           {/* Logo */}
-          <div className="flex flex-col items-start gap-[7.5px] py-[18px] px-6">
+<div className="flex flex-col items-start gap-[7.5px] py-[18px] px-4 md:px-6">
             <img
               className="w-[108.12px] h-[46.51px]"
               alt="Company Logo"
@@ -176,7 +176,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
                   to="/dashboard/user-profile"
                   onClick={toggleMobileNav}
                   className={({ isActive }) =>
-                    `text-sm px-3 py-[6px] rounded-lg w-full transition ${
+    `text-sm px-3 py-[6px] rounded-lg w-full transition whitespace-nowrap ${
                       isActive
                         ? "bg-[#f3e8ff] text-[#9747FF] font-semibold"
                         : "text-slate-500 hover:bg-[#f9f9f9]"
@@ -189,7 +189,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
                   to="/dashboard/company-profile"
                   onClick={toggleMobileNav}
                   className={({ isActive }) =>
-                    `text-sm px-3 py-[6px] rounded-lg w-full transition ${
+    `text-sm px-3 py-[6px] rounded-lg w-full transition whitespace-nowrap ${
                       isActive
                         ? "bg-[#f3e8ff] text-[#9747FF] font-semibold"
                         : "text-slate-500 hover:bg-[#f9f9f9]"
@@ -216,14 +216,14 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
 
 // Extracted NavItem component for cleaner code
 const NavItem = ({ item, onClick }: any) => {
-  const baseClasses ="flex items-center gap-3 px-4 py-3 w-full rounded-xl cursor-pointer";
+const baseClasses = "flex items-center gap-3 px-3 py-2.5 w-full rounded-xl cursor-pointer";
   const activeClasses = "bg-[#f3e8ff] text-[#9747FF] font-semibold";
   const inactiveClasses = "text-slate-500 hover:bg-[#f3e8ff]";
 
   const content = (
     <>
       <div className="inline-flex items-start gap-2.5">{item.icon}</div>
-      <div className="font-medium text-sm">{item.label}</div>
+<div className="font-medium text-sm whitespace-nowrap">{item.label}</div>
       {item.hasNotification && (
         <div className="absolute w-2 h-2 top-[13px] -left-px bg-orange-500 rounded-full border border-white" />
       )}
