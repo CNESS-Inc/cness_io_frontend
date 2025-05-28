@@ -4,10 +4,10 @@ import { RegisterDetails } from "../Common/ServerAPI";
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
 
-interface SignupFormProps {
-  onSuccess: () => void;
-  onSwitchToLogin: () => void;
-}
+// interface SignupFormProps {
+//   onSuccess: () => void;
+//   onSwitchToLogin: () => void;
+// }
 
 interface AuthResponse {
   success: { message: string };
@@ -32,7 +32,7 @@ interface FormErrors {
 
 export default function Signingup() {
   const [errors, setErrors] = useState<FormErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [, setIsSubmitting] = useState(false);
   const [apiMessage, setApiMessage] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formValues, setFormValues] = useState({

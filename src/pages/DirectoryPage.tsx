@@ -4,7 +4,7 @@ import Header from "../layout/Header/Header";
 import Footer from "../layout/Footer/Footer";
 import { iconMap } from "../assets/icons";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
-import { GetDomainDetails, GetIndustryDetails } from "../Common/ServerAPI";
+import { GetIndustryDetails } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
 
 const itemsPerPage = 6;
