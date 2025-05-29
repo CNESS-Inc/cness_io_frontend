@@ -4,6 +4,8 @@ import AppLayout from "../layout/AppLayout";
 import EmailVerify from "../components/ui/EmailVerify";
 import PaymentVerify from "../components/ui/PaymentVerify";
 import ResetPassword from "../components/ui/ResetPassword";
+import GenerateBadgeCode from "../pages/GenerateBadgeCode";
+import AssessmentQuestion from "../pages/AssessmentQuestion";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -57,6 +59,14 @@ export const router = createBrowserRouter([
           {
             path: "company-profile",
             element: <OrganaizationProfilepage />,
+          },
+          {
+            path: "generate-code",
+            element: <GenerateBadgeCode />,
+          },
+          {
+            path: "assesment",
+            element: <AssessmentQuestion />,
           },
         ],
       },

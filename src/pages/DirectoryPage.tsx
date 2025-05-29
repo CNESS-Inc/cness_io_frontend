@@ -6,7 +6,6 @@ import { iconMap } from "../assets/icons";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
 import { GetIndustryDetails } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
-import { Section } from "lucide-react";
 
 const itemsPerPage = 6;
 

@@ -10,7 +10,7 @@ import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const DashboardHeader = ({ toggleMobileNav, user }: any) => {
+const DashboardHeader = ({ toggleMobileNav }: any) => {
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -47,6 +47,10 @@ const DashboardHeader = ({ toggleMobileNav, user }: any) => {
   //   console.log("Navigating to profile...")
   //   setIsDropdownOpen(false)
   // }
+
+  const profile = localStorage.getItem("profile_picture");
+  const defaultAvatar = "https://c.animaapp.com/magahlmqpONVZN/img/ellipse-3279.svg";
+  const name = localStorage.getItem("name");
 
   return (
     <header className="flex w-full items-center justify-between px-4 md:px-8 py-[18px] bg-white border-b border-[#0000001a] relative">
@@ -92,17 +96,18 @@ const DashboardHeader = ({ toggleMobileNav, user }: any) => {
             // onClick={toggleDropdown}
             className="flex items-center focus:outline-none"
           >
-            <Avatar className="w-[44.25px] h-[44.25px]">
+            <Avatar>
               <AvatarImage
-                src="https://c.animaapp.com/magahlmqpONVZN/img/ellipse-3279.svg"
+src={profile || defaultAvatar}
                 alt="User avatar"
+                className="w-[44.25px] h-[44.25px] rounded-full border-[0.39px] border-transparent bg-gradient-to-r from-[#9747FF] to-[#F3CCF3]"
               />
             </Avatar>
 
             <div className="flex flex-col items-start">
               <div className="px-2 py-0.5 flex items-center">
                 <div className="font-['Poppins',Helvetica] font-medium text-[#222224] text-sm">
-                  {user}
+                  {name}
                 </div>
               </div>
 
@@ -143,7 +148,7 @@ const DashboardHeader = ({ toggleMobileNav, user }: any) => {
           >
             <Avatar className="w-[36px] h-[36px]">
               <AvatarImage
-                src="https://c.animaapp.com/magahlmqpONVZN/img/ellipse-3279.svg"
+                src={profile || defaultAvatar}
                 alt="User avatar"
               />
             </Avatar>
