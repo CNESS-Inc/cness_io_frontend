@@ -6,6 +6,7 @@ import PaymentVerify from "../components/ui/PaymentVerify";
 import ResetPassword from "../components/ui/ResetPassword";
 import GenerateBadgeCode from "../pages/GenerateBadgeCode";
 import AssessmentQuestion from "../pages/AssessmentQuestion";
+import Setting from "../pages/Setting";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -67,6 +68,10 @@ export const router = createBrowserRouter([
           {
             path: "assesment",
             element: <AssessmentQuestion />,
+          },
+          {
+            path: "setting",
+            element: <Setting />,
           },
         ],
       },

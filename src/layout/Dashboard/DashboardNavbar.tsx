@@ -16,6 +16,7 @@ import {
   LogOutIcon,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -91,6 +92,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
       icon: <SettingsIcon className="w-5 h-5" />,
       label: "Settings",
       active: false,
+      path: "/dashboard/setting",
     },
     {
       icon: <HelpCircleIcon className="w-5 h-5" />,
@@ -136,11 +138,13 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
 
           {/* Logo */}
           <div className="flex flex-col items-start gap-[7.5px] py-[18px] px-4 md:px-6">
-            <img
-              className="w-[108.12px] h-[46.51px]"
-              alt="Company Logo"
-              src="https://c.animaapp.com/magahlmqpONVZN/img/component-1.svg"
-            />
+            <Link to="/">
+              <img
+                className="w-[108.12px] h-[46.51px]"
+                alt="Company Logo"
+                src="https://c.animaapp.com/magahlmqpONVZN/img/component-1.svg"
+              />
+            </Link>
           </div>
 
           {/* Main Menu Items */}
