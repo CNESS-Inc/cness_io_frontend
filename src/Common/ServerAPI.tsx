@@ -9,6 +9,11 @@ type LoginFormData = {
 type ForgotFormData = {
   email: string;
 };
+type UpdateFormData = {
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
+};
 type ResetFormData = {
   token: string;
   password: string;
@@ -63,6 +68,7 @@ export const API = {
 export const EndPoint = {
   login: "/auth/login",
   forgot: "/auth/forgot-password",
+  updatepassword: "/auth/update/password",
   reset: "/auth/reset-password",
   register: "/auth/sign-up",
   organization_profile: "/readiness-question/organization/answer",
@@ -107,6 +113,15 @@ export const ForgotPasswordDetails = (
     email: formData?.email,
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.forgot);
+};
+export const UpdatePasswordDetails = (
+  formData: UpdateFormData
+): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.updatepassword
+  );
 };
 export const ForgotPasswordDetailsSubmit = (
   formData: ResetFormData
