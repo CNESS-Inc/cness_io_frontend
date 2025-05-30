@@ -78,17 +78,24 @@ export default function CompanyCard({
   };
   return (
     
- <Card className="bg-white max-w-sm rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40" onClick={handleCardClick}>
-  <CardHeader className="px-4 pt-4 pb-0">
-    <div className="flex justify-between items-start">
-        <div className="flex items-center gap-2">
+<Card
+  className="relative bg-white max-w-sm rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
+  onClick={handleCardClick}
+>
+  {/* Absolute Badge Logo */}
+  <img
+    src={iconMap['inslogo']}
+    alt="CNESS Logo"
+    className="absolute top-3 right-3 w-8 sm:w-10 h-auto object-contain z-10"
+  />
+
+  <CardHeader className="px-4 pt-4 pb-0 relative z-0">
+  <div className="flex items-start gap-1 pr-12">
       <img src={logoUrl} alt={`${name} logo`} className="h-8 w-8 rounded-full" />
       <div>
         <CardTitle className="text-sm font-semibold">{name}</CardTitle>
         <CardDescription className="text-xs text-gray-500">{location}</CardDescription>
       </div>
-    </div>
-    <img src={iconMap['inslogo']} alt="CNESS Logo"className="h-8 w-auto object-contain" />
     </div>
   </CardHeader>
 
@@ -101,19 +108,18 @@ export default function CompanyCard({
       />
     </div>
 
-   <div className="flex justify-between items-center mb-1">
-  <p className="text-sm font-semibold text-gray-800">Overview</p>
-  <div className="flex items-center text-yellow-500 text-sm">
-    {'★'.repeat(rating || 0)}
-    {'☆'.repeat(5 - (rating || 0))}
-  </div>
-</div>
+    <div className="flex justify-between items-center mb-1">
+      <p className="text-sm font-semibold text-gray-800">Overview</p>
+      <div className="flex items-center text-yellow-500 text-sm">
+        {'★'.repeat(rating || 0)}
+        {'☆'.repeat(5 - (rating || 0))}
+      </div>
+    </div>
 
     <p className="text-sm text-gray-600 leading-snug">
       {description}{' '}
       <span className="text-purple-600 underline cursor-pointer">Read More</span>
     </p>
-   
 
     <div className="flex flex-wrap gap-2 mt-3">
       {tags.map((tag, index) => (
@@ -128,10 +134,10 @@ export default function CompanyCard({
   </CardContent>
 
   <CardFooter className="flex justify-between items-center px-4 py-3">
-  
-
+    {/* Optional footer content */}
   </CardFooter>
 </Card>
+
 
   );
 }

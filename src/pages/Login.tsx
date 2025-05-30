@@ -13,6 +13,7 @@ import {
   submitPersonDetails,
 } from "../Common/ServerAPI";
 import Button from "../components/ui/Button";
+import { Link } from "react-router-dom";
 
 interface SubDomain {
   id: string;
@@ -343,6 +344,14 @@ export default function Login() {
         localStorage.setItem(
           "completed_step",
           response?.data?.data?.user.completed_step
+        );
+        localStorage.setItem(
+          "profile_picture",
+          response?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem(
+          "name",
+          response?.data?.data?.user.name
         );
 
         const completionStatus =
@@ -915,12 +924,11 @@ export default function Login() {
 
               <p className="text-center text-sm text-gray-600 mt-4">
                 New to Cness?{" "}
-                <a
-                  href="#"
+                <Link to={"/sign-up"}
                   className="text-[#7F57FC] font-medium hover:underline"
                 >
                   Create account
-                </a>
+                </Link>
               </p>
             </form>
           </div>

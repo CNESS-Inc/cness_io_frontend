@@ -3,6 +3,7 @@ import SignupAnimation from "../components/ui/SignupAnimation"; // adjust path
 import { RegisterDetails } from "../Common/ServerAPI";
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
+import { Link } from "react-router-dom";
 
 // interface SignupFormProps {
 //   onSuccess: () => void;
@@ -323,9 +324,9 @@ export default function Signingup() {
                 <label className="flex items-center gap-2">
                   Already have an account?{" "}
                 </label>
-                <a href="#" className="text-[#7F57FC] hover:underline">
+                <Link to={"/log-in"} className="text-[#7F57FC] hover:underline">
                   Login
-                </a>
+                </Link>
               </div>
 
               <div className="flex justify-end gap-4 mt-6">
