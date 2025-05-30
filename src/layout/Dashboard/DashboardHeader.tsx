@@ -10,7 +10,7 @@ import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const DashboardHeader = ({ toggleMobileNav, user }: any) => {
+const DashboardHeader = ({ toggleMobileNav }: any) => {
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -42,11 +42,20 @@ const DashboardHeader = ({ toggleMobileNav, user }: any) => {
     }
   };
 
-  // const handleProfile = () => {
-  //   // Add your profile navigation logic here
-  //   console.log("Navigating to profile...")
-  //   setIsDropdownOpen(false)
-  // }
+  const handleProfile = () => {
+    const personOrganization = localStorage.getItem("person_organization");
+
+    if (personOrganization === "2") {
+      navigate("/dashboard/company-profile");
+    } else if (personOrganization === "1") {
+      navigate("/dashboard/user-profile");
+    }
+  };
+
+  const profile = localStorage.getItem("profile_picture");
+  const defaultAvatar =
+    "https://c.animaapp.com/magahlmqpONVZN/img/ellipse-3279.svg";
+  const name = localStorage.getItem("name");
 
   return (
     <header className="flex w-full items-center justify-between px-4 md:px-8 py-[18px] bg-white border-b border-[#0000001a] relative">
@@ -89,20 +98,21 @@ const DashboardHeader = ({ toggleMobileNav, user }: any) => {
 
         <div className="hidden md:flex items-center relative" ref={dropdownRef}>
           <button
-            // onClick={toggleDropdown}
-            className="flex items-center focus:outline-none"
+            onClick={handleProfile}
+            className="flex items-center focus:outline-none cursor-pointer"
           >
-            <Avatar className="w-[44.25px] h-[44.25px]">
+            <Avatar>
               <AvatarImage
-                src="https://c.animaapp.com/magahlmqpONVZN/img/ellipse-3279.svg"
+                src={profile || defaultAvatar}
                 alt="User avatar"
+                className="w-[44.25px] h-[44.25px] rounded-full border-[0.39px] border-transparent bg-gradient-to-r from-[#9747FF] to-[#F3CCF3]"
               />
             </Avatar>
 
             <div className="flex flex-col items-start">
               <div className="px-2 py-0.5 flex items-center">
                 <div className="font-['Poppins',Helvetica] font-medium text-[#222224] text-sm">
-                  {user}
+                  {name}
                 </div>
               </div>
 
@@ -138,13 +148,14 @@ const DashboardHeader = ({ toggleMobileNav, user }: any) => {
         {/* Mobile-only avatar icon with dropdown */}
         <div className="md:hidden flex items-center relative" ref={dropdownRef}>
           <button
-            // onClick={toggleDropdown}
-            className="focus:outline-none"
+            onClick={handleProfile}
+            className="focus:outline-none cursor-pointer"
           >
-            <Avatar className="w-[36px] h-[36px]">
+            <Avatar className="">
               <AvatarImage
-                src="https://c.animaapp.com/magahlmqpONVZN/img/ellipse-3279.svg"
+                src={profile || defaultAvatar}
                 alt="User avatar"
+                className="w-[44.25px] h-[44.25px] rounded-full border-[0.39px] border-transparent bg-gradient-to-r from-[#9747FF] to-[#F3CCF3]"
               />
             </Avatar>
           </button>

@@ -152,7 +152,6 @@ export default function DashboardSection(user: any) {
   const completedStep = localStorage.getItem("completed_step");
   const is_disqualify = localStorage.getItem("is_disqualify");
 
-
   // const urldata = `https://test.cness.ai/profile/public`;
 
   return (
@@ -194,21 +193,36 @@ export default function DashboardSection(user: any) {
 
       <section className="flex flex-col w-full items-start gap-3 p-4 md:p-5">
         {/* Header Section */}
-        <header className="flex flex-col md:flex-row items-start md:items-center justify-between w-full gap-2 md:gap-0">
-          <div className="flex flex-col items-start">
-            <div className="px-2 py-1 md:px-3 md:py-2 flex items-center gap-2.5">
-              <h1 className="font-['Poppins',Helvetica] text-2xl md:text-[32px] leading-8">
-                <span className="font-semibold text-[#222224]">Hello </span>
-                <span className="font-semibold text-[#a392f2]">
-                  {user?.user?.name?.charAt(0)?.toUpperCase() +
-                    user?.user?.name?.slice(1) || ""}
-                </span>
-              </h1>
+        <header className="w-full">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="px-2 py-1 md:px-3 md:py-2 flex items-center gap-2.5">
+                <h1 className="font-['Poppins',Helvetica] text-2xl md:text-[32px] leading-8">
+                  <span className="font-semibold text-[#222224]">Hello </span>
+                  <span className="font-semibold text-[#a392f2]">
+                    {user?.user?.name?.charAt(0)?.toUpperCase() +
+                      user?.user?.name?.slice(1) || ""}
+                  </span>
+                </h1>
+              </div>
+              <div className="inline-flex items-center pt-1 pb-2 px-2 md:pt-2 md:pb-3 md:px-3">
+                <p className="font-['Open_Sans',Helvetica] text-[#7a7a7a] text-xs sm:text-sm md:text-base">
+                  Welcome to your CNESS Dashboard, Margaret!
+                </p>
+              </div>
             </div>
-            <div className="inline-flex items-center pt-1 pb-2 px-2 md:pt-2 md:pb-3 md:px-3">
-              <p className="font-['Open_Sans',Helvetica] text-[#7a7a7a] text-xs sm:text-sm md:text-base">
-                Welcome to your CNESS Dashboard, Margaret!
-              </p>
+            <div>
+              <Button
+                variant="gradient-primary"
+                className="rounded-[100px] py-2 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                onClick={() => {
+                  navigate("/dashboard/assesment");
+                }}
+              >
+                <span className="font-['Plus_Jakarta_Sans',Helvetica] leading-none tracking-[0px] text-white text-center">
+                  Take Assessment
+                </span>
+              </Button>
             </div>
           </div>
         </header>
@@ -376,7 +390,7 @@ export default function DashboardSection(user: any) {
             <div className="w-full sm:w-1/2 relative">
               <Card className="w-full h-full border-[#eceef2] rounded-[10px] overflow-hidden">
                 <CardContent className="flex justify-center items-center pt-4 pb-4 md:pt-6 md:pb-6">
-                  <QRCodeGenerator profileUrl={user?.user?.qr_url}  />
+                  <QRCodeGenerator profileUrl={user?.user?.qr_url} />
                 </CardContent>
               </Card>
             </div>
@@ -454,9 +468,9 @@ export default function DashboardSection(user: any) {
                 </CardHeader>
                 <CardContent className="py-3 md:py-[17px]">
                   <div className="flex flex-col md:flex-row items-center justify-around gap-2">
-                    <div className="flex flex-col md:flex-row items-center gap-2 md:gap-[42px]">
+                    <div className="flex flex-col md:flex-column items-center gap-2 md:gap-[20px]">
                       <img
-                        className="w-24 md:w-[137.96px] h-auto md:h-[61.4px]"
+                        className="w-24"
                         alt="Badge vector"
                         src="https://c.animaapp.com/magahlmqpONVZN/img/vector.svg"
                       />
