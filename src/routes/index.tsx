@@ -4,6 +4,8 @@ import AppLayout from "../layout/AppLayout";
 import EmailVerify from "../components/ui/EmailVerify";
 import PaymentVerify from "../components/ui/PaymentVerify";
 import ResetPassword from "../components/ui/ResetPassword";
+import Why from "../pages/Why"; 
+import What from "../pages/What"; 
 import GenerateBadgeCode from "../pages/GenerateBadgeCode";
 import AssessmentQuestion from "../pages/AssessmentQuestion";
 import Setting from "../pages/Setting";
@@ -42,6 +44,17 @@ export const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
+
+      {
+         path: "/why",
+        element: <Why />,
+      },
+
+      {
+         path: "/What",
+        element: <What />,
+      },
+
       {
         path: "dashboard",
         children: [

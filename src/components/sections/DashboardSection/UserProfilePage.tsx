@@ -401,13 +401,16 @@ const UserProfilePage = () => {
       setStates([]);
     }
   }, [contactInfoForm.watch("country")]);
+  
 
   return (
     <>
       <DashboardLayout>
+            <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-2 overflow-x-hidden min-h-screen">
+
         {public_organization === "1" ? (
           is_disqualify === "true" ? (
-            <div className="max-w-6xl mt-0 shadow overflow-hidden p-8 text-center">
+          <div className="mt-0 shadow overflow-hidden p-8 text-center">
               <div className="py-12">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">
                   User Profile Access Restricted
@@ -434,7 +437,7 @@ const UserProfilePage = () => {
               </div>
             </div>
           ) : (
-            <div className="max-w-6xl mx-auto mt-0 bg-white rounded-xl shadow overflow-hidden">
+          <div className="mt-0 bg-white rounded-xl shadow overflow-hidden">
               <div className="max-w-6xl mx-auto mt-0 bg-white rounded-xl shadow overflow-hidden">
                 <div className="relative h-[300px] bg-gray-100">
                   <img
@@ -510,14 +513,15 @@ const UserProfilePage = () => {
                     selectedIndex={selectedIndex}
                     onChange={setSelectedIndex}
                   >
-                    <div className="px-6 pt-6">
-                      {/* Tab Header - remains the same */}
-                      <Tab.List className="flex gap-3">
+<div className="px-6 pt-6">
+<div className="w-full overflow-x-auto no-scrollbar">
+  <div className="inline-block min-w-[900px] lg:min-w-full">
+    <Tab.List className="flex gap-3 px-2 whitespace-nowrap">
                         {tabNames.map((tab, index) => (
                           <Tab
                             key={index}
                             className={({ selected }) =>
-                              `px-4 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 focus-visible:outline-none ${
+                `px-4 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 focus:outline-none ${
                                 selected
                                   ? "text-purple-600 bg-white shadow-md border-t-2 border-x-2 border-purple-600 -mb-[1px]"
                                   : "text-gray-500 bg-transparent hover:text-purple-500"
@@ -528,17 +532,17 @@ const UserProfilePage = () => {
                           </Tab>
                         ))}
                       </Tab.List>
-
+                      </div>
+</div>
                       {/* Tab Content Panel */}
                       <Tab.Panels className="pt-6">
-                        {/* Basic Information Tab */}
                         <Tab.Panel>
                           <form
                             onSubmit={basicInfoForm.handleSubmit(
                               handleBasicInfoSubmit
                             )}
                           >
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                               {/* First Name */}
                               <div>
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -738,7 +742,7 @@ const UserProfilePage = () => {
                               handleContactInfoSubmit
                             )}
                           >
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                               {/* Phone Number */}
                               <div>
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1012,7 +1016,7 @@ const UserProfilePage = () => {
                               handleSocialLinksSubmit
                             )}
                           >
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                               {/* Facebook */}
                               <div>
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1094,7 +1098,7 @@ const UserProfilePage = () => {
                               handleEducationSubmit
                             )}
                           >
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                               {/* Degree */}
                               <div>
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1184,7 +1188,7 @@ const UserProfilePage = () => {
                               handleWorkExperienceSubmit
                             )}
                           >
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                               {/* Company */}
                               <div>
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1276,7 +1280,7 @@ const UserProfilePage = () => {
                               handlePublicProfileSubmit
                             )}
                           >
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                               {/* Title */}
                               <div className="md:col-span-2">
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1462,6 +1466,7 @@ const UserProfilePage = () => {
             </div>
           </div>
         )}
+        </div>  
       </DashboardLayout>
     </>
   );
