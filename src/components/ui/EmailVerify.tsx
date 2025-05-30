@@ -48,7 +48,7 @@ const EmailVerify = () => {
 
   const navigate = useNavigate();
   const handleLoginClick = () => {
-    navigate("/");
+    navigate("/log-in");
   };
 
   return (

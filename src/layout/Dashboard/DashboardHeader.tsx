@@ -42,14 +42,19 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
     }
   };
 
-  // const handleProfile = () => {
-  //   // Add your profile navigation logic here
-  //   console.log("Navigating to profile...")
-  //   setIsDropdownOpen(false)
-  // }
+  const handleProfile = () => {
+    const personOrganization = localStorage.getItem("person_organization");
+
+    if (personOrganization === "2") {
+      navigate("/dashboard/company-profile");
+    } else if (personOrganization === "1") {
+      navigate("/dashboard/user-profile");
+    }
+  };
 
   const profile = localStorage.getItem("profile_picture");
-  const defaultAvatar = "https://c.animaapp.com/magahlmqpONVZN/img/ellipse-3279.svg";
+  const defaultAvatar =
+    "https://c.animaapp.com/magahlmqpONVZN/img/ellipse-3279.svg";
   const name = localStorage.getItem("name");
 
   return (
@@ -93,12 +98,12 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
 
         <div className="hidden md:flex items-center relative" ref={dropdownRef}>
           <button
-            // onClick={toggleDropdown}
-            className="flex items-center focus:outline-none"
+            onClick={handleProfile}
+            className="flex items-center focus:outline-none cursor-pointer"
           >
             <Avatar>
               <AvatarImage
-src={profile || defaultAvatar}
+                src={profile || defaultAvatar}
                 alt="User avatar"
                 className="w-[44.25px] h-[44.25px] rounded-full border-[0.39px] border-transparent bg-gradient-to-r from-[#9747FF] to-[#F3CCF3]"
               />
@@ -143,13 +148,14 @@ src={profile || defaultAvatar}
         {/* Mobile-only avatar icon with dropdown */}
         <div className="md:hidden flex items-center relative" ref={dropdownRef}>
           <button
-            // onClick={toggleDropdown}
-            className="focus:outline-none"
+            onClick={handleProfile}
+            className="focus:outline-none cursor-pointer"
           >
-            <Avatar className="w-[36px] h-[36px]">
+            <Avatar className="">
               <AvatarImage
                 src={profile || defaultAvatar}
                 alt="User avatar"
+                className="w-[44.25px] h-[44.25px] rounded-full border-[0.39px] border-transparent bg-gradient-to-r from-[#9747FF] to-[#F3CCF3]"
               />
             </Avatar>
           </button>

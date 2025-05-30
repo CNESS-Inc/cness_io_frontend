@@ -93,3 +93,42 @@
 .clip-wave3 {
   clip-path: polygon(0 0, 100% 0, 100% 70%, 0% 100%);
 }
+
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.tw-reflow-fix {
+  --tw-reflow: 1;
+}
+
+
+summary::-webkit-details-marker {
+  display: none;
+}
+details[open] > summary::after {
+  content: "▲";
+}
+summary::after {
+  content: "▼";
+  float: right;
+  margin-left: 1rem;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

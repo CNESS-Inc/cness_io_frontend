@@ -3,7 +3,7 @@ import SignupAnimation from "../components/ui/SignupAnimation"; // adjust path
 import { RegisterDetails } from "../Common/ServerAPI";
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // interface SignupFormProps {
 //   onSuccess: () => void;
@@ -36,6 +36,7 @@ export default function Signingup() {
   const [, setIsSubmitting] = useState(false);
   const [apiMessage, setApiMessage] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
   const [formValues, setFormValues] = useState({
     username: "",
     email: "",
@@ -173,6 +174,7 @@ export default function Signingup() {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    navigate("/log-in");
   };
 
   return (

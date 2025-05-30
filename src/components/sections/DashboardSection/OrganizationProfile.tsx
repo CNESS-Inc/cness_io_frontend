@@ -399,9 +399,10 @@ const OrganaizationProfilepage = () => {
   return (
     <>
       <DashboardLayout>
+         <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-2 overflow-x-hidden min-h-screen">
         {public_organization === "2" ? (
           is_disqualify === "true" ? (
-            <div className="max-w-6xl mt-0 shadow overflow-hidden p-8 text-center">
+          <div className="mt-0 shadow overflow-hidden p-8 text-center">
               <div className="py-12">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">
                   Organization Profile Access Restricted
@@ -428,7 +429,8 @@ const OrganaizationProfilepage = () => {
               </div>
             </div>
           ) : (
-            <div className="max-w-6xl mx-auto mt-0 bg-white rounded-xl shadow overflow-hidden">
+            <div className="mt-0 bg-white rounded-xl shadow overflow-hidden">
+             <div className="max-w-6xl mx-auto mt-0 bg-white rounded-xl shadow overflow-hidden">
               <div className="relative h-[300px] bg-gray-100">
                 <img
                   src={banner || "/default-banner.jpg"}
@@ -505,10 +507,15 @@ const OrganaizationProfilepage = () => {
                 <Tab.Group
                   selectedIndex={selectedIndex}
                   onChange={setSelectedIndex}
+
                 >
-                  <div className="px-6 pt-6">
+                  
+<div className="px-6 pt-6">
+  <div className="w-full overflow-x-auto sm:overflow-x-visible no-scrollbar">
+  <div className="inline-block min-w-[1024px] md:min-w-[1152px] lg:min-w-full px-4 sm:px-6 lg:px-8">
+
                     {/* Tab Header */}
-                    <Tab.List className="flex gap-3">
+<Tab.List className="flex gap-3 px-2 min-w-max whitespace-nowrap">
                       {tabNames.map((tab, index) => (
                         <Tab
                           key={index}
@@ -524,6 +531,8 @@ const OrganaizationProfilepage = () => {
                         </Tab>
                       ))}
                     </Tab.List>
+                    </div>
+                   </div>
 
                     {/* Tab Content Panel */}
                     <Tab.Panels className="pt-6">
@@ -1714,6 +1723,7 @@ const OrganaizationProfilepage = () => {
                     </Tab.Panels>
                   </div>
                 </Tab.Group>
+                </div>
               </div>
             </div>
           )
@@ -1746,6 +1756,7 @@ const OrganaizationProfilepage = () => {
             </div>
           </div>
         )}
+        </div>
       </DashboardLayout>
     </>
   );
