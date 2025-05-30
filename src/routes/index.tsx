@@ -4,6 +4,9 @@ import AppLayout from "../layout/AppLayout";
 import EmailVerify from "../components/ui/EmailVerify";
 import PaymentVerify from "../components/ui/PaymentVerify";
 import ResetPassword from "../components/ui/ResetPassword";
+import Why from "../pages/Why"; 
+import What from "../pages/What"; 
+
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -39,6 +42,17 @@ export const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
+
+      {
+         path: "/why",
+        element: <Why />,
+      },
+
+      {
+         path: "/What",
+        element: <What />,
+      },
+
       {
         path: "dashboard",
         children: [

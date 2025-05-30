@@ -19,7 +19,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
 
   return (
-    <div className="bg-[#f9f9f9] flex flex-row justify-center w-full min-h-screen">
+ <div className="bg-[#f9f9f9] flex flex-row justify-center w-full min-h-screen relative">
       <div className="bg-[#f9f9f9] w-full max-w-[1440px] flex flex-col">
         {/* Mobile Header */}
         {!isMobileNavOpen && (
@@ -29,10 +29,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         )}
 
         <div className="flex flex-col md:flex-row">
-          <DashboardNavbar
-            isMobileNavOpen={isMobileNavOpen}
-            toggleMobileNav={toggleMobileNav}
-          />
+          {/* Desktop Sidebar */}
+          <div className="hidden md:block">
+            <DashboardNavbar isMobileNavOpen={false} toggleMobileNav={toggleMobileNav} />
+          </div>
 
           {/* Main content */}
           <div className="flex-1 flex flex-col">
@@ -40,13 +40,30 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <div className="hidden md:block">
               <DashboardHeader />
             </div>
-
             <main>{children}</main>
           </div>
         </div>
       </div>
+
+      {/* Mobile Sidebar Overlay */}
+      {isMobileNavOpen && (
+        <div className="fixed inset-0 z-50 flex">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50"
+            onClick={toggleMobileNav}
+          ></div>
+
+          {/* Sidebar */}
+          <div className="relative w-64 bg-white h-full shadow-lg z-50">
+            <DashboardNavbar
+              isMobileNavOpen={true}
+              toggleMobileNav={toggleMobileNav}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
-
 export default DashboardLayout;

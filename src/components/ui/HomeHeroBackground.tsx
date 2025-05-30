@@ -71,7 +71,7 @@ const HomeHeroBackground: React.FC = () => {
         traceAlpha = 0.6;
       }
 
-      progress += 0.01;
+      progress += 0.003;
       requestAnimationFrame(draw);
     };
 
