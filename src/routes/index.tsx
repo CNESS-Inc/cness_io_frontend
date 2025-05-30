@@ -9,6 +9,7 @@ import Why from "../pages/Why";
 import GenerateBadgeCode from "../pages/GenerateBadgeCode";
 import AssessmentQuestion from "../pages/AssessmentQuestion";
 import Setting from "../pages/Setting";
+import What from "../pages/What";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -50,10 +51,10 @@ export const router = createBrowserRouter([
         element: <Why />,
       },
 
-      // {
-      //    path: "/What",
-      //   element: <What />,
-      // },
+      {
+         path: "/What",
+        element: <What />,
+      },
 
       {
         path: "dashboard",
