@@ -400,7 +400,7 @@ const OrganaizationProfilepage = () => {
     <>
       <DashboardLayout>
          <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-2 overflow-x-hidden min-h-screen">
-        {public_organization === "1" ? (
+        {public_organization === "2" ? (
           is_disqualify === "true" ? (
           <div className="mt-0 shadow overflow-hidden p-8 text-center">
               <div className="py-12">

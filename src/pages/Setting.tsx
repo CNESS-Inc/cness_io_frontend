@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import DashboardLayout from "../layout/Dashboard/dashboardlayout";
+import { UpdatePasswordDetails } from "../Common/ServerAPI";
 
 const Setting = () => {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -7,7 +8,7 @@ const Setting = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (newPassword !== confirmPassword) {
@@ -15,10 +16,26 @@ const Setting = () => {
       return;
     }
 
-    // Call API here to update the password
-    console.log("Password change submitted", { currentPassword, newPassword });
+    const payload = {
+      current_password: currentPassword,
+      new_password: newPassword,
+      confirm_password: confirmPassword,
+    };
 
-    setMessage("Password updated successfully!");
+    try {
+      const res = await UpdatePasswordDetails(payload);
+
+      // Safely access response
+      if (res && res.success && res.success.message) {
+        setMessage(res.success.message);
+      } else {
+        setMessage("Password updated successfully.");
+      }
+    } catch (error) {
+      console.log("🚀 ~ handleSubmit ~ error:", error);
+      setMessage("An error occurred while updating the password.");
+    }
+
     // Reset fields
     setCurrentPassword("");
     setNewPassword("");
@@ -29,7 +46,7 @@ const Setting = () => {
     <DashboardLayout>
       <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
         <h2 className="text-xl font-semibold mb-4">Change Password</h2>
-        {message && <p className="mb-4 text-sm text-red-500">{message}</p>}
+        {message && <p className="mb-4 text-sm text-green-500">{message}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block mb-1 font-medium">Current Password</label>

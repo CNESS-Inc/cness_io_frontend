@@ -60,7 +60,7 @@ export default function Why() {
         </motion.div>
 
         {/* Content Area */}
-        <div className="relative z-10 max-w-5xl w-full flex flex-col items-center text-center space-y-10">
+        <div className="relative z-10 max-w-5xl w-full flex flex-col items-center text-center space-y-10 mt-3">
           {/* Heading */}
           <motion.h1
             initial={{ y: -60, opacity: 0 }}
