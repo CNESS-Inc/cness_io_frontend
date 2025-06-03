@@ -125,8 +125,18 @@ export default function Stepper() {
 
   return (
     <section className="flex flex-col items-center relative w-full">
-      <div className="relative w-full overflow-hidden rounded-xl bg-[url('/Blush.png')]">
-        <div className="absolute left-0 bottom-0 transform translate-x-0 opacity-50">
+<div
+  className="relative w-full overflow-hidden rounded-xl"
+  style={{
+    backgroundImage: `
+      url('/Blush.png'),
+      linear-gradient(90deg, #DDF4FF 0%, #F5E5FF 100%)
+    `,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat'
+  }}
+>        <div className="absolute left-0 bottom-0 transform translate-x-0 opacity-50">
           <img
             className="w-full"
             src={actionImgOne}
@@ -474,7 +484,10 @@ export default function Stepper() {
 
                 {/* Group 3 */}
                 <div className="flex w-full lg:w-[472px] h-[132px] items-center gap-0.5 lg:absolute lg:top-[319px] lg:left-[calc(50%-250px)] justify-center mt-8 lg:mt-0">
+                
                   {journeySteps[2].steps.map((step, stepIndex) => {
+                      const actualOrder = [1, 0]; // If steps[0] is Unlock and steps[1] is Learn, this swaps the order
+  const actualStep = journeySteps[2].steps[actualOrder[stepIndex]];
                     const stepNumber = 4 + stepIndex;
                     const active = isStepActive(stepNumber);
                     const completed = isStepCompleted(stepNumber);
@@ -518,7 +531,7 @@ export default function Stepper() {
                           </CardContent>
                         </Card>
 
-                        {stepIndex === 1 && (
+                        {stepIndex === 0 && (
                           <svg
                             width="166"
                             height="2"
