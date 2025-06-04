@@ -84,13 +84,13 @@ export default function Why() {
             vision of betterment of all.
           </h2>
 
-          <h3 className="text-[#7077FE] font-bold uppercase text-sm tracking-wide mb-10">
+          <h3 className="text-[#7077FE] font-bold uppercase text-2xl tracking-wide mb-10">
             Why CNESS Exists
           </h3>
         </div>
 
         {/* Card Container */}
-        <div className="bg-white rounded-3xl p-10 max-w-7xl mx-auto">
+        <div className="bg-white rounded-3xl p-12 max-w-[200rem] mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
@@ -121,7 +121,7 @@ export default function Why() {
             ].map((item, index) => (
               <div
                 key={index}
-                className="bg-[#F3F1FF] hover:shadow-xl hover:translate-y-[-4px] transition-all duration-300 rounded-2xl p-6 shadow-md border border-[#ececec] flex flex-col"
+className="group bg-white rounded-xl p-6 shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300 hover:bg-[#E8CDFD] flex flex-col gap-4 min-h-[320px] h-full"
               >
                 <h3 className="text-[20px] font-semibold text-[#232323] mb-3 openSans">
                   {item.title}
