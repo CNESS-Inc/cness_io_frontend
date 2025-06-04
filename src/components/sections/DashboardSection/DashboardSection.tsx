@@ -151,6 +151,7 @@ export default function DashboardSection(user: any) {
 
   const completedStep = localStorage.getItem("completed_step");
   const is_disqualify = localStorage.getItem("is_disqualify");
+  console.log("🚀 ~ DashboardSection ~ is_disqualify:", typeof is_disqualify);
 
   // const urldata = `https://test.cness.ai/profile/public`;
 
@@ -160,7 +161,7 @@ export default function DashboardSection(user: any) {
       {completedStep !== "2" && (
         <div className="mx-5 bg-[rgba(255,204,0,0.05)] 5% text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-2">
-            {is_disqualify ? (
+            {is_disqualify === "true" ? (
               <span className="text-red-500">
                 You Are Not Eligible For Inspire. Try After{" "}
                 {user?.user?.daysRemaining} days!
@@ -211,19 +212,17 @@ export default function DashboardSection(user: any) {
                 </p>
               </div>
             </div>
-            <div>
+            {/* <div>
               <Button
                 variant="gradient-primary"
                 className="rounded-[100px] py-2 px-8 self-stretch transition-colors duration-500 ease-in-out"
-                onClick={() => {
-                  navigate("/dashboard/assesment");
-                }}
+                
               >
                 <span className="font-['Plus_Jakarta_Sans',Helvetica] leading-none tracking-[0px] text-white text-center">
                   Take Assessment
                 </span>
               </Button>
-            </div>
+            </div> */}
           </div>
         </header>
 
@@ -326,7 +325,10 @@ export default function DashboardSection(user: any) {
                 <div className="w-full">
                   <Button
                     variant="gradient-primary"
-                    className="rounded-[100px] py-2 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                    className="rounded-[100px] py-2 px-8 self-stretch transition-colors duration-500 ease-in-out cursor-pointer"
+                    onClick={() => {
+                      navigate("/dashboard/assesment");
+                    }}
                   >
                     <span className="font-['Plus_Jakarta_Sans',Helvetica] font-medium text-[12px] leading-none tracking-[0px] text-white text-center">
                       Get Certification

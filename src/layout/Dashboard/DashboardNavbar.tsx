@@ -45,7 +45,8 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
     {
       icon: <AwardIcon className="w-5 h-5" />,
       label: "Get Certified",
-      active: false,
+      active: true,
+      path: "/dashboard/assesment",
     },
     {
       icon: <UploadIcon className="w-5 h-5" />,
