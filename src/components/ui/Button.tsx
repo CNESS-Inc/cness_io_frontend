@@ -30,13 +30,13 @@ const variantClasses = {
   outline: 'border border-gray-300 bg-transparent hover:bg-gray-50 focus-visible:ring-gray-500',
   ghost: 'bg-transparent hover:bg-gray-100 focus-visible:ring-gray-500',
   'white-outline': 'bg-white border border-gray-200 hover:bg-gray-50 focus-visible:ring-gray-300',
-  'gradient-primary': 'bg-gradient-to-r from-[#7077FE] to-[#9747FF] hover:from-[#7077FE] hover:to-[#7077FE] text-white',
+  'gradient-primary': 'bg-gradient-to-r from-[#7077FE] to-[#F07EFF] hover:from-[#7077FE] hover:to-[#7077FE] text-white',
 }
 
 
     const sizeClasses = {
       sm: 'px-3 py-1.5 text-sm',
-      md: 'px-6 py-4 text-base',
+  md: 'px-6 py-4 text-[18px] font-[Plus_Jakarta_Sans] font-medium',
       lg: 'px-6 py-3 text-lg',
     }
 

@@ -13,7 +13,7 @@ const HomeHeroBackground: React.FC = () => {
     if (!ctx) return;
 
     let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = 650);
+    let height = (canvas.height = 692);
 
     const points: Point[] = [
       { x: 200, y: 150 },
@@ -50,15 +50,16 @@ const HomeHeroBackground: React.FC = () => {
 
       // Active moving blobs
       const blobs = [
-        { color: "#00d1ff", x: -220 },
+        { color: "#00d1ff", x: -400 },
         { color: "#623fff", x: 0 },
-        { color: "#ff994a", x: 220 },
+        { color: "#ff994a", x: 400 },
       ];
 
       blobs.forEach((blob) => {
         ctx.globalAlpha = 0.5;
         ctx.beginPath();
-        ctx.arc(centerX + blob.x, centerY, 280, 0, 2 * Math.PI);
+        const jump = Math.abs(Math.sin(progress * 10)) * 30; // bounce amount
+ctx.arc(centerX + blob.x, centerY - jump, 280, 0, 2 * Math.PI);
         ctx.fillStyle = blob.color;
         ctx.fill();
       });
@@ -71,7 +72,7 @@ const HomeHeroBackground: React.FC = () => {
         traceAlpha = 0.6;
       }
 
-      progress += 0.003;
+      progress += 0.008;
       requestAnimationFrame(draw);
     };
 
@@ -81,7 +82,7 @@ const HomeHeroBackground: React.FC = () => {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute top-0 left-0 w-full h-[650px] z-0 pointer-events-none"
+      className="absolute top-0 left-0 w-full h-[692px] z-0 pointer-events-none"
     />
   );
 };
