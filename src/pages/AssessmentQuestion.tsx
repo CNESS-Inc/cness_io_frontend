@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import DashboardLayout from "../layout/Dashboard/dashboardlayout";
 import Button from "../components/ui/Button";
-import { QuestionDetails } from "../Common/ServerAPI";
+import {
+  QuestionDetails,
+  QuestionFileDetails,
+  submitAnswerDetails,
+} from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 interface Section {
@@ -19,14 +23,25 @@ interface Section {
   previous_section_id: string | null;
 }
 
-interface FormValues {
-  selectedCheckboxIds: string[]; // Store IDs of selected options instead of booleans
-  purposePauseAnswers: any;
-  bestPracticeAnswer: string;
-  uploads: (File | null)[];
-  referenceLink: string;
+interface PurposePauseAnswer {
+  id: string;
+  answer: string;
 }
 
+interface FormValues {
+  selectedCheckboxIds: string[];
+  checkboxes_question_id: string;
+  purposePauseAnswers: PurposePauseAnswer[];
+  bestPractice: {
+    answer: string;
+    question_id: string;
+  };
+  uploads: Array<{
+    file: File | null;
+    id: string;
+  }>;
+  referenceLink: string;
+}
 const AssessmentQuestion: React.FC = () => {
   const [currentSection, setCurrentSection] = useState<Section | null>(null);
   console.log("🚀 ~ currentSection:", currentSection);
@@ -37,40 +52,68 @@ const AssessmentQuestion: React.FC = () => {
   const [sectionHistory, setSectionHistory] = useState<string[]>([]);
 
   const transformApiData = (apiData: any): Section => {
-    console.log("🚀 ~ transformApiData ~ apiData:", apiData)
-    return {
-      id: apiData.section.id,
-      name: apiData.section.name,
-      order_number: apiData.section.order_number,
-      checkboxes: apiData.question_data[0].questions[0].options,
-      checkboxes_question: apiData.question_data[0].questions[0].question,
-      checkboxes_question_id: apiData.question_data[0].questions[0].id,
-      purposePauseQuestions: apiData.question_data[1].questions.map(
-        (q: any) => ({
-          question: q.question,
-          id: q.id,
-        })
-      ),
-      bestPracticePrompt: apiData.question_data[2].questions[0].question,
-      bestPracticeQuestionId: apiData.question_data[2].questions[0].id,
-      suggestedUploads: apiData.question_data[3].questions.map((q: any) => ({
-        label: q.question,
-        id: q.id,
-        acceptedTypes: q.question.includes("screenshot")
-          ? ".jpg,.png,.jpeg"
-          : ".pdf,.doc,.docx,.jpg,.png,.jpeg",
-      })),
-      next_section_id: apiData.next_section_id,
-      previous_section_id: apiData.previous_section_id,
-    };
+  console.log("🚀 ~ transformApiData ~ apiData:", apiData);
+  
+  // Initialize variables for each section type
+  let checkboxesData: any = null;
+  let purposePauseData: any = null;
+  let bestPracticeData: any = null;
+  let suggestedUploadsData: any = null;
+
+  // Iterate through each question_data item and categorize them by sub_section name
+  apiData.question_data.forEach((section: any) => {
+    if (section.sub_section.name === "Select all that apply") {
+      checkboxesData = section;
+    } else if (section.sub_section.name === "Purpose Pause") {
+      purposePauseData = section;
+    } else if (section.sub_section.name === "Best Practice") {
+      bestPracticeData = section;
+    } else if (section.sub_section.name === "Suggested Uploads") {
+      suggestedUploadsData = section;
+    }
+  });
+
+  return {
+    id: apiData.section.id,
+    name: apiData.section.name,
+    order_number: apiData.section.order_number,
+    checkboxes: checkboxesData?.questions[0]?.options || [],
+    checkboxes_question: checkboxesData?.questions[0]?.question || "",
+    checkboxes_question_id: checkboxesData?.questions[0]?.id || "",
+    purposePauseQuestions: purposePauseData?.questions?.map((q: any) => ({
+      question: q.question,
+      id: q.id,
+    })) || [],
+    bestPracticePrompt: bestPracticeData?.questions[0]?.question || "",
+    bestPracticeQuestionId: bestPracticeData?.questions[0]?.id || "",
+    suggestedUploads: suggestedUploadsData?.questions?.map((q: any) => ({
+      label: q.question,
+      id: q.id,
+      acceptedTypes: q.question.includes("screenshot")
+        ? ".jpg,.png,.jpeg"
+        : ".pdf,.doc,.docx,.jpg,.png,.jpeg",
+    })) || [],
+    next_section_id: apiData.next_section_id,
+    previous_section_id: apiData.previous_section_id,
   };
+};
 
   const initializeFormData = (section: Section): FormValues => {
     return {
       selectedCheckboxIds: [],
-      purposePauseAnswers: Array(section.purposePauseQuestions.length).fill(""),
-      bestPracticeAnswer: "",
-      uploads: Array(section.suggestedUploads.length).fill(null),
+      checkboxes_question_id: section.checkboxes_question_id,
+      purposePauseAnswers: section.purposePauseQuestions.map((question) => ({
+        id: question.id,
+        answer: "",
+      })),
+      bestPractice: {
+        answer: "",
+        question_id: section.bestPracticeQuestionId,
+      },
+      uploads: section.suggestedUploads.map((upload) => ({
+        file: null,
+        id: upload.id,
+      })),
       referenceLink: "",
     };
   };
@@ -133,34 +176,60 @@ const AssessmentQuestion: React.FC = () => {
   };
 
   const handlePurposePauseChange = (questionIndex: number, value: string) => {
-  setFormData((prev) => {
-    if (!prev) return null;
-    const newData = { ...prev };
-    // Keep the existing ID and update just the answer
-    newData.purposePauseAnswers[questionIndex] = {
-      ...newData.purposePauseAnswers[questionIndex],
-      answer: value
-    };
-    return newData;
-  });
-};
-
-  const handleBestPracticeChange = (value: string) => {
     setFormData((prev) => {
       if (!prev) return null;
       const newData = { ...prev };
-      newData.bestPracticeAnswer = value;
+      // Keep the existing ID and update just the answer
+      newData.purposePauseAnswers[questionIndex] = {
+        ...newData.purposePauseAnswers[questionIndex],
+        answer: value,
+      };
       return newData;
     });
   };
 
-  const handleFileUpload = (uploadIndex: number, file: File | null) => {
+  const handleBestPracticeChange = (value: string) => {
+    setFormData((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        bestPractice: {
+          ...prev.bestPractice,
+          answer: value,
+        },
+      };
+    });
+  };
+
+  const handleFileUpload = async (uploadIndex: number, file: File | null) => {
+    if (!currentSection) return;
+
+    // Get the upload details before updating the state
+    const upload = currentSection.suggestedUploads[uploadIndex];
+
     setFormData((prev) => {
       if (!prev) return null;
       const newData = { ...prev };
-      newData.uploads[uploadIndex] = file;
+      // Create an object to store both the file and the upload id
+      newData.uploads[uploadIndex] = {
+        file: file,
+        id: upload.id,
+      };
       return newData;
     });
+
+    if (file) {
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("question_id", upload.id);
+        const response = await QuestionFileDetails(formData);
+        console.log("🚀 ~ handleFileUpload ~ response:", response);
+      } catch (error) {
+        console.error("Error uploading file:", error);
+        // Handle error (e.g., show error message to user)
+      }
+    }
   };
 
   const handleReferenceLinkChange = (value: string) => {
@@ -172,7 +241,11 @@ const AssessmentQuestion: React.FC = () => {
     });
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    try {
+      const res = await submitAnswerDetails(formData);
+      console.log("🚀 ~ handleNext ~ res:", res)
+    } catch (error) {}
     if (currentSection?.next_section_id) {
       fetchQuestions(currentSection.next_section_id);
     }
@@ -230,12 +303,12 @@ const AssessmentQuestion: React.FC = () => {
               {currentSection.purposePauseQuestions.map((questionObj, i) => (
                 <div key={i}>
                   <label className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1">
-                    {questionObj.question} {/* Access the question property */}
+                    {questionObj.question}
                   </label>
                   <textarea
                     className={`w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                     rows={3}
-                    value={formData.purposePauseAnswers[i].answer || ""}
+                    value={formData.purposePauseAnswers[i]?.answer || ""}
                     onChange={(e) =>
                       handlePurposePauseChange(i, e.target.value)
                     }
@@ -266,7 +339,7 @@ const AssessmentQuestion: React.FC = () => {
                 className={`w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                 rows={3}
                 placeholder={currentSection.bestPracticePrompt}
-                value={formData.bestPracticeAnswer || ""}
+                value={formData.bestPractice.answer || ""}
                 onChange={(e) => handleBestPracticeChange(e.target.value)}
               ></textarea>
             </div>

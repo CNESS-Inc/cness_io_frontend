@@ -99,6 +99,8 @@ export const EndPoint = {
   public_user_profile: "/profile/public-user-profile",
   org_type: "/organization",
   questions: "/quiz/get/question",
+  questions_file: "/quiz/upload-answer-file",
+  answer: "/quiz/answer",
 };
 
 export const LoginDetails = async (formData: LoginFormData): ApiResponse => {
@@ -150,6 +152,9 @@ export const AccountDetails = (formData: AccountData): ApiResponse => {
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.acount_type);
 };
+export const QuestionFileDetails = (formData: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.questions_file);
+};
 export const PaymentDetails = (formData: AccountFormData): ApiResponse => {
   const data: Partial<AccountFormData> = {
     plan_id: formData?.plan_id,
@@ -182,6 +187,66 @@ export const submitPersonDetails = (
     question: formData?.question,
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.person_profile);
+};
+export const submitAnswerDetails = (formData: any): ApiResponse => {
+  console.log("🚀 ~ submitAnswerDetails ~ formData:", formData)
+  // Initialize the data array
+  const data: Array<{ question_id: string; answer: any }> = [];
+
+  // Handle selectedCheckboxIds and checkboxes_question_id
+  if (formData.selectedCheckboxIds && formData.checkboxes_question_id) {
+    data.push({
+      question_id: formData.checkboxes_question_id,
+      answer: formData.selectedCheckboxIds
+    });
+  }
+
+  // Handle purposePauseAnswers
+  if (formData.purposePauseAnswers && Array.isArray(formData.purposePauseAnswers)) {
+    formData.purposePauseAnswers.forEach((item:any) => {
+      if (item.id) {
+        data.push({
+          question_id: item.id,
+          answer: item.answer // Or use item.answer if you want the actual answer text
+        });
+      }
+    });
+  }
+
+  // Handle bestPractice
+  if (formData.bestPractice && formData.bestPractice.question_id) {
+    data.push({
+      question_id: formData.bestPractice.question_id,
+      answer: formData.bestPractice.answer // Or use formData.bestPractice.answer
+    });
+  }
+
+  // // Handle referenceLink (if needed)
+  // // You'll need to know the question_id for the referenceLink
+  // // For example:
+  // if (formData.referenceLink) {
+  //   data.push({
+  //     question_id: "YOUR_REFERENCE_LINK_QUESTION_ID",
+  //     answer: formData.referenceLink
+  //   });
+  // }
+
+  // Handle uploads (if needed)
+  // You'll need to know how to map uploads to question_ids
+  // For example:
+  if (formData.uploads && Array.isArray(formData.uploads)) {
+    formData.uploads.forEach((upload:any) => {
+      if (upload) {
+        data.push({
+          question_id: upload.id,
+          answer: upload.file // or process the upload as needed
+        });
+      }
+    });
+  }
+
+  // Return the formatted data
+  return executeAPI(ServerAPI.APIMethod.POST, { data }, EndPoint.answer);
 };
 
 export const DashboardDetails = (): ApiResponse => {
