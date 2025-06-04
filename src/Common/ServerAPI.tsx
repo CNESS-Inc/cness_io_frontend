@@ -60,7 +60,7 @@ export const ServerAPI = {
 };
 
 export const API = {
-  // BaseUrl: "http://192.168.1.3:5025/api", //local
+  // BaseUrl: "http://192.168.1.35:5025/api", //local
   // BaseUrl: "http://localhost:5025/api", //local
   BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
 };
@@ -97,6 +97,8 @@ export const EndPoint = {
   user_profile: "/profile/user-profile",
   directory_search_profile: "/profile/public-directory",
   public_user_profile: "/profile/public-user-profile",
+  org_type: "/organization",
+  questions: "/quiz/get/question",
 };
 
 export const LoginDetails = async (formData: LoginFormData): ApiResponse => {
@@ -185,6 +187,16 @@ export const submitPersonDetails = (
 export const DashboardDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.dashboard);
+};
+export const OrgTypeDetails = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.org_type);
+};
+export const QuestionDetails = (sectionId:any): ApiResponse => {
+  const data: Partial<any> = {
+    section_id: sectionId,
+  };
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.questions);
 };
 export const GetDomainDetails = (): ApiResponse => {
   const data = {};

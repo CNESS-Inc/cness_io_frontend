@@ -486,8 +486,8 @@ export default function Stepper() {
                 <div className="flex w-full lg:w-[472px] h-[132px] items-center gap-0.5 lg:absolute lg:top-[319px] lg:left-[calc(50%-250px)] justify-center mt-8 lg:mt-0">
                 
                   {journeySteps[2].steps.map((step, stepIndex) => {
-                      const actualOrder = [1, 0]; // If steps[0] is Unlock and steps[1] is Learn, this swaps the order
-  const actualStep = journeySteps[2].steps[actualOrder[stepIndex]];
+                    // const actualOrder = [1, 0]; // If steps[0] is Unlock and steps[1] is Learn, this swaps the order
+                    // const actualStep = journeySteps[2].steps[actualOrder[stepIndex]];
                     const stepNumber = 4 + stepIndex;
                     const active = isStepActive(stepNumber);
                     const completed = isStepCompleted(stepNumber);

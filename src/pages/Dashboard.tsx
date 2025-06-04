@@ -33,6 +33,8 @@ const Dashboard = () => {
       const response: ApiResponse<UserData> = await DashboardDetails();
       if (response?.data?.data) {
         setUser(response.data.data);
+        localStorage.setItem("name",response.data.data?.name);
+        // localStorage.setItem("profile_picture",response.data.data?.profile_picture);
       }
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
