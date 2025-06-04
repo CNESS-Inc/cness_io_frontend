@@ -77,10 +77,10 @@ export default function What() {
         className="absolute bottom-0 left-0 w-[660px] z-20 object-contain opacity-100 animate-fadeIn"
       />
       <div className="relative z-10 text-center px-5 sm:px-6 lg:px-8 py-16 md:py-20 max-w-4xl mx-auto">
-        <p className="poppins text-3xl sm:text-4xl md:text-5xl text-neutral-800 font-bold mb-6">
-          What is CNESS?
-        </p>
-        <p className="openSans text-base sm:text-lg md:text-xl text-neutral-600 mb-10 max-w-2xl mx-auto">
+      <h1 className="poppins text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text">
+What is CNESS?            
+</h1>
+        <p className="openSans text-sm sm:text-lg md:text-xl text-neutral-600 mb-10 max-w-2xl mx-auto">
           Conscious Enterprise & Social Standards
         </p>
       </div>
@@ -111,7 +111,7 @@ export default function What() {
         className="flex items-center text-gray-800 text-center md:text-left"
       >
         <div>
-          <h3 className="text-2xl font-bold mb-6">What is CNESS?</h3>
+          <h2 className="text-2xl font-bold mb-6">What is CNESS?</h2>
     <p className="text-[20px] leading-relaxed max-w-[600px]">
             <strong>CNESS</strong> is a global certification and assessment framework that helps organisations measure, improve, and showcase their commitment to ethical, conscious, and human-centred business practices.
           </p>
@@ -167,9 +167,9 @@ export default function What() {
       transition={{  duration: 1 }}
     >
       <div className="bg-[#edf3ff] border border-purple-100 rounded-2xl shadow-lg p-6 sm:p-8 md:p-12">
-        <h3 className="text-2xl font-semibold text-purple-800 mb-10 text-center md:text-left">
+        <h2 className="text-3xl font-semibold text-purple-800 mb-10 text-center md:text-left">
           Why Choose CNESS?
-        </h3>
+        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
           {[
@@ -201,15 +201,15 @@ export default function What() {
       {/* Pillars Section */}
       <section className="relative h-auto bg-white rounded-[12px] overflow-hidden mx-4 md:mx-8 lg:mx-[12px] py-16 px-4 md:px-8">
 
-      <motion.h3
+      <motion.h2
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{  duration: 1 }}
-        className="text-2xl font-semibold text-purple-800 mb-10 text-center"
+        className="text-3xl font-semibold text-purple-800 mb-10 text-center"
       >
         CNESS Covers Six Pillars
-      </motion.h3>
+      </motion.h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {pillars.map((pillar, index) => {
