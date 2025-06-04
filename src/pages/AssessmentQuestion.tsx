@@ -7,25 +7,35 @@ import {
   submitAnswerDetails,
 } from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import { EyeIcon } from "lucide-react";
 
 interface Section {
   id: string;
   name: string;
   order_number: number;
-  checkboxes: string[];
+  checkboxes: Array<{
+    id: string;
+    option: string;
+  }>;
   checkboxes_question: string;
   checkboxes_question_id: string;
-  purposePauseQuestions: Array<{ question: string; id: string }>; // Changed this line
+  checkboxAnswers: string[]; // Add this field to store checkbox answers
+  purposePauseQuestions: Array<{
+    question: string;
+    id: string;
+    answer?: string;
+  }>;
   bestPracticePrompt: string;
   bestPracticeQuestionId: string;
-  suggestedUploads: Array<{ label: string; acceptedTypes: string; id: string }>;
+  bestPracticeAnswer?: string;
+  suggestedUploads: Array<{
+    label: string;
+    acceptedTypes: string;
+    id: string;
+    fileUrl?: string | null;
+  }>;
   next_section_id: string | null;
   previous_section_id: string | null;
-}
-
-interface PurposePauseAnswer {
-  id: string;
-  answer: string;
 }
 
 interface FormValues {
@@ -39,9 +49,16 @@ interface FormValues {
   uploads: Array<{
     file: File | null;
     id: string;
+    fileUrl?: string | null; // Added this field
   }>;
   referenceLink: string;
 }
+
+interface PurposePauseAnswer {
+  id: string;
+  answer: string;
+}
+
 const AssessmentQuestion: React.FC = () => {
   const [currentSection, setCurrentSection] = useState<Section | null>(null);
   console.log("🚀 ~ currentSection:", currentSection);
@@ -52,67 +69,74 @@ const AssessmentQuestion: React.FC = () => {
   const [sectionHistory, setSectionHistory] = useState<string[]>([]);
 
   const transformApiData = (apiData: any): Section => {
-  console.log("🚀 ~ transformApiData ~ apiData:", apiData);
-  
-  // Initialize variables for each section type
-  let checkboxesData: any = null;
-  let purposePauseData: any = null;
-  let bestPracticeData: any = null;
-  let suggestedUploadsData: any = null;
+    console.log("🚀 ~ transformApiData ~ apiData:", apiData);
 
-  // Iterate through each question_data item and categorize them by sub_section name
-  apiData.question_data.forEach((section: any) => {
-    if (section.sub_section.name === "Select all that apply") {
-      checkboxesData = section;
-    } else if (section.sub_section.name === "Purpose Pause") {
-      purposePauseData = section;
-    } else if (section.sub_section.name === "Best Practice") {
-      bestPracticeData = section;
-    } else if (section.sub_section.name === "Suggested Uploads") {
-      suggestedUploadsData = section;
-    }
-  });
+    // Initialize variables for each section type
+    let checkboxesData: any = null;
+    let purposePauseData: any = null;
+    let bestPracticeData: any = null;
+    let suggestedUploadsData: any = null;
 
-  return {
-    id: apiData.section.id,
-    name: apiData.section.name,
-    order_number: apiData.section.order_number,
-    checkboxes: checkboxesData?.questions[0]?.options || [],
-    checkboxes_question: checkboxesData?.questions[0]?.question || "",
-    checkboxes_question_id: checkboxesData?.questions[0]?.id || "",
-    purposePauseQuestions: purposePauseData?.questions?.map((q: any) => ({
-      question: q.question,
-      id: q.id,
-    })) || [],
-    bestPracticePrompt: bestPracticeData?.questions[0]?.question || "",
-    bestPracticeQuestionId: bestPracticeData?.questions[0]?.id || "",
-    suggestedUploads: suggestedUploadsData?.questions?.map((q: any) => ({
-      label: q.question,
-      id: q.id,
-      acceptedTypes: q.question.includes("screenshot")
-        ? ".jpg,.png,.jpeg"
-        : ".pdf,.doc,.docx,.jpg,.png,.jpeg",
-    })) || [],
-    next_section_id: apiData.next_section_id,
-    previous_section_id: apiData.previous_section_id,
+    // Iterate through each question_data item and categorize them by sub_section name
+    apiData.question_data.forEach((section: any) => {
+      if (section.sub_section.name === "Select all that apply") {
+        checkboxesData = section;
+      } else if (section.sub_section.name === "Purpose Pause") {
+        purposePauseData = section;
+      } else if (section.sub_section.name === "Best Practice") {
+        bestPracticeData = section;
+      } else if (section.sub_section.name === "Suggested Uploads") {
+        suggestedUploadsData = section;
+      }
+    });
+
+    return {
+      id: apiData.section.id,
+      name: apiData.section.name,
+      order_number: apiData.section.order_number,
+      checkboxes: checkboxesData?.questions[0]?.options || [],
+      checkboxes_question: checkboxesData?.questions[0]?.question || "",
+      checkboxes_question_id: checkboxesData?.questions[0]?.id || "",
+      checkboxAnswers: checkboxesData?.questions[0]?.answer || [], // Store the checkbox answers
+      purposePauseQuestions:
+        purposePauseData?.questions?.map((q: any) => ({
+          question: q.question,
+          id: q.id,
+          answer: q.answer || "",
+        })) || [],
+      bestPracticePrompt: bestPracticeData?.questions[0]?.question || "",
+      bestPracticeQuestionId: bestPracticeData?.questions[0]?.id || "",
+      bestPracticeAnswer: bestPracticeData?.questions[0]?.answer || "",
+      suggestedUploads:
+        suggestedUploadsData?.questions?.map((q: any) => ({
+          label: q.question,
+          id: q.id,
+          acceptedTypes: q.question.includes("screenshot")
+            ? ".jpg,.png,.jpeg"
+            : ".pdf,.doc,.docx,.jpg,.png,.jpeg",
+          fileUrl: q.answer || null,
+        })) || [],
+      next_section_id: apiData.next_section_id,
+      previous_section_id: apiData.previous_section_id,
+    };
   };
-};
 
   const initializeFormData = (section: Section): FormValues => {
     return {
-      selectedCheckboxIds: [],
+      selectedCheckboxIds: section.checkboxAnswers || [], // Initialize with saved checkbox answers
       checkboxes_question_id: section.checkboxes_question_id,
       purposePauseAnswers: section.purposePauseQuestions.map((question) => ({
         id: question.id,
-        answer: "",
+        answer: question.answer || "",
       })),
       bestPractice: {
-        answer: "",
+        answer: section.bestPracticeAnswer || "",
         question_id: section.bestPracticeQuestionId,
       },
       uploads: section.suggestedUploads.map((upload) => ({
         file: null,
         id: upload.id,
+        fileUrl: upload.fileUrl || null,
       })),
       referenceLink: "",
     };
@@ -244,7 +268,7 @@ const AssessmentQuestion: React.FC = () => {
   const handleNext = async () => {
     try {
       const res = await submitAnswerDetails(formData);
-      console.log("🚀 ~ handleNext ~ res:", res)
+      console.log("🚀 ~ handleNext ~ res:", res);
     } catch (error) {}
     if (currentSection?.next_section_id) {
       fetchQuestions(currentSection.next_section_id);
@@ -347,18 +371,34 @@ const AssessmentQuestion: React.FC = () => {
             <div className="mb-6 space-y-4">
               <h3 className="text-lg font-semibold">Suggested Uploads</h3>
               {currentSection.suggestedUploads.map((upload, i) => (
-                <div key={i}>
-                  <label className="block font-medium mb-1">
-                    {upload.label}
-                  </label>
-                  <input
-                    type="file"
-                    accept={upload.acceptedTypes}
-                    className={`w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
-                    onChange={(e) =>
-                      handleFileUpload(i, e.target.files?.[0] || null)
-                    }
-                  />
+                <div key={i} className="grid grid-cols-2 items-center">
+                  <div>
+                    <label className="block font-medium mb-1">
+                      {upload.label}
+                    </label>
+                    <input
+                      type="file"
+                      accept={upload.acceptedTypes}
+                      className={`w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                      onChange={(e) =>
+                        handleFileUpload(i, e.target.files?.[0] || null)
+                      }
+                    />
+                  </div>
+                  <div className="ms-3">
+                    {formData.uploads[i]?.fileUrl && (
+                      <div className="mb-2">
+                        <a
+                          href={formData.uploads[i].fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[#9747FF] hover:underline"
+                        >
+                          <EyeIcon/>
+                        </a>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
               <div>
@@ -389,18 +429,23 @@ const AssessmentQuestion: React.FC = () => {
               >
                 Previous
               </Button>
-              <Button
-                variant="gradient-primary"
-                onClick={handleNext}
-                disabled={!currentSection.next_section_id}
-                className={`rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out ${
-                  !currentSection.next_section_id
-                    ? "bg-gray-300 cursor-not-allowed"
-                    : ""
-                }`}
-              >
-                Next
-              </Button>
+              {currentSection.next_section_id ? (
+                <Button
+                  variant="gradient-primary"
+                  onClick={handleNext}
+                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                >
+                  Save & Next
+                </Button>
+              ) : (
+                <Button
+                  variant="gradient-primary"
+                  onClick={handleNext}
+                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                >
+                  Save
+                </Button>
+              )}
             </div>
           </div>
         </div>
