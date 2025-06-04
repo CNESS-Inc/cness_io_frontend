@@ -55,7 +55,7 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
   const profile = localStorage.getItem("profile_picture");
   const defaultAvatar =
     "https://c.animaapp.com/magahlmqpONVZN/img/ellipse-3279.svg";
-  const name = localStorage.getItem("name");
+  const name = localStorage.getItem("name") || "";
 
   return (
     <header className="flex w-full items-center justify-between px-4 md:px-8 py-[18px] bg-white border-b border-[#0000001a] relative">
@@ -109,19 +109,24 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
               />
             </Avatar>
 
-            <div className="flex flex-col items-start">
+            { name != "null null" ?
+            (
+              <div className="flex flex-col items-start">
               <div className="px-2 py-0.5 flex items-center">
                 <div className="font-['Poppins',Helvetica] font-medium text-[#222224] text-sm">
-                  {name}
+                  { name != "null null" ? name : ""}
                 </div>
               </div>
 
               <div className="px-2 py-0.5">
                 <div className="font-['Open_Sans',Helvetica] font-normal text-[#7a7a7a] text-[10px]">
-                  Margaret
+                  { name != "null null" ? "Margaret" : ""}
                 </div>
               </div>
             </div>
+            ):(
+              ""
+            )}
           </button>
 
           {/* Dropdown Menu */}

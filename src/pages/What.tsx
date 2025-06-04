@@ -59,7 +59,7 @@ const pillars = [
 
 
 
-const words = ["Conscious", "Enterprise", "&", "Social", "Standards"];
+// const words = ["Conscious", "Enterprise", "&", "Social", "Standards"];
 
 
 

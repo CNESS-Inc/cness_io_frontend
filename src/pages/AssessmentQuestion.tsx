@@ -1,368 +1,364 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DashboardLayout from "../layout/Dashboard/dashboardlayout";
 import Button from "../components/ui/Button";
+import { QuestionDetails } from "../Common/ServerAPI";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 interface Section {
+  id: string;
   name: string;
+  order_number: number;
   checkboxes: string[];
-  purposePauseQuestions: string[];
+  checkboxes_question: string;
+  checkboxes_question_id: string;
+  purposePauseQuestions: Array<{ question: string; id: string }>; // Changed this line
   bestPracticePrompt: string;
-  suggestedUploads: { label: string; acceptedTypes: string }[];
+  bestPracticeQuestionId: string;
+  suggestedUploads: Array<{ label: string; acceptedTypes: string; id: string }>;
+  next_section_id: string | null;
+  previous_section_id: string | null;
 }
 
-const sections: Section[] = [
-  {
-    name: "Mission & Vision",
-    checkboxes: [
-      "Our mission is clearly defined and grounded in values.",
-      "We revisit and refine our mission as our work evolves.",
-      "Our communications reflect our mission and purpose consistently.",
-      "We envision greater good in all that we do.",
-      "Our mission and vision is foundations for the very long term",
-      "We are inspired by our vision and mission in our daily and strategic thinking and action.",
-    ],
-    purposePauseQuestions: [
-      "Your mission and vision statement",
-      "What inspires your mission & vision?",
-      "What do you do?",
-      "What makes what you do exemplary?",
-    ],
-    bestPracticePrompt:
-      "In alignment with your mission and vision, what are your best practice/s and your organization goals?",
-    suggestedUploads: [
-      {
-        label: "Mission statement document",
-        acceptedTypes: ".pdf,.doc,.docx,.jpg,.png,.jpeg",
-      },
-      {
-        label: "Screenshot of website or social post featuring your values",
-        acceptedTypes: ".jpg,.png,.jpeg",
-      },
-    ],
-  },
-  {
-    name: "Team Spirit",
-    checkboxes: [
-      "We promote and safeguard all our team’s wellbeing and health care with health insurance cover.",
-      "We inspire learning, growth and greater potentials for all our team members.",
-      "We work together as family",
-      "We are inclusive and merit based.",
-      "We prioritize strategies, innovation and decision making together as team",
-      "We recognize each other in our unique strength and capabilities to work together.",
-    ],
-    purposePauseQuestions: [
-      "Why is your organization the ideal workplace?",
-      "How do you foster the culture of team strategy, dynamic action and innovation?",
-    ],
-    bestPracticePrompt:
-      "What are your best practices for your winning team spirit?",
-    suggestedUploads: [
-      { label: "Internal values slide", acceptedTypes: ".pdf,.doc,.jpg,.png" },
-      {
-        label: "Team retreat or wellness initiative photo",
-        acceptedTypes: ".jpg,.png",
-      },
-    ],
-  },
-  {
-    name: "Client / Customer / Consumer",
-    checkboxes: [
-      "Our customers/clients are satisfied and are repeat",
-      "We pride in our customer service.",
-      "We are recommended to others by our customers/ clients",
-      "We are guided by the needs, requests and suggestions by our customers/ clients",
-      "We treat our customers/ clients as our partners",
-    ],
-    purposePauseQuestions: [
-      "What features of value do customers/ clients see in you?",
-      "What is your message to your potential and current customers/ clients?",
-    ],
-    bestPracticePrompt:
-      "What are your best practices that is valued by your customers/ clients?",
-    suggestedUploads: [
-      {
-        label: "Pricing or service explainer",
-        acceptedTypes: ".pdf,.jpg,.png,.doc",
-      },
-      { label: "Client feedback or review", acceptedTypes: ".jpg,.png,.pdf" },
-    ],
-  },
-  {
-    name: "Communities & Charities",
-    checkboxes: [
-      "Our daily operations is mindful and uplifting to all parties engaging with us.",
-      "We donate a portion of our sales/ profit for charities and conscious causes.",
-      "We engage with local and global community to promote conscious needs and causes.",
-    ],
-    purposePauseQuestions: [
-      "How does your organization give back or create impact outside of business goals?",
-    ],
-    bestPracticePrompt:
-      "Describe one best practice for a cause or community you've meaningfully supported.",
-    suggestedUploads: [
-      {
-        label: "Photo of a collaboration or event",
-        acceptedTypes: ".jpg,.png",
-      },
-      {
-        label: "Donation screenshot or partner mention",
-        acceptedTypes: ".jpg,.png,.pdf",
-      },
-    ],
-  },
-  {
-    name: "Vision & Legacy – Long-Term Contribution",
-    checkboxes: [
-      "We are building a legacy each day in intent, operations and planning",
-      "Our legacy uplifts everyone engaging with us- from our team, suppliers/ vendors, customers/clients and all associated with us.",
-      "Our legacy will leave a better world for future generations",
-      "Our success is from the values we create for all",
-    ],
-    purposePauseQuestions: [
-      "What legacy would you like to be known as?",
-      "What is are your dreams for humanity?",
-    ],
-    bestPracticePrompt:
-      "Describe your higher purpose in what you do as the legacy you are creating?",
-    suggestedUploads: [
-      { label: "Vision statement", acceptedTypes: ".pdf,.doc" },
-      {
-        label: "Example of a system or cultural shift initiated by your work",
-        acceptedTypes: ".pdf,.doc,.jpg",
-      },
-    ],
-  },
-  {
-    name: "Leadership Best Practices",
-    checkboxes: [
-      "Our conscious leadership inspires all to be a greater version of themselves",
-      "We are the change and transformation of our industry",
-      "We lead by human values",
-      "Our leadership inspires other organizations",
-      "We collaborate, strategize and partner with other conscious organizations",
-    ],
-    purposePauseQuestions: [
-      "What is your aspiration as a leader?",
-      "Please quote your leadership wisdom!",
-    ],
-    bestPracticePrompt:
-      "What are your leadership best practices that depict your organization/s?",
-    suggestedUploads: [
-      { label: "Blog or social post", acceptedTypes: ".pdf,.jpg,.png" },
-      {
-        label: "Panel event screenshot or internal leadership guide",
-        acceptedTypes: ".pdf,.jpg,.png",
-      },
-    ],
-  },
-];
-
 interface FormValues {
-  checkboxes: boolean[];
-  purposePauseAnswers: string[];
+  selectedCheckboxIds: string[]; // Store IDs of selected options instead of booleans
+  purposePauseAnswers: any;
   bestPracticeAnswer: string;
   uploads: (File | null)[];
   referenceLink: string;
 }
 
 const AssessmentQuestion: React.FC = () => {
-  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
-  const [toggles, setToggles] = useState<boolean[]>(
-    Array(sections.length).fill(true)
-  );
-  const [formData, setFormData] = useState<FormValues[]>(
-    sections.map(section => ({
-      checkboxes: Array(section.checkboxes.length).fill(false),
+  const [currentSection, setCurrentSection] = useState<Section | null>(null);
+  console.log("🚀 ~ currentSection:", currentSection);
+  const [toggles, setToggles] = useState<boolean[]>([]);
+  const [formData, setFormData] = useState<FormValues | null>(null);
+  console.log("🚀 ~ formData:", formData);
+  const [loading, setLoading] = useState(true);
+  const [sectionHistory, setSectionHistory] = useState<string[]>([]);
+
+  const transformApiData = (apiData: any): Section => {
+    console.log("🚀 ~ transformApiData ~ apiData:", apiData)
+    return {
+      id: apiData.section.id,
+      name: apiData.section.name,
+      order_number: apiData.section.order_number,
+      checkboxes: apiData.question_data[0].questions[0].options,
+      checkboxes_question: apiData.question_data[0].questions[0].question,
+      checkboxes_question_id: apiData.question_data[0].questions[0].id,
+      purposePauseQuestions: apiData.question_data[1].questions.map(
+        (q: any) => ({
+          question: q.question,
+          id: q.id,
+        })
+      ),
+      bestPracticePrompt: apiData.question_data[2].questions[0].question,
+      bestPracticeQuestionId: apiData.question_data[2].questions[0].id,
+      suggestedUploads: apiData.question_data[3].questions.map((q: any) => ({
+        label: q.question,
+        id: q.id,
+        acceptedTypes: q.question.includes("screenshot")
+          ? ".jpg,.png,.jpeg"
+          : ".pdf,.doc,.docx,.jpg,.png,.jpeg",
+      })),
+      next_section_id: apiData.next_section_id,
+      previous_section_id: apiData.previous_section_id,
+    };
+  };
+
+  const initializeFormData = (section: Section): FormValues => {
+    return {
+      selectedCheckboxIds: [],
       purposePauseAnswers: Array(section.purposePauseQuestions.length).fill(""),
       bestPracticeAnswer: "",
       uploads: Array(section.suggestedUploads.length).fill(null),
-      referenceLink: ""
-    }))
-  );
-  console.log("🚀 ~ formData:", formData)
-
-  const handleToggleChange = (index: number) => {
-    setToggles((prev) => {
-      const newToggles = [...prev];
-      newToggles[index] = !newToggles[index];
-      return newToggles;
-    });
+      referenceLink: "",
+    };
   };
 
-  const handleCheckboxChange = (sectionIndex: number, checkboxIndex: number, checked: boolean) => {
-    setFormData(prev => {
-      const newData = [...prev];
-      newData[sectionIndex].checkboxes[checkboxIndex] = checked;
+  const fetchQuestions = async (sectionId?: string) => {
+    try {
+      setLoading(true);
+      const res = await QuestionDetails(sectionId);
+      const transformedSection = transformApiData(res.data.data);
+      const initialFormData = initializeFormData(transformedSection);
+
+      setCurrentSection(transformedSection);
+      setFormData(initialFormData);
+      setToggles([true]); // Initialize toggle for this section
+
+      // Update navigation history
+      if (sectionId) {
+        setSectionHistory((prev) => [...prev, sectionId]);
+      } else {
+        setSectionHistory([transformedSection.id]);
+      }
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchQuestions(); // Initial load
+  }, []);
+
+  const handleToggleChange = (checked: boolean) => {
+    setToggles([checked]);
+  };
+
+  const handleCheckboxChange = (optionId: string, isChecked: boolean) => {
+    setFormData((prev) => {
+      if (!prev) return null;
+
+      const newData = { ...prev };
+
+      if (isChecked) {
+        // Add the ID if it's not already present
+        if (!newData.selectedCheckboxIds.includes(optionId)) {
+          newData.selectedCheckboxIds = [
+            ...newData.selectedCheckboxIds,
+            optionId,
+          ];
+        }
+      } else {
+        // Remove the ID if it's present
+        newData.selectedCheckboxIds = newData.selectedCheckboxIds.filter(
+          (id) => id !== optionId
+        );
+      }
+
       return newData;
     });
   };
 
-  const handlePurposePauseChange = (sectionIndex: number, questionIndex: number, value: string) => {
-    setFormData(prev => {
-      const newData = [...prev];
-      newData[sectionIndex].purposePauseAnswers[questionIndex] = value;
+  const handlePurposePauseChange = (questionIndex: number, value: string) => {
+  setFormData((prev) => {
+    if (!prev) return null;
+    const newData = { ...prev };
+    // Keep the existing ID and update just the answer
+    newData.purposePauseAnswers[questionIndex] = {
+      ...newData.purposePauseAnswers[questionIndex],
+      answer: value
+    };
+    return newData;
+  });
+};
+
+  const handleBestPracticeChange = (value: string) => {
+    setFormData((prev) => {
+      if (!prev) return null;
+      const newData = { ...prev };
+      newData.bestPracticeAnswer = value;
       return newData;
     });
   };
 
-  const handleBestPracticeChange = (sectionIndex: number, value: string) => {
-    setFormData(prev => {
-      const newData = [...prev];
-      newData[sectionIndex].bestPracticeAnswer = value;
+  const handleFileUpload = (uploadIndex: number, file: File | null) => {
+    setFormData((prev) => {
+      if (!prev) return null;
+      const newData = { ...prev };
+      newData.uploads[uploadIndex] = file;
       return newData;
     });
   };
 
-  const handleFileUpload = (sectionIndex: number, uploadIndex: number, file: File | null) => {
-    setFormData(prev => {
-      const newData = [...prev];
-      newData[sectionIndex].uploads[uploadIndex] = file;
-      return newData;
-    });
-  };
-
-  const handleReferenceLinkChange = (sectionIndex: number, value: string) => {
-    setFormData(prev => {
-      const newData = [...prev];
-      newData[sectionIndex].referenceLink = value;
+  const handleReferenceLinkChange = (value: string) => {
+    setFormData((prev) => {
+      if (!prev) return null;
+      const newData = { ...prev };
+      newData.referenceLink = value;
       return newData;
     });
   };
 
   const handleNext = () => {
-    if (currentSectionIndex < sections.length - 1) {
-      setCurrentSectionIndex(currentSectionIndex + 1);
+    if (currentSection?.next_section_id) {
+      fetchQuestions(currentSection.next_section_id);
     }
-    console.log("Current form data:", formData);
   };
 
   const handlePrevious = () => {
-    if (currentSectionIndex > 0) {
-      setCurrentSectionIndex(currentSectionIndex - 1);
+    if (currentSection?.previous_section_id) {
+      // If no history but API provides previous_section_id
+      fetchQuestions(currentSection.previous_section_id);
     }
   };
 
-  const section = sections[currentSectionIndex];
-  const currentSectionData = formData[currentSectionIndex];
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <LoadingSpinner />
+      </DashboardLayout>
+    );
+  }
+
+  if (!currentSection || !formData) {
+    return <DashboardLayout>No section data available</DashboardLayout>;
+  }
+
+  const completed_step = localStorage.getItem("completed_step");
+  console.log("🚀 ~ completed_step:", typeof completed_step);
 
   return (
     <DashboardLayout>
-      <div className="p-6 max-w-5xl mx-auto space-y-10">
-        <div className="border border-gray-200 rounded-lg p-4 bg-white">
-          <h2 className="text-2xl font-bold mb-4">{section.name}</h2>
-          <div className="space-y-2 mb-6">
-            {section.checkboxes.map((label, i) => (
-              <label key={i} className="flex items-start gap-2">
-                <input 
-                  type="checkbox" 
-                  className="mt-1" 
-                  checked={currentSectionData.checkboxes[i] || false}
-                  onChange={(e) => handleCheckboxChange(currentSectionIndex, i, e.target.checked)}
-                />
-                <span>{label}</span>
-              </label>
-            ))}
-          </div>
-
-          <div className="space-y-4 mb-6">
-            <h3 className="text-lg font-semibold">Purpose Pause</h3>
-            {section.purposePauseQuestions.map((question, i) => (
-              <div key={i}>
-                <label className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1">
-                  {question}
-                </label>
-                <textarea
-                  className={`w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
-                  rows={3}
-                  value={currentSectionData.purposePauseAnswers[i] || ""}
-                  onChange={(e) => handlePurposePauseChange(currentSectionIndex, i, e.target.value)}
-                ></textarea>
-              </div>
-            ))}
-          </div>
-
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-lg font-semibold">Best Practice</label>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">
-                  Show on public profile
-                </span>
-                <label className="relative inline-flex items-center cursor-pointer">
+      {completed_step === "2" ? (
+        <div className="p-6 mx-auto space-y-10">
+          <div className="border border-gray-200 rounded-lg p-4 bg-white">
+            <h2 className="text-2xl font-bold mb-4">{currentSection.name}</h2>
+            <div className="space-y-2 mb-6">
+              <h3 className="text-lg font-semibold">
+                {currentSection.checkboxes_question}
+              </h3>
+              {currentSection.checkboxes.map((option: any) => (
+                <label key={option.id} className="flex items-start gap-2">
                   <input
                     type="checkbox"
-                    className="sr-only peer"
-                    checked={toggles[currentSectionIndex]}
-                    onChange={() => handleToggleChange(currentSectionIndex)}
+                    className="mt-1"
+                    checked={formData.selectedCheckboxIds.includes(option.id)}
+                    onChange={(e) =>
+                      handleCheckboxChange(option.id, e.target.checked)
+                    }
                   />
-                  <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
+                  <span>{option.option}</span>
                 </label>
-              </div>
+              ))}
             </div>
-            <textarea
-              className={`w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
-              rows={3}
-              placeholder={section.bestPracticePrompt}
-              value={currentSectionData.bestPracticeAnswer || ""}
-              onChange={(e) => handleBestPracticeChange(currentSectionIndex, e.target.value)}
-            ></textarea>
-          </div>
 
-          <div className="mb-6 space-y-4">
-            <h3 className="text-lg font-semibold">Suggested Uploads</h3>
-            {section.suggestedUploads.map((upload, i) => (
-              <div key={i}>
-                <label className="block font-medium mb-1">{upload.label}</label>
+            <div className="space-y-4 mb-6">
+              <h3 className="text-lg font-semibold">Purpose Pause</h3>
+              {currentSection.purposePauseQuestions.map((questionObj, i) => (
+                <div key={i}>
+                  <label className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1">
+                    {questionObj.question} {/* Access the question property */}
+                  </label>
+                  <textarea
+                    className={`w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                    rows={3}
+                    value={formData.purposePauseAnswers[i].answer || ""}
+                    onChange={(e) =>
+                      handlePurposePauseChange(i, e.target.value)
+                    }
+                  ></textarea>
+                </div>
+              ))}
+            </div>
+
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-lg font-semibold">Best Practice</label>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">
+                    Show on public profile
+                  </span>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={toggles[0]}
+                      onChange={(e) => handleToggleChange(e.target.checked)}
+                    />
+                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
+                  </label>
+                </div>
+              </div>
+              <textarea
+                className={`w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                rows={3}
+                placeholder={currentSection.bestPracticePrompt}
+                value={formData.bestPracticeAnswer || ""}
+                onChange={(e) => handleBestPracticeChange(e.target.value)}
+              ></textarea>
+            </div>
+
+            <div className="mb-6 space-y-4">
+              <h3 className="text-lg font-semibold">Suggested Uploads</h3>
+              {currentSection.suggestedUploads.map((upload, i) => (
+                <div key={i}>
+                  <label className="block font-medium mb-1">
+                    {upload.label}
+                  </label>
+                  <input
+                    type="file"
+                    accept={upload.acceptedTypes}
+                    className={`w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                    onChange={(e) =>
+                      handleFileUpload(i, e.target.files?.[0] || null)
+                    }
+                  />
+                </div>
+              ))}
+              <div>
+                <label className="block font-medium mb-1">
+                  Link for Reference
+                </label>
                 <input
-                  type="file"
-                  accept={upload.acceptedTypes}
+                  type="url"
                   className={`w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
-                  onChange={(e) => handleFileUpload(currentSectionIndex, i, e.target.files?.[0] || null)}
+                  placeholder="https://example.com"
+                  value={formData.referenceLink || ""}
+                  onChange={(e) => handleReferenceLinkChange(e.target.value)}
                 />
               </div>
-            ))}
-            <div>
-              <label className="block font-medium mb-1">
-                Link for Reference
-              </label>
-              <input
-                type="url"
-                className={`w-full px-3 py-2 rounded-[12px] border border-[#CBD5E1] border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
-                placeholder="https://example.com"
-                value={currentSectionData.referenceLink || ""}
-                onChange={(e) => handleReferenceLinkChange(currentSectionIndex, e.target.value)}
-              />
+            </div>
+
+            <div className="flex justify-between">
+              <Button
+                variant="gradient-primary"
+                onClick={handlePrevious}
+                disabled={!currentSection.previous_section_id}
+                className={`rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out ${
+                  !currentSection.previous_section_id &&
+                  sectionHistory.length <= 1
+                    ? "bg-gray-300 cursor-not-allowed"
+                    : ""
+                }`}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="gradient-primary"
+                onClick={handleNext}
+                disabled={!currentSection.next_section_id}
+                className={`rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out ${
+                  !currentSection.next_section_id
+                    ? "bg-gray-300 cursor-not-allowed"
+                    : ""
+                }`}
+              >
+                Next
+              </Button>
             </div>
           </div>
-
-          <div className="flex justify-between">
-            <Button
-              variant="gradient-primary"
-              onClick={handlePrevious}
-              disabled={currentSectionIndex === 0}
-              className={`rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out ${
-                currentSectionIndex === 0
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : ""
-              }`}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="gradient-primary"
-              onClick={handleNext}
-              disabled={currentSectionIndex === sections.length - 1}
-              className={`rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out ${
-                currentSectionIndex === sections.length - 1
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : ""
-              }`}
-            >
-              Next
-            </Button>
+        </div>
+      ) : (
+        <div className="mt-0 shadow overflow-hidden p-8 text-center">
+          <div className="py-12">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+              Assement Access Restricted
+            </h2>
+            <p className="text-gray-600 mb-6">
+              You can access your assesment after completing your payment.
+            </p>
+            <div className="flex justify-center">
+              <svg
+                className="w-24 h-24 text-purple-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
+              </svg>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </DashboardLayout>
   );
 };
