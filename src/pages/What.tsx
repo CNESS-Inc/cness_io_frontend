@@ -60,7 +60,6 @@ export default function What() {
   return (
     <>
       <Header />
-
       <section className="relative h-[400px] rounded-[12px] overflow-hidden mx-4 md:mx-8 lg:mx-[12px]">
         <WhypgAnimation />
         <img
@@ -71,6 +70,7 @@ export default function What() {
         <div className="relative z-10 text-center px-5 sm:px-6 lg:px-8 py-16 md:py-20 max-w-4xl mx-auto">
           <p className="poppins text-3xl sm:text-4xl md:text-5xl text-neutral-800 font-bold mb-6">
             What is CNESS?
+
           </p>
           <p className="openSans text-base sm:text-lg md:text-xl text-neutral-600 mb-10 max-w-2xl mx-auto">
             Conscious Enterprise & Social Standards
@@ -138,6 +138,7 @@ export default function What() {
                 </p>
               </div>
             </motion.div>
+
 
             <motion.div
               initial={{ x: 100, opacity: 0 }}
@@ -234,6 +235,7 @@ export default function What() {
             );
           })}
         </div>
+
       </section>
 
       <div className="max-w-6xl mx-auto px-4">

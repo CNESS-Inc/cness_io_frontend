@@ -13,6 +13,7 @@ import What from "../pages/What";
 import Social from "../pages/Social";
 import SinglePost from "../components/Social/SinglePost";
 import ReelsCard from "../components/Social/Reels/ReelsCard";
+import About from "../pages/About";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -57,6 +58,10 @@ export const router = createBrowserRouter([
       {
         path: "/What",
         element: <What />,
+      },
+       {
+         path: "/about",
+        element: <About />,
       },
 
       {

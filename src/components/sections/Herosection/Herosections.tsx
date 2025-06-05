@@ -5,7 +5,7 @@
   export default function HeroSection() {
     return (
       <section className="relative h-[692px] rounded-[12px] overflow-hidden mx-4 md:mx-8 lg:mx-[12px]">
-        <div className="absolute inset-0 z-[-2] bg-gradient-to-br from-[#FDFDFD] via-[#FAFAFA] to-[#F7F7F7]" />
+<div className="absolute inset-0 z-[-2] bg-[#FAFAFA]" />
         {/* 🌈 Animated Canvas Background */}
         <HomeHeroBackground />
 
