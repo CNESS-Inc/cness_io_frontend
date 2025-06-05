@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Reels } from "@sayings/react-reels";
 import '@sayings/react-reels/dist/index.css'
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ReelComment from "./ReelComment";
 import { GetStory, LikeStory } from "../../../Common/ServerAPI";
 
@@ -14,13 +14,7 @@ declare global {
 
 const ReelsCard = () => {
   const [storyData, setstoryData] = useState<any>([]);
-  const [commentText, setCommentText] = useState("");
   const [selectedReelId, setSelectedReelId] = useState<string | null>(null);
-  console.log("🚀 ~ ReelsCard ~ selectedReelId:", selectedReelId)
-  const [currentActiveReel, setCurrentActiveReel] = useState<number | null>(
-    null
-  );
-  console.log("🚀 ~ ReelsCard ~ selectedReelId:", storyData);
   const reelsContainerRef = useRef<HTMLDivElement>(null);
 
   const navigate = useNavigate();
@@ -98,22 +92,22 @@ const ReelsCard = () => {
   };
 
   // Function to submit comment
-  const handleCommentSubmit = async () => {
-    if (!selectedReelId || !commentText.trim()) return;
+  // const handleCommentSubmit = async () => {
+  //   if (!selectedReelId || !commentText.trim()) return;
 
-    try {
-      // await dispatch(
-      //   apiCall("POST", `/story/${selectedReelId}/comment`, "data", {
-      //     comment: commentText,
-      //   })
-      // );
-      setCommentText(""); // Clear input after submitting
-      setSelectedReelId(null); // Close input box after submitting
-      GetStoryData(); // Refresh comments
-    } catch (error) {
-      console.error("Error submitting comment:", error);
-    }
-  };
+  //   try {
+  //     // await dispatch(
+  //     //   apiCall("POST", `/story/${selectedReelId}/comment`, "data", {
+  //     //     comment: commentText,
+  //     //   })
+  //     // );
+  //     setCommentText(""); // Clear input after submitting
+  //     setSelectedReelId(null); // Close input box after submitting
+  //     GetStoryData(); // Refresh comments
+  //   } catch (error) {
+  //     console.error("Error submitting comment:", error);
+  //   }
+  // };
 
   const reelMetaInfo = {
     videoDimensions: {
@@ -157,7 +151,7 @@ const ReelsCard = () => {
     };
   }, [storyData]); // ✅ Depend on storyData to update when new data is added
 
-  const { reelId } = useParams(); // Get reel ID from URL
+  // const { reelId } = useParams(); // Get reel ID from URL
 
   useEffect(() => {
     const swiperInstance = document.querySelector(".swiper")?.swiper;

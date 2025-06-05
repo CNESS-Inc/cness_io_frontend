@@ -7,18 +7,11 @@ import mediaImg from "../../../public/images/media.png";
 import nominateImg from "../../../public/images/conciousjuorney.png";
 import eventImg from "../../../public/images/dreamproject.png";
 
-interface Contributor {
-  name: string;
-  image: string;
-  award: string;
-  points: string;
-}
 
 const LeftSocial: React.FC = () => {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [, setLoading] = useState<boolean>(false);
 
   const [eventsData, setEventsData] = useState<any[]>([]);
-  console.log("🚀 ~ eventsData:", eventsData)
 
 
   const GetPendingRequest = async () => {

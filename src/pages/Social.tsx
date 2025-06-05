@@ -6,35 +6,6 @@ import Footer from "../layout/Footer/Footer.tsx";
 import AllSocialPost from "../components/Social/AllSocialPost.tsx";
 
 
-interface Post {
-  id: string;
-  user_id: string;
-  file: string;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-  file_type: string;
-  followers_count: number;
-  likes_count: number;
-  comments_count: number; 
-  if_follower: boolean;
-  if_following: boolean;
-  user: {
-    id: string;
-    username: string;
-    blocked: boolean;
-    role: string;
-  };
-  profile: {
-    id: string;
-    user_id: string;
-    first_name: string | null;
-    last_name: string | null;
-    profile_picture: string | null;
-    gender: string | null;
-  };
-}
-
 const Social = () => {
 
 

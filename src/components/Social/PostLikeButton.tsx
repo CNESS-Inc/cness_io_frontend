@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { FaRegThumbsUp, FaThumbsUp } from "react-icons/fa6";
-import { toast } from "react-toastify";
 import { PostsLike } from "../../Common/ServerAPI";
 
 interface PostLikeButtonProps {
@@ -16,7 +15,7 @@ const PostLikeButton: React.FC<PostLikeButtonProps> = ({  postId, isLiked, likeC
     const handleLikeClick = async () => {
         try {
             const formattedData = { post_id: postId };
-            const res = await PostsLike(formattedData)
+            PostsLike(formattedData)
             setLocalIsLiked(!localIsLiked);
             // console.log("🚀 ~ handleLikeClick ~ res:", res)
             // toast?.success(res?.success?.message)

@@ -70,14 +70,14 @@ type Story = {
 
 export default function AllSocialPost() {
   // Static categories data
-  const categories = [
-    { name: "Music", src: "./images/category-icons/bx-music.png" },
-    { name: "Movies", src: "./images/category-icons/movie-reel.png" },
-    { name: "Podcasts", src: "./images/category-icons/theatre.png" },
-    { name: "Images", src: "./images/category-icons/conscious.png" },
-    { name: "Documentaries", src: "./images/category-icons/angeles.png" },
-    { name: "Books", src: "./images/category-icons/bx-globe.png" },
-  ];
+  // const categories = [
+  //   { name: "Music", src: "./images/category-icons/bx-music.png" },
+  //   { name: "Movies", src: "./images/category-icons/movie-reel.png" },
+  //   { name: "Podcasts", src: "./images/category-icons/theatre.png" },
+  //   { name: "Images", src: "./images/category-icons/conscious.png" },
+  //   { name: "Documentaries", src: "./images/category-icons/angeles.png" },
+  //   { name: "Books", src: "./images/category-icons/bx-globe.png" },
+  // ];
 
   const [postContent, setPostContent] = useState("");
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
@@ -94,7 +94,6 @@ export default function AllSocialPost() {
   const [showEmojiBox, setShowEmojiBox] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
-  const [post, setPost] = useState<boolean>(true);
   const [page, setPage] = useState<number>(1);
   const navigate = useNavigate();
   const dummyProfilePicture =
@@ -214,13 +213,13 @@ export default function AllSocialPost() {
     setTimeout(() => setIsHighlighted(false), 2000);
   };
 
-  const handleCategoryClick = (categoryName: any) => {
-    if (categoryName === "Movies" || categoryName === "Documentaries") {
-      navigate(`/cnessmedia?name=${categoryName}`);
-    }
-  };
+  // const handleCategoryClick = (categoryName: any) => {
+  //   if (categoryName === "Movies" || categoryName === "Documentaries") {
+  //     navigate(`/cnessmedia?name=${categoryName}`);
+  //   }
+  // };
 
-  const fileuploadRef = useRef<HTMLInputElement>(null);
+  // const fileuploadRef = useRef<HTMLInputElement>(null);
 
   const handleFileButton = () => {
     fileInputRef.current?.click();
@@ -252,13 +251,13 @@ export default function AllSocialPost() {
     }
   };
 
-  const toggleInsert = (text: string) => {
-    if (postContent.includes(text)) {
-      setPostContent(postContent.replace(text, "").trim());
-    } else {
-      setPostContent((prev) => (prev ? prev + " " + text : text));
-    }
-  };
+  // const toggleInsert = (text: string) => {
+  //   if (postContent.includes(text)) {
+  //     setPostContent(postContent.replace(text, "").trim());
+  //   } else {
+  //     setPostContent((prev) => (prev ? prev + " " + text : text));
+  //   }
+  // };
 
   const handleGifUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

@@ -27,7 +27,7 @@ import "react-lazy-load-image-component/src/effects/blur.css";
 import Poll from "react-polls";
 import ConnectButton from "./Button/ConnectButton.tsx";
 import FollowButton from "./Button/FollowButton.tsx";
-import { PostComments } from "../../Common/ServerAPI.tsx";
+import { AddVote, PostComments } from "../../Common/ServerAPI.tsx";
 
 interface SocialPostCartProps {
   key: any; // The key prop should match the type of the `post?.id`
@@ -73,24 +73,24 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
   is_poll,
   bgClass,
   commentCount,
-  is_saved,
+  // is_saved,
   is_liked,
   is_requested,
   profile_picture,
   getUserPosts,
 }) => {
   console.log("🚀 ~ poll:", poll);
-  const [localLikeCount, setLocalLikeCount] = useState<number>(likeCount ?? 0);
+  // const [localLikeCount, setLocalLikeCount] = useState<number>(likeCount ?? 0);
   const [localcommentCount, setCommentCount] = useState<number>(
     commentCount ?? 0
   );
   const [comment, setComment] = useState<string>("");
-  const [saved, setSaved] = useState<boolean>(false);
-  const [liked, setLiked] = useState<boolean>(false);
-  const [requestRaised, setRequestRaised] = useState<boolean>(false);
+  // const [saved, setSaved] = useState<boolean>(false);
+  // const [liked, setLiked] = useState<boolean>(false);
+  // const [requestRaised, setRequestRaised] = useState<boolean>(false);
   //   const [loading, setLoading] = useState<boolean>(false);
   const [showMenu, setShowMenu] = useState<boolean>(false);
-  const [pollAns1, setPollAns1] = useState([]);
+  // const [pollAns1, setPollAns1] = useState([]);
 
   const navigate = useNavigate();
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -121,34 +121,34 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
     navigate(`/directory/user-profile/${user_id}`);
   };
 
-  const docuid = localStorage.getItem("documentId");
+  // const docuid = localStorage.getItem("documentId");
   const myid = localStorage.getItem("Id");
   const urldata = `https://test.cness.ai/profile/public?id=${myid}`;
 
-  const fetchLike = async () => {
-    try {
-      const formattedData = { post_id: id };
+  // const fetchLike = async () => {
+  //   try {
+  //     const formattedData = { post_id: id };
 
-      //   const res = await dispatch(
-      //     apiCall("POST", "/user/posts/like", "like", formattedData)
-      //   );
+  //     //   const res = await dispatch(
+  //     //     apiCall("POST", "/user/posts/like", "like", formattedData)
+  //     //   );
 
-      //   console.log("🚀 ~ fetchLike ~ res:", res);
+  //     //   console.log("🚀 ~ fetchLike ~ res:", res);
 
-      if (is_liked) {
-        // If already liked, unlike it
-        setLiked(false);
-        setLocalLikeCount((old) => Math.max(Number(old) - 1, 0)); // Prevent negative count
-        // toast.success(res?.success?.message)
-      } else {
-        // If not liked, like it
-        setLiked(true);
-        setLocalLikeCount((old) => Number(old) + 1);
-      }
-    } catch (error) {
-      console.error("Error fetching like details:", error);
-    }
-  };
+  //     if (is_liked) {
+  //       // If already liked, unlike it
+  //       setLiked(false);
+  //       setLocalLikeCount((old) => Math.max(Number(old) - 1, 0)); // Prevent negative count
+  //       // toast.success(res?.success?.message)
+  //     } else {
+  //       // If not liked, like it
+  //       setLiked(true);
+  //       setLocalLikeCount((old) => Number(old) + 1);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching like details:", error);
+  //   }
+  // };
 
   const handleCommentSubmit = async (id: number | string) => {
     try {
@@ -156,7 +156,7 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
         text: comment,
         post_id: id,
       };
-        const res = await PostComments(formattedData);
+        await PostComments(formattedData);
         // await fetchComments();
         setCommentCount((old) => Number(old) + 1);
         setComment(""); // Assuming setComment is a function to reset a string state
@@ -173,20 +173,20 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
     navigate(`/social/singlepost/${id}`);
   };
 
-  const fetchSavedPost = async () => {
-    try {
-      const formattedData = {
-        post_id: id,
-      };
-      //   const res = await dispatch(
-      //     apiCall("POST", "/user/posts/save", "saved_post", formattedData, {})
-      //   );
-      //   console.log("🚀 ~ fetchSavedPost ~ res:", res);
-      setSaved(true);
-    } catch (error) {
-      console.error("Error fetching selection details:", error);
-    }
-  };
+  // const fetchSavedPost = async () => {
+  //   try {
+  //     const formattedData = {
+  //       post_id: id,
+  //     };
+  //     //   const res = await dispatch(
+  //     //     apiCall("POST", "/user/posts/save", "saved_post", formattedData, {})
+  //     //   );
+  //     //   console.log("🚀 ~ fetchSavedPost ~ res:", res);
+  //     setSaved(true);
+  //   } catch (error) {
+  //     console.error("Error fetching selection details:", error);
+  //   }
+  // };
 
   const votedOptions = poll?.options
     ?.filter((option: any) => option?.is_voted)
@@ -195,8 +195,7 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
   const [is_voted, setis_voted] = useState(
     votedOptions?.length ? votedOptions.join(", ") : ""
   );
-
-  console.log("🚀 ~ is_voted:", is_voted);
+  console.log("🚀 ~ setis_voted:", setis_voted)
   const pollAnswers = poll?.options?.map((option: any) => ({
     option: option?.text,
     votes: option?.votes,
@@ -209,9 +208,9 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
   // }));
 
   const handleVote = async (
-    selectedAnswer: any,
-    pollAnswers: any,
-    pollNumber: any
+selectedAnswer: any, 
+    // pollAnswers: any,
+    // pollNumber: any
   ) => {
     // If you need to update the votes locally:
     // const updatedPollAnswers = pollAnswers.map((answer: any) => ({
@@ -222,23 +221,22 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
       option_id: selectedAnswer.id,
     };
 
-    // const data = await dispatch(
-    //   apiCall("POST", "/poll/vote", "post", selectedOption)
-    // );
-    // console.log("🚀 ~ data:11", data?.data?.data);
-    // const vote_data = data?.data?.data?.options?.find(
-    //   (ans: any) => ans?.id === selectedOption?.option_id
-    // );
+    const data = await AddVote(selectedOption);
+    ;
+    console.log("🚀 ~ data:11", data?.data?.data);
+    const vote_data = data?.data?.data?.options?.find(
+      (ans: any) => ans?.id === selectedOption?.option_id
+    );
 
-    // if (data?.data?.data?.id == poll?.id) {
-    //   poll.options = poll.options.map((ans: any) =>
-    //     selectedOption?.option_id === ans.id
-    //       ? { ...ans, votes: vote_data?.votes }
-    //       : ans
-    //   );
+    if (data?.data?.data?.id == poll?.id) {
+      poll.options = poll.options.map((ans: any) =>
+        selectedOption?.option_id === ans.id
+          ? { ...ans, votes: vote_data?.votes }
+          : ans
+      );
 
-    //   console.log("🚀 ~ vote_data:", vote_data);
-    // }
+      console.log("🚀 ~ vote_data:", vote_data);
+    }
     console.log("🚀 ~ poll:22", poll);
 
     await getUserPosts();
@@ -384,8 +382,11 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
                   const selectedOption = pollAnswers?.find(
                     (answer: any) => answer?.option === voteAnswer
                   );
+                  // if (selectedOption) {
+                  //   handleVote(selectedOption, pollAnswers, 1);
+                  // }
                   if (selectedOption) {
-                    handleVote(selectedOption, pollAnswers, 1);
+                    handleVote(selectedOption);
                   }
                 }}
                 vote={is_voted}
