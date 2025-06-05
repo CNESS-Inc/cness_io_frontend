@@ -4,6 +4,7 @@ import Button from "../components/ui/Button";
 import {
   QuestionDetails,
   QuestionFileDetails,
+  QuestionFinalSubmission,
   submitAnswerDetails,
 } from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
@@ -72,6 +73,13 @@ const AssessmentQuestion: React.FC = () => {
 
   const closeModal = () => {
     setActiveModal(null);
+  };
+  const handleFinalSubmit = async () => {
+    try {
+      await QuestionFinalSubmission();
+    } catch (error) {
+
+    }
   };
 
   const transformApiData = (apiData: any): Section => {
@@ -468,24 +476,24 @@ const AssessmentQuestion: React.FC = () => {
                 </Button>
               </div>
               {!currentSection.next_section_id && (
-              <>
-                <p className="mt-6">Notes:</p>
-                <p className="text-sm text-gray-600 mb-3">
-                  Please ensure all required fields are completed before
-                  submission. Once submitted, your assessment will be reviewed
-                  and you'll receive feedback within 5-7 business days. You
-                  won't be able to make changes after submission.
-                </p>
-                <div className="flex items-center justify-center">
-                  <Button
-                    variant="gradient-primary"
-                    className={`rounded-[100px] py-2 px-5 self-stretch transition-colors duration-500 ease-in-out`}
-                    onClick={handleconfirm}
-                  >
-                    Submit For Assessment
-                  </Button>
-                </div>
-              </>
+                <>
+                  <p className="mt-6">Notes:</p>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Please ensure all required fields are completed before
+                    submission. Once submitted, your assessment will be reviewed
+                    and you'll receive feedback within 5-7 business days. You
+                    won't be able to make changes after submission.
+                  </p>
+                  <div className="flex items-center justify-center">
+                    <Button
+                      variant="gradient-primary"
+                      className={`rounded-[100px] py-2 px-5 self-stretch transition-colors duration-500 ease-in-out`}
+                      onClick={handleconfirm}
+                    >
+                      Submit For Assessment
+                    </Button>
+                  </div>
+                </>
               )}
             </div>
           </div>
@@ -551,8 +559,7 @@ const AssessmentQuestion: React.FC = () => {
             </Button>
             <Button
               onClick={() => {
-                // Add your submit logic here
-                closeModal();
+                handleFinalSubmit();
               }}
               variant="gradient-primary"
               className="rounded-[100px] py-3 px-8 transition-colors duration-500 ease-in-out"
