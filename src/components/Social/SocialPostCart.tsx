@@ -390,7 +390,7 @@ selectedAnswer: any,
                   }
                 }}
                 vote={is_voted}
-                // noStorage
+                // noStorage 
               />
             </div>
           </div>
