@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import Modal from "../components/ui/Modal";
 import SignupAnimation from "../components/ui/SignupAnimation"; // adjust path
@@ -15,7 +14,6 @@ import {
 } from "../Common/ServerAPI";
 import Button from "../components/ui/Button";
 import { Link } from "react-router-dom";
-
 
 interface SubDomain {
   id: string;
@@ -113,9 +111,8 @@ export default function Login() {
   const [, setAuthenticated] = useState<boolean>(
     localStorage.getItem("authenticated") === "true"
   );
-const [orgFormStep, setOrgFormStep] = useState(1); // 1 = Basic Info, 2 = Questions
+  const [orgFormStep, setOrgFormStep] = useState(1); // 1 = Basic Info, 2 = Questions
 
-  
   const [activeModal, setActiveModal] = useState<
     | "type"
     | "organization"
@@ -156,6 +153,8 @@ const [orgFormStep, setOrgFormStep] = useState(1); // 1 = Basic Info, 2 = Questi
   const [personErrors, setPersonErrors] = useState<FormErrors>({});
   const [resetPasswordErrors] = useState<FormErrors>({});
   const [apiMessage, setApiMessage] = useState<string | null>(null);
+  const [isOrgFormSubmitted, setIsOrgFormSubmitted] = useState(false);
+  console.log("🚀 ~ Login ~ isOrgFormSubmitted:", isOrgFormSubmitted);
 
   const validatePassword = (password: string): string | undefined => {
     if (!password) return "Password is required";
@@ -205,80 +204,83 @@ const [orgFormStep, setOrgFormStep] = useState(1); // 1 = Basic Info, 2 = Questi
     return undefined;
   };
 
-const validateForm = (
-  formData: any,
-  formType: "login" | "organization" | "person" | "forgotpassword",
-  step?: number,
-   validateAllSteps: boolean = false
-): boolean => {
-  let isValid = true;
-  const newErrors: FormErrors = {};
+  const validateForm = (
+    formData: any,
+    formType: "login" | "organization" | "person" | "forgotpassword",
+    step?: number,
+    validateAllSteps: boolean = false,
+    setErrors?: boolean 
+  ): boolean => {
+    let isValid = true;
+    const newErrors: FormErrors = {};
 
-  if (formType === "login") {
-    const emailError = validateField("email", formData.email, {
-      required: true,
-      pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-    });
-    if (emailError) {
-      newErrors.email = emailError;
-      isValid = false;
-    }
-
-    const passwordError = validateField("password", formData.password, {
-      required: true,
-      minLength: 6,
-    });
-    if (passwordError) {
-      newErrors.password = passwordError;
-      isValid = false;
-    }
-
-    setLoginErrors(newErrors);
-  }
-
-  if (formType === "organization") {
-    const requiredFields = [
-      "organization_name",
-      "domain",
-      "sub_domain",
-      "employee_size",
-      "revenue",
-    ];
-
-    // ✅ Validate Step 1 fields on both step 1 and 2
-    if (step === 1 || validateAllSteps) {
-    requiredFields.forEach((field) => {
-      const error = validateField(field, formData[field], { required: true });
-      if (error) {
-        newErrors[field] = error;
+    if (formType === "login") {
+      const emailError = validateField("email", formData.email, {
+        required: true,
+        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      });
+      if (emailError) {
+        newErrors.email = emailError;
         isValid = false;
       }
-    });
-    }
-   // ✅ Step 2 question validation (only on step 2 or final submit)
-  if (step === 2) {
-    readlineQuestion.forEach((question: any) => {
-      const answer = formData.question?.find(
-        (q: QuestionAnswer) => q.question_id === question.id
-      )?.answer || "";
 
-      if (!answer || answer.trim() === "") {
-        newErrors[`question_${question.id}`] = "This Field is required";
+      const passwordError = validateField("password", formData.password, {
+        required: true,
+        minLength: 6,
+      });
+      if (passwordError) {
+        newErrors.password = passwordError;
         isValid = false;
       }
-    });
-  }
 
-    setOrganizationErrors(newErrors);
-    return isValid;
-  }
+      setLoginErrors(newErrors);
+    }
 
+    if (formType === "organization") {
+      // Always validate step 1 fields if we're on step 1 or validating all steps
+      if (step === 1 || validateAllSteps) {
+        const requiredFields = [
+          "organization_name",
+          "domain",
+          "sub_domain",
+          "employee_size",
+          "revenue",
+        ];
 
+        requiredFields.forEach((field) => {
+          const error = validateField(field, formData[field], {
+            required: true,
+          });
+          if (error) {
+            newErrors[field] = error;
+            isValid = false;
+          }
+        });
+      }
 
+      // Only validate questions when submitting (validateAllSteps = true)
+      if (validateAllSteps) {
+        readlineQuestion.forEach((question: any) => {
+          const answer =
+            formData.question?.find(
+              (q: QuestionAnswer) => q.question_id === question.id
+            )?.answer || "";
 
+          if (!answer || answer.trim() === "") {
+            newErrors[`question_${question.id}`] = "This Field is required";
+            isValid = false;
+          }
+        });
+      }
 
-    
-     if (formType === "person") {
+      if (setErrors) {
+        console.log("🚀 ~ Login ~ setErrors:", setErrors)
+        setOrganizationErrors(newErrors);
+      }
+      return isValid;
+    }
+
+    if (formType === "person") {
       // Validate person questions
       readlineQuestion.forEach((question: any) => {
         const answer =
@@ -297,7 +299,8 @@ const validateForm = (
       });
 
       setPersonErrors(newErrors);
-    }  if (formType === "forgotpassword") {
+    }
+    if (formType === "forgotpassword") {
       const emailError = validateField("email", formData.email, {
         required: true,
         pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -309,6 +312,16 @@ const validateForm = (
     }
 
     return isValid;
+  };
+
+  const handleNextClick = () => {
+    // Only validate step 1 fields when clicking next
+    const isValid = validateForm(organizationForm, "organization", 1, false);
+
+    if (isValid) {
+      setOrgFormStep(2);
+      setOrganizationErrors({});
+    }
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -356,10 +369,7 @@ const validateForm = (
           "profile_picture",
           response?.data?.data?.user.profile_picture
         );
-        localStorage.setItem(
-          "name",
-          response?.data?.data?.user.name
-        );
+        localStorage.setItem("name", response?.data?.data?.user.name);
 
         const completionStatus =
           response.data.data.user.person_organization_complete;
@@ -574,22 +584,12 @@ const validateForm = (
 
   const handleOrganizationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsOrgFormSubmitted(true);
+    // Validate all fields (both steps) when submitting
+    const isValid = validateForm(organizationForm, "organization", 2, true,true);
 
-if (orgFormStep === 1) {
-  setOrgFormStep(2);
-  return;
-}
-
-const isValid = validateForm(organizationForm, "organization", 2, true);
-if (!isValid) return;
-
-
-
+    if (!isValid) return;
     setIsSubmitting(true);
-    console.log(
-      "🚀 ~ handleOrganizationSubmit ~ organizationForm:",
-      organizationForm
-    );
     try {
       const res = await submitOrganizationDetails(organizationForm);
       localStorage.setItem("person_organization", "2");
@@ -825,7 +825,6 @@ if (!isValid) return;
       }
     }
   };
-  
 
   return (
     <>
@@ -927,11 +926,10 @@ if (!isValid) return;
               </div>
 
               <Button
-type="submit"
-  variant="gradient-primary"
-  withGradientOverlay
-
-  className="w-full py-2"
+                type="submit"
+                variant="gradient-primary"
+                withGradientOverlay
+                className="w-full py-2"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Loging..." : "Login"}
@@ -941,7 +939,8 @@ type="submit"
 
               <p className="text-center text-sm text-gray-600 mt-4">
                 New to Cness?{" "}
-                <Link to={"/sign-up"}
+                <Link
+                  to={"/sign-up"}
                   className="text-[#7F57FC] font-medium hover:underline"
                 >
                   Create account
@@ -993,252 +992,256 @@ type="submit"
           <form onSubmit={handleOrganizationSubmit}>
             {orgFormStep === 1 && (
               <>
-              
-            {/* Organization Name */}
-  <div className="space-y-5">
-              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
-                Organization Name*
-              </label>
-              <input
-                type="text"
-                name="organization_name"
-                value={organizationForm.organization_name}
-                onChange={handleOrganizationFormChange}
-                className={`w-full px-3 py-2 border ${
-                  organizationErrors.organization_name
-                    ? "border-red-500"
-                    : "border-gray-300"
-                } rounded-md`}
-                placeholder="Enter organization name"
-              />
-              {organizationErrors.organization_name && (
-                <p className="mt-1 text-sm text-red-600">
-                  {organizationErrors.organization_name}
-                </p>
-              )}
-            </div>
+                {/* Organization Name */}
+                <div className="space-y-5">
+                  <label className="block openSans text-sm font-medium text-gray-700 mb-1">
+                    Organization Name*
+                  </label>
+                  <input
+                    type="text"
+                    name="organization_name"
+                    value={organizationForm.organization_name}
+                    onChange={handleOrganizationFormChange}
+                    className={`w-full px-3 py-2 border ${
+                      organizationErrors.organization_name
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    } rounded-md`}
+                    placeholder="Enter organization name"
+                  />
+                  {organizationErrors.organization_name && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {organizationErrors.organization_name}
+                    </p>
+                  )}
+                </div>
 
-            <div className="mb-4">
-              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
-                Domain*
-              </label>
-              <select
-                name="domain"
-                value={organizationForm.domain}
-                onChange={handleOrganizationFormChange}
-                className={`w-full px-3 py-2 border ${
-                  organizationErrors.domain
-                    ? "border-red-500"
-                    : "border-gray-300"
-                } rounded-md`}
-              >
-                <option value="">Select domain</option>
-                {domains?.map((domain: any) => (
-                  <option key={domain.id} value={domain.id}>
-                    {domain.name}
-                  </option>
-                ))}
-              </select>
-              {organizationErrors.domain && (
-                <p className="mt-1 text-sm text-red-600">
-                  {organizationErrors.domain}
-                </p>
-              )}
-            </div>
+                <div className="mb-4">
+                  <label className="block openSans text-sm font-medium text-gray-700 mb-1">
+                    Domain*
+                  </label>
+                  <select
+                    name="domain"
+                    value={organizationForm.domain}
+                    onChange={handleOrganizationFormChange}
+                    className={`w-full px-3 py-2 border ${
+                      organizationErrors.domain
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    } rounded-md`}
+                  >
+                    <option value="">Select domain</option>
+                    {domains?.map((domain: any) => (
+                      <option key={domain.id} value={domain.id}>
+                        {domain.name}
+                      </option>
+                    ))}
+                  </select>
+                  {organizationErrors.domain && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {organizationErrors.domain}
+                    </p>
+                  )}
+                </div>
 
-            {/* Sub Domain */}
-            <div className="mb-4">
-              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
-                Sub Domain
-              </label>
-              <select
-                name="sub_domain"
-                value={organizationForm.sub_domain}
-                onChange={handleOrganizationFormChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              >
-                <>
-                  <option value="">Select Sub domain</option>
-                  {subDomain?.map((subdomain: any) => (
-                    <option key={subdomain.id} value={subdomain.id}>
-                      {subdomain.name}
-                    </option>
-                  ))}
-                </>
-              </select>
-              {organizationErrors.sub_domain && (
-                <p className="mt-1 text-sm text-red-600">
-                  {organizationErrors.sub_domain}
-                </p>
-              )}
-            </div>
+                {/* Sub Domain */}
+                <div className="mb-4">
+                  <label className="block openSans text-sm font-medium text-gray-700 mb-1">
+                    Sub Domain
+                  </label>
+                  <select
+                    name="sub_domain"
+                    value={organizationForm.sub_domain}
+                    onChange={handleOrganizationFormChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  >
+                    <>
+                      <option value="">Select Sub domain</option>
+                      {subDomain?.map((subdomain: any) => (
+                        <option key={subdomain.id} value={subdomain.id}>
+                          {subdomain.name}
+                        </option>
+                      ))}
+                    </>
+                  </select>
+                  {organizationErrors.sub_domain && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {organizationErrors.sub_domain}
+                    </p>
+                  )}
+                </div>
 
-            {/* Employees Size */}
-            <div className="mb-4">
-              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
-                Employees Size*
-              </label>
-              <select
-                name="employee_size"
-                value={organizationForm.employee_size}
-                onChange={handleOrganizationFormChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              >
-                <>
-                  <option value="">Select Employee Size</option>
-                  {OrganizationSize?.map((orgsize: any) => (
-                    <option key={orgsize.id} value={orgsize.id}>
-                      {orgsize.name}
-                    </option>
-                  ))}
-                </>
-              </select>
-              {organizationErrors.employee_size && (
-                <p className="mt-1 text-sm text-red-600">
-                  {organizationErrors.employee_size}
-                </p>
-              )}
-            </div>
+                {/* Employees Size */}
+                <div className="mb-4">
+                  <label className="block openSans text-sm font-medium text-gray-700 mb-1">
+                    Employees Size*
+                  </label>
+                  <select
+                    name="employee_size"
+                    value={organizationForm.employee_size}
+                    onChange={handleOrganizationFormChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  >
+                    <>
+                      <option value="">Select Employee Size</option>
+                      {OrganizationSize?.map((orgsize: any) => (
+                        <option key={orgsize.id} value={orgsize.id}>
+                          {orgsize.name}
+                        </option>
+                      ))}
+                    </>
+                  </select>
+                  {organizationErrors.employee_size && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {organizationErrors.employee_size}
+                    </p>
+                  )}
+                </div>
 
-            {/* Revenue */}
-            <div className="mb-4">
-              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
-                Revenue*
-              </label>
-              <select
-                name="revenue"
-                value={organizationForm.revenue}
-                onChange={handleOrganizationFormChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              >
-                <>
-                  <option value="">Select Revenue Range</option>
-                  {revenue?.map((revenue: any) => (
-                    <option key={revenue.id} value={revenue.id}>
-                      {revenue.revenue_range}
-                    </option>
-                  ))}
-                </>
-              </select>
-              {organizationErrors.revenue && (
-                <p className="mt-1 text-sm text-red-600">
-                  {organizationErrors.revenue}
-                </p>
-              )}
-          </div>
-        </>
-      )}
+                {/* Revenue */}
+                <div className="mb-4">
+                  <label className="block openSans text-sm font-medium text-gray-700 mb-1">
+                    Revenue*
+                  </label>
+                  <select
+                    name="revenue"
+                    value={organizationForm.revenue}
+                    onChange={handleOrganizationFormChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  >
+                    <>
+                      <option value="">Select Revenue Range</option>
+                      {revenue?.map((revenue: any) => (
+                        <option key={revenue.id} value={revenue.id}>
+                          {revenue.revenue_range}
+                        </option>
+                      ))}
+                    </>
+                  </select>
+                  {organizationErrors.revenue && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {organizationErrors.revenue}
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
 
+            {orgFormStep === 2 && (
+              <>
+                {/* Questions with options as radio buttons */}
+                <div className="space-y-4">
+                  {readlineQuestion?.map((question: any) => {
+                    const existingAnswer =
+                      organizationForm.question.find(
+                        (q: QuestionAnswer) => q.question_id === question.id
+                      )?.answer || "";
 
-{orgFormStep === 2 && (
-        <>
-            {/* Questions with options as radio buttons */}
-            <div className="space-y-4">
-              {readlineQuestion?.map((question: any) => {
-                const existingAnswer =
-                  organizationForm.question.find(
-                    (q: QuestionAnswer) => q.question_id === question.id
-                  )?.answer || "";
+                    return (
+                      <div key={question.id} className="mb-4">
+                        <label className="block openSans text-sm font-medium text-gray-800 mb-1">
+                          {question.question}
+                        </label>
 
-                return (
-                  <div key={question.id} className="mb-4">
-                    <label className="block openSans text-sm font-medium text-gray-800 mb-1">
-                      {question.question}
-                    </label>
-
-                    {question.options && question.options.length > 0 ? (
-                      <div className="space-y-2">
-                        {question.options.map((option: any) => (
-                          <div key={option.id} className="flex items-center">
-                            <input
-                              type="radio"
-                              id={`question_${question.id}_${option.id}`}
-                              name={`question_${question.id}`}
-                              value={option.option}
-                              checked={existingAnswer === option.option}
-                              onChange={handleOrganizationFormChange}
-                              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
-                            />
-                            <label
-                              htmlFor={`question_${question.id}_${option.id}`}
-                              className="ml-3 block openSans text-sm text-gray-700"
-                            >
-                              {option.option}
-                            </label>
+                        {question.options && question.options.length > 0 ? (
+                          <div className="space-y-2">
+                            {question.options.map((option: any) => (
+                              <div
+                                key={option.id}
+                                className="flex items-center"
+                              >
+                                <input
+                                  type="radio"
+                                  id={`question_${question.id}_${option.id}`}
+                                  name={`question_${question.id}`}
+                                  value={option.option}
+                                  checked={existingAnswer === option.option}
+                                  onChange={handleOrganizationFormChange}
+                                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                                />
+                                <label
+                                  htmlFor={`question_${question.id}_${option.id}`}
+                                  className="ml-3 block openSans text-sm text-gray-700"
+                                >
+                                  {option.option}
+                                </label>
+                              </div>
+                            ))}
                           </div>
-                        ))}
+                        ) : (
+                          <textarea
+                            name={`question_${question.id}`}
+                            value={existingAnswer}
+                            onChange={handleOrganizationFormChange}
+                            className={`w-full px-3 py-2 border ${
+                              organizationErrors[`question_${question.id}`]
+                                ? "border-red-500"
+                                : "border-gray-300"
+                            } rounded-md`}
+                            placeholder={`Enter your answer`}
+                            rows={3}
+                          />
+                        )}
+
+                        {isOrgFormSubmitted &&
+                          organizationErrors[`question_${question.id}`] && (
+                            <p className="mt-1 text-sm text-red-600">
+                              {organizationErrors[`question_${question.id}`]}
+                            </p>
+                          )}
                       </div>
-                    ) : (
-                      <textarea
-                        name={`question_${question.id}`}
-                        value={existingAnswer}
-                        onChange={handleOrganizationFormChange}
-                        className={`w-full px-3 py-2 border ${
-  organizationErrors[`question_${question.id}`]
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        } rounded-md`}
-                        placeholder={`Enter your answer`}
-                        rows={3}
-                      />
-                    )}
+                    );
+                  })}
+                </div>
+              </>
+            )}
+            {/* Form Footer Actions */}
 
-                  {organizationErrors[`question_${question.id}`] && (
-  <p className="mt-1 text-sm text-red-600">
-    {organizationErrors[`question_${question.id}`]}
-  </p>
-)}
-                   </div>
-              );
-            })}
-          </div>
-        </>
-      )}
-        {/* Form Footer Actions */}
+            {/* Form Footer Actions */}
+            <div className="flex justify-end mt-6 gap-3">
+              {orgFormStep === 2 && (
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setOrgFormStep(1);
+                    setOrganizationErrors({});
+                  }}
+                  variant="white-outline"
+                >
+                  Back
+                </Button>
+              )}
+              <Button
+                type="button"
+                onClick={closeModal}
+                variant="white-outline"
+              >
+                Cancel
+              </Button>
 
-{/* Form Footer Actions */}
-<div className="flex justify-end mt-6 gap-3">
-  {orgFormStep === 2 && (
-    <Button
-      type="button"
-      onClick={() => setOrgFormStep(1)}
-      variant="white-outline"
-    >
-      Back
-    </Button>
-  )}
-  <Button type="button" onClick={closeModal} variant="white-outline">
-    Cancel
-  </Button>
-
-  {orgFormStep === 1 ? (
-  <Button
-  type="button"
-  onClick={() => setOrgFormStep(2)}
-  variant="gradient-primary"
-  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
->
-Next
-</Button>
-  ) : (
-    <Button
-      type="submit"
-      variant="gradient-primary"
-      className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
-      disabled={isSubmitting}
-    >
-      {isSubmitting ? "Submitting..." : "Submit"}
-    </Button>
-  )}
-</div>
-      </form>
-    </div>
-  </Modal>
-
-
-
-
-
+              {orgFormStep === 1 ? (
+                <Button
+                  type="button"
+                  onClick={handleNextClick}
+                  variant="gradient-primary"
+                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                >
+                  Next
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  variant="gradient-primary"
+                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Submitting..." : "Submit"}
+                </Button>
+              )}
+            </div>
+          </form>
+        </div>
+      </Modal>
 
       <Modal isOpen={activeModal === "person"} onClose={closeModal}>
         <div className="p-6 rounded-lg w-full mx-auto z-10 relative">
@@ -1585,8 +1588,3 @@ Next
     </>
   );
 }
-
-
-
-
-
