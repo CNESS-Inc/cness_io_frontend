@@ -20,6 +20,7 @@ export default defineConfig({
 
   build: {
     rollupOptions: {
+      external: ['@fortawesome/fontawesome-svg-core', '@fortawesome/free-solid-svg-icons'],
       output: {
         manualChunks: {
           react: ['react', 'react-dom'],
