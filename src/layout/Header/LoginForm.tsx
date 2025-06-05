@@ -923,7 +923,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
             <Button
               type="submit"
               onClick={() => handleTypeSelection(1)}
-              className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
+              className="bg-gradient-to-r from-indigo-500 to-purple-500 py-[16px] px-[24px] rounded-full transition-colors text-white duration-500 ease-in-out"
               variant="primary"
               withGradientOverlay
             >
@@ -931,7 +931,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
             </Button>
             <Button
               onClick={() => handleTypeSelection(2)}
-              className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
+              className="bg-gradient-to-r from-indigo-500 to-purple-500 py-[16px] px-[24px] rounded-full transition-colors text-white duration-500 ease-in-out"
               variant="primary"
               withGradientOverlay
             >

@@ -8,8 +8,8 @@ const AppLayout = () => {
 
   useEffect(() => {
     const checkAuth = () => {
-      const token = localStorage.getItem("jwt"); 
-      const completed_step = localStorage.getItem("completed_step"); 
+      const token = localStorage.getItem("jwt");
+      const completed_step = localStorage.getItem("completed_step");
       if (!token || completed_step === "0") {
         navigate("/");
       }
@@ -19,7 +19,11 @@ const AppLayout = () => {
   }, [navigate]);
 
   if (isCheckingAuth) {
-    return <LoadingSpinner />;
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   return (

@@ -6,7 +6,9 @@ import { RouterProvider } from 'react-router-dom'; // ✅ add this
 import { router } from './routes'; // ✅ this must point to your router config
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+  <>
+   {/* <StrictMode> */}
     <RouterProvider router={router} /> {/* ✅ this enables /directory route */}
-  </StrictMode>
+   {/* </StrictMode> */}
+  </>
 );

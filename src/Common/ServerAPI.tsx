@@ -101,6 +101,25 @@ export const EndPoint = {
   questions: "/quiz/get/question",
   questions_file: "/quiz/upload-answer-file",
   answer: "/quiz/answer",
+
+  // Social Routes
+
+  get_all_post: "/user/posts/get/all",
+  create_post: "/user/posts",
+  postComments: "/user/post/comments",
+  postChildComment: "/user/post/comments/child",
+  postCommentLike: "/user/post/comments/like",
+  like: "/user/posts/like",
+  Post_AllComments: "/user/post/comments",
+  single_post: "/user/posts/get",
+  story: "/story",
+  story_like: "/story/like",
+  story_comment: "/story/comment",
+  event: "/event",
+  trending_post: "/user/posts/trending",
+  trending_movie: "/movie/trending",
+  following: "/user/following",
+  connection: "/friend",
 };
 
 export const LoginDetails = async (formData: LoginFormData): ApiResponse => {
@@ -153,7 +172,11 @@ export const AccountDetails = (formData: AccountData): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.acount_type);
 };
 export const QuestionFileDetails = (formData: any): ApiResponse => {
-  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.questions_file);
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.questions_file
+  );
 };
 export const PaymentDetails = (formData: AccountFormData): ApiResponse => {
   const data: Partial<AccountFormData> = {
@@ -189,7 +212,7 @@ export const submitPersonDetails = (
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.person_profile);
 };
 export const submitAnswerDetails = (formData: any): ApiResponse => {
-  console.log("🚀 ~ submitAnswerDetails ~ formData:", formData)
+  console.log("🚀 ~ submitAnswerDetails ~ formData:", formData);
   // Initialize the data array
   const data: Array<{ question_id: string; answer: any }> = [];
 
@@ -197,17 +220,20 @@ export const submitAnswerDetails = (formData: any): ApiResponse => {
   if (formData.selectedCheckboxIds && formData.checkboxes_question_id) {
     data.push({
       question_id: formData.checkboxes_question_id,
-      answer: formData.selectedCheckboxIds
+      answer: formData.selectedCheckboxIds,
     });
   }
 
   // Handle purposePauseAnswers
-  if (formData.purposePauseAnswers && Array.isArray(formData.purposePauseAnswers)) {
-    formData.purposePauseAnswers.forEach((item:any) => {
+  if (
+    formData.purposePauseAnswers &&
+    Array.isArray(formData.purposePauseAnswers)
+  ) {
+    formData.purposePauseAnswers.forEach((item: any) => {
       if (item.id) {
         data.push({
           question_id: item.id,
-          answer: item.answer // Or use item.answer if you want the actual answer text
+          answer: item.answer, // Or use item.answer if you want the actual answer text
         });
       }
     });
@@ -217,7 +243,7 @@ export const submitAnswerDetails = (formData: any): ApiResponse => {
   if (formData.bestPractice && formData.bestPractice.question_id) {
     data.push({
       question_id: formData.bestPractice.question_id,
-      answer: formData.bestPractice.answer // Or use formData.bestPractice.answer
+      answer: formData.bestPractice.answer, // Or use formData.bestPractice.answer
     });
   }
 
@@ -235,11 +261,11 @@ export const submitAnswerDetails = (formData: any): ApiResponse => {
   // You'll need to know how to map uploads to question_ids
   // For example:
   if (formData.uploads && Array.isArray(formData.uploads)) {
-    formData.uploads.forEach((upload:any) => {
+    formData.uploads.forEach((upload: any) => {
       if (upload) {
         data.push({
           question_id: upload.id,
-          answer: upload.file // or process the upload as needed
+          answer: upload.file, // or process the upload as needed
         });
       }
     });
@@ -257,7 +283,7 @@ export const OrgTypeDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.org_type);
 };
-export const QuestionDetails = (sectionId:any): ApiResponse => {
+export const QuestionDetails = (sectionId: any): ApiResponse => {
   const data: Partial<any> = {
     section_id: sectionId,
   };
@@ -417,6 +443,112 @@ export const GetUsersearchProfileDetails = (
     data,
     EndPoint.directory_search_profile
   );
+};
+
+// Social APIS
+
+export const PostsDetails = (page: any) => {
+  let data = {};
+  let params: { [key: string]: any } = {};
+  params["pagination[page]"] = page;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    EndPoint.get_all_post,
+    params
+  );
+};
+
+export const AddPost = (formData: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.create_post);
+};
+
+export const PostComments = (formattedData: any) => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formattedData,
+    EndPoint.postComments
+  );
+};
+export const PostChildComments = (formattedData: any) => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formattedData,
+    EndPoint.postChildComment
+  );
+};
+export const PostCommentLike = (formattedData: any) => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formattedData,
+    EndPoint.postCommentLike
+  );
+};
+
+export const PostsLike = (formattedData: any) => {
+  return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.like);
+};
+
+export const GetComment = (id: any) => {
+  console.log("🚀 ~ GetComment ~ id:", id);
+  let data = {};
+  let params: { [key: string]: any } = {};
+  params["post_id"] = id;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.Post_AllComments}`,
+    params
+  );
+};
+export const GetSinglePost = (id: any) => {
+  console.log("🚀 ~ GetComment ~ id:", id);
+  let data = {};
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.single_post}/${id}`
+  );
+};
+export const GetStory = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.story);
+};
+export const LikeStory = (story_id: any) => {
+const data: Partial<any> = {
+    story_id: story_id,
+  };
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.story_like);
+};
+export const CommentStory = (formattedData: any) => {
+  return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.story_comment);
+};
+export const FetchCommentStory = (id: any) => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.story_comment}?story_id=${id}`);
+};
+export const AddStory = (formData: any) => {
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.story);
+};
+export const GetEvent = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.event);
+};
+export const GetTrendingPost = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.trending_post);
+};
+export const GetTrendingMovie = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.trending_movie);
+};
+export const GetFollowingUser = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.following);
+};
+export const GetConnectionUser = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection);
 };
 
 export const executeAPI = async <T = any,>(
