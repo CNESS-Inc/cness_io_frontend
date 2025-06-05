@@ -101,9 +101,7 @@ export const EndPoint = {
   questions: "/quiz/get/question",
   questions_file: "/quiz/upload-answer-file",
   answer: "/quiz/answer",
-
-  // Social Routes
-
+  final_submission: "/quiz/final-submition",
   get_all_post: "/user/posts/get/all",
   create_post: "/user/posts",
   postComments: "/user/post/comments",
@@ -177,6 +175,10 @@ export const QuestionFileDetails = (formData: any): ApiResponse => {
     formData,
     EndPoint.questions_file
   );
+};
+export const QuestionFinalSubmission = (): ApiResponse => {
+  const data = {}
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.final_submission);
 };
 export const PaymentDetails = (formData: AccountFormData): ApiResponse => {
   const data: Partial<AccountFormData> = {
