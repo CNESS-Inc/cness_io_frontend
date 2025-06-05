@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import Modal from "../components/ui/Modal";
 import SignupAnimation from "../components/ui/SignupAnimation"; // adjust path
@@ -14,6 +15,7 @@ import {
 } from "../Common/ServerAPI";
 import Button from "../components/ui/Button";
 import { Link } from "react-router-dom";
+
 
 interface SubDomain {
   id: string;
@@ -111,6 +113,9 @@ export default function Login() {
   const [, setAuthenticated] = useState<boolean>(
     localStorage.getItem("authenticated") === "true"
   );
+const [orgFormStep, setOrgFormStep] = useState(1); // 1 = Basic Info, 2 = Questions
+
+  
   const [activeModal, setActiveModal] = useState<
     | "type"
     | "organization"
@@ -200,97 +205,99 @@ export default function Login() {
     return undefined;
   };
 
-  const validateForm = (
-    formData: any,
-    formType: "login" | "organization" | "person" | "forgotpassword"
-  ): boolean => {
-    let isValid = true;
-    const newErrors: FormErrors = {};
+const validateForm = (
+  formData: any,
+  formType: "login" | "organization" | "person" | "forgotpassword",
+  step?: number,
+   validateAllSteps: boolean = false
+): boolean => {
+  let isValid = true;
+  const newErrors: FormErrors = {};
 
-    if (formType === "login") {
-      // Validate email
-      const emailError = validateField("email", formData.email, {
-        required: true,
-        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-      });
-      if (emailError) {
-        newErrors.email = emailError;
+  if (formType === "login") {
+    const emailError = validateField("email", formData.email, {
+      required: true,
+      pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    });
+    if (emailError) {
+      newErrors.email = emailError;
+      isValid = false;
+    }
+
+    const passwordError = validateField("password", formData.password, {
+      required: true,
+      minLength: 6,
+    });
+    if (passwordError) {
+      newErrors.password = passwordError;
+      isValid = false;
+    }
+
+    setLoginErrors(newErrors);
+  }
+
+  if (formType === "organization") {
+    const requiredFields = [
+      "organization_name",
+      "domain",
+      "sub_domain",
+      "employee_size",
+      "revenue",
+    ];
+
+    // ✅ Validate Step 1 fields on both step 1 and 2
+    if (step === 1 || validateAllSteps) {
+    requiredFields.forEach((field) => {
+      const error = validateField(field, formData[field], { required: true });
+      if (error) {
+        newErrors[field] = error;
         isValid = false;
       }
+    });
+    }
+   // ✅ Step 2 question validation (only on step 2 or final submit)
+  if (step === 2) {
+    readlineQuestion.forEach((question: any) => {
+      const answer = formData.question?.find(
+        (q: QuestionAnswer) => q.question_id === question.id
+      )?.answer || "";
 
-      // Validate password
-      const passwordError = validateField("password", formData.password, {
-        required: true,
-        minLength: 6,
-      });
-      if (passwordError) {
-        newErrors.password = passwordError;
+      if (!answer || answer.trim() === "") {
+        newErrors[`question_${question.id}`] = "This Field is required";
         isValid = false;
       }
+    });
+  }
 
-      setLoginErrors(newErrors);
-    } else if (formType === "organization") {
-      // Validate organization fields
-      const requiredFields = [
-        "organization_name",
-        "domain",
-        "sub_domain",
-        "employee_size",
-        "revenue",
-      ];
+    setOrganizationErrors(newErrors);
+    return isValid;
+  }
 
-      requiredFields.forEach((field) => {
-        const error = validateField(
-          field,
-          organizationForm[field as keyof OrganizationForm] as string,
-          {
-            required: true,
-          }
-        );
-        if (error) {
-          newErrors[field] = error;
-          isValid = false;
-        }
-      });
 
-      // Validate questions
-      readlineQuestion.forEach((question: any, index) => {
-        const answer =
-          organizationForm.question.find(
-            (q: QuestionAnswer) => q.question_id === question.id
-          )?.answer || "";
 
-        const error = validateField(`question_${index + 1}`, answer, {
-          required: true,
-        });
 
-        if (error) {
-          newErrors[`question_${index + 1}`] = error;
-          isValid = false;
-        }
-      });
 
-      setOrganizationErrors(newErrors);
-    } else if (formType === "person") {
+    
+     if (formType === "person") {
       // Validate person questions
-      readlineQuestion.forEach((question: any, index) => {
+      readlineQuestion.forEach((question: any) => {
         const answer =
           organizationForm.question.find(
             (q: QuestionAnswer) => q.question_id === question.id
           )?.answer || "";
 
-        const error = validateField(`question_${index + 1}`, answer, {
+        const error = validateField(`question_${question.id}`, answer, {
           required: true,
         });
 
         if (error) {
-          newErrors[`question_${index + 1}`] = error;
+          newErrors[`question_${question.id}`] = "This Field is required";
           isValid = false;
         }
       });
 
       setPersonErrors(newErrors);
-    } else if (formType === "forgotpassword") {
+    }  if (formType === "forgotpassword") {
       const emailError = validateField("email", formData.email, {
         required: true,
         pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -568,9 +575,15 @@ export default function Login() {
   const handleOrganizationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm(organizationForm, "organization")) {
-      return;
-    }
+if (orgFormStep === 1) {
+  setOrgFormStep(2);
+  return;
+}
+
+const isValid = validateForm(organizationForm, "organization", 2, true);
+if (!isValid) return;
+
+
 
     setIsSubmitting(true);
     console.log(
@@ -913,13 +926,16 @@ export default function Login() {
                 </a>
               </div>
 
-              <button
-                type="submit"
-                className="w-full bg-gradient-to-r from-blue-600 via-purple-700 to-blue-600 text-white font-semibold py-2 rounded-full shadow-md transition duration-200 hover:from-blue-500 hover:to-blue-500"
+              <Button
+type="submit"
+  variant="gradient-primary"
+  withGradientOverlay
+
+  className="w-full py-2"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Loging..." : "Login"}
-              </button>
+              </Button>
 
               <div className="text-center text-sm text-gray-500">OR</div>
 
@@ -975,8 +991,11 @@ export default function Login() {
             Organization Information
           </h2>
           <form onSubmit={handleOrganizationSubmit}>
+            {orgFormStep === 1 && (
+              <>
+              
             {/* Organization Name */}
-            <div className="mb-4">
+  <div className="space-y-5">
               <label className="block openSans text-sm font-medium text-gray-700 mb-1">
                 Organization Name*
               </label>
@@ -1106,11 +1125,16 @@ export default function Login() {
                   {organizationErrors.revenue}
                 </p>
               )}
-            </div>
+          </div>
+        </>
+      )}
 
+
+{orgFormStep === 2 && (
+        <>
             {/* Questions with options as radio buttons */}
             <div className="space-y-4">
-              {readlineQuestion?.map((question: any, index) => {
+              {readlineQuestion?.map((question: any) => {
                 const existingAnswer =
                   organizationForm.question.find(
                     (q: QuestionAnswer) => q.question_id === question.id
@@ -1118,7 +1142,7 @@ export default function Login() {
 
                 return (
                   <div key={question.id} className="mb-4">
-                    <label className="block openSans text-sm font-medium text-gray-700 mb-1">
+                    <label className="block openSans text-sm font-medium text-gray-800 mb-1">
                       {question.question}
                     </label>
 
@@ -1150,7 +1174,7 @@ export default function Login() {
                         value={existingAnswer}
                         onChange={handleOrganizationFormChange}
                         className={`w-full px-3 py-2 border ${
-                          organizationErrors[`question_${index + 1}`]
+  organizationErrors[`question_${question.id}`]
                             ? "border-red-500"
                             : "border-gray-300"
                         } rounded-md`}
@@ -1159,43 +1183,69 @@ export default function Login() {
                       />
                     )}
 
-                    {organizationErrors[`question_${index + 1}`] && (
-                      <p className="mt-1 text-sm text-red-600">
-                        {organizationErrors[`question_${index + 1}`]}
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                  {organizationErrors[`question_${question.id}`] && (
+  <p className="mt-1 text-sm text-red-600">
+    {organizationErrors[`question_${question.id}`]}
+  </p>
+)}
+                   </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+        {/* Form Footer Actions */}
 
-            <div className="flex justify-end mt-6 gap-3">
-              <Button
-                type="button"
-                onClick={closeModal}
-                variant="white-outline"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="gradient-primary"
-                className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Submitting..." : "Submit"}
-              </Button>
-            </div>
-          </form>
-        </div>
-      </Modal>
+{/* Form Footer Actions */}
+<div className="flex justify-end mt-6 gap-3">
+  {orgFormStep === 2 && (
+    <Button
+      type="button"
+      onClick={() => setOrgFormStep(1)}
+      variant="white-outline"
+    >
+      Back
+    </Button>
+  )}
+  <Button type="button" onClick={closeModal} variant="white-outline">
+    Cancel
+  </Button>
+
+  {orgFormStep === 1 ? (
+  <Button
+  type="button"
+  onClick={() => setOrgFormStep(2)}
+  variant="gradient-primary"
+  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+>
+Next
+</Button>
+  ) : (
+    <Button
+      type="submit"
+      variant="gradient-primary"
+      className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+      disabled={isSubmitting}
+    >
+      {isSubmitting ? "Submitting..." : "Submit"}
+    </Button>
+  )}
+</div>
+      </form>
+    </div>
+  </Modal>
+
+
+
+
+
 
       <Modal isOpen={activeModal === "person"} onClose={closeModal}>
         <div className="p-6 rounded-lg w-full mx-auto z-10 relative">
           <h2 className="text-xl poppins font-bold mb-4">Person Information</h2>
           <form onSubmit={handlePersonSubmit}>
             {/* Questions */}
-            {readlineQuestion.map((question: any, index) => {
+            {readlineQuestion.map((question: any) => {
               const existingAnswer =
                 organizationForm.question.find(
                   (q: QuestionAnswer) => q.question_id === question.id
@@ -1236,7 +1286,7 @@ export default function Login() {
                       value={existingAnswer}
                       onChange={handleOrganizationFormChange}
                       className={`w-full px-3 py-2 border ${
-                        personErrors[`question_${index + 1}`]
+                        personErrors[`question_${question.id}`]
                           ? "border-red-500"
                           : "border-gray-300"
                       } rounded-md`}
@@ -1245,9 +1295,9 @@ export default function Login() {
                     />
                   )}
 
-                  {personErrors[`question_${index + 1}`] && (
+                  {personErrors[`question_${question.id}`] && (
                     <p className="mt-1 text-sm text-red-600">
-                      {personErrors[`question_${index + 1}`]}
+                      {personErrors[`question_${question.id}`]}
                     </p>
                   )}
                 </div>
@@ -1535,3 +1585,8 @@ export default function Login() {
     </>
   );
 }
+
+
+
+
+
