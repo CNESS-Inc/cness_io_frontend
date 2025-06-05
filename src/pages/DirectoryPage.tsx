@@ -282,7 +282,7 @@ export default function DirectoryPage() {
     <div className="w-full max-w-3xl mx-auto bg-white border border-gray-200 rounded-full flex flex-row items-center px-2 py-2 shadow-sm gap-2">
       <div className="relative">
         <select
-      className="bg-[#7077FE] text-white font-medium rounded-full px-4 py-2 appearance-none focus:outline-none cursor-pointer w-[110px] sm:w-[150px]"
+      className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-full px-4 py-2 appearance-none focus:outline-none cursor-pointer w-[110px] sm:w-[150px]"
           value={selectedDomain}
           onChange={handleDomainChange}
         >

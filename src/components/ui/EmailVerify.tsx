@@ -65,7 +65,7 @@ const EmailVerify = () => {
             </h1>
             {loginShow && (
               <Button
-                className="bg-[#7077FE] py-3 sm:py-[16px] px-6 sm:px-[24px] rounded-full text-sm sm:text-base w-full sm:w-auto text-center mt-3"
+                className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-3 sm:py-[16px] px-6 sm:px-[24px] rounded-full text-sm sm:text-base w-full sm:w-auto text-center mt-3"
                 withGradientOverlay
                 onClick={handleLoginClick}
               >

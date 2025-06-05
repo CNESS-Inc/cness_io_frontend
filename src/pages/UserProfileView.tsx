@@ -315,7 +315,7 @@ export default function UserProfileView() {
                   <p className="text-xs text-gray-500 mb-2">
                     Exploring Advanced Techniques
                   </p>
-                  <button className="text-xs px-3 py-1 rounded-full bg-[#7077FE] text-white">
+                  <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
                     Read More
                   </button>
                 </div>
@@ -339,7 +339,7 @@ export default function UserProfileView() {
                   <p className="text-xs text-gray-500 mb-2">
                     Mastering Complex Concepts
                   </p>
-                  <button className="text-xs px-3 py-1 rounded-full bg-[#7077FE] text-white">
+                  <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
                     Read More
                   </button>
                 </div>
@@ -364,7 +364,7 @@ export default function UserProfileView() {
                   <p className="text-xs text-gray-500 mb-2">
                     Real-World Case Studies
                   </p>
-                  <button className="text-xs px-3 py-1 rounded-full bg-[#7077FE] text-white">
+                  <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
                     Read More
                   </button>
                 </div>
@@ -388,7 +388,7 @@ export default function UserProfileView() {
                   <p className="text-xs text-gray-500 mb-2">
                     Introduction to Fundamentals
                   </p>
-                  <button className="text-xs px-3 py-1 rounded-full bg-[#7077FE] text-white">
+                  <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
                     Read More
                   </button>
                 </div>

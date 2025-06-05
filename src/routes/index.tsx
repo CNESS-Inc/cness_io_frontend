@@ -4,12 +4,15 @@ import AppLayout from "../layout/AppLayout";
 import EmailVerify from "../components/ui/EmailVerify";
 import PaymentVerify from "../components/ui/PaymentVerify";
 import ResetPassword from "../components/ui/ResetPassword";
-import Why from "../pages/Why"; 
-// import What from "../pages/What"; 
+import Why from "../pages/Why";
+// import What from "../pages/What";
 import GenerateBadgeCode from "../pages/GenerateBadgeCode";
 import AssessmentQuestion from "../pages/AssessmentQuestion";
 import Setting from "../pages/Setting";
 import What from "../pages/What";
+import Social from "../pages/Social";
+import SinglePost from "../components/Social/SinglePost";
+import ReelsCard from "../components/Social/Reels/ReelsCard";
 import About from "../pages/About";
 
 // Lazy-loaded pages
@@ -48,12 +51,12 @@ export const router = createBrowserRouter([
       },
 
       {
-         path: "/why",
+        path: "/why",
         element: <Why />,
       },
 
       {
-         path: "/What",
+        path: "/What",
         element: <What />,
       },
        {
@@ -125,6 +128,24 @@ export const router = createBrowserRouter([
             element: <TechnologyAndAIPage />,
           },
         ],
+      },
+    ],
+  },
+  {
+    path: "social",
+    children: [
+      {
+        index: true,
+        element: <Social />,
+      },
+
+      {
+        path: "singlepost/:id",
+        element: <SinglePost />,
+      },
+      {
+        path: "reel/:id?",
+        element: <ReelsCard />,
       },
     ],
   },

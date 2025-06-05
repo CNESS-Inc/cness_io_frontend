@@ -606,7 +606,7 @@ export default function DashboardSection(user: any) {
                         </h3>
                         {!module.locked && (
                           <Button
-                            className="bg-[#7077FE] py-1 px-2 sm:py-2 sm:px-4 md:py-[8px] md:px-[20.5px] w-fit rounded-full text-xs md:text-base"
+                            className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-1 px-2 sm:py-2 sm:px-4 md:py-[8px] md:px-[20.5px] w-fit rounded-full text-xs md:text-base"
                             variant="primary"
                             withGradientOverlay
                           >
@@ -653,7 +653,7 @@ export default function DashboardSection(user: any) {
                     </span>
                   </div>
                   <Button
-                    className="bg-[#7077FE] py-1 px-3 md:py-[8px] md:px-[20.5px] rounded-full text-xs md:text-base w-fit sm:w-auto text-center"
+                    className="bg-gradient-to-r from-indigo-500 to-purple-500 py-1 px-3 md:py-[8px] md:px-[20.5px] rounded-full text-xs md:text-base w-fit sm:w-auto text-center"
                     variant="primary"
                     withGradientOverlay
                   >
