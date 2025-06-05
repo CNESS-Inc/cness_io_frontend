@@ -118,6 +118,9 @@ export const EndPoint = {
   trending_movie: "/movie/trending",
   following: "/user/following",
   connection: "/friend",
+  connection_request: "/friend/request",
+  follow: "/user/follow",
+  vote: "/poll/vote",
 };
 
 export const LoginDetails = async (formData: LoginFormData): ApiResponse => {
@@ -551,6 +554,15 @@ export const GetFollowingUser = () => {
 export const GetConnectionUser = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection);
+};
+export const SendConnectionRequest = (formattedData:any) => {
+  return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.connection_request);
+};
+export const SendFollowRequest = (formattedData:any) => {
+  return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.follow);
+};
+export const AddVote = (formattedData:any) => {
+  return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.vote);
 };
 
 export const executeAPI = async <T = any,>(

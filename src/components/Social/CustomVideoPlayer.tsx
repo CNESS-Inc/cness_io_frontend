@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {LazyLoadComponent } from "react-lazy-load-image-component";
 
 interface CustomVideoPlayerProps {
@@ -6,7 +6,8 @@ interface CustomVideoPlayerProps {
 }
 
 const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({ videoSrc }) => {
-  const [banner, setBanner] = useState<string>("");
+  console.log("🚀 ~ videoSrc:", videoSrc)
+  // const [banner, setBanner] = useState<string>("");
   return (
     <>
     <LazyLoadComponent>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FaArrowTrendUp } from "react-icons/fa6";
+import { SendFollowRequest } from "../../../Common/ServerAPI";
 
 interface FollowButtonProps {
   user_id: any;
@@ -17,11 +18,8 @@ const FollowButton: React.FC<FollowButtonProps> = ({ user_id,isFollowing }) => {
       const formattedData = {
         following_id: user_id,
       };
-      // const res = await dispatch(
-      //   apiCall("POST", "/user/follow", "follow", formattedData)
-      // );
-      // console.log("🚀 ~ handleSendConnectionRequest ~ res:", res);
-      // set_IsFollowing(res?.success?.status)
+      const res = await SendFollowRequest(formattedData)
+      set_IsFollowing(res?.success?.status)
     } catch (error) {
       console.error("Error fetching selection details:", error);
     } finally {

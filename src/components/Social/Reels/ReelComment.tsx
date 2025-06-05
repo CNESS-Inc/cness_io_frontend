@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BsFillSendFill, BsXLg } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -8,7 +8,7 @@ import LoadingSpinner from "../../ui/LoadingSpinner";
 
 const ReelComment = (props: any) => {
   const [commentText, setCommentText] = useState("");
-  const [commentData, setComentData] = useState([]);
+  const [commentData, setComentData] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [postLoading, setPostLoading] = useState(false);
 
@@ -73,7 +73,7 @@ const ReelComment = (props: any) => {
                   <LoadingSpinner/>
                 </div>
               ) : commentData?.length > 0 ? (
-                commentData.map((comment, index) => (
+                commentData.map((comment:any, index:any) => (
                   <div key={index} className="mt-2 mb-2 w-full">
                     <div className="flex items-start">
                       <Link to={""}>

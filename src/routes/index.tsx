@@ -14,6 +14,7 @@ import Social from "../pages/Social";
 import SinglePost from "../components/Social/SinglePost";
 import ReelsCard from "../components/Social/Reels/ReelsCard";
 import About from "../pages/About";
+import SocialLayout from "../layout/SocialLayout";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -133,6 +134,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "social",
+    element: <SocialLayout />,
     children: [
       {
         index: true,
@@ -140,7 +142,7 @@ export const router = createBrowserRouter([
       },
 
       {
-        path: "singlepost/:id",
+        path: "singlepost/:id?",
         element: <SinglePost />,
       },
       {
