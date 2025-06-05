@@ -16,21 +16,28 @@ const HomeHeroBackground: React.FC = () => {
     let height = (canvas.height = 692);
 
     const points: Point[] = [
-      { x: 200, y: 150 },
-      { x: width / 2, y: 500 },
-      { x: width - 200, y: 150 },
+      { x: 200, y: 150 }, // Point A (Top-Left)
+      { x: width / 2, y: 500 }, // Point B (Bottom-Center)
+      { x: width - 200, y: 150 }, // Point C (Top-Right)
     ];
 
     let progress = 0;
 
-    // Optional trace effect
-    let traceAlpha = 0;
+    // Trace & pause state
+    let traceVisible = false;
+    let traceAlpha = 0.6;
     let traceX = 0;
     let traceY = 0;
 
+    let isFadingTrace = false;
+    let traceFadeStartTime = 0;
+
+    let isPaused = false;
+    let pauseStartTime = 0;
+
     const draw = () => {
       ctx.clearRect(0, 0, width, height);
-      ctx.filter = "blur(140px)";
+      ctx.filter = "blur(100px)";
 
       const current = Math.floor(progress) % 3;
       const next = (current + 1) % 3;
@@ -39,44 +46,74 @@ const HomeHeroBackground: React.FC = () => {
       const centerX = lerp(points[current].x, points[next].x, t);
       const centerY = lerp(points[current].y, points[next].y, t);
 
-      // Optional: Show trace permanently
-      if (traceAlpha > 0) {
+      // Draw trace if visible
+      if (traceVisible) {
         ctx.globalAlpha = traceAlpha;
         ctx.beginPath();
-        ctx.arc(traceX, traceY, 300, 0, 2 * Math.PI);
+        ctx.arc(traceX, traceY, 200, 0, 2 * Math.PI);
         ctx.fillStyle = "#00d1ff";
         ctx.fill();
       }
 
-      // Active moving blobs
+      // Draw moving blobs (no bounce, fixed Y)
       const blobs = [
-        { color: "#00d1ff", x: -400 },
-        { color: "#623fff", x: 0 },
-        { color: "#ff994a", x: 400 },
+        { color: "#66e4ff", x: -400 },
+        { color: "#a18bff", x: 0 },
+        { color: "#ffc38f", x: 400 },
       ];
 
       blobs.forEach((blob) => {
         ctx.globalAlpha = 0.5;
         ctx.beginPath();
-        const jump = Math.abs(Math.sin(progress * 10)) * 30; // bounce amount
-ctx.arc(centerX + blob.x, centerY - jump, 280, 0, 2 * Math.PI);
+        ctx.arc(centerX + blob.x, centerY, 250, 0, 2 * Math.PI); // Bigger, fixed position
         ctx.fillStyle = blob.color;
         ctx.fill();
       });
 
-      // Show the trace once (optional)
-      if (traceAlpha === 0 && current === 2 && next === 0 && t < 0.02) {
-        const topRight = points[2];
-        traceX = topRight.x - 220;
-        traceY = topRight.y;
+      // Show trace at top-right corner (Point C → Point A)
+      if (!traceVisible && current === 2 && next === 0 && t < 0.02) {
+        traceX = points[2].x - 220;
+        traceY = points[2].y;
+        traceVisible = true;
         traceAlpha = 0.6;
+      }
+
+      // Start trace fade + pause at top-left (Point A → Point B)
+      if (!isPaused && !isFadingTrace && current === 0 && next === 1 && t < 0.02) {
+        isPaused = true;
+        isFadingTrace = true;
+        traceFadeStartTime = performance.now();
+        pauseStartTime = performance.now();
+      }
+
+      // Trace fading logic
+      if (isFadingTrace) {
+        const fadeElapsed = performance.now() - traceFadeStartTime;
+        traceAlpha = Math.max(0, 0.6 - (fadeElapsed / 5000) * 0.6); // Fade out over 1s
+
+        if (traceAlpha <= 0) {
+          traceVisible = false;
+          isFadingTrace = false;
+          traceAlpha = 0;
+        }
+      }
+
+      // Pause logic: wait 3s after fade before resuming
+      if (isPaused) {
+        const pauseElapsed = performance.now() - pauseStartTime;
+        if (pauseElapsed >= 1000 && !isFadingTrace) {
+          isPaused = false;
+        } else {
+          requestAnimationFrame(draw);
+          return;
+        }
       }
 
       progress += 0.008;
       requestAnimationFrame(draw);
     };
 
-    draw();
+    requestAnimationFrame(draw);
   }, []);
 
   return (

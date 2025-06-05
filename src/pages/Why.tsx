@@ -18,9 +18,9 @@ export default function Why() {
           className="absolute bottom-0 left-0 w-[660px] z-20 object-contain opacity-100 animate-fadeIn"
         />
         <div className="relative z-10 text-center px-5 sm:px-6 lg:px-8 py-16 md:py-20 max-w-4xl mx-auto">
-          <p className="poppins text-3xl sm:text-4xl md:text-5xl text-neutral-800 font-bold mb-6">
-            Why CNESS?
-          </p>
+         <h1 className="poppins text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text">
+              Why CNESS?
+            </h1>
           <p className="openSans text-base sm:text-lg md:text-xl text-neutral-600 mb-10 max-w-2xl mx-auto">
             The world's first conscious business platform — where individuals
             and organizations certify, connect, grow, and lead with integrity.
@@ -84,13 +84,13 @@ export default function Why() {
             vision of betterment of all.
           </h2>
 
-          <h3 className="text-[#7077FE] font-bold uppercase text-sm tracking-wide mb-10">
+          <h2 className="text-[#7077FE] font-bold uppercase text-3xl tracking-wide mb-10">
             Why CNESS Exists
-          </h3>
+          </h2>
         </div>
 
         {/* Card Container */}
-        <div className="bg-white rounded-3xl p-10 max-w-7xl mx-auto">
+        <div className="bg-white rounded-3xl p-12 max-w-[200rem] mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
@@ -121,7 +121,7 @@ export default function Why() {
             ].map((item, index) => (
               <div
                 key={index}
-                className="bg-[#F3F1FF] hover:shadow-xl hover:translate-y-[-4px] transition-all duration-300 rounded-2xl p-6 shadow-md border border-[#ececec] flex flex-col"
+className="group bg-white rounded-xl p-6 shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300 hover:bg-[#E8CDFD] flex flex-col gap-4 min-h-[320px] h-full"
               >
                 <h3 className="text-[20px] font-semibold text-[#232323] mb-3 openSans">
                   {item.title}
@@ -137,9 +137,9 @@ export default function Why() {
 
       <section className="bg-[#F4F1FF] py-5 px-6 sm:px-8">
         <div className="max-w-4xl mx-auto bg-white rounded-3xl p-10 shadow-md text-center">
-          <h3 className="text-base font-bold uppercase text-[#9747FF] tracking-widest mb-4">
+          <h2 className="text-2xl font-bold uppercase text-[#9747FF] tracking-widest mb-4">
             The Ultimate Why
-          </h3>
+          </h2>
 
           <p className="text-lg sm:text-xl text-gray-700 leading-relaxed openSans">
             CNESS epitomizes consciousness that is mindful, abundant &

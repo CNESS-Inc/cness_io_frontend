@@ -950,7 +950,7 @@ export default function Login() {
             <Button
               type="submit"
               onClick={() => handleTypeSelection(1)}
-              className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
+              className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
               variant="primary"
               withGradientOverlay
             >
@@ -958,7 +958,7 @@ export default function Login() {
             </Button>
             <Button
               onClick={() => handleTypeSelection(2)}
-              className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
+              className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
               variant="primary"
               withGradientOverlay
             >

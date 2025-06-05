@@ -124,7 +124,7 @@ export default function TechnologyAndAIPage() {
 <div className="w-full max-w-2xl flex items-center rounded-full bg-white shadow-sm border border-[#CBD5E1] overflow-hidden">
   <div className="relative">
           <select
-      className="bg-[#7077FE] text-white font-semibold px-5 py-2 rounded-l-full appearance-none focus:outline-none cursor-pointer w-[130px]"
+      className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold px-5 py-2 rounded-l-full appearance-none focus:outline-none cursor-pointer w-[130px]"
             value={selectedDomain}
             onChange={(e) => setSelectedDomain(e.target.value)}
           >

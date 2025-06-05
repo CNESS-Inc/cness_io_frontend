@@ -82,7 +82,7 @@ export default function MobileMenu({ isOpen }: { isOpen: boolean }) {
             )}
             {/* <li>
               <Button
-                className="w-full bg-[#7077FE] py-3 px-6 rounded-full transition-colors duration-500 ease-in-out"
+                className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 py-3 px-6 rounded-full transition-colors duration-500 ease-in-out"
                 variant="primary"
                 withGradientOverlay
                 onClick={openSignupModal}
@@ -92,7 +92,7 @@ export default function MobileMenu({ isOpen }: { isOpen: boolean }) {
             </li>
             <li>
               <Button
-                className="w-full bg-[#7077FE] py-3 px-6 rounded-full transition-colors duration-500 ease-in-out"
+                className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 py-3 px-6 rounded-full transition-colors duration-500 ease-in-out"
                 variant="primary"
                 withGradientOverlay
                 onClick={openSignupModal}
