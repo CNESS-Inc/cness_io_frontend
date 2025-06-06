@@ -403,13 +403,13 @@ export default function AllSocialPost() {
               }}
             >
               <button
-                className="flex items-center justify-center px-3 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full "
+                className="w-full sm:w-auto bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white py-3 px-6 rounded-full transition-all duration-300 hover:from-[#7077FE] hover:to-[#7077FE] shadow-md "
                 onClick={handleButtonClick}
               >
-                <span className="text-xs text-white text-nowrap font-500">
+                
                   Bring Your Awareness to Life
-                </span>
-                <div className="ml-4 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 p-2">
+               
+                {/* <div className="ml-4 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 p-2">
                   <svg
                     width="16"
                     height="16"
@@ -422,7 +422,7 @@ export default function AllSocialPost() {
                       fill="white"
                     />
                   </svg>
-                </div>
+                </div> */}
               </button>
             </div>
           </div>
@@ -732,7 +732,7 @@ export default function AllSocialPost() {
                     <button
                       disabled={disable}
                       onClick={CreatePost}
-                      className="px-6 py-2 text-white rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 font-medium focus:outline-none focus:ring-2 "
+                      className="w-full sm:w-auto bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white py-3 px-6 rounded-full transition-all duration-300 hover:from-[#7077FE] hover:to-[#7077FE] shadow-md "
                     >
                       Post
                     </button>
