@@ -1040,6 +1040,7 @@ export default function Login() {
         </div>
       </div>
 
+
       {/* Type Selection Modal - only shows when activeModal is "type" */}
       <Modal isOpen={activeModal === "type"} onClose={closeModal}>
         <div className=" p-6 rounded-lg z-10 relative">
@@ -1415,14 +1416,14 @@ export default function Login() {
                         {isSubmitting ? "Submitting..." : "Submit"}
                       </Button>
 
-                      <Button
+                      {/* <Button
                         type="button"
                         onClick={() => setOrgFormStep(3)}
                         variant="white-outline"
                         className="border border-[#7077FE] text-[#7077FE] hover:bg-[#f0f4ff]"
                       >
                         Pricing
-                      </Button>
+                      </Button> */}
                     </>
                   )}
 
