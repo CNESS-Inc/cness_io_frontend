@@ -50,7 +50,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         <div className="fixed inset-0 z-50 flex">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black bg-opacity-50"
             onClick={toggleMobileNav}
           ></div>
 

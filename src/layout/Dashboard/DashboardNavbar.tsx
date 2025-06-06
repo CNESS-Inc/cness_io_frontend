@@ -52,6 +52,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
       icon: <UploadIcon className="w-5 h-5" />,
       label: "Upload Proof",
       active: false,
+      path: "/dashboard/upload-proof",
     },
     {
       icon: <FileBarChartIcon className="w-5 h-5" />,
@@ -63,11 +64,13 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
       icon: <GraduationCapIcon className="w-5 h-5" />,
       label: "Learning Lab (LMS)",
       active: false,
+      path: "/dashboard/learning-lab",
     },
     {
       icon: <BadgePlusIcon className="w-5 h-5" />,
       label: "Upgrade Badge",
       active: false,
+      path: "/dashboard/upgrade-badge",
     },
     {
       icon: <BadgePlusIcon className="w-5 h-5" />,
@@ -79,6 +82,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
       icon: <UserIcon className="w-5 h-5" />,
       label: "Directory Profile",
       active: false,
+      path: "/dashboard/directory-profile",
     },
   ];
 
@@ -88,6 +92,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
       label: "Notifications",
       active: false,
       hasNotification: true,
+      path: "/dashboard/notification",
     },
     {
       icon: <SettingsIcon className="w-5 h-5" />,
@@ -99,6 +104,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
       icon: <HelpCircleIcon className="w-5 h-5" />,
       label: "Support",
       active: false,
+      path: "/dashboard/support",
     },
     {
       icon: <LogOutIcon className="w-5 h-5" />,
@@ -113,7 +119,6 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
       {/* Mobile Overlay */}
       {isMobileNavOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
           onClick={toggleMobileNav}
         />
       )}

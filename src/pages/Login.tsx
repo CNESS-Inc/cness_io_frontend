@@ -34,6 +34,17 @@ interface OrganizationForm {
     answer: string;
   }>;
 }
+
+interface PersonForm {
+  first_name: string;
+  last_name: string;
+  interest: string;
+  profession: string;
+  question: Array<{
+    question_id: string;
+    answer: string;
+  }>;
+}
 type PartialOrganizationFormData = Partial<OrganizationForm>;
 
 interface AuthResponse {
@@ -111,6 +122,10 @@ export default function Login() {
   const [, setAuthenticated] = useState<boolean>(
     localStorage.getItem("authenticated") === "true"
   );
+  const [orgFormStep, setOrgFormStep] = useState(1); // 1 = Basic Info, 2 = Questions
+  const [personFormStep, setPersonFormStep] = useState(1);
+  console.log("🚀 ~ Login ~ personFormStep:", personFormStep);
+
   const [activeModal, setActiveModal] = useState<
     | "type"
     | "organization"
@@ -133,14 +148,23 @@ export default function Login() {
     revenue: "",
     question: [], // Changed from 'question' to 'questions' to match interface
   });
+  const [personForm, setPersonForm] = useState<PersonForm>({
+    first_name: "",
+    last_name: "",
+    interest: "",
+    profession: "",
+    question: [],
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [subDomain, setsubDomain] = useState<SubDomain[] | null>();
-  const [isAnnual, setIsAnnual] = useState(false);
+  const [isAnnual, setIsAnnual] = useState(true);
   const [personPricing, setPersonPricing] = useState<PersPricingPlan[]>([]);
   const [organizationpricingPlans, setorganizationpricingPlans] = useState<
     OrgPricingPlan[]
   >([]);
   const [domains, setDomains] = useState([]);
+  const [interest, setInterest] = useState([]);
+  const [profession, setProfession] = useState([]);
   const [revenue, setRevenue] = useState([]);
   const [OrganizationSize, setOrganizationSize] = useState([]);
   const [readlineQuestion, setReadlineQuestion] = useState([]);
@@ -151,6 +175,8 @@ export default function Login() {
   const [personErrors, setPersonErrors] = useState<FormErrors>({});
   const [resetPasswordErrors] = useState<FormErrors>({});
   const [apiMessage, setApiMessage] = useState<string | null>(null);
+  const [isOrgFormSubmitted, setIsOrgFormSubmitted] = useState(false);
+  console.log("🚀 ~ Login ~ isOrgFormSubmitted:", isOrgFormSubmitted);
 
   const validatePassword = (password: string): string | undefined => {
     if (!password) return "Password is required";
@@ -202,13 +228,14 @@ export default function Login() {
 
   const validateForm = (
     formData: any,
-    formType: "login" | "organization" | "person" | "forgotpassword"
+    formType: "login" | "organization" | "person" | "forgotpassword",
+    step?: number,
+    setErrors?: boolean
   ): boolean => {
     let isValid = true;
     const newErrors: FormErrors = {};
 
     if (formType === "login") {
-      // Validate email
       const emailError = validateField("email", formData.email, {
         required: true,
         pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -218,7 +245,6 @@ export default function Login() {
         isValid = false;
       }
 
-      // Validate password
       const passwordError = validateField("password", formData.password, {
         required: true,
         minLength: 6,
@@ -229,68 +255,92 @@ export default function Login() {
       }
 
       setLoginErrors(newErrors);
-    } else if (formType === "organization") {
-      // Validate organization fields
-      const requiredFields = [
-        "organization_name",
-        "domain",
-        "sub_domain",
-        "employee_size",
-        "revenue",
-      ];
+    }
 
-      requiredFields.forEach((field) => {
-        const error = validateField(
-          field,
-          organizationForm[field as keyof OrganizationForm] as string,
-          {
+    if (formType === "organization") {
+      // Always validate step 1 fields if we're on step 1 or validating all steps
+      if (step === 1) {
+        const requiredFields = [
+          "organization_name",
+          "domain",
+          "sub_domain",
+          "employee_size",
+          "revenue",
+        ];
+
+        requiredFields.forEach((field) => {
+          const error = validateField(field, formData[field], {
             required: true,
+          });
+          if (error) {
+            newErrors[field] = error;
+            isValid = false;
           }
-        );
-        if (error) {
-          newErrors[field] = error;
-          isValid = false;
-        }
-      });
-
-      // Validate questions
-      readlineQuestion.forEach((question: any, index) => {
-        const answer =
-          organizationForm.question.find(
-            (q: QuestionAnswer) => q.question_id === question.id
-          )?.answer || "";
-
-        const error = validateField(`question_${index + 1}`, answer, {
-          required: true,
         });
+      }
 
-        if (error) {
-          newErrors[`question_${index + 1}`] = error;
-          isValid = false;
-        }
-      });
+      // Only validate questions when submitting (validateAllSteps = true)
+      if (step === 2) {
+        readlineQuestion.forEach((question: any) => {
+          const answer =
+            formData.question?.find(
+              (q: QuestionAnswer) => q.question_id === question.id
+            )?.answer || "";
 
-      setOrganizationErrors(newErrors);
-    } else if (formType === "person") {
-      // Validate person questions
-      readlineQuestion.forEach((question: any, index) => {
-        const answer =
-          organizationForm.question.find(
-            (q: QuestionAnswer) => q.question_id === question.id
-          )?.answer || "";
-
-        const error = validateField(`question_${index + 1}`, answer, {
-          required: true,
+          if (!answer || answer.trim() === "") {
+            newErrors[`question_${question.id}`] = "This Field is required";
+            isValid = false;
+          }
         });
+      }
 
-        if (error) {
-          newErrors[`question_${index + 1}`] = error;
-          isValid = false;
-        }
-      });
+      if (setErrors) {
+        console.log("🚀 ~ Login ~ setErrors:", setErrors);
+        setOrganizationErrors(newErrors);
+      }
+      return isValid;
+    }
 
-      setPersonErrors(newErrors);
-    } else if (formType === "forgotpassword") {
+    if (formType === "person") {
+      // Always validate step 1 fields if we're on step 1 or validating all steps
+      if (step === 1) {
+        const requiredFields: Array<
+          "first_name" | "last_name" | "interest" | "profession"
+        > = ["first_name", "last_name", "interest", "profession"];
+
+        requiredFields.forEach((field) => {
+          const error = validateField(field, formData[field], {
+            required: true,
+          });
+          if (error) {
+            newErrors[field] = error;
+            isValid = false;
+          }
+        });
+      }
+
+      // Only validate questions when submitting (step 2) or validating all steps
+      if (step === 2) {
+        readlineQuestion.forEach((question: any) => {
+          const answer =
+            formData.question?.find(
+              (q: QuestionAnswer) => q.question_id === question.id
+            )?.answer || "";
+
+          if (!answer || answer.trim() === "") {
+            newErrors[`question_${question.id}`] = "This field is required";
+            isValid = false;
+          }
+        });
+      }
+
+      if (setErrors) {
+        setPersonErrors(newErrors);
+      }
+      return isValid;
+    }
+
+    if (formType === "forgotpassword") {
       const emailError = validateField("email", formData.email, {
         required: true,
         pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -302,6 +352,26 @@ export default function Login() {
     }
 
     return isValid;
+  };
+
+  const handleNextClick = () => {
+    // Only validate step 1 fields when clicking next
+    const isValid = validateForm(organizationForm, "organization", 1, true);
+
+    if (isValid) {
+      setOrgFormStep(2);
+      setOrganizationErrors({});
+    }
+  };
+  const handleNextPersonClick = () => {
+    // Only validate step 1 fields when clicking next
+    const isValid = validateForm(personForm, "person", 1, true);
+    console.log("🚀 ~ handleNextPersonClick ~ isValid:", isValid);
+
+    if (isValid) {
+      setPersonFormStep(2);
+      setOrganizationErrors({});
+    }
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -349,10 +419,7 @@ export default function Login() {
           "profile_picture",
           response?.data?.data?.user.profile_picture
         );
-        localStorage.setItem(
-          "name",
-          response?.data?.data?.user.name
-        );
+        localStorage.setItem("name", response?.data?.data?.user.name);
 
         const completionStatus =
           response.data.data.user.person_organization_complete;
@@ -567,16 +634,12 @@ export default function Login() {
 
   const handleOrganizationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsOrgFormSubmitted(true);
+    // Validate all fields (both steps) when submitting
+    const isValid = validateForm(organizationForm, "organization", 2, true);
 
-    if (!validateForm(organizationForm, "organization")) {
-      return;
-    }
-
+    if (!isValid) return;
     setIsSubmitting(true);
-    console.log(
-      "🚀 ~ handleOrganizationSubmit ~ organizationForm:",
-      organizationForm
-    );
     try {
       const res = await submitOrganizationDetails(organizationForm);
       localStorage.setItem("person_organization", "2");
@@ -638,16 +701,13 @@ export default function Login() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    if (!validateForm(organizationForm, "person")) {
+    if (!validateForm(personForm, "person", 2, true)) {
       setIsSubmitting(false);
       return;
     }
 
     try {
-      const question_payload: PartialOrganizationFormData = {
-        question: organizationForm.question,
-      };
-      const res = await submitPersonDetails(question_payload as any);
+      const res = await submitPersonDetails(personForm as any);
       localStorage.setItem("person_organization", "1");
       localStorage.setItem("completed_step", "1");
       // Group plans by their range (Basic Plan, Pro Plan, etc.)
@@ -702,6 +762,45 @@ export default function Login() {
     }
   };
 
+  const handlePersonFormChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+
+    if (name.startsWith("question_")) {
+      const questionId = name.replace("question_", "");
+      setPersonForm((prev) => {
+        const existingQuestionIndex = prev.question.findIndex(
+          (q) => q.question_id === questionId
+        );
+
+        if (existingQuestionIndex >= 0) {
+          const updatedQuestions = [...prev.question];
+          updatedQuestions[existingQuestionIndex] = {
+            question_id: questionId,
+            answer: value,
+          };
+          return { ...prev, question: updatedQuestions };
+        } else {
+          return {
+            ...prev,
+            question: [
+              ...prev.question,
+              { question_id: questionId, answer: value },
+            ],
+          };
+        }
+      });
+    } else {
+      setPersonForm((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+
   useEffect(() => {
     if (personPricing.length > 0) {
       const updatedPlans = personPricing.map((plan: any) => ({
@@ -722,12 +821,15 @@ export default function Login() {
 
   const closeModal = () => {
     setActiveModal(null);
+    setApiMessage(null)
   };
 
   const fetchAllDataDetails = async () => {
     try {
       const response = await GetAllFormDetails();
       setDomains((response as any)?.data?.data?.domain);
+      setProfession((response as any)?.data?.data?.profession);
+      setInterest((response as any)?.data?.data?.interest);
       setReadlineQuestion(response?.data?.data?.questions);
       setOrganizationSize(response?.data?.data?.organization_size);
       setRevenue(response?.data?.data?.revenue);
@@ -759,9 +861,9 @@ export default function Login() {
     }
   };
 
-  // const onForgotPassword = () => {
-  //   setActiveModal("forgotpassword");
-  // };
+  const onForgotPassword = () => {
+    setActiveModal("forgotpassword");
+  };
 
   const handleforgot = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -812,7 +914,6 @@ export default function Login() {
       }
     }
   };
-  
 
   return (
     <>
@@ -908,24 +1009,27 @@ export default function Login() {
                     Remember me on this device
                   </span>
                 </label>
-                <a href="#" className="text-[#7F57FC] hover:underline">
+                <a href="#" className="text-[#7F57FC] hover:underline" onClick={onForgotPassword}>
                   Trouble logging in? Reset password
                 </a>
               </div>
 
-              <button
+              <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-blue-600 via-purple-700 to-blue-600 text-white font-semibold py-2 rounded-full shadow-md transition duration-200 hover:from-blue-500 hover:to-blue-500"
+                variant="gradient-primary"
+                withGradientOverlay
+                className="w-full py-2"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Loging..." : "Login"}
-              </button>
+              </Button>
 
               <div className="text-center text-sm text-gray-500">OR</div>
 
               <p className="text-center text-sm text-gray-600 mt-4">
                 New to Cness?{" "}
-                <Link to={"/sign-up"}
+                <Link
+                  to={"/sign-up"}
                   className="text-[#7F57FC] font-medium hover:underline"
                 >
                   Create account
@@ -939,10 +1043,10 @@ export default function Login() {
       {/* Type Selection Modal - only shows when activeModal is "type" */}
       <Modal isOpen={activeModal === "type"} onClose={closeModal}>
         <div className=" p-6 rounded-lg z-10 relative">
-          <h2 className="text-xl poppins font-bold mb-4">
+          <h2 className="text-2xl font-bold text-gray-800 mb-3">
             Select Account Type
           </h2>
-          <p className="mb-6 openSans">
+          <p className="text-base text-gray-600 mb-6">
             Please choose whether you're signing up as an individual or an
             organization.
           </p>
@@ -950,17 +1054,13 @@ export default function Login() {
             <Button
               type="submit"
               onClick={() => handleTypeSelection(1)}
-              className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
-              variant="primary"
-              withGradientOverlay
+              className="w-full sm:w-auto bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white py-3 px-6 rounded-full transition-all duration-300 hover:from-[#7077FE] hover:to-[#7077FE] shadow-md"
             >
               Person
             </Button>
             <Button
               onClick={() => handleTypeSelection(2)}
-              className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
-              variant="primary"
-              withGradientOverlay
+              className="w-full sm:w-auto bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white py-3 px-6 rounded-full transition-all duration-300 hover:from-[#7077FE] hover:to-[#7077FE] shadow-md"
             >
               Organization
             </Button>
@@ -970,383 +1070,819 @@ export default function Login() {
 
       {/* Organization Form Modal - only shows when activeModal is "organization" */}
       <Modal isOpen={activeModal === "organization"} onClose={closeModal}>
-        <div className=" p-6 rounded-lg z-10 relative">
-          <h2 className="text-xl poppins font-bold mb-4">
-            Organization Information
-          </h2>
-          <form onSubmit={handleOrganizationSubmit}>
-            {/* Organization Name */}
-            <div className="mb-4">
-              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
-                Organization Name*
-              </label>
-              <input
-                type="text"
-                name="organization_name"
-                value={organizationForm.organization_name}
-                onChange={handleOrganizationFormChange}
-                className={`w-full px-3 py-2 border ${
-                  organizationErrors.organization_name
-                    ? "border-red-500"
-                    : "border-gray-300"
-                } rounded-md`}
-                placeholder="Enter organization name"
-              />
-              {organizationErrors.organization_name && (
-                <p className="mt-1 text-sm text-red-600">
-                  {organizationErrors.organization_name}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-4">
+          {" "}
+          {/* Ensures center + padding on small screens */}
+          <div className="w-full max-w-[1100px] h-[80vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+            {/* LEFT PANEL */}
+            <div className="bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex flex-col items-center justify-center text-center p-10">
+              <div>
+                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-15 h-15 text-gray-700"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="3"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <circle
+                      cx="4.5"
+                      cy="4.5"
+                      r="2"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <circle
+                      cx="19.5"
+                      cy="4.5"
+                      r="2"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <circle
+                      cx="4.5"
+                      cy="19.5"
+                      r="2"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <circle
+                      cx="19.5"
+                      cy="19.5"
+                      r="2"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <line
+                      x1="12"
+                      y1="12"
+                      x2="4.5"
+                      y2="4.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <line
+                      x1="12"
+                      y1="12"
+                      x2="19.5"
+                      y2="4.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <line
+                      x1="12"
+                      y1="12"
+                      x2="4.5"
+                      y2="19.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <line
+                      x1="12"
+                      y1="12"
+                      x2="19.5"
+                      y2="19.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                  </svg>
+                </div>
+
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                  Let’s Get to Know Your Organization
+                </h2>
+                <p className="text-gray-900 text-sm">
+                  This information helps us understand your conscious impact
+                  better.
                 </p>
-              )}
+              </div>
             </div>
 
-            <div className="mb-4">
-              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
-                Domain*
-              </label>
-              <select
-                name="domain"
-                value={organizationForm.domain}
-                onChange={handleOrganizationFormChange}
-                className={`w-full px-3 py-2 border ${
-                  organizationErrors.domain
-                    ? "border-red-500"
-                    : "border-gray-300"
-                } rounded-md`}
-              >
-                <option value="">Select domain</option>
-                {domains?.map((domain: any) => (
-                  <option key={domain.id} value={domain.id}>
-                    {domain.name}
-                  </option>
-                ))}
-              </select>
-              {organizationErrors.domain && (
-                <p className="mt-1 text-sm text-red-600">
-                  {organizationErrors.domain}
-                </p>
-              )}
-            </div>
+            {/* Right Form Panel */}
+            <div className="w-full lg:w-[60%] bg-white p-6 md:p-10 overflow-y-auto">
+              <h2 className="text-xl font-bold text-gray-800 mb-6">
+                Let’s Set Up Your Organization
+              </h2>
 
-            {/* Sub Domain */}
-            <div className="mb-4">
-              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
-                Sub Domain
-              </label>
-              <select
-                name="sub_domain"
-                value={organizationForm.sub_domain}
-                onChange={handleOrganizationFormChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              >
-                <>
-                  <option value="">Select Sub domain</option>
-                  {subDomain?.map((subdomain: any) => (
-                    <option key={subdomain.id} value={subdomain.id}>
-                      {subdomain.name}
-                    </option>
-                  ))}
-                </>
-              </select>
-              {organizationErrors.sub_domain && (
-                <p className="mt-1 text-sm text-red-600">
-                  {organizationErrors.sub_domain}
-                </p>
-              )}
-            </div>
-
-            {/* Employees Size */}
-            <div className="mb-4">
-              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
-                Employees Size*
-              </label>
-              <select
-                name="employee_size"
-                value={organizationForm.employee_size}
-                onChange={handleOrganizationFormChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              >
-                <>
-                  <option value="">Select Employee Size</option>
-                  {OrganizationSize?.map((orgsize: any) => (
-                    <option key={orgsize.id} value={orgsize.id}>
-                      {orgsize.name}
-                    </option>
-                  ))}
-                </>
-              </select>
-              {organizationErrors.employee_size && (
-                <p className="mt-1 text-sm text-red-600">
-                  {organizationErrors.employee_size}
-                </p>
-              )}
-            </div>
-
-            {/* Revenue */}
-            <div className="mb-4">
-              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
-                Revenue*
-              </label>
-              <select
-                name="revenue"
-                value={organizationForm.revenue}
-                onChange={handleOrganizationFormChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              >
-                <>
-                  <option value="">Select Revenue Range</option>
-                  {revenue?.map((revenue: any) => (
-                    <option key={revenue.id} value={revenue.id}>
-                      {revenue.revenue_range}
-                    </option>
-                  ))}
-                </>
-              </select>
-              {organizationErrors.revenue && (
-                <p className="mt-1 text-sm text-red-600">
-                  {organizationErrors.revenue}
-                </p>
-              )}
-            </div>
-
-            {/* Questions with options as radio buttons */}
-            <div className="space-y-4">
-              {readlineQuestion?.map((question: any, index) => {
-                const existingAnswer =
-                  organizationForm.question.find(
-                    (q: QuestionAnswer) => q.question_id === question.id
-                  )?.answer || "";
-
-                return (
-                  <div key={question.id} className="mb-4">
-                    <label className="block openSans text-sm font-medium text-gray-700 mb-1">
-                      {question.question}
-                    </label>
-
-                    {question.options && question.options.length > 0 ? (
-                      <div className="space-y-2">
-                        {question.options.map((option: any) => (
-                          <div key={option.id} className="flex items-center">
-                            <input
-                              type="radio"
-                              id={`question_${question.id}_${option.id}`}
-                              name={`question_${question.id}`}
-                              value={option.option}
-                              checked={existingAnswer === option.option}
-                              onChange={handleOrganizationFormChange}
-                              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
-                            />
-                            <label
-                              htmlFor={`question_${question.id}_${option.id}`}
-                              className="ml-3 block openSans text-sm text-gray-700"
-                            >
-                              {option.option}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <textarea
-                        name={`question_${question.id}`}
-                        value={existingAnswer}
+              <form onSubmit={handleOrganizationSubmit} className="space-y-6">
+                {orgFormStep === 1 && (
+                  <>
+                    {/* Organization Name */}
+                    <div className="space-y-5">
+                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                        Organization Name*
+                      </label>
+                      <input
+                        type="text"
+                        name="organization_name"
+                        value={organizationForm.organization_name}
                         onChange={handleOrganizationFormChange}
                         className={`w-full px-3 py-2 border ${
-                          organizationErrors[`question_${index + 1}`]
+                          organizationErrors.organization_name
                             ? "border-red-500"
                             : "border-gray-300"
                         } rounded-md`}
-                        placeholder={`Enter your answer`}
-                        rows={3}
+                        placeholder="Enter organization name"
                       />
-                    )}
+                      {organizationErrors.organization_name && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {organizationErrors.organization_name}
+                        </p>
+                      )}
+                    </div>
 
-                    {organizationErrors[`question_${index + 1}`] && (
-                      <p className="mt-1 text-sm text-red-600">
-                        {organizationErrors[`question_${index + 1}`]}
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                    <div className="mb-4">
+                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                        Domain*
+                      </label>
+                      <select
+                        name="domain"
+                        value={organizationForm.domain}
+                        onChange={handleOrganizationFormChange}
+                        className={`w-full px-3 py-2 border ${
+                          organizationErrors.domain
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        } rounded-md`}
+                      >
+                        <option value="">Select domain</option>
+                        {domains?.map((domain: any) => (
+                          <option key={domain.id} value={domain.id}>
+                            {domain.name}
+                          </option>
+                        ))}
+                      </select>
+                      {organizationErrors.domain && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {organizationErrors.domain}
+                        </p>
+                      )}
+                    </div>
 
-            <div className="flex justify-end mt-6 gap-3">
-              <Button
-                type="button"
-                onClick={closeModal}
-                variant="white-outline"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="gradient-primary"
-                className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Submitting..." : "Submit"}
-              </Button>
+                    {/* Sub Domain */}
+                    <div className="mb-4">
+                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                        Sub Domain
+                      </label>
+                      <select
+                        name="sub_domain"
+                        value={organizationForm.sub_domain}
+                        onChange={handleOrganizationFormChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      >
+                        <>
+                          <option value="">Select Sub domain</option>
+                          {subDomain?.map((subdomain: any) => (
+                            <option key={subdomain.id} value={subdomain.id}>
+                              {subdomain.name}
+                            </option>
+                          ))}
+                        </>
+                      </select>
+                      {organizationErrors.sub_domain && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {organizationErrors.sub_domain}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Employees Size */}
+                    <div className="mb-4">
+                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                        Employees Size*
+                      </label>
+                      <select
+                        name="employee_size"
+                        value={organizationForm.employee_size}
+                        onChange={handleOrganizationFormChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      >
+                        <>
+                          <option value="">Select Employee Size</option>
+                          {OrganizationSize?.map((orgsize: any) => (
+                            <option key={orgsize.id} value={orgsize.id}>
+                              {orgsize.name}
+                            </option>
+                          ))}
+                        </>
+                      </select>
+                      {organizationErrors.employee_size && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {organizationErrors.employee_size}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Revenue */}
+                    <div className="mb-4">
+                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                        Revenue*
+                      </label>
+                      <select
+                        name="revenue"
+                        value={organizationForm.revenue}
+                        onChange={handleOrganizationFormChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      >
+                        <>
+                          <option value="">Select Revenue Range</option>
+                          {revenue?.map((revenue: any) => (
+                            <option key={revenue.id} value={revenue.id}>
+                              {revenue.revenue_range}
+                            </option>
+                          ))}
+                        </>
+                      </select>
+                      {organizationErrors.revenue && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {organizationErrors.revenue}
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {orgFormStep === 2 && (
+                  <>
+                    {/* Questions with options as radio buttons */}
+                    <div className="space-y-4">
+                      {readlineQuestion?.map((question: any) => {
+                        const existingAnswer =
+                          organizationForm.question.find(
+                            (q: QuestionAnswer) => q.question_id === question.id
+                          )?.answer || "";
+
+                        return (
+                          <div key={question.id} className="mb-4">
+                            <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                              {question.question}
+                            </label>
+
+                            {question.options && question.options.length > 0 ? (
+                              <div className="space-y-2">
+                                {question.options.map((option: any) => (
+                                  <div
+                                    key={option.id}
+                                    className="flex items-center"
+                                  >
+                                    <input
+                                      type="radio"
+                                      id={`question_${question.id}_${option.id}`}
+                                      name={`question_${question.id}`}
+                                      value={option.option}
+                                      checked={existingAnswer === option.option}
+                                      onChange={handleOrganizationFormChange}
+                                      className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 flex-shrink-0 peer-checked:border-transparent peer-checked:bg-gradient-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
+                                    />
+                                    <label
+                                      htmlFor={`question_${question.id}_${option.id}`}
+                                      className="ml-3 block openSans text-base text-gray-700"
+                                    >
+                                      {option.option}
+                                    </label>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <textarea
+                                name={`question_${question.id}`}
+                                value={existingAnswer}
+                                onChange={handleOrganizationFormChange}
+                                className={`w-full px-3 py-2 border ${
+                                  organizationErrors[`question_${question.id}`]
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-md`}
+                                placeholder={`Enter your answer`}
+                                rows={3}
+                              />
+                            )}
+
+                            {isOrgFormSubmitted &&
+                              organizationErrors[`question_${question.id}`] && (
+                                <p className="mt-1 text-sm text-red-600">
+                                  {
+                                    organizationErrors[
+                                      `question_${question.id}`
+                                    ]
+                                  }
+                                </p>
+                              )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+                {/* Form Footer Actions */}
+
+                {/* Form Footer Actions */}
+                <div className="flex justify-end mt-6 gap-3">
+                  {orgFormStep === 2 && (
+                    <>
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          setOrgFormStep(1);
+                          setOrganizationErrors({});
+                        }}
+                        variant="white-outline"
+                      >
+                        Back
+                      </Button>
+
+                      <Button
+                        type="button"
+                        onClick={closeModal}
+                        variant="white-outline"
+                      >
+                        Cancel
+                      </Button>
+
+                      <Button
+                        type="submit"
+                        variant="gradient-primary"
+                        className="rounded-full py-3 px-8 transition-all"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? "Submitting..." : "Submit"}
+                      </Button>
+
+                      <Button
+                        type="button"
+                        onClick={() => setOrgFormStep(3)}
+                        variant="white-outline"
+                        className="border border-[#7077FE] text-[#7077FE] hover:bg-[#f0f4ff]"
+                      >
+                        Pricing
+                      </Button>
+                    </>
+                  )}
+
+                  {orgFormStep === 1 && (
+                    <>
+                      <Button
+                        type="button"
+                        onClick={closeModal}
+                        variant="white-outline"
+                      >
+                        Cancel
+                      </Button>
+
+                      <Button
+                        type="button"
+                        onClick={handleNextClick}
+                        variant="gradient-primary"
+                        className="rounded-full py-3 px-8 transition-all"
+                      >
+                        Next
+                      </Button>
+                    </>
+                  )}
+                </div>
+
+                {/* Dummy Pricing */}
+                {orgFormStep === 3 && (
+                  <>
+                    <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">
+                      🌟 Choose Your Plan
+                    </h2>
+
+                    <div className="flex justify-center">
+                      <div className="relative w-full max-w-sm p-8 rounded-3xl border border-violet-300 shadow-xl bg-white hover:shadow-2xl transition-all duration-300">
+                        {/* Ribbon */}
+                        <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-3 py-1 rounded-bl-xl rounded-tr-3xl font-semibold shadow-md">
+                          Popular
+                        </div>
+
+                        {/* Plan Info */}
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                          Starter Plan
+                        </h3>
+                        <p className="text-sm text-gray-600 mb-6">
+                          Perfect for small conscious teams
+                        </p>
+
+                        <div className="text-center mb-6">
+                          <span className="text-4xl font-extrabold text-gray-900">
+                            $36
+                          </span>
+                          <span className="text-sm text-gray-500 ml-1">
+                            /month
+                          </span>
+                        </div>
+
+                        {/* CTA */}
+                        <div className="flex justify-center">
+                          <Button
+                            variant="gradient-primary"
+                            className="rounded-full py-3 px-8 text-white shadow-lg hover:opacity-90 transition"
+                            onClick={() => closeModal()} // or navigate("/dashboard")
+                          >
+                            Get Started
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </form>
             </div>
-          </form>
+          </div>
         </div>
       </Modal>
 
       <Modal isOpen={activeModal === "person"} onClose={closeModal}>
-        <div className="p-6 rounded-lg w-full mx-auto z-10 relative">
-          <h2 className="text-xl poppins font-bold mb-4">Person Information</h2>
-          <form onSubmit={handlePersonSubmit}>
-            {/* Questions */}
-            {readlineQuestion.map((question: any, index) => {
-              const existingAnswer =
-                organizationForm.question.find(
-                  (q: QuestionAnswer) => q.question_id === question.id
-                )?.answer || "";
-
-              return (
-                <div key={question.id} className="mb-4">
-                  <label className="block openSans text-sm font-medium text-gray-700 mb-1">
-                    {question.question}
-                  </label>
-
-                  {/* Render radio buttons if options exist, otherwise render textarea */}
-                  {question.options && question.options.length > 0 ? (
-                    <div className="space-y-2">
-                      {question.options.map((option: any) => (
-                        <div key={option.id} className="flex items-center">
-                          <input
-                            type="radio"
-                            id={`option_${option.id}`}
-                            name={`question_${question.id}`}
-                            value={option.option}
-                            checked={existingAnswer === option.option}
-                            onChange={handleOrganizationFormChange}
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                          />
-                          <label
-                            htmlFor={`option_${option.id}`}
-                            className="ml-3 block text-sm font-medium text-gray-700"
-                          >
-                            {option.option}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <textarea
-                      name={`question_${question.id}`}
-                      value={existingAnswer}
-                      onChange={handleOrganizationFormChange}
-                      className={`w-full px-3 py-2 border ${
-                        personErrors[`question_${index + 1}`]
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      } rounded-md`}
-                      placeholder={`Enter your answer`}
-                      rows={3}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-4">
+          <div className="w-full max-w-[1100px] h-[80vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+            {/* LEFT PANEL */}
+            <div className="bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex flex-col items-center justify-center text-center p-10">
+              <div>
+                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-15 h-15 text-gray-700"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                     />
+                  </svg>
+                </div>
+
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                  Let's Get to Know You Better
+                </h2>
+                <p className="text-gray-900 text-sm">
+                  This information helps us understand your conscious impact
+                  better.
+                </p>
+              </div>
+            </div>
+
+            {/* Right Form Panel */}
+            <div className="w-full lg:w-[60%] bg-white p-6 md:p-10 overflow-y-auto">
+              <h2 className="text-xl font-bold text-gray-800 mb-6">
+                Tell Us About Yourself
+              </h2>
+              <form onSubmit={handlePersonSubmit} className="space-y-6">
+                {/* Step 1 - Basic Information */}
+                {personFormStep === 1 && (
+                  <>
+                    <div className="mb-4">
+                      <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                        First Name*
+                      </label>
+                      <input
+                        type="text"
+                        name="first_name"
+                        value={personForm.first_name}
+                        onChange={handlePersonFormChange}
+                        className={`w-full px-3 py-2 border ${
+                          personErrors.first_name
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        } rounded-md`}
+                        placeholder="Enter your first name"
+                      />
+                      {personErrors.first_name && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {personErrors.first_name}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                        Last Name*
+                      </label>
+                      <input
+                        type="text"
+                        name="last_name"
+                        value={personForm.last_name}
+                        onChange={handlePersonFormChange}
+                        className={`w-full px-3 py-2 border ${
+                          personErrors.last_name
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        } rounded-md`}
+                        placeholder="Enter your last name"
+                      />
+                      {personErrors.last_name && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {personErrors.last_name}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                        Interest*
+                      </label>
+                      <select
+                        name="interest"
+                        value={personForm.interest}
+                        onChange={handlePersonFormChange}
+                        className={`w-full px-3 py-2 border ${
+                          personErrors.interest
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        } rounded-md`}
+                      >
+                        <option value="">Select your interest</option>
+                        {interest?.map((interest: any) => (
+                          <option key={interest.id} value={interest.id}>
+                            {interest.name}
+                          </option>
+                        ))}
+                      </select>
+                      {personErrors.interest && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {personErrors.interest}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                        Profession*
+                      </label>
+                      <select
+                        name="profession"
+                        value={personForm.profession}
+                        onChange={handlePersonFormChange}
+                        className={`w-full px-3 py-2 border ${
+                          personErrors.profession
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        } rounded-md`}
+                      >
+                        <option value="">Select your profession</option>
+                        {profession?.map((profession: any) => (
+                          <option key={profession.id} value={profession.id}>
+                            {profession.title}
+                          </option>
+                        ))}
+                      </select>
+                      {personErrors.profession && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {personErrors.profession}
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {/* Step 2 - Questions */}
+                {personFormStep === 2 && (
+                  <>
+                    <div className="space-y-4">
+                      {readlineQuestion?.map((question: any) => {
+                        const existingAnswer =
+                          personForm.question.find(
+                            (q: QuestionAnswer) => q.question_id === question.id
+                          )?.answer || "";
+
+                        return (
+                          <div key={question.id} className="mb-4">
+                            <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                              {question.question}
+                            </label>
+
+                            {question.options && question.options.length > 0 ? (
+                              <div className="space-y-2">
+                                {question.options.map((option: any) => (
+                                  <div
+                                    key={option.id}
+                                    className="flex items-center"
+                                  >
+                                    <input
+                                      type="radio"
+                                      id={`question_${question.id}_${option.id}`}
+                                      name={`question_${question.id}`}
+                                      value={option.option}
+                                      checked={existingAnswer === option.option}
+                                      onChange={handlePersonFormChange}
+                                      className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 flex-shrink-0 peer-checked:border-transparent peer-checked:bg-gradient-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
+                                    />
+                                    <label
+                                      htmlFor={`question_${question.id}_${option.id}`}
+                                      className="ml-3 block openSans text-base text-gray-700"
+                                    >
+                                      {option.option}
+                                    </label>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <textarea
+                                name={`question_${question.id}`}
+                                value={existingAnswer}
+                                onChange={handlePersonFormChange}
+                                className={`w-full px-3 py-2 border ${
+                                  personErrors[`question_${question.id}`]
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-md`}
+                                placeholder={`Enter your answer`}
+                                rows={3}
+                              />
+                            )}
+
+                            {personErrors[`question_${question.id}`] && (
+                              <p className="mt-1 text-sm text-red-600">
+                                {personErrors[`question_${question.id}`]}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+
+                {/* Form Footer Actions */}
+                <div className="flex justify-end mt-6 gap-3">
+                  {personFormStep === 2 && (
+                    <>
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          setPersonFormStep(1);
+                          setPersonErrors({});
+                        }}
+                        variant="white-outline"
+                      >
+                        Back
+                      </Button>
+
+                      <Button
+                        type="button"
+                        onClick={closeModal}
+                        variant="white-outline"
+                      >
+                        Cancel
+                      </Button>
+
+                      <Button
+                        type="submit"
+                        variant="gradient-primary"
+                        className="rounded-full py-3 px-8 transition-all"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? "Submitting..." : "Submit"}
+                      </Button>
+                    </>
                   )}
 
-                  {personErrors[`question_${index + 1}`] && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {personErrors[`question_${index + 1}`]}
-                    </p>
+                  {personFormStep === 1 && (
+                    <>
+                      <Button
+                        type="button"
+                        onClick={closeModal}
+                        variant="white-outline"
+                      >
+                        Cancel
+                      </Button>
+
+                      <Button
+                        type="button"
+                        onClick={handleNextPersonClick}
+                        variant="gradient-primary"
+                        className="rounded-full py-3 px-8 transition-all"
+                      >
+                        Next
+                      </Button>
+                    </>
                   )}
                 </div>
-              );
-            })}
-
-            <div className="flex justify-end mt-6 gap-3">
-              <Button
-                type="button"
-                onClick={closeModal}
-                variant="white-outline"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="gradient-primary"
-                className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Submitting..." : "Submit"}
-              </Button>
+              </form>
             </div>
-          </form>
+          </div>
         </div>
       </Modal>
 
       <Modal isOpen={activeModal === "personPricing"} onClose={closeModal}>
-        <div className=" p-6 rounded-lg w-full mx-auto z-10 relative">
-          <h2 className="text-xl poppins font-bold mb-4 text-center">
-            Person Pricing Plan
-          </h2>
-
-          <div className="flex justify-center">
-            {personPricing.map((plan) => (
-              <div
-                key={plan.id}
-                className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
-              >
-                {plan.popular && (
-                  <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
-                    Popular
-                  </div>
-                )}
-                <h3 className="font-semibold text-lg mb-2 mt-2">
-                  {plan.title}
-                </h3>
-                <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
-                <div className="mb-4">
-                  <span className="text-3xl font-bold">
-                    {isAnnual
-                      ? plan.yearlyPrice || plan.monthlyPrice
-                      : plan.monthlyPrice}
-                  </span>
-                  <span className="text-gray-500">/month</span>
-                  {plan.billingNote && (
-                    <p className="text-sm text-gray-500 mt-1">
-                      {plan.billingNote}
-                    </p>
-                  )}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-4">
+          <div className="w-full max-w-[1100px] h-[80vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+            {/* LEFT PANEL */}
+            <div className="bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex flex-col items-center justify-center text-center p-10">
+              <div>
+                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-15 h-15 text-gray-700"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
                 </div>
-                <Button
-                  variant="gradient-primary"
-                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
-                  onClick={() => handlePlanSelection(plan)}
+
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                  Let's Get to Know You Better
+                </h2>
+                <p className="text-gray-900 text-sm">
+                  This information helps us understand your conscious impact
+                  better.
+                </p>
+              </div>
+            </div>
+
+            {/* Right Form Panel */}
+            <div className=" p-6 rounded-lg w-full mx-auto my-auto z-10 relative">
+              <h2 className="text-xl poppins font-bold mb-4 text-center">
+                Person Pricing Plan
+              </h2>
+
+              <div className="flex justify-center">
+                {personPricing.map((plan) => (
+                  <div
+                    key={plan.id}
+                    className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
+                  >
+                    {plan.popular && (
+                      <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
+                        Popular
+                      </div>
+                    )}
+                    <h3 className="font-semibold text-lg mb-2 mt-2">
+                      {plan.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-4">
+                      {plan.description}
+                    </p>
+                    <div className="mb-4">
+                      <span className="text-3xl font-bold">
+                        {isAnnual
+                          ? plan.yearlyPrice || plan.monthlyPrice
+                          : plan.monthlyPrice}
+                      </span>
+                      <span className="text-gray-500">/month</span>
+                      {plan.billingNote && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {plan.billingNote}
+                        </p>
+                      )}
+                    </div>
+                    <Button
+                      variant="gradient-primary"
+                      className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                      onClick={() => handlePlanSelection(plan)}
+                    >
+                      {plan.buttonText}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 text-center">
+                <label className="inline-flex items-center cursor-pointer">
+                  <span className="mr-3 text-sm font-medium text-gray-700">
+                    Monthly billing
+                  </span>
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={isAnnual}
+                      onChange={() => setIsAnnual(!isAnnual)}
+                    />
+                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
+                  </div>
+                  <span className="ml-3 text-sm font-medium text-gray-700">
+                    Annual billing
+                  </span>
+                </label>
+              </div>
+
+              <div className="mt-6 text-center">
+                <button
+                  onClick={() => navigate("/dashboard")}
+                  className="text-gray-500 hover:text-gray-700 font-medium text-sm underline focus:outline-none"
                 >
-                  {plan.buttonText}
-                </Button>
+                  Skip for now, go to Dashboard
+                </button>
               </div>
-            ))}
-          </div>
-
-          <div className="mt-6 text-center">
-            <label className="inline-flex items-center cursor-pointer">
-              <span className="mr-3 text-sm font-medium text-gray-700">
-                Monthly billing
-              </span>
-              <div className="relative">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  checked={isAnnual}
-                  onChange={() => setIsAnnual(!isAnnual)}
-                />
-                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
-              </div>
-              <span className="ml-3 text-sm font-medium text-gray-700">
-                Annual billing
-              </span>
-            </label>
-          </div>
-
-          <div className="mt-6 text-center">
-            <button
-              onClick={() => navigate("/dashboard")}
-              className="text-gray-500 hover:text-gray-700 font-medium text-sm underline focus:outline-none"
-            >
-              Skip for now, go to Dashboard
-            </button>
+            </div>
           </div>
         </div>
       </Modal>
@@ -1355,77 +1891,175 @@ export default function Login() {
         isOpen={activeModal === "organizationPricing"}
         onClose={closeModal}
       >
-        <div className=" p-6 rounded-lg w-full mx-auto z-10 relative">
-          <h2 className="text-xl poppins font-bold mb-4 text-center">
-            Organization Pricing Plan
-          </h2>
-
-          <div className="flex justify-center">
-            {organizationpricingPlans.map((plan) => (
-              <div
-                key={plan.id}
-                className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
-              >
-                {plan.popular && (
-                  <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
-                    Popular
-                  </div>
-                )}
-                <h3 className="font-semibold text-lg mb-2 mt-2">
-                  {plan.title}
-                </h3>
-                <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
-                <div className="mb-4">
-                  <span className="text-3xl font-bold">
-                    {isAnnual
-                      ? plan.yearlyPrice || plan.monthlyPrice
-                      : plan.monthlyPrice}
-                  </span>
-                  <span className="text-gray-500">/month</span>
-                  {plan.billingNote && (
-                    <p className="text-sm text-gray-500 mt-1">
-                      {plan.billingNote}
-                    </p>
-                  )}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-4">
+          <div className="w-full max-w-[1100px] h-[80vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+            {/* LEFT PANEL */}
+            <div className="bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex flex-col items-center justify-center text-center p-10">
+              <div>
+                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-15 h-15 text-gray-700"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="3"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <circle
+                      cx="4.5"
+                      cy="4.5"
+                      r="2"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <circle
+                      cx="19.5"
+                      cy="4.5"
+                      r="2"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <circle
+                      cx="4.5"
+                      cy="19.5"
+                      r="2"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <circle
+                      cx="19.5"
+                      cy="19.5"
+                      r="2"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <line
+                      x1="12"
+                      y1="12"
+                      x2="4.5"
+                      y2="4.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <line
+                      x1="12"
+                      y1="12"
+                      x2="19.5"
+                      y2="4.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <line
+                      x1="12"
+                      y1="12"
+                      x2="4.5"
+                      y2="19.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <line
+                      x1="12"
+                      y1="12"
+                      x2="19.5"
+                      y2="19.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                  </svg>
                 </div>
-                <Button
-                  variant="gradient-primary"
-                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
-                  onClick={() => handlePlanSelection(plan)}
+
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                  Let’s Get to Know Your Organization
+                </h2>
+                <p className="text-gray-900 text-sm">
+                  This information helps us understand your conscious impact
+                  better.
+                </p>
+              </div>
+            </div>
+
+            {/* Right Form Panel */}
+            <div className=" p-6 rounded-lg w-full mx-auto my-auto z-10 relative">
+              <h2 className="text-xl poppins font-bold mb-4 text-center">
+                Organization Pricing Plan
+              </h2>
+
+              <div className="flex justify-center">
+                {organizationpricingPlans.map((plan) => (
+                  <div
+                    key={plan.id}
+                    className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
+                  >
+                    {plan.popular && (
+                      <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
+                        Popular
+                      </div>
+                    )}
+                    <h3 className="font-semibold text-lg mb-2 mt-2">
+                      {plan.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-4">
+                      {plan.description}
+                    </p>
+                    <div className="mb-4">
+                      <span className="text-3xl font-bold">
+                        {isAnnual
+                          ? plan.yearlyPrice || plan.monthlyPrice
+                          : plan.monthlyPrice}
+                      </span>
+                      <span className="text-gray-500">/month</span>
+                      {plan.billingNote && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {plan.billingNote}
+                        </p>
+                      )}
+                    </div>
+                    <Button
+                      variant="gradient-primary"
+                      className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                      onClick={() => handlePlanSelection(plan)}
+                    >
+                      {plan.buttonText}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 text-center">
+                <label className="inline-flex items-center cursor-pointer">
+                  <span className="mr-3 text-sm font-medium text-gray-700">
+                    Monthly billing
+                  </span>
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={isAnnual}
+                      onChange={() => setIsAnnual(!isAnnual)}
+                    />
+                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
+                  </div>
+                  <span className="ml-3 text-sm font-medium text-gray-700">
+                    Annual billing
+                  </span>
+                </label>
+              </div>
+
+              <div className="mt-6 text-center">
+                <button
+                  onClick={() => navigate("/dashboard")}
+                  className="text-gray-500 hover:text-gray-700 font-medium text-sm underline focus:outline-none"
                 >
-                  {plan.buttonText}
-                </Button>
+                  Skip for now, go to Dashboard
+                </button>
               </div>
-            ))}
-          </div>
-
-          <div className="mt-6 text-center">
-            <label className="inline-flex items-center cursor-pointer">
-              <span className="mr-3 text-sm font-medium text-gray-700">
-                Monthly billing
-              </span>
-              <div className="relative">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  checked={isAnnual}
-                  onChange={() => setIsAnnual(!isAnnual)}
-                />
-                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
-              </div>
-              <span className="ml-3 text-sm font-medium text-gray-700">
-                Annual billing
-              </span>
-            </label>
-          </div>
-
-          <div className="mt-6 text-center">
-            <button
-              onClick={() => navigate("/dashboard")}
-              className="text-gray-500 hover:text-gray-700 font-medium text-sm underline focus:outline-none"
-            >
-              Skip for now, go to Dashboard
-            </button>
+            </div>
           </div>
         </div>
       </Modal>
