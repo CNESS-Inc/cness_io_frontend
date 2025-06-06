@@ -133,7 +133,6 @@ export default function Login() {
     question: [], // Changed from 'question' to 'questions' to match interface
   });
   const [step, setStep] = useState(1);
-  const totalSteps = 2;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [subDomain, setsubDomain] = useState<SubDomain[] | null>();
   const [isAnnual, setIsAnnual] = useState(false);
@@ -931,7 +930,8 @@ export default function Login() {
 
               <p className="text-center text-sm text-gray-600 mt-4">
                 New to Cness?{" "}
-<Link to="/sign-up"
+                <Link
+                  to="/sign-up"
                   className="text-[#7F57FC] font-medium hover:underline"
                 >
                   Create account
@@ -1056,10 +1056,10 @@ export default function Login() {
                     ))}
                   </select>
                   {organizationErrors.sub_domain && (
-              <p className="mt-1 text-sm text-red-600">
-                {organizationErrors.sub_domain}
-              </p>
-            )}
+                    <p className="mt-1 text-sm text-red-600">
+                      {organizationErrors.sub_domain}
+                    </p>
+                  )}
                 </div>
 
                 {/* Employee Size */}
@@ -1081,10 +1081,10 @@ export default function Login() {
                     ))}
                   </select>
                   {organizationErrors.employee_size && (
-              <p className="mt-1 text-sm text-red-600">
-                {organizationErrors.employee_size}
-              </p>
-            )}
+                    <p className="mt-1 text-sm text-red-600">
+                      {organizationErrors.employee_size}
+                    </p>
+                  )}
                 </div>
 
                 {/* Revenue */}
@@ -1106,10 +1106,10 @@ export default function Login() {
                     ))}
                   </select>
                   {organizationErrors.revenue && (
-              <p className="mt-1 text-sm text-red-600">
-                {organizationErrors.revenue}
-              </p>
-            )}
+                    <p className="mt-1 text-sm text-red-600">
+                      {organizationErrors.revenue}
+                    </p>
+                  )}
                 </div>
               </>
             )}
