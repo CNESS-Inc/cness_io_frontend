@@ -403,7 +403,6 @@ export default function AllSocialPost() {
                 right: 0,
               }}
             >
-<<<<<<< Updated upstream
               <button
                 className="w-full sm:w-auto bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white py-3 px-6 rounded-full transition-all duration-300 hover:from-[#7077FE] hover:to-[#7077FE] shadow-md "
                 onClick={handleButtonClick}
@@ -412,17 +411,6 @@ export default function AllSocialPost() {
                   Bring Your Awareness to Life
                
                 {/* <div className="ml-4 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 p-2">
-=======
-              <Button
-                variant="gradient-primary"
-                className="rounded-[100px] flex items-center py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
-                onClick={handleButtonClick}
-              >
-                <span className=" text-white">
-                  Bring Your Awareness to Life
-                </span>
-                <div className="rounded-full p-2">
->>>>>>> Stashed changes
                   <svg
                     width="16"
                     height="16"
@@ -435,13 +423,8 @@ export default function AllSocialPost() {
                       fill="white"
                     />
                   </svg>
-<<<<<<< Updated upstream
                 </div> */}
               </button>
-=======
-                </div>
-              </Button>
->>>>>>> Stashed changes
             </div>
           </div>
 
