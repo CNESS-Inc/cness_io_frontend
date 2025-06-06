@@ -12,6 +12,7 @@ import {
   SubmitOrganizationDetails,
   SubmitOrganizationListingDetails,
 } from "../../../Common/ServerAPI";
+import Button from "../../ui/Button";
 
 const tabNames = [
   "Basic Information",
@@ -82,10 +83,7 @@ const OrganaizationProfilepage = () => {
   const [industry, setIndustryData] = useState<any>(null);
   const [serviceData, setServiceData] = useState<any>(null);
   const [OrgSize, setOrgSize] = useState([]);
-  console.log(
-    "🚀 ~ OrganaizationProfilepage ~ OrganizationSize:",
-    OrgSize
-  );
+  console.log("🚀 ~ OrganaizationProfilepage ~ OrganizationSize:", OrgSize);
 
   const public_organization = localStorage.getItem("person_organization");
   const is_disqualify = localStorage.getItem("is_disqualify");
@@ -290,7 +288,7 @@ const OrganaizationProfilepage = () => {
     try {
       const response = await GetOrganiZationProfileDetails();
       const profileData = response.data.data;
-      console.log("🚀 ~ GetOrganizationProfile ~ profileData:", profileData)
+      console.log("🚀 ~ GetOrganizationProfile ~ profileData:", profileData);
 
       // Reset basic info form with the fetched data
       basicInfoForm.reset({
@@ -813,7 +811,7 @@ const OrganaizationProfilepage = () => {
                                     }`}
                                   >
                                     <option value="">Select size</option>
-                                    {OrgSize.map((size:any) => (
+                                    {OrgSize.map((size: any) => (
                                       <option key={size.id} value={size.id}>
                                         {size.name}
                                       </option>
@@ -894,12 +892,13 @@ const OrganaizationProfilepage = () => {
                                 >
                                   Cancel
                                 </button>
-                                <button
+                                <Button
+                                  variant="gradient-primary"
+                                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                   type="submit"
-                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition"
                                 >
                                   Save Basic Info
-                                </button>
+                                </Button>
                               </div>
                             </form>
                           </Tab.Panel>
@@ -1083,12 +1082,13 @@ const OrganaizationProfilepage = () => {
                                 >
                                   Cancel
                                 </button>
-                                <button
+                                <Button
+                                  variant="gradient-primary"
+                                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                   type="submit"
-                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition"
                                 >
                                   Save Contact Info
-                                </button>
+                                </Button>
                               </div>
                             </form>
                           </Tab.Panel>
@@ -1288,12 +1288,13 @@ const OrganaizationProfilepage = () => {
                                 >
                                   Cancel
                                 </button>
-                                <button
+                                <Button
+                                  variant="gradient-primary"
+                                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                   type="submit"
-                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition"
                                 >
                                   Save Social Links
-                                </button>
+                                </Button>
                               </div>
                             </form>
                           </Tab.Panel>
@@ -1432,12 +1433,13 @@ const OrganaizationProfilepage = () => {
                                 >
                                   Cancel
                                 </button>
-                                <button
+                                <Button
+                                  variant="gradient-primary"
+                                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                   type="submit"
-                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition"
                                 >
                                   Save Mission & Vision
-                                </button>
+                                </Button>
                               </div>
                             </form>
                           </Tab.Panel>
@@ -1784,12 +1786,13 @@ const OrganaizationProfilepage = () => {
                                 >
                                   Cancel
                                 </button>
-                                <button
+                                <Button
+                                  variant="gradient-primary"
+                                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                   type="submit"
-                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition"
                                 >
                                   Save Public View
-                                </button>
+                                </Button>
                               </div>
                             </form>
                           </Tab.Panel>

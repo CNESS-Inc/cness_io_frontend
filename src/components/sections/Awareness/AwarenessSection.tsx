@@ -75,8 +75,8 @@ export default function AwarenessSection() {
                   </div>
 
                   <Button
-variant="gradient-primary"
-  className="rounded-[100px] py-3 px-8 transition-colors duration-500 ease-in-out"
+                    variant="gradient-primary"
+                    className="rounded-[100px] py-3 px-8 transition-colors duration-500 ease-in-out"
                   >
                     Get Started
                   </Button>

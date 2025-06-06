@@ -298,7 +298,7 @@ export default function DashboardSection(user: any) {
                         }
                       }}
                     >
-                      <span className="font-['Plus_Jakarta_Sans',Helvetica] font-medium text-[12px] leading-none tracking-[0px] text-white text-center">
+                      <span className="font-['Plus_Jakarta_Sans',Helvetica] leading-none  text-white ">
                         Start
                       </span>
                     </Button>
@@ -330,7 +330,7 @@ export default function DashboardSection(user: any) {
                       navigate("/dashboard/assesment");
                     }}
                   >
-                    <span className="font-['Plus_Jakarta_Sans',Helvetica] font-medium text-[12px] leading-none tracking-[0px] text-white text-center">
+                    <span className="font-['Plus_Jakarta_Sans',Helvetica] leading-none text-white">
                       Get Certification
                     </span>
                   </Button>
