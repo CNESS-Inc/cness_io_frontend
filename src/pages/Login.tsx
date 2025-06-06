@@ -45,7 +45,7 @@ interface PersonForm {
     answer: string;
   }>;
 }
-type PartialOrganizationFormData = Partial<OrganizationForm>;
+// type PartialOrganizationFormData = Partial<OrganizationForm>;
 
 interface AuthResponse {
   success: any;
