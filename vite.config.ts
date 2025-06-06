@@ -4,7 +4,14 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-
+resolve: {
+    alias: {
+      // Ensure Vite knows these are packages, not relative files
+      '@fortawesome/fontawesome-svg-core': '@fortawesome/fontawesome-svg-core',
+      '@fortawesome/free-solid-svg-icons': '@fortawesome/free-solid-svg-icons',
+      '@fortawesome/react-fontawesome': '@fortawesome/react-fontawesome',
+    },
+  },
   // ✅ Add server config here
   server: {
     port: 3000,        // fixed port

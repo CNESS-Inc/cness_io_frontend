@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { GetFollowingUser } from "../../../Common/ServerAPI";
 
@@ -16,41 +15,7 @@ interface DreamBuilder {
 
 const MyDreamBuilders: React.FC = () => {
   const [dreambuilders, setDreamBuilders] = useState<DreamBuilder[]>([]);
-  const navigate = useNavigate();
-
-  // Static data instead of API call
-  const staticDreamBuilders: DreamBuilder[] = [
-    {
-      userId: "1",
-      userDocumentId: "doc1",
-      profile: {
-        profile_picture: "https://example.com/user1.jpg",
-        first_name: "John",
-        last_name: "Doe",
-        user_id: "1",
-      },
-    },
-    {
-      userId: "2",
-      userDocumentId: "doc2",
-      profile: {
-        profile_picture: "https://example.com/user2.jpg",
-        first_name: "Jane",
-        last_name: "Smith",
-        user_id: "2",
-      },
-    },
-    {
-      userId: "3",
-      userDocumentId: "doc3",
-      profile: {
-        profile_picture: "https://example.com/user3.jpg",
-        first_name: "Bob",
-        last_name: "Johnson",
-        user_id: "3",
-      },
-    },
-  ];
+  // const navigate = useNavigate();
 
   const getDreamBuilder = async () => {
     try {
@@ -61,9 +26,9 @@ const MyDreamBuilders: React.FC = () => {
     }
   };
 
-  const handleProfileClick = (user_id: string) => {
-    // navigate(`/profile/public?id=${user_id}`);
-  };
+  // const handleProfileClick = (user_id: string) => {
+  //   // navigate(`/profile/public?id=${user_id}`);
+  // };
 
   useEffect(() => {
     getDreamBuilder();
@@ -79,7 +44,7 @@ const MyDreamBuilders: React.FC = () => {
               key={index}
               className="flex items-center"
               style={{ cursor: "pointer" }}
-              onClick={() => handleProfileClick(user.profile?.user_id || "")}
+              // onClick={() => handleProfileClick(user.profile?.user_id || "")}
             >
               <span
                 className={`w-2 h-2 rounded-full mr-3 ${

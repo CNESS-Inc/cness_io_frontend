@@ -13,6 +13,7 @@ import {
   SubmitProfileDetails,
   SubmitPublicProfileDetails,
 } from "../../../Common/ServerAPI";
+import Button from "../../ui/Button";
 
 const tabNames = [
   "Basic Information",
@@ -729,15 +730,16 @@ const UserProfilePage = () => {
                                   >
                                     Reset
                                   </button>
-                                  <button
+                                  <Button
+                                    variant="gradient-primary"
+                                    className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                     type="submit"
                                     disabled={isSubmitting.basic}
-                                    className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                   >
                                     {isSubmitting.basic
                                       ? "Saving..."
                                       : "Save Basic Info"}
-                                  </button>
+                                  </Button>
                                 </div>
                               </div>
                             </form>
@@ -1010,15 +1012,16 @@ const UserProfilePage = () => {
                                   >
                                     Reset
                                   </button>
-                                  <button
+                                  <Button
+                                    variant="gradient-primary"
+                                    className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                     type="submit"
                                     disabled={isSubmitting.contact}
-                                    className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                   >
                                     {isSubmitting.contact
                                       ? "Saving..."
                                       : "Save Contact Info"}
-                                  </button>
+                                  </Button>
                                 </div>
                               </div>
                             </form>
@@ -1092,15 +1095,16 @@ const UserProfilePage = () => {
                                   >
                                     Reset
                                   </button>
-                                  <button
+                                  <Button
+                                    variant="gradient-primary"
+                                    className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                     type="submit"
                                     disabled={isSubmitting.social}
-                                    className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                   >
                                     {isSubmitting.social
                                       ? "Saving..."
                                       : "Save Social Links"}
-                                  </button>
+                                  </Button>
                                 </div>
                               </div>
                             </form>
@@ -1183,15 +1187,16 @@ const UserProfilePage = () => {
                                   >
                                     Reset
                                   </button>
-                                  <button
+                                  <Button
+                                    variant="gradient-primary"
+                                    className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                     type="submit"
                                     disabled={isSubmitting.education}
-                                    className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                   >
                                     {isSubmitting.education
                                       ? "Saving..."
                                       : "Save Education"}
-                                  </button>
+                                  </Button>
                                 </div>
                               </div>
                             </form>
@@ -1277,15 +1282,16 @@ const UserProfilePage = () => {
                                   >
                                     Reset
                                   </button>
-                                  <button
+                                  <Button
+                                    variant="gradient-primary"
+                                    className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                     type="submit"
                                     disabled={isSubmitting.work}
-                                    className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                   >
                                     {isSubmitting.work
                                       ? "Saving..."
                                       : "Save Work Experience"}
-                                  </button>
+                                  </Button>
                                 </div>
                               </div>
                             </form>
@@ -1436,15 +1442,16 @@ const UserProfilePage = () => {
                                   >
                                     Reset
                                   </button>
-                                  <button
+                                  <Button
+                                    variant="gradient-primary"
+                                    className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                     type="submit"
                                     disabled={isSubmitting.public}
-                                    className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                   >
                                     {isSubmitting.public
                                       ? "Saving..."
                                       : "Save Public Profile"}
-                                  </button>
+                                  </Button>
                                 </div>
                               </div>
                             </form>

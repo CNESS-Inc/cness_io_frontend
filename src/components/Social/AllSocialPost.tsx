@@ -19,6 +19,7 @@ import {
   PostsDetails,
 } from "../../Common/ServerAPI.tsx";
 import LoadingSpinner from "../ui/LoadingSpinner.tsx";
+import Button from "../ui/Button.tsx";
 
 interface Post {
   id: string;
@@ -70,14 +71,14 @@ type Story = {
 
 export default function AllSocialPost() {
   // Static categories data
-  const categories = [
-    { name: "Music", src: "./images/category-icons/bx-music.png" },
-    { name: "Movies", src: "./images/category-icons/movie-reel.png" },
-    { name: "Podcasts", src: "./images/category-icons/theatre.png" },
-    { name: "Images", src: "./images/category-icons/conscious.png" },
-    { name: "Documentaries", src: "./images/category-icons/angeles.png" },
-    { name: "Books", src: "./images/category-icons/bx-globe.png" },
-  ];
+  // const categories = [
+  //   { name: "Music", src: "./images/category-icons/bx-music.png" },
+  //   { name: "Movies", src: "./images/category-icons/movie-reel.png" },
+  //   { name: "Podcasts", src: "./images/category-icons/theatre.png" },
+  //   { name: "Images", src: "./images/category-icons/conscious.png" },
+  //   { name: "Documentaries", src: "./images/category-icons/angeles.png" },
+  //   { name: "Books", src: "./images/category-icons/bx-globe.png" },
+  // ];
 
   const [postContent, setPostContent] = useState("");
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
@@ -94,7 +95,6 @@ export default function AllSocialPost() {
   const [showEmojiBox, setShowEmojiBox] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
-  const [post, setPost] = useState<boolean>(true);
   const [page, setPage] = useState<number>(1);
   const navigate = useNavigate();
   const dummyProfilePicture =
@@ -214,13 +214,13 @@ export default function AllSocialPost() {
     setTimeout(() => setIsHighlighted(false), 2000);
   };
 
-  const handleCategoryClick = (categoryName: any) => {
-    if (categoryName === "Movies" || categoryName === "Documentaries") {
-      navigate(`/cnessmedia?name=${categoryName}`);
-    }
-  };
+  // const handleCategoryClick = (categoryName: any) => {
+  //   if (categoryName === "Movies" || categoryName === "Documentaries") {
+  //     navigate(`/cnessmedia?name=${categoryName}`);
+  //   }
+  // };
 
-  const fileuploadRef = useRef<HTMLInputElement>(null);
+  // const fileuploadRef = useRef<HTMLInputElement>(null);
 
   const handleFileButton = () => {
     fileInputRef.current?.click();
@@ -252,13 +252,13 @@ export default function AllSocialPost() {
     }
   };
 
-  const toggleInsert = (text: string) => {
-    if (postContent.includes(text)) {
-      setPostContent(postContent.replace(text, "").trim());
-    } else {
-      setPostContent((prev) => (prev ? prev + " " + text : text));
-    }
-  };
+  // const toggleInsert = (text: string) => {
+  //   if (postContent.includes(text)) {
+  //     setPostContent(postContent.replace(text, "").trim());
+  //   } else {
+  //     setPostContent((prev) => (prev ? prev + " " + text : text));
+  //   }
+  // };
 
   const handleGifUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -404,13 +404,13 @@ export default function AllSocialPost() {
               }}
             >
               <button
-                className="flex items-center justify-center px-3 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full "
+                className="w-full sm:w-auto bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white py-3 px-6 rounded-full transition-all duration-300 hover:from-[#7077FE] hover:to-[#7077FE] shadow-md "
                 onClick={handleButtonClick}
               >
-                <span className="text-xs text-white text-nowrap font-500">
+                
                   Bring Your Awareness to Life
-                </span>
-                <div className="ml-4 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 p-2">
+               
+                {/* <div className="ml-4 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 p-2">
                   <svg
                     width="16"
                     height="16"
@@ -423,7 +423,7 @@ export default function AllSocialPost() {
                       fill="white"
                     />
                   </svg>
-                </div>
+                </div> */}
               </button>
             </div>
           </div>
@@ -597,19 +597,20 @@ export default function AllSocialPost() {
                           ))}
 
                           {options.length < 4 && (
-                            <button
+                            <Button
+                              variant="gradient-primary"
+                              className="rounded-[100px] flex justify-center py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                               type="button"
                               onClick={addOption}
-                              className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 font-medium focus:ring-2 text-white"
                             >
                               +
-                            </button>
+                            </Button>
                           )}
                           {options.length > 2 && (
                             <button
                               type="button"
                               onClick={removeLastOption}
-                              className="bg-red-500 text-white px-6 py-2 rounded-full font-medium focus:ring-2"
+                              className="bg-red-500 text-white py-3 px-8 rounded-full font-medium focus:ring-2"
                             >
                               ✕ Remove Option
                             </button>
@@ -730,13 +731,14 @@ export default function AllSocialPost() {
                         />
                       </label>
                     </div>
-                    <button
+                    <Button
+                      variant="gradient-primary"
+                      className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                       disabled={disable}
                       onClick={CreatePost}
-                      className="px-6 py-2 text-white rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 font-medium focus:outline-none focus:ring-2 "
                     >
                       Post
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -749,12 +751,13 @@ export default function AllSocialPost() {
               <h3 className="text-xl font-semibold leading-9">
                 Share your story
               </h3>
-              <button
+              <Button
+                variant="gradient-primary"
+                className="rounded-[100px] py-1 px-3 self-stretch transition-colors duration-500 ease-in-out"
                 onClick={handleFileButton}
-                className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 font-medium  flex items-center text-white justify-center"
               >
                 +
-              </button>
+              </Button>
               <input
                 type="file"
                 accept="image/*, video/*"

@@ -1,22 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { useNavigate } from "react-router-dom";
 import { GetConnectionUser } from "../../../Common/ServerAPI";
 
-interface User {
-  userId: string;
-  userDocumentId: string;
-  username: string;
-  thumbnail?: string;
-  friend_user?: {
-    profile: {
-      user_id: string;
-      first_name: string;
-      last_name: string;
-      profile_picture?: string;
-    };
-  };
-}
+
 
 const MyConnections: React.FC = () => {
   const [connections, setConnections] = useState<any>([]);
@@ -34,11 +20,11 @@ const MyConnections: React.FC = () => {
     getConnections();
   }, []);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const handleProfileClick = (user_id: string) => {
-    // navigate(`/profile/public?id=${user_id}`);
-  };
+  // const handleProfileClick = (user_id: string) => {
+  //   // navigate(`/profile/public?id=${user_id}`);
+  // };
 
   return (
     <>
@@ -50,7 +36,7 @@ const MyConnections: React.FC = () => {
               key={index}
               className="flex items-center"
               style={{ cursor: "pointer" }}
-              onClick={() => handleProfileClick(user?.friend_user?.profile?.user_id)}
+              // onClick={() => handleProfileClick(user?.friend_user?.profile?.user_id)}
             >
               <span
                 className={`w-2 h-2 rounded-full mr-3 ${user ? "bg-green-500" : "bg-gray-400"}`}

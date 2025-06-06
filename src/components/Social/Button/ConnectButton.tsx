@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { SendConnectionRequest } from "../../../Common/ServerAPI";
 
 interface ConnectButtonProps {
   isFriend?: boolean;
@@ -14,6 +15,9 @@ const ConnectButton: React.FC<ConnectButtonProps> = ({
   userId,
   isUserProfile = false,
 }) => {
+  console.log("🚀 ~ isUserProfile:", isUserProfile)
+  console.log("🚀 ~ is_requested:", is_requested)
+  console.log("🚀 ~ isFriend:", isFriend)
   const [loading, setLoading] = useState(false);
   const [request, setRequest] = useState(is_requested);
 
@@ -21,13 +25,13 @@ const ConnectButton: React.FC<ConnectButtonProps> = ({
     setLoading(true);
     try {
       const formattedData = { friend_id: userId };
-      // // const res = await dispatch(apiCall("POST", "/friend/request", "conections", formattedData));
+      const res = await SendConnectionRequest(formattedData)
 
-      // // console.log("🚀 API Response:", res);
+      console.log("🚀 API Response:", res);
 
-      // if (res.success) {
-      //     setRequest(true); //  This will trigger re-render
-      // }
+      if (res.success) {
+          setRequest(true); 
+      }
     } catch (error) {
       console.error("Error sending connection request:", error);
     } finally {
