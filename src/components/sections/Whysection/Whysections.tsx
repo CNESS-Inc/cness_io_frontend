@@ -1,10 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import Button from "../../ui/Button";
 import Image from "../../ui/Image";
 
 export default function WhySection() {
+  const navigate = useNavigate()
   return (
-
-    
     <section className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-[59px]">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 max-w-7xl mx-auto items-center">
         {/* Image Section */}
@@ -47,6 +47,7 @@ export default function WhySection() {
             <Button
               variant="gradient-primary"
               className="rounded-[100px] py-3 px-8 transition-colors duration-500 ease-in-out"
+              onClick={() => navigate("/why")}
             >
               Why Now
             </Button>

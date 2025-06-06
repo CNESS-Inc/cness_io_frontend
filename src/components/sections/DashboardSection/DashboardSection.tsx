@@ -34,7 +34,7 @@ type PersPricingPlan = {
 
 export default function DashboardSection(user: any) {
   const [activeModal, setActiveModal] = useState<string | null>(null);
-  const [isAnnual, setIsAnnual] = useState(false);
+  const [isAnnual, setIsAnnual] = useState(true);
   const [personPricing, setPersonPricing] = useState<PersPricingPlan[]>([]);
   const navigate = useNavigate();
   // Data for modules
