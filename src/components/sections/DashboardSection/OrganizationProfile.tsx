@@ -12,7 +12,8 @@ import {
   SubmitOrganizationDetails,
   SubmitOrganizationListingDetails,
 } from "../../../Common/ServerAPI";
-import Button from "../../ui/Button";
+import { useToast } from "../../ui/Toast/ToastProvider";
+import Button from "../../ui/Button"
 
 const tabNames = [
   "Basic Information",
@@ -83,10 +84,12 @@ const OrganaizationProfilepage = () => {
   const [industry, setIndustryData] = useState<any>(null);
   const [serviceData, setServiceData] = useState<any>(null);
   const [OrgSize, setOrgSize] = useState([]);
-  console.log("🚀 ~ OrganaizationProfilepage ~ OrganizationSize:", OrgSize);
+  const [isSubmitting, setIsSubmitting] = useState<Record<string, boolean>>({});
 
   const public_organization = localStorage.getItem("person_organization");
   const is_disqualify = localStorage.getItem("is_disqualify");
+
+  const { showToast } = useToast();
 
   // Create separate form instances for each tab
   const basicInfoForm = useForm<BasicInfoFormData>({
@@ -190,6 +193,7 @@ const OrganaizationProfilepage = () => {
 
   // Submit handlers for each tab
   const submitBasicInfo = async (data: BasicInfoFormData) => {
+    setIsSubmitting((prev) => ({ ...prev, basic: true }));
     console.log("Basic Info submitted:", data);
     const payload = {
       organization_name: data.organizationName || null,
@@ -204,14 +208,27 @@ const OrganaizationProfilepage = () => {
     };
 
     try {
-      await SubmitOrganizationDetails(payload);
-    } catch (error) {
+      const response = await SubmitOrganizationDetails(payload);
+      showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
       console.error("Error saving basic info:", error);
+      showToast({
+        message: error?.message,
+        type: "error",
+        duration: 5000,
+      });
       // Error handling
+    } finally {
+      setIsSubmitting((prev) => ({ ...prev, basic: false }));
     }
   };
 
   const submitContactInfo = async (data: ContactInfoFormData) => {
+    setIsSubmitting((prev) => ({ ...prev, contact: true }));
     const payload = {
       primary_contact_person_name: data.primaryContactName || null,
       designation: data.designation || null,
@@ -220,14 +237,28 @@ const OrganaizationProfilepage = () => {
     };
 
     try {
-      await SubmitOrganizationDetails(payload);
-    } catch (error) {
+      const response = await SubmitOrganizationDetails(payload);
+      showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
       console.error("Error saving basic info:", error);
+      showToast({
+        message: error?.message,
+        type: "error",
+        duration: 5000,
+      });
       // Error handling
+    } finally {
+      setIsSubmitting((prev) => ({ ...prev, contact: false }));
     }
   };
 
   const submitSocialLinks = async (data: SocialLinksFormData) => {
+    setIsSubmitting((prev) => ({ ...prev, social: true }));
+
     console.log("Social Links submitted:", data);
     const payload = {
       facebook: data.facebook || null,
@@ -238,14 +269,27 @@ const OrganaizationProfilepage = () => {
     };
 
     try {
-      await SubmitOrganizationDetails(payload);
-    } catch (error) {
+      const response = await SubmitOrganizationDetails(payload);
+      showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
       console.error("Error saving basic info:", error);
+      showToast({
+        message: error?.message,
+        type: "error",
+        duration: 5000,
+      });
       // Error handling
+    } finally {
+      setIsSubmitting((prev) => ({ ...prev, social: false }));
     }
   };
 
   const submitMissionVision = async (data: MissionVisionFormData) => {
+    setIsSubmitting((prev) => ({ ...prev, mission: true }));
     console.log("Mission & Vision submitted:", data);
     const payload = {
       mission_statement: data.missionStatement || null,
@@ -254,14 +298,28 @@ const OrganaizationProfilepage = () => {
     };
 
     try {
-      await SubmitOrganizationDetails(payload);
-    } catch (error) {
+      const response = await SubmitOrganizationDetails(payload);
+      showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
       console.error("Error saving basic info:", error);
+      showToast({
+        message: error?.message,
+        type: "error",
+        duration: 5000,
+      });
       // Error handling
+    } finally {
+      setIsSubmitting((prev) => ({ ...prev, mission: false }));
     }
   };
 
   const submitPublicView = async (data: PublicViewFormData) => {
+    setIsSubmitting((prev) => ({ ...prev, public: true }));
+
     console.log("Public View submitted:", data);
 
     // Transform services array to just IDs
@@ -277,10 +335,21 @@ const OrganaizationProfilepage = () => {
 
     try {
       const response = await SubmitOrganizationListingDetails(payload);
-      console.log("Success:", response);
-    } catch (error) {
+      showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
       console.error("Error saving basic info:", error);
+      showToast({
+        message: error?.message,
+        type: "error",
+        duration: 5000,
+      });
       // Error handling
+    } finally {
+      setIsSubmitting((prev) => ({ ...prev, public: false }));
     }
   };
 
@@ -896,9 +965,13 @@ const OrganaizationProfilepage = () => {
                                   variant="gradient-primary"
                                   className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                   type="submit"
+                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                  disabled={isSubmitting.basic}
                                 >
-                                  Save Basic Info
-                                </Button>
+                                  {isSubmitting.basic
+                                    ? "Saving..."
+                                    : "Save Basic Info"}
+                                </button>
                               </div>
                             </form>
                           </Tab.Panel>
@@ -1086,9 +1159,13 @@ const OrganaizationProfilepage = () => {
                                   variant="gradient-primary"
                                   className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                   type="submit"
+                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                  disabled={isSubmitting.contact}
                                 >
-                                  Save Contact Info
-                                </Button>
+                                  {isSubmitting.contact
+                                    ? "Saving..."
+                                    : "Save Contact Info"}
+                                </button>
                               </div>
                             </form>
                           </Tab.Panel>
@@ -1292,9 +1369,13 @@ const OrganaizationProfilepage = () => {
                                   variant="gradient-primary"
                                   className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                   type="submit"
+                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                  disabled={isSubmitting.social}
                                 >
-                                  Save Social Links
-                                </Button>
+                                  {isSubmitting.social
+                                    ? "Saving..."
+                                    : "Save Social Links"}
+                                </button>
                               </div>
                             </form>
                           </Tab.Panel>
@@ -1437,9 +1518,13 @@ const OrganaizationProfilepage = () => {
                                   variant="gradient-primary"
                                   className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                   type="submit"
+                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                  disabled={isSubmitting.mission}
                                 >
-                                  Save Mission & Vision
-                                </Button>
+                                  {isSubmitting.mission
+                                    ? "Saving..."
+                                    : "Save Mission & Vision"}
+                                </button>
                               </div>
                             </form>
                           </Tab.Panel>
@@ -1790,9 +1875,13 @@ const OrganaizationProfilepage = () => {
                                   variant="gradient-primary"
                                   className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                   type="submit"
+                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                  disabled={isSubmitting.public}
                                 >
-                                  Save Public View
-                                </Button>
+                                  {isSubmitting.public
+                                    ? "Saving..."
+                                    : "Save Public View"}
+                                </button>
                               </div>
                             </form>
                           </Tab.Panel>

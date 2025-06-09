@@ -5,8 +5,10 @@ import { Card, CardContent } from "../../ui/Card";
 import IndividualImage from "../../../assets/aware_1.jpg";
 import OrganizationImage from "../../../assets/aware_2.jpg";
 import MentorImage from "../../../assets/aware_3.jpg";
+import { useNavigate } from "react-router-dom";
 
 export default function AwarenessSection() {
+  const navigate = useNavigate()
   const cards = [
     {
       title: "Join as an Individual",
@@ -76,7 +78,8 @@ export default function AwarenessSection() {
 
                   <Button
                     variant="gradient-primary"
-                    className="rounded-[100px] py-3 px-8 transition-colors duration-500 ease-in-out"
+                    className="rounded-[100px] cursor-pointer py-3 px-8 transition-colors duration-500 ease-in-out"
+                    onClick={() => navigate("/sign-up")}
                   >
                     Get Started
                   </Button>

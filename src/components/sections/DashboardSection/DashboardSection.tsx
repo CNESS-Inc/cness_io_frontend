@@ -34,7 +34,7 @@ type PersPricingPlan = {
 
 export default function DashboardSection(user: any) {
   const [activeModal, setActiveModal] = useState<string | null>(null);
-  const [isAnnual, setIsAnnual] = useState(false);
+  const [isAnnual, setIsAnnual] = useState(true);
   const [personPricing, setPersonPricing] = useState<PersPricingPlan[]>([]);
   const navigate = useNavigate();
   // Data for modules
@@ -298,7 +298,7 @@ export default function DashboardSection(user: any) {
                         }
                       }}
                     >
-                      <span className="font-['Plus_Jakarta_Sans',Helvetica] leading-none  text-white ">
+                      <span className="font-['Plus_Jakarta_Sans',Helvetica] text-white text-center">
                         Start
                       </span>
                     </Button>
@@ -330,7 +330,7 @@ export default function DashboardSection(user: any) {
                       navigate("/dashboard/assesment");
                     }}
                   >
-                    <span className="font-['Plus_Jakarta_Sans',Helvetica] leading-none text-white">
+                    <span className="font-['Plus_Jakarta_Sans',Helvetica] text-white text-center">
                       Get Certification
                     </span>
                   </Button>

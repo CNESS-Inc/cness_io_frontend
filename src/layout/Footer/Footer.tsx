@@ -29,10 +29,10 @@ const Footer = () => {
           <div className="col-span-1 space-y-3 md:space-y-4">
             <h4 className="text-base md:text-lg font-semibold">About</h4>
             <ul className="space-y-1 md:space-y-2">
-              <li><a href="#" className="text-sm md:text-base hover:underline">Company</a></li>
-              <li><a href="#" className="text-sm md:text-base hover:underline">Benefits</a></li>
-              <li><a href="#" className="text-sm md:text-base hover:underline">Directory</a></li>
-              <li><a href="#" className="text-sm md:text-base hover:underline">Visionary Council</a></li>
+              <li><Link to="/" className="text-sm md:text-base hover:underline">Company</Link></li>
+              <li><Link to="/" className="text-sm md:text-base hover:underline">Benefits</Link></li>
+              <li><Link to="/directory" className="text-sm md:text-base hover:underline">Directory</Link></li>
+              <li><Link to="/" className="text-sm md:text-base hover:underline">Visionary Council</Link></li>
             </ul>
           </div>
 
@@ -41,8 +41,8 @@ const Footer = () => {
             <h4 className="text-base md:text-lg font-semibold">Quick Links</h4>
             <ul className="space-y-1 md:space-y-2">
               <li><Link to="/" className="text-sm md:text-base hover:underline">Home</Link></li>
-              <li><a href="#" className="text-sm md:text-base hover:underline">Certifications</a></li>
-              <li><a href="#" className="text-sm md:text-base hover:underline">Career</a></li>
+              <li><Link to="/" className="text-sm md:text-base hover:underline">Certifications</Link></li>
+              <li><Link to="/" className="text-sm md:text-base hover:underline">Career</Link></li>
             </ul>
           </div>
 

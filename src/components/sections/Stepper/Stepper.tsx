@@ -12,6 +12,7 @@ import {
   faBook,
   faCircleUser,
 } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 interface CustomCSSProperties extends React.CSSProperties {
   "--stroke-color"?: string;
@@ -21,6 +22,7 @@ export default function Stepper() {
   const [activeStep, setActiveStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [isJourneyComplete] = useState(false);
+  const navigate = useNavigate()
 
   const journeySteps = [
     {
@@ -570,24 +572,9 @@ export default function Stepper() {
 
           {/* CTA Button */}
           <Button
-            className="rounded-[100px] py-2 sm:py-3 lg:py-[16px] px-3 sm:px-4 lg:px-[24px] text-xs sm:text-sm lg:text-base w-full sm:w-auto mx-auto sm:mx-0 text-center block transition-colors duration-500 ease-in-out"
+            className="rounded-[100px] cursor-pointer py-2 sm:py-3 lg:py-[16px] px-3 sm:px-4 lg:px-[24px] text-xs sm:text-sm lg:text-base w-full sm:w-auto mx-auto sm:mx-0 text-center block transition-colors duration-500 ease-in-out"
             variant="gradient-primary"
-            // onClick={() => {
-            //   const nextStep = activeStep + 1;
-            //   if (nextStep >= totalSteps) {
-            //     setActiveStep(0);
-            //     setCompletedSteps([]);
-            //     setIsJourneyComplete(false);
-            //   } else {
-            //     setActiveStep(nextStep);
-            //     if (!completedSteps.includes(activeStep)) {
-            //       setCompletedSteps([...completedSteps, activeStep]);
-            //     }
-            //     if (nextStep === totalSteps - 1) {
-            //       setIsJourneyComplete(true);
-            //     }
-            //   }
-            // }}
+            onClick={() => navigate("/sign-up")}
           >
             Start Journey
           </Button>

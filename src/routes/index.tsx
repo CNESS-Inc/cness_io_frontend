@@ -15,6 +15,12 @@ import SinglePost from "../components/Social/SinglePost";
 import ReelsCard from "../components/Social/Reels/ReelsCard";
 import About from "../pages/About";
 import SocialLayout from "../layout/SocialLayout";
+import UploadProof from "../pages/UploadProof";
+import LearningLab from "../pages/LearningLab";
+import UpgradeBadge from "../pages/UpgradeBadge";
+import DirectoryProfile from "../pages/DirectoryProfile";
+import Notification from "../pages/Notification";
+import Support from "../pages/Support";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -95,6 +101,30 @@ export const router = createBrowserRouter([
           {
             path: "setting",
             element: <Setting />,
+          },
+          {
+            path: "upload-proof",
+            element: <UploadProof />,
+          },
+          {
+            path: "learning-lab",
+            element: <LearningLab />,
+          },
+          {
+            path: "upgrade-badge",
+            element: <UpgradeBadge />,
+          },
+          {
+            path: "directory-profile",
+            element: <DirectoryProfile />,
+          },
+          {
+            path: "notification",
+            element: <Notification />,
+          },
+          {
+            path: "support",
+            element: <Support />,
           },
         ],
       },
