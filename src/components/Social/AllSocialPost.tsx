@@ -19,6 +19,7 @@ import {
   PostsDetails,
 } from "../../Common/ServerAPI.tsx";
 import LoadingSpinner from "../ui/LoadingSpinner.tsx";
+import Button from "../ui/Button.tsx";
 
 interface Post {
   id: string;
@@ -402,8 +403,11 @@ export default function AllSocialPost() {
                 right: 0,
               }}
             >
-              <button
-                className="w-full sm:w-auto bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white py-3 px-6 rounded-full transition-all duration-300 hover:from-[#7077FE] hover:to-[#7077FE] shadow-md "
+
+              <Button
+                variant="gradient-primary"
+                className="rounded-[100px] py-3 px-8  self-stretch transition-colors duration-500 ease-in-out"
+
                 onClick={handleButtonClick}
               >
                 
@@ -423,7 +427,9 @@ export default function AllSocialPost() {
                     />
                   </svg>
                 </div> */}
-              </button>
+
+              </Button>
+
             </div>
           </div>
 
@@ -596,19 +602,20 @@ export default function AllSocialPost() {
                           ))}
 
                           {options.length < 4 && (
-                            <button
+                            <Button
+                              variant="gradient-primary"
+                              className="rounded-[100px] flex justify-center py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                               type="button"
                               onClick={addOption}
-                              className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 font-medium focus:ring-2 text-white"
                             >
                               +
-                            </button>
+                            </Button>
                           )}
                           {options.length > 2 && (
                             <button
                               type="button"
                               onClick={removeLastOption}
-                              className="bg-red-500 text-white px-6 py-2 rounded-full font-medium focus:ring-2"
+                              className="bg-red-500 text-white py-3 px-8 rounded-full font-medium focus:ring-2"
                             >
                               ✕ Remove Option
                             </button>
@@ -729,13 +736,14 @@ export default function AllSocialPost() {
                         />
                       </label>
                     </div>
-                    <button
+                    <Button
+                      variant="gradient-primary"
+                      className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                       disabled={disable}
                       onClick={CreatePost}
-                      className="w-full sm:w-auto bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white py-3 px-6 rounded-full transition-all duration-300 hover:from-[#7077FE] hover:to-[#7077FE] shadow-md "
                     >
                       Post
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -748,12 +756,13 @@ export default function AllSocialPost() {
               <h3 className="text-xl font-semibold leading-9">
                 Share your story
               </h3>
-              <button
+              <Button
+                variant="gradient-primary"
+                className="rounded-[100px] py-1 px-3 self-stretch transition-colors duration-500 ease-in-out"
                 onClick={handleFileButton}
-                className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 font-medium  flex items-center text-white justify-center"
               >
                 +
-              </button>
+              </Button>
               <input
                 type="file"
                 accept="image/*, video/*"

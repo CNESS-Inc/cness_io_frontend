@@ -16,6 +16,7 @@ import Modal from "../../ui/Modal";
 import { GetAllPlanDetails, PaymentDetails } from "../../../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
 import QRCodeGenerator from "../../ui/QRCodeGenerator";
+import { useToast } from "../../ui/Toast/ToastProvider";
 
 type PersPricingPlan = {
   id: any;
@@ -37,6 +38,8 @@ export default function DashboardSection(user: any) {
   const [isAnnual, setIsAnnual] = useState(true);
   const [personPricing, setPersonPricing] = useState<PersPricingPlan[]>([]);
   const navigate = useNavigate();
+    const { showToast } = useToast();
+  
   // Data for modules
   const modules = [
     {
@@ -89,43 +92,51 @@ export default function DashboardSection(user: any) {
   // );
 
   const openPricingModal = async () => {
-    setActiveModal("PricingModal");
-    const res = await GetAllPlanDetails();
-    const plansByRange: Record<string, any> = {};
-    res?.data?.data?.forEach((plan: any) => {
-      if (!plansByRange[plan.plan_range]) {
-        plansByRange[plan.plan_range] = {};
-      }
-      plansByRange[plan.plan_range][plan.plan_type] = plan;
-    });
-    // Create combined plan objects with both monthly and yearly data
-    const updatedPlans = Object.values(plansByRange).map((planGroup: any) => {
-      const monthlyPlan = planGroup.monthly;
-      const yearlyPlan = planGroup.yearly;
-
-      return {
-        id: monthlyPlan?.id || yearlyPlan?.id,
-        title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-        description: "Customized pricing based on your selection",
-        monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
-        yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-        period: isAnnual ? "/year" : "/month",
-        billingNote: yearlyPlan
-          ? isAnnual
-            ? `billed annually ($${yearlyPlan.amount})`
-            : `or $${monthlyPlan?.amount}/month`
-          : undefined,
-        features: [], // Add any features you need here
-        buttonText: "Get Started",
-        buttonClass: yearlyPlan
-          ? ""
-          : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-        borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
-        popular: !!yearlyPlan,
-      };
-    });
-
-    setPersonPricing(updatedPlans);
+    try {      
+      setActiveModal("PricingModal");
+      const res = await GetAllPlanDetails();
+      const plansByRange: Record<string, any> = {};
+      res?.data?.data?.forEach((plan: any) => {
+        if (!plansByRange[plan.plan_range]) {
+          plansByRange[plan.plan_range] = {};
+        }
+        plansByRange[plan.plan_range][plan.plan_type] = plan;
+      });
+      // Create combined plan objects with both monthly and yearly data
+      const updatedPlans = Object.values(plansByRange).map((planGroup: any) => {
+        const monthlyPlan = planGroup.monthly;
+        const yearlyPlan = planGroup.yearly;
+  
+        return {
+          id: monthlyPlan?.id || yearlyPlan?.id,
+          title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+          description: "Customized pricing based on your selection",
+          monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
+          yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+          period: isAnnual ? "/year" : "/month",
+          billingNote: yearlyPlan
+            ? isAnnual
+              ? `billed annually ($${yearlyPlan.amount})`
+              : `or $${monthlyPlan?.amount}/month`
+            : undefined,
+          features: [], // Add any features you need here
+          buttonText: "Get Started",
+          buttonClass: yearlyPlan
+            ? ""
+            : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+          borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
+          popular: !!yearlyPlan,
+        };
+      });
+  
+      setPersonPricing(updatedPlans);
+    } catch (error:any) {
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
   };
   const closeModal = () => setActiveModal(null);
   const handlePlanSelection = async (plan: any) => {
@@ -144,8 +155,12 @@ export default function DashboardSection(user: any) {
       } else {
         console.error("URL not found in response");
       }
-    } catch (error) {
-      console.error("Error in handlePlanSelection:", error);
+    } catch (error:any) {
+showToast({
+        message:error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 

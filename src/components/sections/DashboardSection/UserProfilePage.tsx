@@ -13,6 +13,9 @@ import {
   SubmitProfileDetails,
   SubmitPublicProfileDetails,
 } from "../../../Common/ServerAPI";
+import { useToast } from "../../ui/Toast/ToastProvider";
+
+import Button from "../../ui/Button";
 
 const tabNames = [
   "Basic Information",
@@ -30,6 +33,7 @@ const UserProfilePage = () => {
   const [tags, setTags] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState<Record<string, boolean>>({});
+  console.log("🚀 ~ UserProfilePage ~ isSubmitting:", isSubmitting);
   const [profileData, setProfileData] = useState<any>(null);
   console.log("🚀 ~ UserProfilePage ~ profileData:", profileData);
   const [intereset, setInterestData] = useState<any>(null);
@@ -38,6 +42,8 @@ const UserProfilePage = () => {
   const [states, setStates] = useState<any[]>([]);
   const public_organization = localStorage.getItem("person_organization");
   const is_disqualify = localStorage.getItem("is_disqualify");
+
+  const { showToast } = useToast();
 
   // Separate form handlers for each tab
   const basicInfoForm = useForm();
@@ -64,9 +70,19 @@ const UserProfilePage = () => {
       formData.append(formKey, file); // Use dynamic key
 
       try {
-        await SubmitProfileDetails(formData);
-      } catch (error) {
+        const res = await SubmitProfileDetails(formData);
+        showToast({
+          message: res?.success?.message,
+          type: "success",
+          duration: 5000,
+        });
+      } catch (error: any) {
         console.error(`Error uploading ${formKey}:`, error);
+        showToast({
+          message: error?.response?.data?.error?.message,
+          type: "error",
+          duration: 5000,
+        });
       }
     }
   };
@@ -127,9 +143,19 @@ const UserProfilePage = () => {
     };
 
     try {
-      await SubmitProfileDetails(payload);
-    } catch (error) {
+      const res = await SubmitProfileDetails(payload);
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
       console.error("Error saving basic info:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     } finally {
       setIsSubmitting((prev) => ({ ...prev, basic: false }));
     }
@@ -155,9 +181,18 @@ const UserProfilePage = () => {
 
     try {
       const response = await SubmitProfileDetails(payload);
-      console.log("Contact info saved:", response.data);
-    } catch (error) {
+      showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
       console.error("Error saving contact info:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     } finally {
       setIsSubmitting((prev) => ({ ...prev, contact: false }));
     }
@@ -176,9 +211,19 @@ const UserProfilePage = () => {
     };
 
     try {
-      await SubmitProfileDetails(payload);
-    } catch (error) {
+      const response = await SubmitProfileDetails(payload);
+      showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
       console.error("Error saving social links:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     } finally {
       setIsSubmitting((prev) => ({ ...prev, social: false }));
     }
@@ -190,9 +235,18 @@ const UserProfilePage = () => {
 
     try {
       const response = await SubmitProfileDetails(payload);
-      console.log("Education saved:", response.data);
-    } catch (error) {
+      showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
       console.error("Error saving education:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     } finally {
       setIsSubmitting((prev) => ({ ...prev, education: false }));
     }
@@ -205,9 +259,18 @@ const UserProfilePage = () => {
 
     try {
       const response = await SubmitProfileDetails(payload);
-      console.log("Work experience saved:", response.data);
-    } catch (error) {
+      showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
       console.error("Error saving work experience:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     } finally {
       setIsSubmitting((prev) => ({ ...prev, work: false }));
     }
@@ -232,9 +295,18 @@ const UserProfilePage = () => {
       }
 
       const response = await SubmitPublicProfileDetails(formData);
-      console.log("Public profile saved:", response.data);
-    } catch (error) {
+      showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
       console.error("Error saving public profile:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     } finally {
       setIsSubmitting((prev) => ({ ...prev, public: false }));
     }
@@ -322,8 +394,13 @@ const UserProfilePage = () => {
           setBanner(response.data.data.profile_banner);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching profile:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
@@ -333,16 +410,21 @@ const UserProfilePage = () => {
       const profileData = response.data.data;
 
       publicProfileForm.reset({
-        title: profileData.title || "",
-        services: profileData.service_offered || "",
-        notifyEmail: profileData.notify_email || "",
-        emailAddress: profileData.email_address || "",
+        title: profileData?.title || "",
+        services: profileData?.service_offered || "",
+        notifyEmail: profileData?.notify_email || "",
+        emailAddress: profileData?.email_address || "",
       });
-      if (profileData.tags) {
-        setTags(profileData.tags);
+      if (profileData?.tags) {
+        setTags(profileData?.tags);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching profile:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
@@ -350,32 +432,52 @@ const UserProfilePage = () => {
     try {
       const response = await GetInterestsDetails();
       setInterestData(response.data.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching profile:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
   const GetProfessional = async () => {
     try {
       const response = await GetProfessionalDetails();
       setProfessionalData(response.data.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching profile:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
   const GetCountry = async () => {
     try {
       const response = await GetCountryDetails();
       setCountry(response.data.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching profile:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
   const GetState = async (countryId: any) => {
     try {
       const response = await GetStateDetails(countryId);
       setStates(response.data.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching profile:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
@@ -722,22 +824,24 @@ const UserProfilePage = () => {
                                 </div>
 
                                 <div className="md:col-span-2 flex justify-end gap-4 mt-6">
-                                  <button
+                                  <Button
+                                    variant="white-outline"
+                                    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px]  bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                     type="button"
                                     onClick={() => basicInfoForm.reset()}
-                                    className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
                                   >
                                     Reset
-                                  </button>
-                                  <button
+                                  </Button>
+                                  <Button
+                                    variant="gradient-primary"
+                                    className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                     type="submit"
                                     disabled={isSubmitting.basic}
-                                    className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                   >
                                     {isSubmitting.basic
                                       ? "Saving..."
                                       : "Save Basic Info"}
-                                  </button>
+                                  </Button>
                                 </div>
                               </div>
                             </form>
@@ -1003,22 +1107,24 @@ const UserProfilePage = () => {
                                 </div>
 
                                 <div className="md:col-span-2 flex justify-end gap-4 mt-6">
-                                  <button
+                                  <Button
+                                    variant="white-outline"
+                                    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px]  bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                     type="button"
                                     onClick={() => contactInfoForm.reset()}
-                                    className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
                                   >
                                     Reset
-                                  </button>
-                                  <button
+                                  </Button>
+                                  <Button
+                                    variant="gradient-primary"
+                                    className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                     type="submit"
                                     disabled={isSubmitting.contact}
-                                    className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                   >
                                     {isSubmitting.contact
                                       ? "Saving..."
                                       : "Save Contact Info"}
-                                  </button>
+                                  </Button>
                                 </div>
                               </div>
                             </form>
@@ -1085,22 +1191,24 @@ const UserProfilePage = () => {
                                 </div>
 
                                 <div className="md:col-span-2 flex justify-end gap-4 mt-6">
-                                  <button
+                                  <Button
+                                    variant="white-outline"
+                                    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px]  bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                     type="button"
                                     onClick={() => socialLinksForm.reset()}
-                                    className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
                                   >
                                     Reset
-                                  </button>
-                                  <button
+                                  </Button>
+                                  <Button
+                                    variant="gradient-primary"
+                                    className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                     type="submit"
                                     disabled={isSubmitting.social}
-                                    className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                   >
                                     {isSubmitting.social
                                       ? "Saving..."
                                       : "Save Social Links"}
-                                  </button>
+                                  </Button>
                                 </div>
                               </div>
                             </form>
@@ -1176,22 +1284,24 @@ const UserProfilePage = () => {
                                 </div>
 
                                 <div className="md:col-span-2 flex justify-end gap-4 mt-6">
-                                  <button
+                                  <Button
+                                    variant="white-outline"
+                                    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px]  bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                     type="button"
                                     onClick={() => educationForm.reset()}
-                                    className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
                                   >
                                     Reset
-                                  </button>
-                                  <button
+                                  </Button>
+                                  <Button
+                                    variant="gradient-primary"
+                                    className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                     type="submit"
                                     disabled={isSubmitting.education}
-                                    className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                   >
                                     {isSubmitting.education
                                       ? "Saving..."
                                       : "Save Education"}
-                                  </button>
+                                  </Button>
                                 </div>
                               </div>
                             </form>
@@ -1270,22 +1380,24 @@ const UserProfilePage = () => {
                                 </div>
 
                                 <div className="md:col-span-2 flex justify-end gap-4 mt-6">
-                                  <button
+                                  <Button
+                                    variant="white-outline"
+                                    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px]  bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                     type="button"
                                     onClick={() => workExperienceForm.reset()}
-                                    className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
                                   >
                                     Reset
-                                  </button>
-                                  <button
+                                  </Button>
+                                  <Button
+                                    variant="gradient-primary"
+                                    className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                     type="submit"
                                     disabled={isSubmitting.work}
-                                    className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                   >
                                     {isSubmitting.work
                                       ? "Saving..."
                                       : "Save Work Experience"}
-                                  </button>
+                                  </Button>
                                 </div>
                               </div>
                             </form>
@@ -1429,22 +1541,24 @@ const UserProfilePage = () => {
                                 </div>
 
                                 <div className="md:col-span-2 flex justify-end gap-4 mt-6">
-                                  <button
+<Button
+                                    variant="white-outline"
+                                    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px]  bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                     type="button"
                                     onClick={() => publicProfileForm.reset()}
-                                    className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
                                   >
                                     Reset
-                                  </button>
-                                  <button
+                                  </Button>
+                                  <Button
+                                    variant="gradient-primary"
+                                    className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                     type="submit"
                                     disabled={isSubmitting.public}
-                                    className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                   >
                                     {isSubmitting.public
                                       ? "Saving..."
                                       : "Save Public Profile"}
-                                  </button>
+                                  </Button>
                                 </div>
                               </div>
                             </form>

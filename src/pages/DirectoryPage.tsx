@@ -10,8 +10,12 @@ import {
   GetPopularCompanyDetails,
 } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "../components/ui/Toast/ToastProvider";
+import Button from "../components/ui/Button";
 
 type Company = {
+  is_organization: boolean | undefined;
+  is_person: boolean | undefined;
   id: any;
   name: string;
   location: string;
@@ -37,6 +41,7 @@ export default function DirectoryPage() {
   const [selectedDomain, setSelectedDomain] = useState("");
   const [searchText, setSearchText] = useState("");
   const [Domain, setDomain] = useState([]);
+  const { showToast } = useToast();
 
   // Pagination states
   const [popularPagination, setPopularPagination] = useState<PaginationData>({
@@ -54,6 +59,7 @@ export default function DirectoryPage() {
   });
 
   const [popularCompanies, setPopularCompanies] = useState<Company[]>([]);
+  console.log("🚀 ~ DirectoryPage ~ popularCompanies:", popularCompanies)
   const [aspiringCompanies, setAspiringCompanies] = useState<Company[]>([]);
   const [isLoading, setIsLoading] = useState({
     popular: false,
@@ -64,8 +70,13 @@ export default function DirectoryPage() {
     try {
       const res = await GetIndustryDetails();
       setDomain(res?.data?.data);
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching domains:", error);
+      showToast({
+        message:error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
@@ -87,6 +98,8 @@ export default function DirectoryPage() {
           tags: company.tags || [],
           rating: company.rating || 4,
           isCertified: company.is_certified || true,
+          is_person: company.is_person ,
+          is_organization: company.is_organization,
         }));
 
         setPopularCompanies(transformedCompanies);
@@ -98,8 +111,13 @@ export default function DirectoryPage() {
           totalItems: res.data.data.count,
         }));
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching popular companies:", error);
+      showToast({
+        message:error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     } finally {
       setIsLoading((prev) => ({ ...prev, popular: false }));
     }
@@ -131,8 +149,13 @@ export default function DirectoryPage() {
           totalItems: res.data.data.count
         }));
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching inspiring companies:", error);
+      showToast({
+        message:error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     } finally {
       setIsLoading((prev) => ({ ...prev, inspiring: false }));
     }
@@ -347,15 +370,11 @@ export default function DirectoryPage() {
               </ul>
 
               <div className="mt-6 flex justify-center md:justify-start">
-                <button
-                  className="text-white px-6 py-2 rounded-full shadow transition font-medium"
-                  style={{
-                    background:
-                      "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
-                  }}
+                <Button
+                variant="gradient-primary"
                 >
                   Register Now
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -386,6 +405,8 @@ export default function DirectoryPage() {
                   tags={company.tags}
                   rating={company.rating}
                   isCertified={company.isCertified}
+                  is_organization={company.is_organization}
+                  is_person={company.is_person}
                 />
               ))}
             </div>

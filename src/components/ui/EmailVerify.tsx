@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { GetEmailVerify } from "../../Common/ServerAPI";
 import Button from "./Button";
+import { useToast } from "./Toast/ToastProvider";
 
 interface EmailVerifyData {
   token: string;
@@ -11,6 +12,8 @@ const EmailVerify = () => {
   const location = useLocation();
   const [loginShow, setLoginShow] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { showToast } = useToast()
   
   const getQueryParams = () => {
     const params = new URLSearchParams(location.search);
@@ -36,9 +39,14 @@ const EmailVerify = () => {
       const res = await GetEmailVerify(verifyData);
       console.log("Verification response:", res);
       setLoginShow(true);
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error verifying email:", error);
       setError(error instanceof Error ? error.message : "Verification failed");
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
