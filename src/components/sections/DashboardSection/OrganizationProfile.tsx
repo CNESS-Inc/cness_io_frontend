@@ -13,6 +13,7 @@ import {
   SubmitOrganizationListingDetails,
 } from "../../../Common/ServerAPI";
 import { useToast } from "../../ui/Toast/ToastProvider";
+import Button from "../../ui/Button"
 
 const tabNames = [
   "Basic Information",
@@ -84,7 +85,6 @@ const OrganaizationProfilepage = () => {
   const [serviceData, setServiceData] = useState<any>(null);
   const [OrgSize, setOrgSize] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState<Record<string, boolean>>({});
-  console.log("🚀 ~ OrganaizationProfilepage ~ isSubmitting:", isSubmitting);
 
   const public_organization = localStorage.getItem("person_organization");
   const is_disqualify = localStorage.getItem("is_disqualify");
@@ -961,7 +961,9 @@ const OrganaizationProfilepage = () => {
                                 >
                                   Cancel
                                 </button>
-                                <button
+                                <Button
+                                  variant="gradient-primary"
+                                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                   disabled={isSubmitting.basic}
@@ -1153,7 +1155,9 @@ const OrganaizationProfilepage = () => {
                                 >
                                   Cancel
                                 </button>
-                                <button
+                                <Button
+                                  variant="gradient-primary"
+                                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                   disabled={isSubmitting.contact}
@@ -1361,7 +1365,9 @@ const OrganaizationProfilepage = () => {
                                 >
                                   Cancel
                                 </button>
-                                <button
+                                <Button
+                                  variant="gradient-primary"
+                                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                   disabled={isSubmitting.social}
@@ -1508,7 +1514,9 @@ const OrganaizationProfilepage = () => {
                                 >
                                   Cancel
                                 </button>
-                                <button
+                                <Button
+                                  variant="gradient-primary"
+                                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                   disabled={isSubmitting.mission}
@@ -1863,7 +1871,9 @@ const OrganaizationProfilepage = () => {
                                 >
                                   Cancel
                                 </button>
-                                <button
+                                <Button
+                                  variant="gradient-primary"
+                                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                   disabled={isSubmitting.public}

@@ -28,6 +28,7 @@ import Poll from "react-polls";
 import ConnectButton from "./Button/ConnectButton.tsx";
 import FollowButton from "./Button/FollowButton.tsx";
 import { AddVote, PostComments } from "../../Common/ServerAPI.tsx";
+import Button from "../ui/Button.tsx";
 
 interface SocialPostCartProps {
   key: any; // The key prop should match the type of the `post?.id`
@@ -156,10 +157,10 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
         text: comment,
         post_id: id,
       };
-        await PostComments(formattedData);
-        // await fetchComments();
-        setCommentCount((old) => Number(old) + 1);
-        setComment(""); // Assuming setComment is a function to reset a string state
+      await PostComments(formattedData);
+      // await fetchComments();
+      setCommentCount((old) => Number(old) + 1);
+      setComment(""); // Assuming setComment is a function to reset a string state
       await getUserPosts();
     } catch (error: any) {
       console.error(
@@ -195,20 +196,20 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
   const [is_voted, setis_voted] = useState(
     votedOptions?.length ? votedOptions.join(", ") : ""
   );
-  console.log("🚀 ~ setis_voted:", setis_voted)
+  console.log("🚀 ~ setis_voted:", setis_voted);
   const pollAnswers = poll?.options?.map((option: any) => ({
     option: option?.text,
     votes: option?.votes,
     id: option?.id,
   }));
-  console.log("🚀 ~ pollAnswers ~ pollAnswers:", pollAnswers)
+  console.log("🚀 ~ pollAnswers ~ pollAnswers:", pollAnswers);
   // const pollAnswers = poll?.options?.map((option: any) => ({
   //   option: option,
   //   votes: option,
   // }));
 
   const handleVote = async (
-selectedAnswer: any, 
+    selectedAnswer: any
     // pollAnswers: any,
     // pollNumber: any
   ) => {
@@ -222,7 +223,6 @@ selectedAnswer: any,
     };
 
     const data = await AddVote(selectedOption);
-    ;
     console.log("🚀 ~ data:11", data?.data?.data);
     const vote_data = data?.data?.data?.options?.find(
       (ans: any) => ans?.id === selectedOption?.option_id
@@ -390,7 +390,7 @@ selectedAnswer: any,
                   }
                 }}
                 vote={is_voted}
-                // noStorage 
+                // noStorage
               />
             </div>
           </div>
@@ -495,13 +495,14 @@ selectedAnswer: any,
               placeholder="Enter your comment"
               className="w-full rounded-lg px-4 py-2 pr-16 focus:outline-none bg-transparent border-0 bg_input_grey"
             />
-            <button
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 px-6 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium  focus:outline-none"
+            <Button
+              variant="gradient-primary"
+              className="absolute right-4 top-[2px] transform px-6 py-1 rounded-[100px] self-stretch transition-colors duration-500 ease-in-out"
               onClick={() => handleCommentSubmit(id !== undefined ? id : 0)}
               style={{ cursor: "pointer" }}
             >
               Post
-            </button>
+            </Button>
           </div>
         </div>
       </div>

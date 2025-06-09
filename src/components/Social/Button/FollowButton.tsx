@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { FaArrowTrendUp } from "react-icons/fa6";
 import { SendFollowRequest } from "../../../Common/ServerAPI";
+import Button from "../../ui/Button";
 
 interface FollowButtonProps {
   user_id: any;
   isFollowing: any;
 }
 
-const FollowButton: React.FC<FollowButtonProps> = ({ user_id,isFollowing }) => {
-  console.log("🚀 ~ isFollowing:", isFollowing)
+const FollowButton: React.FC<FollowButtonProps> = ({
+  user_id,
+  isFollowing,
+}) => {
+  console.log("🚀 ~ isFollowing:", isFollowing);
   const [loading, setLoading] = useState<boolean>(false);
   const [is_Following, set_IsFollowing] = useState<boolean>(false);
 
@@ -18,8 +22,8 @@ const FollowButton: React.FC<FollowButtonProps> = ({ user_id,isFollowing }) => {
       const formattedData = {
         following_id: user_id,
       };
-      const res = await SendFollowRequest(formattedData)
-      set_IsFollowing(res?.success?.status)
+      const res = await SendFollowRequest(formattedData);
+      set_IsFollowing(res?.success?.status);
     } catch (error) {
       console.error("Error fetching selection details:", error);
     } finally {
@@ -28,13 +32,12 @@ const FollowButton: React.FC<FollowButtonProps> = ({ user_id,isFollowing }) => {
   };
 
   return (
-    <button
+    <Button
       onClick={handleFollow}
-      className={`flex items-center space-x-2 font-semibold py-1 ms-1 px-3 rounded-md ${
-        isFollowing || is_Following
-          ? "bg-gray-300 text-black"
-          : "bg-gradient-to-r from-indigo-500 to-purple-500 text-white "
-      } focus:outline-none focus:ring-2 `}
+      variant="gradient-primary"
+      className={`rounded-[100px] py-1 px-4 self-stretch transition-colors duration-500 ease-in-out flex items-center space-x-2 font-semibold ms-1 ${
+        isFollowing || is_Following ? "bg-gray-300 text-black" : "text-white"
+      }`}
     >
       {isFollowing || is_Following ? (
         <>
@@ -44,7 +47,7 @@ const FollowButton: React.FC<FollowButtonProps> = ({ user_id,isFollowing }) => {
       ) : (
         <span>{loading ? "Following..." : "Follow"}</span>
       )}
-    </button>
+    </Button>
   );
 };
 

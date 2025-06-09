@@ -267,7 +267,6 @@ export default function Login() {
           "employee_size",
           "revenue",
         ];
-
         requiredFields.forEach((field) => {
           const error = validateField(field, formData[field], {
             required: true,
@@ -318,6 +317,7 @@ export default function Login() {
           }
         });
       }
+
 
       // Only validate questions when submitting (step 2) or validating all steps
       if (step === 2) {
@@ -1055,13 +1055,17 @@ export default function Login() {
             <Button
               type="submit"
               onClick={() => handleTypeSelection(1)}
-              className="w-full sm:w-auto bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white py-3 px-6 rounded-full transition-all duration-300 hover:from-[#7077FE] hover:to-[#7077FE] shadow-md"
+              className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
+              variant="primary"
+              withGradientOverlay
             >
               Person
             </Button>
             <Button
               onClick={() => handleTypeSelection(2)}
-              className="w-full sm:w-auto bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white py-3 px-6 rounded-full transition-all duration-300 hover:from-[#7077FE] hover:to-[#7077FE] shadow-md"
+              className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
+              variant="primary"
+              withGradientOverlay
             >
               Organization
             </Button>

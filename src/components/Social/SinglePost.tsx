@@ -29,6 +29,9 @@ import {
   PostCommentLike,
   PostComments,
 } from "../../Common/ServerAPI";
+import Button from "../ui/Button";
+import Header from "../../layout/Header";
+import Footer from "../../layout/Footer/Footer";
 
 const SinglePost = () => {
   const [disable, setDisable] = useState(true);
@@ -278,7 +281,7 @@ const SinglePost = () => {
   const navigate = useNavigate();
 
   const handleProfileClick = (user_id: any) => {
-    navigate(`/social/singlepost/${user_id}`);
+    navigate(`/directory/user-profile/${user_id}`);
   };
 
   const votedOptions = singlepost?.poll?.options
@@ -365,6 +368,8 @@ const SinglePost = () => {
 
   return (
     <>
+       <Header />
+    
       <div className="flex flex-col w-full gap-4 p-4 md:flex-row">
         {/* First Part (1/3 width on medium screens and above) */}
         <div className="w-full md:w-1/4 md:sticky ">
@@ -584,7 +589,7 @@ const SinglePost = () => {
                           {/* Avatar and Comment Content */}
                           <div className="flex items-start">
                             <Link
-                              to={`/profile/public?id=${
+                              to={`/directory/user-profile/${
                                 (comment as any)?.profile?.user_id
                               }`}
                               state={comment}
@@ -657,7 +662,9 @@ const SinglePost = () => {
                                 }
                                 className="w-full rounded-lg px-4 py-2 pr-16 focus:outline-none bg-transparent border-0 bg_input_grey"
                               />
-                              <button
+                              <Button
+                                variant="gradient-primary"
+                                className="absolute right-4 top-[2px] transform px-6 py-1 rounded-[100px] self-stretch transition-colors duration-500 ease-in-out"
                                 // disabled={disable}
                                 onClick={() =>
                                   handleReply(
@@ -665,10 +672,9 @@ const SinglePost = () => {
                                     (comment as any)?.post_id
                                   )
                                 }
-                                className="absolute text-white right-1 top-1/2 transform -translate-y-1/2 px-6 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 font-medium  focus:outline-none focus:ring-2 "
                               >
                                 Post
-                              </button>
+                              </Button>
                             </div>
                           )}
 
@@ -685,7 +691,7 @@ const SinglePost = () => {
                                       className="flex items-start bg-gray-50 rounded-lg p-2 mt-2"
                                     >
                                       <Link
-                                        to={`/profile/public?id=${reply?.profile?.user_id}`}
+                                        to={`/directory/user-profile/${reply?.profile?.user_id}`}
                                         state={reply}
                                       >
                                         {/* <img
@@ -746,8 +752,9 @@ const SinglePost = () => {
                     <LazyLoadImage
                       src={profilePicture}
                       alt=""
-                      className="w-10 h-10 rounded-full mr-2"
+                      className="w-10 h-10 rounded-full mr-2 cursor-pointer"
                       effect="blur"
+                      onClick={() => handleProfileClick(singlepost?.user_id)}
                     />
                   )}
 
@@ -761,15 +768,16 @@ const SinglePost = () => {
                     />
 
                     {/* Post Button */}
-                    <button
+                    <Button
+                      variant="gradient-primary"
+                      className="absolute right-4 top-[2px] transform px-6 py-1 rounded-[100px] self-stretch transition-colors duration-500 ease-in-out"
                       disabled={disable}
                       onClick={() =>
                         handleCommentSubmit(id !== undefined ? id : 0)
                       }
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 px-6 text-white py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 font-medium  focus:outline-none focus:ring-2 "
                     >
                       Post
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -782,6 +790,9 @@ const SinglePost = () => {
           <RightSocial />
         </div>
       </div>
+
+      <Footer />
+
     </>
   );
 };
