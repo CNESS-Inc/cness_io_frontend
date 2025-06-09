@@ -33,7 +33,7 @@ interface FormErrors {
 
 export default function Signingup() {
   const [errors, setErrors] = useState<FormErrors>({});
-  const [, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiMessage, setApiMessage] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -144,6 +144,7 @@ export default function Signingup() {
         setTimeout(() => {
           setIsModalOpen(true);
         }, 1000);
+        setIsSubmitting(false);
       } else {
         setApiMessage("Registration failed");
       }
@@ -164,6 +165,7 @@ export default function Signingup() {
 
         setErrors(formattedErrors);
         setApiMessage(serverErrors.message);
+        setIsSubmitting(false);
       } else {
         setApiMessage(error.message || "An error occurred during registration");
       }
@@ -332,23 +334,18 @@ export default function Signingup() {
               </div>
 
               <div className="flex justify-end gap-4 mt-6">
-                <button
+                <Button
                   type="submit"
-                  className="w-[150px] h-[50px] text-white font-semibold rounded-full shadow-md transition duration-300 
-               bg-gradient-to-r from-blue-500 to-purple-500 
-               hover:blue-500 hover:to-blue-500"
+                  variant="gradient-primary"
+                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                  disabled={isSubmitting}
                 >
-                  Sign Up
-                </button>
+                  {isSubmitting ? "sign up..." : "Sign Up"}
+                </Button>
 
-                <button
-                  type="button"
-                  className="w-[150px] h-[50px] text-white font-semibold rounded-full shadow-md transition duration-300 
-               bg-gradient-to-r from-blue-500 to-purple-500 
-               hover:from-blue-500 hover:to-blue-500"
-                >
+                <Button type="button" variant="white-outline" size="md">
                   Cancel
-                </button>
+                </Button>
               </div>
             </form>
           </div>

@@ -60,7 +60,7 @@ export const ServerAPI = {
 };
 
 export const API = {
-  // BaseUrl: "http://192.168.1.35:5025/api", //local
+  // BaseUrl: "http://192.168.1.34:5025/api", //local
   // BaseUrl: "http://localhost:5025/api", //local
   BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
 };
@@ -97,6 +97,8 @@ export const EndPoint = {
   user_profile: "/profile/user-profile",
   directory_search_profile: "/profile/public-directory",
   public_user_profile: "/profile/public-user-profile",
+  get_popular_company: "/profile/get-popular-company",
+  get_inspire_company: "/profile/get-inspire-company",
   org_type: "/organization",
   questions: "/quiz/get/question",
   questions_file: "/quiz/upload-answer-file",
@@ -180,7 +182,7 @@ export const QuestionFileDetails = (formData: any): ApiResponse => {
   );
 };
 export const QuestionFinalSubmission = (): ApiResponse => {
-  const data = {}
+  const data = {};
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.final_submission);
 };
 export const PaymentDetails = (formData: AccountFormData): ApiResponse => {
@@ -207,11 +209,13 @@ export const submitOrganizationDetails = (
     EndPoint.organization_profile
   );
 };
-export const submitPersonDetails = (
-  formData: OrganizationFormData
-): ApiResponse => {
+export const submitPersonDetails = (formData: any): ApiResponse => {
   console.log("🚀 ~ formData:", formData);
-  const data: Partial<OrganizationFormData> = {
+  const data: Partial<any> = {
+    interest_id: formData?.interest,
+    profession_id: formData?.profession,
+    first_name: formData?.first_name,
+    last_name: formData?.last_name,
     question: formData?.question,
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.person_profile);
@@ -375,6 +379,36 @@ export const GetPublicProfileDetails = (): ApiResponse => {
     EndPoint.public_user_profile
   );
 };
+export const GetPopularCompanyDetails = (
+  page: number,
+  limit: number
+): ApiResponse => {
+  console.log("🚀 ~ GetPopularCompanyDetails ~ limit:", limit);
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["limit"] = limit;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.get_popular_company,
+    params
+  );
+};
+export const GetInspiringCompanies = (
+  page: number,
+  limit: number
+): ApiResponse => {
+  console.log("🚀 ~ GetPopularCompanyDetails ~ limit:", limit);
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["limit"] = limit;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.get_inspire_company,
+    params
+  );
+};
 export const GetProfileDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.profile);
@@ -433,10 +467,6 @@ export const GetUsersearchProfileDetails = (
   page: any,
   limit: any
 ): ApiResponse => {
-  console.log(
-    "🚀 ~ GetUsersearchProfileDetails ~ selectedDomain:",
-    selectedDomain
-  );
   const data: Partial<any> = {
     domain: selectedDomain,
     text: searchQuery,
@@ -520,17 +550,25 @@ export const GetStory = () => {
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.story);
 };
 export const LikeStory = (story_id: any) => {
-const data: Partial<any> = {
+  const data: Partial<any> = {
     story_id: story_id,
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.story_like);
 };
 export const CommentStory = (formattedData: any) => {
-  return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.story_comment);
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formattedData,
+    EndPoint.story_comment
+  );
 };
 export const FetchCommentStory = (id: any) => {
   let data = {};
-  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.story_comment}?story_id=${id}`);
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.story_comment}?story_id=${id}`
+  );
 };
 export const AddStory = (formData: any) => {
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.story);
@@ -555,13 +593,17 @@ export const GetConnectionUser = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection);
 };
-export const SendConnectionRequest = (formattedData:any) => {
-  return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.connection_request);
+export const SendConnectionRequest = (formattedData: any) => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formattedData,
+    EndPoint.connection_request
+  );
 };
-export const SendFollowRequest = (formattedData:any) => {
+export const SendFollowRequest = (formattedData: any) => {
   return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.follow);
 };
-export const AddVote = (formattedData:any) => {
+export const AddVote = (formattedData: any) => {
   return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.vote);
 };
 

@@ -12,6 +12,7 @@ import {
   faBook,
   faCircleUser,
 } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 interface CustomCSSProperties extends React.CSSProperties {
   "--stroke-color"?: string;
@@ -21,6 +22,7 @@ export default function Stepper() {
   const [activeStep, setActiveStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [isJourneyComplete] = useState(false);
+  const navigate = useNavigate()
 
   const journeySteps = [
     {
@@ -73,7 +75,7 @@ export default function Stepper() {
     },
   ];
 
-  const totalSteps = journeySteps.length * 2;
+  const totalSteps = journeySteps?.length * 2;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -125,18 +127,20 @@ export default function Stepper() {
 
   return (
     <section className="flex flex-col items-center relative w-full">
-<div
-  className="relative w-full overflow-hidden rounded-xl"
-  style={{
-    backgroundImage: `
+      <div
+        className="relative w-full overflow-hidden rounded-xl"
+        style={{
+          backgroundImage: `
       url('/Blush.png'),
       linear-gradient(90deg, #DDF4FF 0%, #F5E5FF 100%)
     `,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat'
-  }}
->        <div className="absolute left-0 bottom-0 transform translate-x-0 opacity-50">
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        {" "}
+        <div className="absolute left-0 bottom-0 transform translate-x-0 opacity-50">
           <img
             className="w-full"
             src={actionImgOne}
@@ -152,7 +156,6 @@ export default function Stepper() {
             role="presentation"
           />
         </div>
-
         <div className="inline-flex flex-col items-center gap-6 md:gap-[78px] px-0 py-6 relative flex-[0_0_auto] z-10 w-full">
           {/* Header section */}
           <div className="inline-flex flex-col items-center gap-[18px] relative flex-[0_0_auto] w-full">
@@ -484,11 +487,12 @@ export default function Stepper() {
 
                 {/* Group 3 */}
                 <div className="flex w-full lg:w-[472px] h-[132px] items-center gap-0.5 lg:absolute lg:top-[319px] lg:left-[calc(50%-250px)] justify-center mt-8 lg:mt-0">
-                
                   {journeySteps[2].steps.map((step, stepIndex) => {
                     // const actualOrder = [1, 0]; // If steps[0] is Unlock and steps[1] is Learn, this swaps the order
                     // const actualStep = journeySteps[2].steps[actualOrder[stepIndex]];
-                    const stepNumber = 4 + stepIndex;
+                    const reversedIndex = journeySteps[2].steps.length - 1 - stepIndex;
+const stepNumber = 4 + reversedIndex;
+                    // const stepNumber = 4 + stepIndex;
                     const active = isStepActive(stepNumber);
                     const completed = isStepCompleted(stepNumber);
 
@@ -504,7 +508,7 @@ export default function Stepper() {
                                 ? `bg-gradient-to-br ${step.color}`
                                 : "bg-white"
                             } 
-                          order-${journeySteps[2].steps.length - stepIndex}`}
+                          order-${journeySteps[2]?.steps?.length - stepIndex}`}
                         >
                           <CardContent className="p-0 flex flex-col items-center gap-3">
                             <FontAwesomeIcon
@@ -570,24 +574,9 @@ export default function Stepper() {
 
           {/* CTA Button */}
           <Button
-            className="rounded-[100px] py-2 sm:py-3 lg:py-[16px] px-3 sm:px-4 lg:px-[24px] text-xs sm:text-sm lg:text-base w-full sm:w-auto mx-auto sm:mx-0 text-center block transition-colors duration-500 ease-in-out"
+            className="rounded-[100px] cursor-pointer py-2 sm:py-3 lg:py-[16px] px-3 sm:px-4 lg:px-[24px] text-xs sm:text-sm lg:text-base w-full sm:w-auto mx-auto sm:mx-0 text-center block transition-colors duration-500 ease-in-out"
             variant="gradient-primary"
-            // onClick={() => {
-            //   const nextStep = activeStep + 1;
-            //   if (nextStep >= totalSteps) {
-            //     setActiveStep(0);
-            //     setCompletedSteps([]);
-            //     setIsJourneyComplete(false);
-            //   } else {
-            //     setActiveStep(nextStep);
-            //     if (!completedSteps.includes(activeStep)) {
-            //       setCompletedSteps([...completedSteps, activeStep]);
-            //     }
-            //     if (nextStep === totalSteps - 1) {
-            //       setIsJourneyComplete(true);
-            //     }
-            //   }
-            // }}
+            onClick={() => navigate("/sign-up")}
           >
             Start Journey
           </Button>

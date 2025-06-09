@@ -12,13 +12,14 @@ import {
   SubmitOrganizationDetails,
   SubmitOrganizationListingDetails,
 } from "../../../Common/ServerAPI";
+import { useToast } from "../../ui/Toast/ToastProvider";
 import Button from "../../ui/Button";
 
 const tabNames = [
   "Basic Information",
   "Contact Information",
   "Social Links",
-  "Organization Mission & Vision Values",
+  // "Organization Mission & Vision Values",
   "Public View Under Directory",
 ];
 
@@ -83,10 +84,12 @@ const OrganaizationProfilepage = () => {
   const [industry, setIndustryData] = useState<any>(null);
   const [serviceData, setServiceData] = useState<any>(null);
   const [OrgSize, setOrgSize] = useState([]);
-  console.log("🚀 ~ OrganaizationProfilepage ~ OrganizationSize:", OrgSize);
+  const [isSubmitting, setIsSubmitting] = useState<Record<string, boolean>>({});
 
   const public_organization = localStorage.getItem("person_organization");
   const is_disqualify = localStorage.getItem("is_disqualify");
+
+  const { showToast } = useToast();
 
   // Create separate form instances for each tab
   const basicInfoForm = useForm<BasicInfoFormData>({
@@ -130,9 +133,19 @@ const OrganaizationProfilepage = () => {
       formData.append(formKey, file); // Use dynamic key
 
       try {
-        await SubmitOrganizationDetails(formData);
-      } catch (error) {
+        const response = await SubmitOrganizationDetails(formData);
+        showToast({
+          message: response?.success?.message,
+          type: "success",
+          duration: 5000,
+        });
+      } catch (error: any) {
         console.error(`Error uploading ${formKey}:`, error);
+        showToast({
+          message: error?.response?.data?.error?.message,
+          type: "error",
+          duration: 5000,
+        });
       }
     }
   };
@@ -190,7 +203,7 @@ const OrganaizationProfilepage = () => {
 
   // Submit handlers for each tab
   const submitBasicInfo = async (data: BasicInfoFormData) => {
-    console.log("Basic Info submitted:", data);
+    setIsSubmitting((prev) => ({ ...prev, basic: true }));
     const payload = {
       organization_name: data.organizationName || null,
       business_name: data.legalBusinessName || null,
@@ -204,14 +217,27 @@ const OrganaizationProfilepage = () => {
     };
 
     try {
-      await SubmitOrganizationDetails(payload);
-    } catch (error) {
+      const response = await SubmitOrganizationDetails(payload);
+      showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
       console.error("Error saving basic info:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
       // Error handling
+    } finally {
+      setIsSubmitting((prev) => ({ ...prev, basic: false }));
     }
   };
 
   const submitContactInfo = async (data: ContactInfoFormData) => {
+    setIsSubmitting((prev) => ({ ...prev, contact: true }));
     const payload = {
       primary_contact_person_name: data.primaryContactName || null,
       designation: data.designation || null,
@@ -220,14 +246,28 @@ const OrganaizationProfilepage = () => {
     };
 
     try {
-      await SubmitOrganizationDetails(payload);
-    } catch (error) {
+      const response = await SubmitOrganizationDetails(payload);
+      showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
       console.error("Error saving basic info:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
       // Error handling
+    } finally {
+      setIsSubmitting((prev) => ({ ...prev, contact: false }));
     }
   };
 
   const submitSocialLinks = async (data: SocialLinksFormData) => {
+    setIsSubmitting((prev) => ({ ...prev, social: true }));
+
     console.log("Social Links submitted:", data);
     const payload = {
       facebook: data.facebook || null,
@@ -238,30 +278,57 @@ const OrganaizationProfilepage = () => {
     };
 
     try {
-      await SubmitOrganizationDetails(payload);
-    } catch (error) {
+      const response = await SubmitOrganizationDetails(payload);
+      showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
       console.error("Error saving basic info:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
       // Error handling
+    } finally {
+      setIsSubmitting((prev) => ({ ...prev, social: false }));
     }
   };
 
-  const submitMissionVision = async (data: MissionVisionFormData) => {
-    console.log("Mission & Vision submitted:", data);
-    const payload = {
-      mission_statement: data.missionStatement || null,
-      vision_statement: data.visionStatement || null,
-      core_values: data.coreValues || null,
-    };
+  // const submitMissionVision = async (data: MissionVisionFormData) => {
+  //   setIsSubmitting((prev) => ({ ...prev, mission: true }));
+  //   console.log("Mission & Vision submitted:", data);
+  //   const payload = {
+  //     mission_statement: data.missionStatement || null,
+  //     vision_statement: data.visionStatement || null,
+  //     core_values: data.coreValues || null,
+  //   };
 
-    try {
-      await SubmitOrganizationDetails(payload);
-    } catch (error) {
-      console.error("Error saving basic info:", error);
-      // Error handling
-    }
-  };
+  //   try {
+  //     const response = await SubmitOrganizationDetails(payload);
+  //     showToast({
+  //       message: response?.success?.message,
+  //       type: "success",
+  //       duration: 5000,
+  //     });
+  //   } catch (error: any) {
+  //     console.error("Error saving basic info:", error);
+  //     showToast({
+  //       message: error?.response?.data?.error?.message,
+  //       type: "error",
+  //       duration: 5000,
+  //     });
+  //     // Error handling
+  //   } finally {
+  //     setIsSubmitting((prev) => ({ ...prev, mission: false }));
+  //   }
+  // };
 
   const submitPublicView = async (data: PublicViewFormData) => {
+    setIsSubmitting((prev) => ({ ...prev, public: true }));
+
     console.log("Public View submitted:", data);
 
     // Transform services array to just IDs
@@ -277,10 +344,21 @@ const OrganaizationProfilepage = () => {
 
     try {
       const response = await SubmitOrganizationListingDetails(payload);
-      console.log("Success:", response);
-    } catch (error) {
+      showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
       console.error("Error saving basic info:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
       // Error handling
+    } finally {
+      setIsSubmitting((prev) => ({ ...prev, public: false }));
     }
   };
 
@@ -333,26 +411,31 @@ const OrganaizationProfilepage = () => {
       if (response.data.data.banner_url) {
         setBanner(response.data.data.banner_url);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching profile:", error);
       // Optionally show error to user
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
   const GetOrganizationListingProfile = async () => {
     try {
       const response = await GetOrganizationListingDetails();
-      const profileData = response.data.data;
+      const profileData = response?.data?.data;
 
       // // Reset public view form
       publicViewForm.reset({
-        email: profileData.notify_email_address || "",
-        phone: profileData.contact_number || "",
-        optionalEmail: profileData.alternative_email || "",
-        officialAddress: profileData.official_address || "",
+        email: profileData?.notify_email_address || "",
+        phone: profileData?.contact_number || "",
+        optionalEmail: profileData?.alternative_email || "",
+        officialAddress: profileData?.official_address || "",
       });
 
       // Set services and tags from API data
-      if (profileData.organization_service) {
+      if (profileData?.organization_service) {
         // Extract just the id values from each object in the array
         const serviceIds = profileData.organization_service.map(
           (service: any) => service.id
@@ -363,12 +446,16 @@ const OrganaizationProfilepage = () => {
         );
         setServices(serviceIds);
       }
-      if (profileData.tags) {
+      if (profileData?.tags) {
         setTags(profileData.tags);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching profile:", error);
-      // Optionally show error to user
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
@@ -376,8 +463,13 @@ const OrganaizationProfilepage = () => {
     try {
       const response = await GetIndustryDetails();
       setIndustryData(response.data.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching profile:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
@@ -385,8 +477,13 @@ const OrganaizationProfilepage = () => {
     try {
       const response = await GetServiceDetails();
       setServiceData(response.data.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching profile:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
@@ -394,7 +491,13 @@ const OrganaizationProfilepage = () => {
     try {
       const res = await OrgTypeDetails();
       setOrgSize(res?.data?.data);
-    } catch (error) {}
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
   };
   const hasFetched = useRef(false);
 
@@ -894,10 +997,13 @@ const OrganaizationProfilepage = () => {
                                 </button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                   type="submit"
+                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                  disabled={isSubmitting.basic}
                                 >
-                                  Save Basic Info
+                                  {isSubmitting.basic
+                                    ? "Saving..."
+                                    : "Save Basic Info"}
                                 </Button>
                               </div>
                             </form>
@@ -1084,10 +1190,13 @@ const OrganaizationProfilepage = () => {
                                 </button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                   type="submit"
+                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                  disabled={isSubmitting.contact}
                                 >
-                                  Save Contact Info
+                                  {isSubmitting.contact
+                                    ? "Saving..."
+                                    : "Save Contact Info"}
                                 </Button>
                               </div>
                             </form>
@@ -1290,24 +1399,26 @@ const OrganaizationProfilepage = () => {
                                 </button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                   type="submit"
+                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                  disabled={isSubmitting.social}
                                 >
-                                  Save Social Links
+                                  {isSubmitting.social
+                                    ? "Saving..."
+                                    : "Save Social Links"}
                                 </Button>
                               </div>
                             </form>
                           </Tab.Panel>
 
                           {/* Organization Mission & Vision Values */}
-                          <Tab.Panel>
+                          {/* <Tab.Panel>
                             <form
                               onSubmit={missionVisionForm.handleSubmit(
                                 submitMissionVision
                               )}
                             >
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Organization Mission Statement */}
                                 <div>
                                   <label className="block text-sm font-medium text-gray-800 mb-2">
                                     Organization Mission Statement{" "}
@@ -1346,7 +1457,6 @@ const OrganaizationProfilepage = () => {
                                   )}
                                 </div>
 
-                                {/* Vision Statement */}
                                 <div>
                                   <label className="block text-sm font-medium text-gray-800 mb-2">
                                     Vision Statement{" "}
@@ -1385,7 +1495,6 @@ const OrganaizationProfilepage = () => {
                                   )}
                                 </div>
 
-                                {/* Core Values */}
                                 <div className="md:col-span-2">
                                   <label className="block text-sm font-medium text-gray-800 mb-2">
                                     Core Values{" "}
@@ -1424,7 +1533,6 @@ const OrganaizationProfilepage = () => {
                                 </div>
                               </div>
 
-                              {/* Action buttons for this tab */}
                               <div className="flex justify-end gap-4 mt-6">
                                 <button
                                   type="button"
@@ -1435,14 +1543,17 @@ const OrganaizationProfilepage = () => {
                                 </button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                   type="submit"
+                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                  disabled={isSubmitting.mission}
                                 >
-                                  Save Mission & Vision
+                                  {isSubmitting.mission
+                                    ? "Saving..."
+                                    : "Save Mission & Vision"}
                                 </Button>
                               </div>
                             </form>
-                          </Tab.Panel>
+                          </Tab.Panel> */}
 
                           {/* Services with Add More functionality */}
 
@@ -1788,10 +1899,13 @@ const OrganaizationProfilepage = () => {
                                 </button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                                   type="submit"
+                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                  disabled={isSubmitting.public}
                                 >
-                                  Save Public View
+                                  {isSubmitting.public
+                                    ? "Saving..."
+                                    : "Save Public View"}
                                 </Button>
                               </div>
                             </form>

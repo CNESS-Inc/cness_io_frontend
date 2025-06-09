@@ -1,7 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import Button from "../../ui/Button";
 import Image from "../../ui/Image";
 
 export default function PlatformSections() {
+  const navigate = useNavigate();
   return (
     <section className="bg-[#F3F1FF] px-4 sm:px-6 pb-8 sm:pb-12 lg:pb-[52px]">
       <div className="max-w-6xl mx-auto">
@@ -41,6 +43,7 @@ export default function PlatformSections() {
             "Six pillars of conscious leadership",
             "Required for renewals & upgrades",
           ],
+          navigateTo: "/what",
         },
         {
           title: "Directory",
@@ -52,6 +55,7 @@ export default function PlatformSections() {
             "Premium spotlight listings",
             "Conscious badges",
           ],
+          navigateTo: "/directory",
         },
         {
           title: "Council | Mentors | Partners",
@@ -91,14 +95,16 @@ export default function PlatformSections() {
                   {platform.title}
                 </h2>
 
-<p className="poppins font-semibold text-lg sm:text-xl lg:text-2xl xl:text-[32px] leading-snug sm:leading-normal lg:leading-tight text-[#222224] mb-3 sm:mb-4 lg:mb-6 whitespace-pre-line">                  {platform.tagline}
+                <p className="poppins font-semibold text-lg sm:text-xl lg:text-2xl xl:text-[32px] leading-snug sm:leading-normal lg:leading-tight text-[#222224] mb-3 sm:mb-4 lg:mb-6 whitespace-pre-line">
+                  {" "}
+                  {platform.tagline}
                 </p>
 
                 <ul className="space-y-2 sm:space-y-3 mb-4 sm:mb-5 lg:mb-6">
                   {platform.features.map((feature, i) => (
                     <li
                       key={i}
-  className="openSans text-sm sm:text-base lg:text-lg xl:text-xl leading-tight tracking-normal text-black bg-[#F7F7F7] px-4 py-2 rounded-full sm:rounded-[90px] text-left"
+                      className="openSans w-fit text-sm sm:text-base lg:text-lg xl:text-xl leading-tight tracking-normal text-black bg-[#F7F7F7] px-4 py-2 rounded-full sm:rounded-[90px] text-left"
                     >
                       {feature}
                     </li>
@@ -107,7 +113,10 @@ export default function PlatformSections() {
 
                 <Button
                   variant="gradient-primary"
-                  className="rounded-[100px] py-3 px-8 transition-colors duration-500 ease-in-out"
+                  className="rounded-[100px] cursor-pointer py-3 px-8 transition-colors duration-500 ease-in-out"
+                  onClick={() =>
+                    platform.navigateTo ? navigate(platform.navigateTo) : null
+                  }
                 >
                   Learn More
                 </Button>
