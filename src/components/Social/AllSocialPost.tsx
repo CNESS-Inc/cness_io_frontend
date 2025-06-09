@@ -403,9 +403,11 @@ export default function AllSocialPost() {
                 right: 0,
               }}
             >
+
               <Button
                 variant="gradient-primary"
                 className="rounded-[100px] py-3 px-8  self-stretch transition-colors duration-500 ease-in-out"
+
                 onClick={handleButtonClick}
               >
                 
@@ -425,7 +427,9 @@ export default function AllSocialPost() {
                     />
                   </svg>
                 </div> */}
+
               </Button>
+
             </div>
           </div>
 
