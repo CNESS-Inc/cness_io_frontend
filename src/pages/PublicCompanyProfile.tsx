@@ -17,6 +17,7 @@ import tag from "../assets/tags.png";
 import review from "../assets/review.png";
 import { useParams } from "react-router-dom";
 import { GetCompanyProfileDetails } from "../Common/ServerAPI";
+import { useToast } from "../components/ui/Toast/ToastProvider";
 
 interface Organization {
     organization_name: string;
@@ -39,7 +40,7 @@ export default function PublicCompanyProfile() {
   console.log(id);
 
   const [companyDetails, setCompanyDetails] = useState<Organization>();
-  console.log("🚀 ~ PublicCompanyProfile ~ companyDetails:", companyDetails);
+  const { showToast } = useToast()
 
   const fetchCompanyDetails = async () => {
     try {

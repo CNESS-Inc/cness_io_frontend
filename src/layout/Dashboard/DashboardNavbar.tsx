@@ -8,7 +8,7 @@ import {
   HelpCircleIcon,
   LayoutDashboardIcon,
   SettingsIcon,
-  UploadIcon,
+  // UploadIcon,
   UserIcon,
   XIcon,
   ChevronDownIcon,

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { GetEmailVerify } from "../../Common/ServerAPI";
 import Button from "./Button";
+import { useToast } from "./Toast/ToastProvider";
 
 interface EmailVerifyData {
   token: string;
@@ -11,6 +12,8 @@ const EmailVerify = () => {
   const location = useLocation();
   const [loginShow, setLoginShow] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { showToast } = useToast()
   
   const getQueryParams = () => {
     const params = new URLSearchParams(location.search);

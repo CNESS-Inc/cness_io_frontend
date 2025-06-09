@@ -297,34 +297,34 @@ const OrganaizationProfilepage = () => {
     }
   };
 
-  const submitMissionVision = async (data: MissionVisionFormData) => {
-    setIsSubmitting((prev) => ({ ...prev, mission: true }));
-    console.log("Mission & Vision submitted:", data);
-    const payload = {
-      mission_statement: data.missionStatement || null,
-      vision_statement: data.visionStatement || null,
-      core_values: data.coreValues || null,
-    };
+  // const submitMissionVision = async (data: MissionVisionFormData) => {
+  //   setIsSubmitting((prev) => ({ ...prev, mission: true }));
+  //   console.log("Mission & Vision submitted:", data);
+  //   const payload = {
+  //     mission_statement: data.missionStatement || null,
+  //     vision_statement: data.visionStatement || null,
+  //     core_values: data.coreValues || null,
+  //   };
 
-    try {
-      const response = await SubmitOrganizationDetails(payload);
-      showToast({
-        message: response?.success?.message,
-        type: "success",
-        duration: 5000,
-      });
-    } catch (error: any) {
-      console.error("Error saving basic info:", error);
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-      // Error handling
-    } finally {
-      setIsSubmitting((prev) => ({ ...prev, mission: false }));
-    }
-  };
+  //   try {
+  //     const response = await SubmitOrganizationDetails(payload);
+  //     showToast({
+  //       message: response?.success?.message,
+  //       type: "success",
+  //       duration: 5000,
+  //     });
+  //   } catch (error: any) {
+  //     console.error("Error saving basic info:", error);
+  //     showToast({
+  //       message: error?.response?.data?.error?.message,
+  //       type: "error",
+  //       duration: 5000,
+  //     });
+  //     // Error handling
+  //   } finally {
+  //     setIsSubmitting((prev) => ({ ...prev, mission: false }));
+  //   }
+  // };
 
   const submitPublicView = async (data: PublicViewFormData) => {
     setIsSubmitting((prev) => ({ ...prev, public: true }));
