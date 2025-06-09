@@ -45,7 +45,13 @@ export default function PublicCompanyProfile() {
     try {
       const res = await GetCompanyProfileDetails(id);
       setCompanyDetails(res?.data?.data);
-    } catch (error) {}
+    } catch (error:any) {
+      showToast({
+        message:error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
   };
 
   useEffect(() => {

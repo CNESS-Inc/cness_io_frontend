@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import DashboardSection from "../components/sections/DashboardSection";
 import { DashboardDetails } from "../Common/ServerAPI";
 import DashboardLayout from "../layout/Dashboard/dashboardlayout";
+import { useToast } from "../components/ui/Toast/ToastProvider";
 
 // interface DashboardLayoutProps {
 //   children: React.ReactNode;
@@ -25,6 +26,8 @@ interface ApiResponse<T> {
 
 const Dashboard = () => {
   const [user, setUser] = useState<UserData | null>(null);
+    const { showToast } = useToast();
+  
 
   const hasFetched = useRef(false);
 
@@ -36,8 +39,13 @@ const Dashboard = () => {
         localStorage.setItem("name",response.data.data?.name);
         // localStorage.setItem("profile_picture",response.data.data?.profile_picture);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching dashboard data:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 

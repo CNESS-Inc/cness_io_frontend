@@ -20,17 +20,26 @@ import review from "../assets/review.png";
 import { useEffect, useState } from "react";
 import { GetUserProfileDetails } from "../Common/ServerAPI";
 import { useParams } from "react-router-dom";
+import { useToast } from "../components/ui/Toast/ToastProvider";
 
 export default function UserProfileView() {
   const { id } = useParams();
   const [userDetails, setUserDetails] = useState<any>();
   console.log("🚀 ~ UserProfileView ~ userDetails:", userDetails);
 
+  const { showToast } = useToast()
+
   const fetchUserDetails = async () => {
     try {
       const res = await GetUserProfileDetails(id);
       setUserDetails(res?.data?.data);
-    } catch (error) {}
+    } catch (error:any) {
+      showToast({
+        message:error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
   };
 
   useEffect(() => {

@@ -33,7 +33,7 @@ const UserProfilePage = () => {
   const [tags, setTags] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState<Record<string, boolean>>({});
-  console.log("🚀 ~ UserProfilePage ~ isSubmitting:", isSubmitting)
+  console.log("🚀 ~ UserProfilePage ~ isSubmitting:", isSubmitting);
   const [profileData, setProfileData] = useState<any>(null);
   console.log("🚀 ~ UserProfilePage ~ profileData:", profileData);
   const [intereset, setInterestData] = useState<any>(null);
@@ -70,9 +70,19 @@ const UserProfilePage = () => {
       formData.append(formKey, file); // Use dynamic key
 
       try {
-        await SubmitProfileDetails(formData);
-      } catch (error) {
+        const res = await SubmitProfileDetails(formData);
+        showToast({
+          message: res?.success?.message,
+          type: "success",
+          duration: 5000,
+        });
+      } catch (error: any) {
         console.error(`Error uploading ${formKey}:`, error);
+        showToast({
+          message: error?.response?.data?.error?.message,
+          type: "error",
+          duration: 5000,
+        });
       }
     }
   };
@@ -142,7 +152,7 @@ const UserProfilePage = () => {
     } catch (error: any) {
       console.error("Error saving basic info:", error);
       showToast({
-        message: error?.message,
+        message: error?.response?.data?.error?.message,
         type: "error",
         duration: 5000,
       });
@@ -179,7 +189,7 @@ const UserProfilePage = () => {
     } catch (error: any) {
       console.error("Error saving contact info:", error);
       showToast({
-        message: error?.message,
+        message: error?.response?.data?.error?.message,
         type: "error",
         duration: 5000,
       });
@@ -210,7 +220,7 @@ const UserProfilePage = () => {
     } catch (error: any) {
       console.error("Error saving social links:", error);
       showToast({
-        message: error?.message,
+        message: error?.response?.data?.error?.message,
         type: "error",
         duration: 5000,
       });
@@ -233,7 +243,7 @@ const UserProfilePage = () => {
     } catch (error: any) {
       console.error("Error saving education:", error);
       showToast({
-        message: error?.message,
+        message: error?.response?.data?.error?.message,
         type: "error",
         duration: 5000,
       });
@@ -257,7 +267,7 @@ const UserProfilePage = () => {
     } catch (error: any) {
       console.error("Error saving work experience:", error);
       showToast({
-        message: error?.message,
+        message: error?.response?.data?.error?.message,
         type: "error",
         duration: 5000,
       });
@@ -290,10 +300,10 @@ const UserProfilePage = () => {
         type: "success",
         duration: 5000,
       });
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error saving public profile:", error);
       showToast({
-        message: error?.message,
+        message: error?.response?.data?.error?.message,
         type: "error",
         duration: 5000,
       });
@@ -384,8 +394,13 @@ const UserProfilePage = () => {
           setBanner(response.data.data.profile_banner);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching profile:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
@@ -395,16 +410,21 @@ const UserProfilePage = () => {
       const profileData = response.data.data;
 
       publicProfileForm.reset({
-        title: profileData.title || "",
-        services: profileData.service_offered || "",
-        notifyEmail: profileData.notify_email || "",
-        emailAddress: profileData.email_address || "",
+        title: profileData?.title || "",
+        services: profileData?.service_offered || "",
+        notifyEmail: profileData?.notify_email || "",
+        emailAddress: profileData?.email_address || "",
       });
-      if (profileData.tags) {
-        setTags(profileData.tags);
+      if (profileData?.tags) {
+        setTags(profileData?.tags);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching profile:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
@@ -412,32 +432,52 @@ const UserProfilePage = () => {
     try {
       const response = await GetInterestsDetails();
       setInterestData(response.data.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching profile:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
   const GetProfessional = async () => {
     try {
       const response = await GetProfessionalDetails();
       setProfessionalData(response.data.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching profile:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
   const GetCountry = async () => {
     try {
       const response = await GetCountryDetails();
       setCountry(response.data.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching profile:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
   const GetState = async (countryId: any) => {
     try {
       const response = await GetStateDetails(countryId);
       setStates(response.data.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching profile:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
@@ -784,13 +824,14 @@ const UserProfilePage = () => {
                                 </div>
 
                                 <div className="md:col-span-2 flex justify-end gap-4 mt-6">
-                                  <button
+                                  <Button
+                                    variant="white-outline"
+                                    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px]  bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                     type="button"
                                     onClick={() => basicInfoForm.reset()}
-                                    className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
                                   >
                                     Reset
-                                  </button>
+                                  </Button>
                                   <Button
                                     variant="gradient-primary"
                                     className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
@@ -1066,13 +1107,14 @@ const UserProfilePage = () => {
                                 </div>
 
                                 <div className="md:col-span-2 flex justify-end gap-4 mt-6">
-                                  <button
+                                  <Button
+                                    variant="white-outline"
+                                    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px]  bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                     type="button"
                                     onClick={() => contactInfoForm.reset()}
-                                    className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
                                   >
                                     Reset
-                                  </button>
+                                  </Button>
                                   <Button
                                     variant="gradient-primary"
                                     className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
@@ -1149,13 +1191,14 @@ const UserProfilePage = () => {
                                 </div>
 
                                 <div className="md:col-span-2 flex justify-end gap-4 mt-6">
-                                  <button
+                                  <Button
+                                    variant="white-outline"
+                                    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px]  bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                     type="button"
                                     onClick={() => socialLinksForm.reset()}
-                                    className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
                                   >
                                     Reset
-                                  </button>
+                                  </Button>
                                   <Button
                                     variant="gradient-primary"
                                     className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
@@ -1241,13 +1284,14 @@ const UserProfilePage = () => {
                                 </div>
 
                                 <div className="md:col-span-2 flex justify-end gap-4 mt-6">
-                                  <button
+                                  <Button
+                                    variant="white-outline"
+                                    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px]  bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                     type="button"
                                     onClick={() => educationForm.reset()}
-                                    className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
                                   >
                                     Reset
-                                  </button>
+                                  </Button>
                                   <Button
                                     variant="gradient-primary"
                                     className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
@@ -1336,13 +1380,14 @@ const UserProfilePage = () => {
                                 </div>
 
                                 <div className="md:col-span-2 flex justify-end gap-4 mt-6">
-                                  <button
+                                  <Button
+                                    variant="white-outline"
+                                    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px]  bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                     type="button"
                                     onClick={() => workExperienceForm.reset()}
-                                    className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
                                   >
                                     Reset
-                                  </button>
+                                  </Button>
                                   <Button
                                     variant="gradient-primary"
                                     className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
@@ -1496,13 +1541,14 @@ const UserProfilePage = () => {
                                 </div>
 
                                 <div className="md:col-span-2 flex justify-end gap-4 mt-6">
-                                  <button
+<Button
+                                    variant="white-outline"
+                                    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px]  bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                     type="button"
                                     onClick={() => publicProfileForm.reset()}
-                                    className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
                                   >
                                     Reset
-                                  </button>
+                                  </Button>
                                   <Button
                                     variant="gradient-primary"
                                     className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"

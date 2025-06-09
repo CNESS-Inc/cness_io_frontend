@@ -36,9 +36,14 @@ const PaymentVerify = () => {
       const res = await GetPaymentVerify(verifyData);
       console.log("Verification response:", res);
       setLoginShow(true);
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error verifying email:", error);
       setError(error instanceof Error ? error.message : "Verification failed");
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 

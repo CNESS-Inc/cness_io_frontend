@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   AwardIcon,
   BadgePlusIcon,
@@ -15,13 +15,23 @@ import {
   ChevronUpIcon,
   LogOutIcon,
 } from "lucide-react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-
+  const location = useLocation();
   const navigate = useNavigate();
+
+  // Automatically open/close profile dropdown based on current route
+  useEffect(() => {
+    if (location.pathname.startsWith('/dashboard/user-profile') || 
+        location.pathname.startsWith('/dashboard/company-profile')) {
+      setIsProfileOpen(true);
+    } else {
+      setIsProfileOpen(false);
+    }
+  }, [location.pathname]);
 
   const handleLogout = () => {
     try {
@@ -43,17 +53,27 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
       path: "/dashboard",
     },
     {
+      icon: <UserIcon className="w-5 h-5" />,
+      label: "Profile",
+      active: false,
+      isProfileDropdown: true,
+      childPaths: [
+        "/dashboard/user-profile",
+        "/dashboard/company-profile"
+      ]
+    },
+    {
       icon: <AwardIcon className="w-5 h-5" />,
       label: "Get Certified",
       active: true,
       path: "/dashboard/assesment",
     },
-    {
-      icon: <UploadIcon className="w-5 h-5" />,
-      label: "Upload Proof",
-      active: false,
-      path: "/dashboard/upload-proof",
-    },
+    // {
+    //   icon: <UploadIcon className="w-5 h-5" />,
+    //   label: "Upload Proof",
+    //   active: false,
+    //   path: "/dashboard/upload-proof",
+    // },
     {
       icon: <FileBarChartIcon className="w-5 h-5" />,
       label: "Score & Results",
@@ -114,12 +134,113 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
     },
   ];
 
+  // NavItem component with profile dropdown support
+  const NavItem = ({ item, onClick }: any) => {
+    const location = useLocation();
+    const isActiveChild = item.childPaths?.some((path:any) => 
+      location.pathname.startsWith(path)
+    );
+
+    const baseClasses = "flex items-center gap-3 px-3 py-2.5 w-full rounded-xl cursor-pointer";
+    const activeClasses = "bg-[#f3e8ff] text-[#9747FF] font-semibold";
+    const inactiveClasses = "text-slate-500 hover:bg-[#f3e8ff]";
+
+    const content = (
+      <>
+        <div className="inline-flex items-start gap-2.5">{item.icon}</div>
+        <div className="font-medium text-sm whitespace-nowrap">{item.label}</div>
+        {item.hasNotification && (
+          <div className="absolute w-2 h-2 top-[13px] -left-px bg-orange-500 rounded-full border border-white" />
+        )}
+      </>
+    );
+
+    const handleClick = () => {
+      if (item.customAction) {
+        item.customAction();
+      } else {
+        onClick();
+      }
+    };
+
+    if (item.isProfileDropdown) {
+      return (
+        <div className="w-full">
+          <button
+            onClick={() => setIsProfileOpen(!isProfileOpen)}
+            className={`${baseClasses} ${
+              isActiveChild ? activeClasses : inactiveClasses
+            }`}
+          >
+            <div className="flex items-start gap-3 w-full relative">
+              {content}
+            </div>
+            {isProfileOpen ? (
+              <ChevronUpIcon className="w-4 h-4" />
+            ) : (
+              <ChevronDownIcon className="w-4 h-4" />
+            )}
+          </button>
+
+          {isProfileOpen && (
+            <div className="flex flex-col gap-[2px] mt-[2px] ml-[52px]">
+              <NavLink
+                to="/dashboard/user-profile"
+                onClick={onClick}
+                className={({ isActive }) =>
+                  `text-sm px-3 py-[6px] rounded-lg w-full transition whitespace-nowrap ${
+                    isActive
+                      ? "bg-[#f3e8ff] text-[#9747FF] font-semibold"
+                      : "text-slate-500 hover:bg-[#f9f9f9]"
+                  }`
+                }
+              >
+                My Profile
+              </NavLink>
+              <NavLink
+                to="/dashboard/company-profile"
+                onClick={onClick}
+                className={({ isActive }) =>
+                  `text-sm px-3 py-[6px] rounded-lg w-full transition whitespace-nowrap ${
+                    isActive
+                      ? "bg-[#f3e8ff] text-[#9747FF] font-semibold"
+                      : "text-slate-500 hover:bg-[#f9f9f9]"
+                  }`
+                }
+              >
+                Company Profile
+              </NavLink>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return item.path ? (
+      <NavLink
+        to={item.path}
+        end={item.path === "/dashboard"}
+        onClick={handleClick}
+        className={({ isActive }) =>
+          `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`
+        }
+      >
+        <div className="flex items-start gap-3 w-full relative">{content}</div>
+      </NavLink>
+    ) : (
+      <div className={`${baseClasses} ${inactiveClasses}`} onClick={handleClick}>
+        <div className="flex items-start gap-3 w-full relative">{content}</div>
+      </div>
+    );
+  };
+
   return (
     <>
       {/* Mobile Overlay */}
       {isMobileNavOpen && (
         <div
           onClick={toggleMobileNav}
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
         />
       )}
 
@@ -127,7 +248,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
       <nav
         className={`
         fixed md:relative
-    h-full w-[220px] sm:w-[240px] md:w-[260px] lg:w-[280px]
+        h-full w-[220px] sm:w-[240px] md:w-[260px] lg:w-[280px]
         bg-white border-r border-[#0000001a]
         transition-all duration-300 ease-in-out
         z-50
@@ -169,55 +290,6 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
             />
           </div>
 
-          {/* Profile Dropdown (tight, clean layout) */}
-          <div className="w-full px-3">
-            <button
-              onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center justify-between w-full px-4 py-[10px] rounded-xl cursor-pointer text-slate-500 hover:bg-[#f3e8ff] transition"
-            >
-              <div className="flex items-center gap-3">
-                <UserIcon className="w-5 h-5" />
-                <span className="text-sm font-medium">Profile</span>
-              </div>
-              {isProfileOpen ? (
-                <ChevronUpIcon className="w-4 h-4" />
-              ) : (
-                <ChevronDownIcon className="w-4 h-4" />
-              )}
-            </button>
-
-            {isProfileOpen && (
-              <div className="flex flex-col gap-[2px] mt-[2px] ml-[52px]">
-                <NavLink
-                  to="/dashboard/user-profile"
-                  onClick={toggleMobileNav}
-                  className={({ isActive }) =>
-                    `text-sm px-3 py-[6px] rounded-lg w-full transition whitespace-nowrap ${
-                      isActive
-                        ? "bg-[#f3e8ff] text-[#9747FF] font-semibold"
-                        : "text-slate-500 hover:bg-[#f9f9f9]"
-                    }`
-                  }
-                >
-                  My Profile
-                </NavLink>
-                <NavLink
-                  to="/dashboard/company-profile"
-                  onClick={toggleMobileNav}
-                  className={({ isActive }) =>
-                    `text-sm px-3 py-[6px] rounded-lg w-full transition whitespace-nowrap ${
-                      isActive
-                        ? "bg-[#f3e8ff] text-[#9747FF] font-semibold"
-                        : "text-slate-500 hover:bg-[#f9f9f9]"
-                    }`
-                  }
-                >
-                  Company Profile
-                </NavLink>
-              </div>
-            )}
-          </div>
-
           {/* Secondary Menu Items */}
           <div className="flex flex-col items-start gap-1 px-3 w-full">
             {secondaryNavItems.map((item, index) => (
@@ -227,49 +299,6 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
         </div>
       </nav>
     </>
-  );
-};
-
-// Extracted NavItem component for cleaner code
-const NavItem = ({ item, onClick }: any) => {
-  const baseClasses =
-    "flex items-center gap-3 px-3 py-2.5 w-full rounded-xl cursor-pointer";
-  const activeClasses = "bg-[#f3e8ff] text-[#9747FF] font-semibold";
-  const inactiveClasses = "text-slate-500 hover:bg-[#f3e8ff]";
-
-  const content = (
-    <>
-      <div className="inline-flex items-start gap-2.5">{item.icon}</div>
-      <div className="font-medium text-sm whitespace-nowrap">{item.label}</div>
-      {item.hasNotification && (
-        <div className="absolute w-2 h-2 top-[13px] -left-px bg-orange-500 rounded-full border border-white" />
-      )}
-    </>
-  );
-
-  const handleClick = () => {
-    if (item.customAction) {
-      item.customAction();
-    } else {
-      onClick();
-    }
-  };
-
-  return item.path ? (
-    <NavLink
-      to={item.path}
-      end={item.path === "/dashboard"}
-      onClick={handleClick}
-      className={({ isActive }) =>
-        `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`
-      }
-    >
-      <div className="flex items-start gap-3 w-full relative">{content}</div>
-    </NavLink>
-  ) : (
-    <div className={`${baseClasses} ${inactiveClasses}`} onClick={handleClick}>
-      <div className="flex items-start gap-3 w-full relative">{content}</div>
-    </div>
   );
 };
 

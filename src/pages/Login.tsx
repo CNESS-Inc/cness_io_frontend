@@ -14,6 +14,7 @@ import {
 } from "../Common/ServerAPI";
 import Button from "../components/ui/Button";
 import { Link } from "react-router-dom";
+import { useToast } from "../components/ui/Toast/ToastProvider";
 
 interface SubDomain {
   id: string;
@@ -176,7 +177,8 @@ export default function Login() {
   const [resetPasswordErrors] = useState<FormErrors>({});
   const [apiMessage, setApiMessage] = useState<string | null>(null);
   const [isOrgFormSubmitted, setIsOrgFormSubmitted] = useState(false);
-  console.log("🚀 ~ Login ~ isOrgFormSubmitted:", isOrgFormSubmitted);
+    const { showToast } = useToast();
+
 
   const validatePassword = (password: string): string | undefined => {
     if (!password) return "Password is required";
@@ -625,8 +627,13 @@ export default function Login() {
         try {
           const response = await GetSubDomainDetails(value);
           setsubDomain(response?.data?.data);
-        } catch (error) {
+        } catch (error:any) {
           console.error("Error calling API:", error);
+          showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
         }
       }
     }
@@ -833,7 +840,13 @@ export default function Login() {
       setReadlineQuestion(response?.data?.data?.questions);
       setOrganizationSize(response?.data?.data?.organization_size);
       setRevenue(response?.data?.data?.revenue);
-    } catch (error) {}
+    } catch (error:any) {
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
   };
 
   useEffect(() => {
@@ -856,8 +869,13 @@ export default function Login() {
       } else {
         console.error("URL not found in response");
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error in handlePlanSelection:", error);
+            showToast({
+        message:error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
@@ -1017,8 +1035,7 @@ export default function Login() {
               <Button
                 type="submit"
                 variant="gradient-primary"
-                withGradientOverlay
-                className="w-full py-2"
+                className="w-full rounded-[100px] flex justify-center py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Loging..." : "Login"}
@@ -1180,7 +1197,7 @@ export default function Login() {
                 {orgFormStep === 1 && (
                   <>
                     {/* Organization Name */}
-                    <div className="space-y-5">
+                    <div className="mb-4">
                       <label className="block openSans text-base font-medium text-gray-700 mb-1">
                         Organization Name*
                       </label>

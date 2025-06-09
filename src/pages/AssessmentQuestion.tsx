@@ -71,19 +71,36 @@ const AssessmentQuestion: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [sectionHistory, setSectionHistory] = useState<string[]>([]);
   const [activeModal, setActiveModal] = useState<"assesment" | null>(null);
+  const [isFinalSubmitting, setIsFinalSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { showToast } = useToast();
 
   const closeModal = () => {
     setActiveModal(null);
   };
   const handleFinalSubmit = async () => {
+    setIsFinalSubmitting(true)
     try {
-      await QuestionFinalSubmission();
-    } catch (error) {}
+      const res = await QuestionFinalSubmission();
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+      setIsFinalSubmitting(false);
+      setActiveModal(null);
+    } catch (error:any) {
+      console.log("🚀 ~ handleFinalSubmit ~ error:", error)
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+      setIsFinalSubmitting(false);
+    }
   };
 
   const transformApiData = (apiData: any): Section => {
-    console.log("🚀 ~ transformApiData ~ apiData:", apiData);
 
     // Initialize variables for each section type
     let checkboxesData: any = null;
@@ -173,8 +190,12 @@ const AssessmentQuestion: React.FC = () => {
       } else {
         setSectionHistory([transformedSection.id]);
       }
-    } catch (error) {
-      console.error("Error fetching questions:", error);
+    } catch (error:any) {
+showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     } finally {
       setLoading(false);
     }
@@ -263,9 +284,13 @@ const AssessmentQuestion: React.FC = () => {
         formData.append("question_id", upload.id);
         const response = await QuestionFileDetails(formData);
         console.log("🚀 ~ handleFileUpload ~ response:", response);
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error uploading file:", error);
-        // Handle error (e.g., show error message to user)
+showToast({
+        message:error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
       }
     }
   };
@@ -290,6 +315,7 @@ const AssessmentQuestion: React.FC = () => {
   };
 
   const handleSave = async () => {
+    setIsSubmitting(true)
     try {
       const res = await submitAnswerDetails(formData);
       showToast({
@@ -297,12 +323,14 @@ const AssessmentQuestion: React.FC = () => {
         type: "success",
         duration: 5000,
       });
+    setIsSubmitting(false)
     } catch (error: any) {
       showToast({
-        message: error?.message,
+        message:error?.response?.data?.error?.message,
         type: "error",
         duration: 5000,
       });
+    setIsSubmitting(false)
     }
   };
 
@@ -469,8 +497,9 @@ const AssessmentQuestion: React.FC = () => {
                   variant="gradient-primary"
                   onClick={handleSave}
                   className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                  disabled={isSubmitting}
                 >
-                  Save
+                {isSubmitting ? "Saving..." : "Save"}
                 </Button>
                 <Button
                   variant="gradient-primary"
@@ -573,8 +602,9 @@ const AssessmentQuestion: React.FC = () => {
               }}
               variant="gradient-primary"
               className="rounded-[100px] py-3 px-8 transition-colors duration-500 ease-in-out"
+              disabled={isFinalSubmitting}
             >
-              Submit
+              {isFinalSubmitting ? "Submiting..." : "Submit"}
             </Button>
           </div>
         </div>

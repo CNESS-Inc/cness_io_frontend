@@ -14,15 +14,22 @@ const Toast: React.FC<ToastProps> = ({
   onClose,
 }) => {
   const [isVisible, setIsVisible] = useState(true);
+  const [isClosing, setIsClosing] = useState(false);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
       setIsVisible(false);
       onClose?.();
-    }, duration);
+    }, 300); // Match this with your fade-out animation duration
+  };
 
-    return () => clearTimeout(timer);
-  }, [duration, onClose]);
+  useEffect(() => {
+    if (duration) {
+      const timer = setTimeout(handleClose, duration);
+      return () => clearTimeout(timer);
+    }
+  }, [duration]);
 
   if (!isVisible) return null;
 
@@ -133,7 +140,9 @@ const Toast: React.FC<ToastProps> = ({
 
   return (
     <div
-      className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 flex items-center p-1 mb-4 w-full max-w-xs rounded-lg border ${getColor()} shadow-lg transition-all animate-bounce-in`}
+      className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 flex items-center p-1 mb-4 w-full max-w-xs rounded-lg border ${getColor()} shadow-lg transition-all ${
+        isClosing ? "animate-fade-out" : "animate-bounce-in"
+      }`}
       role="alert"
     >
       <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg">
@@ -143,7 +152,7 @@ const Toast: React.FC<ToastProps> = ({
       <button
         type="button"
         className="ml-auto -mx-1.5 -my-1.5 rounded-lg p-1.5 inline-flex h-8 w-8 hover:bg-white hover:bg-opacity-30 focus:ring-2 focus:ring-opacity-50 transition-all"
-        onClick={() => setIsVisible(false)}
+        onClick={handleClose}
         aria-label="Close"
       >
         <span className="sr-only">Close</span>
