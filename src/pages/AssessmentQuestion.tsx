@@ -10,6 +10,7 @@ import {
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { EyeIcon } from "lucide-react";
 import Modal from "../components/ui/Modal";
+import { useToast } from "../components/ui/Toast/ToastProvider";
 
 interface Section {
   id: string;
@@ -70,6 +71,7 @@ const AssessmentQuestion: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [sectionHistory, setSectionHistory] = useState<string[]>([]);
   const [activeModal, setActiveModal] = useState<"assesment" | null>(null);
+  const { showToast } = useToast();
 
   const closeModal = () => {
     setActiveModal(null);
@@ -77,9 +79,7 @@ const AssessmentQuestion: React.FC = () => {
   const handleFinalSubmit = async () => {
     try {
       await QuestionFinalSubmission();
-    } catch (error) {
-
-    }
+    } catch (error) {}
   };
 
   const transformApiData = (apiData: any): Section => {
@@ -292,8 +292,18 @@ const AssessmentQuestion: React.FC = () => {
   const handleSave = async () => {
     try {
       const res = await submitAnswerDetails(formData);
-      console.log("🚀 ~ handleNext ~ res:", res);
-    } catch (error) {}
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
+      showToast({
+        message: error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
   };
 
   const handlePrevious = () => {

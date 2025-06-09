@@ -13,6 +13,7 @@ import {
   SubmitProfileDetails,
   SubmitPublicProfileDetails,
 } from "../../../Common/ServerAPI";
+import { useToast } from "../../ui/Toast/ToastProvider";
 
 const tabNames = [
   "Basic Information",
@@ -30,6 +31,7 @@ const UserProfilePage = () => {
   const [tags, setTags] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState<Record<string, boolean>>({});
+  console.log("🚀 ~ UserProfilePage ~ isSubmitting:", isSubmitting)
   const [profileData, setProfileData] = useState<any>(null);
   console.log("🚀 ~ UserProfilePage ~ profileData:", profileData);
   const [intereset, setInterestData] = useState<any>(null);
@@ -38,6 +40,8 @@ const UserProfilePage = () => {
   const [states, setStates] = useState<any[]>([]);
   const public_organization = localStorage.getItem("person_organization");
   const is_disqualify = localStorage.getItem("is_disqualify");
+
+  const { showToast } = useToast();
 
   // Separate form handlers for each tab
   const basicInfoForm = useForm();
@@ -127,9 +131,19 @@ const UserProfilePage = () => {
     };
 
     try {
-      await SubmitProfileDetails(payload);
-    } catch (error) {
+      const res = await SubmitProfileDetails(payload);
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
       console.error("Error saving basic info:", error);
+      showToast({
+        message: error?.message,
+        type: "error",
+        duration: 5000,
+      });
     } finally {
       setIsSubmitting((prev) => ({ ...prev, basic: false }));
     }
@@ -155,9 +169,18 @@ const UserProfilePage = () => {
 
     try {
       const response = await SubmitProfileDetails(payload);
-      console.log("Contact info saved:", response.data);
-    } catch (error) {
+      showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
       console.error("Error saving contact info:", error);
+      showToast({
+        message: error?.message,
+        type: "error",
+        duration: 5000,
+      });
     } finally {
       setIsSubmitting((prev) => ({ ...prev, contact: false }));
     }
@@ -176,9 +199,19 @@ const UserProfilePage = () => {
     };
 
     try {
-      await SubmitProfileDetails(payload);
-    } catch (error) {
+      const response = await SubmitProfileDetails(payload);
+      showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
       console.error("Error saving social links:", error);
+      showToast({
+        message: error?.message,
+        type: "error",
+        duration: 5000,
+      });
     } finally {
       setIsSubmitting((prev) => ({ ...prev, social: false }));
     }
@@ -190,9 +223,18 @@ const UserProfilePage = () => {
 
     try {
       const response = await SubmitProfileDetails(payload);
-      console.log("Education saved:", response.data);
-    } catch (error) {
+      showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
       console.error("Error saving education:", error);
+      showToast({
+        message: error?.message,
+        type: "error",
+        duration: 5000,
+      });
     } finally {
       setIsSubmitting((prev) => ({ ...prev, education: false }));
     }
@@ -205,9 +247,18 @@ const UserProfilePage = () => {
 
     try {
       const response = await SubmitProfileDetails(payload);
-      console.log("Work experience saved:", response.data);
-    } catch (error) {
+      showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
       console.error("Error saving work experience:", error);
+      showToast({
+        message: error?.message,
+        type: "error",
+        duration: 5000,
+      });
     } finally {
       setIsSubmitting((prev) => ({ ...prev, work: false }));
     }
@@ -232,9 +283,18 @@ const UserProfilePage = () => {
       }
 
       const response = await SubmitPublicProfileDetails(formData);
-      console.log("Public profile saved:", response.data);
-    } catch (error) {
+      showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error:any) {
       console.error("Error saving public profile:", error);
+      showToast({
+        message: error?.message,
+        type: "error",
+        duration: 5000,
+      });
     } finally {
       setIsSubmitting((prev) => ({ ...prev, public: false }));
     }
