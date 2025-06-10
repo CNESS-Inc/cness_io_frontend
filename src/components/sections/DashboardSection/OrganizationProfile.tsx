@@ -20,7 +20,7 @@ const tabNames = [
   "Contact Information",
   "Social Links",
   // "Organization Mission & Vision Values",
-  "Public View Under Directory",
+  "Create your Legacy Profile",
 ];
 
 // Define types for each tab's form data
