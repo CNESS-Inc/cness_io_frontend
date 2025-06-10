@@ -8,9 +8,9 @@ import SignupForm from "./SignupForm";
 import LoginForm from "./LoginForm";
 
 const links = [
-  { name: "Why", href: "/" },
-  { name: "What", href: "/" },
-  { name: "About", href: "/" },
+{ name: "Why", href: "/why" },
+  { name: "What", href: "/what" },
+  { name: "About", href: "/about" },
   { name: "Directory", href: "/directory" },
 ];
 
@@ -38,6 +38,7 @@ export default function MobileMenu({ isOpen }: { isOpen: boolean }) {
               <li key={link.name}>
                 <Link
                   to={link.href}
+                  
                   className="block text-gray-700 hover:text-primary-600 transition-colors py-2 px-4"
                 >
                   {link.name}

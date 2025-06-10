@@ -181,10 +181,10 @@ export default function Signingup() {
 
   return (
     <>
-      <div className="relative min-h-screen flex flex-col overflow-hidden bg-white">
+<div className="relative min-h-screen flex flex-col overflow-hidden bg-white px-4 sm:px-6 lg:px-8">
         <div className="relative w-full h-[250px]">
           {/* Diagonal Gradient Background */}
-          <div className="hidden lg:block absolute top-0 left-0 w-full h-[600px] z-0">
+<div className="absolute top-0 left-0 w-full h-[300px] sm:h-[400px] lg:h-[600px] z-0">
             <div
               className="absolute top-0 left-0 w-full h-full"
               style={{
@@ -201,8 +201,8 @@ export default function Signingup() {
         </div>
 
         {/* Sign In Form */}
-        <div className="z-10 w-full flex justify-center items-center px-4 py-1">
-          <div className="w-full max-w-[600px] min-h-[550px] bg-white rounded-2xl shadow-xl px-6 sm:px-10 py-10 sm:py-12 space-y-12">
+<div className="z-10 w-full flex justify-center items-center py-4">
+  <div className="w-full max-w-[600px] bg-white rounded-2xl shadow-xl px-4 sm:px-10 py-8 sm:py-12 space-y-10">
             <h2 className="text-3xl font-bold text-gray-900">
               Sign up your account
             </h2>
@@ -333,7 +333,7 @@ export default function Signingup() {
                 </Link>
               </div>
 
-              <div className="flex justify-end gap-4 mt-6">
+<div className="flex flex-col sm:flex-row justify-end gap-4 mt-6">
                 <Button
                   type="submit"
                   variant="gradient-primary"
