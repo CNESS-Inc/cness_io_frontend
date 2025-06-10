@@ -384,7 +384,7 @@ export default function DirectoryPage() {
       {/* Popular Companies Section */}
       <section className="py-16 border-t border-gray-100">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-xl font-semibold mb-4">Popular Companies</h2>
+          <h2 className="text-xl font-semibold mb-4">Aspiring Companies</h2>
 
           {isLoading.popular ? (
             <div className="flex justify-center py-10">
