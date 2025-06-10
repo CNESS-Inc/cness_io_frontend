@@ -246,7 +246,7 @@ export default function PublicCompanyProfile() {
             </div>
 
             <div className=" flex flex-col  mt-[-15px]">
-              <div className="bg-white rounded-xl shadow-sm p-15.5">
+              <div className="bg-white rounded-xl shadow-sm px-6 py-9.5">
                 <h3 className="text-base font-semibold text-black mb-2 flex items-center gap-2">
                   <span className="bg-purple-50 p-2 rounded-full">
                     <img
