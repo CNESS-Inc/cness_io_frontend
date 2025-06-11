@@ -11,7 +11,7 @@ const SignupAnimation = () => {
     if (!ctx) return;
 
     canvas.width = window.innerWidth;
-    canvas.height = 500;
+canvas.height = window.innerHeight * 0.6; // instead of fixed 500
 
     const paletteColors = [
       "#7077FE", // Primary 500
@@ -77,7 +77,7 @@ const SignupAnimation = () => {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute top-0 left-0 w-full h-[600px] z-0"
+  className="absolute top-0 left-0 w-full h-[500px] sm:h-[600px] z-0"
       style={{
         clipPath: "polygon(0 0, 100% 0, 100% 40%, 0% 100%)",
         pointerEvents: "none",

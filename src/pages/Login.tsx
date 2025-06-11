@@ -955,9 +955,9 @@ export default function Login() {
         </div>
 
         {/* Sign In Form */}
-        <div className="z-10 w-full flex justify-center items-center px-10 py-5">
-          <div className="w-full max-w-[600px] min-h-[550px] bg-white rounded-2xl shadow-xl px-6 sm:px-10 py-10 sm:py-12 space-y-12">
-            <h2 className="text-3xl font-bold text-gray-900">
+<div className="z-10 w-full flex justify-center items-center px-4 sm:px-6 py-6">
+  <div className="w-full max-w-md bg-white rounded-2xl shadow-xl px-4 sm:px-8 py-8 sm:py-10 space-y-8">
+    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center">
               Sign in to your account
             </h2>
             {apiMessage && (

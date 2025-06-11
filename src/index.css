@@ -207,3 +207,11 @@ summary::after {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* 👇 GLOBAL CURSOR STYLE FOR LINKS */
+a[href],
+a[role="button"],
+a[data-clickable="true"],
+.link-clickable {
+  cursor: pointer;
+}

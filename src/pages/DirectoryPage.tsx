@@ -197,7 +197,7 @@ export default function DirectoryPage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative h-auto md:h-[692px] rounded-[12px] overflow-hidden mx-4 md:mx-8 lg:mx-[12px]">
+<section className="relative h-auto md:h-[692px] rounded-[12px] overflow-hidden mx-4 sm:mx-6 md:mx-8">
         <AnimatedBackground />
 
         <img
@@ -206,43 +206,43 @@ export default function DirectoryPage() {
           className="absolute bottom-[-150px] left-0 w-full object-cover z-0 pointer-events-none"
         />
 
-        <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 py-16 md:py-20 max-w-4xl mx-auto">
+  <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 py-12 md:py-20 max-w-4xl mx-auto">
           <p className="text-lg sm:text-xl text-[#7077FE] font-bold mb-4">
             Conscious Directory
           </p>
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+    <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-800 mb-4">
             Conscious Search Stops here.
           </h1>
 
-          <div className="w-full max-w-3xl mx-auto bg-white border border-gray-200 rounded-full flex flex-row items-center px-2 py-2 shadow-sm gap-2">
-            <div className="relative">
+<div className="w-full max-w-3xl mx-auto bg-white border border-gray-200 rounded-full flex flex-nowrap items-center px-3 py-2 shadow-sm gap-2">
+  <div className="relative flex-shrink-0">
               <select
-                className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-full px-4 py-2 appearance-none focus:outline-none cursor-pointer w-[110px] sm:w-[150px]"
+  className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold rounded-full px-4 py-2 appearance-none focus:outline-none cursor-pointer w-[130px] text-center"
                 value={selectedDomain}
                 onChange={handleDomainChange}
               >
-                <option value="">All Domains</option>
+  <option value="" className="text-white bg-indigo-500">All Domains</option>
                 {Domain.map((domain: any) => (
-                  <option key={domain.id} value={domain.slug}>
+                  <option key={domain.id} value={domain.slug} className="text-black">
                     {domain.name}
                   </option>
                 ))}
               </select>
-              <div className="absolute top-3 right-3 text-white text-xs pointer-events-none">
+    <div className="absolute top-3 right-2 text-white text-xs pointer-events-none">
                 ▼
               </div>
             </div>
-            <div className="relative flex-1">
+  <div className="relative flex-grow">
               <input
                 type="text"
                 placeholder="Find & Choose your perfect organization"
-                className="w-full px-4 py-2 pr-10 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none border-none"
+      className="w-full px-4 py-2 pr-10 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none border-none"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 onKeyDown={handleKeyPress}
               />
               <button
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE]"
+      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE]"
                 onClick={handleSearch}
               >
                 🔍
@@ -282,9 +282,8 @@ export default function DirectoryPage() {
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="space-y-6">
             {[topRow, bottomRow].map((row, rowIndex) => (
-              <div key={rowIndex} className="overflow-hidden">
-                <div
-                  className={`flex gap-4 sm:gap-6 w-max animate-bounce-x-${
+<div key={rowIndex} className="overflow-x-auto whitespace-nowrap no-scrollbar">
+                 <div className={`flex gap-4 sm:gap-6 w-max animate-bounce-x-${
                     rowIndex === 0 ? "left" : "right"
                   }`}
                 >
@@ -332,7 +331,7 @@ export default function DirectoryPage() {
       {/* Why List Section */}
       <section className="bg-[#FAFAFA] py-16">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-20">
+<div className="flex flex-col md:flex-row items-center md:items-start gap-10">
             <div className="w-full md:w-auto flex justify-center">
               <img
                 src={iconMap["leftimg"]}
@@ -391,7 +390,7 @@ export default function DirectoryPage() {
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : popularCompanies.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {popularCompanies.map((company) => (
                 <CompanyCard
                   id={company.id}
@@ -480,7 +479,7 @@ export default function DirectoryPage() {
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : aspiringCompanies.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {aspiringCompanies.map((company) => (
                 <CompanyCard
                   id={company.id}
@@ -502,8 +501,8 @@ export default function DirectoryPage() {
           )}
 
           {aspiringPagination.totalPages > 1 && (
-            <div className="mt-8">
-              <div className="flex justify-end">
+<div className="mt-8 overflow-x-auto">
+  <div className="flex justify-center sm:justify-end flex-wrap gap-2">
                 <nav
                   className="inline-flex rounded-md shadow-sm -space-x-px text-sm"
                   aria-label="Pagination"
