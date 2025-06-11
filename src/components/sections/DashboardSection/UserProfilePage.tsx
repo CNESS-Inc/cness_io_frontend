@@ -1315,7 +1315,7 @@ const UserProfilePage = () => {
                             >
                               {educationForm
                                 .watch("educations")
-                                ?.map((education, index) => (
+                                ?.map((_education, index) => (
                                   <div
                                     key={index}
                                     className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative"
@@ -1507,7 +1507,7 @@ const UserProfilePage = () => {
                             >
                               {workExperienceForm
                                 .watch("workExperiences")
-                                ?.map((experience, index) => (
+                                ?.map((_experience, index) => (
                                   <div
                                     key={index}
                                     className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative"
