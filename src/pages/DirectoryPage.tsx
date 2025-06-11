@@ -5,6 +5,7 @@ import Footer from "../layout/Footer/Footer";
 import { iconMap } from "../assets/icons";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
 import {
+  GetDomainDetails,
   GetIndustryDetails,
   GetInspiringCompanies,
   GetPopularCompanyDetails,
@@ -68,7 +69,7 @@ export default function DirectoryPage() {
 
   const fetchDomain = async () => {
     try {
-      const res = await GetIndustryDetails();
+      const res = await GetDomainDetails();
       setDomain(res?.data?.data);
     } catch (error:any) {
       console.error("Error fetching domains:", error);
@@ -180,6 +181,7 @@ export default function DirectoryPage() {
 
   const handleDomainChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newDomain = e.target.value;
+    console.log("🚀 ~ handleDomainChange ~ newDomain:", newDomain)
     setSelectedDomain(newDomain);
   };
 
