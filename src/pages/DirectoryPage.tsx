@@ -5,6 +5,7 @@ import Footer from "../layout/Footer/Footer";
 import { iconMap } from "../assets/icons";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
 import {
+  GetDomainDetails,
   GetIndustryDetails,
   GetInspiringCompanies,
   GetPopularCompanyDetails,
@@ -68,7 +69,7 @@ export default function DirectoryPage() {
 
   const fetchDomain = async () => {
     try {
-      const res = await GetIndustryDetails();
+      const res = await GetDomainDetails();
       setDomain(res?.data?.data);
     } catch (error:any) {
       console.error("Error fetching domains:", error);
@@ -180,6 +181,7 @@ export default function DirectoryPage() {
 
   const handleDomainChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newDomain = e.target.value;
+    console.log("🚀 ~ handleDomainChange ~ newDomain:", newDomain)
     setSelectedDomain(newDomain);
   };
 
@@ -384,7 +386,7 @@ export default function DirectoryPage() {
       {/* Popular Companies Section */}
       <section className="py-16 border-t border-gray-100">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-xl font-semibold mb-4">Popular Companies</h2>
+          <h2 className="text-xl font-semibold mb-4">Aspiring Companies</h2>
 
           {isLoading.popular ? (
             <div className="flex justify-center py-10">

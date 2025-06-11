@@ -14,6 +14,7 @@ import {
   SubmitPublicProfileDetails,
 } from "../../../Common/ServerAPI";
 import { useToast } from "../../ui/Toast/ToastProvider";
+import Select from "react-select";
 
 import Button from "../../ui/Button";
 
@@ -49,8 +50,30 @@ const UserProfilePage = () => {
   const basicInfoForm = useForm();
   const contactInfoForm = useForm();
   const socialLinksForm = useForm();
-  const educationForm = useForm();
-  const workExperienceForm = useForm();
+  const educationForm = useForm({
+    defaultValues: {
+      educations: [
+        {
+          degree: "",
+          institution: "",
+          startDate: "",
+          endDate: "",
+        },
+      ],
+    },
+  });
+  const workExperienceForm = useForm({
+    defaultValues: {
+      workExperiences: [
+        {
+          company: "",
+          position: "",
+          start_date: "",
+          end_date: "",
+        },
+      ],
+    },
+  });
   const publicProfileForm = useForm();
 
   const handleImageChange = async (
@@ -138,7 +161,7 @@ const UserProfilePage = () => {
       dob: data.dob || null,
       opinion_on_counsciouness: data.quote || null,
       personal_vision_statement: data.vision || null,
-      professions: normalizeToArray(data.profession),
+      professions: normalizeToArray(data.professions),
       interests: normalizeToArray(data.interests),
     };
 
@@ -231,7 +254,11 @@ const UserProfilePage = () => {
   const handleEducationSubmit = async (data: any) => {
     setIsSubmitting((prev) => ({ ...prev, education: true }));
 
-    const payload = { education: [data] };
+    const payload = {
+      education: data.educations.filter(
+        (edu: any) => edu.degree && edu.institution // filter out empty entries
+      ),
+    };
 
     try {
       const response = await SubmitProfileDetails(payload);
@@ -255,7 +282,11 @@ const UserProfilePage = () => {
   const handleWorkExperienceSubmit = async (data: any) => {
     setIsSubmitting((prev) => ({ ...prev, work: true }));
 
-    const payload = { work_experience: [data] };
+    const payload = {
+      work_experience: data.workExperiences.filter(
+        (exp: any) => exp.company && exp.position // filter out empty entries
+      ),
+    };
 
     try {
       const response = await SubmitProfileDetails(payload);
@@ -330,8 +361,10 @@ const UserProfilePage = () => {
             : "",
           quote: response.data.data.opinion_on_counsciouness || "",
           // For interests and professions, since they're arrays in the response
-          interests: response.data.data.interests?.[0].id || "",
-          profession: response.data.data.professions?.[0].profession_id || "",
+          interests: response.data.data.interests?.map((i: any) => i.id) || [],
+          professions:
+            response.data.data.professions?.map((p: any) => p.profession_id) ||
+            [],
           vision: response.data.data.personal_vision_statement,
         });
 
@@ -367,22 +400,53 @@ const UserProfilePage = () => {
         });
 
         // Education - using the first education entry if available
+        // In GetProfile function, update the education part:
         if (response.data.data.education?.length > 0) {
           educationForm.reset({
-            degree: response.data.data.education[0].degree || "",
-            institution: response.data.data.education[0].institution || "",
-            startDate: response.data.data.education[0].start_date || "",
-            endDate: response.data.data.education[0].end_date || "",
+            educations: response.data.data.education.map((edu: any) => ({
+              id:edu.id || "",
+              degree: edu.degree || "",
+              institution: edu.institution || "",
+              startDate: edu.start_date || "",
+              endDate: edu.end_date || "",
+            })),
+          });
+        } else {
+          educationForm.reset({
+            educations: [
+              {
+                degree: "",
+                institution: "",
+                startDate: "",
+                endDate: "",
+              },
+            ],
           });
         }
 
         // Work Experience - using the first work experience if available
         if (response.data.data.work_experience?.length > 0) {
           workExperienceForm.reset({
-            company: response.data.data.work_experience[0].company || "",
-            position: response.data.data.work_experience[0].position || "",
-            start_date: response.data.data.work_experience[0].start_date || "",
-            end_date: response.data.data.work_experience[0].end_date || "",
+            workExperiences: response.data.data.work_experience.map(
+              (exp: any) => ({
+                id:exp.id || "",
+                company: exp.company || "",
+                position: exp.position || "",
+                start_date: exp.start_date || "",
+                end_date: exp.end_date || "",
+              })
+            ),
+          });
+        } else {
+          workExperienceForm.reset({
+            workExperiences: [
+              {
+                company: "",
+                position: "",
+                start_date: "",
+                end_date: "",
+              },
+            ],
           });
         }
 
@@ -696,51 +760,79 @@ const UserProfilePage = () => {
                                     Interests{" "}
                                     <span className="text-red-500">*</span>
                                   </label>
-                                  <select
-                                    {...basicInfoForm.register("interests", {
-                                      required: true,
-                                    })}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                  >
-                                    <option value="">
-                                      Select your Interest
-                                    </option>
-
-                                    {intereset?.map((interest: any) => (
-                                      <option
-                                        key={interest.id}
-                                        value={interest.id}
-                                      >
-                                        {interest.name}
-                                      </option>
-                                    ))}
-                                  </select>
+                                  <Select
+                                    isMulti
+                                    options={intereset?.map(
+                                      (interest: any) => ({
+                                        value: interest.id,
+                                        label: interest.name,
+                                      })
+                                    )}
+                                    value={basicInfoForm
+                                      .watch("interests")
+                                      ?.map((interestId: any) => ({
+                                        value: interestId,
+                                        label: intereset?.find(
+                                          (i: any) => i.id === interestId
+                                        )?.name,
+                                      }))}
+                                    onChange={(selectedOptions) => {
+                                      basicInfoForm.setValue(
+                                        "interests",
+                                        selectedOptions.map(
+                                          (option) => option.value
+                                        )
+                                      );
+                                    }}
+                                    className="react-select-container"
+                                    classNamePrefix="react-select"
+                                    placeholder="Select interests..."
+                                  />
+                                  {basicInfoForm.formState.errors.interests && (
+                                    <p className="text-sm text-red-500 mt-1">
+                                      At least one interest is required
+                                    </p>
+                                  )}
                                 </div>
 
                                 {/* Profession */}
                                 <div>
                                   <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Profession{" "}
+                                    Professions{" "}
                                     <span className="text-red-500">*</span>
                                   </label>
-                                  <select
-                                    {...basicInfoForm.register("profession", {
-                                      required: true,
-                                    })}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                  >
-                                    <option value="">
-                                      Select your profession
-                                    </option>
-                                    {professional?.map((profession: any) => (
-                                      <option
-                                        key={profession.id}
-                                        value={profession.id}
-                                      >
-                                        {profession.title}
-                                      </option>
-                                    ))}
-                                  </select>
+                                  <Select
+                                    isMulti
+                                    options={professional?.map((prof: any) => ({
+                                      value: prof.id,
+                                      label: prof.title,
+                                    }))}
+                                    value={basicInfoForm
+                                      .watch("professions")
+                                      ?.map((profId: any) => ({
+                                        value: profId,
+                                        label: professional?.find(
+                                          (p: any) => p.id === profId
+                                        )?.title,
+                                      }))}
+                                    onChange={(selectedOptions) => {
+                                      basicInfoForm.setValue(
+                                        "professions",
+                                        selectedOptions.map(
+                                          (option) => option.value
+                                        )
+                                      );
+                                    }}
+                                    className="react-select-container"
+                                    classNamePrefix="react-select"
+                                    placeholder="Select professions..."
+                                  />
+                                  {basicInfoForm.formState.errors
+                                    .professions && (
+                                    <p className="text-sm text-red-500 mt-1">
+                                      At least one profession is required
+                                    </p>
+                                  )}
                                 </div>
 
                                 {/* Gender */}
@@ -1221,88 +1313,187 @@ const UserProfilePage = () => {
                                 handleEducationSubmit
                               )}
                             >
-                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                {/* Degree */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Degree{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    {...educationForm.register("degree", {
-                                      required: true,
-                                    })}
-                                    placeholder="Enter your degree"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                  />
-                                  {educationForm.formState.errors.degree && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      Degree is required
-                                    </p>
-                                  )}
-                                </div>
-
-                                {/* Institution */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Institution{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    {...educationForm.register("institution")}
-                                    placeholder="Enter institution name"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                  />
-                                </div>
-
-                                {/* Start Date */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Start Date{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <input
-                                    type="date"
-                                    {...educationForm.register("startDate")}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                  />
-                                </div>
-
-                                {/* End Date */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    End Date{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <input
-                                    type="date"
-                                    {...educationForm.register("endDate")}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                  />
-                                </div>
-
-                                <div className="md:col-span-2 flex justify-end gap-4 mt-6">
-                                  <Button
-                                    variant="white-outline"
-                                    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px]  bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
-                                    type="button"
-                                    onClick={() => educationForm.reset()}
+                              {educationForm
+                                .watch("educations")
+                                ?.map((education, index) => (
+                                  <div
+                                    key={index}
+                                    className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative"
                                   >
-                                    Reset
-                                  </Button>
-                                  <Button
-                                    variant="gradient-primary"
-                                    className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
-                                    type="submit"
-                                    disabled={isSubmitting.education}
+                                    {/* Add remove button */}
+                                    {index > 0 && (
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const educations = [
+                                            ...educationForm.getValues(
+                                              "educations"
+                                            ),
+                                          ];
+                                          educations.splice(index, 1);
+                                          educationForm.setValue(
+                                            "educations",
+                                            educations
+                                          );
+                                        }}
+                                        className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                                      >
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          className="h-5 w-5"
+                                          viewBox="0 0 20 20"
+                                          fill="currentColor"
+                                        >
+                                          <path
+                                            fillRule="evenodd"
+                                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                            clipRule="evenodd"
+                                          />
+                                        </svg>
+                                      </button>
+                                    )}
+
+                                    {/* Degree */}
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-800 mb-2">
+                                        Degree{" "}
+                                        <span className="text-red-500">*</span>
+                                      </label>
+                                      <input
+                                        type="text"
+                                        {...educationForm.register(
+                                          `educations.${index}.degree`,
+                                          {
+                                            required: true,
+                                          }
+                                        )}
+                                        placeholder="Enter your degree"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                      />
+                                      {educationForm.formState.errors
+                                        ?.educations?.[index]?.degree && (
+                                        <p className="text-sm text-red-500 mt-1">
+                                          Degree is required
+                                        </p>
+                                      )}
+                                    </div>
+
+                                    {/* Institution */}
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-800 mb-2">
+                                        Institution{" "}
+                                        <span className="text-red-500">*</span>
+                                      </label>
+                                      <input
+                                        type="text"
+                                        {...educationForm.register(
+                                          `educations.${index}.institution`,
+                                          {
+                                            required: true,
+                                          }
+                                        )}
+                                        placeholder="Enter institution name"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                      />
+                                      {educationForm.formState.errors
+                                        ?.educations?.[index]?.institution && (
+                                        <p className="text-sm text-red-500 mt-1">
+                                          Institution is required
+                                        </p>
+                                      )}
+                                    </div>
+
+                                    {/* Start Date */}
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-800 mb-2">
+                                        Start Date{" "}
+                                        <span className="text-red-500">*</span>
+                                      </label>
+                                      <input
+                                        type="date"
+                                        {...educationForm.register(
+                                          `educations.${index}.startDate`,
+                                          {
+                                            required: true,
+                                          }
+                                        )}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                      />
+                                      {educationForm.formState.errors
+                                        ?.educations?.[index]?.startDate && (
+                                        <p className="text-sm text-red-500 mt-1">
+                                          Start date is required
+                                        </p>
+                                      )}
+                                    </div>
+
+                                    {/* End Date */}
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-800 mb-2">
+                                        End Date
+                                      </label>
+                                      <input
+                                        type="date"
+                                        {...educationForm.register(
+                                          `educations.${index}.endDate`
+                                        )}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                      />
+                                    </div>
+                                  </div>
+                                ))}
+
+                              <div className="flex justify-between items-center mt-4">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    educationForm.setValue("educations", [
+                                      ...educationForm.getValues("educations"),
+                                      {
+                                        degree: "",
+                                        institution: "",
+                                        startDate: "",
+                                        endDate: "",
+                                      },
+                                    ]);
+                                  }}
+                                  className="text-purple-600 hover:text-purple-800 font-medium flex items-center"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5 mr-1"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
                                   >
-                                    {isSubmitting.education
-                                      ? "Saving..."
-                                      : "Save Education"}
-                                  </Button>
-                                </div>
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                  Add Another Education
+                                </button>
+                              </div>
+
+                              <div className="md:col-span-2 flex justify-end gap-4 mt-6">
+                                <Button
+                                  variant="white-outline"
+                                  className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px] bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                  type="button"
+                                  onClick={() => educationForm.reset()}
+                                >
+                                  Reset
+                                </Button>
+                                <Button
+                                  variant="gradient-primary"
+                                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                                  type="submit"
+                                  disabled={isSubmitting.education}
+                                >
+                                  {isSubmitting.education
+                                    ? "Saving..."
+                                    : "Save Education"}
+                                </Button>
                               </div>
                             </form>
                           </Tab.Panel>
@@ -1314,91 +1505,194 @@ const UserProfilePage = () => {
                                 handleWorkExperienceSubmit
                               )}
                             >
-                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                {/* Company */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Company{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    {...workExperienceForm.register("company", {
-                                      required: true,
-                                    })}
-                                    placeholder="Enter Company Name"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                  />
-                                  {workExperienceForm.formState.errors
-                                    .company && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      Company is required
-                                    </p>
-                                  )}
-                                </div>
-
-                                {/* Position */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Position{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    {...workExperienceForm.register("position")}
-                                    placeholder="Enter your Designation"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                  />
-                                </div>
-
-                                {/* Start Date */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Start Date{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <input
-                                    type="date"
-                                    {...workExperienceForm.register(
-                                      "start_date"
+                              {workExperienceForm
+                                .watch("workExperiences")
+                                ?.map((experience, index) => (
+                                  <div
+                                    key={index}
+                                    className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative"
+                                  >
+                                    {/* Add remove button */}
+                                    {index > 0 && (
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const experiences = [
+                                            ...workExperienceForm.getValues(
+                                              "workExperiences"
+                                            ),
+                                          ];
+                                          experiences.splice(index, 1);
+                                          workExperienceForm.setValue(
+                                            "workExperiences",
+                                            experiences
+                                          );
+                                        }}
+                                        className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                                      >
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          className="h-5 w-5"
+                                          viewBox="0 0 20 20"
+                                          fill="currentColor"
+                                        >
+                                          <path
+                                            fillRule="evenodd"
+                                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                            clipRule="evenodd"
+                                          />
+                                        </svg>
+                                      </button>
                                     )}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                  />
-                                </div>
 
-                                {/* End Date */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    End Date{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <input
-                                    type="date"
-                                    {...workExperienceForm.register("end_date")}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                  />
-                                </div>
+                                    {/* Company */}
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-800 mb-2">
+                                        Company{" "}
+                                        <span className="text-red-500">*</span>
+                                      </label>
+                                      <input
+                                        type="text"
+                                        {...workExperienceForm.register(
+                                          `workExperiences.${index}.company`,
+                                          {
+                                            required: true,
+                                          }
+                                        )}
+                                        placeholder="Enter Company Name"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                      />
+                                      {workExperienceForm.formState.errors
+                                        ?.workExperiences?.[index]?.company && (
+                                        <p className="text-sm text-red-500 mt-1">
+                                          Company is required
+                                        </p>
+                                      )}
+                                    </div>
 
-                                <div className="md:col-span-2 flex justify-end gap-4 mt-6">
-                                  <Button
-                                    variant="white-outline"
-                                    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px]  bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
-                                    type="button"
-                                    onClick={() => workExperienceForm.reset()}
+                                    {/* Position */}
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-800 mb-2">
+                                        Position{" "}
+                                        <span className="text-red-500">*</span>
+                                      </label>
+                                      <input
+                                        type="text"
+                                        {...workExperienceForm.register(
+                                          `workExperiences.${index}.position`,
+                                          {
+                                            required: true,
+                                          }
+                                        )}
+                                        placeholder="Enter your Designation"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                      />
+                                      {workExperienceForm.formState.errors
+                                        ?.workExperiences?.[index]
+                                        ?.position && (
+                                        <p className="text-sm text-red-500 mt-1">
+                                          Position is required
+                                        </p>
+                                      )}
+                                    </div>
+
+                                    {/* Start Date */}
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-800 mb-2">
+                                        Start Date{" "}
+                                        <span className="text-red-500">*</span>
+                                      </label>
+                                      <input
+                                        type="date"
+                                        {...workExperienceForm.register(
+                                          `workExperiences.${index}.start_date`,
+                                          {
+                                            required: true,
+                                          }
+                                        )}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                      />
+                                      {workExperienceForm.formState.errors
+                                        ?.workExperiences?.[index]
+                                        ?.start_date && (
+                                        <p className="text-sm text-red-500 mt-1">
+                                          Start date is required
+                                        </p>
+                                      )}
+                                    </div>
+
+                                    {/* End Date */}
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-800 mb-2">
+                                        End Date
+                                      </label>
+                                      <input
+                                        type="date"
+                                        {...workExperienceForm.register(
+                                          `workExperiences.${index}.end_date`
+                                        )}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                      />
+                                    </div>
+                                  </div>
+                                ))}
+
+                              <div className="flex justify-between items-center mt-4">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    workExperienceForm.setValue(
+                                      "workExperiences",
+                                      [
+                                        ...workExperienceForm.getValues(
+                                          "workExperiences"
+                                        ),
+                                        {
+                                          company: "",
+                                          position: "",
+                                          start_date: "",
+                                          end_date: "",
+                                        },
+                                      ]
+                                    );
+                                  }}
+                                  className="text-purple-600 hover:text-purple-800 font-medium flex items-center"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5 mr-1"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
                                   >
-                                    Reset
-                                  </Button>
-                                  <Button
-                                    variant="gradient-primary"
-                                    className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
-                                    type="submit"
-                                    disabled={isSubmitting.work}
-                                  >
-                                    {isSubmitting.work
-                                      ? "Saving..."
-                                      : "Save Work Experience"}
-                                  </Button>
-                                </div>
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                  Add Another Experience
+                                </button>
+                              </div>
+
+                              <div className="md:col-span-2 flex justify-end gap-4 mt-6">
+                                <Button
+                                  variant="white-outline"
+                                  className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px] bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                  type="button"
+                                  onClick={() => workExperienceForm.reset()}
+                                >
+                                  Reset
+                                </Button>
+                                <Button
+                                  variant="gradient-primary"
+                                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                                  type="submit"
+                                  disabled={isSubmitting.work}
+                                >
+                                  {isSubmitting.work
+                                    ? "Saving..."
+                                    : "Save Work Experiences"}
+                                </Button>
                               </div>
                             </form>
                           </Tab.Panel>
@@ -1541,7 +1835,7 @@ const UserProfilePage = () => {
                                 </div>
 
                                 <div className="md:col-span-2 flex justify-end gap-4 mt-6">
-<Button
+                                  <Button
                                     variant="white-outline"
                                     className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px]  bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                     type="button"
