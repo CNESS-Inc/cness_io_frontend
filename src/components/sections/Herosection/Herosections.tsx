@@ -6,7 +6,7 @@ import HomeHeroBackground from "../../ui/HomeHeroBackground";
 export default function HeroSection() {
   const navigate = useNavigate();
   return (
-    <section className="relative h-[692px] rounded-[12px] overflow-hidden mx-4 md:mx-8 lg:mx-[12px]">
+<section className="relative min-h-[600px] sm:min-h-[692px] py-12 sm:py-0 rounded-[12px] overflow-hidden mx-4 md:mx-8 lg:mx-[12px]">
       <div className="absolute inset-0 z-[-2] bg-[#FAFAFA]" />
       {/* 🌈 Animated Canvas Background */}
       <HomeHeroBackground />
@@ -32,17 +32,17 @@ export default function HeroSection() {
           </p>
 
           {/* Buttons */}
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
+<div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md mx-auto">
             <Button
               variant="gradient-primary"
-              className="font-[Plus Jakarta Sans] text-[18px] cursor-pointer rounded-[100px] py-3 px-10 w-full sm:w-auto transition-colors duration-500 ease-in-out"
+className="text-base sm:text-lg font-semibold font-[Plus Jakarta Sans] rounded-full w-full sm:w-auto px-6 py-3 flex items-center justify-center text-center"
               onClick={() => navigate("sign-up")}
             >
               Get Started
             </Button>
             <Button
               variant="white-outline"
-              className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px] bg-white text-black border border-[#ddd] hover:bg-[#F07EFF] hover:text-white transition-colors duration-300"
+className="bg-white border border-gray-200 text-gray-800 hover:bg-[#F07EFF] hover:text-white focus-visible:ring-pink-300"
               onClick={() => navigate("log-in")}
             >
               Login

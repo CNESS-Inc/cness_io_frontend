@@ -4,7 +4,6 @@ import Group from "../assets/Group.png";
 import { motion } from "framer-motion";
 import certification_engine from "../assets/certification_engine.jpg";
 import WhypgAnimation from "../components/ui/WhypgAnimation";
-
 import aware_3 from "../assets/aware_3.jpg";
 import {
   Target,
@@ -54,23 +53,22 @@ const pillars = [
   },
 ];
 
-// const words = ["Conscious", "Enterprise", "&", "Social", "Standards"];
-
 export default function What() {
   return (
     <>
       <Header />
+
+      {/* Hero */}
       <section className="relative h-[400px] rounded-[12px] overflow-hidden mx-4 md:mx-8 lg:mx-[12px]">
         <WhypgAnimation />
         <img
           src={Group}
           alt="Decorative Overlay"
-          className="absolute bottom-0 left-0 w-[660px] z-20 object-contain opacity-100 animate-fadeIn"
+          className="absolute bottom-0 left-0 w-full max-w-[660px] z-20 object-contain opacity-100 animate-fadeIn"
         />
         <div className="relative z-10 text-center px-5 sm:px-6 lg:px-8 py-16 md:py-20 max-w-4xl mx-auto">
           <p className="poppins text-3xl sm:text-4xl md:text-5xl text-neutral-800 font-bold mb-6">
             What is CNESS?
-
           </p>
           <p className="openSans text-base sm:text-lg md:text-xl text-neutral-600 mb-10 max-w-2xl mx-auto">
             Conscious Enterprise & Social Standards
@@ -78,20 +76,20 @@ export default function What() {
         </div>
       </section>
 
-      {/* Section 1 – What is CNESS */}
-      <section className="relative h-auto bg-white rounded-[12px] overflow-hidden mx-4 md:mx-8 lg:mx-[12px] py-16 px-4 md:px-8">
-        <div className="bg-[#f3f1ff] rounded-3xl p-6 sm:p-10 md:p-12 max-w-[90rem] mx-auto shadow-xl mb-15">
+      {/* What is CNESS Section */}
+      <section className="bg-white py-16 px-4 md:px-8 mx-4 md:mx-8 lg:mx-[12px]">
+        <div className="bg-[#f3f1ff] rounded-3xl p-6 sm:p-10 md:p-12 max-w-[90rem] mx-auto shadow-xl mb-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
             <motion.div
               initial={{ x: -100, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
               transition={{ duration: 1 }}
-              className="flex justify-center items-center"
+              className="flex justify-center"
             >
               <img
                 src={certification_engine}
                 alt="CNESS Impact Illustration"
-                className="w-full max-w-[400px] h-auto object-cover rounded-xl shadow-md"
+                className="w-full max-w-[400px] h-auto rounded-xl shadow-md"
               />
             </motion.div>
 
@@ -99,63 +97,48 @@ export default function What() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
-              className="flex items-center text-gray-800 text-center md:text-left"
+              className="text-center md:text-left"
             >
-              <div>
-                <h3 className="text-2xl font-bold mb-6">What is CNESS?</h3>
-                <p className="text-[20px] leading-relaxed max-w-[600px]">
-                  <strong>CNESS</strong> is a global certification and
-                  assessment framework that helps organisations measure,
-                  improve, and showcase their commitment to ethical, conscious,
-                  and human-centred business practices.
-                </p>
-              </div>
+              <h3 className="text-2xl font-bold mb-6">What is CNESS?</h3>
+              <p className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed max-w-[600px] mx-auto md:mx-0">
+                <strong>CNESS</strong> is a global certification and assessment framework that helps organisations measure, improve, and showcase their commitment to ethical, conscious, and human-centred business practices.
+              </p>
             </motion.div>
           </div>
         </div>
 
-        {/* Section 2 – Consciousness Score */}
-
+        {/* Consciousness Score */}
         <div className="bg-[#f3f1ff] rounded-3xl p-6 sm:p-10 md:p-12 max-w-[90rem] mx-auto shadow-xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
             <motion.div
               initial={{ x: -100, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
               transition={{ duration: 1 }}
-              className="flex justify-center items-center"
+              className="text-center md:text-left"
             >
-              <div>
-                <p className="text-[20px] leading-relaxed max-w-[600px]">
-                  Think of it as the{" "}
-                  <span className="font-semibold italic">
-                    “Consciousness Score”
-                  </span>{" "}
-                  for your organisation — a powerful new way to assess how well
-                  a company integrates values like <strong>ethics</strong>,{" "}
-                  <strong>inclusion</strong>, <strong>sustainability</strong>,{" "}
-                  <strong>culture</strong>, and <strong>well-being</strong> into
-                  its core operations.
-                </p>
-              </div>
+              <p className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed max-w-[600px] mx-auto md:mx-0">
+                Think of it as the{" "}
+                <span className="font-semibold italic">“Consciousness Score”</span> for your organisation — a powerful new way to assess how well a company integrates values like <strong>ethics</strong>, <strong>inclusion</strong>, <strong>sustainability</strong>, <strong>culture</strong>, and <strong>well-being</strong> into its core operations.
+              </p>
             </motion.div>
-
 
             <motion.div
               initial={{ x: 100, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
               transition={{ duration: 1 }}
-              className="flex justify-center items-center"
+              className="flex justify-center"
             >
               <img
                 src={aware_3}
                 alt="CNESS Conscious Score"
-                className="w-full max-w-[400px] h-auto object-cover rounded-xl shadow-md"
+                className="w-full max-w-[400px] h-auto rounded-xl shadow-md"
               />
             </motion.div>
           </div>
         </div>
       </section>
 
+      {/* Why Choose CNESS */}
       <section className="bg-[#f3f1ff] py-16 px-4 md:px-8">
         <div className="bg-white rounded-3xl shadow-xl p-6 sm:p-10 md:p-12 max-w-[90rem] mx-auto">
           <motion.div
@@ -168,8 +151,7 @@ export default function What() {
               <h3 className="text-2xl font-semibold text-purple-800 mb-10 text-center md:text-left">
                 Why Choose CNESS?
               </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {[
                   "Gain credibility with conscious clients and investors.",
                   "Stand out with your ethical and purpose-driven values.",
@@ -180,14 +162,11 @@ export default function What() {
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
                     transition={{ duration: 1 }}
                     className="flex items-start gap-3 bg-white p-5 rounded-xl shadow-sm border border-purple-100"
                   >
                     <div className="w-4 h-4 mt-1 bg-purple-600 rounded-full flex-shrink-0" />
-                    <p className="text-gray-800 text-[20px] leading-snug">
-                      {point}
-                    </p>
+                    <p className="text-base sm:text-lg text-gray-800 leading-snug">{point}</p>
                   </motion.div>
                 ))}
               </div>
@@ -196,8 +175,8 @@ export default function What() {
         </div>
       </section>
 
-      {/* Pillars Section */}
-      <section className="relative h-auto bg-white rounded-[12px] overflow-hidden mx-4 md:mx-8 lg:mx-[12px] py-16 px-4 md:px-8">
+      {/* Six Pillars */}
+      <section className="bg-white py-16 px-4 md:px-8 mx-4 md:mx-8 lg:mx-[12px]">
         <motion.h3
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -207,7 +186,6 @@ export default function What() {
         >
           CNESS Covers Six Pillars
         </motion.h3>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {pillars.map((pillar, index) => {
             const Icon = pillar.icon;
@@ -224,20 +202,18 @@ export default function What() {
                   <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mb-4">
                     <Icon className="w-5 h-5 text-purple-700 group-hover:text-white transition" />
                   </div>
-                  <h4 className="text-[22px] md:text-xl font-semibold text-gray-800 mb-3 transition">
-                    {pillar.title}
-                  </h4>
+                  <h4 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">{pillar.title}</h4>
                 </div>
-                <p className="text-[20px] text-gray-700 leading-relaxed transition">
+                <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
                   {pillar.description}
                 </p>
               </motion.div>
             );
           })}
         </div>
-
       </section>
 
+      {/* Closing Note */}
       <div className="max-w-6xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -246,14 +222,8 @@ export default function What() {
           transition={{ duration: 1 }}
           className="w-full flex justify-center mt-10"
         >
-          <p className="max-w-3xl text-center text-lg text-gray-700 font-poppins leading-relaxed">
-            Each pillar includes specific areas (like{" "}
-            <span className="italic">diversity</span>,{" "}
-            <span className="italic">emissions</span>,{" "}
-            <span className="italic">mental health</span>,{" "}
-            <span className="italic">transparency</span>, etc.) and is measured
-            through qualitative and quantitative questions tailored to your size
-            and sector.
+          <p className="max-w-3xl text-center text-base sm:text-lg md:text-xl text-gray-700 font-poppins leading-relaxed">
+            Each pillar includes specific areas (like <span className="italic">diversity</span>, <span className="italic">emissions</span>, <span className="italic">mental health</span>, <span className="italic">transparency</span>, etc.) and is measured through qualitative and quantitative questions tailored to your size and sector.
           </p>
         </motion.div>
       </div>
