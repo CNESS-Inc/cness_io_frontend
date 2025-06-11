@@ -56,8 +56,8 @@ const UserProfilePage = () => {
         {
           degree: "",
           institution: "",
-          startDate: "",
-          endDate: "",
+          start_date: "",
+          end_date: "",
         },
       ],
     },
@@ -407,8 +407,8 @@ const UserProfilePage = () => {
               id:edu.id || "",
               degree: edu.degree || "",
               institution: edu.institution || "",
-              startDate: edu.start_date || "",
-              endDate: edu.end_date || "",
+              start_date: edu.start_date || "",
+              end_date: edu.end_date || "",
             })),
           });
         } else {
@@ -417,8 +417,8 @@ const UserProfilePage = () => {
               {
                 degree: "",
                 institution: "",
-                startDate: "",
-                endDate: "",
+                start_date: "",
+                end_date: "",
               },
             ],
           });
@@ -1412,7 +1412,7 @@ const UserProfilePage = () => {
                                       <input
                                         type="date"
                                         {...educationForm.register(
-                                          `educations.${index}.startDate`,
+                                          `educations.${index}.start_date`,
                                           {
                                             required: true,
                                           }
@@ -1420,7 +1420,7 @@ const UserProfilePage = () => {
                                         className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                       />
                                       {educationForm.formState.errors
-                                        ?.educations?.[index]?.startDate && (
+                                        ?.educations?.[index]?.start_date && (
                                         <p className="text-sm text-red-500 mt-1">
                                           Start date is required
                                         </p>
@@ -1435,7 +1435,7 @@ const UserProfilePage = () => {
                                       <input
                                         type="date"
                                         {...educationForm.register(
-                                          `educations.${index}.endDate`
+                                          `educations.${index}.end_date`
                                         )}
                                         className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                       />
@@ -1452,8 +1452,8 @@ const UserProfilePage = () => {
                                       {
                                         degree: "",
                                         institution: "",
-                                        startDate: "",
-                                        endDate: "",
+                                        start_date: "",
+                                        end_date: "",
                                       },
                                     ]);
                                   }}
