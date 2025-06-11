@@ -207,3 +207,35 @@ summary::after {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+
+.react-select-container {
+  width: 100%;
+  font-size: 0.875rem;
+}
+.react-select__control {
+  border: 1px solid #d1d5db !important;
+  border-radius: 12px !important;
+  min-height: 42px !important;
+}
+.react-select__control--is-focused {
+  box-shadow: 0 0 0 2px rgba(112, 119, 254, 0.5) !important;
+  border-color: #7077FE !important;
+}
+
+.css-1p3m7a8-multiValue {
+  border-radius: 12px !important;
+   background-image: linear-gradient(to right, #7077FE, #F07EFF);
+   color: #fff;
+}
+.react-select__multi-value__label{
+  color: #fff !important;
+}
+.react-select__multi-value__remove:hover{
+  background-color: #7077FE !important;
+  transition: all 0.3s ease-in-out;
+  color: #fff !important;
+  border-top-right-radius: 12px !important;
+  border-bottom-right-radius: 12px !important;
+
+}
