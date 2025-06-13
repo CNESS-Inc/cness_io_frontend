@@ -85,6 +85,7 @@ export const EndPoint = {
   paymentverify: "/payment/payment-confirm",
   profile: "/profile",
   organizationProfile: "/organization-profile",
+  organizationNumber: "/organization-profile/verify-identify",
   organization_profile_create: "/organization-profile",
   organization_Listing_profile_create: "/organization-listing",
   interests: "/interests",
@@ -95,6 +96,7 @@ export const EndPoint = {
   state: "/state",
   company_profile: "/organization-profile/company-profile",
   user_profile: "/profile/user-profile",
+  rating: "/profile/rating",
   directory_search_profile: "/profile/public-directory",
   public_user_profile: "/profile/public-user-profile",
   get_popular_company: "/profile/get-popular-company",
@@ -421,6 +423,13 @@ export const GetOrganiZationProfileDetails = (): ApiResponse => {
     EndPoint.organizationProfile
   );
 };
+export const GetOrganiZationNumberVerify = (formData:any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.organizationNumber
+  );
+};
 export const GetInterestsDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.interests);
@@ -459,6 +468,24 @@ export const GetUserProfileDetails = (id: any): ApiResponse => {
     ServerAPI.APIMethod.GET,
     data,
     `${EndPoint.user_profile}/${id}`
+  );
+};
+export const AddUserRating = (payload: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    payload,
+    `${EndPoint.rating}`
+  );
+};
+export const GetUserRating = (payload: any): ApiResponse => {
+    let params: { [key: string]: any } = {};
+  params["profile_id"] = payload.profile_id;
+  params["user_type"] = payload.user_type;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    payload,
+    EndPoint.rating,
+    params
   );
 };
 export const GetUsersearchProfileDetails = (

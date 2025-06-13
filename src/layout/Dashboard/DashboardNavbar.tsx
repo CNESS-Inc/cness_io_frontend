@@ -159,7 +159,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
       if (item.customAction) {
         item.customAction();
       } else {
-        onClick();
+        // onClick();
       }
     };
 
@@ -277,7 +277,9 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
           {/* Main Menu Items */}
           <div className="flex flex-col items-start gap-1 px-3 w-full">
             {mainNavItems.map((item, index) => (
-              <NavItem key={index} item={item} onClick={toggleMobileNav} />
+              <NavItem key={index} item={item} 
+              // onClick={toggleMobileNav} 
+              />
             ))}
           </div>
 

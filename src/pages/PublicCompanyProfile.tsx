@@ -114,7 +114,7 @@ export default function PublicCompanyProfile() {
                 <h2 className="text-lg font-semibold text-gray-800">
                   {companyDetails?.organization_name}
                 </h2>
-                <p className="text-sm text-gray-500">Micro Organisation</p>
+                {/* <p className="text-sm text-gray-500">Micro Organisation</p> */}
               </div>
 
               <div
