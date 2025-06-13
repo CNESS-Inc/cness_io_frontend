@@ -20,7 +20,7 @@ export const StarRating = ({
 
   const [rating, setRating] = useState(initialRating);
   const [hover, setHover] = useState(0);
-  const [hoverPosition, setHoverPosition] = useState<number | null>(null);
+  const [_hoverPosition, setHoverPosition] = useState<number | null>(null);
 
   const sizeClasses = {
     xs: "text-xs",    // 12px
