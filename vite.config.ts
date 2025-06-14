@@ -15,7 +15,8 @@ resolve: {
   // ✅ Add server config here
   server: {
     port: 3001,        // fixed port
-    strictPort: true,  // error if port is taken, instead of switching
+    strictPort: true,
+    host: true,  // error if port is taken, instead of switching
     hmr: {
       overlay: true,   // shows error overlay in browser
     },

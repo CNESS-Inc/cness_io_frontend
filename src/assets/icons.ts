@@ -26,6 +26,17 @@ import herosection from './Hero section.png'
 // import companycard3 from './companycard3.jpg';
 // import companylogo3 from  './companylogo3.jpg';
 
+import home from './home.png';
+import learning from './learning.png';
+import market from './market.png';
+import mentor from './mentor.png';
+import social from './social.png';
+import community from './community.png';
+import certify from './certify.png';
+import directory from './directory.png';
+import usericon from './usericon.png';
+
+
 
 
 export const iconMap: Record<string, string> = {
@@ -56,6 +67,14 @@ companylogo1,
 aspcompany1,
 aspcompany2,
 // companylogo3
-
+home,
+learning,
+market,
+mentor,
+social,
+community,
+directory,
+certify,
+usericon
 
 };

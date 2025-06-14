@@ -21,6 +21,7 @@ import UpgradeBadge from "../pages/UpgradeBadge";
 import DirectoryProfile from "../pages/DirectoryProfile";
 import Notification from "../pages/Notification";
 import Support from "../pages/Support";
+import MarketPlace from "../pages/MarketPlace";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -125,6 +126,11 @@ export const router = createBrowserRouter([
             path: "support",
             element: <Support />,
           },
+          {
+            path: "market_place",
+            element: <MarketPlace />,
+          },
+
         ],
       },
     ],
