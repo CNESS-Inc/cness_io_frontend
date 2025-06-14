@@ -26,6 +26,8 @@ import { useToast } from "../components/ui/Toast/ToastProvider";
 import { StarRating } from "../components/ui/Rating";
 import Button from "../components/ui/Button";
 import Modal from "../components/ui/Modal";
+import { FacebookIcon, LinkedinIcon, TwitterIcon } from "react-share";
+import { Instagram } from "lucide-react";
 
 export default function UserProfileView() {
   const { id } = useParams();
@@ -103,14 +105,29 @@ export default function UserProfileView() {
       console.log("Form submitted:", { rating, reviewText });
       try {
         const payload = {
-          rating,
-          reviewText,
-          user_type: 1,
+          rating:rating.toString(),
+          review:reviewText,
+          user_type: "1",
           profile_id: id,
         };
-        const res = await AddUserRating(payload);
-        console.log("🚀 ~ handleSubmit ~ res:", res);
-      } catch (error) {}
+        await AddUserRating(payload);
+        setActiveModal(null);
+        // Reset form on success
+        setRating(0);
+        setReviewText("");
+        await fetchRatingDetails();
+      } catch (error: any) {
+        console.log("🚀 ~ handleSubmit ~ error:", error);
+        // Reset form on error too
+        setRating(0);
+        setReviewText("");
+        setActiveModal(null);
+        showToast({
+          message: error?.response?.data?.error?.message,
+          type: "error",
+          duration: 5000,
+        });
+      }
     }
   };
 
@@ -123,9 +140,13 @@ export default function UserProfileView() {
       const res = await GetUserRating(payload);
       setAvgRating(parseFloat(res?.data?.data?.average));
       setUserReviewData(res?.data?.data?.user_data);
-    } catch (error) {
+    } catch (error: any) {
       setAvgRating(0);
-      console.error("Error fetching rating details:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
@@ -135,6 +156,12 @@ export default function UserProfileView() {
 
   const closeModal = () => {
     setActiveModal(null);
+    setRating(0);
+    setReviewText("");
+    setErrors({
+      rating: "",
+      reviewText: "",
+    });
   };
 
   return (
@@ -217,12 +244,45 @@ export default function UserProfileView() {
 
               {/* Social Media Section */}
               <div className="flex flex-col items-start space-y-2 mt-6">
-                <div className="flex space-x-4 text-gray-800 text-xl">
-                  <span className="fab fa-facebook-f"></span>
-                  <span className="fab fa-twitter"></span>
-                  <span className="fab fa-instagram"></span>
-                </div>
                 <p className="text-xs text-gray-500">Social Media</p>
+                <div className="flex space-x-4 text-gray-800 text-xl">
+                  {userDetails?.social_links?.facebook && (
+                    <a
+                      href={userDetails?.social_links?.facebook}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <FacebookIcon size={24}/>
+                    </a>
+                  )}
+                  {userDetails?.social_links?.twitter && (
+                    <a
+                      href={userDetails?.social_links?.twitter}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <TwitterIcon size={24}/>
+                    </a>
+                  )}
+                  {userDetails?.social_links?.instagram && (
+                    <a
+                      href={userDetails?.social_links?.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Instagram size={24}/>
+                    </a>
+                  )}
+                  {userDetails?.social_links?.linkedin && (
+                    <a
+                      href={userDetails?.social_links?.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <LinkedinIcon size={24}/>
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -253,7 +313,7 @@ export default function UserProfileView() {
                 About
               </h3>
               <p className="text-sm text-gray-700 leading-relaxed">
-                {userDetails?.bio}
+                {userDetails?.about_us}
               </p>
             </div>
 
@@ -275,7 +335,8 @@ export default function UserProfileView() {
                   style={{ borderColor: "#0000001A" }}
                 />
 
-                {userDetails?.education?.map((edu: any) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {userDetails?.education?.map((edu: any) => (
                   <div key={edu.id} className="flex items-center gap-4">
                     <img
                       src={msc}
@@ -297,6 +358,7 @@ export default function UserProfileView() {
                     </div>
                   </div>
                 ))}
+                </div>
               </div>
 
               {/* Work Experience Section */}
@@ -357,15 +419,16 @@ export default function UserProfileView() {
                   style={{ borderColor: "#0000001A" }}
                 />
                 <div className="flex flex-wrap gap-5">
-                  <span className="bg-[#EEF3FF] text-[#7077FE] text-xs font-medium px-7 py-2 semi rounded">
-                    Tag 1
-                  </span>
-                  <span className="bg-[#EEF3FF] text-[#7077FE] text-xs font-medium px-7 py-2 semi rounded">
-                    Tag 2
-                  </span>
-                  <span className="bg-[#EEF3FF] text-[#7077FE] text-xs font-medium px-7 py-2 semi rounded">
-                    Tag 3
-                  </span>
+                  {userDetails?.person_tags?.map(
+                    (tag: any, index: any) => (
+                      <span
+                        key={index}
+                        className="bg-[#EEF3FF] text-[#7077FE] text-xs font-medium px-7 py-2 semi rounded"
+                      >
+                        {tag}
+                      </span>
+                    )
+                  )}
                 </div>
               </div>
             </div>
@@ -531,16 +594,18 @@ export default function UserProfileView() {
               {/* Left: Score + Bars */}
               <div className="flex flex-col items-center xl:items-start w-full md:w-1/2 gap-4">
                 <div className="flex flex-col items-center xl:items-start">
-                  <p className="text-4xl font-bold text-purple-500">
-                    {avgrating}
-                  </p>
-                  {avgrating && (
-                    <StarRating
-                      initialRating={avgrating}
-                      allowHalfStars={true}
-                      size="4xl"
-                      readOnly
-                    />
+                  {typeof avgrating === "number" && !isNaN(avgrating) && (
+                    <>
+                      <p className="text-4xl font-bold text-purple-500">
+                        {avgrating}
+                      </p>
+                      <StarRating
+                        initialRating={avgrating}
+                        allowHalfStars={true}
+                        size="4xl"
+                        readOnly
+                      />
+                    </>
                   )}
                   <p className="text-sm text-gray-500">2,256,896</p>
                 </div>
@@ -664,13 +729,13 @@ export default function UserProfileView() {
                 {reviewItem.review && (
                   <>
                     <p className="font-semibold text-sm text-gray-800 mb-1">
-                      {reviewItem.review.title || "Great experience!"}{" "}
+                      {reviewItem.review}
                       {/* Add a fallback if no title */}
                     </p>
-                    <p className="text-sm text-gray-600">
+                    {/* <p className="text-sm text-gray-600">
                       {reviewItem.review.description ||
                         "No detailed review provided."}
-                    </p>
+                    </p> */}
                   </>
                 )}
               </div>
@@ -698,17 +763,17 @@ export default function UserProfileView() {
                 </label>
                 <div className="flex justify-center">
                   <StarRating
-                  initialRating={rating}
-                  allowHalfStars={true}
-                  size="4xl"
-                  onRatingChange={(newRating: number) => {
-                    setRating(newRating);
-                    // Clear rating error when user selects a rating
-                    if (errors.rating) {
-                      setErrors((prev) => ({ ...prev, rating: "" }));
-                    }
-                  }}
-                />
+                    initialRating={rating}
+                    allowHalfStars={true}
+                    size="4xl"
+                    onRatingChange={(newRating: number) => {
+                      setRating(newRating);
+                      // Clear rating error when user selects a rating
+                      if (errors.rating) {
+                        setErrors((prev) => ({ ...prev, rating: "" }));
+                      }
+                    }}
+                  />
                 </div>
                 {errors.rating && (
                   <p className="text-red-500 text-sm mt-1">{errors.rating}</p>

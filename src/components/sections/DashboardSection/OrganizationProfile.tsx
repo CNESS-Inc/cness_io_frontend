@@ -35,7 +35,7 @@ type BasicInfoFormData = {
   organizationSize: string;
   headquartersLocation: string;
   operatingLocations?: string;
-  identify_uploaded?: boolean;
+  identify_uploaded?: any;
   status?: number;
 };
 
@@ -67,6 +67,7 @@ type PublicViewFormData = {
   officialAddress: string;
   phone: string;
   optionalEmail?: string;
+  aboutUs?: string;
 };
 
 interface Service {
@@ -341,6 +342,7 @@ const OrganaizationProfilepage = () => {
       notify_email_address: data.email || null,
       contact_number: data.phone || null,
       official_address: data.officialAddress || null,
+      about_us: data.aboutUs || null,
       organization_service: serviceIds, // Now just an array of strings
       tags: tags,
     };
@@ -373,48 +375,48 @@ const OrganaizationProfilepage = () => {
 
       // Reset basic info form with the fetched data
       basicInfoForm.reset({
-        organizationName: profileData.organization_name || "",
-        legalBusinessName: profileData.business_name || "",
+        organizationName: profileData?.organization_name || "",
+        legalBusinessName: profileData?.business_name || "",
         businessRegistrationNumber:
-          profileData.business_registration_number || "",
-        website: profileData.web_url || "",
-        industry: profileData.industry_id || "",
-        yearOfEstablishment: profileData.year_of_establishment || "",
-        organizationSize: profileData.employee_size || "",
-        headquartersLocation: profileData.headquarters_location || "",
-        operatingLocations: profileData.operating_regions || "",
-        identify_uploaded: profileData.identify_uploaded || "",
-        status: profileData.status || "",
+          profileData?.business_registration_number || "",
+        website: profileData?.web_url || "",
+        industry: profileData?.industry_id || "",
+        yearOfEstablishment: profileData?.year_of_establishment || "",
+        organizationSize: profileData?.employee_size || "",
+        headquartersLocation: profileData?.headquarters_location || "",
+        operatingLocations: profileData?.operating_regions || "",
+        identify_uploaded: profileData?.identify_uploaded || "",
+        status: profileData?.status || "",
       });
 
       // Reset contact info form with the fetched data
       contactInfoForm.reset({
-        primaryContactName: profileData.primary_contact_person_name || "",
-        designation: profileData.designation || "",
-        email: profileData.official_email_address || "",
-        phone: profileData.contact_number || "",
+        primaryContactName: profileData?.primary_contact_person_name || "",
+        designation: profileData?.designation || "",
+        email: profileData?.official_email_address || "",
+        phone: profileData?.contact_number || "",
       });
 
       // Reset social links form with the fetched data
       socialLinksForm.reset({
-        facebook: profileData.facebook || "",
-        twitter: profileData.twitter || "",
-        linkedin: profileData.linkedin || "",
-        instagram: profileData.instagram || "", // Add if you have this field
-        youtube: profileData.youtube || "", // Add if you have this field
+        facebook: profileData?.facebook || "",
+        twitter: profileData?.twitter || "",
+        linkedin: profileData?.linkedin || "",
+        instagram: profileData?.instagram || "", // Add if you have this field
+        youtube: profileData?.youtube || "", // Add if you have this field
       });
 
       missionVisionForm.reset({
-        missionStatement: profileData.mission_statement || "",
-        visionStatement: profileData.vision_statement || "",
-        coreValues: profileData.core_values || "",
+        missionStatement: profileData?.mission_statement || "",
+        visionStatement: profileData?.vision_statement || "",
+        coreValues: profileData?.core_values || "",
       });
 
-      if (response.data.data.profile_url) {
-        setLogoPreview(response.data.data.profile_url);
+      if (response?.data?.data?.profile_url) {
+        setLogoPreview(response?.data?.data?.profile_url);
       }
       if (response.data.data.banner_url) {
-        setBanner(response.data.data.banner_url);
+        setBanner(response?.data?.data?.banner_url);
       }
     } catch (error: any) {
       console.error("Error fetching profile:", error);
@@ -437,6 +439,7 @@ const OrganaizationProfilepage = () => {
         phone: profileData?.contact_number || "",
         optionalEmail: profileData?.alternative_email || "",
         officialAddress: profileData?.official_address || "",
+        aboutUs: profileData?.about_us || "",
       });
 
       // Set services and tags from API data
@@ -522,12 +525,18 @@ const OrganaizationProfilepage = () => {
       const formData = new FormData();
       formData.append("file", file);
       const res = await GetOrganiZationNumberVerify(formData);
+      console.log("🚀 ~ fetchVerifyOrganizationNumber ~ res:", res.success)
 
       // Handle the response
       if (res.success) {
         return res;
       }
 
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
       throw new Error(res.message || "Verification failed");
     } catch (error: any) {
       console.error("Verification error:", error);
@@ -759,8 +768,8 @@ const OrganaizationProfilepage = () => {
                                         }
                                       )}
                                       disabled={
-                                        basicInfoForm.watch("status") == 1 ||
-                                        basicInfoForm.watch("status") == 0
+                                        (basicInfoForm.watch("status") == 1 ||
+                                        basicInfoForm.watch("status") == 0) && (basicInfoForm.watch("identify_uploaded") == 0 || basicInfoForm.watch("identify_uploaded") == 1 )
                                       }
                                       placeholder="Enter registration number"
                                       className={`flex-1 px-4 py-2 border ${
@@ -777,7 +786,7 @@ const OrganaizationProfilepage = () => {
                                     />
 
                                     {/* Verification Status Display */}
-                                    {basicInfoForm.watch("status") == 1 ? (
+                                    {basicInfoForm.watch("status") == 1 && basicInfoForm.watch("identify_uploaded") ? (
                                       <span className="px-4 py-2 bg-green-50 border border-green-200 rounded-xl text-sm font-medium text-green-600 flex items-center">
                                         <svg
                                           className="w-4 h-4 mr-1"
@@ -795,7 +804,7 @@ const OrganaizationProfilepage = () => {
                                         </svg>
                                         Verified
                                       </span>
-                                    ) : basicInfoForm.watch("status") == 2 ? (
+                                    ) : basicInfoForm.watch("status") == 2 && basicInfoForm.watch("identify_uploaded") ? (
                                       <span className="px-4 py-2 bg-red-50 border border-red-200 rounded-xl text-sm font-medium text-red-600 flex items-center">
                                         <svg
                                           className="w-4 h-4 mr-1"
@@ -813,7 +822,7 @@ const OrganaizationProfilepage = () => {
                                         </svg>
                                         Rejected
                                       </span>
-                                    ) : basicInfoForm.watch("status") == 0 ? (
+                                    ) : basicInfoForm.watch("status") == 0 && basicInfoForm.watch("identify_uploaded") == 0 ? (
                                       <span className="px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-xl text-sm font-medium text-yellow-600 flex items-center">
                                         <svg
                                           className="w-4 h-4 mr-1"
@@ -832,6 +841,7 @@ const OrganaizationProfilepage = () => {
                                         Pending
                                       </span>
                                     ) : (
+                                      // This will show for status === null, undefined, or any other value
                                       <>
                                         <input
                                           type="file"
@@ -1816,6 +1826,33 @@ const OrganaizationProfilepage = () => {
                                     </div>
                                   )}
                                 </div>
+
+                                <div className="md:col-span-2">
+  <label className="block text-sm font-medium text-gray-800 mb-2">
+    About Us <span className="text-red-500">*</span>
+  </label>
+  <textarea
+    {...publicViewForm.register("aboutUs", {
+      required: "About Us information is required"
+    })}
+    rows={4}
+    className={`w-full px-4 py-2 border ${
+      publicViewForm.formState.errors.aboutUs
+        ? "border-red-500"
+        : "border-gray-300"
+    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+      publicViewForm.formState.errors.aboutUs
+        ? "focus:ring-red-500"
+        : "focus:ring-purple-500"
+    }`}
+    placeholder="Tell people about your organization, mission, values, etc."
+  />
+  {publicViewForm.formState.errors.aboutUs && (
+    <p className="text-sm text-red-500 mt-1">
+      {publicViewForm.formState.errors.aboutUs.message as string}
+    </p>
+  )}
+</div>
 
                                 {/* Tags Input */}
                                 {/* Tags Field */}
