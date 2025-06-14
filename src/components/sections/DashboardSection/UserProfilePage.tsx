@@ -317,6 +317,7 @@ const UserProfilePage = () => {
       formData.append("tags", JSON.stringify(tags));
       formData.append("notify_email", data.notifyEmail);
       formData.append("title", data.title);
+      formData.append("about_us", data.aboutUs);
 
       const email = data.emailAddress || data.notifyEmail;
       formData.append("email_address", email);
@@ -351,60 +352,57 @@ const UserProfilePage = () => {
       if (response.data.data) {
         // Basic Info
         basicInfoForm.reset({
-          firstName: response.data.data.first_name || "",
-          lastName: response.data.data.last_name || "",
+          firstName: response.data.data?.first_name || "",
+          lastName: response.data.data?.last_name || "",
           bio:
-            response.data.data.bio || response.data.data.professional_bio || "",
-          gender: response.data.data.gender || "",
-          dob: response.data.data.dob
-            ? response.data.data.dob.split("T")[0]
+            response.data.data?.bio ||
+            response.data.data?.professional_bio ||
+            "",
+          gender: response.data?.data.gender || "",
+          dob: response.data.data?.dob
+            ? response.data.data?.dob.split("T")[0]
             : "",
-          quote: response.data.data.opinion_on_counsciouness || "",
+          quote: response.data.data?.opinion_on_counsciouness || "",
           // For interests and professions, since they're arrays in the response
-          interests: response.data.data.interests?.map((i: any) => i.id) || [],
+          interests: response.data.data?.interests?.map((i: any) => i.id) || [],
           professions:
-            response.data.data.professions?.map((p: any) => p.profession_id) ||
+            response.data.data?.professions?.map((p: any) => p.profession_id) ||
             [],
-          vision: response.data.data.personal_vision_statement,
+          vision: response.data.data?.personal_vision_statement,
         });
 
         // Contact Info
         contactInfoForm.reset({
-          phone: response.data.data.phone_no || "",
-          email: response.data.data.email || "",
+          phone: response.data.data?.phone_no || "",
+          email: response.data.data?.email || "",
           address:
-            response.data.data.address ||
-            response.data.data.location?.address ||
+            response.data.data?.address ||
+            response.data.data?.location?.address ||
             "",
-          country: response.data.data.country_id || "",
-          state: response.data.data.state_id || "",
-          city: response.data.data.location?.city || "",
-          postalCode: response.data.data.location?.postal_code || "",
+          country: response.data.data?.country_id || "",
+          state: response.data.data?.state_id || "",
+          city: response.data.data?.location?.city || "",
+          postalCode: response.data.data?.location?.postal_code || "",
           communication: {
-            sms: response.data.data.communication_sms || false,
-            email: response.data.data.communication_email || false,
-            whatsapp: response.data.data.communication_whatsapp || false,
+            sms: response.data.data?.communication_sms || false,
+            email: response.data.data?.communication_email || false,
+            whatsapp: response.data.data?.communication_whatsapp || false,
           },
         });
-        console.log(
-          "🚀 ~ GetProfile ~ response.data.data.state_id:",
-          response.data.data.state_id
-        );
-
         // Social Links
         socialLinksForm.reset({
-          facebook: response.data.data.social_links?.facebook || "",
-          twitter: response.data.data.social_links?.twitter || "",
-          linkedin: response.data.data.social_links?.linkedin || "",
-          instagram: response.data.data.social_links?.instagram || "",
+          facebook: response.data.data?.social_links?.facebook || "",
+          twitter: response.data.data?.social_links?.twitter || "",
+          linkedin: response.data.data?.social_links?.linkedin || "",
+          instagram: response.data.data?.social_links?.instagram || "",
         });
 
         // Education - using the first education entry if available
         // In GetProfile function, update the education part:
-        if (response.data.data.education?.length > 0) {
+        if (response.data.data?.education?.length > 0) {
           educationForm.reset({
-            educations: response.data.data.education.map((edu: any) => ({
-              id:edu.id || "",
+            educations: response.data.data?.education.map((edu: any) => ({
+              id: edu.id || "",
               degree: edu.degree || "",
               institution: edu.institution || "",
               start_date: edu.start_date || "",
@@ -425,11 +423,11 @@ const UserProfilePage = () => {
         }
 
         // Work Experience - using the first work experience if available
-        if (response.data.data.work_experience?.length > 0) {
+        if (response.data.data?.work_experience?.length > 0) {
           workExperienceForm.reset({
-            workExperiences: response.data.data.work_experience.map(
+            workExperiences: response.data.data?.work_experience.map(
               (exp: any) => ({
-                id:exp.id || "",
+                id: exp.id || "",
                 company: exp.company || "",
                 position: exp.position || "",
                 start_date: exp.start_date || "",
@@ -451,11 +449,11 @@ const UserProfilePage = () => {
         }
 
         // Set profile picture if available
-        if (response.data.data.profile_picture) {
-          setLogoPreview(response.data.data.profile_picture);
+        if (response.data.data?.profile_picture) {
+          setLogoPreview(response.data.data?.profile_picture);
         }
-        if (response.data.data.profile_banner) {
-          setBanner(response.data.data.profile_banner);
+        if (response.data.data?.profile_banner) {
+          setBanner(response.data.data?.profile_banner);
         }
       }
     } catch (error: any) {
@@ -478,6 +476,7 @@ const UserProfilePage = () => {
         services: profileData?.service_offered || "",
         notifyEmail: profileData?.notify_email || "",
         emailAddress: profileData?.email_address || "",
+        aboutUs: profileData?.about_us || "",
       });
       if (profileData?.tags) {
         setTags(profileData?.tags);
@@ -1722,6 +1721,41 @@ const UserProfilePage = () => {
                                   {publicProfileForm.formState.errors.title && (
                                     <p className="text-sm text-red-500 mt-1">
                                       Title is required
+                                    </p>
+                                  )}
+                                </div>
+
+                                <div className="md:col-span-2">
+                                  <label className="block text-sm font-medium text-gray-800 mb-2">
+                                    About Us{" "}
+                                    <span className="text-red-500">*</span>
+                                  </label>
+                                  <textarea
+                                    {...publicProfileForm.register("aboutUs", {
+                                      required:
+                                        "About Us description is required",
+                                      minLength: {
+                                        value: 50,
+                                        message:
+                                          "Description should be at least 50 characters",
+                                      },
+                                      maxLength: {
+                                        value: 1000,
+                                        message:
+                                          "Description should not exceed 1000 characters",
+                                      },
+                                    })}
+                                    rows={5}
+                                    placeholder="Tell us about yourself, your services, and your approach..."
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  />
+                                  {publicProfileForm.formState.errors
+                                    .aboutUs && (
+                                    <p className="text-sm text-red-500 mt-1">
+                                      {
+                                        publicProfileForm.formState.errors
+                                          .aboutUs.message as string
+                                      }
                                     </p>
                                   )}
                                 </div>
