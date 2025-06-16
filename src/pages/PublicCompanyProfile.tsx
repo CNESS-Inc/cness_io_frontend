@@ -215,9 +215,9 @@ export default function PublicCompanyProfile() {
         </div>
 
         {/* Content Body – Centered and aligned */}
-        <div className="w-full px-6 md:px-5 mt-6 flex flex-col md:flex-row gap-4">
+<div className="w-full px-6 md:px-5 mt-6 flex flex-col md:flex-row gap-4">
           {/* LEFT COLUMN */}
-          <div className="md:w-1/3 space-y-4">
+<div className="md:w-1/3 space-y-4">
             {/* Profile Card */}
             <div className="bg-white rounded-xl shadow-sm p-6 pt-40 relative">
               <div className="text-center -mt-13">
@@ -264,19 +264,17 @@ export default function PublicCompanyProfile() {
             </div>
 
             {/* Badge Card */}
-            <div className="flex flex-col mt-2">
-              <div className="bg-white rounded-xl shadow-sm px-4 py-4 md:py-6">
-                <div className="flex flex-row items-center justify-center gap-2 sm:gap-2 md:gap-20 text-center">
-                  <p className="text-sm font-medium">CNESS Badge:</p>
-                  <img
-                    src={inspiredbadge}
-                    alt="CNESS Badge"
-                    className="w-[120px] md:w-[150px] object-contain"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+<div className="bg-white rounded-xl shadow-sm px-4 py-4 md:py-6">
+  <div className="flex items-center justify-center gap-3">
+    <p className="text-sm font-medium whitespace-nowrap">CNESS Badge:</p>
+    <img
+      src={inspiredbadge}
+      alt="CNESS Badge"
+      className="w-[100px] sm:w-[120px] md:w-[150px] object-contain"
+    />
+  </div>
+</div>
+</div>
           {/* RIGHT COLUMN */}
           <div className="md:w-2/3 flex flex-col gap-6">
             <div className="bg-white rounded-xl shadow-sm px-6 py-8">

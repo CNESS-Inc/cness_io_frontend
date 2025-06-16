@@ -1,27 +1,19 @@
+
 import { useState, useEffect } from "react";
-import {
-  AwardIcon,
-  BadgePlusIcon,
-  BellIcon,
-  FileBarChartIcon,
-  GraduationCapIcon,
-  HelpCircleIcon,
-  LayoutDashboardIcon,
-  SettingsIcon,
+import {BellIcon,HelpCircleIcon,SettingsIcon,
   // UploadIcon,
-  UserIcon,
-  XIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-  LogOutIcon,
-} from "lucide-react";
+  XIcon, ChevronDownIcon,ChevronUpIcon,LogOutIcon,} from "lucide-react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { icon } from "@fortawesome/fontawesome-svg-core";
+import { iconMap } from '../../assets/icons';
+
 
 const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   // Automatically open/close profile dropdown based on current route
   useEffect(() => {
@@ -44,17 +36,19 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
     }
   };
 
+  
   // Navigation items data
   const mainNavItems = [
     {
-      icon: <LayoutDashboardIcon className="w-5 h-5" />,
-      label: "Dashboard",
+    icon: <img src={iconMap["home"]} alt="Home Icon" className="w-5 h-5" />,
+      label: "Home/Dashboard",
       active: true,
       path: "/dashboard",
     },
+
     {
-      icon: <UserIcon className="w-5 h-5" />,
-      label: "Profile",
+    icon: <img src={iconMap["usericon"]} alt="Home Icon" className="w-5 h-5" />,
+      label: "True Profile",
       active: false,
       isProfileDropdown: true,
       childPaths: [
@@ -62,48 +56,236 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
         "/dashboard/company-profile"
       ]
     },
+ 
+{
+    icon: <img src={iconMap["certify"]} alt="Home Icon" className="w-5 h-5" />,
+  label: "Certifications",
+  active: false,
+  isCertificationsDropdown: true,
+  childPaths: ["/dashboard/assesment", "/dashboard/score-result","/dashboard/upgrade-badge"],
+  children: [
     {
-      icon: <AwardIcon className="w-5 h-5" />,
       label: "Get Certified",
-      active: true,
       path: "/dashboard/assesment",
     },
+
+    {
+      label: "Upload Proof",
+      path: "",
+    },
+
+    {
+      label: "Score & Results",
+      path: "/dashboard/score-result",
+    },
+
+    
+    {
+      label: "Upgrade Badge",
+      path: "/dashboard/upgrade-badge"
+    },
+  ],
+},
     // {
     //   icon: <UploadIcon className="w-5 h-5" />,
     //   label: "Upload Proof",
     //   active: false,
     //   path: "/dashboard/upload-proof",
     // },
+    
+{
+    icon: <img src={iconMap["directory"]} alt="Home Icon" className="w-5 h-5" />,
+  label: "Directory",
+  active: false,
+  isDirectoryDropdown: true,
+  childPaths: ["/dashboard/search_listing"],
+  children: [
     {
-      icon: <FileBarChartIcon className="w-5 h-5" />,
-      label: "Score & Results",
-      active: true,
-      path: "/dashboard/score-result",
+      label: "Search Listing",
+      path: "/dashboard/search_listing",
     },
+
     {
-      icon: <GraduationCapIcon className="w-5 h-5" />,
-      label: "Learning Lab (LMS)",
-      active: false,
-      path: "/dashboard/learning-lab",
+      label: "Edit Public Listing",
+      path: "",
     },
+
     {
-      icon: <BadgePlusIcon className="w-5 h-5" />,
-      label: "Upgrade Badge",
-      active: false,
-      path: "/dashboard/upgrade-badge",
+      label: "Visibility Settings",
+      path: "",
     },
+
+    
     {
-      icon: <BadgePlusIcon className="w-5 h-5" />,
-      label: "Generate Badge code",
-      active: false,
-      path: "/dashboard/generate-code",
+      label: "Rating & Reviews",
+      path: "",
     },
+  ],
+},
+
+
+{
+    icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
+  label: "Market Place",
+  active: true,
+path: "/dashboard/market_place",
+  isMarketplaceDropdown: true,
+  childPaths: ["/dashboard/DigiProducts"],
+  children: [
     {
-      icon: <UserIcon className="w-5 h-5" />,
-      label: "Directory Profile",
-      active: false,
-      path: "/dashboard/directory-profile",
+      label: "Buy Digital Products",
+      path: "/dashboard/digital_products",
     },
+
+    {
+      label: "Sell ypur Products",
+      path: "",
+    },
+
+    {
+      label: "Track Purchase & Sales",
+      path: "",
+    },
+
+    
+    {
+      label: "Creator Guideline",
+      path: "",
+    },
+  ],
+},
+
+{
+    icon: <img src={iconMap["social"]} alt="Home Icon" className="w-5 h-5" />,
+  label: "Social",
+  active: false,
+  isSocialDropdown: true,
+  childPaths: ["/dashboard/Feed"],
+  children: [
+    {
+      label: "Feed",
+      path: "/dashboard/Feed",
+    },
+
+    {
+      label: "Profile",
+      path: "",
+    },
+
+    {
+      label: "My Connections",
+      path: "",
+    },
+
+    
+    {
+      label: "Messagings",
+      path: "",
+    },
+  ],
+},
+
+
+{
+    icon: <img src={iconMap["community"]} alt="Home Icon" className="w-5 h-5" />,
+  label: "Community",
+  active: false,
+  isCommunityDropdown: true,
+  childPaths: ["/dashboard/SearchExplore"],
+  children: [
+    {
+      label: "Search & Explore",
+     path: "/dashboard/SearchExplore"
+    },
+
+    {
+      label: "Create Circles (Coming Soon)",
+      path: "",
+    },
+
+    {
+      label: "Manage Circles (Coming Soon)",
+      path: "",
+    },
+
+    
+    {
+      label: "Messagings",
+      path: "",
+    },
+  ],
+},
+
+{
+    icon: <img src={iconMap["mentor"]} alt="Home Icon" className="w-5 h-5" />,
+  label: "Mentor Partner Hub",
+  active: false,
+  isMentorDropdown: true,
+  childPaths: ["/dashboard/Become_mentor"],
+  children: [
+    {
+      label: "Became an Mentor",
+      path: "/dashboard/Become_mentor",
+    },
+
+    {
+      label: "Mentor Dashboard",
+      path: "",
+    },
+
+    {
+      label: "Track Progress",
+      path: "",
+    },
+
+    
+    {
+      label: "Partner License & Toolkit",
+      path: "",
+    },
+
+     {
+      label: "Partner Dashboard",
+      path: "",
+    },
+  ],
+},
+
+
+{
+    icon: <img src={iconMap["learning"]} alt="Home Icon" className="w-5 h-5" />,
+  label: "Learning Lab",
+  active: false,
+  isLearningLabDropdown: true,
+  childPaths: ["/dashboard/learning-lab"],
+  children: [
+    {
+      label: "Modules",
+      path:  "/dashboard/learning-lab",
+    },
+
+    {
+      label: "Learning Progress",
+      path: "",
+    },
+
+    {
+      label: "Renewal",
+      path: "",
+    },
+
+    
+    {
+      label: "Resources",
+      path: "",
+    },
+
+  
+  ],
+},
+   
+
+
   ];
 
   const secondaryNavItems = [
@@ -137,6 +319,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
   // NavItem component with profile dropdown support
   const NavItem = ({ item, onClick }: any) => {
     const location = useLocation();
+const isDropdownOpen = openDropdown === item.label;
     const isActiveChild = item.childPaths?.some((path:any) => 
       location.pathname.startsWith(path)
     );
@@ -190,7 +373,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
                 className={({ isActive }) =>
                   `text-sm px-3 py-[6px] rounded-lg w-full transition whitespace-nowrap ${
                     isActive
-                      ? "bg-[#f3e8ff] text-[#9747FF] font-semibold"
+                      ? " text-[#F07EFF] font-semibold"
                       : "text-slate-500 hover:bg-[#f9f9f9]"
                   }`
                 }
@@ -203,7 +386,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
                 className={({ isActive }) =>
                   `text-sm px-3 py-[6px] rounded-lg w-full transition whitespace-nowrap ${
                     isActive
-                      ? "bg-[#f3e8ff] text-[#9747FF] font-semibold"
+                      ? " text-[#F07EFF] font-semibold"
                       : "text-slate-500 hover:bg-[#f9f9f9]"
                   }`
                 }
@@ -216,7 +399,55 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
       );
     }
 
+ // Handle Dropdown Menus
+if (item.children?.length > 0) {
+  return (
+    <div className="w-full">
+      <button
+        onClick={() => {
+          if (item.path) {
+            navigate(item.path); // ✅ Navigate to main menu page
+          }
+  setOpenDropdown(isDropdownOpen ? null : item.label);
+        }}
+        className={`${baseClasses} ${isActiveChild ? activeClasses : inactiveClasses}`}
+      >
+        <div className="flex items-start gap-3 w-full relative">{content}</div>
+        {isDropdownOpen ? (
+          <ChevronUpIcon className="w-4 h-4" />
+        ) : (
+          <ChevronDownIcon className="w-4 h-4" />
+        )}
+      </button>
+
+      {isDropdownOpen && (
+        <div className="flex flex-col gap-1 mt-1 ml-[36px]">
+          {item.children.map((child: any, idx: number) => (
+            <NavLink
+              key={idx}
+              to={child.path}
+              onClick={onClick}
+              className={({ isActive }) =>
+  `text-sm px-4 py-2 w-full rounded-md transition whitespace-nowrap ${
+                  isActive
+      ? "text-[#F07EFF] font-semibold"
+      : "text-gray-600 hover:text-[#F07EFF]"
+  }`
+}
+            >
+              {child.label}
+            </NavLink>
+          ))}
+        </div>
+      )}
+    </div>
+    );
+  }
+
+
+
     return item.path ? (
+      
       <NavLink
         to={item.path}
         end={item.path === "/dashboard"}
@@ -234,8 +465,14 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
     );
   };
 
+
+
+
+
   return (
     <>
+
+    
       {/* Mobile Overlay */}
       {isMobileNavOpen && (
         <div
@@ -259,7 +496,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
           {/* Mobile Close Button */}
           <div className="md:hidden flex justify-end px-2">
             <button onClick={toggleMobileNav} className="p-2">
-              <XIcon className="w-6 h-6 text-gray-500" />
+              <XIcon className="w-5 h-5 text-gray-500" />
             </button>
           </div>
 
@@ -277,9 +514,9 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
           {/* Main Menu Items */}
           <div className="flex flex-col items-start gap-1 px-3 w-full">
             {mainNavItems.map((item, index) => (
-              <NavItem key={index} item={item} 
-              // onClick={toggleMobileNav} 
-              />
+              <NavItem key={index} item={item} openDropdown={openDropdown}
+  setOpenDropdown={setOpenDropdown} onClick={toggleMobileNav} />
+
             ))}
           </div>
 
@@ -295,7 +532,8 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
           {/* Secondary Menu Items */}
           <div className="flex flex-col items-start gap-1 px-3 w-full">
             {secondaryNavItems.map((item, index) => (
-              <NavItem key={index} item={item} onClick={toggleMobileNav} />
+              <NavItem key={index} item={item} openDropdown={openDropdown}
+  setOpenDropdown={setOpenDropdown} onClick={toggleMobileNav} />
             ))}
           </div>
         </div>
