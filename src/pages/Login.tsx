@@ -709,7 +709,7 @@ export default function Login() {
     };
 
     try {
-      const res = await submitOrganizationDetails(organizationForm);
+      const res = await submitOrganizationDetails(formData);
       localStorage.setItem("person_organization", "2");
       localStorage.setItem("completed_step", "1");
       if (res.success.statusCode === 200) {
