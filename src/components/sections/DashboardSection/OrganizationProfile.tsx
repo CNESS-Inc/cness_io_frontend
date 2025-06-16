@@ -415,7 +415,7 @@ const OrganaizationProfilepage = () => {
       if (response?.data?.data?.profile_url) {
         setLogoPreview(response?.data?.data?.profile_url);
       }
-      if (response.data.data.banner_url) {
+      if (response?.data?.data?.banner_url) {
         setBanner(response?.data?.data?.banner_url);
       }
     } catch (error: any) {
