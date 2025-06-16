@@ -214,8 +214,8 @@ export const submitOrganizationDetails = (
 export const submitPersonDetails = (formData: any): ApiResponse => {
   console.log("🚀 ~ formData:", formData);
   const data: Partial<any> = {
-    interest_id: formData?.interest,
-    profession_id: formData?.profession,
+    interest_id: formData?.interests,
+    profession_id: formData?.professions,
     first_name: formData?.first_name,
     last_name: formData?.last_name,
     question: formData?.question,
