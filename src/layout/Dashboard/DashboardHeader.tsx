@@ -57,7 +57,8 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
   const profile = localStorage.getItem("profile_picture");
   const defaultAvatar =
     "https://c.animaapp.com/magahlmqpONVZN/img/ellipse-3279.svg";
-  const name = localStorage.getItem("name") || "";
+  const name = localStorage.getItem("main_name") || "";
+  const margaret_name = localStorage.getItem("margaret_name") || "";
 
   return (
 
@@ -124,7 +125,7 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
 
               <div className="px-2 py-0.5">
                 <div className="font-['Open_Sans',Helvetica] font-normal text-[#7a7a7a] text-[10px]">
-                  { name != "null null" ? "Margaret" : ""}
+                  { name != "null null" ? margaret_name : ""}
                 </div>
               </div>
             </div>

@@ -177,8 +177,7 @@ export default function Login() {
   const [resetPasswordErrors] = useState<FormErrors>({});
   const [apiMessage, setApiMessage] = useState<string | null>(null);
   const [isOrgFormSubmitted, setIsOrgFormSubmitted] = useState(false);
-    const { showToast } = useToast();
-
+  const { showToast } = useToast();
 
   const validatePassword = (password: string): string | undefined => {
     if (!password) return "Password is required";
@@ -320,7 +319,6 @@ export default function Login() {
         });
       }
 
-
       // Only validate questions when submitting (step 2) or validating all steps
       if (step === 2) {
         readlineQuestion.forEach((question: any) => {
@@ -422,6 +420,8 @@ export default function Login() {
           response?.data?.data?.user.profile_picture
         );
         localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+        localStorage.setItem("margaret_name", response?.data?.data?.user.margaret_name);
 
         const completionStatus =
           response.data.data.user.person_organization_complete;
@@ -627,13 +627,13 @@ export default function Login() {
         try {
           const response = await GetSubDomainDetails(value);
           setsubDomain(response?.data?.data);
-        } catch (error:any) {
+        } catch (error: any) {
           console.error("Error calling API:", error);
           showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
+            message: error?.response?.data?.error?.message,
+            type: "error",
+            duration: 5000,
+          });
         }
       }
     }
@@ -828,7 +828,7 @@ export default function Login() {
 
   const closeModal = () => {
     setActiveModal(null);
-    setApiMessage(null)
+    setApiMessage(null);
   };
 
   const fetchAllDataDetails = async () => {
@@ -840,7 +840,7 @@ export default function Login() {
       setReadlineQuestion(response?.data?.data?.questions);
       setOrganizationSize(response?.data?.data?.organization_size);
       setRevenue(response?.data?.data?.revenue);
-    } catch (error:any) {
+    } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -869,10 +869,10 @@ export default function Login() {
       } else {
         console.error("URL not found in response");
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error in handlePlanSelection:", error);
-            showToast({
-        message:error?.response?.data?.error?.message,
+      showToast({
+        message: error?.response?.data?.error?.message,
         type: "error",
         duration: 5000,
       });
@@ -955,9 +955,9 @@ export default function Login() {
         </div>
 
         {/* Sign In Form */}
-<div className="z-10 w-full flex justify-center items-center px-4 sm:px-6 py-6">
-  <div className="w-full max-w-md bg-white rounded-2xl shadow-xl px-4 sm:px-8 py-8 sm:py-10 space-y-8">
-    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center">
+        <div className="z-10 w-full flex justify-center items-center px-4 sm:px-6 py-6">
+          <div className="w-full max-w-md bg-white rounded-2xl shadow-xl px-4 sm:px-8 py-8 sm:py-10 space-y-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center">
               Sign in to your account
             </h2>
             {apiMessage && (
@@ -1027,7 +1027,11 @@ export default function Login() {
                     Remember me on this device
                   </span>
                 </label>
-                <a href="#" className="text-[#7F57FC] hover:underline" onClick={onForgotPassword}>
+                <a
+                  href="#"
+                  className="text-[#7F57FC] hover:underline"
+                  onClick={onForgotPassword}
+                >
                   Trouble logging in? Reset password
                 </a>
               </div>
@@ -1056,7 +1060,6 @@ export default function Login() {
           </div>
         </div>
       </div>
-
 
       {/* Type Selection Modal - only shows when activeModal is "type" */}
       <Modal isOpen={activeModal === "type"} onClose={closeModal}>

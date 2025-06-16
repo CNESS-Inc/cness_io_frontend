@@ -342,7 +342,7 @@ const isDropdownOpen = openDropdown === item.label;
       if (item.customAction) {
         item.customAction();
       } else {
-        onClick();
+        // onClick();
       }
     };
 
@@ -516,6 +516,7 @@ if (item.children?.length > 0) {
             {mainNavItems.map((item, index) => (
               <NavItem key={index} item={item} openDropdown={openDropdown}
   setOpenDropdown={setOpenDropdown} onClick={toggleMobileNav} />
+
             ))}
           </div>
 
