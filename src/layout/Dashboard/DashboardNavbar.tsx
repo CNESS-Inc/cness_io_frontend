@@ -5,7 +5,6 @@ import {BellIcon,HelpCircleIcon,SettingsIcon,
   XIcon, ChevronDownIcon,ChevronUpIcon,LogOutIcon,} from "lucide-react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { icon } from "@fortawesome/fontawesome-svg-core";
 import { iconMap } from '../../assets/icons';
 
 

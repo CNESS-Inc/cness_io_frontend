@@ -3,7 +3,6 @@ import {
   SearchIcon,
   SettingsIcon,
   LogOutIcon,
-  Menu 
 } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
