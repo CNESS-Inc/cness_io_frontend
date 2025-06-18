@@ -44,6 +44,7 @@ type OrganizationFormData = {
   organization_name: string;
   domain_id: string;
   sub_domain_id: string;
+  custom_domain?: string;
   organization_type_id: string;
   revenue_range_id: string;
   question: any;
@@ -60,7 +61,7 @@ export const ServerAPI = {
 };
 
 export const API = {
-  // BaseUrl: "http://192.168.1.26:5025/api", //local
+  // BaseUrl: "http://192.168.1.31:5025/api", //local
   // BaseUrl: "http://localhost:5025/api", //local
   BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
 };
@@ -200,6 +201,7 @@ export const submitOrganizationDetails = (
   const data: Partial<OrganizationFormData> = {
     organization_name: formData?.organization_name,
     domain_id: formData?.domain,
+    custom_domain: formData?.custom_domain,
     sub_domain_id: formData?.sub_domain,
     organization_type_id: formData?.employee_size,
     revenue_range_id: formData?.revenue,

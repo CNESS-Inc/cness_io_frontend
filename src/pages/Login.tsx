@@ -158,6 +158,7 @@ export default function Login() {
     revenue: "",
     question: [], // Changed from 'question' to 'questions' to match interface
   });
+  console.log("🚀 ~ Login ~ organizationForm:", organizationForm)
   const [personForm, setPersonForm] = useState<PersonForm>({
     first_name: "",
     last_name: "",
@@ -700,16 +701,11 @@ export default function Login() {
 
     // Prepare the data to submit
     const formData = {
-      ...organizationForm,
-      // If "other" is selected, use the custom domain instead
-      domain:
-        organizationForm.domain === "other"
-          ? organizationForm.custom_domain
-          : organizationForm.domain,
+      ...organizationForm
     };
 
     try {
-      const res = await submitOrganizationDetails(formData);
+      const res = await submitOrganizationDetails(organizationForm);
       localStorage.setItem("person_organization", "2");
       localStorage.setItem("completed_step", "1");
       if (res.success.statusCode === 200) {
