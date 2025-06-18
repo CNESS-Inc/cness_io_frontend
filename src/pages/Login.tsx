@@ -699,11 +699,6 @@ export default function Login() {
       return;
     }
 
-    // Prepare the data to submit
-    const formData = {
-      ...organizationForm
-    };
-
     try {
       const res = await submitOrganizationDetails(organizationForm);
       localStorage.setItem("person_organization", "2");
