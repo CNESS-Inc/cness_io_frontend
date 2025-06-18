@@ -8,6 +8,7 @@ import {
   GetAllFormDetails,
   GetSubDomainDetails,
   LoginDetails,
+  MeDetails,
   PaymentDetails,
   submitOrganizationDetails,
   submitPersonDetails,
@@ -158,7 +159,7 @@ export default function Login() {
     revenue: "",
     question: [], // Changed from 'question' to 'questions' to match interface
   });
-  console.log("🚀 ~ Login ~ organizationForm:", organizationForm)
+  console.log("🚀 ~ Login ~ organizationForm:", organizationForm);
   const [personForm, setPersonForm] = useState<PersonForm>({
     first_name: "",
     last_name: "",
@@ -712,6 +713,18 @@ export default function Login() {
           plansByRange[plan.plan_range][plan.plan_type] = plan;
         });
 
+        const response = await MeDetails();
+        localStorage.setItem(
+          "profile_picture",
+          response?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          response?.data?.data?.user.margaret_name
+        );
+
         // Create combined plan objects with both monthly and yearly data
         const updatedPlans = Object.values(plansByRange)?.map(
           (planGroup: any) => {
@@ -778,6 +791,18 @@ export default function Login() {
           }
           plansByRange[plan.plan_range][plan.plan_type] = plan;
         });
+
+        const response = await MeDetails();
+        localStorage.setItem(
+          "profile_picture",
+          response?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          response?.data?.data?.user.margaret_name
+        );
 
         // Create combined plan objects with both monthly and yearly data
         const updatedPlans = Object.values(plansByRange)?.map(
@@ -932,6 +957,7 @@ export default function Login() {
   };
 
   const onForgotPassword = () => {
+    setApiMessage("");
     setActiveModal("forgotpassword");
   };
 
@@ -2255,7 +2281,7 @@ export default function Login() {
         <div className="text-center p-6 max-w-md">
           <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] ">
             <svg
-              className="h-30 w-30 text-white animate-bounce"
+              className="h-30 w-30 text-white "
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

@@ -69,6 +69,7 @@ export const API = {
 export const EndPoint = {
   login: "/auth/login",
   forgot: "/auth/forgot-password",
+  me: "/auth/me",
   updatepassword: "/auth/update/password",
   reset: "/auth/reset-password",
   register: "/auth/sign-up",
@@ -134,6 +135,10 @@ export const LoginDetails = async (formData: LoginFormData): ApiResponse => {
     password: formData?.password,
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.login);
+};
+export const MeDetails = async (): ApiResponse => {
+  const data = {}
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.me);
 };
 export const ForgotPasswordDetails = (
   formData: ForgotFormData
