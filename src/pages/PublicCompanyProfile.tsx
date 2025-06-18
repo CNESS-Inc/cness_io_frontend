@@ -3,11 +3,11 @@ import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import Header from "../layout/Header/Header";
 import Footer from "../layout/Footer/Footer";
 import inspiredbadge from "../assets/Inspired _ Badge.png";
-import bestprac from "../assets/bestprac.png";
-import bcard1 from "../assets/Bcard1.png";
-import bcard2 from "../assets/Bcard2.png";
-import bcard3 from "../assets/Bcard3.png";
-import bcard4 from "../assets/Bcard4.png";
+// import bestprac from "../assets/bestprac.png";
+// import bcard1 from "../assets/Bcard1.png";
+// import bcard2 from "../assets/Bcard2.png";
+// import bcard3 from "../assets/Bcard3.png";
+// import bcard4 from "../assets/Bcard4.png";
 import overallrating from "../assets/overallratings.png";
 import service from "../assets/service.png";
 import aboutus from "../assets/aboutus.png";
@@ -66,38 +66,58 @@ export default function PublicCompanyProfile() {
     fetchCompanyDetails();
   }, []);
 
-  // const BackArrow = () => (
-  //   <button
-  //     onClick={() => window.history.back()}
-  //     className="absolute top-4 left-4 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition"
-  //   >
-  //     <ArrowLeftIcon className="h-5 w-5 text-[#7077FE]" />
-  //   </button>
-  // );
-
-  const [rating, setRating] = useState<number>(0);
   const [reviewText, setReviewText] = useState<string>("");
   const [avgrating, setAvgRating] = useState<number>();
+  const [totalrate, setTotalRate] = useState<number>();
+  const [breakDown, setBreakDown] = useState<any>();
   const [userReviewData, setUserReviewData] = useState<any>([]);
+
+  const [breakdowns, setBreakdowns] = useState({
+    one: 0,
+    two: 0,
+    three: 0,
+    four: 0,
+    five: 0,
+    six: 0,
+  });
 
   // State for errors
   const [errors, setErrors] = useState({
-    rating: "",
     reviewText: "",
+    breakdowns: {
+      one: "",
+      two: "",
+      three: "",
+      four: "",
+      five: "",
+      six: "",
+    },
   });
 
   // Validate form function
   const validateForm = (): boolean => {
     let valid = true;
     const newErrors = {
-      rating: "",
       reviewText: "",
+      breakdowns: {
+        one: "",
+        two: "",
+        three: "",
+        four: "",
+        five: "",
+        six: "",
+      },
     };
 
-    if (rating === 0) {
-      newErrors.rating = "Please select a rating";
-      valid = false;
-    }
+    // Validate each breakdown rating
+    (Object.keys(breakdowns) as Array<keyof typeof breakdowns>).forEach(
+      (key) => {
+        if (breakdowns[key] === 0) {
+          newErrors.breakdowns[key] = "Please select a rating";
+          valid = false;
+        }
+      }
+    );
 
     if (!reviewText.trim()) {
       newErrors.reviewText = "Review cannot be empty";
@@ -116,25 +136,41 @@ export default function PublicCompanyProfile() {
     e.preventDefault();
 
     if (validateForm()) {
-      console.log("Form submitted:", { rating, reviewText });
       try {
         const payload = {
-          rating:rating.toString(),
-          review:reviewText,
+          review: reviewText,
           user_type: "2",
           profile_id: id,
+          breakdown_one: breakdowns.one.toString(),
+          breakdown_two: breakdowns.two.toString(),
+          breakdown_three: breakdowns.three.toString(),
+          breakdown_four: breakdowns.four.toString(),
+          breakdown_five: breakdowns.five.toString(),
+          breakdown_six: breakdowns.six.toString(),
         };
         await AddUserRating(payload);
         setActiveModal(null);
         // Reset form on success
-        setRating(0);
         setReviewText("");
-        await fetchRatingDetails()
+        setBreakdowns({
+          one: 0,
+          two: 0,
+          three: 0,
+          four: 0,
+          five: 0,
+          six: 0,
+        });
+        await fetchRatingDetails();
       } catch (error: any) {
-        console.log("🚀 ~ handleSubmit ~ error:", error);
-        // Reset form on error too
-        setRating(0);
         setReviewText("");
+        setBreakdowns({
+          one: 0,
+          two: 0,
+          three: 0,
+          four: 0,
+          five: 0,
+          six: 0,
+        });
         setActiveModal(null);
         showToast({
           message: error?.response?.data?.error?.message,
@@ -154,6 +190,8 @@ export default function PublicCompanyProfile() {
       const res = await GetUserRating(payload);
       setAvgRating(parseFloat(res?.data?.data?.average));
       setUserReviewData(res?.data?.data?.user_data);
+      setTotalRate(res?.data?.data?.total_user_rated);
+      setBreakDown(res?.data?.data?.breakdown);
     } catch (error: any) {
       setAvgRating(0);
       showToast({
@@ -170,13 +208,28 @@ export default function PublicCompanyProfile() {
 
   const closeModal = () => {
     setActiveModal(null);
-    setRating(0);
     setReviewText("");
     setErrors({
-      rating: "",
       reviewText: "",
+      breakdowns: {
+        one: "",
+        two: "",
+        three: "",
+        four: "",
+        five: "",
+        six: "",
+      },
     });
   };
+
+
+  const formatBreakdownName = (name: string) => {
+  // Split by underscore, capitalize each word, and join with space
+  return name
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
 
   return (
     <>
@@ -224,7 +277,6 @@ export default function PublicCompanyProfile() {
                 <h2 className="text-lg font-semibold text-gray-800">
                   {companyDetails?.organization_name}
                 </h2>
-                {/* <p className="text-sm text-gray-500">Micro Organisation</p> */}
               </div>
 
               <div
@@ -314,12 +366,7 @@ export default function PublicCompanyProfile() {
                   style={{ borderColor: "#0000001A" }}
                 />
 
-                {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-gray-700"> */}
-                {/* Column 1: Service List */}
                 <div>
-                  {/* <h4 className="text-sm font-semibold text-gray-800 mb-2">
-                      Service List
-                    </h4> */}
                   <ul className="space-y-2 list-none">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-gray-700">
                       {companyDetails?.organazation_service?.map(
@@ -332,26 +379,6 @@ export default function PublicCompanyProfile() {
                     </div>
                   </ul>
                 </div>
-
-                {/* Column 2: Service Category */}
-                {/* <div>
-                    <h4 className="text-sm font-semibold text-gray-800 mb-2">
-                      Service Category
-                    </h4>
-                    <ul className="space-y-2 list-none">
-                      <li className="flex items-start gap-2">
-                        <span className="text-[#B855FF]">✔</span> Super Service
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-[#B855FF]">✔</span> Very Good
-                        Service
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-[#B855FF]">✔</span> Simple Service
-                      </li>
-                    </ul>
-                  </div> */}
-                {/* </div> */}
               </div>
             </div>
 
@@ -389,132 +416,7 @@ export default function PublicCompanyProfile() {
         </div>
 
         <div className="w-full px-6 md:px-5 mt-2">
-          {/* Section Title */}
           <div className="bg-white rounded-xl shadow-sm px-6 py-8">
-            <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
-              <span className="bg-green-50 p-2 rounded-full">
-                <img
-                  src={bestprac}
-                  alt="Best Practices Icon"
-                  className="w-5 h-5 object-contain"
-                />
-              </span>{" "}
-              Best Practices
-            </h3>
-            <div
-              className="border-t my-4"
-              style={{ borderColor: "#0000001A" }}
-            />
-
-            {/* Card Grid */}
-            <div className="grid grid-cols-2 2xl:grid-cols-4 gap-4">
-              {/* Card 1 */}
-              <div className="bg-white rounded-xl shadow border border-gray-100 p-3">
-                <div className="rounded-lg overflow-hidden">
-                  <img
-                    src={bcard1}
-                    alt="Module 1"
-                    className="w-full h-[150px] object-cover"
-                  />
-                </div>
-                <p className="text-xs text-pink-500 font-medium mt-2 text-right">
-                  12.00 hrs
-                </p>
-
-                <div className="mt-2">
-                  <h4 className="text-sm font-semibold">
-                    Module 1: Intermediate
-                  </h4>
-                  <p className="text-xs text-gray-500 mb-2">
-                    Exploring Advanced Techniques
-                  </p>
-                  <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                    Read More
-                  </button>
-                </div>
-              </div>
-
-              {/* Card 2 */}
-              <div className="bg-white rounded-xl shadow border border-gray-100 p-3">
-                <div className="rounded-lg overflow-hidden">
-                  <img
-                    src={bcard2}
-                    alt="Module 1"
-                    className="w-full h-[150px] object-cover"
-                  />
-                </div>
-                <p className="text-xs text-pink-500 font-medium mt-2 text-right">
-                  12.00 hrs
-                </p>
-
-                <div className="mt-2">
-                  <h4 className="text-sm font-semibold">Module 3: Expert</h4>
-                  <p className="text-xs text-gray-500 mb-2">
-                    Mastering Complex Concepts
-                  </p>
-                  <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                    Read More
-                  </button>
-                </div>
-              </div>
-
-              {/* Card 3 */}
-              <div className="bg-white rounded-xl shadow border border-gray-100 p-3">
-                <div className="rounded-lg overflow-hidden">
-                  <img
-                    src={bcard3}
-                    alt="Module 1"
-                    className="w-full h-[150px] object-cover"
-                  />
-                </div>
-                <p className="text-xs text-pink-500 font-medium mt-2 text-right">
-                  12.00 hrs
-                </p>
-                <div className="mt-2">
-                  <h4 className="text-sm font-semibold">
-                    Module 4: Applications
-                  </h4>
-                  <p className="text-xs text-gray-500 mb-2">
-                    Real-World Case Studies
-                  </p>
-                  <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                    Read More
-                  </button>
-                </div>
-              </div>
-
-              {/* Card 4 */}
-              <div className="bg-white rounded-xl shadow border border-gray-100 p-3">
-                <div className="rounded-lg overflow-hidden">
-                  <img
-                    src={bcard4}
-                    alt="Module 1"
-                    className="w-full h-[150px] object-cover"
-                  />
-                </div>
-                <p className="text-xs text-pink-500 font-medium mt-2 text-right">
-                  12.00 hrs
-                </p>
-
-                <div className="mt-2">
-                  <h4 className="text-sm font-semibold">Module 1: Basic</h4>
-                  <p className="text-xs text-gray-500 mb-2">
-                    Introduction to Fundamentals
-                  </p>
-                  <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                    Read More
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Overall Ratings */}
-
-        <div className="w-full px-6 md:px-5 mt-2">
-          <div className="bg-white rounded-xl shadow-sm px-6 py-8">
-            {/* Title */}
             <div className="flex items-center">
               <h3 className="text-lg font-semibold text-[#000000] flex items-center gap-2">
                 <span className="bg-[#F5EDFF] p-2 rounded-full">
@@ -524,7 +426,7 @@ export default function PublicCompanyProfile() {
                     className="w-5 h-5 object-contain"
                   />
                 </span>
-                Overall Ratings
+                Ratings
               </h3>
               <div className="ms-3">
                 <Button
@@ -533,7 +435,7 @@ export default function PublicCompanyProfile() {
                   type="button"
                   onClick={() => setActiveModal("rating")}
                 >
-                  wite Review
+                  Write Review
                 </Button>
               </div>
             </div>
@@ -542,9 +444,7 @@ export default function PublicCompanyProfile() {
               className="border-t my-4"
               style={{ borderColor: "#0000001A" }}
             />
-            {/* Grid Layout */}
             <div className="flex flex-col md:flex-row 2xl:gap-0 gap-6 w-full mt-5">
-              {/* Left: Score + Bars */}
               <div className="flex flex-col items-center xl:items-start w-full md:w-1/2 gap-4">
                 <div className="flex flex-col items-center xl:items-start">
                   {typeof avgrating === "number" && !isNaN(avgrating) && (
@@ -560,10 +460,8 @@ export default function PublicCompanyProfile() {
                       />
                     </>
                   )}
-                  <p className="text-sm text-gray-500">2,256,896</p>
+                  <p className="text-sm text-gray-500">{totalrate}</p>
                 </div>
-
-                {/* Center: Rating Bars */}
 
                 <div className="flex flex-col gap-2 w-full max-w-md">
                   {[5, 4, 3, 2, 1].map((star) => (
@@ -590,28 +488,20 @@ export default function PublicCompanyProfile() {
                 </div>
               </div>
 
-              {/* Right: Breakdown */}
-              {/* Right: Ratings Breakdown */}
               <div className="w-full xl:w-1/2 text-sm text-gray-800">
                 <p className="text-[#E57CFF] font-semibold mb-5 mt-5">
-                  Ratings Break down
+                  Ratings Breakdown
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-10  w-full max-w-[400px]">
-                  {[
-                    { label: "Breakdown 1", score: 4.1 },
-                    { label: "Breakdown 2", score: 4.0 },
-                    { label: "Breakdown 3", score: 3.9 },
-                    { label: "Breakdown 4", score: 4.0 },
-                    { label: "Breakdown 5", score: 4.0 },
-                  ].map((item, i) => (
+                  {breakDown?.map((item:any, i:any) => (
                     <div
                       key={i}
                       className="flex justify-between items-center w-full gap-1"
                     >
-                      <span>{item.label}</span>
+                      <span>{formatBreakdownName(item.breakdown_name)}</span>
                       <span className="flex items-center gap-2 text-sm text-gray-800 font-medium">
                         <span className="text-yellow-500">⭐</span>
-                        {item.score.toFixed(1)}
+                        {item?.value}
                       </span>
                     </div>
                   ))}
@@ -621,9 +511,7 @@ export default function PublicCompanyProfile() {
           </div>
         </div>
 
-        {/* Reviews & Ratings */}
         <div className="w-full px-10 md:px-5 bg-[#ECEEF2] rounded-xl shadow-sm p-2 mt-2">
-          {/* Title */}
           <h3 className="text-lg font-semibold text-black mb-4 flex items-center gap-2">
             <span className="bg-[#F5EDFF] p-2 rounded-full">
               <img
@@ -636,7 +524,6 @@ export default function PublicCompanyProfile() {
           </h3>
           <div className="border-t my-4" style={{ borderColor: "#0000001A" }} />
 
-          {/* Reviews List */}
           {userReviewData.length > 0 ? (
             userReviewData.map((reviewItem: any) => (
               <div
@@ -648,14 +535,14 @@ export default function PublicCompanyProfile() {
                     <img
                       src={
                         reviewItem.profile.profile_picture || "default-user.png"
-                      } // fallback image
+                      }
                       alt={reviewItem.profile.name}
                       className="w-10 h-10 rounded-full"
                     />
                     <div>
                       <p className="font-medium">{reviewItem.profile.name}</p>
                       <p className="text-xs text-gray-400">
-                        {new Date(reviewItem.created_at).toLocaleDateString(
+                        {new Date(reviewItem.createdAt).toLocaleDateString(
                           "en-US",
                           {
                             day: "numeric",
@@ -667,11 +554,10 @@ export default function PublicCompanyProfile() {
                     </div>
                   </div>
                   <div className="text-sm font-medium">
-                    Rating: {reviewItem.rating}
+                    Rating: {reviewItem.average}
                     <span className="ml-2 text-yellow-500">
-                      {/* {renderStars(parseFloat(reviewItem.rating))} */}
                       <StarRating
-                        initialRating={parseFloat(reviewItem.rating)}
+                        initialRating={parseFloat(reviewItem.average)}
                         allowHalfStars={true}
                         size="sm"
                         readOnly
@@ -683,12 +569,7 @@ export default function PublicCompanyProfile() {
                   <>
                     <p className="font-semibold text-sm text-gray-800 mb-1">
                       {reviewItem.review}
-                      {/* Add a fallback if no title */}
                     </p>
-                    {/* <p className="text-sm text-gray-600">
-                      {reviewItem.review.description ||
-                        "No detailed review provided."}
-                    </p> */}
                   </>
                 )}
               </div>
@@ -710,29 +591,167 @@ export default function PublicCompanyProfile() {
           </h2>
           <form onSubmit={handleSubmit}>
             <div>
+              {/* Breakdown Ratings */}
               <div className="mb-4">
-                <label className="text-[#E57CFF] font-semibold mb-5 mt-5">
-                  Your Rating:
+                <label className="text-[#E57CFF] font-semibold mb-2 block">
+                  Breakdown One:
                 </label>
                 <div className="flex justify-center">
                   <StarRating
-                    initialRating={rating}
+                    initialRating={breakdowns.one}
                     allowHalfStars={true}
                     size="4xl"
                     onRatingChange={(newRating: number) => {
-                      setRating(newRating);
-                      // Clear rating error when user selects a rating
-                      if (errors.rating) {
-                        setErrors((prev) => ({ ...prev, rating: "" }));
+                      setBreakdowns((prev) => ({ ...prev, one: newRating }));
+                      if (errors.breakdowns.one) {
+                        setErrors((prev) => ({
+                          ...prev,
+                          breakdowns: { ...prev.breakdowns, one: "" },
+                        }));
                       }
                     }}
                   />
                 </div>
-                {errors.rating && (
-                  <p className="text-red-500 text-sm mt-1">{errors.rating}</p>
+                {errors.breakdowns.one && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.breakdowns.one}
+                  </p>
                 )}
               </div>
 
+              <div className="mb-4">
+                <label className="text-[#E57CFF] font-semibold mb-2 block">
+                  Breakdown Two:
+                </label>
+                <div className="flex justify-center">
+                  <StarRating
+                    initialRating={breakdowns.two}
+                    allowHalfStars={true}
+                    size="4xl"
+                    onRatingChange={(newRating: number) => {
+                      setBreakdowns((prev) => ({ ...prev, two: newRating }));
+                      if (errors.breakdowns.two) {
+                        setErrors((prev) => ({
+                          ...prev,
+                          breakdowns: { ...prev.breakdowns, two: "" },
+                        }));
+                      }
+                    }}
+                  />
+                </div>
+                {errors.breakdowns.two && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.breakdowns.two}
+                  </p>
+                )}
+              </div>
+
+              <div className="mb-4">
+                <label className="text-[#E57CFF] font-semibold mb-2 block">
+                  Breakdown Three:
+                </label>
+                <div className="flex justify-center">
+                  <StarRating
+                    initialRating={breakdowns.three}
+                    allowHalfStars={true}
+                    size="4xl"
+                    onRatingChange={(newRating: number) => {
+                      setBreakdowns((prev) => ({ ...prev, three: newRating }));
+                      if (errors.breakdowns.three) {
+                        setErrors((prev) => ({
+                          ...prev,
+                          breakdowns: { ...prev.breakdowns, three: "" },
+                        }));
+                      }
+                    }}
+                  />
+                </div>
+                {errors.breakdowns.three && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.breakdowns.three}
+                  </p>
+                )}
+              </div>
+              <div className="mb-4">
+                <label className="text-[#E57CFF] font-semibold mb-2 block">
+                  Breakdown Four:
+                </label>
+                <div className="flex justify-center">
+                  <StarRating
+                    initialRating={breakdowns.four}
+                    allowHalfStars={true}
+                    size="4xl"
+                    onRatingChange={(newRating: number) => {
+                      setBreakdowns((prev) => ({ ...prev, four: newRating }));
+                      if (errors.breakdowns.four) {
+                        setErrors((prev) => ({
+                          ...prev,
+                          breakdowns: { ...prev.breakdowns, four: "" },
+                        }));
+                      }
+                    }}
+                  />
+                </div>
+                {errors.breakdowns.four && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.breakdowns.four}
+                  </p>
+                )}
+              </div>
+              <div className="mb-4">
+                <label className="text-[#E57CFF] font-semibold mb-2 block">
+                  Breakdown Five:
+                </label>
+                <div className="flex justify-center">
+                  <StarRating
+                    initialRating={breakdowns.five}
+                    allowHalfStars={true}
+                    size="4xl"
+                    onRatingChange={(newRating: number) => {
+                      setBreakdowns((prev) => ({ ...prev, five: newRating }));
+                      if (errors.breakdowns.five) {
+                        setErrors((prev) => ({
+                          ...prev,
+                          breakdowns: { ...prev.breakdowns, five: "" },
+                        }));
+                      }
+                    }}
+                  />
+                </div>
+                {errors.breakdowns.five && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.breakdowns.five}
+                  </p>
+                )}
+              </div>
+              <div className="mb-4">
+                <label className="text-[#E57CFF] font-semibold mb-2 block">
+                  Breakdown Six:
+                </label>
+                <div className="flex justify-center">
+                  <StarRating
+                    initialRating={breakdowns.six}
+                    allowHalfStars={true}
+                    size="4xl"
+                    onRatingChange={(newRating: number) => {
+                      setBreakdowns((prev) => ({ ...prev, six: newRating }));
+                      if (errors.breakdowns.six) {
+                        setErrors((prev) => ({
+                          ...prev,
+                          breakdowns: { ...prev.breakdowns, six: "" },
+                        }));
+                      }
+                    }}
+                  />
+                </div>
+                {errors.breakdowns.six && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.breakdowns.six}
+                  </p>
+                )}
+              </div>
+
+              {/* Review Text */}
               <div className="mb-4">
                 <label
                   className="text-[#E57CFF] font-semibold mt-5"
@@ -750,7 +769,6 @@ export default function PublicCompanyProfile() {
                   value={reviewText}
                   onChange={(e) => {
                     setReviewText(e.target.value);
-                    // Clear error when user starts typing
                     if (errors.reviewText) {
                       setErrors((prev) => ({ ...prev, reviewText: "" }));
                     }
