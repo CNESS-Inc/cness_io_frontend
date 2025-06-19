@@ -3,7 +3,6 @@ import {
   BellIcon,
   HelpCircleIcon,
   SettingsIcon,
-
   ChevronDownIcon,
   ChevronUpIcon,
   LogOutIcon,
@@ -400,8 +399,12 @@ return item.path ? (
 {/* Hamburger button (always visible) */}
 {/* Desktop hamburger only */}
 <div className="hidden md:block ml-auto">
-  <button onClick={toggleMobileNav} className="p-2 cursor-pointer focus:outline-none" >
-    <img src={hambur} alt="Toggle Menu" className="w-8 h-8" />
+  <button
+    onClick={toggleMobileNav}
+    className="p-2 cursor-pointer focus:outline-none"
+    aria-label="Toggle Navigation Menu"
+  >
+    <img src={hambur} alt="Toggle Menu" className="w-6 h-6" />
   </button>
 </div>
 </div>
@@ -414,8 +417,12 @@ return item.path ? (
           {/* Main Menu Items */}
 <div className="flex flex-col items-start space-y-3 px-3 w-full">
             {mainNavItems.map((item, index) => (
-              <NavItem key={index} item={item} openDropdown={openDropdown}
-  setOpenDropdown={setOpenDropdown} onClick={toggleMobileNav} />
+              <NavItem
+  key={index}
+  item={item}
+  openDropdown={openDropdown}
+  setOpenDropdown={setOpenDropdown}
+/>
 
             ))}
           </div>
