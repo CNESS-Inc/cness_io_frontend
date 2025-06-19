@@ -13,7 +13,7 @@ import service from "../assets/service.png";
 import aboutus from "../assets/aboutus.png";
 import tag from "../assets/tags.png";
 import review from "../assets/review.png";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   AddUserRating,
   GetCompanyProfileDetails,
@@ -49,6 +49,8 @@ export default function PublicCompanyProfile() {
   const [companyDetails, setCompanyDetails] = useState<Organization>();
   const { showToast } = useToast();
   const [activeModal, setActiveModal] = useState<"rating" | null>(null);
+
+  const navigate = useNavigate();
 
   const fetchCompanyDetails = async () => {
     try {
@@ -438,7 +440,14 @@ export default function PublicCompanyProfile() {
                     variant="gradient-primary"
                     className="rounded-[100px] cursor-pointer py-2 px-4 transition-colors duration-500 ease-in-out"
                     type="button"
-                    onClick={() => setActiveModal("rating")}
+                    onClick={() => {
+                      const token = localStorage.getItem("jwt");
+                      if (token) {
+                        setActiveModal("rating");
+                      } else {
+                        navigate("/log-in");
+                      }
+                    }}
                   >
                     write Review
                   </Button>

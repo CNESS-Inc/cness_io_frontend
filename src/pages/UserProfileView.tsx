@@ -21,7 +21,7 @@ import {
   GetUserProfileDetails,
   GetUserRating,
 } from "../Common/ServerAPI";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { StarRating } from "../components/ui/Rating";
 import Button from "../components/ui/Button";
@@ -35,6 +35,7 @@ export default function UserProfileView() {
   const [activeModal, setActiveModal] = useState<"rating" | null>(null);
 
   const { showToast } = useToast();
+  const navigate = useNavigate();
 
   const fetchUserDetails = async () => {
     try {
@@ -637,7 +638,14 @@ export default function UserProfileView() {
                     variant="gradient-primary"
                     className="rounded-[100px] cursor-pointer py-2 px-4 transition-colors duration-500 ease-in-out"
                     type="button"
-                    onClick={() => setActiveModal("rating")}
+                    onClick={() => {
+                      const token = localStorage.getItem("jwt");
+                      if (token) {
+                        setActiveModal("rating");
+                      } else {
+                        navigate("/log-in");
+                      }
+                    }}
                   >
                     write Review
                   </Button>
