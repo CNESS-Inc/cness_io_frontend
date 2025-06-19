@@ -5,7 +5,7 @@ import carosuel1 from "../../assets/carosuel1.png";
 import carosuel2 from "../../assets/carosuel2.png";
 import carosuel3 from "../../assets/carosuel3.png";
 import carosuel4 from "../../assets/carosuel4.png";
-import { Music, Video, Mic, Book, Tv } from "lucide-react";
+//import { Music, Video, Mic, Book, Tv } from "lucide-react";
 
 // Register Swiper modules
 SwiperCore.use([Autoplay, SwiperPagination]);

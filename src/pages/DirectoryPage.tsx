@@ -12,6 +12,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import Button from "../components/ui/Button";
+import { useLocation } from "react-router-dom";
+
 
 type Company = {
   is_organization: boolean | undefined;
@@ -42,6 +44,9 @@ export default function DirectoryPage() {
   const [searchText, setSearchText] = useState("");
   const [Domain, setDomain] = useState([]);
   const { showToast } = useToast();
+
+  const location = useLocation();
+const isInDashboard = location.pathname.includes("/dashboard");
 
   // Pagination states
   const [popularPagination, setPopularPagination] = useState<PaginationData>({
@@ -193,9 +198,10 @@ export default function DirectoryPage() {
   const topRow = Domain.slice(0, 7);
   const bottomRow = Domain.slice(7);
 
+ 
   return (
     <>
-      <Header />
+     {!isInDashboard && <Header />}
 
       {/* Hero Section */}
 <section className="relative h-auto md:h-[692px] rounded-[12px] overflow-hidden mx-4 sm:mx-6 md:mx-8">
@@ -557,7 +563,7 @@ export default function DirectoryPage() {
         </div>
       </section>
 
-      <Footer />
+{!isInDashboard && <Footer />}
     </>
   );
 }

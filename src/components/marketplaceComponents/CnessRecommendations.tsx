@@ -16,7 +16,8 @@ const recommendations = [
   { title: "Effective Leadership", image: Ellipse3, icon: Proadcast },
   { title: "Ethical AI", image: Ellipse1, icon: Ebook },
   { title: "10 Minutes meditation", image: Ellipse2, icon: Webinar },
-];export default function CnessRecommendations() {
+];
+export default function CnessRecommendations() {
   return (
     <div className="w-full lg:w-[280px] flex-shrink-0 bg-white rounded-2xl p-4 shadow-md flex flex-col gap-3">
       <h3 className="text-sm font-semibold text-gray-800 mb-1">

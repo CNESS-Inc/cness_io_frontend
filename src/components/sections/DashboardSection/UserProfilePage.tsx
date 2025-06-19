@@ -17,7 +17,7 @@ import { useToast } from "../../ui/Toast/ToastProvider";
 import Select from "react-select";
 
 import Button from "../../ui/Button";
-import { Section } from "lucide-react";
+//import { Section } from "lucide-react";
 
 const tabNames = [
   "Basic Information",

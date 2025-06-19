@@ -1,5 +1,5 @@
 // dashboardlayout.tsx
-import React, { useState } from "react";
+import  { useState } from "react";
 import DashboardHeader from "./DashboardHeader";
 import DashboardNavbar from "./DashboardNavbar";
 import hambur from "../../assets/hambur.png"
@@ -34,7 +34,7 @@ const DashboardLayout = () => {
   </button>
 )}
 
-<div className="flex flex-col md:flex-row">
+<div className="flex flex-col md:flex-row ">
   {/* Sidebar: always render */}
   <DashboardNavbar
     isMobileNavOpen={isMobileNavOpen}
@@ -48,7 +48,7 @@ const DashboardLayout = () => {
 <div className="hidden md:block pl-3">
       <DashboardHeader toggleMobileNav={toggleMobileNav} />
     </div>
-    <main>
+  <main className="flex-1 min-h-screen px-4 md:px-6 py-6 overflow-y-auto">
       <Outlet />
     </main>
           </div>
