@@ -8,6 +8,7 @@ import {
   GetOrganiZationNumberVerify,
   GetOrganiZationProfileDetails,
   GetServiceDetails,
+  MeDetails,
   OrgTypeDetails,
   SubmitOrganizationDetails,
   SubmitOrganizationListingDetails,
@@ -142,6 +143,7 @@ const OrganaizationProfilepage = () => {
           type: "success",
           duration: 5000,
         });
+        await MeDetails();
       } catch (error: any) {
         console.error(`Error uploading ${formKey}:`, error);
         showToast({
@@ -226,6 +228,17 @@ const OrganaizationProfilepage = () => {
         type: "success",
         duration: 5000,
       });
+      const res = await MeDetails();
+      localStorage.setItem(
+        "profile_picture",
+        res?.data?.data?.user.profile_picture
+      );
+      localStorage.setItem("name", res?.data?.data?.user.name);
+      localStorage.setItem("main_name", res?.data?.data?.user.main_name);
+      localStorage.setItem(
+        "margaret_name",
+        res?.data?.data?.user.margaret_name
+      );
     } catch (error: any) {
       console.error("Error saving basic info:", error);
       showToast({
@@ -255,6 +268,17 @@ const OrganaizationProfilepage = () => {
         type: "success",
         duration: 5000,
       });
+      const res = await MeDetails();
+      localStorage.setItem(
+        "profile_picture",
+        res?.data?.data?.user.profile_picture
+      );
+      localStorage.setItem("name", res?.data?.data?.user.name);
+      localStorage.setItem("main_name", res?.data?.data?.user.main_name);
+      localStorage.setItem(
+        "margaret_name",
+        res?.data?.data?.user.margaret_name
+      );
     } catch (error: any) {
       console.error("Error saving basic info:", error);
       showToast({
@@ -287,6 +311,17 @@ const OrganaizationProfilepage = () => {
         type: "success",
         duration: 5000,
       });
+      const res = await MeDetails();
+      localStorage.setItem(
+        "profile_picture",
+        res?.data?.data?.user.profile_picture
+      );
+      localStorage.setItem("name", res?.data?.data?.user.name);
+      localStorage.setItem("main_name", res?.data?.data?.user.main_name);
+      localStorage.setItem(
+        "margaret_name",
+        res?.data?.data?.user.margaret_name
+      );
     } catch (error: any) {
       console.error("Error saving basic info:", error);
       showToast({
@@ -353,6 +388,7 @@ const OrganaizationProfilepage = () => {
         type: "success",
         duration: 5000,
       });
+      
     } catch (error: any) {
       console.error("Error saving basic info:", error);
       showToast({
@@ -414,7 +450,7 @@ const OrganaizationProfilepage = () => {
       if (response?.data?.data?.profile_url) {
         setLogoPreview(response?.data?.data?.profile_url);
       }
-      if (response.data.data.banner_url) {
+      if (response?.data?.data?.banner_url) {
         setBanner(response?.data?.data?.banner_url);
       }
     } catch (error: any) {
@@ -524,7 +560,7 @@ const OrganaizationProfilepage = () => {
       const formData = new FormData();
       formData.append("file", file);
       const res = await GetOrganiZationNumberVerify(formData);
-      console.log("🚀 ~ fetchVerifyOrganizationNumber ~ res:", res.success)
+      console.log("🚀 ~ fetchVerifyOrganizationNumber ~ res:", res.success);
 
       // Handle the response
       if (res.success) {
@@ -766,10 +802,13 @@ const OrganaizationProfilepage = () => {
                                             "Registration number is required",
                                         }
                                       )}
-                                      disabled={
-                                        (basicInfoForm.watch("status") == 1 ||
-                                        basicInfoForm.watch("status") == 0) && (basicInfoForm.watch("identify_uploaded") == 0 || basicInfoForm.watch("identify_uploaded") == 1 )
-                                      }
+                                      disabled={[0, 1, 2].includes(
+                                        Number(
+                                          basicInfoForm.watch(
+                                            "identify_uploaded"
+                                          )
+                                        )
+                                      )}
                                       placeholder="Enter registration number"
                                       className={`flex-1 px-4 py-2 border ${
                                         basicInfoForm.formState.errors
@@ -785,7 +824,8 @@ const OrganaizationProfilepage = () => {
                                     />
 
                                     {/* Verification Status Display */}
-                                    {basicInfoForm.watch("status") == 1 && basicInfoForm.watch("identify_uploaded") ? (
+                                    {basicInfoForm.watch("identify_uploaded") ==
+                                    1 ? (
                                       <span className="px-4 py-2 bg-green-50 border border-green-200 rounded-xl text-sm font-medium text-green-600 flex items-center">
                                         <svg
                                           className="w-4 h-4 mr-1"
@@ -803,7 +843,9 @@ const OrganaizationProfilepage = () => {
                                         </svg>
                                         Verified
                                       </span>
-                                    ) : basicInfoForm.watch("status") == 2 && basicInfoForm.watch("identify_uploaded") ? (
+                                    ) : basicInfoForm.watch(
+                                        "identify_uploaded"
+                                      ) == 2 ? (
                                       <span className="px-4 py-2 bg-red-50 border border-red-200 rounded-xl text-sm font-medium text-red-600 flex items-center">
                                         <svg
                                           className="w-4 h-4 mr-1"
@@ -821,7 +863,9 @@ const OrganaizationProfilepage = () => {
                                         </svg>
                                         Rejected
                                       </span>
-                                    ) : basicInfoForm.watch("status") == 0 && basicInfoForm.watch("identify_uploaded") == 0 ? (
+                                    ) : basicInfoForm.watch(
+                                        "identify_uploaded"
+                                      ) == 0 ? (
                                       <span className="px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-xl text-sm font-medium text-yellow-600 flex items-center">
                                         <svg
                                           className="w-4 h-4 mr-1"
@@ -840,7 +884,6 @@ const OrganaizationProfilepage = () => {
                                         Pending
                                       </span>
                                     ) : (
-                                      // This will show for status === null, undefined, or any other value
                                       <>
                                         <input
                                           type="file"
@@ -1827,31 +1870,36 @@ const OrganaizationProfilepage = () => {
                                 </div>
 
                                 <div className="md:col-span-2">
-  <label className="block text-sm font-medium text-gray-800 mb-2">
-    About Us <span className="text-red-500">*</span>
-  </label>
-  <textarea
-    {...publicViewForm.register("aboutUs", {
-      required: "About Us information is required"
-    })}
-    rows={4}
-    className={`w-full px-4 py-2 border ${
-      publicViewForm.formState.errors.aboutUs
-        ? "border-red-500"
-        : "border-gray-300"
-    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-      publicViewForm.formState.errors.aboutUs
-        ? "focus:ring-red-500"
-        : "focus:ring-purple-500"
-    }`}
-    placeholder="Tell people about your organization, mission, values, etc."
-  />
-  {publicViewForm.formState.errors.aboutUs && (
-    <p className="text-sm text-red-500 mt-1">
-      {publicViewForm.formState.errors.aboutUs.message as string}
-    </p>
-  )}
-</div>
+                                  <label className="block text-sm font-medium text-gray-800 mb-2">
+                                    About Us{" "}
+                                    <span className="text-red-500">*</span>
+                                  </label>
+                                  <textarea
+                                    {...publicViewForm.register("aboutUs", {
+                                      required:
+                                        "About Us information is required",
+                                    })}
+                                    rows={4}
+                                    className={`w-full px-4 py-2 border ${
+                                      publicViewForm.formState.errors.aboutUs
+                                        ? "border-red-500"
+                                        : "border-gray-300"
+                                    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                      publicViewForm.formState.errors.aboutUs
+                                        ? "focus:ring-red-500"
+                                        : "focus:ring-purple-500"
+                                    }`}
+                                    placeholder="Tell people about your organization, mission, values, etc."
+                                  />
+                                  {publicViewForm.formState.errors.aboutUs && (
+                                    <p className="text-sm text-red-500 mt-1">
+                                      {
+                                        publicViewForm.formState.errors.aboutUs
+                                          .message as string
+                                      }
+                                    </p>
+                                  )}
+                                </div>
 
                                 {/* Tags Input */}
                                 {/* Tags Field */}

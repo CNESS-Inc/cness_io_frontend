@@ -8,6 +8,7 @@ import {
   GetAllFormDetails,
   GetSubDomainDetails,
   LoginDetails,
+  MeDetails,
   PaymentDetails,
   submitOrganizationDetails,
   submitPersonDetails,
@@ -15,11 +16,11 @@ import {
 import Button from "../components/ui/Button";
 import { Link } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
+
 import logo from "../assets/logo.png"; // update the path as needed
 import { FiMail, FiEye, FiEyeOff } from "react-icons/fi"; // add if not already
 
-
-
+import Select from "react-select";
 
 interface SubDomain {
   id: string;
@@ -32,6 +33,7 @@ interface OrganizationForm {
   revenue_range_id: string;
   organization_name: string;
   domain: string;
+  custom_domain?: string;
   sub_domain: string;
   employee_size: string;
   revenue: string;
@@ -41,15 +43,22 @@ interface OrganizationForm {
   }>;
 }
 
+interface Interest {
+  id: string | number;
+  name: string;
+}
+
+interface Profession {
+  id: string | number;
+  title: string; // Changed from 'name' to 'title' to match your usage
+}
+
 interface PersonForm {
   first_name: string;
   last_name: string;
-  interest: string;
-  profession: string;
-  question: Array<{
-    question_id: string;
-    answer: string;
-  }>;
+  interests: (string | number)[];
+  professions: (string | number)[];
+  question: QuestionAnswer[];
 }
 // type PartialOrganizationFormData = Partial<OrganizationForm>;
 
@@ -154,13 +163,15 @@ export default function Login() {
     revenue: "",
     question: [], // Changed from 'question' to 'questions' to match interface
   });
+  console.log("🚀 ~ Login ~ organizationForm:", organizationForm);
   const [personForm, setPersonForm] = useState<PersonForm>({
     first_name: "",
     last_name: "",
-    interest: "",
-    profession: "",
+    interests: [],
+    professions: [],
     question: [],
   });
+  console.log("🚀 ~ Login ~ personForm:", personForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [subDomain, setsubDomain] = useState<SubDomain[] | null>();
   const [isAnnual, setIsAnnual] = useState(true);
@@ -169,15 +180,14 @@ export default function Login() {
     OrgPricingPlan[]
   >([]);
   const [domains, setDomains] = useState([]);
-  const [interest, setInterest] = useState([]);
-  const [profession, setProfession] = useState([]);
+  const [interest, setInterest] = useState<Interest[]>([]);
+  const [profession, setProfession] = useState<Profession[]>([]);
   const [revenue, setRevenue] = useState([]);
   const [OrganizationSize, setOrganizationSize] = useState([]);
   const [readlineQuestion, setReadlineQuestion] = useState([]);
 
   const [loginErrors, setLoginErrors] = useState<FormErrors>({});
   const [organizationErrors, setOrganizationErrors] = useState<FormErrors>({});
-  console.log("🚀 ~ organizationErrors:", organizationErrors);
   const [personErrors, setPersonErrors] = useState<FormErrors>({});
   const [resetPasswordErrors] = useState<FormErrors>({});
   const [apiMessage, setApiMessage] = useState<string | null>(null);
@@ -203,11 +213,18 @@ const [emailFocused, setEmailFocused] = useState(false);
     value: string,
     rules: ValidationRules
   ): string | undefined => {
+    if (name === "interests" || name === "professions") {
+      if (rules.required && (!value || value.length === 0)) {
+        return `${name.replace("_", " ")} is required`;
+      }
+      return undefined;
+    }
+
     if (name === "password") {
       return validatePassword(value);
     }
 
-    if (rules.required && !value.trim()) {
+    if (rules.required && !value?.trim()) {
       return `${name.replace("_", " ")} is required`;
     }
 
@@ -271,17 +288,30 @@ const [emailFocused, setEmailFocused] = useState(false);
         const requiredFields = [
           "organization_name",
           "domain",
-          "sub_domain",
           "employee_size",
           "revenue",
         ];
+
+        // Only require sub_domain if domain is not "other"
+        if (formData.domain !== "other") {
+          requiredFields.push("sub_domain");
+        }
+
         requiredFields.forEach((field) => {
-          const error = validateField(field, formData[field], {
-            required: true,
-          });
-          if (error) {
-            newErrors[field] = error;
-            isValid = false;
+          // Special handling for domain="other" case
+          if (field === "domain" && formData.domain === "other") {
+            if (!formData.custom_domain?.trim()) {
+              newErrors.custom_domain = "Custom domain is required";
+              isValid = false;
+            }
+          } else {
+            const error = validateField(field, formData[field], {
+              required: true,
+            });
+            if (error) {
+              newErrors[field] = error;
+              isValid = false;
+            }
           }
         });
       }
@@ -312,8 +342,8 @@ const [emailFocused, setEmailFocused] = useState(false);
       // Always validate step 1 fields if we're on step 1 or validating all steps
       if (step === 1) {
         const requiredFields: Array<
-          "first_name" | "last_name" | "interest" | "profession"
-        > = ["first_name", "last_name", "interest", "profession"];
+          "first_name" | "last_name" | "interests" | "professions"
+        > = ["first_name", "last_name", "interests", "professions"];
 
         requiredFields.forEach((field) => {
           const error = validateField(field, formData[field], {
@@ -322,6 +352,12 @@ const [emailFocused, setEmailFocused] = useState(false);
           if (error) {
             newErrors[field] = error;
             isValid = false;
+          }
+          if (field === "interests" || field === "professions") {
+            if (!formData[field] || formData[field].length === 0) {
+              newErrors[field] = `${field} is required`;
+              isValid = false;
+            }
           }
         });
       }
@@ -428,7 +464,10 @@ const [emailFocused, setEmailFocused] = useState(false);
         );
         localStorage.setItem("name", response?.data?.data?.user.name);
         localStorage.setItem("main_name", response?.data?.data?.user.main_name);
-        localStorage.setItem("margaret_name", response?.data?.data?.user.margaret_name);
+        localStorage.setItem(
+          "margaret_name",
+          response?.data?.data?.user.margaret_name
+        );
 
         const completionStatus =
           response.data.data.user.person_organization_complete;
@@ -450,7 +489,7 @@ const [emailFocused, setEmailFocused] = useState(false);
               //   }
               //   plansByRange[plan.plan_range][plan.plan_type] = plan;
               // });
-              // const updatedPlans = Object.values(plansByRange).map(
+              // const updatedPlans = Object.values(plansByRange)?.map(
               //   (planGroup: any) => {
               //     const monthlyPlan = planGroup.monthly;
               //     const yearlyPlan = planGroup.yearly;
@@ -499,7 +538,7 @@ const [emailFocused, setEmailFocused] = useState(false);
               //   }
               //   plansByRange[plan.plan_range][plan.plan_type] = plan;
               // });
-              // const updatedPlans = Object.values(plansByRange).map(
+              // const updatedPlans = Object.values(plansByRange)?.map(
               //   (planGroup: any) => {
               //     const monthlyPlan = planGroup.monthly;
               //     const yearlyPlan = planGroup.yearly;
@@ -597,7 +636,7 @@ const [emailFocused, setEmailFocused] = useState(false);
     const { name, value } = e.target;
 
     if (name.startsWith("question_")) {
-      // Handle question answers
+      // Handle question answers (unchanged)
       const questionId = name.replace("question_", "");
       setOrganizationForm((prev) => {
         const existingQuestionIndex = prev.question.findIndex(
@@ -628,9 +667,10 @@ const [emailFocused, setEmailFocused] = useState(false);
       setOrganizationForm((prev) => ({
         ...prev,
         [name]: value,
+        ...(name === "domain" && value !== "other" && { sub_domain: "" }),
+        ...(name === "domain" && value !== "other" && { custom_domain: "" }),
       }));
-
-      if (name === "domain" && value) {
+      if (name === "domain" && value && value !== "other") {
         try {
           const response = await GetSubDomainDetails(value);
           setsubDomain(response?.data?.data);
@@ -654,6 +694,18 @@ const [emailFocused, setEmailFocused] = useState(false);
 
     if (!isValid) return;
     setIsSubmitting(true);
+
+    if (
+      organizationForm.domain === "other" &&
+      !organizationForm.custom_domain
+    ) {
+      setOrganizationErrors({
+        ...organizationErrors,
+        custom_domain: "Custom domain name is required",
+      });
+      return;
+    }
+
     try {
       const res = await submitOrganizationDetails(organizationForm);
       localStorage.setItem("person_organization", "2");
@@ -667,8 +719,20 @@ const [emailFocused, setEmailFocused] = useState(false);
           plansByRange[plan.plan_range][plan.plan_type] = plan;
         });
 
+        const response = await MeDetails();
+        localStorage.setItem(
+          "profile_picture",
+          response?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          response?.data?.data?.user.margaret_name
+        );
+
         // Create combined plan objects with both monthly and yearly data
-        const updatedPlans = Object.values(plansByRange).map(
+        const updatedPlans = Object.values(plansByRange)?.map(
           (planGroup: any) => {
             const monthlyPlan = planGroup.monthly;
             const yearlyPlan = planGroup.yearly;
@@ -734,8 +798,20 @@ const [emailFocused, setEmailFocused] = useState(false);
           plansByRange[plan.plan_range][plan.plan_type] = plan;
         });
 
+        const response = await MeDetails();
+        localStorage.setItem(
+          "profile_picture",
+          response?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          response?.data?.data?.user.margaret_name
+        );
+
         // Create combined plan objects with both monthly and yearly data
-        const updatedPlans = Object.values(plansByRange).map(
+        const updatedPlans = Object.values(plansByRange)?.map(
           (planGroup: any) => {
             const monthlyPlan = planGroup.monthly;
             const yearlyPlan = planGroup.yearly;
@@ -817,7 +893,7 @@ const [emailFocused, setEmailFocused] = useState(false);
 
   useEffect(() => {
     if (personPricing.length > 0) {
-      const updatedPlans = personPricing.map((plan: any) => ({
+      const updatedPlans = personPricing?.map((plan: any) => ({
         ...plan,
         price: isAnnual
           ? plan.yearlyPrice || plan.monthlyPrice
@@ -887,6 +963,7 @@ const [emailFocused, setEmailFocused] = useState(false);
   };
 
   const onForgotPassword = () => {
+    setApiMessage("");
     setActiveModal("forgotpassword");
   };
 
@@ -1277,6 +1354,7 @@ const [emailFocused, setEmailFocused] = useState(false);
                             {domain.name}
                           </option>
                         ))}
+                        <option value="other">Other (please specify)</option>
                       </select>
                       {organizationErrors.domain && (
                         <p className="mt-1 text-sm text-red-600">
@@ -1285,32 +1363,54 @@ const [emailFocused, setEmailFocused] = useState(false);
                       )}
                     </div>
 
-                    {/* Sub Domain */}
-                    <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
-                        Sub Domain
-                      </label>
-                      <select
-                        name="sub_domain"
-                        value={organizationForm.sub_domain}
-                        onChange={handleOrganizationFormChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      >
-                        <>
+                    {organizationForm.domain === "other" ? (
+                      <div className="mb-4">
+                        <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                          Custom Domain Name*
+                        </label>
+                        <input
+                          type="text"
+                          name="custom_domain"
+                          value={organizationForm.custom_domain || ""}
+                          onChange={handleOrganizationFormChange}
+                          className={`w-full px-3 py-2 border ${
+                            organizationErrors.custom_domain
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          } rounded-md`}
+                          placeholder="Enter your domain name"
+                        />
+                        {organizationErrors.custom_domain && (
+                          <p className="mt-1 text-sm text-red-600">
+                            {organizationErrors.custom_domain}
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="mb-4">
+                        <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                          Sub Domain
+                        </label>
+                        <select
+                          name="sub_domain"
+                          value={organizationForm.sub_domain}
+                          onChange={handleOrganizationFormChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        >
                           <option value="">Select Sub domain</option>
                           {subDomain?.map((subdomain: any) => (
                             <option key={subdomain.id} value={subdomain.id}>
                               {subdomain.name}
                             </option>
                           ))}
-                        </>
-                      </select>
-                      {organizationErrors.sub_domain && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {organizationErrors.sub_domain}
-                        </p>
-                      )}
-                    </div>
+                        </select>
+                        {organizationErrors.sub_domain && (
+                          <p className="mt-1 text-sm text-red-600">
+                            {organizationErrors.sub_domain}
+                          </p>
+                        )}
+                      </div>
+                    )}
 
                     {/* Employees Size */}
                     <div className="mb-4">
@@ -1386,7 +1486,7 @@ const [emailFocused, setEmailFocused] = useState(false);
 
                             {question.options && question.options.length > 0 ? (
                               <div className="space-y-2">
-                                {question.options.map((option: any) => (
+                                {question?.options?.map((option: any) => (
                                   <div
                                     key={option.id}
                                     className="flex items-center"
@@ -1648,56 +1748,80 @@ const [emailFocused, setEmailFocused] = useState(false);
 
                     <div className="mb-4">
                       <label className="block openSans text-base font-medium text-gray-800 mb-1">
-                        Interest*
+                        Interests*
                       </label>
-                      <select
-                        name="interest"
-                        value={personForm.interest}
-                        onChange={handlePersonFormChange}
-                        className={`w-full px-3 py-2 border ${
-                          personErrors.interest
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        } rounded-md`}
-                      >
-                        <option value="">Select your interest</option>
-                        {interest?.map((interest: any) => (
-                          <option key={interest.id} value={interest.id}>
-                            {interest.name}
-                          </option>
-                        ))}
-                      </select>
-                      {personErrors.interest && (
+                      <Select
+                        isMulti
+                        options={interest?.map((interestItem: Interest) => ({
+                          value: interestItem.id,
+                          label: interestItem.name,
+                        }))}
+                        value={
+                          personForm.interests?.map((interestId: any) => ({
+                            value: interestId,
+                            label: interest?.find(
+                              (i: any) => i.id === interestId
+                            )?.name,
+                          })) || []
+                        }
+                        onChange={(selectedOptions) => {
+                          // Update your form state with the selected values
+                          const selectedValues = selectedOptions?.map(
+                            (option) => option.value
+                          );
+                          setPersonForm({
+                            ...personForm,
+                            interests: selectedValues,
+                          });
+                        }}
+                        className="react-select-container"
+                        classNamePrefix="react-select"
+                        placeholder="Select interests..."
+                      />
+                      {personErrors.interests && (
                         <p className="mt-1 text-sm text-red-600">
-                          {personErrors.interest}
+                          {personErrors.interests}
                         </p>
                       )}
                     </div>
 
                     <div className="mb-4">
                       <label className="block openSans text-base font-medium text-gray-800 mb-1">
-                        Profession*
+                        Professions*
                       </label>
-                      <select
-                        name="profession"
-                        value={personForm.profession}
-                        onChange={handlePersonFormChange}
-                        className={`w-full px-3 py-2 border ${
-                          personErrors.profession
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        } rounded-md`}
-                      >
-                        <option value="">Select your profession</option>
-                        {profession?.map((profession: any) => (
-                          <option key={profession.id} value={profession.id}>
-                            {profession.title}
-                          </option>
-                        ))}
-                      </select>
-                      {personErrors.profession && (
+                      <Select
+                        isMulti
+                        options={profession?.map(
+                          (professionItem: Profession) => ({
+                            value: professionItem.id,
+                            label: professionItem.title,
+                          })
+                        )}
+                        value={
+                          personForm.professions?.map((professionId: any) => ({
+                            value: professionId,
+                            label: profession?.find(
+                              (p: any) => p.id === professionId
+                            )?.title,
+                          })) || []
+                        }
+                        onChange={(selectedOptions) => {
+                          // Update your form state with the selected values
+                          const selectedValues = selectedOptions?.map(
+                            (option) => option.value
+                          );
+                          setPersonForm({
+                            ...personForm,
+                            professions: selectedValues,
+                          });
+                        }}
+                        className="react-select-container"
+                        classNamePrefix="react-select"
+                        placeholder="Select professions..."
+                      />
+                      {personErrors.professions && (
                         <p className="mt-1 text-sm text-red-600">
-                          {personErrors.profession}
+                          {personErrors.professions}
                         </p>
                       )}
                     </div>
@@ -1722,7 +1846,7 @@ const [emailFocused, setEmailFocused] = useState(false);
 
                             {question.options && question.options.length > 0 ? (
                               <div className="space-y-2">
-                                {question.options.map((option: any) => (
+                                {question?.options?.map((option: any) => (
                                   <div
                                     key={option.id}
                                     className="flex items-center"
@@ -1873,7 +1997,7 @@ const [emailFocused, setEmailFocused] = useState(false);
               </h2>
 
               <div className="flex justify-center">
-                {personPricing.map((plan) => (
+                {personPricing?.map((plan) => (
                   <div
                     key={plan.id}
                     className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
@@ -2050,7 +2174,7 @@ const [emailFocused, setEmailFocused] = useState(false);
               </h2>
 
               <div className="flex justify-center">
-                {organizationpricingPlans.map((plan) => (
+                {organizationpricingPlans?.map((plan) => (
                   <div
                     key={plan.id}
                     className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
@@ -2190,7 +2314,7 @@ const [emailFocused, setEmailFocused] = useState(false);
         <div className="text-center p-6 max-w-md">
           <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] ">
             <svg
-              className="h-30 w-30 text-white animate-bounce"
+              className="h-30 w-30 text-white "
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

@@ -44,6 +44,7 @@ type OrganizationFormData = {
   organization_name: string;
   domain_id: string;
   sub_domain_id: string;
+  custom_domain?: string;
   organization_type_id: string;
   revenue_range_id: string;
   question: any;
@@ -60,7 +61,7 @@ export const ServerAPI = {
 };
 
 export const API = {
-  // BaseUrl: "http://192.168.1.26:5025/api", //local
+  // BaseUrl: "http://192.168.1.31:5025/api", //local
   // BaseUrl: "http://localhost:5025/api", //local
   BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
 };
@@ -68,6 +69,7 @@ export const API = {
 export const EndPoint = {
   login: "/auth/login",
   forgot: "/auth/forgot-password",
+  me: "/auth/me",
   updatepassword: "/auth/update/password",
   reset: "/auth/reset-password",
   register: "/auth/sign-up",
@@ -133,6 +135,10 @@ export const LoginDetails = async (formData: LoginFormData): ApiResponse => {
     password: formData?.password,
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.login);
+};
+export const MeDetails = async (): ApiResponse => {
+  const data = {}
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.me);
 };
 export const ForgotPasswordDetails = (
   formData: ForgotFormData
@@ -200,6 +206,7 @@ export const submitOrganizationDetails = (
   const data: Partial<OrganizationFormData> = {
     organization_name: formData?.organization_name,
     domain_id: formData?.domain,
+    custom_domain: formData?.custom_domain,
     sub_domain_id: formData?.sub_domain,
     organization_type_id: formData?.employee_size,
     revenue_range_id: formData?.revenue,
@@ -214,8 +221,8 @@ export const submitOrganizationDetails = (
 export const submitPersonDetails = (formData: any): ApiResponse => {
   console.log("🚀 ~ formData:", formData);
   const data: Partial<any> = {
-    interest_id: formData?.interest,
-    profession_id: formData?.profession,
+    interest_id: formData?.interests,
+    profession_id: formData?.professions,
     first_name: formData?.first_name,
     last_name: formData?.last_name,
     question: formData?.question,

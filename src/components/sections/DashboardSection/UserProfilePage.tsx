@@ -9,6 +9,7 @@ import {
   GetProfileDetails,
   GetPublicProfileDetails,
   GetStateDetails,
+  MeDetails,
   SubmitProfileDetails,
   SubmitPublicProfileDetails,
 } from "../../../Common/ServerAPI";
@@ -172,6 +173,17 @@ const UserProfilePage = () => {
         type: "success",
         duration: 5000,
       });
+      const response = await MeDetails();
+      localStorage.setItem(
+        "profile_picture",
+        response?.data?.data?.user.profile_picture
+      );
+      localStorage.setItem("name", response?.data?.data?.user.name);
+      localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+      localStorage.setItem(
+        "margaret_name",
+        response?.data?.data?.user.margaret_name
+      );
     } catch (error: any) {
       console.error("Error saving basic info:", error);
       showToast({
