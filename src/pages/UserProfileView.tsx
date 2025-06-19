@@ -65,6 +65,7 @@ export default function UserProfileView() {
   const [avgrating, setAvgRating] = useState<number>();
   const [totalrate, setTotalRate] = useState<number>();
   const [breakDown, setBreakDown] = useState<any>();
+  const [ratingPercentage, setratingPercentage] = useState<any>();
   const [userReviewData, setUserReviewData] = useState<any>([]);
 
   const [breakdowns, setBreakdowns] = useState({
@@ -188,6 +189,7 @@ export default function UserProfileView() {
       setUserReviewData(res?.data?.data?.user_data);
       setTotalRate(res?.data?.data?.total_user_rated);
       setBreakDown(res?.data?.data?.breakdown);
+      setratingPercentage(res?.data?.data?.rating_start_percentage);
     } catch (error: any) {
       setAvgRating(0);
       showToast({
@@ -629,16 +631,18 @@ export default function UserProfileView() {
                 </span>
                 Overall Ratings
               </h3>
-              <div className="ms-3">
-                <Button
-                  variant="gradient-primary"
-                  className="rounded-[100px] cursor-pointer py-2 px-4 transition-colors duration-500 ease-in-out"
-                  type="button"
-                  onClick={() => setActiveModal("rating")}
-                >
-                  wite Review
-                </Button>
-              </div>
+              {!userDetails?.is_rated && (
+                <div className="ms-3">
+                  <Button
+                    variant="gradient-primary"
+                    className="rounded-[100px] cursor-pointer py-2 px-4 transition-colors duration-500 ease-in-out"
+                    type="button"
+                    onClick={() => setActiveModal("rating")}
+                  >
+                    write Review
+                  </Button>
+                </div>
+              )}
             </div>
 
             <div
@@ -679,11 +683,17 @@ export default function UserProfileView() {
                           className="h-full bg-purple-500"
                           style={{
                             width: `${
-                              (star === 5 && 85) ||
-                              (star === 4 && 55) ||
-                              (star === 3 && 15) ||
-                              (star === 2 && 5) ||
-                              3
+                              ratingPercentage?.[
+                                star === 5
+                                  ? "five"
+                                  : star === 4
+                                  ? "four"
+                                  : star === 3
+                                  ? "three"
+                                  : star === 2
+                                  ? "two"
+                                  : "one"
+                              ] || 0
                             }%`,
                           }}
                         />
@@ -699,7 +709,7 @@ export default function UserProfileView() {
                   Ratings Breakdown
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-10  w-full max-w-[400px]">
-                  {breakDown?.map((item:any, i:any) => (
+                  {breakDown?.map((item: any, i: any) => (
                     <div
                       key={i}
                       className="flex justify-between items-center w-full gap-1"
