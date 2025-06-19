@@ -193,7 +193,7 @@ const [isUsernameFocused, setIsUsernameFocused] = useState(false);
 
   return (
     <>
-<div className="relative min-h-screen flex flex-col overflow-hidden bg-white px-4 sm:px-6 lg:px-8">
+<div className="relative min-h-screen flex flex-col overflow-hidden bg-white">
         <div className="relative w-full h-[250px]">
           {/* Diagonal Gradient Background */}
 <div className="absolute top-0 left-0 w-full h-[300px] sm:h-[400px] lg:h-[600px] z-0">
