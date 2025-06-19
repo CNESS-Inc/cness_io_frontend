@@ -119,10 +119,13 @@ input[type="checkbox"]:checked:not(.sr-only):not(.no-style-checkbox)::after {
 
 @keyframes bounceLeft {
   0%, 100% {
-    transform: translateX(0%);
+    transform: translateX(20%);
   }
   50% {
-    transform: translateX(30%);
+    transform: translateX(50%);
+  }
+   20% {
+    transform: translateX(-30%);
   }
 }
 
@@ -130,6 +133,11 @@ input[type="checkbox"]:checked:not(.sr-only):not(.no-style-checkbox)::after {
   0%, 100% {
     transform: translateX(0%);
   }
+
+  50% {
+    transform: translateX(50%);
+  }
+
   50% {
     transform: translateX(-30%);
   }
@@ -271,3 +279,7 @@ summary::after {
   border-bottom-right-radius: 12px !important;
 
 }
+
+
+
+

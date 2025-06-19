@@ -1,5 +1,4 @@
-
-const LearningLab = () => {
+const Feeds = () => {
   return (
     <>
       <div className="w-full min-h-[70vh] flex items-center justify-center px-4">
@@ -20,7 +19,7 @@ const LearningLab = () => {
         />
       </svg>
       <h2 className="text-2xl font-semibold text-gray-800 mb-3">
-        Learning Lab Coming Soon
+        Social Feeds Coming Soon
       </h2>
       <p className="text-gray-600 text-sm sm:text-base">
         We're working hard to bring this feature to you. Please check back soon!
@@ -32,4 +31,4 @@ const LearningLab = () => {
   )
 }
 
-export default LearningLab
+export default Feeds

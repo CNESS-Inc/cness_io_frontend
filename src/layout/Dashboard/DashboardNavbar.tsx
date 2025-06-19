@@ -1,12 +1,16 @@
-
 import { useState, useEffect } from "react";
-import {BellIcon,HelpCircleIcon,SettingsIcon,
-  // UploadIcon,
-  XIcon, ChevronDownIcon,ChevronUpIcon,LogOutIcon,} from "lucide-react";
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
-import { Link } from "react-router-dom";
+import {
+  BellIcon,
+  HelpCircleIcon,
+  SettingsIcon,
+  XIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  LogOutIcon,
+} from "lucide-react";
+import { NavLink, useNavigate, useLocation, Link } from "react-router-dom";
 import { iconMap } from '../../assets/icons';
-
+import hambur from "../../assets/hambur.png";
 
 const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -14,10 +18,11 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
   const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-  // Automatically open/close profile dropdown based on current route
   useEffect(() => {
-    if (location.pathname.startsWith('/dashboard/user-profile') || 
-        location.pathname.startsWith('/dashboard/company-profile')) {
+    if (
+      location.pathname.startsWith('/dashboard/user-profile') || 
+      location.pathname.startsWith('/dashboard/company-profile')
+    ) {
       setIsProfileOpen(true);
     } else {
       setIsProfileOpen(false);
@@ -35,18 +40,15 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
     }
   };
 
-  
-  // Navigation items data
   const mainNavItems = [
     {
-    icon: <img src={iconMap["home"]} alt="Home Icon" className="w-5 h-5" />,
+      icon: <img src={iconMap["home"]} alt="Home Icon" className="w-5 h-5" />,
       label: "Home/Dashboard",
       active: true,
       path: "/dashboard",
     },
-
     {
-    icon: <img src={iconMap["usericon"]} alt="Home Icon" className="w-5 h-5" />,
+      icon: <img src={iconMap["usericon"]} alt="Home Icon" className="w-5 h-5" />,
       label: "True Profile",
       active: false,
       isProfileDropdown: true,
@@ -55,236 +57,99 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
         "/dashboard/company-profile"
       ]
     },
- 
-{
-    icon: <img src={iconMap["certify"]} alt="Home Icon" className="w-5 h-5" />,
-  label: "Certifications",
-  active: false,
-  isCertificationsDropdown: true,
-  childPaths: ["/dashboard/assesment", "/dashboard/score-result","/dashboard/upgrade-badge"],
-  children: [
     {
-      label: "Get Certified",
-      path: "/dashboard/assesment",
+      icon: <img src={iconMap["certify"]} alt="Home Icon" className="w-5 h-5" />,
+      label: "Certifications",
+      active: false,
+      isCertificationsDropdown: true,
+      childPaths: ["/dashboard/assesment", "/dashboard/score-result","/dashboard/upgrade-badge"],
+      children: [
+        { label: "Get Certified", path: "/dashboard/assesment" },
+        { label: "Upload Proof", path: "" },
+        { label: "Score & Results", path: "/dashboard/score-result" },
+        { label: "Upgrade Badge", path: "/dashboard/upgrade-badge" },
+      ],
     },
-
     {
-      label: "Upload Proof",
-      path: "",
+      icon: <img src={iconMap["directory"]} alt="Home Icon" className="w-5 h-5" />,
+      label: "Directory",
+      active: false,
+      isDirectoryDropdown: true,
+      childPaths: ["/dashboard/search_listing"],
+      children: [
+        { label: "Search Listing", path: "/dashboard/search_listing" },
+        { label: "Edit Public Listing", path: "" },
+        { label: "Visibility Settings", path: "" },
+        { label: "Rating & Reviews", path: "" },
+      ],
     },
-
     {
-      label: "Score & Results",
-      path: "/dashboard/score-result",
+      icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
+      label: "Market Place",
+      active: true,
+      path: "/dashboard/market_place",
+      isMarketplaceDropdown: true,
+      childPaths: ["/dashboard/DigitalProducts"],
+      children: [
+        { label: "Buy Digital Products", path: "/dashboard/digital_products" },
+        { label: "Sell ypur Products", path: "" },
+        { label: "Track Purchase & Sales", path: "" },
+        { label: "Creator Guideline", path: "" },
+      ],
     },
-
-    
     {
-      label: "Upgrade Badge",
-      path: "/dashboard/upgrade-badge"
+      icon: <img src={iconMap["social"]} alt="Home Icon" className="w-5 h-5" />,
+      label: "Social",
+      active: false,
+      isSocialDropdown: true,
+      childPaths: ["/dashboard/Feed"],
+      children: [
+        { label: "Feed", path: "/dashboard/Feed" },
+        { label: "Profile", path: "" },
+        { label: "My Connections", path: "" },
+        { label: "Messagings", path: "" },
+      ],
     },
-  ],
-},
-    // {
-    //   icon: <UploadIcon className="w-5 h-5" />,
-    //   label: "Upload Proof",
-    //   active: false,
-    //   path: "/dashboard/upload-proof",
-    // },
-    
-{
-    icon: <img src={iconMap["directory"]} alt="Home Icon" className="w-5 h-5" />,
-  label: "Directory",
-  active: false,
-  isDirectoryDropdown: true,
-  childPaths: ["/dashboard/search_listing"],
-  children: [
     {
-      label: "Search Listing",
-      path: "/dashboard/search_listing",
+      icon: <img src={iconMap["community"]} alt="Home Icon" className="w-5 h-5" />,
+      label: "Community",
+      active: false,
+      isCommunityDropdown: true,
+      childPaths: ["/dashboard/SearchExplore"],
+      children: [
+        { label: "Search & Explore", path: "/dashboard/SearchExplore" },
+        { label: "Create Circles (Coming Soon)", path: "" },
+        { label: "Manage Circles (Coming Soon)", path: "" },
+        { label: "Messagings", path: "" },
+      ],
     },
-
     {
-      label: "Edit Public Listing",
-      path: "",
+      icon: <img src={iconMap["mentor"]} alt="Home Icon" className="w-5 h-5" />,
+      label: "Mentor Partner Hub",
+      active: false,
+      isMentorDropdown: true,
+      childPaths: ["/dashboard/BecomeMentor"],
+      children: [
+        { label: "Became an Mentor", path: "/dashboard/Become_mentor" },
+        { label: "Mentor Dashboard", path: "" },
+        { label: "Track Progress", path: "" },
+        { label: "Partner License & Toolkit", path: "" },
+        { label: "Partner Dashboard", path: "" },
+      ],
     },
-
     {
-      label: "Visibility Settings",
-      path: "",
+      icon: <img src={iconMap["learning"]} alt="Home Icon" className="w-5 h-5" />,
+      label: "Learning Lab",
+      active: false,
+      isLearningLabDropdown: true,
+      childPaths: ["/dashboard/learning-lab"],
+      children: [
+        { label: "Modules", path: "/dashboard/learning-lab" },
+        { label: "Learning Progress", path: "" },
+        { label: "Renewal", path: "" },
+        { label: "Resources", path: "" },
+      ],
     },
-
-    
-    {
-      label: "Rating & Reviews",
-      path: "",
-    },
-  ],
-},
-
-
-{
-    icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
-  label: "Market Place",
-  active: true,
-path: "/dashboard/market_place",
-  isMarketplaceDropdown: true,
-  childPaths: ["/dashboard/DigiProducts"],
-  children: [
-    {
-      label: "Buy Digital Products",
-      path: "/dashboard/digital_products",
-    },
-
-    {
-      label: "Sell ypur Products",
-      path: "",
-    },
-
-    {
-      label: "Track Purchase & Sales",
-      path: "",
-    },
-
-    
-    {
-      label: "Creator Guideline",
-      path: "",
-    },
-  ],
-},
-
-{
-    icon: <img src={iconMap["social"]} alt="Home Icon" className="w-5 h-5" />,
-  label: "Social",
-  active: false,
-  isSocialDropdown: true,
-  childPaths: ["/dashboard/Feed"],
-  children: [
-    {
-      label: "Feed",
-      path: "/dashboard/Feed",
-    },
-
-    {
-      label: "Profile",
-      path: "",
-    },
-
-    {
-      label: "My Connections",
-      path: "",
-    },
-
-    
-    {
-      label: "Messagings",
-      path: "",
-    },
-  ],
-},
-
-
-{
-    icon: <img src={iconMap["community"]} alt="Home Icon" className="w-5 h-5" />,
-  label: "Community",
-  active: false,
-  isCommunityDropdown: true,
-  childPaths: ["/dashboard/SearchExplore"],
-  children: [
-    {
-      label: "Search & Explore",
-     path: "/dashboard/SearchExplore"
-    },
-
-    {
-      label: "Create Circles (Coming Soon)",
-      path: "",
-    },
-
-    {
-      label: "Manage Circles (Coming Soon)",
-      path: "",
-    },
-
-    
-    {
-      label: "Messagings",
-      path: "",
-    },
-  ],
-},
-
-{
-    icon: <img src={iconMap["mentor"]} alt="Home Icon" className="w-5 h-5" />,
-  label: "Mentor Partner Hub",
-  active: false,
-  isMentorDropdown: true,
-  childPaths: ["/dashboard/Become_mentor"],
-  children: [
-    {
-      label: "Became an Mentor",
-      path: "/dashboard/Become_mentor",
-    },
-
-    {
-      label: "Mentor Dashboard",
-      path: "",
-    },
-
-    {
-      label: "Track Progress",
-      path: "",
-    },
-
-    
-    {
-      label: "Partner License & Toolkit",
-      path: "",
-    },
-
-     {
-      label: "Partner Dashboard",
-      path: "",
-    },
-  ],
-},
-
-
-{
-    icon: <img src={iconMap["learning"]} alt="Home Icon" className="w-5 h-5" />,
-  label: "Learning Lab",
-  active: false,
-  isLearningLabDropdown: true,
-  childPaths: ["/dashboard/learning-lab"],
-  children: [
-    {
-      label: "Modules",
-      path:  "/dashboard/learning-lab",
-    },
-
-    {
-      label: "Learning Progress",
-      path: "",
-    },
-
-    {
-      label: "Renewal",
-      path: "",
-    },
-
-    
-    {
-      label: "Resources",
-      path: "",
-    },
-
-  
-  ],
-},
-   
-
-
   ];
 
   const secondaryNavItems = [
@@ -314,7 +179,6 @@ path: "/dashboard/market_place",
       customAction: handleLogout,
     },
   ];
-
   // NavItem component with profile dropdown support
   const NavItem = ({ item, onClick }: any) => {
     const location = useLocation();
@@ -323,7 +187,7 @@ const isDropdownOpen = openDropdown === item.label;
       location.pathname.startsWith(path)
     );
 
-    const baseClasses = "flex items-center gap-3 px-3 py-2.5 w-full rounded-xl cursor-pointer";
+const baseClasses = "flex items-center gap-3 px-3 py-2.5 w-full rounded-xl cursor-pointer font-poppins text-sm font-medium leading-[20px]";
     const activeClasses = "bg-[#f3e8ff] text-[#9747FF] font-semibold";
     const inactiveClasses = "text-slate-500 hover:bg-[#f3e8ff]";
 
@@ -465,34 +329,22 @@ if (item.children?.length > 0) {
   };
 
 
-
-
-
   return (
     <>
-
-    
-      {/* Mobile Overlay */}
       {isMobileNavOpen && (
         <div
           onClick={toggleMobileNav}
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 bg-transparent z-40 md:hidden"
         />
       )}
-
-      {/* Navbar Container */}
-      <nav
-        className={`
-        fixed md:relative
-        h-full w-[220px] sm:w-[240px] md:w-[260px] lg:w-[280px]
-        bg-white border-r border-[#0000001a]
-        transition-all duration-300 ease-in-out
-        z-50
-        ${isMobileNavOpen ? "left-0" : "-left-full md:left-0"}
-      `}
-      >
-        <div className="flex flex-col h-full overflow-y-auto">
-          {/* Mobile Close Button */}
+     <nav
+  className={`fixed top-0 left-0 z-40 h-full w-64 bg-white border-r border-gray-200
+    transform transition-transform duration-300 ease-in-out
+    ${isMobileNavOpen ? "translate-x-0" : "-translate-x-full"}
+  `}
+>
+<div className="flex flex-col h-full overflow-y-auto font-poppins text-sm font-medium leading-[20px]">
+          {/* Mobile Close Button 
           <div className="md:hidden flex justify-end px-2">
             <button onClick={toggleMobileNav} className="p-2">
               <XIcon className="w-5 h-5 text-gray-500" />
@@ -500,7 +352,7 @@ if (item.children?.length > 0) {
           </div>
 
           {/* Logo */}
-          <div className="flex flex-col items-start gap-[7.5px] py-[18px] px-4 md:px-6">
+<div className="flex items-center justify-between w-full py-[18px] px-4 md:px-6">
             <Link to="/">
               <img
                 className="w-[108.12px] h-[46.51px]"
@@ -508,7 +360,19 @@ if (item.children?.length > 0) {
                 src="https://c.animaapp.com/magahlmqpONVZN/img/component-1.svg"
               />
             </Link>
-          </div>
+{/* Hamburger button (always visible) */}
+{/* Desktop hamburger only */}
+<div className="hidden md:block ml-auto">
+  <button onClick={toggleMobileNav} className="p-2 cursor-pointer focus:outline-none" >
+    <img src={hambur} alt="Toggle Menu" className="w-8 h-8" />
+  </button>
+</div>
+</div>
+
+            
+
+            
+       
 
           {/* Main Menu Items */}
           <div className="flex flex-col items-start gap-1 px-3 w-full">

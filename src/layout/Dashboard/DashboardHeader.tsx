@@ -65,14 +65,13 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
     <header className="flex w-full items-center justify-between px-4 md:px-8 py-[18px] bg-white border-b border-[#0000001a] relative">
       {/* Left side - Hamburger (mobile) and Search */}
       <div className="flex items-center gap-4">
-        {/* Hamburger menu - visible only on mobile */}
-      <button
-  onClick={toggleMobileNav}
-  className="   flex items-center justify-center hover:shadow-md transition"
->
-   <img src={hambur} alt="Menu" className="w-10 h-10 object-contain" />
-</button>
 
+{/* Mobile hamburger only */}
+<div className="block md:hidden">
+  <button onClick={toggleMobileNav} className="p-2">
+    <img src={hambur} alt="Menu" className="w-8 h-8" />
+  </button>
+</div>
         {/* Search bar */}
         <div className="flex items-center justify-between p-3 relative bg-white rounded-xl border border-solid border-slate-300 w-full md:w-[440px]">
           <Input

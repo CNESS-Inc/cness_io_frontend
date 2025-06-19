@@ -279,8 +279,8 @@ export default function DirectoryPage() {
       </section>
 
       {/* Marquee Section */}
-      <div className="bg-white py-10">
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-white py-10 ">
+        <div className="max-w-screen-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="space-y-6">
             {[topRow, bottomRow].map((row, rowIndex) => (
 <div key={rowIndex} className="overflow-x-auto whitespace-nowrap no-scrollbar">

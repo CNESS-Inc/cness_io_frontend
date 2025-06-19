@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import DashboardLayout from "../layout/Dashboard/dashboardlayout";
 
 const GenerateBadgeCode = () => {
   const staticImageURL = "https://dev.cness.io/logo.png";
@@ -53,7 +52,7 @@ const GenerateBadgeCode = () => {
   };
 
   return (
-    <DashboardLayout>
+    <>
       <div className="p-4 mx-auto">
         {/* <h2 className="text-xl font-bold mb-4">Embed Code Generator</h2>
 
@@ -125,7 +124,7 @@ const GenerateBadgeCode = () => {
           </div>
         )}
       </div>
-    </DashboardLayout>
+    </>
   );
 };
 

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import DashboardLayout from "../layout/Dashboard/dashboardlayout";
 import Button from "../components/ui/Button";
 import {
   QuestionDetails,
@@ -344,15 +343,15 @@ const AssessmentQuestion: React.FC = () => {
 
   if (loading) {
     return (
-      <DashboardLayout>
+  
         <LoadingSpinner />
-      </DashboardLayout>
+   
     );
   }
 
-  if (!currentSection || !formData) {
-    return <DashboardLayout>No section data available</DashboardLayout>;
-  }
+if (!currentSection || !formData) {
+  return <div className="p-6 text-center">No section data available</div>;
+}
 
   const completed_step = localStorage.getItem("completed_step");
   console.log("🚀 ~ completed_step:", typeof completed_step);
@@ -377,8 +376,8 @@ const AssessmentQuestion: React.FC = () => {
 
   return (
     <>
-      <DashboardLayout>
-        <div className="max-w-6xl mx-auto px-3 pt-8">
+     
+<div className="w-full px-2 sm:px-6 lg:px-2 mt-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-3">
@@ -401,11 +400,11 @@ const AssessmentQuestion: React.FC = () => {
         </div>
 
         {completed_step === "2" ? (
-          <div className="px-4 pt-4 pb-10 max-w-6xl mx-auto space-y-6">
-            <div className="bg-white rounded-3xl shadow-base p-8 space-y-10">
+<div className="w-full px-4 sm:px-6 lg:px-2 pt-4 pb-10 space-y-6">
+            <div className="bg-white rounded-3xl shadow-base p-4 sm:p-6 lg:p-8 space-y-8">
               {/* Section 1: Describe Your Approach */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-700 pb-2 border-b border-gray-200">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-700 pb-2 border-b border-gray-200">
                   {currentSection.checkboxes_question}
                 </h3>
                 <div className="space-y-3">
@@ -415,7 +414,7 @@ const AssessmentQuestion: React.FC = () => {
                       className="flex items-start gap-3 text-gray-700"
                     >
                       <input
-                        type="checkbox"
+                        type="checkbox" 
                         checked={formData.selectedCheckboxIds.includes(
                           option.id
                         )}
@@ -441,7 +440,7 @@ const AssessmentQuestion: React.FC = () => {
                     </p>
                     <textarea
                       placeholder="Enter Text here"
-                      className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full p-2 sm:p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
                       rows={3}
                       value={formData.purposePauseAnswers[i]?.answer || ""}
                       onChange={(e) =>
@@ -483,7 +482,7 @@ const AssessmentQuestion: React.FC = () => {
                   Suggested Uploads
                 </h3>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   {currentSection.suggestedUploads.map((upload, i) => (
                     <div key={i}>
                       <label className="block text-sm font-medium text-gray-700 mb-4">
@@ -528,39 +527,23 @@ const AssessmentQuestion: React.FC = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center justify-between mt-10 px-6 py-6 bg-white rounded-xl shadow-sm gap-4">
+<div className="flex flex-col sm:flex-row items-center justify-between mt-10 px-4 py-6 bg-white rounded-xl shadow-sm gap-4">
                 {/* Save Button - Gradient */}
                 <Button
                   variant="gradient-primary"
                   onClick={handleSave}
                   disabled={isSubmitting}
-                  className="px-6 py-2 rounded-full text-white font-medium  disabled:opacity-60 cursor-pointer"
+    className="w-full sm:w-auto px-6 py-2 rounded-full text-white font-medium disabled:opacity-60 cursor-pointer"
                 >
                   {isSubmitting ? "Saving..." : "Save"}
                 </Button>
 
-                {/* Pagination Dots (Optional center item) */}
-                <div className="flex-1 flex justify-center">
-                  <div className="flex gap-1">
-                    {[...Array(totalSteps)].map((_, i) => (
-                      <div
-                        key={i}
-                        className={`w-2.5 h-2.5 rounded-full ${
-                          i === currentStepIndex
-                            ? "bg-purple-500"
-                            : "bg-purple-300"
-                        } transition`}
-                      />
-                    ))}
-                  </div>
-                </div>
-
                 {/* Prev & Next Buttons */}
-                <div className="flex gap-4">
+  <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
                   <button
                     onClick={handlePrevious}
                     disabled={!currentSection.previous_section_id}
-                    className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 
+      className={`w-full sm:w-auto px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 
     ${
       prevVariant === "white-disabled"
         ? "bg-white text-gray-400 border border-gray-200 shadow-md cursor-not-allowed"
@@ -576,13 +559,33 @@ const AssessmentQuestion: React.FC = () => {
                     variant="gradient-primary"
                     onClick={handleNext}
                     disabled={!currentSection.next_section_id}
-                    className="px-6 py-2 rounded-full text-white font-medium 
-   cursor-pointer transition-colors duration-200"
+                          className="w-full sm:w-auto px-6 py-2 rounded-full text-white font-medium cursor-pointer transition-colors duration-200"
+
                   >
                     Save & Next
                   </Button>
                 </div>
               </div>
+
+
+                {/* Pagination Dots (Optional center item) */}
+  <div className="mt-4 sm:mt-0 flex justify-center flex-1">
+                  <div className="flex gap-1">
+                    {[...Array(totalSteps)].map((_, i) => (
+                      <div
+                        key={i}
+          className={`w-2.5 h-2.5 rounded-full ${
+                          i === currentStepIndex
+                            ? "bg-purple-500"
+                            : "bg-purple-300"
+                        } transition`}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+
+
               {!currentSection.next_section_id && (
                 <>
                   <div className="mt-10 border-t pt-6">
@@ -630,7 +633,7 @@ const AssessmentQuestion: React.FC = () => {
             </div>
           </div>
         )}
-      </DashboardLayout>
+     
       <Modal isOpen={activeModal === "assesment"} onClose={closeModal}>
         <div className="text-center p-6 max-w-md">
           <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] mb-4">

@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 
-import DashboardLayout from "../layout/Dashboard/dashboardlayout";
 import HeroCarousel from "../components/marketplaceComponents/HeroCarousel"; 
 import CnessRecommendations from "../components/marketplaceComponents/CnessRecommendations"; 
 import sorticon from "../assets/sort.png"; // update the path as needed
@@ -183,113 +182,112 @@ const [currentPage, setCurrentPage] = useState(1);
 
   return (
 
-     <DashboardLayout>
-<div className="pt-4 px-4 flex flex-col lg:flex-row gap-6">
-      <HeroCarousel />
-      <CnessRecommendations />
-      {/* ...rest of your marketplace sections like Featured, Trending, etc */}
-    </div>
+ <>
+<div className="w-full bg-[#f9f9f9] flex">
+  <div className="w-full max-w-[1600px] px-2 sm:px-4 lg:px-6">
+        {/* Hero + Recommendations */}
+        <div className="pt-4 flex flex-col lg:flex-row gap-6 w-full">
+          <HeroCarousel />
+          <CnessRecommendations />
+        </div>
 
-    <div className="flex flex-col lg:flex-row items-center justify-between p-4   mt-4 gap-4 w-full max-w-[833px]">
-  <label className="w-full">
-    <span className="block text-sm font-semibold text-gray-700 mb-2">Search</span>
-    <div className="flex items-center gap-2">
-      <div className="relative w-full">
-        <input
-          type="text"
-          placeholder="Search for any materials"
-          className="w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8A6CFF]"
-        />
-        <span className="absolute right-3 top-2.5 text-gray-400 text-sm">
-          🔍
-        </span>
+        {/* Search + Filter + Sort */}
+        <div className="flex flex-col lg:flex-row items-center justify-between mt-6 gap-4 w-full">
+          <div className="w-full">
+            <span className="block text-sm font-semibold text-gray-700 mb-2">Search</span>
+            <div className="flex items-center gap-2">
+              <div className="relative w-[1000px]">
+                <input
+                  type="text"
+                  placeholder="Search for any materials"
+    className="w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8A6CFF]"
+                />
+                <span className="absolute right-3 top-2.5 text-gray-400 text-sm">🔍</span>
+              </div>
+
+              <button className="flex items-center gap-2 bg-[#7077FE] text-white px-5 py-2 rounded-full font-medium hover:bg-[#7c60ff] transition">
+                <span>Filter</span>
+                <Filter className="w-4 h-4 text-white" strokeWidth={2.5} />
+              </button>
+
+              <button className="flex items-center gap-2 bg-white text-[#1C2274] px-5 py-2 rounded-full font-medium shadow-sm border border-gray-100 hover:shadow-md transition">
+                <span>Sort</span>
+                <img
+                  src={sorticon}
+                  alt="Sort Icon"
+                  className="w-[16px] h-[14px] object-contain"
+                />
+              </button>
+            </div>
+            {/* Divider */}
+            <div className="w- h-px bg-[#E1E0E0] mt-6" />
+          </div>
+        </div>
+
+        {/* Marketplace Sections */}
+        <div className="w-full mt-6">
+          <MarketplaceSection
+            title="Featured"
+            icon={<Star className="text-pink-500 w-4 h-4" />}
+            products={paginatedProducts}
+          />
+          <MarketplaceSection
+            title="Trending Products"
+            icon={<TrendingUp className="text-red-500" />}
+            products={trendingProducts}
+          />
+          <MarketplaceSection
+            title="Latest Products"
+            icon={<ClockFading className="text-yellow-500" />}
+            products={latestProducts}
+          />
+
+          {/* Pagination */}
+          <div className="flex justify-center items-center gap-1 py-6">
+            <button
+              onClick={() => setCurrentPage(1)}
+              className="px-3 py-1 rounded bg-white text-sm shadow hover:bg-gray-100"
+            >
+              &laquo;
+            </button>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+              className="px-3 py-1 rounded bg-white text-sm shadow hover:bg-gray-100"
+            >
+              &lsaquo;
+            </button>
+
+            {[...Array(totalPages)].map((_, i) => {
+              const page = i + 1;
+              return (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`px-3 py-1 rounded text-sm shadow ${
+                    currentPage === page ? "bg-[#7077FE] text-white" : "bg-white"
+                  }`}
+                >
+                  {page}
+                </button>
+              );
+            })}
+
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+              className="px-3 py-1 rounded bg-white text-sm shadow hover:bg-gray-100"
+            >
+              &rsaquo;
+            </button>
+            <button
+              onClick={() => setCurrentPage(totalPages)}
+              className="px-3 py-1 rounded bg-white text-sm shadow hover:bg-gray-100"
+            >
+              &raquo;
+            </button>
+          </div>
+        </div>
       </div>
-
-<button className="flex items-center gap-2 bg-[#7077FE] text-white px-5 py-2 rounded-full font-medium hover:bg-[#7c60ff] transition">
-  <span>Filter</span>
-  <Filter className="w-4 h-4 text-white" strokeWidth={2.5} />
-
-</button>
-
-<button className="flex items-center gap-2 bg-white text-[#1C2274] px-5 py-2 rounded-full font-medium shadow-sm border border-gray-100 hover:shadow-md transition">
-  <span>Sort</span>
-  <img
-    src={sorticon}
-    alt="Sort Icon"
-    className="w-[16px] h-[14px] object-contain"
-  />
-</button>
-
-
     </div>
-    <div className="w-full h-px bg-[#E1E0E0] mt-6" />
-  </label>
-</div>
-
-
- <div className="max-w-[860px]   ml-0.5">
-<MarketplaceSection
-  title="Featured"
-  icon={<Star className="text-pink-500 w-4 h-4" />}
-  products={paginatedProducts}
-/>
-      <MarketplaceSection
-        title="Trending Products"
-        icon={<TrendingUp className="text-red-500" />}
-        products={trendingProducts}
-      />
-      <MarketplaceSection
-        title="Latest Products"
-        icon={<ClockFading className="text-yellow-500" />}
-        products={latestProducts}
-      />
-
-
-<div className="flex justify-center items-center gap-1 py-6">
-  <button
-    onClick={() => setCurrentPage(1)}
-    className="px-3 py-1 rounded bg-white text-sm shadow hover:bg-gray-100"
-  >
-    &laquo;
-  </button>
-  <button
-    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-    className="px-3 py-1 rounded bg-white text-sm shadow hover:bg-gray-100"
-  >
-    &lsaquo;
-  </button>
-
-  {[...Array(totalPages)].map((_, i) => {
-    const page = i + 1;
-    return (
-      <button
-        key={page}
-        onClick={() => setCurrentPage(page)}
-        className={`px-3 py-1 rounded text-sm shadow ${
-          currentPage === page ? "bg-[#7077FE] text-white" : "bg-white"
-        }`}
-      >
-        {page}
-      </button>
-    );
-  })}
-
-  <button
-    onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
-    className="px-3 py-1 rounded bg-white text-sm shadow hover:bg-gray-100"
-  >
-    &rsaquo;
-  </button>
-  <button
-    onClick={() => setCurrentPage(totalPages)}
-    className="px-3 py-1 rounded bg-white text-sm shadow hover:bg-gray-100"
-  >
-    &raquo;
-  </button>
-</div>
-</div>
-
-
-    </DashboardLayout>
+  </>
   );
 }

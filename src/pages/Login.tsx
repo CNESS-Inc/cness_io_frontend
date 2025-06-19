@@ -15,6 +15,11 @@ import {
 import Button from "../components/ui/Button";
 import { Link } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
+import logo from "../assets/logo.png"; // update the path as needed
+import { FiMail, FiEye, FiEyeOff } from "react-icons/fi"; // add if not already
+
+
+
 
 interface SubDomain {
   id: string;
@@ -190,6 +195,8 @@ export default function Login() {
       return "Password must contain at least one special character";
     return undefined;
   };
+const [showLoginPassword, setShowLoginPassword] = useState(false);
+const [emailFocused, setEmailFocused] = useState(false);
 
   const validateField = (
     name: string,
@@ -950,12 +957,17 @@ export default function Login() {
           </div>
 
           <div className="absolute top-40 left-10 z-10">
-            <h1 className="text-white text-4xl font-bold">CNESS</h1>
-          </div>
+<div className="flex justify-center">
+  <img
+    src={logo}
+    alt="logo"
+    className="w-40 h-40 object-contain"
+  />
+</div>      </div>
         </div>
 
         {/* Sign In Form */}
-        <div className="z-10 w-full flex justify-center items-center px-4 sm:px-6 py-6">
+<div className="absolute top-[120px] sm:top-[160px] md:top-[200px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
           <div className="w-full max-w-md bg-white rounded-2xl shadow-xl px-4 sm:px-8 py-8 sm:py-10 space-y-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center">
               Sign in to your account
@@ -972,23 +984,35 @@ export default function Login() {
               </div>
             )}
             <form className="space-y-4" onSubmit={handleSubmit}>
-              <div className="mb-4">
+<div className="mb-4 relative">
                 <label
                   htmlFor="email"
                   className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
                 >
                   Email
                 </label>
+                  <div className="relative">
+
                 <input
                   type="email"
                   id="email"
                   name="email"
                   required
                   placeholder="Enter your email"
+      onFocus={() => setEmailFocused(true)}
+    onBlur={() => setEmailFocused(false)}
                   className={`w-full px-3 py-2 rounded-[12px] border ${
                     loginErrors.email ? "border-red-500" : "border-[#CBD5E1]"
                   } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                 />
+
+<FiMail
+      className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-opacity duration-300 ${
+      emailFocused ? "opacity-100" : "opacity-0"
+    }`}
+    size={18}
+  />
+</div>
                 {loginErrors.email && (
                   <p className="mt-1 text-sm text-red-600">
                     {loginErrors.email}
@@ -996,15 +1020,17 @@ export default function Login() {
                 )}
               </div>
 
-              <div className="mb-4">
+<div className="mb-4 relative">
                 <label
                   htmlFor="password"
                   className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
                 >
                   Password
                 </label>
+                  <div className="relative">
+
                 <input
-                  type="password"
+      type={showLoginPassword ? "text" : "password"}
                   id="password"
                   name="password"
                   required
@@ -1013,6 +1039,14 @@ export default function Login() {
                     loginErrors.password ? "border-red-500" : "border-[#CBD5E1]"
                   } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                 />
+
+                 <div
+      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+      onClick={() => setShowLoginPassword(!showLoginPassword)}
+    >
+      {showLoginPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+    </div>
+  </div>
                 {loginErrors.password && (
                   <p className="mt-1 text-sm text-red-600">
                     {loginErrors.password}

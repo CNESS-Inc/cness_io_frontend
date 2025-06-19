@@ -172,7 +172,7 @@ showToast({
 
   return (
     <>
-      <div className="max-w-[1200px] mx-auto "></div>
+<section className="w-full px-2 sm:px-4 lg:px-0.5 pt-4 pb-10">
       {completedStep !== "2" && (
         <div className="mx-5 bg-[rgba(255,204,0,0.05)] 5% text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-2">
@@ -747,6 +747,7 @@ showToast({
           </div>
         </div>
       </Modal>
+      </section>
     </>
   );
 }
