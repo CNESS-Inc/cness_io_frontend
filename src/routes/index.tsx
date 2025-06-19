@@ -22,7 +22,6 @@ import DirectoryProfile from "../pages/DirectoryProfile";
 import Notification from "../pages/Notification";
 import Support from "../pages/Support";
 import MarketPlace from "../pages/MarketPlace";
-import DashboardLayout from "../layout/Dashboard/DashboardLayout";
 import SearchListing from "../pages/SearchListing";
 import DigitalProducts from "../pages/DigitalProducts";
 import Feed from "../pages/Feed";
@@ -38,7 +37,7 @@ import CreatorGuideline from "../pages/CreatorGuideline";
 import Profile from "../pages/Profile";
 import MyConnection from "../pages/MyConnection";
 import ComingSoon from "../pages/ComingSoon";
-
+import DashboardLayout from "../layout/Dashboard/dashboardlayout";
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
 const DirectoryPage = lazy(() => import("../pages/DirectoryPage"));
