@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { Tab } from "@headlessui/react";
 import { useForm } from "react-hook-form";
 import { PhotoIcon, TrashIcon } from "@heroicons/react/24/solid";
-import DashboardLayout from "../../../layout/Dashboard/dashboardlayout";
 import {
   GetCountryDetails,
   GetInterestsDetails,
@@ -18,6 +17,7 @@ import { useToast } from "../../ui/Toast/ToastProvider";
 import Select from "react-select";
 
 import Button from "../../ui/Button";
+import { Section } from "lucide-react";
 
 const tabNames = [
   "Basic Information",
@@ -581,8 +581,8 @@ const UserProfilePage = () => {
 
   return (
     <>
-      <DashboardLayout>
-        <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-2 overflow-x-hidden min-h-screen">
+    
+<section className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-10">
           {public_organization === "1" ? (
             is_disqualify === "true" ? (
               <div className="mt-0 shadow overflow-hidden p-8 text-center">
@@ -614,7 +614,7 @@ const UserProfilePage = () => {
               </div>
             ) : (
               <div className="mt-0 bg-white rounded-xl shadow overflow-hidden">
-                <div className="max-w-6xl mx-auto mt-0 bg-white rounded-xl shadow overflow-hidden">
+<div className="bg-white rounded-xl shadow overflow-hidden">
                   <div className="relative h-[300px] bg-gray-100">
                     <img
                       src={banner || "/default-banner.jpg"}
@@ -643,7 +643,7 @@ const UserProfilePage = () => {
                       )}
                     </div>
 
-                    <div className="absolute -bottom-0 left-6 z-20 group">
+<div className="absolute -bottom-0 left-6 sm:left-10 z-20 group">
                       <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100">
                         <img
                           src={logoPreview || "/default-logo.jpg"}
@@ -685,7 +685,7 @@ const UserProfilePage = () => {
                     </div>
                   </div>
                   <div className="max-w-6xl mx-auto px-6 py-10">
-                    <h2 className="text-[22px] font-bold text-[#9747FF] mb-6">
+                    <h2 className="text-[24px] font-bold text-[#9747FF] mb-6">
                       My Profile
                     </h2>
 
@@ -693,10 +693,10 @@ const UserProfilePage = () => {
                       selectedIndex={selectedIndex}
                       onChange={setSelectedIndex}
                     >
-                      <div className="px-6 pt-6">
-                        <div className="w-full overflow-x-auto no-scrollbar">
+<div className="px-4 sm:px-6 pt-6">
+<div className="w-full overflow-x-auto no-scrollbar px-2 sm:px-4">
                           <div className="inline-block min-w-[900px] lg:min-w-full">
-                            <Tab.List className="flex gap-3 px-2 whitespace-nowrap">
+<Tab.List className="flex gap-3 flex-wrap sm:flex-nowrap overflow-x-auto no-scrollbar px-2">
                               {tabNames.map((tab, index) => (
                                 <Tab
                                   key={index}
@@ -715,6 +715,8 @@ const UserProfilePage = () => {
                           </div>
                         </div>
                         {/* Tab Content Panel */}
+                   
+
                         <Tab.Panels className="pt-6">
                           <Tab.Panel>
                             <form
@@ -722,7 +724,7 @@ const UserProfilePage = () => {
                                 handleBasicInfoSubmit
                               )}
                             >
-                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
                                 {/* First Name */}
                                 <div>
                                   <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -926,10 +928,10 @@ const UserProfilePage = () => {
                                   {/*contact info */}
                                 </div>
 
-                                <div className="md:col-span-2 flex justify-end gap-4 mt-6">
+<div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                   <Button
                                     variant="white-outline"
-                                    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px]  bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                     type="button"
                                     onClick={() => basicInfoForm.reset()}
                                   >
@@ -937,7 +939,7 @@ const UserProfilePage = () => {
                                   </Button>
                                   <Button
                                     variant="gradient-primary"
-                                    className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+    className="w-full sm:w-auto rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
                                     type="submit"
                                     disabled={isSubmitting.basic}
                                   >
@@ -957,7 +959,7 @@ const UserProfilePage = () => {
                                 handleContactInfoSubmit
                               )}
                             >
-                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
                                 {/* Phone Number */}
                                 <div>
                                   <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1209,10 +1211,10 @@ const UserProfilePage = () => {
                                   </div>
                                 </div>
 
-                                <div className="md:col-span-2 flex justify-end gap-4 mt-6">
+<div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                   <Button
                                     variant="white-outline"
-                                    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px]  bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                     type="button"
                                     onClick={() => contactInfoForm.reset()}
                                   >
@@ -1220,7 +1222,7 @@ const UserProfilePage = () => {
                                   </Button>
                                   <Button
                                     variant="gradient-primary"
-                                    className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+    className="w-full sm:w-auto rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
                                     type="submit"
                                     disabled={isSubmitting.contact}
                                   >
@@ -1240,7 +1242,7 @@ const UserProfilePage = () => {
                                 handleSocialLinksSubmit
                               )}
                             >
-                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
                                 {/* Facebook */}
                                 <div>
                                   <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1293,10 +1295,10 @@ const UserProfilePage = () => {
                                   />
                                 </div>
 
-                                <div className="md:col-span-2 flex justify-end gap-4 mt-6">
+<div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                   <Button
                                     variant="white-outline"
-                                    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px]  bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                     type="button"
                                     onClick={() => socialLinksForm.reset()}
                                   >
@@ -1304,7 +1306,7 @@ const UserProfilePage = () => {
                                   </Button>
                                   <Button
                                     variant="gradient-primary"
-                                    className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+    className="w-full sm:w-auto rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
                                     type="submit"
                                     disabled={isSubmitting.social}
                                   >
@@ -1486,10 +1488,10 @@ const UserProfilePage = () => {
                                 </button>
                               </div>
 
-                              <div className="md:col-span-2 flex justify-end gap-4 mt-6">
+<div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                  className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px] bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                   type="button"
                                   onClick={() => educationForm.reset()}
                                 >
@@ -1497,7 +1499,7 @@ const UserProfilePage = () => {
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+    className="w-full sm:w-auto rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   disabled={isSubmitting.education}
                                 >
@@ -1685,10 +1687,10 @@ const UserProfilePage = () => {
                                 </button>
                               </div>
 
-                              <div className="md:col-span-2 flex justify-end gap-4 mt-6">
+<div className="md:col-span-2 flex flex-col sm:flex-row sm:justify-end items-center gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                  className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px] bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+    className="font-[Plus Jakarta Sans] w-full sm:w-auto max-w-[280px] text-[16px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                   type="button"
                                   onClick={() => workExperienceForm.reset()}
                                 >
@@ -1696,7 +1698,7 @@ const UserProfilePage = () => {
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+    className="w-full sm:w-auto max-w-[280px] rounded-full py-3 px-6 text-white text-[16px] font-semibold shadow-md transition duration-300 ease-in-out"
                                   type="submit"
                                   disabled={isSubmitting.work}
                                 >
@@ -1715,7 +1717,7 @@ const UserProfilePage = () => {
                                 handlePublicProfileSubmit
                               )}
                             >
-                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
                                 {/* Title */}
                                 <div className="md:col-span-2">
                                   <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1880,10 +1882,10 @@ const UserProfilePage = () => {
                                   )}
                                 </div>
 
-                                <div className="md:col-span-2 flex justify-end gap-4 mt-6">
+<div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                   <Button
                                     variant="white-outline"
-                                    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-[100px]  bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+    className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                     type="button"
                                     onClick={() => publicProfileForm.reset()}
                                   >
@@ -1891,7 +1893,7 @@ const UserProfilePage = () => {
                                   </Button>
                                   <Button
                                     variant="gradient-primary"
-                                    className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+    className="w-full sm:w-auto rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
                                     type="submit"
                                     disabled={isSubmitting.public}
                                   >
@@ -1939,9 +1941,10 @@ const UserProfilePage = () => {
               </div>
             </div>
           )}
-        </div>
-      </DashboardLayout>
+       
+</section>
     </>
+    
   );
 };
 

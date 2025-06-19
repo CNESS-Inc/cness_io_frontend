@@ -22,6 +22,14 @@ import DirectoryProfile from "../pages/DirectoryProfile";
 import Notification from "../pages/Notification";
 import Support from "../pages/Support";
 import MarketPlace from "../pages/MarketPlace";
+import DashboardLayout from "../layout/Dashboard/DashboardLayout";
+import SearchListing from "../pages/SearchListing";
+import DigitalProducts from "../pages/DigitalProducts";
+import Feed from "../pages/Feed";
+import SearchExplore from "../pages/SearchExplore";
+import BecomeMentor from "../pages/BecomeMentor";
+
+
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -73,6 +81,7 @@ export const router = createBrowserRouter([
 
       {
         path: "dashboard",
+        element: <DashboardLayout />, // ✅ now it's wrapped!
         children: [
           {
             index: true,
@@ -130,7 +139,28 @@ export const router = createBrowserRouter([
             path: "market_place",
             element: <MarketPlace />,
           },
+          {
+            path: "search_listing",
+            element: <SearchListing />,
+          },
+           {
+            path: "digital_products",
+            element: <DigitalProducts />,
+          },
 
+            {
+            path: "Feed",
+            element: <Feed />,
+          },
+
+           {
+            path: "SearchExplore",
+            element: <SearchExplore />,
+          },
+             {
+            path: "Become_mentor",
+            element: <BecomeMentor />,
+          },
         ],
       },
     ],

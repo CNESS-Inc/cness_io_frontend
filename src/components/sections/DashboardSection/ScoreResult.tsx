@@ -1,5 +1,4 @@
 import { useState } from "react";
-import DashboardLayout from "../../../layout/Dashboard/dashboardlayout";
 
 import "react-circular-progressbar/dist/styles.css";
 
@@ -129,8 +128,8 @@ const SegmentedRing = ({
 const ScoreResult = () => {
   const [activeTab, setActiveTab] = useState(0);
   return (
-    <DashboardLayout>
-      <div className="p-6 bg-[#f9f9f9] min-h-screen font-[Poppins]">
+
+<div className="w-full px-2 sm:px-4 lg:px-5 pt-4 pb-10 bg-[#f9f9f9] min-h-screen font-[Poppins]">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-semibold text-[#222224]">
@@ -242,7 +241,7 @@ const ScoreResult = () => {
 
         {/* Metric Scores */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="w-[365px] h-[151px] bg-white rounded-[12px] border border-[#eceef2] p-[12px] flex flex-col justify-between shadow-sm">
+          <div className="w-full h-[151px] bg-white rounded-[12px] border border-[#eceef2] p-[12px] flex flex-col justify-between shadow-sm">
             {/* Top Section: Icon and Label */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -267,7 +266,7 @@ const ScoreResult = () => {
           </div>
 
           {/* Qualitative Score */}
-          <div className="w-[365px] h-[151px] bg-white rounded-[12px] border border-[#eceef2] p-[12px] flex flex-col justify-between shadow-sm">
+          <div className="w-full h-[151px] bg-white rounded-[12px] border border-[#eceef2] p-[12px] flex flex-col justify-between shadow-sm">
             {/* Top Section: Icon and Label */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -292,7 +291,7 @@ const ScoreResult = () => {
           </div>
 
           {/* Improvement Score */}
-          <div className="w-[365px] h-[151px] bg-white rounded-[12px] border border-[#eceef2] p-[12px] flex flex-col justify-between shadow-sm">
+          <div className="w-full h-[151px] bg-white rounded-[12px] border border-[#eceef2] p-[12px] flex flex-col justify-between shadow-sm">
             {/* Top Section: Icon and Label */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -336,16 +335,17 @@ const ScoreResult = () => {
         {/* Tabs Container */}
         <div className="flex flex-col gap-0">
           {/* Tabs */}
-          <div className="w-full overflow-x-auto ">
-            <div className="inline-flex gap-4 py-1 min-w-max">
+<div className="w-full px-2 sm:px-4 lg:px-6 overflow-x-auto">
+<div className="inline-flex gap-5 py-1 min-w-max mx-6 sm:mx-4 lg:mx-6">
               {tabs.map((tab, index) => (
                 <button
                   key={index}
                   onClick={() => setActiveTab(index)}
-                  className={`text-xs font-medium px-4 py-3  rounded-t-[12px] border border-[#ECEEF2] transition-all  duration-200 ease-in-out  ${
+                  className={`w-[200px] text-xs font-medium py-3 rounded-t-[12px] border border-[#ECEEF2] transition-all duration-200 ease-in-out 
+                     ${
                     activeTab === index
-                      ? "bg-[#F8F3FF] text-[#9747FF]  h-[48px] -mt-[6px] z-10 "
-                      : "bg-white text-[#334155] hover:bg-[#F1F5F9] h-[42px] mt-0"
+                      ? "bg-[#F8F3FF] text-[#9747FF] -mt-[6px] z-10"
+                      : "bg-white text-[#334155] hover:bg-[#F1F5F9]"
                   }`}
                 >
                   {tab}
@@ -399,7 +399,7 @@ const ScoreResult = () => {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+   
   );
 };
 

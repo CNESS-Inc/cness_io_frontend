@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import DashboardLayout from "../layout/Dashboard/dashboardlayout";
 import { UpdatePasswordDetails } from "../Common/ServerAPI";
 
 const Setting = () => {
@@ -43,7 +42,7 @@ const Setting = () => {
   };
 
   return (
-    <DashboardLayout>
+    <>
       <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
         <h2 className="text-xl font-semibold mb-4">Change Password</h2>
         {message && <p className="mb-4 text-sm text-green-500">{message}</p>}
@@ -88,7 +87,7 @@ const Setting = () => {
           </button>
         </form>
       </div>
-    </DashboardLayout>
+    </>
   );
 };
 
