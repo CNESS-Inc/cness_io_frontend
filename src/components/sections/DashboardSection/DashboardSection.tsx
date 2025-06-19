@@ -150,7 +150,6 @@ export default function DashboardSection(user: any) {
 
       if (res?.data?.data?.url) {
         const url = res.data.data.url;
-        console.log("Redirecting to:", url); // Log the actual URL
         window.location.href = url; // Redirect in the same tab
       } else {
         console.error("URL not found in response");
@@ -166,7 +165,6 @@ showToast({
 
   const completedStep = localStorage.getItem("completed_step");
   const is_disqualify = localStorage.getItem("is_disqualify");
-  console.log("🚀 ~ DashboardSection ~ is_disqualify:", typeof is_disqualify);
 
   // const urldata = `https://test.cness.ai/profile/public`;
 

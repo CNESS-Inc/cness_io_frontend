@@ -79,11 +79,9 @@ const OrganaizationProfilepage = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [banner, setBanner] = useState<string | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  console.log("🚀 ~ OrganaizationProfilepage ~ logoPreview:", logoPreview);
   const [tags, setTags] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [services, setServices] = useState<any[]>([]);
-  console.log("🚀 ~ OrganaizationProfilepage ~ services:", services);
   const [serviceInput, setServiceInput] = useState("");
   const [industry, setIndustryData] = useState<any>(null);
   const [serviceData, setServiceData] = useState<any>(null);
@@ -143,7 +141,11 @@ const OrganaizationProfilepage = () => {
           type: "success",
           duration: 5000,
         });
-        await MeDetails();
+        const res = await MeDetails();
+        localStorage.setItem(
+        "profile_picture",
+        res?.data?.data?.user.profile_picture
+      );
       } catch (error: any) {
         console.error(`Error uploading ${formKey}:`, error);
         showToast({
@@ -294,8 +296,6 @@ const OrganaizationProfilepage = () => {
 
   const submitSocialLinks = async (data: SocialLinksFormData) => {
     setIsSubmitting((prev) => ({ ...prev, social: true }));
-
-    console.log("Social Links submitted:", data);
     const payload = {
       facebook: data.facebook || null,
       twitter: data.twitter || null,
@@ -337,7 +337,6 @@ const OrganaizationProfilepage = () => {
 
   // const submitMissionVision = async (data: MissionVisionFormData) => {
   //   setIsSubmitting((prev) => ({ ...prev, mission: true }));
-  //   console.log("Mission & Vision submitted:", data);
   //   const payload = {
   //     mission_statement: data.missionStatement || null,
   //     vision_statement: data.visionStatement || null,
@@ -366,9 +365,6 @@ const OrganaizationProfilepage = () => {
 
   const submitPublicView = async (data: PublicViewFormData) => {
     setIsSubmitting((prev) => ({ ...prev, public: true }));
-
-    console.log("Public View submitted:", data);
-
     // Transform services array to just IDs
     const serviceIds = services?.map((service) => service);
 
@@ -406,7 +402,6 @@ const OrganaizationProfilepage = () => {
     try {
       const response = await GetOrganiZationProfileDetails();
       const profileData = response.data.data;
-      console.log("🚀 ~ GetOrganizationProfile ~ profileData:", profileData);
 
       // Reset basic info form with the fetched data
       basicInfoForm.reset({
@@ -483,10 +478,6 @@ const OrganaizationProfilepage = () => {
         const serviceIds = profileData.organization_service.map(
           (service: any) => service.id
         );
-        console.log(
-          "🚀 ~ GetOrganizationListingProfile ~ serviceIds:",
-          serviceIds
-        );
         setServices(serviceIds);
       }
       if (profileData?.tags) {
@@ -560,8 +551,6 @@ const OrganaizationProfilepage = () => {
       const formData = new FormData();
       formData.append("file", file);
       const res = await GetOrganiZationNumberVerify(formData);
-      console.log("🚀 ~ fetchVerifyOrganizationNumber ~ res:", res.success);
-
       // Handle the response
       if (res.success) {
         return res;
@@ -1805,34 +1794,13 @@ const OrganaizationProfilepage = () => {
                                             typeof serviceItem === "object"
                                               ? serviceItem.id
                                               : serviceItem;
-
-                                          // Debug output
-                                          console.log(
-                                            "Current service ID:",
-                                            serviceId
-                                          );
-                                          console.log(
-                                            "All serviceData:",
-                                            serviceData
-                                          );
-
                                           // Loose equality check (== instead of ===) to handle string/number mismatches
                                           const foundService =
                                             serviceData?.find(
                                               (svc: Service) => {
-                                                console.log(
-                                                  `Comparing ${
-                                                    svc.id
-                                                  } (${typeof svc.id}) with ${serviceId} (${typeof serviceId})`
-                                                );
                                                 return svc.id == serviceId; // Note: using == for type coercion
                                               }
                                             );
-                                          console.log(
-                                            "🚀 ~ OrganaizationProfilepage ~ foundService:",
-                                            foundService
-                                          );
-
                                           if (!foundService) {
                                             console.warn(
                                               `No service found for ID: ${serviceId}`

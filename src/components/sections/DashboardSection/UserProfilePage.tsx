@@ -34,9 +34,7 @@ const UserProfilePage = () => {
   const [tags, setTags] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState<Record<string, boolean>>({});
-  console.log("🚀 ~ UserProfilePage ~ isSubmitting:", isSubmitting);
-  const [profileData, setProfileData] = useState<any>(null);
-  console.log("🚀 ~ UserProfilePage ~ profileData:", profileData);
+  const [_profileData, setProfileData] = useState<any>(null);
   const [intereset, setInterestData] = useState<any>(null);
   const [professional, setProfessionalData] = useState<any>(null);
   const [Country, setCountry] = useState<any>(null);
@@ -143,7 +141,6 @@ const UserProfilePage = () => {
 
   // Tab-specific submit handlers
   const handleBasicInfoSubmit = async (data: any) => {
-    console.log("🚀 ~ handleBasicInfoSubmit ~ raw form data:", data);
     setIsSubmitting((prev) => ({ ...prev, basic: true }));
 
     const normalizeToArray = (input: any) => {
@@ -570,7 +567,6 @@ const UserProfilePage = () => {
 
   useEffect(() => {
     const countryId = contactInfoForm.watch("country");
-    console.log("🚀 ~ useEffect ~ countryId:", countryId);
     if (countryId) {
       GetState(countryId);
     } else {
