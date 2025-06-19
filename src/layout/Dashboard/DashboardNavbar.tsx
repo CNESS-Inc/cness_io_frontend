@@ -3,7 +3,6 @@ import {
   BellIcon,
   HelpCircleIcon,
   SettingsIcon,
-  XIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   LogOutIcon,

@@ -22,12 +22,12 @@ import DirectoryProfile from "../pages/DirectoryProfile";
 import Notification from "../pages/Notification";
 import Support from "../pages/Support";
 import MarketPlace from "../pages/MarketPlace";
-import DashboardLayout from "../layout/Dashboard/DashboardLayout";
 import SearchListing from "../pages/SearchListing";
 import DigitalProducts from "../pages/DigitalProducts";
 import Feed from "../pages/Feed";
 import SearchExplore from "../pages/SearchExplore";
 import BecomeMentor from "../pages/BecomeMentor";
+import DashboardLayout from "../layout/Dashboard/dashboardlayout";
 
 
 
