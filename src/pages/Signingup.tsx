@@ -4,7 +4,7 @@ import { RegisterDetails } from "../Common/ServerAPI";
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../assets/logo.png";
+import cnesslogo from "../assets/cnesslogo.png";
 import { FiMail, FiEye, FiEyeOff } from "react-icons/fi";
 
 
@@ -208,13 +208,15 @@ const [isUsernameFocused, setIsUsernameFocused] = useState(false);
           </div>
 
           <div className="absolute top-40 left-10 z-10">
-<div className="flex justify-center">
+<div className="fixed top-0 left-0 p-1 z-50">
   <img
-    src={logo}
+    src={cnesslogo}
     alt="logo"
-    className="w-40 h-40 object-contain"
+    className="w-60 h-60 object-contain"
+  
   />
-</div>            </div>
+</div>          
+  </div>
         </div>
 
         {/* Sign In Form */}

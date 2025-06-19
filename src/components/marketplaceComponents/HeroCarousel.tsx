@@ -6,6 +6,7 @@ import carosuel2 from "../../assets/carosuel2.png";
 import carosuel3 from "../../assets/carosuel3.png";
 import carosuel4 from "../../assets/carosuel4.png";
 
+
 // Register Swiper modules
 SwiperCore.use([Autoplay, SwiperPagination]);
 
