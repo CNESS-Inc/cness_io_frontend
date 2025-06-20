@@ -9,7 +9,7 @@ import { Outlet } from "react-router-dom";
 
 const DashboardLayout = () => {
 
-  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(true);
 
   const toggleMobileNav = () => {
      setIsMobileNavOpen(prev => !prev);
