@@ -258,10 +258,10 @@ const baseClasses = "flex items-center gap-3 px-3 py-2.5 w-full rounded-xl curso
                 to="/dashboard/user-profile"
                 onClick={onClick}
                 className={({ isActive }) =>
-                  `text-sm px-3 py-[6px] rounded-lg w-full transition whitespace-nowrap ${
+                  `dashboard_nav px-3 py-[6px] rounded-lg w-full transition whitespace-nowrap ${
                     isActive
                       ? " text-[#F07EFF] font-semibold"
-                      : "text-slate-500 hover:bg-[#f9f9f9]"
+                      : " dashboard_nav hover:bg-[#f9f9f9]"
                   }`
                 }
               >
@@ -271,10 +271,10 @@ const baseClasses = "flex items-center gap-3 px-3 py-2.5 w-full rounded-xl curso
                 to="/dashboard/company-profile"
                 onClick={onClick}
                 className={({ isActive }) =>
-                  `text-sm px-3 py-[6px] rounded-lg w-full transition whitespace-nowrap ${
+                  `dashboard_nav px-3 py-[6px] rounded-lg w-full transition whitespace-nowrap ${
                     isActive
                       ? " text-[#F07EFF] font-semibold"
-                      : "text-slate-500 hover:bg-[#f9f9f9]"
+                      : "dashboard_nav hover:bg-[#f9f9f9]"
                   }`
                 }
               >
@@ -317,10 +317,10 @@ setOpenDropdown(isDropdownOpen ? null : item.id);
               to={child.path}
               onClick={onClick}
               className={({ isActive }) =>
-  `text-sm px-4 py-2 w-full rounded-md transition whitespace-nowrap ${
+  `dashboard_nav px-4 py-2 w-full rounded-md transition whitespace-nowrap ${
                   isActive
       ? "text-[#F07EFF] font-semibold"
-      : "text-gray-600 hover:text-[#F07EFF]"
+      : "dashboard_nav hover:text-[#F07EFF]"
   }`
 }
             >

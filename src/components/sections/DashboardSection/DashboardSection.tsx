@@ -11,7 +11,7 @@ import {
 
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from "../../ui/Modal";
 import { GetAllPlanDetails, PaymentDetails } from "../../../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
@@ -39,7 +39,12 @@ export default function DashboardSection(user: any) {
   const [personPricing, setPersonPricing] = useState<PersPricingPlan[]>([]);
   const navigate = useNavigate();
     const { showToast } = useToast();
-  
+    const [margaretName, setMargaretName] = useState(localStorage.getItem("margaret_name") || "");
+     // Watch for localStorage changes
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setMargaretName(localStorage.getItem("margaret_name") || "");
+    };
   // Data for modules
   const modules = [
     {
@@ -221,7 +226,7 @@ showToast({
               </div>
               <div className="inline-flex items-center pt-1 pb-2 px-2 md:pt-2 md:pb-3 md:px-3">
                 <p className="font-['Open_Sans',Helvetica] text-[#7a7a7a] text-xs sm:text-sm md:text-base">
-                  Welcome to your CNESS Dashboard, Margaret!
+                  Welcome to your CNESS Dashboard, {margaretName}!
                 </p>
               </div>
             </div>
