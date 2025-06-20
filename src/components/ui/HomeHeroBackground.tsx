@@ -101,7 +101,7 @@ const HomeHeroBackground: React.FC = () => {
       // Pause logic: wait 3s after fade before resuming
       if (isPaused) {
         const pauseElapsed = performance.now() - pauseStartTime;
-        if (pauseElapsed >= 1000 && !isFadingTrace) {
+        if (pauseElapsed >= 500 && !isFadingTrace) {
           isPaused = false;
         } else {
           requestAnimationFrame(draw);
@@ -109,7 +109,7 @@ const HomeHeroBackground: React.FC = () => {
         }
       }
 
-      progress += 0.008;
+      progress += 0.03;
       requestAnimationFrame(draw);
     };
 

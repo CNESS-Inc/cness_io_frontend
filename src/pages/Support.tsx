@@ -1,9 +1,8 @@
-import DashboardLayout from "../layout/Dashboard/dashboardlayout";
 
 const Support = () => {
   return (
     <>
-      <DashboardLayout>
+    
         <div className="max-w-6xl mt-0 shadow overflow-hidden p-8 text-center">
           <div className="py-12">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">
@@ -31,7 +30,7 @@ const Support = () => {
             </div>
           </div>
         </div>
-      </DashboardLayout>
+     
     </>
   );
 };

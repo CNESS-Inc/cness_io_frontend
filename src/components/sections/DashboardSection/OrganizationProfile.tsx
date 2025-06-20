@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { Tab } from "@headlessui/react";
 import { useForm } from "react-hook-form";
 import { PhotoIcon, TrashIcon } from "@heroicons/react/24/solid";
-import DashboardLayout from "../../../layout/Dashboard/dashboardlayout";
 import {
   GetIndustryDetails,
   GetOrganizationListingDetails,
@@ -80,11 +79,9 @@ const OrganaizationProfilepage = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [banner, setBanner] = useState<string | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  console.log("🚀 ~ OrganaizationProfilepage ~ logoPreview:", logoPreview);
   const [tags, setTags] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [services, setServices] = useState<any[]>([]);
-  console.log("🚀 ~ OrganaizationProfilepage ~ services:", services);
   const [serviceInput, setServiceInput] = useState("");
   const [industry, setIndustryData] = useState<any>(null);
   const [serviceData, setServiceData] = useState<any>(null);
@@ -144,7 +141,11 @@ const OrganaizationProfilepage = () => {
           type: "success",
           duration: 5000,
         });
-        await MeDetails();
+        const res = await MeDetails();
+        localStorage.setItem(
+        "profile_picture",
+        res?.data?.data?.user.profile_picture
+      );
       } catch (error: any) {
         console.error(`Error uploading ${formKey}:`, error);
         showToast({
@@ -295,8 +296,6 @@ const OrganaizationProfilepage = () => {
 
   const submitSocialLinks = async (data: SocialLinksFormData) => {
     setIsSubmitting((prev) => ({ ...prev, social: true }));
-
-    console.log("Social Links submitted:", data);
     const payload = {
       facebook: data.facebook || null,
       twitter: data.twitter || null,
@@ -338,7 +337,6 @@ const OrganaizationProfilepage = () => {
 
   // const submitMissionVision = async (data: MissionVisionFormData) => {
   //   setIsSubmitting((prev) => ({ ...prev, mission: true }));
-  //   console.log("Mission & Vision submitted:", data);
   //   const payload = {
   //     mission_statement: data.missionStatement || null,
   //     vision_statement: data.visionStatement || null,
@@ -367,9 +365,6 @@ const OrganaizationProfilepage = () => {
 
   const submitPublicView = async (data: PublicViewFormData) => {
     setIsSubmitting((prev) => ({ ...prev, public: true }));
-
-    console.log("Public View submitted:", data);
-
     // Transform services array to just IDs
     const serviceIds = services?.map((service) => service);
 
@@ -407,7 +402,6 @@ const OrganaizationProfilepage = () => {
     try {
       const response = await GetOrganiZationProfileDetails();
       const profileData = response.data.data;
-      console.log("🚀 ~ GetOrganizationProfile ~ profileData:", profileData);
 
       // Reset basic info form with the fetched data
       basicInfoForm.reset({
@@ -451,7 +445,7 @@ const OrganaizationProfilepage = () => {
       if (response?.data?.data?.profile_url) {
         setLogoPreview(response?.data?.data?.profile_url);
       }
-      if (response.data.data.banner_url) {
+      if (response?.data?.data?.banner_url) {
         setBanner(response?.data?.data?.banner_url);
       }
     } catch (error: any) {
@@ -483,10 +477,6 @@ const OrganaizationProfilepage = () => {
         // Extract just the id values from each object in the array
         const serviceIds = profileData.organization_service.map(
           (service: any) => service.id
-        );
-        console.log(
-          "🚀 ~ GetOrganizationListingProfile ~ serviceIds:",
-          serviceIds
         );
         setServices(serviceIds);
       }
@@ -561,8 +551,6 @@ const OrganaizationProfilepage = () => {
       const formData = new FormData();
       formData.append("file", file);
       const res = await GetOrganiZationNumberVerify(formData);
-      console.log("🚀 ~ fetchVerifyOrganizationNumber ~ res:", res.success);
-
       // Handle the response
       if (res.success) {
         return res;
@@ -586,8 +574,8 @@ const OrganaizationProfilepage = () => {
 
   return (
     <>
-      <DashboardLayout>
-        <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-2 overflow-x-hidden min-h-screen">
+ 
+<section className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-10">
           {public_organization === "2" ? (
             is_disqualify === "true" ? (
               <div className="mt-0 shadow overflow-hidden p-8 text-center">
@@ -619,7 +607,7 @@ const OrganaizationProfilepage = () => {
               </div>
             ) : (
               <div className="mt-0 bg-white rounded-xl shadow overflow-hidden">
-                <div className="max-w-6xl mx-auto mt-0 bg-white rounded-xl shadow overflow-hidden">
+<div className="bg-white rounded-xl shadow overflow-hidden">
                   <div className="relative h-[300px] bg-gray-100">
                     <img
                       src={banner || "/default-banner.jpg"}
@@ -649,7 +637,7 @@ const OrganaizationProfilepage = () => {
                       )}
                     </div>
 
-                    <div className="absolute -bottom-0 left-6 z-20 group">
+<div className="absolute -bottom-0 left-6 sm:left-10 z-20 group">
                       <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100">
                         <img
                           src={logoPreview || "/default-logo.jpg"}
@@ -693,7 +681,7 @@ const OrganaizationProfilepage = () => {
                   </div>
 
                   <div className="max-w-6xl mx-auto px-6 py-10">
-                    <h2 className="text-[22px] font-bold text-[#9747FF] mb-6">
+                    <h2 className="text-[24px] font-bold text-[#9747FF] mb-6">
                       My Profile
                     </h2>
 
@@ -701,11 +689,11 @@ const OrganaizationProfilepage = () => {
                       selectedIndex={selectedIndex}
                       onChange={setSelectedIndex}
                     >
-                      <div className="px-6 pt-6">
-                        <div className="w-full overflow-x-auto sm:overflow-x-visible no-scrollbar">
+<div className="px-4 sm:px-6 pt-6">
+<div className="w-full overflow-x-auto no-scrollbar px-2 sm:px-4">
                           <div className="inline-block min-w-[1024px] md:min-w-[1152px] lg:min-w-full px-4 sm:px-6 lg:px-8">
                             {/* Tab Header */}
-                            <Tab.List className="flex gap-3 px-2 min-w-max whitespace-nowrap">
+<Tab.List className="flex gap-3 flex-wrap sm:flex-nowrap overflow-x-auto no-scrollbar px-2">
                               {tabNames.map((tab, index) => (
                                 <Tab
                                   key={index}
@@ -733,7 +721,7 @@ const OrganaizationProfilepage = () => {
                                 submitBasicInfo
                               )}
                             >
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
                                 {/* Organization Name */}
                                 <div>
                                   <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1196,7 +1184,7 @@ const OrganaizationProfilepage = () => {
                                 submitContactInfo
                               )}
                             >
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
                                 {/* Primary Contact Person Name */}
                                 <div>
                                   <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1389,7 +1377,7 @@ const OrganaizationProfilepage = () => {
                                 submitSocialLinks
                               )}
                             >
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
                                 {/* Facebook */}
                                 <div>
                                   <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1598,7 +1586,7 @@ const OrganaizationProfilepage = () => {
                                 submitMissionVision
                               )}
                             >
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
                                 <div>
                                   <label className="block text-sm font-medium text-gray-800 mb-2">
                                     Organization Mission Statement{" "}
@@ -1743,7 +1731,7 @@ const OrganaizationProfilepage = () => {
                                 submitPublicView
                               )}
                             >
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
                                 {/* Services Input */}
                                 <div className="md:col-span-2 mb-6">
                                   <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1806,34 +1794,13 @@ const OrganaizationProfilepage = () => {
                                             typeof serviceItem === "object"
                                               ? serviceItem.id
                                               : serviceItem;
-
-                                          // Debug output
-                                          console.log(
-                                            "Current service ID:",
-                                            serviceId
-                                          );
-                                          console.log(
-                                            "All serviceData:",
-                                            serviceData
-                                          );
-
                                           // Loose equality check (== instead of ===) to handle string/number mismatches
                                           const foundService =
                                             serviceData?.find(
                                               (svc: Service) => {
-                                                console.log(
-                                                  `Comparing ${
-                                                    svc.id
-                                                  } (${typeof svc.id}) with ${serviceId} (${typeof serviceId})`
-                                                );
                                                 return svc.id == serviceId; // Note: using == for type coercion
                                               }
                                             );
-                                          console.log(
-                                            "🚀 ~ OrganaizationProfilepage ~ foundService:",
-                                            foundService
-                                          );
-
                                           if (!foundService) {
                                             console.warn(
                                               `No service found for ID: ${serviceId}`
@@ -2158,8 +2125,8 @@ const OrganaizationProfilepage = () => {
               </div>
             </div>
           )}
-        </div>
-      </DashboardLayout>
+      
+</section>
     </>
   );
 };

@@ -16,6 +16,10 @@ import {
 import Button from "../components/ui/Button";
 import { Link } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
+
+import cnesslogo from "../assets/cnesslogo.png";
+import { FiMail, FiEye, FiEyeOff } from "react-icons/fi"; // add if not already
+
 import Select from "react-select";
 
 interface SubDomain {
@@ -201,6 +205,8 @@ export default function Login() {
       return "Password must contain at least one special character";
     return undefined;
   };
+const [showLoginPassword, setShowLoginPassword] = useState(false);
+const [emailFocused, setEmailFocused] = useState(false);
 
   const validateField = (
     name: string,
@@ -1028,12 +1034,18 @@ export default function Login() {
           </div>
 
           <div className="absolute top-40 left-10 z-10">
-            <h1 className="text-white text-4xl font-bold">CNESS</h1>
-          </div>
+<div className="fixed top-0 left-0 p-1 z-50">
+  <img
+    src={cnesslogo}
+    alt="logo"
+    className="w-60 h-60 object-contain"
+  
+  />
+</div>      </div>
         </div>
 
         {/* Sign In Form */}
-        <div className="z-10 w-full flex justify-center items-center px-4 sm:px-6 py-6">
+<div className="absolute top-[120px] sm:top-[160px] md:top-[200px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
           <div className="w-full max-w-md bg-white rounded-2xl shadow-xl px-4 sm:px-8 py-8 sm:py-10 space-y-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center">
               Sign in to your account
@@ -1050,23 +1062,35 @@ export default function Login() {
               </div>
             )}
             <form className="space-y-4" onSubmit={handleSubmit}>
-              <div className="mb-4">
+<div className="mb-4 relative">
                 <label
                   htmlFor="email"
                   className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
                 >
                   Email
                 </label>
+                  <div className="relative">
+
                 <input
                   type="email"
                   id="email"
                   name="email"
                   required
                   placeholder="Enter your email"
+      onFocus={() => setEmailFocused(true)}
+    onBlur={() => setEmailFocused(false)}
                   className={`w-full px-3 py-2 rounded-[12px] border ${
                     loginErrors.email ? "border-red-500" : "border-[#CBD5E1]"
                   } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                 />
+
+<FiMail
+      className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-opacity duration-300 ${
+      emailFocused ? "opacity-100" : "opacity-0"
+    }`}
+    size={18}
+  />
+</div>
                 {loginErrors.email && (
                   <p className="mt-1 text-sm text-red-600">
                     {loginErrors.email}
@@ -1074,15 +1098,17 @@ export default function Login() {
                 )}
               </div>
 
-              <div className="mb-4">
+<div className="mb-4 relative">
                 <label
                   htmlFor="password"
                   className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
                 >
                   Password
                 </label>
+                  <div className="relative">
+
                 <input
-                  type="password"
+      type={showLoginPassword ? "text" : "password"}
                   id="password"
                   name="password"
                   required
@@ -1091,6 +1117,14 @@ export default function Login() {
                     loginErrors.password ? "border-red-500" : "border-[#CBD5E1]"
                   } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                 />
+
+                 <div
+      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+      onClick={() => setShowLoginPassword(!showLoginPassword)}
+    >
+      {showLoginPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+    </div>
+  </div>
                 {loginErrors.password && (
                   <p className="mt-1 text-sm text-red-600">
                     {loginErrors.password}
@@ -1173,12 +1207,12 @@ export default function Login() {
 
       {/* Organization Form Modal - only shows when activeModal is "organization" */}
       <Modal isOpen={activeModal === "organization"} onClose={closeModal}>
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           {" "}
           {/* Ensures center + padding on small screens */}
-          <div className="w-full max-w-[1100px] h-[80vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+          <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex flex-col items-center justify-center text-center p-10">
+<div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -1269,7 +1303,7 @@ export default function Login() {
             </div>
 
             {/* Right Form Panel */}
-            <div className="w-full lg:w-[60%] bg-white p-6 md:p-10 overflow-y-auto">
+<div className="w-full lg:w-[60%] bg-white px-4 py-6 sm:px-6 sm:py-8 md:p-10 overflow-y-auto">
               <h2 className="text-xl font-bold text-gray-800 mb-6">
                 Let’s Set Up Your Organization
               </h2>
@@ -1510,7 +1544,7 @@ export default function Login() {
                 {/* Form Footer Actions */}
 
                 {/* Form Footer Actions */}
-                <div className="flex justify-end mt-6 gap-3">
+<div className="flex justify-end mt-6 gap-3 flex-wrap">
                   {orgFormStep === 2 && (
                     <>
                       <Button
@@ -1626,10 +1660,10 @@ export default function Login() {
       </Modal>
 
       <Modal isOpen={activeModal === "person"} onClose={closeModal}>
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-4">
-          <div className="w-full max-w-[1100px] h-[80vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+<div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
+<div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex flex-col items-center justify-center text-center p-10">
+<div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -1659,7 +1693,7 @@ export default function Login() {
             </div>
 
             {/* Right Form Panel */}
-            <div className="w-full lg:w-[60%] bg-white p-6 md:p-10 overflow-y-auto">
+<div className="w-full lg:w-[60%] bg-white px-4 py-6 sm:px-6 sm:py-8 md:p-10 overflow-y-auto">
               <h2 className="text-xl font-bold text-gray-800 mb-6">
                 Tell Us About Yourself
               </h2>
@@ -1864,7 +1898,7 @@ export default function Login() {
                 )}
 
                 {/* Form Footer Actions */}
-                <div className="flex justify-end mt-6 gap-3">
+<div className="flex justify-end mt-6 gap-3 flex-wrap">
                   {personFormStep === 2 && (
                     <>
                       <Button
@@ -1925,10 +1959,10 @@ export default function Login() {
       </Modal>
 
       <Modal isOpen={activeModal === "personPricing"} onClose={closeModal}>
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-4">
-          <div className="w-full max-w-[1100px] h-[80vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+<div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
+<div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex flex-col items-center justify-center text-center p-10">
+<div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -2041,10 +2075,10 @@ export default function Login() {
         isOpen={activeModal === "organizationPricing"}
         onClose={closeModal}
       >
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-4">
-          <div className="w-full max-w-[1100px] h-[80vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
+          <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex flex-col items-center justify-center text-center p-10">
+<div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg

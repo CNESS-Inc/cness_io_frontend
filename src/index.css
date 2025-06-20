@@ -9,15 +9,47 @@
 .poppins{
     font-family: "Poppins", sans-serif;
 }
-
-/* === Common Styles for Checkbox & Radio === */
-input[type="checkbox"],
-input[type="radio"] {
-  width: 1rem;
-  height: 1rem;
-  accent-color: #7077fe; /* Custom purple tone */
+input[type="checkbox"]:not(.sr-only):not(.no-style-checkbox)  {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 1.5px solid #d1d5db; /* gray border */
+  border-radius: 0.4rem;        /* softly rounded corners */
+  background-color: #fff;
   cursor: pointer;
-  transition: box-shadow 0.2s ease;
+  transition: all 0.2s ease;
+  position: relative;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+/* Checkmark using pseudo-element */
+input[type="checkbox"]:not(.sr-only):not(.no-style-checkbox)::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 5px;
+  height: 10px;
+ border: 5px solid #7077FE;
+  border-width: 0 3px 3px 0;
+  opacity: 0;
+  transform: rotate(45deg);
+  transition: opacity 0.2s ease;
+}
+
+/* Checked state with purple background + checkmark */
+input[type="checkbox"]:checked {
+  
+  border-color: #7077fe;
+}
+
+input[type="checkbox"]:checked::after {
+  opacity: 1;
+}
+
+input[type="checkbox"]:checked:not(.sr-only):not(.no-style-checkbox)::after {
+  opacity: 1;
 }
 
 /* Optional container hover styling */
@@ -87,10 +119,13 @@ input[type="radio"] {
 
 @keyframes bounceLeft {
   0%, 100% {
-    transform: translateX(0%);
+    transform: translateX(20%);
   }
   50% {
-    transform: translateX(30%);
+    transform: translateX(50%);
+  }
+   20% {
+    transform: translateX(-30%);
   }
 }
 
@@ -98,6 +133,11 @@ input[type="radio"] {
   0%, 100% {
     transform: translateX(0%);
   }
+
+  50% {
+    transform: translateX(50%);
+  }
+
   50% {
     transform: translateX(-30%);
   }
@@ -239,3 +279,13 @@ summary::after {
   border-bottom-right-radius: 12px !important;
 
 }
+
+.dashboard_nav
+{
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color:#64748b;
+}
+
