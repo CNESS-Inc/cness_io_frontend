@@ -312,6 +312,7 @@ const AssessmentQuestion: React.FC = () => {
     if (currentSection?.next_section_id) {
       fetchQuestions(currentSection.next_section_id);
     }
+    await handleSave()
   };
 
   const handleSave = async () => {

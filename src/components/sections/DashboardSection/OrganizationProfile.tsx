@@ -143,9 +143,9 @@ const OrganaizationProfilepage = () => {
         });
         const res = await MeDetails();
         localStorage.setItem(
-        "profile_picture",
-        res?.data?.data?.user.profile_picture
-      );
+          "profile_picture",
+          res?.data?.data?.user.profile_picture
+        );
       } catch (error: any) {
         console.error(`Error uploading ${formKey}:`, error);
         showToast({
@@ -384,7 +384,6 @@ const OrganaizationProfilepage = () => {
         type: "success",
         duration: 5000,
       });
-      
     } catch (error: any) {
       console.error("Error saving basic info:", error);
       showToast({
@@ -415,7 +414,7 @@ const OrganaizationProfilepage = () => {
         organizationSize: profileData?.employee_size || "",
         headquartersLocation: profileData?.headquarters_location || "",
         operatingLocations: profileData?.operating_regions || "",
-        identify_uploaded: profileData?.identify_uploaded || "",
+        identify_uploaded: profileData.identify_uploaded,
         status: profileData?.status || "",
       });
 
@@ -574,1013 +573,1025 @@ const OrganaizationProfilepage = () => {
 
   return (
     <>
- 
-<section className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-10">
-          {public_organization === "2" ? (
-            is_disqualify === "true" ? (
-              <div className="mt-0 shadow overflow-hidden p-8 text-center">
-                <div className="py-12">
-                  <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                    Organization Profile Access Restricted
-                  </h2>
-                  <p className="text-gray-600 mb-6">
-                    You can access your profile after completing your
-                    assessment.
-                  </p>
-                  <div className="flex justify-center">
-                    <svg
-                      className="w-24 h-24 text-purple-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                      />
-                    </svg>
-                  </div>
+      <section className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-10">
+        {public_organization === "2" ? (
+          is_disqualify === "true" ? (
+            <div className="mt-0 shadow overflow-hidden p-8 text-center">
+              <div className="py-12">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                  Organization Profile Access Restricted
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  You can access your profile after completing your assessment.
+                </p>
+                <div className="flex justify-center">
+                  <svg
+                    className="w-24 h-24 text-purple-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    />
+                  </svg>
                 </div>
               </div>
-            ) : (
-              <div className="mt-0 bg-white rounded-xl shadow overflow-hidden">
-<div className="bg-white rounded-xl shadow overflow-hidden">
-                  <div className="relative h-[300px] bg-gray-100">
-                    <img
-                      src={banner || "/default-banner.jpg"}
-                      alt="Banner"
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute top-3 right-3 flex gap-2 z-10">
-                      <label className="cursor-pointer bg-white p-2 rounded-full shadow hover:bg-gray-200">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) =>
-                            handleImageChange(e, setBanner, "banner")
-                          }
-                        />
+            </div>
+          ) : (
+            <div className="mt-0 bg-white rounded-xl shadow overflow-hidden">
+              <div className="bg-white rounded-xl shadow overflow-hidden">
+                <div className="relative h-[300px] bg-gray-100">
+                  <img
+                    src={banner || "/default-banner.jpg"}
+                    alt="Banner"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-3 right-3 flex gap-2 z-10">
+                    <label className="cursor-pointer bg-white p-2 rounded-full shadow hover:bg-gray-200">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) =>
+                          handleImageChange(e, setBanner, "banner")
+                        }
+                      />
 
-                        <PhotoIcon className="w-5 h-5 text-gray-600" />
-                      </label>
-                      {banner && (
-                        <button
-                          onClick={() => setBanner(null)}
-                          className="bg-white p-2 rounded-full shadow hover:bg-red-100"
-                        >
-                          <TrashIcon className="w-5 h-5 text-red-600" />
-                        </button>
-                      )}
-                    </div>
+                      <PhotoIcon className="w-5 h-5 text-gray-600" />
+                    </label>
+                    {banner && (
+                      <button
+                        onClick={() => setBanner(null)}
+                        className="bg-white p-2 rounded-full shadow hover:bg-red-100"
+                      >
+                        <TrashIcon className="w-5 h-5 text-red-600" />
+                      </button>
+                    )}
+                  </div>
 
-<div className="absolute -bottom-0 left-6 sm:left-10 z-20 group">
-                      <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100">
-                        <img
-                          src={logoPreview || "/default-logo.jpg"}
-                          alt="Profile"
-                          className="object-cover w-full h-full"
-                        />
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <div className="flex gap-2">
-                            <label
-                              className="bg-white p-1.5 rounded-full shadow cursor-pointer hover:bg-gray-100"
-                              title="Upload Photo"
+                  <div className="absolute -bottom-0 left-6 sm:left-10 z-20 group">
+                    <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100">
+                      <img
+                        src={logoPreview || "/default-logo.jpg"}
+                        alt="Profile"
+                        className="object-cover w-full h-full"
+                      />
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="flex gap-2">
+                          <label
+                            className="bg-white p-1.5 rounded-full shadow cursor-pointer hover:bg-gray-100"
+                            title="Upload Photo"
+                          >
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) =>
+                                handleImageChange(e, setLogoPreview, "profile")
+                              }
+                            />
+
+                            <PhotoIcon className="w-4 h-4 text-gray-600" />
+                          </label>
+                          {logoPreview && (
+                            <button
+                              onClick={() => setLogoPreview(null)}
+                              className="bg-white p-1.5 rounded-full shadow hover:bg-red-100"
+                              title="Remove Photo"
                             >
-                              <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={(e) =>
-                                  handleImageChange(
-                                    e,
-                                    setLogoPreview,
-                                    "profile"
-                                  )
-                                }
-                              />
-
-                              <PhotoIcon className="w-4 h-4 text-gray-600" />
-                            </label>
-                            {logoPreview && (
-                              <button
-                                onClick={() => setLogoPreview(null)}
-                                className="bg-white p-1.5 rounded-full shadow hover:bg-red-100"
-                                title="Remove Photo"
-                              >
-                                <TrashIcon className="w-4 h-4 text-red-600" />
-                              </button>
-                            )}
-                          </div>
+                              <TrashIcon className="w-4 h-4 text-red-600" />
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  <div className="max-w-6xl mx-auto px-6 py-10">
-                    <h2 className="text-[24px] font-bold text-[#9747FF] mb-6">
-                      My Profile
-                    </h2>
+                <div className="max-w-6xl mx-auto px-6 py-10">
+                  <h2 className="text-[24px] font-bold text-[#9747FF] mb-6">
+                    My Profile
+                  </h2>
 
-                    <Tab.Group
-                      selectedIndex={selectedIndex}
-                      onChange={setSelectedIndex}
-                    >
-<div className="px-4 sm:px-6 pt-6">
-<div className="w-full overflow-x-auto no-scrollbar px-2 sm:px-4">
-                          <div className="inline-block min-w-[1024px] md:min-w-[1152px] lg:min-w-full px-4 sm:px-6 lg:px-8">
-                            {/* Tab Header */}
-<Tab.List className="flex gap-3 flex-wrap sm:flex-nowrap overflow-x-auto no-scrollbar px-2">
-                              {tabNames.map((tab, index) => (
-                                <Tab
-                                  key={index}
-                                  className={({ selected }) =>
-                                    `px-4 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 focus-visible:outline-none ${
-                                      selected
-                                        ? "text-purple-600 bg-white shadow-md border-t-2 border-x-2 border-purple-600 -mb-[1px]"
-                                        : "text-gray-500 bg-transparent hover:text-purple-500"
-                                    }`
-                                  }
-                                >
-                                  {tab}
-                                </Tab>
-                              ))}
-                            </Tab.List>
-                          </div>
+                  <Tab.Group
+                    selectedIndex={selectedIndex}
+                    onChange={setSelectedIndex}
+                  >
+                    <div className="px-4 sm:px-6 pt-6">
+                      <div className="w-full overflow-x-auto no-scrollbar px-2 sm:px-4">
+                        <div className="inline-block min-w-[1024px] md:min-w-[1152px] lg:min-w-full px-4 sm:px-6 lg:px-8">
+                          {/* Tab Header */}
+                          <Tab.List className="flex gap-3 flex-wrap sm:flex-nowrap overflow-x-auto no-scrollbar px-2">
+                            {tabNames.map((tab, index) => (
+                              <Tab
+                                key={index}
+                                className={({ selected }) =>
+                                  `px-4 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 focus-visible:outline-none ${
+                                    selected
+                                      ? "text-purple-600 bg-white shadow-md border-t-2 border-x-2 border-purple-600 -mb-[1px]"
+                                      : "text-gray-500 bg-transparent hover:text-purple-500"
+                                  }`
+                                }
+                              >
+                                {tab}
+                              </Tab>
+                            ))}
+                          </Tab.List>
                         </div>
+                      </div>
 
-                        {/* Tab Content Panel */}
-                        <Tab.Panels className="pt-6">
-                          {/* Basic info */}
-                          <Tab.Panel>
-                            <form
-                              onSubmit={basicInfoForm.handleSubmit(
-                                submitBasicInfo
-                              )}
-                            >
-                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
-                                {/* Organization Name */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Organization Name{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    {...basicInfoForm.register(
-                                      "organizationName",
-                                      {
-                                        required:
-                                          "Organization name is required",
-                                      }
-                                    )}
-                                    placeholder="Enter your organization name"
-                                    className={`w-full px-4 py-2 border ${
-                                      basicInfoForm.formState.errors
-                                        .organizationName
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                      basicInfoForm.formState.errors
-                                        .organizationName
-                                        ? "focus:ring-red-500"
-                                        : "focus:ring-purple-500"
-                                    }`}
-                                  />
-                                  {basicInfoForm.formState.errors
-                                    .organizationName && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        basicInfoForm.formState.errors
-                                          .organizationName.message
-                                      }
-                                    </p>
+                      {/* Tab Content Panel */}
+                      <Tab.Panels className="pt-6">
+                        {/* Basic info */}
+                        <Tab.Panel>
+                          <form
+                            onSubmit={basicInfoForm.handleSubmit(
+                              submitBasicInfo
+                            )}
+                          >
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
+                              {/* Organization Name */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Organization Name{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  {...basicInfoForm.register(
+                                    "organizationName",
+                                    {
+                                      required: "Organization name is required",
+                                    }
                                   )}
-                                </div>
-
-                                {/* Legal Business Name */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Legal Business Name (if different)
-                                  </label>
-                                  <input
-                                    type="text"
-                                    {...basicInfoForm.register(
-                                      "legalBusinessName"
-                                    )}
-                                    placeholder="Enter legal business name"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                  />
-                                </div>
-                                {/* Business Registration Number */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Business Registration Number{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <div className="flex gap-2">
-                                    <input
-                                      type="text"
-                                      {...basicInfoForm.register(
-                                        "businessRegistrationNumber",
-                                        {
-                                          required:
-                                            "Registration number is required",
-                                        }
-                                      )}
-                                      disabled={[0, 1, 2].includes(
-                                        Number(
-                                          basicInfoForm.watch(
-                                            "identify_uploaded"
-                                          )
-                                        )
-                                      )}
-                                      placeholder="Enter registration number"
-                                      className={`flex-1 px-4 py-2 border ${
-                                        basicInfoForm.formState.errors
-                                          .businessRegistrationNumber
-                                          ? "border-red-500"
-                                          : "border-gray-300"
-                                      } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                        basicInfoForm.formState.errors
-                                          .businessRegistrationNumber
-                                          ? "focus:ring-red-500"
-                                          : "focus:ring-purple-500"
-                                      }`}
-                                    />
-
-                                    {/* Verification Status Display */}
-                                    {basicInfoForm.watch("identify_uploaded") ==
-                                    1 ? (
-                                      <span className="px-4 py-2 bg-green-50 border border-green-200 rounded-xl text-sm font-medium text-green-600 flex items-center">
-                                        <svg
-                                          className="w-4 h-4 mr-1"
-                                          fill="none"
-                                          stroke="currentColor"
-                                          viewBox="0 0 24 24"
-                                          xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                          <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M5 13l4 4L19 7"
-                                          />
-                                        </svg>
-                                        Verified
-                                      </span>
-                                    ) : basicInfoForm.watch(
-                                        "identify_uploaded"
-                                      ) == 2 ? (
-                                      <span className="px-4 py-2 bg-red-50 border border-red-200 rounded-xl text-sm font-medium text-red-600 flex items-center">
-                                        <svg
-                                          className="w-4 h-4 mr-1"
-                                          fill="none"
-                                          stroke="currentColor"
-                                          viewBox="0 0 24 24"
-                                          xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                          <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M6 18L18 6M6 6l12 12"
-                                          />
-                                        </svg>
-                                        Rejected
-                                      </span>
-                                    ) : basicInfoForm.watch(
-                                        "identify_uploaded"
-                                      ) == 0 ? (
-                                      <span className="px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-xl text-sm font-medium text-yellow-600 flex items-center">
-                                        <svg
-                                          className="w-4 h-4 mr-1"
-                                          fill="none"
-                                          stroke="currentColor"
-                                          viewBox="0 0 24 24"
-                                          xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                          <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                          />
-                                        </svg>
-                                        Pending
-                                      </span>
-                                    ) : (
-                                      <>
-                                        <input
-                                          type="file"
-                                          id="registrationFile"
-                                          accept=".pdf,.jpg,.jpeg,.png"
-                                          className="hidden"
-                                          onChange={async (e) => {
-                                            if (
-                                              e.target.files &&
-                                              e.target.files[0]
-                                            ) {
-                                              try {
-                                                const file = e.target.files[0];
-                                                await fetchVerifyOrganizationNumber(
-                                                  file
-                                                );
-                                              } catch (error) {
-                                                console.error(
-                                                  "File upload failed:",
-                                                  error
-                                                );
-                                              }
-                                            }
-                                          }}
-                                        />
-                                        <label
-                                          htmlFor="registrationFile"
-                                          className="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
-                                        >
-                                          Verify Identity
-                                        </label>
-                                      </>
-                                    )}
-                                  </div>
-                                  <p className="text-xs text-gray-500 mt-1">
-                                    This will remain private. Used for
-                                    verification.
-                                    {basicInfoForm.watch("status") == 2 && (
-                                      <span className="text-red-500 ml-2">
-                                        Please upload again
-                                      </span>
-                                    )}
+                                  placeholder="Enter your organization name"
+                                  className={`w-full px-4 py-2 border ${
+                                    basicInfoForm.formState.errors
+                                      .organizationName
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    basicInfoForm.formState.errors
+                                      .organizationName
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {basicInfoForm.formState.errors
+                                  .organizationName && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      basicInfoForm.formState.errors
+                                        .organizationName.message
+                                    }
                                   </p>
-                                  {basicInfoForm.formState.errors
-                                    .businessRegistrationNumber && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        basicInfoForm.formState.errors
-                                          .businessRegistrationNumber.message
-                                      }
-                                    </p>
-                                  )}
-                                </div>
+                                )}
+                              </div>
 
-                                {/* Website */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Website{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
+                              {/* Legal Business Name */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Legal Business Name (if different)
+                                </label>
+                                <input
+                                  type="text"
+                                  {...basicInfoForm.register(
+                                    "legalBusinessName"
+                                  )}
+                                  placeholder="Enter legal business name"
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
+                              {/* Business Registration Number */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Business Registration Number{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <div className="flex gap-2">
                                   <input
-                                    type="url"
-                                    {...basicInfoForm.register("website", {
-                                      required: "Website is required",
-                                      pattern: {
-                                        value:
-                                          /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/,
-                                        message: "Enter a valid website URL",
-                                      },
-                                    })}
-                                    placeholder="https://yourwebsite.com"
-                                    className={`w-full px-4 py-2 border ${
-                                      basicInfoForm.formState.errors.website
+                                    type="text"
+                                    {...basicInfoForm.register(
+                                      "businessRegistrationNumber",
+                                      {
+                                        required:
+                                          "Registration number is required",
+                                      }
+                                    )}
+                                    disabled={[0, 1, 2].includes(
+                                     basicInfoForm.watch("identify_uploaded") != null ? Number(
+                                        basicInfoForm.watch("identify_uploaded")
+                                      ) : basicInfoForm.watch("identify_uploaded")
+                                    )}
+                                    placeholder="Enter registration number"
+                                    className={`flex-1 px-4 py-2 border ${
+                                      basicInfoForm.formState.errors
+                                        .businessRegistrationNumber
                                         ? "border-red-500"
                                         : "border-gray-300"
                                     } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                      basicInfoForm.formState.errors.website
+                                      basicInfoForm.formState.errors
+                                        .businessRegistrationNumber
                                         ? "focus:ring-red-500"
                                         : "focus:ring-purple-500"
                                     }`}
                                   />
-                                  {basicInfoForm.formState.errors.website && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        basicInfoForm.formState.errors.website
-                                          .message
-                                      }
-                                    </p>
+
+                                  {/* Verification Status Display */}
+                                  {basicInfoForm.watch("identify_uploaded") ==
+                                  null ? (
+                                    <>
+                                      <input
+                                        type="file"
+                                        id="registrationFile"
+                                        accept=".pdf,.jpg,.jpeg,.png"
+                                        className="hidden"
+                                        onChange={async (e) => {
+                                          if (
+                                            e.target.files &&
+                                            e.target.files[0]
+                                          ) {
+                                            try {
+                                              const file = e.target.files[0];
+                                              await fetchVerifyOrganizationNumber(
+                                                file
+                                              );
+                                            } catch (error) {
+                                              console.error(
+                                                "File upload failed:",
+                                                error
+                                              );
+                                            }
+                                          }
+                                        }}
+                                      />
+                                      <label
+                                        htmlFor="registrationFile"
+                                        className="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                                      >
+                                        Verify Identity
+                                      </label>
+                                    </>
+                                  ) : basicInfoForm.watch(
+                                      "identify_uploaded"
+                                    ) == 1 ? (
+                                    <span className="px-4 py-2 bg-green-50 border border-green-200 rounded-xl text-sm font-medium text-green-600 flex items-center">
+                                      <svg
+                                        className="w-4 h-4 mr-1"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M5 13l4 4L19 7"
+                                        />
+                                      </svg>
+                                      Verified
+                                    </span>
+                                  ) : basicInfoForm.watch(
+                                      "identify_uploaded"
+                                    ) == 2 ? (
+                                    <span className="px-4 py-2 bg-red-50 border border-red-200 rounded-xl text-sm font-medium text-red-600 flex items-center">
+                                      <svg
+                                        className="w-4 h-4 mr-1"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M6 18L18 6M6 6l12 12"
+                                        />
+                                      </svg>
+                                      Rejected
+                                    </span>
+                                  ) : basicInfoForm.watch(
+                                      "identify_uploaded"
+                                    ) == 0 ? (
+                                    <span className="px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-xl text-sm font-medium text-yellow-600 flex items-center">
+                                      <svg
+                                        className="w-4 h-4 mr-1"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        />
+                                      </svg>
+                                      Pending
+                                    </span>
+                                  ) : (
+                                    <>
+                                      <input
+                                        type="file"
+                                        id="registrationFile"
+                                        accept=".pdf,.jpg,.jpeg,.png"
+                                        className="hidden"
+                                        onChange={async (e) => {
+                                          if (
+                                            e.target.files &&
+                                            e.target.files[0]
+                                          ) {
+                                            try {
+                                              const file = e.target.files[0];
+                                              await fetchVerifyOrganizationNumber(
+                                                file
+                                              );
+                                            } catch (error) {
+                                              console.error(
+                                                "File upload failed:",
+                                                error
+                                              );
+                                            }
+                                          }
+                                        }}
+                                      />
+                                      <label
+                                        htmlFor="registrationFile"
+                                        className="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                                      >
+                                        Verify Identity
+                                      </label>
+                                    </>
                                   )}
                                 </div>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  This will remain private. Used for
+                                  verification.
+                                  {basicInfoForm.watch("status") == 2 && (
+                                    <span className="text-red-500 ml-2">
+                                      Please upload again
+                                    </span>
+                                  )}
+                                </p>
+                                {basicInfoForm.formState.errors
+                                  .businessRegistrationNumber && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      basicInfoForm.formState.errors
+                                        .businessRegistrationNumber.message
+                                    }
+                                  </p>
+                                )}
+                              </div>
 
-                                {/* Industry */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Industry{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <select
-                                    {...basicInfoForm.register("industry", {
-                                      required: "Industry is required",
-                                    })}
-                                    className={`w-full px-4 py-2 border ${
-                                      basicInfoForm.formState.errors.industry
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${
-                                      basicInfoForm.formState.errors.industry
-                                        ? "focus:ring-red-500"
-                                        : "focus:ring-purple-500"
-                                    }`}
-                                  >
-                                    <option value="">
-                                      Select your industry
+                              {/* Website */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Website{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="url"
+                                  {...basicInfoForm.register("website", {
+                                    required: "Website is required",
+                                    pattern: {
+                                      value:
+                                        /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/,
+                                      message: "Enter a valid website URL",
+                                    },
+                                  })}
+                                  placeholder="https://yourwebsite.com"
+                                  className={`w-full px-4 py-2 border ${
+                                    basicInfoForm.formState.errors.website
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    basicInfoForm.formState.errors.website
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {basicInfoForm.formState.errors.website && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      basicInfoForm.formState.errors.website
+                                        .message
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Industry */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Industry{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                  {...basicInfoForm.register("industry", {
+                                    required: "Industry is required",
+                                  })}
+                                  className={`w-full px-4 py-2 border ${
+                                    basicInfoForm.formState.errors.industry
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${
+                                    basicInfoForm.formState.errors.industry
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                >
+                                  <option value="">Select your industry</option>
+                                  {industry?.map((industry: any) => (
+                                    <option
+                                      key={industry.id}
+                                      value={industry.id}
+                                    >
+                                      {industry.name}
                                     </option>
-                                    {industry?.map((industry: any) => (
-                                      <option
-                                        key={industry.id}
-                                        value={industry.id}
-                                      >
-                                        {industry.name}
-                                      </option>
-                                    ))}
-                                  </select>
-                                  {basicInfoForm.formState.errors.industry && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        basicInfoForm.formState.errors.industry
-                                          .message
-                                      }
-                                    </p>
-                                  )}
-                                </div>
-
-                                {/* Year of Establishment */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Year Of Establishment{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <select
-                                    {...basicInfoForm.register(
-                                      "yearOfEstablishment",
-                                      {
-                                        required: "Year is required",
-                                      }
-                                    )}
-                                    className={`w-full px-4 py-2 border ${
-                                      basicInfoForm.formState.errors
-                                        .yearOfEstablishment
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${
-                                      basicInfoForm.formState.errors
-                                        .yearOfEstablishment
-                                        ? "focus:ring-red-500"
-                                        : "focus:ring-purple-500"
-                                    }`}
-                                  >
-                                    <option value="">Select year</option>
-                                    {Array.from(
-                                      { length: 125 },
-                                      (_, i) => new Date().getFullYear() - i
-                                    ).map((year) => (
-                                      <option
-                                        key={year}
-                                        value={year.toString()}
-                                      >
-                                        {year}
-                                      </option>
-                                    ))}
-                                  </select>
-                                  {basicInfoForm.formState.errors
-                                    .yearOfEstablishment && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        basicInfoForm.formState.errors
-                                          .yearOfEstablishment.message
-                                      }
-                                    </p>
-                                  )}
-                                </div>
-
-                                {/* Organization Size */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Organization Size{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <select
-                                    {...basicInfoForm.register(
-                                      "organizationSize",
-                                      {
-                                        required:
-                                          "Organization size is required",
-                                      }
-                                    )}
-                                    className={`w-full px-4 py-2 border ${
-                                      basicInfoForm.formState.errors
-                                        .organizationSize
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${
-                                      basicInfoForm.formState.errors
-                                        .organizationSize
-                                        ? "focus:ring-red-500"
-                                        : "focus:ring-purple-500"
-                                    }`}
-                                  >
-                                    <option value="">Select size</option>
-                                    {OrgSize.map((size: any) => (
-                                      <option key={size.id} value={size.id}>
-                                        {size.name}
-                                      </option>
-                                    ))}
-                                  </select>
-                                  {basicInfoForm.formState.errors
-                                    .organizationSize && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        basicInfoForm.formState.errors
-                                          .organizationSize.message
-                                      }
-                                    </p>
-                                  )}
-                                </div>
-
-                                {/* Headquarters Location */}
-                                <div className="md:col-span-2">
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Headquarters Location{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    {...basicInfoForm.register(
-                                      "headquartersLocation",
-                                      {
-                                        required:
-                                          "Headquarters location is required",
-                                      }
-                                    )}
-                                    placeholder="Enter city, state, country"
-                                    className={`w-full px-4 py-2 border ${
-                                      basicInfoForm.formState.errors
-                                        .headquartersLocation
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                      basicInfoForm.formState.errors
-                                        .headquartersLocation
-                                        ? "focus:ring-red-500"
-                                        : "focus:ring-purple-500"
-                                    }`}
-                                  />
-                                  {basicInfoForm.formState.errors
-                                    .headquartersLocation && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        basicInfoForm.formState.errors
-                                          .headquartersLocation.message
-                                      }
-                                    </p>
-                                  )}
-                                </div>
-
-                                {/* Operating Locations with Add More functionality - optional placeholder */}
-                                <div className="md:col-span-2">
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Operating Locations
-                                  </label>
-                                  <textarea
-                                    rows={3}
-                                    {...basicInfoForm.register(
-                                      "operatingLocations"
-                                    )}
-                                    placeholder="Enter city, state, country and address. Use line breaks for multiple locations."
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                  />
-                                </div>
+                                  ))}
+                                </select>
+                                {basicInfoForm.formState.errors.industry && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      basicInfoForm.formState.errors.industry
+                                        .message
+                                    }
+                                  </p>
+                                )}
                               </div>
 
-                              {/* Action buttons for this tab */}
-                              <div className="flex justify-end gap-4 mt-6">
-                                <button
-                                  type="button"
-                                  onClick={handleCancel}
-                                  className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
+                              {/* Year of Establishment */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Year Of Establishment{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                  {...basicInfoForm.register(
+                                    "yearOfEstablishment",
+                                    {
+                                      required: "Year is required",
+                                    }
+                                  )}
+                                  className={`w-full px-4 py-2 border ${
+                                    basicInfoForm.formState.errors
+                                      .yearOfEstablishment
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${
+                                    basicInfoForm.formState.errors
+                                      .yearOfEstablishment
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
                                 >
-                                  Cancel
-                                </button>
-                                <Button
-                                  variant="gradient-primary"
-                                  type="submit"
-                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
-                                  disabled={isSubmitting.basic}
-                                >
-                                  {isSubmitting.basic
-                                    ? "Saving..."
-                                    : "Save Basic Info"}
-                                </Button>
+                                  <option value="">Select year</option>
+                                  {Array.from(
+                                    { length: 125 },
+                                    (_, i) => new Date().getFullYear() - i
+                                  ).map((year) => (
+                                    <option key={year} value={year.toString()}>
+                                      {year}
+                                    </option>
+                                  ))}
+                                </select>
+                                {basicInfoForm.formState.errors
+                                  .yearOfEstablishment && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      basicInfoForm.formState.errors
+                                        .yearOfEstablishment.message
+                                    }
+                                  </p>
+                                )}
                               </div>
-                            </form>
-                          </Tab.Panel>
 
-                          {/*contact info */}
-                          <Tab.Panel>
-                            <form
-                              onSubmit={contactInfoForm.handleSubmit(
-                                submitContactInfo
-                              )}
-                            >
-                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
-                                {/* Primary Contact Person Name */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Primary Contact Person Name{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    {...contactInfoForm.register(
-                                      "primaryContactName",
-                                      {
-                                        required:
-                                          "Primary contact name is required",
-                                      }
-                                    )}
-                                    placeholder="Enter full name"
-                                    className={`w-full px-4 py-2 border ${
-                                      contactInfoForm.formState.errors
-                                        .primaryContactName
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                      contactInfoForm.formState.errors
-                                        .primaryContactName
-                                        ? "focus:ring-red-500"
-                                        : "focus:ring-purple-500"
-                                    }`}
-                                  />
-                                  {contactInfoForm.formState.errors
-                                    .primaryContactName && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        contactInfoForm.formState.errors
-                                          .primaryContactName.message
-                                      }
-                                    </p>
+                              {/* Organization Size */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Organization Size{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                  {...basicInfoForm.register(
+                                    "organizationSize",
+                                    {
+                                      required: "Organization size is required",
+                                    }
                                   )}
-                                </div>
+                                  className={`w-full px-4 py-2 border ${
+                                    basicInfoForm.formState.errors
+                                      .organizationSize
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${
+                                    basicInfoForm.formState.errors
+                                      .organizationSize
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                >
+                                  <option value="">Select size</option>
+                                  {OrgSize.map((size: any) => (
+                                    <option key={size.id} value={size.id}>
+                                      {size.name}
+                                    </option>
+                                  ))}
+                                </select>
+                                {basicInfoForm.formState.errors
+                                  .organizationSize && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      basicInfoForm.formState.errors
+                                        .organizationSize.message
+                                    }
+                                  </p>
+                                )}
+                              </div>
 
-                                {/* Designation */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Designation{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <select
-                                    {...contactInfoForm.register(
-                                      "designation",
-                                      {
-                                        required: "Designation is required",
-                                      }
-                                    )}
-                                    className={`w-full px-4 py-2 border ${
-                                      contactInfoForm.formState.errors
-                                        .designation
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${
-                                      contactInfoForm.formState.errors
-                                        .designation
-                                        ? "focus:ring-red-500"
-                                        : "focus:ring-purple-500"
-                                    }`}
-                                  >
-                                    <option value="">Select designation</option>
-                                    <option value="Founder">Founder</option>
-                                    <option value="CEO">CEO</option>
-                                    <option value="COO">COO</option>
-                                    <option value="Manager">Manager</option>
-                                    <option value="Director">Director</option>
-                                  </select>
-                                  {contactInfoForm.formState.errors
-                                    .designation && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        contactInfoForm.formState.errors
-                                          .designation.message
-                                      }
-                                    </p>
+                              {/* Headquarters Location */}
+                              <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Headquarters Location{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  {...basicInfoForm.register(
+                                    "headquartersLocation",
+                                    {
+                                      required:
+                                        "Headquarters location is required",
+                                    }
                                   )}
-                                </div>
+                                  placeholder="Enter city, state, country"
+                                  className={`w-full px-4 py-2 border ${
+                                    basicInfoForm.formState.errors
+                                      .headquartersLocation
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    basicInfoForm.formState.errors
+                                      .headquartersLocation
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {basicInfoForm.formState.errors
+                                  .headquartersLocation && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      basicInfoForm.formState.errors
+                                        .headquartersLocation.message
+                                    }
+                                  </p>
+                                )}
+                              </div>
 
-                                {/* Phone Number */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Contact Number{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <input
-                                    type="tel"
-                                    {...contactInfoForm.register("phone", {
-                                      required: "Phone number is required",
-                                      pattern: {
-                                        value: /^[0-9]{10}$/,
-                                        message: "Phone must be 10 digits",
-                                      },
-                                    })}
-                                    onKeyDown={(e) => {
-                                      if (
-                                        !/[0-9]/.test(e.key) &&
-                                        e.key !== "Backspace" &&
-                                        e.key !== "Tab"
-                                      ) {
-                                        e.preventDefault();
-                                      }
-                                    }}
-                                    className={`w-full px-4 py-2 border ${
+                              {/* Operating Locations with Add More functionality - optional placeholder */}
+                              <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Operating Locations
+                                </label>
+                                <textarea
+                                  rows={3}
+                                  {...basicInfoForm.register(
+                                    "operatingLocations"
+                                  )}
+                                  placeholder="Enter city, state, country and address. Use line breaks for multiple locations."
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Action buttons for this tab */}
+                            <div className="flex justify-end gap-4 mt-6">
+                              <button
+                                type="button"
+                                onClick={handleCancel}
+                                className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
+                              >
+                                Cancel
+                              </button>
+                              <Button
+                                variant="gradient-primary"
+                                type="submit"
+                                className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                disabled={isSubmitting.basic}
+                              >
+                                {isSubmitting.basic
+                                  ? "Saving..."
+                                  : "Save Basic Info"}
+                              </Button>
+                            </div>
+                          </form>
+                        </Tab.Panel>
+
+                        {/*contact info */}
+                        <Tab.Panel>
+                          <form
+                            onSubmit={contactInfoForm.handleSubmit(
+                              submitContactInfo
+                            )}
+                          >
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
+                              {/* Primary Contact Person Name */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Primary Contact Person Name{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  {...contactInfoForm.register(
+                                    "primaryContactName",
+                                    {
+                                      required:
+                                        "Primary contact name is required",
+                                    }
+                                  )}
+                                  placeholder="Enter full name"
+                                  className={`w-full px-4 py-2 border ${
+                                    contactInfoForm.formState.errors
+                                      .primaryContactName
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    contactInfoForm.formState.errors
+                                      .primaryContactName
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {contactInfoForm.formState.errors
+                                  .primaryContactName && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      contactInfoForm.formState.errors
+                                        .primaryContactName.message
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Designation */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Designation{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                  {...contactInfoForm.register("designation", {
+                                    required: "Designation is required",
+                                  })}
+                                  className={`w-full px-4 py-2 border ${
+                                    contactInfoForm.formState.errors.designation
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${
+                                    contactInfoForm.formState.errors.designation
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                >
+                                  <option value="">Select designation</option>
+                                  <option value="Founder">Founder</option>
+                                  <option value="CEO">CEO</option>
+                                  <option value="COO">COO</option>
+                                  <option value="Manager">Manager</option>
+                                  <option value="Director">Director</option>
+                                </select>
+                                {contactInfoForm.formState.errors
+                                  .designation && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      contactInfoForm.formState.errors
+                                        .designation.message
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Phone Number */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Contact Number{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="tel"
+                                  {...contactInfoForm.register("phone", {
+                                    required: "Phone number is required",
+                                    pattern: {
+                                      value: /^[0-9]{10}$/,
+                                      message: "Phone must be 10 digits",
+                                    },
+                                  })}
+                                  onKeyDown={(e) => {
+                                    if (
+                                      !/[0-9]/.test(e.key) &&
+                                      e.key !== "Backspace" &&
+                                      e.key !== "Tab"
+                                    ) {
+                                      e.preventDefault();
+                                    }
+                                  }}
+                                  className={`w-full px-4 py-2 border ${
+                                    contactInfoForm.formState.errors.phone
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl focus:outline-none focus:ring-2 ${
+                                    contactInfoForm.formState.errors.phone
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {contactInfoForm.formState.errors.phone && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
                                       contactInfoForm.formState.errors.phone
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    } rounded-xl focus:outline-none focus:ring-2 ${
-                                      contactInfoForm.formState.errors.phone
-                                        ? "focus:ring-red-500"
-                                        : "focus:ring-purple-500"
-                                    }`}
-                                  />
-                                  {contactInfoForm.formState.errors.phone && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        contactInfoForm.formState.errors.phone
-                                          .message
-                                      }
-                                    </p>
-                                  )}
-                                </div>
+                                        .message
+                                    }
+                                  </p>
+                                )}
+                              </div>
 
-                                {/* Email */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Official Email address{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <input
-                                    type="email"
-                                    {...contactInfoForm.register("email", {
-                                      required: "Email is required",
-                                      pattern: {
-                                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                        message: "Enter a valid email",
-                                      },
-                                    })}
-                                    className={`w-full px-4 py-2 border ${
+                              {/* Email */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Official Email address{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="email"
+                                  {...contactInfoForm.register("email", {
+                                    required: "Email is required",
+                                    pattern: {
+                                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                      message: "Enter a valid email",
+                                    },
+                                  })}
+                                  className={`w-full px-4 py-2 border ${
+                                    contactInfoForm.formState.errors.email
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl focus:outline-none focus:ring-2 ${
+                                    contactInfoForm.formState.errors.email
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {contactInfoForm.formState.errors.email && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
                                       contactInfoForm.formState.errors.email
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    } rounded-xl focus:outline-none focus:ring-2 ${
-                                      contactInfoForm.formState.errors.email
-                                        ? "focus:ring-red-500"
-                                        : "focus:ring-purple-500"
-                                    }`}
-                                  />
-                                  {contactInfoForm.formState.errors.email && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        contactInfoForm.formState.errors.email
-                                          .message
-                                      }
-                                    </p>
-                                  )}
-                                </div>
+                                        .message
+                                    }
+                                  </p>
+                                )}
                               </div>
+                            </div>
 
-                              {/* Action buttons for this tab */}
-                              <div className="flex justify-end gap-4 mt-6">
-                                <button
-                                  type="button"
-                                  onClick={handleCancel}
-                                  className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
-                                >
-                                  Cancel
-                                </button>
-                                <Button
-                                  variant="gradient-primary"
-                                  type="submit"
-                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
-                                  disabled={isSubmitting.contact}
-                                >
-                                  {isSubmitting.contact
-                                    ? "Saving..."
-                                    : "Save Contact Info"}
-                                </Button>
-                              </div>
-                            </form>
-                          </Tab.Panel>
+                            {/* Action buttons for this tab */}
+                            <div className="flex justify-end gap-4 mt-6">
+                              <button
+                                type="button"
+                                onClick={handleCancel}
+                                className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
+                              >
+                                Cancel
+                              </button>
+                              <Button
+                                variant="gradient-primary"
+                                type="submit"
+                                className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                disabled={isSubmitting.contact}
+                              >
+                                {isSubmitting.contact
+                                  ? "Saving..."
+                                  : "Save Contact Info"}
+                              </Button>
+                            </div>
+                          </form>
+                        </Tab.Panel>
 
-                          {/* Social links */}
-                          <Tab.Panel>
-                            <form
-                              onSubmit={socialLinksForm.handleSubmit(
-                                submitSocialLinks
-                              )}
-                            >
-                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
-                                {/* Facebook */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Facebook
-                                  </label>
-                                  <input
-                                    type="url"
-                                    {...socialLinksForm.register("facebook", {
-                                      pattern: {
-                                        value:
-                                          /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/,
-                                        message: "Enter a valid URL",
-                                      },
-                                    })}
-                                    placeholder="Enter Facebook profile URL"
-                                    className={`w-full px-4 py-2 border ${
+                        {/* Social links */}
+                        <Tab.Panel>
+                          <form
+                            onSubmit={socialLinksForm.handleSubmit(
+                              submitSocialLinks
+                            )}
+                          >
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
+                              {/* Facebook */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Facebook
+                                </label>
+                                <input
+                                  type="url"
+                                  {...socialLinksForm.register("facebook", {
+                                    pattern: {
+                                      value:
+                                        /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/,
+                                      message: "Enter a valid URL",
+                                    },
+                                  })}
+                                  placeholder="Enter Facebook profile URL"
+                                  className={`w-full px-4 py-2 border ${
+                                    socialLinksForm.formState.errors.facebook
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    socialLinksForm.formState.errors.facebook
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {socialLinksForm.formState.errors.facebook && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
                                       socialLinksForm.formState.errors.facebook
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                      socialLinksForm.formState.errors.facebook
-                                        ? "focus:ring-red-500"
-                                        : "focus:ring-purple-500"
-                                    }`}
-                                  />
-                                  {socialLinksForm.formState.errors
-                                    .facebook && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        socialLinksForm.formState.errors
-                                          .facebook.message
-                                      }
-                                    </p>
-                                  )}
-                                </div>
-
-                                {/* Twitter */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Twitter
-                                  </label>
-                                  <input
-                                    type="url"
-                                    {...socialLinksForm.register("twitter", {
-                                      pattern: {
-                                        value:
-                                          /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/,
-                                        message: "Enter a valid URL",
-                                      },
-                                    })}
-                                    placeholder="Enter Twitter profile URL"
-                                    className={`w-full px-4 py-2 border ${
-                                      socialLinksForm.formState.errors.twitter
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                      socialLinksForm.formState.errors.twitter
-                                        ? "focus:ring-red-500"
-                                        : "focus:ring-purple-500"
-                                    }`}
-                                  />
-                                  {socialLinksForm.formState.errors.twitter && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        socialLinksForm.formState.errors.twitter
-                                          .message
-                                      }
-                                    </p>
-                                  )}
-                                </div>
-
-                                {/* LinkedIn */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    LinkedIn
-                                  </label>
-                                  <input
-                                    type="url"
-                                    {...socialLinksForm.register("linkedin", {
-                                      pattern: {
-                                        value:
-                                          /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/,
-                                        message: "Enter a valid URL",
-                                      },
-                                    })}
-                                    placeholder="Enter LinkedIn profile URL"
-                                    className={`w-full px-4 py-2 border ${
-                                      socialLinksForm.formState.errors.linkedin
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                      socialLinksForm.formState.errors.linkedin
-                                        ? "focus:ring-red-500"
-                                        : "focus:ring-purple-500"
-                                    }`}
-                                  />
-                                  {socialLinksForm.formState.errors
-                                    .linkedin && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        socialLinksForm.formState.errors
-                                          .linkedin.message
-                                      }
-                                    </p>
-                                  )}
-                                </div>
-
-                                {/* Instagram */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Instagram
-                                  </label>
-                                  <input
-                                    type="url"
-                                    {...socialLinksForm.register("instagram", {
-                                      pattern: {
-                                        value:
-                                          /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/,
-                                        message: "Enter a valid URL",
-                                      },
-                                    })}
-                                    placeholder="Enter Instagram profile URL"
-                                    className={`w-full px-4 py-2 border ${
-                                      socialLinksForm.formState.errors.instagram
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                      socialLinksForm.formState.errors.instagram
-                                        ? "focus:ring-red-500"
-                                        : "focus:ring-purple-500"
-                                    }`}
-                                  />
-                                  {socialLinksForm.formState.errors
-                                    .instagram && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        socialLinksForm.formState.errors
-                                          .instagram.message
-                                      }
-                                    </p>
-                                  )}
-                                </div>
-
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Youtube
-                                  </label>
-                                  <input
-                                    type="url"
-                                    {...socialLinksForm.register("youtube", {
-                                      pattern: {
-                                        value:
-                                          /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/i,
-                                        message: "Enter a valid YouTube URL",
-                                      },
-                                    })}
-                                    placeholder="Enter YouTube channel URL"
-                                    className={`w-full px-4 py-2 border ${
-                                      socialLinksForm.formState.errors.youtube
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                      socialLinksForm.formState.errors.youtube
-                                        ? "focus:ring-red-500"
-                                        : "focus:ring-purple-500"
-                                    }`}
-                                  />
-                                  {socialLinksForm.formState.errors.youtube && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        socialLinksForm.formState.errors.youtube
-                                          .message
-                                      }
-                                    </p>
-                                  )}
-                                </div>
+                                        .message
+                                    }
+                                  </p>
+                                )}
                               </div>
 
-                              {/* Action buttons for this tab */}
-                              <div className="flex justify-end gap-4 mt-6">
-                                <button
-                                  type="button"
-                                  onClick={handleCancel}
-                                  className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
-                                >
-                                  Cancel
-                                </button>
-                                <Button
-                                  variant="gradient-primary"
-                                  type="submit"
-                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
-                                  disabled={isSubmitting.social}
-                                >
-                                  {isSubmitting.social
-                                    ? "Saving..."
-                                    : "Save Social Links"}
-                                </Button>
+                              {/* Twitter */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Twitter
+                                </label>
+                                <input
+                                  type="url"
+                                  {...socialLinksForm.register("twitter", {
+                                    pattern: {
+                                      value:
+                                        /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/,
+                                      message: "Enter a valid URL",
+                                    },
+                                  })}
+                                  placeholder="Enter Twitter profile URL"
+                                  className={`w-full px-4 py-2 border ${
+                                    socialLinksForm.formState.errors.twitter
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    socialLinksForm.formState.errors.twitter
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {socialLinksForm.formState.errors.twitter && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      socialLinksForm.formState.errors.twitter
+                                        .message
+                                    }
+                                  </p>
+                                )}
                               </div>
-                            </form>
-                          </Tab.Panel>
 
-                          {/* Organization Mission & Vision Values */}
-                          {/* <Tab.Panel>
+                              {/* LinkedIn */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  LinkedIn
+                                </label>
+                                <input
+                                  type="url"
+                                  {...socialLinksForm.register("linkedin", {
+                                    pattern: {
+                                      value:
+                                        /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/,
+                                      message: "Enter a valid URL",
+                                    },
+                                  })}
+                                  placeholder="Enter LinkedIn profile URL"
+                                  className={`w-full px-4 py-2 border ${
+                                    socialLinksForm.formState.errors.linkedin
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    socialLinksForm.formState.errors.linkedin
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {socialLinksForm.formState.errors.linkedin && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      socialLinksForm.formState.errors.linkedin
+                                        .message
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Instagram */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Instagram
+                                </label>
+                                <input
+                                  type="url"
+                                  {...socialLinksForm.register("instagram", {
+                                    pattern: {
+                                      value:
+                                        /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/,
+                                      message: "Enter a valid URL",
+                                    },
+                                  })}
+                                  placeholder="Enter Instagram profile URL"
+                                  className={`w-full px-4 py-2 border ${
+                                    socialLinksForm.formState.errors.instagram
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    socialLinksForm.formState.errors.instagram
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {socialLinksForm.formState.errors.instagram && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      socialLinksForm.formState.errors.instagram
+                                        .message
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Youtube
+                                </label>
+                                <input
+                                  type="url"
+                                  {...socialLinksForm.register("youtube", {
+                                    pattern: {
+                                      value:
+                                        /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/i,
+                                      message: "Enter a valid YouTube URL",
+                                    },
+                                  })}
+                                  placeholder="Enter YouTube channel URL"
+                                  className={`w-full px-4 py-2 border ${
+                                    socialLinksForm.formState.errors.youtube
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    socialLinksForm.formState.errors.youtube
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {socialLinksForm.formState.errors.youtube && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      socialLinksForm.formState.errors.youtube
+                                        .message
+                                    }
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Action buttons for this tab */}
+                            <div className="flex justify-end gap-4 mt-6">
+                              <button
+                                type="button"
+                                onClick={handleCancel}
+                                className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
+                              >
+                                Cancel
+                              </button>
+                              <Button
+                                variant="gradient-primary"
+                                type="submit"
+                                className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                disabled={isSubmitting.social}
+                              >
+                                {isSubmitting.social
+                                  ? "Saving..."
+                                  : "Save Social Links"}
+                              </Button>
+                            </div>
+                          </form>
+                        </Tab.Panel>
+
+                        {/* Organization Mission & Vision Values */}
+                        {/* <Tab.Panel>
                             <form
                               onSubmit={missionVisionForm.handleSubmit(
                                 submitMissionVision
@@ -1723,410 +1734,404 @@ const OrganaizationProfilepage = () => {
                             </form>
                           </Tab.Panel> */}
 
-                          {/* Services with Add More functionality */}
+                        {/* Services with Add More functionality */}
 
-                          <Tab.Panel>
-                            <form
-                              onSubmit={publicViewForm.handleSubmit(
-                                submitPublicView
-                              )}
-                            >
-                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
-                                {/* Services Input */}
-                                <div className="md:col-span-2 mb-6">
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Services{" "}
-                                    <span className="text-gray-500 text-xs">
-                                      (Add up to 20)
-                                    </span>{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <div className="flex gap-2 items-center">
-                                    <select
-                                      value={serviceInput}
-                                      onChange={(e) =>
-                                        setServiceInput(e.target.value)
-                                      }
-                                      className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                    >
-                                      <option value="">Select a service</option>
-                                      {serviceData?.map((service: any) => (
-                                        <option
-                                          key={service.id}
-                                          value={service.id}
-                                        >
-                                          {service.name}
-                                        </option>
-                                      ))}
-                                      {/* Add more options as needed */}
-                                    </select>
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        const trimmed = serviceInput.trim();
-                                        if (
-                                          trimmed &&
-                                          !services.includes(trimmed) &&
-                                          services.length < 20
-                                        ) {
-                                          setServices([...services, trimmed]);
-                                          setServiceInput("");
-                                        }
-                                      }}
-                                      className="px-3 py-2 text-sm font-bold bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
-                                      disabled={
-                                        services.length >= 20 || !serviceInput
-                                      }
-                                    >
-                                      +
-                                    </button>
-                                  </div>
-
-                                  {/* Display added services */}
-                                  {services.length > 0 && (
-                                    <div className="mt-3 flex flex-wrap gap-2">
-                                      {services.map(
-                                        (
-                                          serviceItem: string | Service,
-                                          index
-                                        ) => {
-                                          const serviceId =
-                                            typeof serviceItem === "object"
-                                              ? serviceItem.id
-                                              : serviceItem;
-                                          // Loose equality check (== instead of ===) to handle string/number mismatches
-                                          const foundService =
-                                            serviceData?.find(
-                                              (svc: Service) => {
-                                                return svc.id == serviceId; // Note: using == for type coercion
-                                              }
-                                            );
-                                          if (!foundService) {
-                                            console.warn(
-                                              `No service found for ID: ${serviceId}`
-                                            );
-                                          }
-
-                                          const displayName =
-                                            foundService?.name || serviceId;
-
-                                          return (
-                                            <span
-                                              key={serviceId || index} // Prefer serviceId, fallback to index
-                                              className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm flex items-center"
-                                            >
-                                              {displayName}
-                                              <button
-                                                type="button"
-                                                onClick={() => {
-                                                  setServices(
-                                                    services.filter(
-                                                      (_, i) => i !== index
-                                                    )
-                                                  );
-                                                }}
-                                                className="ml-2 text-purple-600 hover:text-red-500 font-bold"
-                                              >
-                                                ×
-                                              </button>
-                                            </span>
-                                          );
-                                        }
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
-
-                                <div className="md:col-span-2">
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    About Us{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <textarea
-                                    {...publicViewForm.register("aboutUs", {
-                                      required:
-                                        "About Us information is required",
-                                    })}
-                                    rows={4}
-                                    className={`w-full px-4 py-2 border ${
-                                      publicViewForm.formState.errors.aboutUs
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                      publicViewForm.formState.errors.aboutUs
-                                        ? "focus:ring-red-500"
-                                        : "focus:ring-purple-500"
-                                    }`}
-                                    placeholder="Tell people about your organization, mission, values, etc."
-                                  />
-                                  {publicViewForm.formState.errors.aboutUs && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        publicViewForm.formState.errors.aboutUs
-                                          .message as string
-                                      }
-                                    </p>
-                                  )}
-                                </div>
-
-                                {/* Tags Input */}
-                                {/* Tags Field */}
-                                <div className="md:col-span-2">
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Tags <span className="text-red-500">*</span>
-                                  </label>
-                                  <div className="w-full border border-gray-300 rounded-xl px-3 py-2">
-                                    <div className="flex flex-wrap gap-2 mb-1">
-                                      {tags.map((tag, idx) => (
-                                        <span
-                                          key={idx}
-                                          className="flex items-center bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs"
-                                        >
-                                          {tag}
-                                          <button
-                                            onClick={() => removeTag(idx)}
-                                            className="ml-1 text-purple-600 hover:text-red-500 font-bold"
-                                          >
-                                            ×
-                                          </button>
-                                        </span>
-                                      ))}
-                                    </div>
-                                    <input
-                                      type="text"
-                                      className="w-full text-sm focus:outline-none placeholder-gray-400"
-                                      placeholder="Add tags (e.g. therapy, online, free-consult)"
-                                      value={inputValue}
-                                      onChange={(e) =>
-                                        setInputValue(e.target.value)
-                                      }
-                                      onKeyDown={handleTagKeyDown}
-                                    />
-                                  </div>
-                                </div>
-
-                                {/* Notify Email */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Notify Email{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <input
-                                    type="email"
-                                    {...publicViewForm.register("email", {
-                                      required: "Email is required",
-                                      pattern: {
-                                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                        message: "Enter a valid email",
-                                      },
-                                    })}
-                                    className={`w-full px-4 py-2 border ${
-                                      publicViewForm.formState.errors.email
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    } rounded-xl focus:outline-none focus:ring-2 ${
-                                      publicViewForm.formState.errors.email
-                                        ? "focus:ring-red-500"
-                                        : "focus:ring-purple-500"
-                                    }`}
-                                  />
-                                  {publicViewForm.formState.errors.email && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        publicViewForm.formState.errors.email
-                                          .message as string
-                                      }
-                                    </p>
-                                  )}
-                                </div>
-
-                                {/* Official Address (Geo) */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Official Address{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    placeholder="Enter full address"
-                                    {...publicViewForm.register(
-                                      "officialAddress",
-                                      {
-                                        required:
-                                          "Official address is required",
-                                      }
-                                    )}
-                                    className={`w-full px-4 py-2 border ${
-                                      publicViewForm.formState.errors
-                                        .officialAddress
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                      publicViewForm.formState.errors
-                                        .officialAddress
-                                        ? "focus:ring-red-500"
-                                        : "focus:ring-purple-500"
-                                    }`}
-                                  />
-                                  {publicViewForm.formState.errors
-                                    .officialAddress && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        publicViewForm.formState.errors
-                                          .officialAddress.message as string
-                                      }
-                                    </p>
-                                  )}
-                                </div>
-
-                                {/* Phone Number */}
-                                <div>
-                                       {" "}
-                                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                                    Phone Number{" "}
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                       {" "}
-                                  <input
-                                    type="tel"
-                                    {...publicViewForm.register("phone", {
-                                      required: "Phone number is required",
-                                      pattern: {
-                                        value: /^[0-9]{10}$/,
-                                        message: "Phone must be 10 digits",
-                                      },
-                                    })}
-                                    onKeyDown={(e) => {
+                        <Tab.Panel>
+                          <form
+                            onSubmit={publicViewForm.handleSubmit(
+                              submitPublicView
+                            )}
+                          >
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
+                              {/* Services Input */}
+                              <div className="md:col-span-2 mb-6">
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Services{" "}
+                                  <span className="text-gray-500 text-xs">
+                                    (Add up to 20)
+                                  </span>{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <div className="flex gap-2 items-center">
+                                  <select
+                                    value={serviceInput}
+                                    onChange={(e) =>
+                                      setServiceInput(e.target.value)
+                                    }
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  >
+                                    <option value="">Select a service</option>
+                                    {serviceData?.map((service: any) => (
+                                      <option
+                                        key={service.id}
+                                        value={service.id}
+                                      >
+                                        {service.name}
+                                      </option>
+                                    ))}
+                                    {/* Add more options as needed */}
+                                  </select>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const trimmed = serviceInput.trim();
                                       if (
-                                        !/[0-9]/.test(e.key) &&
-                                        e.key !== "Backspace" &&
-                                        e.key !== "Tab"
+                                        trimmed &&
+                                        !services.includes(trimmed) &&
+                                        services.length < 20
                                       ) {
-                                        e.preventDefault();
+                                        setServices([...services, trimmed]);
+                                        setServiceInput("");
                                       }
                                     }}
-                                    className={`w-full px-4 py-2 border ${
-                                      publicViewForm.formState.errors.phone
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    } rounded-xl focus:outline-none focus:ring-2 ${
-                                      publicViewForm.formState.errors.phone
-                                        ? "focus:ring-red-500"
-                                        : "focus:ring-purple-500"
-                                    }`}
-                                  />
-                                  {publicViewForm.formState.errors.phone && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        publicViewForm.formState.errors.phone
-                                          .message as string
-                                      }
-                                    </p>
-                                  )}
+                                    className="px-3 py-2 text-sm font-bold bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
+                                    disabled={
+                                      services.length >= 20 || !serviceInput
+                                    }
+                                  >
+                                    +
+                                  </button>
                                 </div>
 
-                                {/* Optional Email */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Email address{" "}
-                                    <span className="text-gray-500 text-xs">
-                                      (optional)
-                                    </span>
-                                  </label>
-                                  <input
-                                    type="email"
-                                    {...publicViewForm.register(
-                                      "optionalEmail",
-                                      {
-                                        pattern: {
-                                          value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                          message: "Enter a valid email",
-                                        },
+                                {/* Display added services */}
+                                {services.length > 0 && (
+                                  <div className="mt-3 flex flex-wrap gap-2">
+                                    {services.map(
+                                      (
+                                        serviceItem: string | Service,
+                                        index
+                                      ) => {
+                                        const serviceId =
+                                          typeof serviceItem === "object"
+                                            ? serviceItem.id
+                                            : serviceItem;
+                                        // Loose equality check (== instead of ===) to handle string/number mismatches
+                                        const foundService = serviceData?.find(
+                                          (svc: Service) => {
+                                            return svc.id == serviceId; // Note: using == for type coercion
+                                          }
+                                        );
+                                        if (!foundService) {
+                                          console.warn(
+                                            `No service found for ID: ${serviceId}`
+                                          );
+                                        }
+
+                                        const displayName =
+                                          foundService?.name || serviceId;
+
+                                        return (
+                                          <span
+                                            key={serviceId || index} // Prefer serviceId, fallback to index
+                                            className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm flex items-center"
+                                          >
+                                            {displayName}
+                                            <button
+                                              type="button"
+                                              onClick={() => {
+                                                setServices(
+                                                  services.filter(
+                                                    (_, i) => i !== index
+                                                  )
+                                                );
+                                              }}
+                                              className="ml-2 text-purple-600 hover:text-red-500 font-bold"
+                                            >
+                                              ×
+                                            </button>
+                                          </span>
+                                        );
                                       }
                                     )}
-                                    className={`w-full px-4 py-2 border ${
-                                      publicViewForm.formState.errors
-                                        .optionalEmail
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    } rounded-xl focus:outline-none focus:ring-2 ${
-                                      publicViewForm.formState.errors
-                                        .optionalEmail
-                                        ? "focus:ring-red-500"
-                                        : "focus:ring-purple-500"
-                                    }`}
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  About Us{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <textarea
+                                  {...publicViewForm.register("aboutUs", {
+                                    required:
+                                      "About Us information is required",
+                                  })}
+                                  rows={4}
+                                  className={`w-full px-4 py-2 border ${
+                                    publicViewForm.formState.errors.aboutUs
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    publicViewForm.formState.errors.aboutUs
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                  placeholder="Tell people about your organization, mission, values, etc."
+                                />
+                                {publicViewForm.formState.errors.aboutUs && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      publicViewForm.formState.errors.aboutUs
+                                        .message as string
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Tags Input */}
+                              {/* Tags Field */}
+                              <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Tags <span className="text-red-500">*</span>
+                                </label>
+                                <div className="w-full border border-gray-300 rounded-xl px-3 py-2">
+                                  <div className="flex flex-wrap gap-2 mb-1">
+                                    {tags.map((tag, idx) => (
+                                      <span
+                                        key={idx}
+                                        className="flex items-center bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs"
+                                      >
+                                        {tag}
+                                        <button
+                                          onClick={() => removeTag(idx)}
+                                          className="ml-1 text-purple-600 hover:text-red-500 font-bold"
+                                        >
+                                          ×
+                                        </button>
+                                      </span>
+                                    ))}
+                                  </div>
+                                  <input
+                                    type="text"
+                                    className="w-full text-sm focus:outline-none placeholder-gray-400"
+                                    placeholder="Add tags (e.g. therapy, online, free-consult)"
+                                    value={inputValue}
+                                    onChange={(e) =>
+                                      setInputValue(e.target.value)
+                                    }
+                                    onKeyDown={handleTagKeyDown}
                                   />
-                                  {publicViewForm.formState.errors
-                                    .optionalEmail && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        publicViewForm.formState.errors
-                                          .optionalEmail.message as string
-                                      }
-                                    </p>
-                                  )}
                                 </div>
                               </div>
-                              {/* Action buttons for this tab */}
-                              <div className="flex justify-end gap-4 mt-6">
-                                <button
-                                  type="button"
-                                  onClick={handleCancel}
-                                  className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
-                                >
-                                  Cancel
-                                </button>
-                                <Button
-                                  variant="gradient-primary"
-                                  type="submit"
-                                  className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
-                                  disabled={isSubmitting.public}
-                                >
-                                  {isSubmitting.public
-                                    ? "Saving..."
-                                    : "Save Public View"}
-                                </Button>
+
+                              {/* Notify Email */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Notify Email{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="email"
+                                  {...publicViewForm.register("email", {
+                                    required: "Email is required",
+                                    pattern: {
+                                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                      message: "Enter a valid email",
+                                    },
+                                  })}
+                                  className={`w-full px-4 py-2 border ${
+                                    publicViewForm.formState.errors.email
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl focus:outline-none focus:ring-2 ${
+                                    publicViewForm.formState.errors.email
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {publicViewForm.formState.errors.email && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      publicViewForm.formState.errors.email
+                                        .message as string
+                                    }
+                                  </p>
+                                )}
                               </div>
-                            </form>
-                          </Tab.Panel>
-                        </Tab.Panels>
-                      </div>
-                    </Tab.Group>
-                  </div>
-                </div>
-              </div>
-            )
-          ) : (
-            <div className="max-w-6xl mt-0 shadow overflow-hidden p-8 text-center">
-              <div className="py-12">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                  Organization Profile Feature Coming Soon
-                </h2>
-                <p className="text-gray-600 mb-6">
-                  We're working hard to bring this feature to you. Please check
-                  back later!
-                </p>
-                <div className="flex justify-center">
-                  <svg
-                    className="w-24 h-24 text-purple-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                    />
-                  </svg>
+
+                              {/* Official Address (Geo) */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Official Address{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  placeholder="Enter full address"
+                                  {...publicViewForm.register(
+                                    "officialAddress",
+                                    {
+                                      required: "Official address is required",
+                                    }
+                                  )}
+                                  className={`w-full px-4 py-2 border ${
+                                    publicViewForm.formState.errors
+                                      .officialAddress
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    publicViewForm.formState.errors
+                                      .officialAddress
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {publicViewForm.formState.errors
+                                  .officialAddress && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      publicViewForm.formState.errors
+                                        .officialAddress.message as string
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Phone Number */}
+                              <div>
+                                     {" "}
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Phone Number{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                     {" "}
+                                <input
+                                  type="tel"
+                                  {...publicViewForm.register("phone", {
+                                    required: "Phone number is required",
+                                    pattern: {
+                                      value: /^[0-9]{10}$/,
+                                      message: "Phone must be 10 digits",
+                                    },
+                                  })}
+                                  onKeyDown={(e) => {
+                                    if (
+                                      !/[0-9]/.test(e.key) &&
+                                      e.key !== "Backspace" &&
+                                      e.key !== "Tab"
+                                    ) {
+                                      e.preventDefault();
+                                    }
+                                  }}
+                                  className={`w-full px-4 py-2 border ${
+                                    publicViewForm.formState.errors.phone
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl focus:outline-none focus:ring-2 ${
+                                    publicViewForm.formState.errors.phone
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {publicViewForm.formState.errors.phone && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      publicViewForm.formState.errors.phone
+                                        .message as string
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Optional Email */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Email address{" "}
+                                  <span className="text-gray-500 text-xs">
+                                    (optional)
+                                  </span>
+                                </label>
+                                <input
+                                  type="email"
+                                  {...publicViewForm.register("optionalEmail", {
+                                    pattern: {
+                                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                      message: "Enter a valid email",
+                                    },
+                                  })}
+                                  className={`w-full px-4 py-2 border ${
+                                    publicViewForm.formState.errors
+                                      .optionalEmail
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl focus:outline-none focus:ring-2 ${
+                                    publicViewForm.formState.errors
+                                      .optionalEmail
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {publicViewForm.formState.errors
+                                  .optionalEmail && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      publicViewForm.formState.errors
+                                        .optionalEmail.message as string
+                                    }
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            {/* Action buttons for this tab */}
+                            <div className="flex justify-end gap-4 mt-6">
+                              <button
+                                type="button"
+                                onClick={handleCancel}
+                                className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 shadow-sm hover:bg-gray-100 transition"
+                              >
+                                Cancel
+                              </button>
+                              <Button
+                                variant="gradient-primary"
+                                type="submit"
+                                className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                disabled={isSubmitting.public}
+                              >
+                                {isSubmitting.public
+                                  ? "Saving..."
+                                  : "Save Public View"}
+                              </Button>
+                            </div>
+                          </form>
+                        </Tab.Panel>
+                      </Tab.Panels>
+                    </div>
+                  </Tab.Group>
                 </div>
               </div>
             </div>
-          )}
-      
-</section>
+          )
+        ) : (
+          <div className="max-w-6xl mt-0 shadow overflow-hidden p-8 text-center">
+            <div className="py-12">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                Organization Profile Feature Coming Soon
+              </h2>
+              <p className="text-gray-600 mb-6">
+                We're working hard to bring this feature to you. Please check
+                back later!
+              </p>
+              <div className="flex justify-center">
+                <svg
+                  className="w-24 h-24 text-purple-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
     </>
   );
 };
