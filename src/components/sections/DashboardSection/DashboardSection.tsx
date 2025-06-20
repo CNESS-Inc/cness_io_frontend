@@ -44,7 +44,7 @@ export default function DashboardSection(user: any) {
   useEffect(() => {
     const handleStorageChange = () => {
       setMargaretName(localStorage.getItem("margaret_name") || "");
-    };
+    }}, []);
   // Data for modules
   const modules = [
     {

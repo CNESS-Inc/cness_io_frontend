@@ -211,14 +211,14 @@ const isDropdownOpen = openDropdown === item.id;
       location.pathname.startsWith(path)
     );
 
-const baseClasses = "flex items-center gap-3 px-3 py-2.5 w-full rounded-xl cursor-pointer font-poppins text-sm font-medium leading-[20px]";
+const baseClasses = "flex items-center gap-3 px-3 py-2.5 w-full rounded-xl cursor-pointer dashboard_nav font-medium leading-[20px]";
     const activeClasses = "bg-[#f3e8ff] text-[#9747FF] font-semibold";
-    const inactiveClasses = "text-slate-500 hover:bg-[#f3e8ff]";
+    const inactiveClasses = "dashboard_nav hover:bg-[#f3e8ff]";
 
     const content = (
       <>
         <div className="inline-flex items-start gap-2.5">{item.icon}</div>
-        <div className="font-medium text-sm whitespace-nowrap">{item.label}</div>
+        <div className="dashboard_nav dashboard_nav whitespace-nowrap">{item.label}</div>
         {item.hasNotification && (
           <div className="absolute w-2 h-2 top-[13px] -left-px bg-orange-500 rounded-full border border-white" />
         )}
@@ -261,7 +261,7 @@ const baseClasses = "flex items-center gap-3 px-3 py-2.5 w-full rounded-xl curso
                   `dashboard_nav px-3 py-[6px] rounded-lg w-full transition whitespace-nowrap ${
                     isActive
                       ? " text-[#F07EFF] font-semibold"
-                      : " dashboard_nav hover:bg-[#f9f9f9]"
+                      : " hover:bg-[#f9f9f9]"
                   }`
                 }
               >
@@ -379,7 +379,7 @@ return item.path ? (
     ${isMobileNavOpen ? "translate-x-0" : "-translate-x-full"}
   `}
 >
-<div className="flex flex-col h-full overflow-y-auto font-poppins text-sm font-medium leading-[20px]">
+<div className="flex flex-col h-full overflow-y-auto font-poppins dashboard_nav leading-[20px]">
           {/* Mobile Close Button 
           <div className="md:hidden flex justify-end px-2">
             <button onClick={toggleMobileNav} className="p-2">
