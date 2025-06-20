@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import DashboardLayout from "../layout/Dashboard/dashboardlayout";
 import { UpdatePasswordDetails } from "../Common/ServerAPI";
 
 const Setting = () => {
@@ -41,55 +40,69 @@ const Setting = () => {
     setNewPassword("");
     setConfirmPassword("");
   };
+return (
+  <div className="w-full h-full px-4 py-10 md:px-8 bg-[#f9f9f9]">
+    <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-md p-6 sm:p-8">
+      <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+        Change Password
+      </h2>
 
-  return (
-    <DashboardLayout>
-      <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4">Change Password</h2>
-        {message && <p className="mb-4 text-sm text-green-500">{message}</p>}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block mb-1 font-medium">Current Password</label>
-            <input
-              type="password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block mb-1 font-medium">New Password</label>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block mb-1 font-medium">
-              Confirm New Password
-            </label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-              required
-            />
-          </div>
+      {message && (
+        <p className="mb-4 text-sm text-green-600 font-medium">{message}</p>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Current Password
+          </label>
+          <input
+            type="password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            New Password
+          </label>
+          <input
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Confirm New Password
+          </label>
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+        </div>
+
+        <div className="pt-2">
           <button
             type="submit"
-            className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+            className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold shadow-md hover:opacity-90 transition disabled:opacity-50"
           >
             Update Password
           </button>
-        </form>
-      </div>
-    </DashboardLayout>
-  );
+        </div>
+      </form>
+    </div>
+  </div>
+);
 };
 
 export default Setting;

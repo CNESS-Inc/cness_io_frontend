@@ -2,12 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { Tab } from "@headlessui/react";
 import { useForm } from "react-hook-form";
 import { PhotoIcon, TrashIcon } from "@heroicons/react/24/solid";
-import DashboardLayout from "../../../layout/Dashboard/dashboardlayout";
 import {
   GetIndustryDetails,
   GetOrganizationListingDetails,
+  GetOrganiZationNumberVerify,
   GetOrganiZationProfileDetails,
   GetServiceDetails,
+  MeDetails,
   OrgTypeDetails,
   SubmitOrganizationDetails,
   SubmitOrganizationListingDetails,
@@ -34,6 +35,8 @@ type BasicInfoFormData = {
   organizationSize: string;
   headquartersLocation: string;
   operatingLocations?: string;
+  identify_uploaded?: any;
+  status?: number;
 };
 
 type ContactInfoFormData = {
@@ -64,6 +67,7 @@ type PublicViewFormData = {
   officialAddress: string;
   phone: string;
   optionalEmail?: string;
+  aboutUs?: string;
 };
 
 interface Service {
@@ -75,11 +79,9 @@ const OrganaizationProfilepage = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [banner, setBanner] = useState<string | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  console.log("🚀 ~ OrganaizationProfilepage ~ logoPreview:", logoPreview);
   const [tags, setTags] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [services, setServices] = useState<any[]>([]);
-  console.log("🚀 ~ OrganaizationProfilepage ~ services:", services);
   const [serviceInput, setServiceInput] = useState("");
   const [industry, setIndustryData] = useState<any>(null);
   const [serviceData, setServiceData] = useState<any>(null);
@@ -139,6 +141,11 @@ const OrganaizationProfilepage = () => {
           type: "success",
           duration: 5000,
         });
+        const res = await MeDetails();
+        localStorage.setItem(
+        "profile_picture",
+        res?.data?.data?.user.profile_picture
+      );
       } catch (error: any) {
         console.error(`Error uploading ${formKey}:`, error);
         showToast({
@@ -223,6 +230,17 @@ const OrganaizationProfilepage = () => {
         type: "success",
         duration: 5000,
       });
+      const res = await MeDetails();
+      localStorage.setItem(
+        "profile_picture",
+        res?.data?.data?.user.profile_picture
+      );
+      localStorage.setItem("name", res?.data?.data?.user.name);
+      localStorage.setItem("main_name", res?.data?.data?.user.main_name);
+      localStorage.setItem(
+        "margaret_name",
+        res?.data?.data?.user.margaret_name
+      );
     } catch (error: any) {
       console.error("Error saving basic info:", error);
       showToast({
@@ -252,6 +270,17 @@ const OrganaizationProfilepage = () => {
         type: "success",
         duration: 5000,
       });
+      const res = await MeDetails();
+      localStorage.setItem(
+        "profile_picture",
+        res?.data?.data?.user.profile_picture
+      );
+      localStorage.setItem("name", res?.data?.data?.user.name);
+      localStorage.setItem("main_name", res?.data?.data?.user.main_name);
+      localStorage.setItem(
+        "margaret_name",
+        res?.data?.data?.user.margaret_name
+      );
     } catch (error: any) {
       console.error("Error saving basic info:", error);
       showToast({
@@ -267,8 +296,6 @@ const OrganaizationProfilepage = () => {
 
   const submitSocialLinks = async (data: SocialLinksFormData) => {
     setIsSubmitting((prev) => ({ ...prev, social: true }));
-
-    console.log("Social Links submitted:", data);
     const payload = {
       facebook: data.facebook || null,
       twitter: data.twitter || null,
@@ -284,6 +311,17 @@ const OrganaizationProfilepage = () => {
         type: "success",
         duration: 5000,
       });
+      const res = await MeDetails();
+      localStorage.setItem(
+        "profile_picture",
+        res?.data?.data?.user.profile_picture
+      );
+      localStorage.setItem("name", res?.data?.data?.user.name);
+      localStorage.setItem("main_name", res?.data?.data?.user.main_name);
+      localStorage.setItem(
+        "margaret_name",
+        res?.data?.data?.user.margaret_name
+      );
     } catch (error: any) {
       console.error("Error saving basic info:", error);
       showToast({
@@ -299,7 +337,6 @@ const OrganaizationProfilepage = () => {
 
   // const submitMissionVision = async (data: MissionVisionFormData) => {
   //   setIsSubmitting((prev) => ({ ...prev, mission: true }));
-  //   console.log("Mission & Vision submitted:", data);
   //   const payload = {
   //     mission_statement: data.missionStatement || null,
   //     vision_statement: data.visionStatement || null,
@@ -328,9 +365,6 @@ const OrganaizationProfilepage = () => {
 
   const submitPublicView = async (data: PublicViewFormData) => {
     setIsSubmitting((prev) => ({ ...prev, public: true }));
-
-    console.log("Public View submitted:", data);
-
     // Transform services array to just IDs
     const serviceIds = services?.map((service) => service);
 
@@ -338,6 +372,7 @@ const OrganaizationProfilepage = () => {
       notify_email_address: data.email || null,
       contact_number: data.phone || null,
       official_address: data.officialAddress || null,
+      about_us: data.aboutUs || null,
       organization_service: serviceIds, // Now just an array of strings
       tags: tags,
     };
@@ -349,6 +384,7 @@ const OrganaizationProfilepage = () => {
         type: "success",
         duration: 5000,
       });
+      
     } catch (error: any) {
       console.error("Error saving basic info:", error);
       showToast({
@@ -366,50 +402,51 @@ const OrganaizationProfilepage = () => {
     try {
       const response = await GetOrganiZationProfileDetails();
       const profileData = response.data.data;
-      console.log("🚀 ~ GetOrganizationProfile ~ profileData:", profileData);
 
       // Reset basic info form with the fetched data
       basicInfoForm.reset({
-        organizationName: profileData.organization_name || "",
-        legalBusinessName: profileData.business_name || "",
+        organizationName: profileData?.organization_name || "",
+        legalBusinessName: profileData?.business_name || "",
         businessRegistrationNumber:
-          profileData.business_registration_number || "",
-        website: profileData.web_url || "",
-        industry: profileData.industry_id || "",
-        yearOfEstablishment: profileData.year_of_establishment || "",
-        organizationSize: profileData.employee_size || "",
-        headquartersLocation: profileData.headquarters_location || "",
-        operatingLocations: profileData.operating_regions || "",
+          profileData?.business_registration_number || "",
+        website: profileData?.web_url || "",
+        industry: profileData?.industry_id || "",
+        yearOfEstablishment: profileData?.year_of_establishment || "",
+        organizationSize: profileData?.employee_size || "",
+        headquartersLocation: profileData?.headquarters_location || "",
+        operatingLocations: profileData?.operating_regions || "",
+        identify_uploaded: profileData?.identify_uploaded || "",
+        status: profileData?.status || "",
       });
 
       // Reset contact info form with the fetched data
       contactInfoForm.reset({
-        primaryContactName: profileData.primary_contact_person_name || "",
-        designation: profileData.designation || "",
-        email: profileData.official_email_address || "",
-        phone: profileData.contact_number || "",
+        primaryContactName: profileData?.primary_contact_person_name || "",
+        designation: profileData?.designation || "",
+        email: profileData?.official_email_address || "",
+        phone: profileData?.contact_number || "",
       });
 
       // Reset social links form with the fetched data
       socialLinksForm.reset({
-        facebook: profileData.facebook || "",
-        twitter: profileData.twitter || "",
-        linkedin: profileData.linkedin || "",
-        instagram: profileData.instagram || "", // Add if you have this field
-        youtube: profileData.youtube || "", // Add if you have this field
+        facebook: profileData?.facebook || "",
+        twitter: profileData?.twitter || "",
+        linkedin: profileData?.linkedin || "",
+        instagram: profileData?.instagram || "", // Add if you have this field
+        youtube: profileData?.youtube || "", // Add if you have this field
       });
 
       missionVisionForm.reset({
-        missionStatement: profileData.mission_statement || "",
-        visionStatement: profileData.vision_statement || "",
-        coreValues: profileData.core_values || "",
+        missionStatement: profileData?.mission_statement || "",
+        visionStatement: profileData?.vision_statement || "",
+        coreValues: profileData?.core_values || "",
       });
 
-      if (response.data.data.profile_url) {
-        setLogoPreview(response.data.data.profile_url);
+      if (response?.data?.data?.profile_url) {
+        setLogoPreview(response?.data?.data?.profile_url);
       }
-      if (response.data.data.banner_url) {
-        setBanner(response.data.data.banner_url);
+      if (response?.data?.data?.banner_url) {
+        setBanner(response?.data?.data?.banner_url);
       }
     } catch (error: any) {
       console.error("Error fetching profile:", error);
@@ -432,6 +469,7 @@ const OrganaizationProfilepage = () => {
         phone: profileData?.contact_number || "",
         optionalEmail: profileData?.alternative_email || "",
         officialAddress: profileData?.official_address || "",
+        aboutUs: profileData?.about_us || "",
       });
 
       // Set services and tags from API data
@@ -439,10 +477,6 @@ const OrganaizationProfilepage = () => {
         // Extract just the id values from each object in the array
         const serviceIds = profileData.organization_service.map(
           (service: any) => service.id
-        );
-        console.log(
-          "🚀 ~ GetOrganizationListingProfile ~ serviceIds:",
-          serviceIds
         );
         setServices(serviceIds);
       }
@@ -512,10 +546,36 @@ const OrganaizationProfilepage = () => {
     }
   }, []);
 
+  const fetchVerifyOrganizationNumber = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await GetOrganiZationNumberVerify(formData);
+      // Handle the response
+      if (res.success) {
+        return res;
+      }
+
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+      throw new Error(res.message || "Verification failed");
+    } catch (error: any) {
+      console.error("Verification error:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
   return (
     <>
-      <DashboardLayout>
-        <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-2 overflow-x-hidden min-h-screen">
+ 
+<section className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-10">
           {public_organization === "2" ? (
             is_disqualify === "true" ? (
               <div className="mt-0 shadow overflow-hidden p-8 text-center">
@@ -547,7 +607,7 @@ const OrganaizationProfilepage = () => {
               </div>
             ) : (
               <div className="mt-0 bg-white rounded-xl shadow overflow-hidden">
-                <div className="max-w-6xl mx-auto mt-0 bg-white rounded-xl shadow overflow-hidden">
+<div className="bg-white rounded-xl shadow overflow-hidden">
                   <div className="relative h-[300px] bg-gray-100">
                     <img
                       src={banner || "/default-banner.jpg"}
@@ -577,7 +637,7 @@ const OrganaizationProfilepage = () => {
                       )}
                     </div>
 
-                    <div className="absolute -bottom-0 left-6 z-20 group">
+<div className="absolute -bottom-0 left-6 sm:left-10 z-20 group">
                       <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100">
                         <img
                           src={logoPreview || "/default-logo.jpg"}
@@ -621,7 +681,7 @@ const OrganaizationProfilepage = () => {
                   </div>
 
                   <div className="max-w-6xl mx-auto px-6 py-10">
-                    <h2 className="text-[22px] font-bold text-[#9747FF] mb-6">
+                    <h2 className="text-[24px] font-bold text-[#9747FF] mb-6">
                       My Profile
                     </h2>
 
@@ -629,11 +689,11 @@ const OrganaizationProfilepage = () => {
                       selectedIndex={selectedIndex}
                       onChange={setSelectedIndex}
                     >
-                      <div className="px-6 pt-6">
-                        <div className="w-full overflow-x-auto sm:overflow-x-visible no-scrollbar">
+<div className="px-4 sm:px-6 pt-6">
+<div className="w-full overflow-x-auto no-scrollbar px-2 sm:px-4">
                           <div className="inline-block min-w-[1024px] md:min-w-[1152px] lg:min-w-full px-4 sm:px-6 lg:px-8">
                             {/* Tab Header */}
-                            <Tab.List className="flex gap-3 px-2 min-w-max whitespace-nowrap">
+<Tab.List className="flex gap-3 flex-wrap sm:flex-nowrap overflow-x-auto no-scrollbar px-2">
                               {tabNames.map((tab, index) => (
                                 <Tab
                                   key={index}
@@ -661,7 +721,7 @@ const OrganaizationProfilepage = () => {
                                 submitBasicInfo
                               )}
                             >
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
                                 {/* Organization Name */}
                                 <div>
                                   <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -715,38 +775,146 @@ const OrganaizationProfilepage = () => {
                                     className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                   />
                                 </div>
-
                                 {/* Business Registration Number */}
                                 <div>
                                   <label className="block text-sm font-medium text-gray-800 mb-2">
                                     Business Registration Number{" "}
                                     <span className="text-red-500">*</span>
                                   </label>
-                                  <input
-                                    type="text"
-                                    {...basicInfoForm.register(
-                                      "businessRegistrationNumber",
-                                      {
-                                        required:
-                                          "Registration number is required",
-                                      }
+                                  <div className="flex gap-2">
+                                    <input
+                                      type="text"
+                                      {...basicInfoForm.register(
+                                        "businessRegistrationNumber",
+                                        {
+                                          required:
+                                            "Registration number is required",
+                                        }
+                                      )}
+                                      disabled={[0, 1, 2].includes(
+                                        Number(
+                                          basicInfoForm.watch(
+                                            "identify_uploaded"
+                                          )
+                                        )
+                                      )}
+                                      placeholder="Enter registration number"
+                                      className={`flex-1 px-4 py-2 border ${
+                                        basicInfoForm.formState.errors
+                                          .businessRegistrationNumber
+                                          ? "border-red-500"
+                                          : "border-gray-300"
+                                      } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                        basicInfoForm.formState.errors
+                                          .businessRegistrationNumber
+                                          ? "focus:ring-red-500"
+                                          : "focus:ring-purple-500"
+                                      }`}
+                                    />
+
+                                    {/* Verification Status Display */}
+                                    {basicInfoForm.watch("identify_uploaded") ==
+                                    1 ? (
+                                      <span className="px-4 py-2 bg-green-50 border border-green-200 rounded-xl text-sm font-medium text-green-600 flex items-center">
+                                        <svg
+                                          className="w-4 h-4 mr-1"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                          xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M5 13l4 4L19 7"
+                                          />
+                                        </svg>
+                                        Verified
+                                      </span>
+                                    ) : basicInfoForm.watch(
+                                        "identify_uploaded"
+                                      ) == 2 ? (
+                                      <span className="px-4 py-2 bg-red-50 border border-red-200 rounded-xl text-sm font-medium text-red-600 flex items-center">
+                                        <svg
+                                          className="w-4 h-4 mr-1"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                          xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M6 18L18 6M6 6l12 12"
+                                          />
+                                        </svg>
+                                        Rejected
+                                      </span>
+                                    ) : basicInfoForm.watch(
+                                        "identify_uploaded"
+                                      ) == 0 ? (
+                                      <span className="px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-xl text-sm font-medium text-yellow-600 flex items-center">
+                                        <svg
+                                          className="w-4 h-4 mr-1"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                          xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                          />
+                                        </svg>
+                                        Pending
+                                      </span>
+                                    ) : (
+                                      <>
+                                        <input
+                                          type="file"
+                                          id="registrationFile"
+                                          accept=".pdf,.jpg,.jpeg,.png"
+                                          className="hidden"
+                                          onChange={async (e) => {
+                                            if (
+                                              e.target.files &&
+                                              e.target.files[0]
+                                            ) {
+                                              try {
+                                                const file = e.target.files[0];
+                                                await fetchVerifyOrganizationNumber(
+                                                  file
+                                                );
+                                              } catch (error) {
+                                                console.error(
+                                                  "File upload failed:",
+                                                  error
+                                                );
+                                              }
+                                            }
+                                          }}
+                                        />
+                                        <label
+                                          htmlFor="registrationFile"
+                                          className="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                                        >
+                                          Verify Identity
+                                        </label>
+                                      </>
                                     )}
-                                    placeholder="Enter registration number"
-                                    className={`w-full px-4 py-2 border ${
-                                      basicInfoForm.formState.errors
-                                        .businessRegistrationNumber
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                      basicInfoForm.formState.errors
-                                        .businessRegistrationNumber
-                                        ? "focus:ring-red-500"
-                                        : "focus:ring-purple-500"
-                                    }`}
-                                  />
+                                  </div>
                                   <p className="text-xs text-gray-500 mt-1">
                                     This will remain private. Used for
                                     verification.
+                                    {basicInfoForm.watch("status") == 2 && (
+                                      <span className="text-red-500 ml-2">
+                                        Please upload again
+                                      </span>
+                                    )}
                                   </p>
                                   {basicInfoForm.formState.errors
                                     .businessRegistrationNumber && (
@@ -1016,7 +1184,7 @@ const OrganaizationProfilepage = () => {
                                 submitContactInfo
                               )}
                             >
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
                                 {/* Primary Contact Person Name */}
                                 <div>
                                   <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1209,7 +1377,7 @@ const OrganaizationProfilepage = () => {
                                 submitSocialLinks
                               )}
                             >
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
                                 {/* Facebook */}
                                 <div>
                                   <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1418,7 +1586,7 @@ const OrganaizationProfilepage = () => {
                                 submitMissionVision
                               )}
                             >
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
                                 <div>
                                   <label className="block text-sm font-medium text-gray-800 mb-2">
                                     Organization Mission Statement{" "}
@@ -1563,7 +1731,7 @@ const OrganaizationProfilepage = () => {
                                 submitPublicView
                               )}
                             >
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
                                 {/* Services Input */}
                                 <div className="md:col-span-2 mb-6">
                                   <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1626,34 +1794,13 @@ const OrganaizationProfilepage = () => {
                                             typeof serviceItem === "object"
                                               ? serviceItem.id
                                               : serviceItem;
-
-                                          // Debug output
-                                          console.log(
-                                            "Current service ID:",
-                                            serviceId
-                                          );
-                                          console.log(
-                                            "All serviceData:",
-                                            serviceData
-                                          );
-
                                           // Loose equality check (== instead of ===) to handle string/number mismatches
                                           const foundService =
                                             serviceData?.find(
                                               (svc: Service) => {
-                                                console.log(
-                                                  `Comparing ${
-                                                    svc.id
-                                                  } (${typeof svc.id}) with ${serviceId} (${typeof serviceId})`
-                                                );
                                                 return svc.id == serviceId; // Note: using == for type coercion
                                               }
                                             );
-                                          console.log(
-                                            "🚀 ~ OrganaizationProfilepage ~ foundService:",
-                                            foundService
-                                          );
-
                                           if (!foundService) {
                                             console.warn(
                                               `No service found for ID: ${serviceId}`
@@ -1687,6 +1834,38 @@ const OrganaizationProfilepage = () => {
                                         }
                                       )}
                                     </div>
+                                  )}
+                                </div>
+
+                                <div className="md:col-span-2">
+                                  <label className="block text-sm font-medium text-gray-800 mb-2">
+                                    About Us{" "}
+                                    <span className="text-red-500">*</span>
+                                  </label>
+                                  <textarea
+                                    {...publicViewForm.register("aboutUs", {
+                                      required:
+                                        "About Us information is required",
+                                    })}
+                                    rows={4}
+                                    className={`w-full px-4 py-2 border ${
+                                      publicViewForm.formState.errors.aboutUs
+                                        ? "border-red-500"
+                                        : "border-gray-300"
+                                    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                      publicViewForm.formState.errors.aboutUs
+                                        ? "focus:ring-red-500"
+                                        : "focus:ring-purple-500"
+                                    }`}
+                                    placeholder="Tell people about your organization, mission, values, etc."
+                                  />
+                                  {publicViewForm.formState.errors.aboutUs && (
+                                    <p className="text-sm text-red-500 mt-1">
+                                      {
+                                        publicViewForm.formState.errors.aboutUs
+                                          .message as string
+                                      }
+                                    </p>
                                   )}
                                 </div>
 
@@ -1946,8 +2125,8 @@ const OrganaizationProfilepage = () => {
               </div>
             </div>
           )}
-        </div>
-      </DashboardLayout>
+      
+</section>
     </>
   );
 };

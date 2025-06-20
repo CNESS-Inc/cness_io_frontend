@@ -102,7 +102,6 @@ export default function AllSocialPost() {
 
   // Static posts data
   const [userPosts, setUserPosts] = useState<Post[]>([]);
-  console.log("🚀 ~ AllSocialPost ~ userPosts:", userPosts);
 
   const getUserPosts = async () => {
     if (isLoading || !hasMore) return; // Ensure this doesn't block new fetch
@@ -171,7 +170,6 @@ export default function AllSocialPost() {
       // Call your API endpoint
       const res = await GetStory();
       setStoryData(res?.data?.data);
-      console.log("🚀 ~ handleFileUpload ~ res:", res);
     } catch (error) {
       console.error("Error uploading file:", error);
     }
@@ -232,8 +230,7 @@ export default function AllSocialPost() {
     const file = event.target.files?.[0];
     if (file) {
       const fileType = file.type.startsWith("image") ? "Image" : "Video";
-      console.log(`Uploaded ${fileType}:`, file.name);
-
+      console.log("🚀 ~ AllSocialPost ~ fileType:", fileType)
       const formData = new FormData();
       formData.append("file", file);
       formData.append("description", "");

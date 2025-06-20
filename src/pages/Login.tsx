@@ -8,6 +8,7 @@ import {
   GetAllFormDetails,
   GetSubDomainDetails,
   LoginDetails,
+  MeDetails,
   PaymentDetails,
   submitOrganizationDetails,
   submitPersonDetails,
@@ -15,6 +16,11 @@ import {
 import Button from "../components/ui/Button";
 import { Link } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
+
+import cnesslogo from "../assets/cnesslogo.png";
+import { FiMail, FiEye, FiEyeOff } from "react-icons/fi"; // add if not already
+
+import Select from "react-select";
 
 interface SubDomain {
   id: string;
@@ -27,6 +33,7 @@ interface OrganizationForm {
   revenue_range_id: string;
   organization_name: string;
   domain: string;
+  custom_domain?: string;
   sub_domain: string;
   employee_size: string;
   revenue: string;
@@ -36,15 +43,22 @@ interface OrganizationForm {
   }>;
 }
 
+interface Interest {
+  id: string | number;
+  name: string;
+}
+
+interface Profession {
+  id: string | number;
+  title: string; // Changed from 'name' to 'title' to match your usage
+}
+
 interface PersonForm {
   first_name: string;
   last_name: string;
-  interest: string;
-  profession: string;
-  question: Array<{
-    question_id: string;
-    answer: string;
-  }>;
+  interests: (string | number)[];
+  professions: (string | number)[];
+  question: QuestionAnswer[];
 }
 // type PartialOrganizationFormData = Partial<OrganizationForm>;
 
@@ -149,13 +163,15 @@ export default function Login() {
     revenue: "",
     question: [], // Changed from 'question' to 'questions' to match interface
   });
+  console.log("🚀 ~ Login ~ organizationForm:", organizationForm);
   const [personForm, setPersonForm] = useState<PersonForm>({
     first_name: "",
     last_name: "",
-    interest: "",
-    profession: "",
+    interests: [],
+    professions: [],
     question: [],
   });
+  console.log("🚀 ~ Login ~ personForm:", personForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [subDomain, setsubDomain] = useState<SubDomain[] | null>();
   const [isAnnual, setIsAnnual] = useState(true);
@@ -164,21 +180,19 @@ export default function Login() {
     OrgPricingPlan[]
   >([]);
   const [domains, setDomains] = useState([]);
-  const [interest, setInterest] = useState([]);
-  const [profession, setProfession] = useState([]);
+  const [interest, setInterest] = useState<Interest[]>([]);
+  const [profession, setProfession] = useState<Profession[]>([]);
   const [revenue, setRevenue] = useState([]);
   const [OrganizationSize, setOrganizationSize] = useState([]);
   const [readlineQuestion, setReadlineQuestion] = useState([]);
 
   const [loginErrors, setLoginErrors] = useState<FormErrors>({});
   const [organizationErrors, setOrganizationErrors] = useState<FormErrors>({});
-  console.log("🚀 ~ organizationErrors:", organizationErrors);
   const [personErrors, setPersonErrors] = useState<FormErrors>({});
   const [resetPasswordErrors] = useState<FormErrors>({});
   const [apiMessage, setApiMessage] = useState<string | null>(null);
   const [isOrgFormSubmitted, setIsOrgFormSubmitted] = useState(false);
-    const { showToast } = useToast();
-
+  const { showToast } = useToast();
 
   const validatePassword = (password: string): string | undefined => {
     if (!password) return "Password is required";
@@ -191,17 +205,26 @@ export default function Login() {
       return "Password must contain at least one special character";
     return undefined;
   };
+const [showLoginPassword, setShowLoginPassword] = useState(false);
+const [emailFocused, setEmailFocused] = useState(false);
 
   const validateField = (
     name: string,
     value: string,
     rules: ValidationRules
   ): string | undefined => {
+    if (name === "interests" || name === "professions") {
+      if (rules.required && (!value || value.length === 0)) {
+        return `${name.replace("_", " ")} is required`;
+      }
+      return undefined;
+    }
+
     if (name === "password") {
       return validatePassword(value);
     }
 
-    if (rules.required && !value.trim()) {
+    if (rules.required && !value?.trim()) {
       return `${name.replace("_", " ")} is required`;
     }
 
@@ -265,17 +288,30 @@ export default function Login() {
         const requiredFields = [
           "organization_name",
           "domain",
-          "sub_domain",
           "employee_size",
           "revenue",
         ];
+
+        // Only require sub_domain if domain is not "other"
+        if (formData.domain !== "other") {
+          requiredFields.push("sub_domain");
+        }
+
         requiredFields.forEach((field) => {
-          const error = validateField(field, formData[field], {
-            required: true,
-          });
-          if (error) {
-            newErrors[field] = error;
-            isValid = false;
+          // Special handling for domain="other" case
+          if (field === "domain" && formData.domain === "other") {
+            if (!formData.custom_domain?.trim()) {
+              newErrors.custom_domain = "Custom domain is required";
+              isValid = false;
+            }
+          } else {
+            const error = validateField(field, formData[field], {
+              required: true,
+            });
+            if (error) {
+              newErrors[field] = error;
+              isValid = false;
+            }
           }
         });
       }
@@ -306,8 +342,8 @@ export default function Login() {
       // Always validate step 1 fields if we're on step 1 or validating all steps
       if (step === 1) {
         const requiredFields: Array<
-          "first_name" | "last_name" | "interest" | "profession"
-        > = ["first_name", "last_name", "interest", "profession"];
+          "first_name" | "last_name" | "interests" | "professions"
+        > = ["first_name", "last_name", "interests", "professions"];
 
         requiredFields.forEach((field) => {
           const error = validateField(field, formData[field], {
@@ -317,9 +353,14 @@ export default function Login() {
             newErrors[field] = error;
             isValid = false;
           }
+          if (field === "interests" || field === "professions") {
+            if (!formData[field] || formData[field].length === 0) {
+              newErrors[field] = `${field} is required`;
+              isValid = false;
+            }
+          }
         });
       }
-
 
       // Only validate questions when submitting (step 2) or validating all steps
       if (step === 2) {
@@ -422,6 +463,11 @@ export default function Login() {
           response?.data?.data?.user.profile_picture
         );
         localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          response?.data?.data?.user.margaret_name
+        );
 
         const completionStatus =
           response.data.data.user.person_organization_complete;
@@ -443,7 +489,7 @@ export default function Login() {
               //   }
               //   plansByRange[plan.plan_range][plan.plan_type] = plan;
               // });
-              // const updatedPlans = Object.values(plansByRange).map(
+              // const updatedPlans = Object.values(plansByRange)?.map(
               //   (planGroup: any) => {
               //     const monthlyPlan = planGroup.monthly;
               //     const yearlyPlan = planGroup.yearly;
@@ -492,7 +538,7 @@ export default function Login() {
               //   }
               //   plansByRange[plan.plan_range][plan.plan_type] = plan;
               // });
-              // const updatedPlans = Object.values(plansByRange).map(
+              // const updatedPlans = Object.values(plansByRange)?.map(
               //   (planGroup: any) => {
               //     const monthlyPlan = planGroup.monthly;
               //     const yearlyPlan = planGroup.yearly;
@@ -590,7 +636,7 @@ export default function Login() {
     const { name, value } = e.target;
 
     if (name.startsWith("question_")) {
-      // Handle question answers
+      // Handle question answers (unchanged)
       const questionId = name.replace("question_", "");
       setOrganizationForm((prev) => {
         const existingQuestionIndex = prev.question.findIndex(
@@ -621,19 +667,20 @@ export default function Login() {
       setOrganizationForm((prev) => ({
         ...prev,
         [name]: value,
+        ...(name === "domain" && value !== "other" && { sub_domain: "" }),
+        ...(name === "domain" && value !== "other" && { custom_domain: "" }),
       }));
-
-      if (name === "domain" && value) {
+      if (name === "domain" && value && value !== "other") {
         try {
           const response = await GetSubDomainDetails(value);
           setsubDomain(response?.data?.data);
-        } catch (error:any) {
+        } catch (error: any) {
           console.error("Error calling API:", error);
           showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
+            message: error?.response?.data?.error?.message,
+            type: "error",
+            duration: 5000,
+          });
         }
       }
     }
@@ -647,6 +694,18 @@ export default function Login() {
 
     if (!isValid) return;
     setIsSubmitting(true);
+
+    if (
+      organizationForm.domain === "other" &&
+      !organizationForm.custom_domain
+    ) {
+      setOrganizationErrors({
+        ...organizationErrors,
+        custom_domain: "Custom domain name is required",
+      });
+      return;
+    }
+
     try {
       const res = await submitOrganizationDetails(organizationForm);
       localStorage.setItem("person_organization", "2");
@@ -660,8 +719,20 @@ export default function Login() {
           plansByRange[plan.plan_range][plan.plan_type] = plan;
         });
 
+        const response = await MeDetails();
+        localStorage.setItem(
+          "profile_picture",
+          response?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          response?.data?.data?.user.margaret_name
+        );
+
         // Create combined plan objects with both monthly and yearly data
-        const updatedPlans = Object.values(plansByRange).map(
+        const updatedPlans = Object.values(plansByRange)?.map(
           (planGroup: any) => {
             const monthlyPlan = planGroup.monthly;
             const yearlyPlan = planGroup.yearly;
@@ -727,8 +798,20 @@ export default function Login() {
           plansByRange[plan.plan_range][plan.plan_type] = plan;
         });
 
+        const response = await MeDetails();
+        localStorage.setItem(
+          "profile_picture",
+          response?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          response?.data?.data?.user.margaret_name
+        );
+
         // Create combined plan objects with both monthly and yearly data
-        const updatedPlans = Object.values(plansByRange).map(
+        const updatedPlans = Object.values(plansByRange)?.map(
           (planGroup: any) => {
             const monthlyPlan = planGroup.monthly;
             const yearlyPlan = planGroup.yearly;
@@ -810,7 +893,7 @@ export default function Login() {
 
   useEffect(() => {
     if (personPricing.length > 0) {
-      const updatedPlans = personPricing.map((plan: any) => ({
+      const updatedPlans = personPricing?.map((plan: any) => ({
         ...plan,
         price: isAnnual
           ? plan.yearlyPrice || plan.monthlyPrice
@@ -828,7 +911,7 @@ export default function Login() {
 
   const closeModal = () => {
     setActiveModal(null);
-    setApiMessage(null)
+    setApiMessage(null);
   };
 
   const fetchAllDataDetails = async () => {
@@ -840,7 +923,7 @@ export default function Login() {
       setReadlineQuestion(response?.data?.data?.questions);
       setOrganizationSize(response?.data?.data?.organization_size);
       setRevenue(response?.data?.data?.revenue);
-    } catch (error:any) {
+    } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -869,10 +952,10 @@ export default function Login() {
       } else {
         console.error("URL not found in response");
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error in handlePlanSelection:", error);
-            showToast({
-        message:error?.response?.data?.error?.message,
+      showToast({
+        message: error?.response?.data?.error?.message,
         type: "error",
         duration: 5000,
       });
@@ -880,6 +963,7 @@ export default function Login() {
   };
 
   const onForgotPassword = () => {
+    setApiMessage("");
     setActiveModal("forgotpassword");
   };
 
@@ -950,14 +1034,20 @@ export default function Login() {
           </div>
 
           <div className="absolute top-40 left-10 z-10">
-            <h1 className="text-white text-4xl font-bold">CNESS</h1>
-          </div>
+<div className="fixed top-0 left-0 p-1 z-50">
+  <img
+    src={cnesslogo}
+    alt="logo"
+    className="w-60 h-60 object-contain"
+  
+  />
+</div>      </div>
         </div>
 
         {/* Sign In Form */}
-<div className="z-10 w-full flex justify-center items-center px-4 sm:px-6 py-6">
-  <div className="w-full max-w-md bg-white rounded-2xl shadow-xl px-4 sm:px-8 py-8 sm:py-10 space-y-8">
-    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center">
+<div className="absolute top-[120px] sm:top-[160px] md:top-[200px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
+          <div className="w-full max-w-md bg-white rounded-2xl shadow-xl px-4 sm:px-8 py-8 sm:py-10 space-y-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center">
               Sign in to your account
             </h2>
             {apiMessage && (
@@ -972,23 +1062,35 @@ export default function Login() {
               </div>
             )}
             <form className="space-y-4" onSubmit={handleSubmit}>
-              <div className="mb-4">
+<div className="mb-4 relative">
                 <label
                   htmlFor="email"
                   className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
                 >
                   Email
                 </label>
+                  <div className="relative">
+
                 <input
                   type="email"
                   id="email"
                   name="email"
                   required
                   placeholder="Enter your email"
+      onFocus={() => setEmailFocused(true)}
+    onBlur={() => setEmailFocused(false)}
                   className={`w-full px-3 py-2 rounded-[12px] border ${
                     loginErrors.email ? "border-red-500" : "border-[#CBD5E1]"
                   } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                 />
+
+<FiMail
+      className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-opacity duration-300 ${
+      emailFocused ? "opacity-100" : "opacity-0"
+    }`}
+    size={18}
+  />
+</div>
                 {loginErrors.email && (
                   <p className="mt-1 text-sm text-red-600">
                     {loginErrors.email}
@@ -996,15 +1098,17 @@ export default function Login() {
                 )}
               </div>
 
-              <div className="mb-4">
+<div className="mb-4 relative">
                 <label
                   htmlFor="password"
                   className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
                 >
                   Password
                 </label>
+                  <div className="relative">
+
                 <input
-                  type="password"
+      type={showLoginPassword ? "text" : "password"}
                   id="password"
                   name="password"
                   required
@@ -1013,6 +1117,14 @@ export default function Login() {
                     loginErrors.password ? "border-red-500" : "border-[#CBD5E1]"
                   } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                 />
+
+                 <div
+      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+      onClick={() => setShowLoginPassword(!showLoginPassword)}
+    >
+      {showLoginPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+    </div>
+  </div>
                 {loginErrors.password && (
                   <p className="mt-1 text-sm text-red-600">
                     {loginErrors.password}
@@ -1027,7 +1139,11 @@ export default function Login() {
                     Remember me on this device
                   </span>
                 </label>
-                <a href="#" className="text-[#7F57FC] hover:underline" onClick={onForgotPassword}>
+                <a
+                  href="#"
+                  className="text-[#7F57FC] hover:underline"
+                  onClick={onForgotPassword}
+                >
                   Trouble logging in? Reset password
                 </a>
               </div>
@@ -1056,7 +1172,6 @@ export default function Login() {
           </div>
         </div>
       </div>
-
 
       {/* Type Selection Modal - only shows when activeModal is "type" */}
       <Modal isOpen={activeModal === "type"} onClose={closeModal}>
@@ -1240,6 +1355,7 @@ export default function Login() {
                             {domain.name}
                           </option>
                         ))}
+                        <option value="other">Other (please specify)</option>
                       </select>
                       {organizationErrors.domain && (
                         <p className="mt-1 text-sm text-red-600">
@@ -1248,32 +1364,54 @@ export default function Login() {
                       )}
                     </div>
 
-                    {/* Sub Domain */}
-                    <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
-                        Sub Domain
-                      </label>
-                      <select
-                        name="sub_domain"
-                        value={organizationForm.sub_domain}
-                        onChange={handleOrganizationFormChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      >
-                        <>
+                    {organizationForm.domain === "other" ? (
+                      <div className="mb-4">
+                        <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                          Custom Domain Name*
+                        </label>
+                        <input
+                          type="text"
+                          name="custom_domain"
+                          value={organizationForm.custom_domain || ""}
+                          onChange={handleOrganizationFormChange}
+                          className={`w-full px-3 py-2 border ${
+                            organizationErrors.custom_domain
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          } rounded-md`}
+                          placeholder="Enter your domain name"
+                        />
+                        {organizationErrors.custom_domain && (
+                          <p className="mt-1 text-sm text-red-600">
+                            {organizationErrors.custom_domain}
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="mb-4">
+                        <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                          Sub Domain
+                        </label>
+                        <select
+                          name="sub_domain"
+                          value={organizationForm.sub_domain}
+                          onChange={handleOrganizationFormChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        >
                           <option value="">Select Sub domain</option>
                           {subDomain?.map((subdomain: any) => (
                             <option key={subdomain.id} value={subdomain.id}>
                               {subdomain.name}
                             </option>
                           ))}
-                        </>
-                      </select>
-                      {organizationErrors.sub_domain && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {organizationErrors.sub_domain}
-                        </p>
-                      )}
-                    </div>
+                        </select>
+                        {organizationErrors.sub_domain && (
+                          <p className="mt-1 text-sm text-red-600">
+                            {organizationErrors.sub_domain}
+                          </p>
+                        )}
+                      </div>
+                    )}
 
                     {/* Employees Size */}
                     <div className="mb-4">
@@ -1349,7 +1487,7 @@ export default function Login() {
 
                             {question.options && question.options.length > 0 ? (
                               <div className="space-y-2">
-                                {question.options.map((option: any) => (
+                                {question?.options?.map((option: any) => (
                                   <div
                                     key={option.id}
                                     className="flex items-center"
@@ -1611,56 +1749,80 @@ export default function Login() {
 
                     <div className="mb-4">
                       <label className="block openSans text-base font-medium text-gray-800 mb-1">
-                        Interest*
+                        Interests*
                       </label>
-                      <select
-                        name="interest"
-                        value={personForm.interest}
-                        onChange={handlePersonFormChange}
-                        className={`w-full px-3 py-2 border ${
-                          personErrors.interest
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        } rounded-md`}
-                      >
-                        <option value="">Select your interest</option>
-                        {interest?.map((interest: any) => (
-                          <option key={interest.id} value={interest.id}>
-                            {interest.name}
-                          </option>
-                        ))}
-                      </select>
-                      {personErrors.interest && (
+                      <Select
+                        isMulti
+                        options={interest?.map((interestItem: Interest) => ({
+                          value: interestItem.id,
+                          label: interestItem.name,
+                        }))}
+                        value={
+                          personForm.interests?.map((interestId: any) => ({
+                            value: interestId,
+                            label: interest?.find(
+                              (i: any) => i.id === interestId
+                            )?.name,
+                          })) || []
+                        }
+                        onChange={(selectedOptions) => {
+                          // Update your form state with the selected values
+                          const selectedValues = selectedOptions?.map(
+                            (option) => option.value
+                          );
+                          setPersonForm({
+                            ...personForm,
+                            interests: selectedValues,
+                          });
+                        }}
+                        className="react-select-container"
+                        classNamePrefix="react-select"
+                        placeholder="Select interests..."
+                      />
+                      {personErrors.interests && (
                         <p className="mt-1 text-sm text-red-600">
-                          {personErrors.interest}
+                          {personErrors.interests}
                         </p>
                       )}
                     </div>
 
                     <div className="mb-4">
                       <label className="block openSans text-base font-medium text-gray-800 mb-1">
-                        Profession*
+                        Professions*
                       </label>
-                      <select
-                        name="profession"
-                        value={personForm.profession}
-                        onChange={handlePersonFormChange}
-                        className={`w-full px-3 py-2 border ${
-                          personErrors.profession
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        } rounded-md`}
-                      >
-                        <option value="">Select your profession</option>
-                        {profession?.map((profession: any) => (
-                          <option key={profession.id} value={profession.id}>
-                            {profession.title}
-                          </option>
-                        ))}
-                      </select>
-                      {personErrors.profession && (
+                      <Select
+                        isMulti
+                        options={profession?.map(
+                          (professionItem: Profession) => ({
+                            value: professionItem.id,
+                            label: professionItem.title,
+                          })
+                        )}
+                        value={
+                          personForm.professions?.map((professionId: any) => ({
+                            value: professionId,
+                            label: profession?.find(
+                              (p: any) => p.id === professionId
+                            )?.title,
+                          })) || []
+                        }
+                        onChange={(selectedOptions) => {
+                          // Update your form state with the selected values
+                          const selectedValues = selectedOptions?.map(
+                            (option) => option.value
+                          );
+                          setPersonForm({
+                            ...personForm,
+                            professions: selectedValues,
+                          });
+                        }}
+                        className="react-select-container"
+                        classNamePrefix="react-select"
+                        placeholder="Select professions..."
+                      />
+                      {personErrors.professions && (
                         <p className="mt-1 text-sm text-red-600">
-                          {personErrors.profession}
+                          {personErrors.professions}
                         </p>
                       )}
                     </div>
@@ -1685,7 +1847,7 @@ export default function Login() {
 
                             {question.options && question.options.length > 0 ? (
                               <div className="space-y-2">
-                                {question.options.map((option: any) => (
+                                {question?.options?.map((option: any) => (
                                   <div
                                     key={option.id}
                                     className="flex items-center"
@@ -1836,7 +1998,7 @@ export default function Login() {
               </h2>
 
               <div className="flex justify-center">
-                {personPricing.map((plan) => (
+                {personPricing?.map((plan) => (
                   <div
                     key={plan.id}
                     className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
@@ -2013,7 +2175,7 @@ export default function Login() {
               </h2>
 
               <div className="flex justify-center">
-                {organizationpricingPlans.map((plan) => (
+                {organizationpricingPlans?.map((plan) => (
                   <div
                     key={plan.id}
                     className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
@@ -2153,7 +2315,7 @@ export default function Login() {
         <div className="text-center p-6 max-w-md">
           <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] ">
             <svg
-              className="h-30 w-30 text-white animate-bounce"
+              className="h-30 w-30 text-white "
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

@@ -44,6 +44,7 @@ type OrganizationFormData = {
   organization_name: string;
   domain_id: string;
   sub_domain_id: string;
+  custom_domain?: string;
   organization_type_id: string;
   revenue_range_id: string;
   question: any;
@@ -60,7 +61,7 @@ export const ServerAPI = {
 };
 
 export const API = {
-  // BaseUrl: "http://192.168.1.34:5025/api", //local
+  // BaseUrl: "http://192.168.1.31:5025/api", //local
   // BaseUrl: "http://localhost:5025/api", //local
   BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
 };
@@ -68,6 +69,7 @@ export const API = {
 export const EndPoint = {
   login: "/auth/login",
   forgot: "/auth/forgot-password",
+  me: "/auth/me",
   updatepassword: "/auth/update/password",
   reset: "/auth/reset-password",
   register: "/auth/sign-up",
@@ -85,6 +87,7 @@ export const EndPoint = {
   paymentverify: "/payment/payment-confirm",
   profile: "/profile",
   organizationProfile: "/organization-profile",
+  organizationNumber: "/organization-profile/verify-identify",
   organization_profile_create: "/organization-profile",
   organization_Listing_profile_create: "/organization-listing",
   interests: "/interests",
@@ -95,6 +98,7 @@ export const EndPoint = {
   state: "/state",
   company_profile: "/organization-profile/company-profile",
   user_profile: "/profile/user-profile",
+  rating: "/profile/rating",
   directory_search_profile: "/profile/public-directory",
   public_user_profile: "/profile/public-user-profile",
   get_popular_company: "/profile/get-popular-company",
@@ -131,6 +135,10 @@ export const LoginDetails = async (formData: LoginFormData): ApiResponse => {
     password: formData?.password,
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.login);
+};
+export const MeDetails = async (): ApiResponse => {
+  const data = {}
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.me);
 };
 export const ForgotPasswordDetails = (
   formData: ForgotFormData
@@ -198,6 +206,7 @@ export const submitOrganizationDetails = (
   const data: Partial<OrganizationFormData> = {
     organization_name: formData?.organization_name,
     domain_id: formData?.domain,
+    custom_domain: formData?.custom_domain,
     sub_domain_id: formData?.sub_domain,
     organization_type_id: formData?.employee_size,
     revenue_range_id: formData?.revenue,
@@ -210,10 +219,9 @@ export const submitOrganizationDetails = (
   );
 };
 export const submitPersonDetails = (formData: any): ApiResponse => {
-  console.log("🚀 ~ formData:", formData);
   const data: Partial<any> = {
-    interest_id: formData?.interest,
-    profession_id: formData?.profession,
+    interest_id: formData?.interests,
+    profession_id: formData?.professions,
     first_name: formData?.first_name,
     last_name: formData?.last_name,
     question: formData?.question,
@@ -221,7 +229,6 @@ export const submitPersonDetails = (formData: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.person_profile);
 };
 export const submitAnswerDetails = (formData: any): ApiResponse => {
-  console.log("🚀 ~ submitAnswerDetails ~ formData:", formData);
   // Initialize the data array
   const data: Array<{ question_id: string; answer: any }> = [];
 
@@ -383,7 +390,6 @@ export const GetPopularCompanyDetails = (
   page: number,
   limit: number
 ): ApiResponse => {
-  console.log("🚀 ~ GetPopularCompanyDetails ~ limit:", limit);
   let params: { [key: string]: any } = {};
   params["page_no"] = page;
   params["limit"] = limit;
@@ -398,7 +404,6 @@ export const GetInspiringCompanies = (
   page: number,
   limit: number
 ): ApiResponse => {
-  console.log("🚀 ~ GetPopularCompanyDetails ~ limit:", limit);
   let params: { [key: string]: any } = {};
   params["page_no"] = page;
   params["limit"] = limit;
@@ -419,6 +424,13 @@ export const GetOrganiZationProfileDetails = (): ApiResponse => {
     ServerAPI.APIMethod.GET,
     data,
     EndPoint.organizationProfile
+  );
+};
+export const GetOrganiZationNumberVerify = (formData:any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.organizationNumber
   );
 };
 export const GetInterestsDetails = (): ApiResponse => {
@@ -459,6 +471,24 @@ export const GetUserProfileDetails = (id: any): ApiResponse => {
     ServerAPI.APIMethod.GET,
     data,
     `${EndPoint.user_profile}/${id}`
+  );
+};
+export const AddUserRating = (payload: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    payload,
+    `${EndPoint.rating}`
+  );
+};
+export const GetUserRating = (payload: any): ApiResponse => {
+    let params: { [key: string]: any } = {};
+  params["profile_id"] = payload.profile_id;
+  params["user_type"] = payload.user_type;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    payload,
+    EndPoint.rating,
+    params
   );
 };
 export const GetUsersearchProfileDetails = (
@@ -525,7 +555,6 @@ export const PostsLike = (formattedData: any) => {
 };
 
 export const GetComment = (id: any) => {
-  console.log("🚀 ~ GetComment ~ id:", id);
   let data = {};
   let params: { [key: string]: any } = {};
   params["post_id"] = id;
@@ -537,7 +566,6 @@ export const GetComment = (id: any) => {
   );
 };
 export const GetSinglePost = (id: any) => {
-  console.log("🚀 ~ GetComment ~ id:", id);
   let data = {};
   return executeAPI(
     ServerAPI.APIMethod.GET,

@@ -11,7 +11,7 @@ import {
 
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from "../../ui/Modal";
 import { GetAllPlanDetails, PaymentDetails } from "../../../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
@@ -39,7 +39,25 @@ export default function DashboardSection(user: any) {
   const [personPricing, setPersonPricing] = useState<PersPricingPlan[]>([]);
   const navigate = useNavigate();
     const { showToast } = useToast();
+    const [margaretName, setMargaretName] = useState(localStorage.getItem("margaret_name") || "");
+     // Watch for localStorage changes
+  // Watch for localStorage changes
+    useEffect(() => {
+      const handleStorageChange = () => {
+        setMargaretName(localStorage.getItem("margaret_name") || "");
+      };
   
+      // Listen for storage events (changes from other tabs)
+      window.addEventListener('storage', handleStorageChange);
+      
+      // Also check for changes periodically (in case changes happen in the same tab)
+      const interval = setInterval(handleStorageChange, 1000);
+      
+      return () => {
+        window.removeEventListener('storage', handleStorageChange);
+        clearInterval(interval);
+      };
+    }, []);
   // Data for modules
   const modules = [
     {
@@ -150,7 +168,6 @@ export default function DashboardSection(user: any) {
 
       if (res?.data?.data?.url) {
         const url = res.data.data.url;
-        console.log("Redirecting to:", url); // Log the actual URL
         window.location.href = url; // Redirect in the same tab
       } else {
         console.error("URL not found in response");
@@ -166,19 +183,18 @@ showToast({
 
   const completedStep = localStorage.getItem("completed_step");
   const is_disqualify = localStorage.getItem("is_disqualify");
-  console.log("🚀 ~ DashboardSection ~ is_disqualify:", typeof is_disqualify);
 
   // const urldata = `https://test.cness.ai/profile/public`;
 
   return (
     <>
-      <div className="max-w-[1200px] mx-auto "></div>
+<section className="w-full px-2 sm:px-4 lg:px-0.5 pt-4 pb-10">
       {completedStep !== "2" && (
         <div className="mx-5 bg-[rgba(255,204,0,0.05)] 5% text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-2">
             {is_disqualify === "true" ? (
               <span className="text-red-500">
-                You Are Not Eligible For Inspire. Try After{" "}
+                You Are Not Eligible For Aspiration badge. Please Try After{" "}
                 {user?.user?.daysRemaining} days!
               </span>
             ) : (
@@ -223,7 +239,7 @@ showToast({
               </div>
               <div className="inline-flex items-center pt-1 pb-2 px-2 md:pt-2 md:pb-3 md:px-3">
                 <p className="font-['Open_Sans',Helvetica] text-[#7a7a7a] text-xs sm:text-sm md:text-base">
-                  Welcome to your CNESS Dashboard, Margaret!
+                  Welcome to your CNESS Dashboard, {margaretName}!
                 </p>
               </div>
             </div>
@@ -747,6 +763,7 @@ showToast({
           </div>
         </div>
       </Modal>
+      </section>
     </>
   );
 }
