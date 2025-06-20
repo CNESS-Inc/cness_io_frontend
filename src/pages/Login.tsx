@@ -1207,12 +1207,12 @@ const [emailFocused, setEmailFocused] = useState(false);
 
       {/* Organization Form Modal - only shows when activeModal is "organization" */}
       <Modal isOpen={activeModal === "organization"} onClose={closeModal}>
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           {" "}
           {/* Ensures center + padding on small screens */}
-          <div className="w-full max-w-[1100px] h-[80vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+          <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex flex-col items-center justify-center text-center p-10">
+<div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -1303,7 +1303,7 @@ const [emailFocused, setEmailFocused] = useState(false);
             </div>
 
             {/* Right Form Panel */}
-            <div className="w-full lg:w-[60%] bg-white p-6 md:p-10 overflow-y-auto">
+<div className="w-full lg:w-[60%] bg-white px-4 py-6 sm:px-6 sm:py-8 md:p-10 overflow-y-auto">
               <h2 className="text-xl font-bold text-gray-800 mb-6">
                 Let’s Set Up Your Organization
               </h2>
@@ -1544,7 +1544,7 @@ const [emailFocused, setEmailFocused] = useState(false);
                 {/* Form Footer Actions */}
 
                 {/* Form Footer Actions */}
-                <div className="flex justify-end mt-6 gap-3">
+<div className="flex justify-end mt-6 gap-3 flex-wrap">
                   {orgFormStep === 2 && (
                     <>
                       <Button
@@ -1660,10 +1660,10 @@ const [emailFocused, setEmailFocused] = useState(false);
       </Modal>
 
       <Modal isOpen={activeModal === "person"} onClose={closeModal}>
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-4">
-          <div className="w-full max-w-[1100px] h-[80vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+<div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
+<div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex flex-col items-center justify-center text-center p-10">
+<div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -1693,7 +1693,7 @@ const [emailFocused, setEmailFocused] = useState(false);
             </div>
 
             {/* Right Form Panel */}
-            <div className="w-full lg:w-[60%] bg-white p-6 md:p-10 overflow-y-auto">
+<div className="w-full lg:w-[60%] bg-white px-4 py-6 sm:px-6 sm:py-8 md:p-10 overflow-y-auto">
               <h2 className="text-xl font-bold text-gray-800 mb-6">
                 Tell Us About Yourself
               </h2>
@@ -1898,7 +1898,7 @@ const [emailFocused, setEmailFocused] = useState(false);
                 )}
 
                 {/* Form Footer Actions */}
-                <div className="flex justify-end mt-6 gap-3">
+<div className="flex justify-end mt-6 gap-3 flex-wrap">
                   {personFormStep === 2 && (
                     <>
                       <Button
@@ -1959,10 +1959,10 @@ const [emailFocused, setEmailFocused] = useState(false);
       </Modal>
 
       <Modal isOpen={activeModal === "personPricing"} onClose={closeModal}>
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-4">
-          <div className="w-full max-w-[1100px] h-[80vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+<div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
+<div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex flex-col items-center justify-center text-center p-10">
+<div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -2075,10 +2075,10 @@ const [emailFocused, setEmailFocused] = useState(false);
         isOpen={activeModal === "organizationPricing"}
         onClose={closeModal}
       >
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-4">
-          <div className="w-full max-w-[1100px] h-[80vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
+          <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex flex-col items-center justify-center text-center p-10">
+<div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
