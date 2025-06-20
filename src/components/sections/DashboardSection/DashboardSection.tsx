@@ -194,7 +194,7 @@ showToast({
           <div className="flex items-center gap-2">
             {is_disqualify === "true" ? (
               <span className="text-red-500">
-                You Are Not Eligible For Inspire. Try After{" "}
+                You Are Not Eligible For Aspiration badge. Please Try After{" "}
                 {user?.user?.daysRemaining} days!
               </span>
             ) : (
