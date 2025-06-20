@@ -41,10 +41,23 @@ export default function DashboardSection(user: any) {
     const { showToast } = useToast();
     const [margaretName, setMargaretName] = useState(localStorage.getItem("margaret_name") || "");
      // Watch for localStorage changes
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setMargaretName(localStorage.getItem("margaret_name") || "");
-    }}, []);
+  // Watch for localStorage changes
+    useEffect(() => {
+      const handleStorageChange = () => {
+        setMargaretName(localStorage.getItem("margaret_name") || "");
+      };
+  
+      // Listen for storage events (changes from other tabs)
+      window.addEventListener('storage', handleStorageChange);
+      
+      // Also check for changes periodically (in case changes happen in the same tab)
+      const interval = setInterval(handleStorageChange, 1000);
+      
+      return () => {
+        window.removeEventListener('storage', handleStorageChange);
+        clearInterval(interval);
+      };
+    }, []);
   // Data for modules
   const modules = [
     {
