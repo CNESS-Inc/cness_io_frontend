@@ -189,15 +189,25 @@ showToast({
   return (
     <>
 <section className="w-full px-2 sm:px-4 lg:px-0.5 pt-4 pb-10">
-      {completedStep !== "2" && (
-        <div className="mx-5 bg-[rgba(255,204,0,0.05)] 5% text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
-          <div className="flex items-center gap-2">
-            {is_disqualify === "true" ? (
-              <span className="text-red-500">
-                You Are Not Eligible For Aspiration badge. Please Try After{" "}
-                {user?.user?.daysRemaining} days!
-              </span>
-            ) : (
+  {completedStep !== "2" && (
+    <div className="mx-5 bg-[rgba(255,204,0,0.05)] text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
+      <div className="flex items-center gap-2">
+        {is_disqualify === "true" ? (
+          Number(user?.user?.daysRemaining) < 0 ? (
+            <span className="text-red-500">
+              You are eligible for the Aspiration badge. Please{" "}
+              <a href="/person" className="text-blue-600 underline">
+                click here
+              </a>{" "}
+              to retake the assessment.
+            </span>
+          ) : (
+            <span className="text-red-500">
+              You are not eligible for the Aspiration badge. Please try again after{" "}
+              {user?.user?.daysRemaining} days!
+            </span>
+          )
+        ) : (
               <>
                 <span className="text-yellow-500">💡</span>
                 <span>
