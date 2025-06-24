@@ -204,7 +204,7 @@ showToast({
           ) : (
             <span className="text-red-500">
               You are not eligible for the Aspiration badge. Please try again after{" "}
-              {user?.user?.daysRemaining} days!
+              {user?.user?.daysRemaining +1} days!
             </span>
           )
         ) : (
