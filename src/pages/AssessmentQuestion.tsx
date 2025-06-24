@@ -361,7 +361,7 @@ const AssessmentQuestion: React.FC = () => {
   };
 
   // //pagination
-  const totalSteps = 6; // or dynamic count
+  const totalSteps = 5; // or dynamic count
   const currentStepIndex = currentSection?.order_number - 1;
 
   let prevVariant = "white-disabled";

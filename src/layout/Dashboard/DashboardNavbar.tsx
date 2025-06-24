@@ -115,7 +115,8 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
     {id: "Social", 
       icon: <img src={iconMap["social"]} alt="Home Icon" className="w-5 h-5" />,
       label: "Social",
-      active: false,
+      active: true,
+      path:"/dashboard/DashboardSocial",
       isSocialDropdown: true,
       childPaths: ["/dashboard/Feed"],
       children: [

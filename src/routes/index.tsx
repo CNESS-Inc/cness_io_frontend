@@ -38,6 +38,8 @@ import Profile from "../pages/Profile";
 import MyConnection from "../pages/MyConnection";
 import ComingSoon from "../pages/ComingSoon";
 import DashboardLayout from "../layout/Dashboard/dashboardlayout";
+import DashboardSocial from "../pages/DashboardSocial";
+
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
 const DirectoryPage = lazy(() => import("../pages/DirectoryPage"));
@@ -215,6 +217,11 @@ export const router = createBrowserRouter([
            {
             path: "ComingSoon",
             element: <ComingSoon />,
+          },
+
+          {
+            path: "DashboardSocial",
+            element: <DashboardSocial />,
           },
 
         ],
