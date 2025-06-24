@@ -65,13 +65,11 @@ interface PurposePauseAnswer {
 
 const AssessmentQuestion: React.FC = () => {
   const [currentSection, setCurrentSection] = useState<Section | null>(null);
-  console.log("🚀 ~ currentSection:", currentSection);
   const [toggles, setToggles] = useState<boolean[]>([]);
   const [formData, setFormData] = useState<FormValues | null>(null);
-  console.log("🚀 ~ formData:", formData);
   const [loading, setLoading] = useState(true);
   const [progress, setprogress] = useState(0);
-  console.log("🚀 ~ progress:", progress)
+  const [totalstep, settotalstep] = useState(0);
   const [_sectionHistory, setSectionHistory] = useState<string[]>([]);
   const [activeModal, setActiveModal] = useState<"assesment" | null>(null);
   const [isFinalSubmitting, setIsFinalSubmitting] = useState(false);
@@ -186,6 +184,7 @@ const AssessmentQuestion: React.FC = () => {
       setFormData(initialFormData);
       setToggles([true]); // Initialize toggle for this section
       setprogress(res.data.data.assesment_progress)
+      settotalstep(res.data.data.total_sections)
 
       // Update navigation history
       if (sectionId) {
@@ -361,8 +360,10 @@ const AssessmentQuestion: React.FC = () => {
   };
 
   // //pagination
-  const totalSteps = 6; // or dynamic count
+  const totalSteps = 5; // or dynamic count
   const currentStepIndex = currentSection?.order_number - 1;
+    console.log("🚀 ~ currentStepIndex:", currentStepIndex)
+
 
   let prevVariant = "white-disabled";
 
@@ -566,7 +567,7 @@ const AssessmentQuestion: React.FC = () => {
             {/* Pagination Dots (Optional center item) */}
             <div className="mt-4 sm:mt-0 flex justify-center flex-1">
               <div className="flex gap-1">
-                {[...Array(totalSteps)].map((_, i) => (
+                {[...Array(totalstep)].map((_, i) => (
                   <div
                     key={i}
                     className={`w-2.5 h-2.5 rounded-full ${
