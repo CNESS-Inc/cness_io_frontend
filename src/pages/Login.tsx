@@ -12,10 +12,13 @@ import {
   PaymentDetails,
   submitOrganizationDetails,
   submitPersonDetails,
+  GoogleLoginDetails,
 } from "../Common/ServerAPI";
 import Button from "../components/ui/Button";
 import { Link } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
+import { useGoogleLogin } from '@react-oauth/google';
+
 
 import cnesslogo from "../assets/cnesslogo.png";
 import { FiMail, FiEye, FiEyeOff } from "react-icons/fi"; // add if not already
@@ -1017,8 +1020,39 @@ const [emailFocused, setEmailFocused] = useState(false);
     }
   };
 
+
+ const handleGoogleLoginSuccess = async (tokenResponse: any) => {
+    const token = tokenResponse.access_token;
+
+    try {
+      const data = await GoogleLoginDetails(token); // ✅ use your centralized API call
+      console.log("Backend response:", data);
+
+      if (data?.jwt) {
+        localStorage.setItem("token", data.jwt);
+        navigate("/dashboard"); // ✅ optional redirect after login
+      } else {
+        alert("Google login succeeded, but no JWT received.");
+      }
+    } catch (error) {
+      console.error("Google login error:", error);
+      alert("Google login failed. Please try again.");
+    }
+  };
+
+  const login = useGoogleLogin({
+    onSuccess: handleGoogleLoginSuccess,
+    onError: () => {
+      console.error("Google login failed");
+      alert("Google login failed.");
+    },
+  });
+
   return (
     <>
+
+
+
       <div className="relative min-h-screen flex flex-col overflow-hidden bg-white">
         <div className="relative w-full h-[250px]">
           {/* Diagonal Gradient Background */}
@@ -1043,6 +1077,8 @@ const [emailFocused, setEmailFocused] = useState(false);
   />
 </div>      </div>
         </div>
+
+        
 
         {/* Sign In Form */}
 <div className="absolute top-[120px] sm:top-[160px] md:top-[200px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
@@ -1157,7 +1193,42 @@ const [emailFocused, setEmailFocused] = useState(false);
                 {isSubmitting ? "Loging..." : "Login"}
               </Button>
 
-              <div className="text-center text-sm text-gray-500">OR</div>
+
+
+{/* Divider with "Or sign in with" */}
+<div className="relative my-6">
+  <div className="absolute inset-0 flex items-center">
+    <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+  </div>
+  <div className="relative flex justify-center text-sm">
+    <span className="bg-white dark:bg-gray-900 px-3 text-gray-500 dark:text-gray-400">
+      Or sign in with
+    </span>
+  </div>
+</div>
+
+{/* Google & Facebook Icons */}
+<div className="flex justify-center gap-4 mt-2">
+  <button
+    type="button"
+            onClick={() => login()}
+    className="flex items-center justify-center border border-gray-300 dark:border-gray-600 rounded-md w-12 h-12 bg-white hover:shadow-md hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#F07EFF]"
+  >
+    <img src="/google-icon-logo.svg" alt="Google" className="w-5 h-5" />
+  </button>
+
+  <button
+    type="button"
+    disabled
+    title="Coming soon"
+    className="flex items-center justify-center border border-gray-300 dark:border-gray-600 rounded-md w-12 h-12 opacity-50 cursor-not-allowed bg-white"
+  >
+    <img src="/Facebook_Logo.png" alt="Facebook" className="w-7 h-7" />
+  </button>
+</div>
+
+
+
 
               <p className="text-center text-sm text-gray-600 mt-4">
                 New to Cness?{" "}
