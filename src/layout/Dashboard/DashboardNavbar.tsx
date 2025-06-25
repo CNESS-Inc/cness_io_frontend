@@ -67,7 +67,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
       childPaths: ["/dashboard/assesment", "/dashboard/score-result","/dashboard/upgrade-badge"],
       children: [
         { label: "Get Certified", path: "/dashboard/assesment" },
-        { label: "Upload Proof", path: "/dashboard/UploadProof" },
+        //{ label: "Upload Proof", path: "/dashboard/UploadProof" },
         { label: "Score & Results", path: "/dashboard/score-result" },
         { label: "Upgrade Badge", path: "/dashboard/upgrade-badge" },
       ],
