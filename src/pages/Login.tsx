@@ -476,54 +476,126 @@ export default function Login() {
         const completed_step = response.data.data.user.completed_step;
         const is_disqualify = response.data.data.user.is_disqualify;
 
+        //   if (!is_disqualify) {
+        //     if (completionStatus === 0 || completed_step === 0) {
+        //       setActiveModal("type");
+        //     } else if (completionStatus === 1) {
+        //       if (completed_step === 0) {
+        //         setActiveModal("person");
+        //       } else if (completed_step === 1) {
+        //         // const res = await GetAllPlanDetails();
+        //         // const plansByRange: Record<string, any> = {};
+        //         // res?.data?.data?.forEach((plan: any) => {
+        //         //   if (!plansByRange[plan.plan_range]) {
+        //         //     plansByRange[plan.plan_range] = {};
+        //         //   }
+        //         //   plansByRange[plan.plan_range][plan.plan_type] = plan;
+        //         // });
+        //         // const updatedPlans = Object.values(plansByRange)?.map(
+        //         //   (planGroup: any) => {
+        //         //     const monthlyPlan = planGroup.monthly;
+        //         //     const yearlyPlan = planGroup.yearly;
+
+        //         //     return {
+        //         //       id: monthlyPlan?.id || yearlyPlan?.id,
+        //         //       title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+        //         //       description: "Customized pricing based on your selection",
+        //         //       monthlyPrice: monthlyPlan
+        //         //         ? `$${monthlyPlan.amount}`
+        //         //         : undefined,
+        //         //       yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+        //         //       period: isAnnual ? "/year" : "/month",
+        //         //       billingNote: yearlyPlan
+        //         //         ? isAnnual
+        //         //           ? `billed annually ($${yearlyPlan.amount})`
+        //         //           : `or $${monthlyPlan?.amount}/month`
+        //         //         : undefined,
+        //         //       features: [], // Add any features you need here
+        //         //       buttonText: "Get Started",
+        //         //       buttonClass: yearlyPlan
+        //         //         ? ""
+        //         //         : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+        //         //       borderClass: yearlyPlan
+        //         //         ? "border-2 border-[#F07EFF]"
+        //         //         : "border",
+        //         //       popular: !!yearlyPlan,
+        //         //     };
+        //         //   }
+        //         // );
+        //         // setPersonPricing(updatedPlans);
+        //         // setActiveModal("personPricing");
+        //         navigate("/dashboard");
+        //       } else {
+        //         navigate("/dashboard");
+        //       }
+        //     } else if (completionStatus === 2) {
+        //       if (completed_step === 0) {
+        //         setActiveModal("organization");
+        //       } else if (completed_step === 1) {
+        //         // const res = await GetAllPlanDetails();
+        //         // const plansByRange: Record<string, any> = {};
+        //         // res?.data?.data?.forEach((plan: any) => {
+        //         //   if (!plansByRange[plan.plan_range]) {
+        //         //     plansByRange[plan.plan_range] = {};
+        //         //   }
+        //         //   plansByRange[plan.plan_range][plan.plan_type] = plan;
+        //         // });
+        //         // const updatedPlans = Object.values(plansByRange)?.map(
+        //         //   (planGroup: any) => {
+        //         //     const monthlyPlan = planGroup.monthly;
+        //         //     const yearlyPlan = planGroup.yearly;
+
+        //         //     return {
+        //         //       id: monthlyPlan?.id || yearlyPlan?.id,
+        //         //       title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+        //         //       description: "Customized pricing based on your selection",
+        //         //       monthlyPrice: monthlyPlan
+        //         //         ? `$${monthlyPlan.amount}`
+        //         //         : undefined,
+        //         //       yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+        //         //       period: isAnnual ? "/year" : "/month",
+        //         //       billingNote: yearlyPlan
+        //         //         ? isAnnual
+        //         //           ? `billed annually ($${yearlyPlan.amount})`
+        //         //           : `or $${monthlyPlan?.amount}/month`
+        //         //         : undefined,
+        //         //       features: [], // Add any features you need here
+        //         //       buttonText: "Get Started",
+        //         //       buttonClass: yearlyPlan
+        //         //         ? ""
+        //         //         : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+        //         //       borderClass: yearlyPlan
+        //         //         ? "border-2 border-[#F07EFF]"
+        //         //         : "border",
+        //         //       popular: !!yearlyPlan,
+        //         //     };
+        //         //   }
+        //         // );
+        //         // setorganizationpricingPlans(updatedPlans);
+        //         // setActiveModal("organizationPricing");
+        //         navigate("/dashboard");
+        //       } else {
+        //         navigate("/dashboard");
+        //       }
+        //     }
+        //   } else {
+        //     navigate("/dashboard");
+        //   }
+        // } else {
+        //   setIsSubmitting(false);
+        //   setApiMessage("Login failed");
+        // }
         if (!is_disqualify) {
+          // Skip type selection and directly set to Person (1)
+          await handleTypeSelection(1);
+
           if (completionStatus === 0 || completed_step === 0) {
-            setActiveModal("type");
+            // This will now directly open the person form
+            setActiveModal("person");
           } else if (completionStatus === 1) {
             if (completed_step === 0) {
               setActiveModal("person");
             } else if (completed_step === 1) {
-              // const res = await GetAllPlanDetails();
-              // const plansByRange: Record<string, any> = {};
-              // res?.data?.data?.forEach((plan: any) => {
-              //   if (!plansByRange[plan.plan_range]) {
-              //     plansByRange[plan.plan_range] = {};
-              //   }
-              //   plansByRange[plan.plan_range][plan.plan_type] = plan;
-              // });
-              // const updatedPlans = Object.values(plansByRange)?.map(
-              //   (planGroup: any) => {
-              //     const monthlyPlan = planGroup.monthly;
-              //     const yearlyPlan = planGroup.yearly;
-
-              //     return {
-              //       id: monthlyPlan?.id || yearlyPlan?.id,
-              //       title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-              //       description: "Customized pricing based on your selection",
-              //       monthlyPrice: monthlyPlan
-              //         ? `$${monthlyPlan.amount}`
-              //         : undefined,
-              //       yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-              //       period: isAnnual ? "/year" : "/month",
-              //       billingNote: yearlyPlan
-              //         ? isAnnual
-              //           ? `billed annually ($${yearlyPlan.amount})`
-              //           : `or $${monthlyPlan?.amount}/month`
-              //         : undefined,
-              //       features: [], // Add any features you need here
-              //       buttonText: "Get Started",
-              //       buttonClass: yearlyPlan
-              //         ? ""
-              //         : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-              //       borderClass: yearlyPlan
-              //         ? "border-2 border-[#F07EFF]"
-              //         : "border",
-              //       popular: !!yearlyPlan,
-              //     };
-              //   }
-              // );
-              // setPersonPricing(updatedPlans);
-              // setActiveModal("personPricing");
               navigate("/dashboard");
             } else {
               navigate("/dashboard");
@@ -532,47 +604,6 @@ export default function Login() {
             if (completed_step === 0) {
               setActiveModal("organization");
             } else if (completed_step === 1) {
-              // const res = await GetAllPlanDetails();
-              // const plansByRange: Record<string, any> = {};
-              // res?.data?.data?.forEach((plan: any) => {
-              //   if (!plansByRange[plan.plan_range]) {
-              //     plansByRange[plan.plan_range] = {};
-              //   }
-              //   plansByRange[plan.plan_range][plan.plan_type] = plan;
-              // });
-              // const updatedPlans = Object.values(plansByRange)?.map(
-              //   (planGroup: any) => {
-              //     const monthlyPlan = planGroup.monthly;
-              //     const yearlyPlan = planGroup.yearly;
-
-              //     return {
-              //       id: monthlyPlan?.id || yearlyPlan?.id,
-              //       title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-              //       description: "Customized pricing based on your selection",
-              //       monthlyPrice: monthlyPlan
-              //         ? `$${monthlyPlan.amount}`
-              //         : undefined,
-              //       yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-              //       period: isAnnual ? "/year" : "/month",
-              //       billingNote: yearlyPlan
-              //         ? isAnnual
-              //           ? `billed annually ($${yearlyPlan.amount})`
-              //           : `or $${monthlyPlan?.amount}/month`
-              //         : undefined,
-              //       features: [], // Add any features you need here
-              //       buttonText: "Get Started",
-              //       buttonClass: yearlyPlan
-              //         ? ""
-              //         : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-              //       borderClass: yearlyPlan
-              //         ? "border-2 border-[#F07EFF]"
-              //         : "border",
-              //       popular: !!yearlyPlan,
-              //     };
-              //   }
-              // );
-              // setorganizationpricingPlans(updatedPlans);
-              // setActiveModal("organizationPricing");
               navigate("/dashboard");
             } else {
               navigate("/dashboard");
@@ -1024,7 +1055,7 @@ export default function Login() {
 
     try {
       const response = await GoogleLoginDetails(token); // ✅ use your centralized API call
-      console.log("🚀 ~ handleGoogleLoginSuccess ~ response:", response)
+      console.log("🚀 ~ handleGoogleLoginSuccess ~ response:", response);
 
       if (response) {
         localStorage.setItem("authenticated", "true");
