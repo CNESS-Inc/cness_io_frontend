@@ -183,9 +183,8 @@ const AssessmentQuestion: React.FC = () => {
       setCurrentSection(transformedSection);
       setFormData(initialFormData);
       setToggles([true]); // Initialize toggle for this section
-      setprogress(res.data.data.assesment_progress)
-      settotalstep(res.data.data.total_sections)
-
+      setprogress(res.data.data.assesment_progress);
+      settotalstep(res.data.data.total_sections);
       // Update navigation history
       if (sectionId) {
         setSectionHistory((prev) => [...prev, sectionId]);
@@ -306,18 +305,25 @@ const AssessmentQuestion: React.FC = () => {
     });
   };
 
-  const handleNext = async () => {
-    // try {
-    //   const res = await submitAnswerDetails(formData);
-    //   console.log("🚀 ~ handleNext ~ res:", res);
-    // } catch (error) {}
-    if (currentSection?.next_section_id) {
-      fetchQuestions(currentSection.next_section_id);
+  const validateForm = (): boolean => {
+    if (!formData) return false;
+    if (formData.selectedCheckboxIds.length === 0) {
+      showToast({
+        message: "Please select at least one option",
+        type: "error",
+        duration: 5000,
+      });
+      return false;
     }
-    await handleSave();
+
+    return true;
   };
 
   const handleSave = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const res = await submitAnswerDetails(formData);
@@ -337,9 +343,20 @@ const AssessmentQuestion: React.FC = () => {
     }
   };
 
+  const handleNext = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    await handleSave();
+
+    if (currentSection?.next_section_id) {
+      fetchQuestions(currentSection.next_section_id);
+    }
+  };
+
   const handlePrevious = () => {
     if (currentSection?.previous_section_id) {
-      // If no history but API provides previous_section_id
       fetchQuestions(currentSection.previous_section_id);
     }
   };
@@ -358,13 +375,7 @@ const AssessmentQuestion: React.FC = () => {
   const handleconfirm = () => {
     setActiveModal("assesment");
   };
-
-  // //pagination
-  const totalSteps = 5; // or dynamic count
   const currentStepIndex = currentSection?.order_number - 1;
-    console.log("🚀 ~ currentStepIndex:", currentStepIndex)
-
-
   let prevVariant = "white-disabled";
 
   // if (currentStepIndex === 1) {
@@ -424,6 +435,11 @@ const AssessmentQuestion: React.FC = () => {
                   </label>
                 ))}
               </div>
+              {formData.selectedCheckboxIds.length === 0 && (
+                <p className="text-red-500 text-sm mt-1">
+                  Please select at least one option
+                </p>
+              )}
             </div>
 
             {/* Section 2: Purpose Pause */}

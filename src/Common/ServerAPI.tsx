@@ -131,7 +131,7 @@ export const EndPoint = {
 };
 
 export const GoogleLoginDetails = async (googleToken: string): ApiResponse => {
-  const data = { token: googleToken }; // ✅ This must match backend's `req.body.token`
+  const data = { token: googleToken }; 
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.googleLogin);
 };
 
