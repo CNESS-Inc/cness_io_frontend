@@ -610,7 +610,7 @@ export default function Login() {
   const handleTypeSelection = async (type: 1 | 2) => {
     try {
       const payload: AccountFormData = {
-        person_organization_complete: type,
+        person_organization_complete: 1,
       };
 
       const response = await AccountDetails(payload);
