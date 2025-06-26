@@ -940,9 +940,6 @@ export default function Login() {
     }
   }, [activeModal]);
 
-  useEffect(()=>{
-    handleTypeSelection(1)
-  },[])
   const handlePlanSelection = async (plan: any) => {
     try {
       const payload = {
@@ -1028,8 +1025,6 @@ export default function Login() {
 
     try {
       const response = await GoogleLoginDetails(token); // ✅ use your centralized API call
-      console.log("🚀 ~ handleGoogleLoginSuccess ~ response:", response);
-
       if (response) {
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);
@@ -1060,6 +1055,8 @@ export default function Login() {
           response.data.data.user.person_organization_complete;
         const completed_step = response.data.data.user.completed_step;
         const is_disqualify = response.data.data.user.is_disqualify;
+
+        await handleTypeSelection(1)
 
         if (!is_disqualify) {
           if (completionStatus === 0 || completed_step === 0) {
