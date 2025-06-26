@@ -610,7 +610,7 @@ export default function Login() {
   const handleTypeSelection = async (type: 1 | 2) => {
     try {
       const payload: AccountFormData = {
-        person_organization_complete: 1,
+        person_organization_complete: type,
       };
 
       const response = await AccountDetails(payload);
@@ -939,6 +939,10 @@ export default function Login() {
       fetchAllDataDetails();
     }
   }, [activeModal]);
+
+  useEffect(()=>{
+    handleTypeSelection(1)
+  },[])
   const handlePlanSelection = async (plan: any) => {
     try {
       const payload = {
