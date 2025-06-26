@@ -61,9 +61,9 @@ export const ServerAPI = {
 };
 
 export const API = {
-  // BaseUrl: "http://192.168.1.31:5025/api", //local
-  // BaseUrl: "http://localhost:5025/api", //local
-  BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
+   //BaseUrl: "http://192.168.1.31:5025/api", //local
+ //BaseUrl: "http://localhost:5025/api", //local
+ BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
 };
 
 export const EndPoint = {
@@ -127,6 +127,12 @@ export const EndPoint = {
   connection_request: "/friend/request",
   follow: "/user/follow",
   vote: "/poll/vote",
+  googleLogin: "/auth/google-login",
+};
+
+export const GoogleLoginDetails = async (googleToken: string): ApiResponse => {
+  const data = { token: googleToken }; // ✅ This must match backend's `req.body.token`
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.googleLogin);
 };
 
 export const LoginDetails = async (formData: LoginFormData): ApiResponse => {
