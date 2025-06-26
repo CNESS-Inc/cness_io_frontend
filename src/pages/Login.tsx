@@ -1024,6 +1024,7 @@ export default function Login() {
 
     try {
       const response = await GoogleLoginDetails(token); // ✅ use your centralized API call
+      console.log("🚀 ~ handleGoogleLoginSuccess ~ response:", response)
 
       if (response) {
         localStorage.setItem("authenticated", "true");
