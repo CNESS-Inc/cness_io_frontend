@@ -34,6 +34,7 @@ type PersPricingPlan = {
 };
 
 export default function DashboardSection(user: any) {
+  console.log("🚀 ~ DashboardSection ~ user.cis_score:", user)
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [isAnnual, setIsAnnual] = useState(true);
   const [personPricing, setPersonPricing] = useState<PersPricingPlan[]>([]);
@@ -455,7 +456,7 @@ showToast({
                   </div>
                 </CardHeader>
                 <CardContent className="flex justify-center items-center pt-4 pb-4 md:pt-6 md:pb-6">
-                  <div className="relative w-16 h-14 md:w-[85px] md:h-[71px]">
+                  {/* <div className="relative w-16 h-14 md:w-[85px] md:h-[71px]">
                     <div className="relative w-full h-full bg-[url(https://c.animaapp.com/magahlmqpONVZN/img/ellipse-20.svg)] bg-[100%_100%]">
                       <img
                         className="absolute w-[calc(100%-3px)] h-full top-0 left-0"
@@ -463,13 +464,51 @@ showToast({
                         src="https://c.animaapp.com/magahlmqpONVZN/img/ellipse-19.svg"
                       />
                       <div className="absolute top-[20px] left-[22px] md:top-[27px] md:left-6 text-base md:text-[18.2px] font-bold text-primarydark-1">
-                        72%
+                        {user?.user?.cis_score}%
                       </div>
                     </div>
+                  </div> */}
+
+                  <div className="flex justify-center sm:justify-start">
+                  <div className="relative w-[50px] h-[50px] sm:w-[70px] sm:h-[70px] md:w-[90px] md:h-[90px]">
+                    <CircularProgressbar
+                      value={user?.user?.cis_score}
+                      strokeWidth={10}
+                      styles={buildStyles({
+                        rotation: 0.6,
+                        pathColor: "url(#gradient)",
+                        trailColor: "#f5f5f5",
+                        textColor: "#242731",
+                        pathTransitionDuration: 0.5,
+                      })}
+                    />
+                    {/* Custom-styled text overlaid manually */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="font-['open sans'] font-bold text-[12px] sm:text-[16px] text-[#242731]">
+                        {user?.user?.cis_score}%
+                      </span>
+                    </div>
+
+                    {/* Gradient definition */}
+                    <svg style={{ height: 0 }}>
+                      <defs>
+                        <linearGradient
+                          id="gradient"
+                          x1="1"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop offset="50%" stopColor="#A162F7" />
+                          <stop offset="100%" stopColor="#F07EFF" />
+                        </linearGradient>
+                      </defs>
+                    </svg>
                   </div>
+                </div>
                 </CardContent>
               </Card>
-              {(user?.user?.assesment_progress || 0) < 100 && (
+              {(user?.user?.cis_score == 0)&& (
                 <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/40 rounded-[10px] shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
                   <svg
                     className="w-8 h-8 text-gray-700 opacity-80 mb-2"
