@@ -474,7 +474,7 @@ showToast({
                     />
                     {/* Custom-styled text overlaid manually */}
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="font-['open sans'] font-bold text-[15px] sm:text-[20px] text-[#242731]">
+                      <span className="font-['open sans'] font-bold text-[12px] sm:text-[16px] text-[#242731]">
                         {user?.user?.cis_score}%
                       </span>
                     </div>
