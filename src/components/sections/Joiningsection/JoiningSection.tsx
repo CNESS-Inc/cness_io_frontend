@@ -1,7 +1,10 @@
 import Button from "../../ui/Button";
 import joinImage from "../../../assets/join.png";
+import React, { useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 
-export default function JoiningSection() {
+export default function JoiningSection()
+  { const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   return (
     <section className="flex flex-col items-center relative w-full ">
       <div className="relative w-full max-w-[1488px] h-auto sm:h-[363px] overflow-hidden rounded-xl">
@@ -33,6 +36,10 @@ export default function JoiningSection() {
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-[15px] w-full sm:w-auto">
+           <ReCAPTCHA
+        sitekey="6LePgm4rAAAAAITlhXYYo4QIpQnsRczMa2hJ9UAl"
+        onChange={(token) => setCaptchaToken(token)}
+      />
             <Button
               variant="gradient-primary"
               className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
