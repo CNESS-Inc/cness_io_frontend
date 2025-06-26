@@ -67,7 +67,7 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
       childPaths: ["/dashboard/assesment", "/dashboard/score-result","/dashboard/upgrade-badge"],
       children: [
         { label: "Get Certified", path: "/dashboard/assesment" },
-        { label: "Upload Proof", path: "/dashboard/UploadProof" },
+        //{ label: "Upload Proof", path: "/dashboard/UploadProof" },
         { label: "Score & Results", path: "/dashboard/score-result" },
         { label: "Upgrade Badge", path: "/dashboard/upgrade-badge" },
       ],
@@ -115,7 +115,8 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
     {id: "Social", 
       icon: <img src={iconMap["social"]} alt="Home Icon" className="w-5 h-5" />,
       label: "Social",
-      active: false,
+      active: true,
+      path:"/dashboard/DashboardSocial",
       isSocialDropdown: true,
       childPaths: ["/dashboard/Feed"],
       children: [

@@ -1,18 +1,26 @@
 import { useState } from "react";
 
+import frameim from "../../../assets/Frame-im.png";
+import frameqa from "../../../assets/Frame-qa.png";
+import framequ from "../../../assets/Frame-qu.png";
+import cisscore from "../../../assets/cis score.png";
+import framescr from "../../../assets/Frame-scr.png";
+
+
+
 import "react-circular-progressbar/dist/styles.css";
 
 const tabs = [
-  "Ethical Leadership",
-  "Social Equity, Diversity",
-  "Freedom, Culture",
-  "Environmental Stewardship",
-  "Social Responsibility",
-  "Consciousness and Leadership",
+  "Mission & Vision",
+  "Client / Customer / Consumer",
+  "Communities & Charities",
+  "Vision & Legacy – Long-Term Contribution",
+  "Leadership Best Practices",
+ 
 ];
 const scoreData = [
   {
-    title: "CODE OF ETHICS / CORE VALUES",
+    title: "Mission & Vision",
     score: 79,
     scorecolor: "#404040",
     label: "Excellent",
@@ -22,7 +30,7 @@ const scoreData = [
     color: "#9747FF",
   },
   {
-    title: "ACCOUNTABILITY MECHANISMS",
+    title: "Client / Customer / Consumer",
     score: 100,
     label: "Average",
     tip: "Excellence!",
@@ -30,7 +38,7 @@ const scoreData = [
     color: "#9747FF",
   },
   {
-    title: "STAKEHOLDER INCLUSIVITY",
+    title: "Communities & Charities",
     score: 80,
     label: "Excellent",
     tip: "Verge of Completion!",
@@ -38,13 +46,22 @@ const scoreData = [
     color: "#9747FF",
   },
   {
-    title: "TRANSPARENCY REPORTING",
+    title: "Vision & Legacy – Long-Term Contribution",
     score: 90,
     label: "Average",
     tip: "Almost Perfect!",
     tipColor: "text-[#A259FF]",
     color: "#9747FF",
   },
+  {
+    title: "Leadership Best Practices",
+    score: 60,
+    label: "Average",
+    tip: "Almost Perfect!",
+    tipColor: "text-[#A259FF]",
+    color: "#9747FF",
+  },
+
 ];
 
 const SegmentedRing = ({
@@ -125,14 +142,16 @@ const SegmentedRing = ({
   );
 };
 
+
 const ScoreResult = () => {
   const [activeTab, setActiveTab] = useState(0);
   return (
+<div className="w-full overflow-x-hidden">
+<div className="flex flex-col w-full min-h-screen bg-[#f9f9f9] pt-1 pb-10 px-2 sm:px-3 md:px-4 lg:pl-6 lg:pr-4 xl:px-6 font-[Poppins] overflow-x-hidden">
 
-<div className="w-full px-2 sm:px-4 lg:px-5 pt-4 pb-10 bg-[#f9f9f9] min-h-screen font-[Poppins]">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-semibold text-[#222224]">
+          <h1 className="text-[24px] font-semibold text-[#222224]">
             Score & Results
           </h1>
           <div className="flex gap-2">
@@ -148,7 +167,7 @@ const ScoreResult = () => {
         {/* Summary Cards */}
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 mb-6">
+<div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 mb-2">
           {/* Overall CIS Score Card - will take full width on mobile, 2 cols on larger screens */}
           <div
             className="min-h-[208px] p-4 rounded-[12px] border border-[#eceef2] shadow-sm sm:col-span-2 lg:col-span-2"
@@ -159,12 +178,12 @@ const ScoreResult = () => {
             <div className="flex items-center gap-3 mb-2">
               <div className="w-6 h-6 bg-[#e3d1f6] rounded-full flex items-center justify-center">
                 <img
-                  src="./cis score.png"
+                  src={cisscore}
                   alt="Lightning Icon"
-                  className="w-8 h-6"
+                  className="w-6 h-6"
                 />
               </div>
-              <span className="text-sm font-medium text-[#222224]">
+              <span className="text-[16px] font-medium text-[#222224]">
                 Overall CIS Score
               </span>
             </div>
@@ -196,7 +215,7 @@ const ScoreResult = () => {
                 <div className="w-6 h-6 bg-[#fff3c4] rounded-full flex items-center justify-center">
                   <span className="text-xs font-bold text-[#FFCC00]">⚡</span>
                 </div>
-                <span className="text-sm font-medium text-[#222224]">
+                <span className="text-[16px] font-medium text-[#222224]">
                   Badge
                 </span>
               </div>
@@ -226,7 +245,7 @@ const ScoreResult = () => {
                   className="w-[12px] h-[12px]"
                 />
               </div>
-              <span className="text-sm font-semibold text-[#222224]">
+              <span className="text-[16px] font-semibold text-[#222224]">
                 Certification Level
               </span>
             </div>
@@ -235,22 +254,26 @@ const ScoreResult = () => {
               <span className="px-18 py-4 bg-[#eaf9f5] text-[#00bfa5] text-sm font-semibold rounded-[12px] inline-block">
                 Inspired
               </span>
+       
+
             </div>
           </div>
+
         </div>
+<hr className="border-t border-gray-200 mb-2 mt-0" />
 
         {/* Metric Scores */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2 mt-0">
           <div className="w-full h-[151px] bg-white rounded-[12px] border border-[#eceef2] p-[12px] flex flex-col justify-between shadow-sm">
             {/* Top Section: Icon and Label */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <img
-                  src="./Frame-qa.png"
+                  src={frameqa}
                   alt="Quantitative Icon"
-                  className="w-6 h-6"
+                  className="w-7 h-7"
                 />
-                <span className="text-sm font-semibold text-[#222224]">
+                <span className="text-[16px] font-semibold text-[#222224]">
                   Quantitative Score
                 </span>
               </div>
@@ -271,11 +294,11 @@ const ScoreResult = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <img
-                  src="./Frame-qu.png"
+                 src={framequ}
                   alt="Quantitative Icon"
-                  className="w-6 h-6"
+                  className="w-7 h-7"
                 />
-                <span className="text-sm font-semibold text-[#222224]">
+                <span className="text-[16px] font-semibold text-[#222224]">
                   Quantitative Score
                 </span>
               </div>
@@ -296,11 +319,11 @@ const ScoreResult = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <img
-                  src="./Frame-im.png"
+                  src={frameim}
                   alt="Quantitative Icon"
-                  className="w-6 h-6"
+                  className="w-7 h-7"
                 />
-                <span className="text-sm font-semibold text-[#222224]">
+                <span className="text-[16px] font-semibold text-[#222224]">
                   Improvement Score
                 </span>
               </div>
@@ -317,57 +340,57 @@ const ScoreResult = () => {
         </div>
 
         {/* Section Header: Score Breakdown */}
-        <div className="flex items-center gap-2 mt-6 mb-2">
+        <div className="flex items-center gap-2 mt-1 mb-2">
           <img
-            src="./Frame-scr.png"
+            src={framescr}
             alt="Score Breakdown Icon"
             className="w-8 h-8"
           />
 
-          <span className="text-sm font-semibold text-[#222224]">
+          <span className="text-[16px] font-semibold text-[#222224]">
             Score Breakdown
           </span>
         </div>
         {/* Horizontal divider */}
-        <hr className="border-t border-gray-200 mb-4" />
+        <hr className="border-t border-gray-200 mb-2" />
 
-        {/* Tab Navigation */}
-        {/* Tabs Container */}
-        <div className="flex flex-col gap-0">
-          {/* Tabs */}
-<div className="w-full px-2 sm:px-4 lg:px-6 overflow-x-auto">
-<div className="inline-flex gap-5 py-1 min-w-max mx-6 sm:mx-4 lg:mx-6">
-              {tabs.map((tab, index) => (
-                <button
-                  key={index}
-                  onClick={() => setActiveTab(index)}
-                  className={`w-[200px] text-xs font-medium py-3 rounded-t-[12px] border border-[#ECEEF2] transition-all duration-200 ease-in-out 
-                     ${
-                    activeTab === index
-                      ? "bg-[#F8F3FF] text-[#9747FF] -mt-[6px] z-10"
-                      : "bg-white text-[#334155] hover:bg-[#F1F5F9]"
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-          </div>
+        <div className="w-full px-0 md:px-0">
+  {/* Outer scroll wrapper */}
+  <div className="w-full overflow-x-auto no-scrollbar">
+    {/* Flex container that stretches full width and evenly distributes tabs */}
+  <div className="inline-flex sm:grid sm:grid-cols-5 gap-2 w-full max-w-full px-2 sm:px-4">
+      {tabs.map((tab, index) => (
+        <button
+          key={index}
+          onClick={() => setActiveTab(index)}
+          className={`flex-shrink-0 text-sm font-medium py-3 px-4 rounded-t-xl border border-[#ECEEF2] whitespace-nowrap transition-all
+            ${
+              activeTab === index
+                ? "bg-[#F8F3FF] text-[#9747FF] -mt-[6px] z-10"
+                : "bg-white text-[#334155] hover:bg-[#F1F5F9]"
+            }`}
+        >
+          {tab}
+        </button>
+      ))}
+    </div>
+  </div>
+
 
           {/* Section Wrapper */}
           <div className="bg-[#F8F3FF] rounded-[12px] border border-[#ECEEF2] p-6 -mt-1.5">
             <h2 className="text-center text-xl font-bold text-[#9747FF] mb-6">
-              Ethical Leadership & Governance
-            </h2>
+ {tabs[activeTab]}
+             </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 place-items-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 gap-3 place-items-center">
               {scoreData.map((item, idx) => (
                 <div
                   key={idx}
-                  className="bg-white rounded-[12px] p-4 w-[258.75px] h-[303.25px] flex flex-col justify-between text-center"
+className="bg-white rounded-[12px] p-4 w-full max-w-[258px] h-[303px] flex flex-col justify-between text-center"
                 >
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-800">
+                    <h3 className="text-[12px] font-semibold text-gray-800">
                       {item.title}
                     </h3>
                     <hr className="border-t border-gray-200 my-2" />
@@ -399,7 +422,7 @@ const ScoreResult = () => {
           </div>
         </div>
       </div>
-   
+</div>
   );
 };
 

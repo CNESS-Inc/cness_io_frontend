@@ -289,3 +289,14 @@ summary::after {
   color:#64748b;
 }
 
+body {
+  overflow-x: hidden;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}

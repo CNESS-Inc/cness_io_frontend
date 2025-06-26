@@ -544,7 +544,7 @@ const AssessmentQuestion: React.FC = () => {
                   className={`w-full sm:w-auto px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 
     ${
       prevVariant === "white-disabled"
-        ? "bg-white text-gray-400 border border-gray-200 shadow-md cursor-not-allowed"
+        ? "bg-white text-gray-400 border border-gray-200 shadow-md cursor-pointer"
         : prevVariant === "blue"
         ? "bg-[#EEF0FF] text-[#7077FE] cursor-pointer"
         : "bg-[#EEF0FF] text-[#7077FE] hover:bg-[#DDE1FF] shadow-md cursor-pointer"

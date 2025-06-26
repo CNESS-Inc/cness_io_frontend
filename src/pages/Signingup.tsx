@@ -1,12 +1,12 @@
 import { useState, type FormEvent } from "react";
 import SignupAnimation from "../components/ui/SignupAnimation"; // adjust path
-import { RegisterDetails } from "../Common/ServerAPI";
+import { RegisterDetails,GoogleLoginDetails  } from "../Common/ServerAPI";
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
 import { Link, useNavigate } from "react-router-dom";
 import cnesslogo from "../assets/cnesslogo.png";
 import { FiMail, FiEye, FiEyeOff } from "react-icons/fi";
-
+import { useGoogleLogin } from '@react-oauth/google';
 
 // interface SignupFormProps {
 //   onSuccess: () => void;
@@ -190,6 +190,32 @@ const [isUsernameFocused, setIsUsernameFocused] = useState(false);
     setIsModalOpen(false);
     navigate("/log-in");
   };
+
+ const handleGoogleLoginSuccess = async (tokenResponse: any) => {
+    const token = tokenResponse.access_token;
+
+    try {
+      const data = await GoogleLoginDetails(token); // ✅ use your centralized API call
+      console.log("Backend response:", data);
+
+      if (data?.jwt) {
+        localStorage.setItem("token", data.jwt);       
+      } else {
+        alert("Google login succeeded, but no JWT received.");
+      }
+    } catch (error) {
+      console.error("Google login error:", error);
+      alert("Google login failed. Please try again.");
+    }
+  };
+
+  const login = useGoogleLogin({
+    onSuccess: handleGoogleLoginSuccess,
+    onError: () => {
+      console.error("Google login failed");
+      alert("Google login failed.");
+    },
+  });
 
   return (
     <>
@@ -378,6 +404,42 @@ onBlur={() => setIsUsernameFocused(false)}
                 )}
               </div>
 
+
+{/* Divider with "Or sign up with" */}
+<div className="relative my-6">
+  <div className="absolute inset-0 flex items-center">
+    <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+  </div>
+  <div className="relative flex justify-center text-sm">
+    <span className="bg-white dark:bg-gray-900 px-3 text-gray-500 dark:text-gray-400">
+      Or sign up with
+    </span>
+  </div>
+</div>
+
+{/* Google login via Identity Services */}
+<div className="flex justify-center gap-4 mt-2">
+  <button
+    type="button"
+    onClick={() => login()} // 👈 This calls useGoogleLogin hook
+    className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 transition hover:shadow-md hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#F07EFF] text-sm font-medium text-gray-700 dark:text-gray-200"
+  >
+<img src="/google-icon-logo.svg" alt="Google" className="w-5 h-5" />
+    
+
+  </button>
+
+  {/* Facebook (still inactive) */}
+  <button
+    type="button"
+    disabled
+    title="Coming soon"
+    className="flex items-center justify-center border border-gray-300 dark:border-gray-600 rounded-md w-12 h-12 opacity-50 cursor-not-allowed bg-white dark:bg-gray-900"
+  >
+    <img src="/Facebook_Logo.png" alt="Facebook" className="w-7 h-7" />
+  </button>
+</div>
+
               <div className="mt-2 flex flex-col sm:flex-row sm:items-center justify-center text-sm gap-2 sm:gap-2">
                 <label className="flex items-center gap-2">
                   Already have an account?{" "}
@@ -387,19 +449,17 @@ onBlur={() => setIsUsernameFocused(false)}
                 </Link>
               </div>
 
-<div className="flex flex-col sm:flex-row justify-end gap-4 mt-6">
+<div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
                 <Button
                   type="submit"
                   variant="gradient-primary"
-                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                  className="rounded-[100px] py-3 px-10 self-stretch transition-colors duration-500 ease-in-out"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? "sign up..." : "Sign Up"}
                 </Button>
 
-                <Button type="button" variant="white-outline" size="md">
-                  Cancel
-                </Button>
+              
               </div>
             </form>
           </div>
