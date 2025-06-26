@@ -1030,7 +1030,11 @@ export default function Login() {
         localStorage.setItem("token", data.jwt);
         navigate("/dashboard"); // ✅ optional redirect after login
       } else {
-        alert("Google login succeeded, but no JWT received.");
+        showToast({
+        message: "Google login succeeded, but no JWT received.",
+        type: "error",
+        duration: 5000,
+      });
       }
     } catch (error: any) {
       console.error("Google login error:", error);
@@ -1045,8 +1049,11 @@ export default function Login() {
   const login = useGoogleLogin({
     onSuccess: handleGoogleLoginSuccess,
     onError: () => {
-      console.error("Google login failed");
-      alert("Google login failed.");
+      showToast({
+        message: "Google login failed.",
+        type: "error",
+        duration: 5000,
+      });
     },
   });
 
