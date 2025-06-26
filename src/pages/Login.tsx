@@ -1023,11 +1023,34 @@ export default function Login() {
     const token = tokenResponse.access_token;
 
     try {
-      const data = await GoogleLoginDetails(token); // ✅ use your centralized API call
-      console.log("Backend response:", data);
+      const response = await GoogleLoginDetails(token); // ✅ use your centralized API call
 
-      if (data?.jwt) {
-        localStorage.setItem("token", data.jwt);
+      if (response?.jwt) {
+localStorage.setItem("authenticated", "true");
+        localStorage.setItem("jwt", response?.data?.data?.jwt);
+        localStorage.setItem(
+          "is_disqualify",
+          response?.data?.data?.user?.is_disqualify
+        );
+        localStorage.setItem(
+          "person_organization",
+          response?.data?.data?.user.person_organization_complete
+        );
+        localStorage.setItem("Id", response?.data?.data?.user.id.toString());
+        localStorage.setItem(
+          "completed_step",
+          response?.data?.data?.user.completed_step
+        );
+        localStorage.setItem(
+          "profile_picture",
+          response?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          response?.data?.data?.user.margaret_name
+        );
         navigate("/dashboard"); // ✅ optional redirect after login
       } else {
         showToast({
