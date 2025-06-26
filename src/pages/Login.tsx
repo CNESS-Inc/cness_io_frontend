@@ -1025,8 +1025,8 @@ export default function Login() {
     try {
       const response = await GoogleLoginDetails(token); // ✅ use your centralized API call
 
-      if (response?.jwt) {
-localStorage.setItem("authenticated", "true");
+      if (response) {
+        localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);
         localStorage.setItem(
           "is_disqualify",
@@ -1054,10 +1054,10 @@ localStorage.setItem("authenticated", "true");
         navigate("/dashboard"); // ✅ optional redirect after login
       } else {
         showToast({
-        message: "Google login succeeded, but no JWT received.",
-        type: "error",
-        duration: 5000,
-      });
+          message: "Google login succeeded, but no JWT received.",
+          type: "error",
+          duration: 5000,
+        });
       }
     } catch (error: any) {
       console.error("Google login error:", error);
