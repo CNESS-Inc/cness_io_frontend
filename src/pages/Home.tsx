@@ -1,6 +1,6 @@
 import AwarenessSection from "../components/sections/Awareness";
 import HeroSection from "../components/sections/Herosection";
-import JoiningSection from "../components/sections/Joiningsection";
+import JoiningSection from "../components/sections/JoiningSection";
 import Plateformrootedsection from "../components/sections/PlatformRooted";
 import Platformsections from "../components/sections/PlatformsModule";
 import Stepper from "../components/sections/Stepper";
