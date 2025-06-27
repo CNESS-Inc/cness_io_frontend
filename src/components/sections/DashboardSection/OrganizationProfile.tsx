@@ -85,6 +85,8 @@ const OrganaizationProfilepage = () => {
   const [serviceInput, setServiceInput] = useState("");
   const [industry, setIndustryData] = useState<any>(null);
   const [serviceData, setServiceData] = useState<any>(null);
+  const [customServiceInput, setCustomServiceInput] = useState("");
+  const [showCustomInput, setShowCustomInput] = useState(false);
   const [OrgSize, setOrgSize] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState<Record<string, boolean>>({});
 
@@ -784,9 +786,17 @@ const OrganaizationProfilepage = () => {
                                       }
                                     )}
                                     disabled={[0, 1, 2].includes(
-                                     basicInfoForm.watch("identify_uploaded") != null ? Number(
-                                        basicInfoForm.watch("identify_uploaded")
-                                      ) : basicInfoForm.watch("identify_uploaded")
+                                      basicInfoForm.watch(
+                                        "identify_uploaded"
+                                      ) != null
+                                        ? Number(
+                                            basicInfoForm.watch(
+                                              "identify_uploaded"
+                                            )
+                                          )
+                                        : basicInfoForm.watch(
+                                            "identify_uploaded"
+                                          )
                                     )}
                                     placeholder="Enter registration number"
                                     className={`flex-1 px-4 py-2 border ${
@@ -803,7 +813,7 @@ const OrganaizationProfilepage = () => {
                                   />
 
                                   {/* Verification Status Display */}
-                                  {basicInfoForm.watch("identify_uploaded") ==
+                                  {basicInfoForm.watch("identify_uploaded") ===
                                   null ? (
                                     <>
                                       <input
@@ -839,7 +849,7 @@ const OrganaizationProfilepage = () => {
                                     </>
                                   ) : basicInfoForm.watch(
                                       "identify_uploaded"
-                                    ) == 1 ? (
+                                    ) === 1 ? (
                                     <span className="px-4 py-2 bg-green-50 border border-green-200 rounded-xl text-sm font-medium text-green-600 flex items-center">
                                       <svg
                                         className="w-4 h-4 mr-1"
@@ -860,26 +870,41 @@ const OrganaizationProfilepage = () => {
                                   ) : basicInfoForm.watch(
                                       "identify_uploaded"
                                     ) == 2 ? (
-                                    <span className="px-4 py-2 bg-red-50 border border-red-200 rounded-xl text-sm font-medium text-red-600 flex items-center">
-                                      <svg
-                                        className="w-4 h-4 mr-1"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg"
+                                    <>
+                                      <input
+                                        type="file"
+                                        id="registrationFile"
+                                        accept=".pdf,.jpg,.jpeg,.png"
+                                        className="hidden"
+                                        onChange={async (e) => {
+                                          if (
+                                            e.target.files &&
+                                            e.target.files[0]
+                                          ) {
+                                            try {
+                                              const file = e.target.files[0];
+                                              await fetchVerifyOrganizationNumber(
+                                                file
+                                              );
+                                            } catch (error) {
+                                              console.error(
+                                                "File upload failed:",
+                                                error
+                                              );
+                                            }
+                                          }
+                                        }}
+                                      />
+                                      <label
+                                        htmlFor="registrationFile"
+                                        className="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
                                       >
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          strokeWidth={2}
-                                          d="M6 18L18 6M6 6l12 12"
-                                        />
-                                      </svg>
-                                      Rejected
-                                    </span>
+                                        Reupload
+                                      </label>
+                                    </>
                                   ) : basicInfoForm.watch(
                                       "identify_uploaded"
-                                    ) == 0 ? (
+                                    ) === 0 ? (
                                     <span className="px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-xl text-sm font-medium text-yellow-600 flex items-center">
                                       <svg
                                         className="w-4 h-4 mr-1"
@@ -1755,9 +1780,15 @@ const OrganaizationProfilepage = () => {
                                 <div className="flex gap-2 items-center">
                                   <select
                                     value={serviceInput}
-                                    onChange={(e) =>
-                                      setServiceInput(e.target.value)
-                                    }
+                                    onChange={(e) => {
+                                      if (e.target.value === "other") {
+                                        setShowCustomInput(true);
+                                        setServiceInput("");
+                                      } else {
+                                        setShowCustomInput(false);
+                                        setServiceInput(e.target.value);
+                                      }
+                                    }}
                                     className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                   >
                                     <option value="">Select a service</option>
@@ -1769,60 +1800,87 @@ const OrganaizationProfilepage = () => {
                                         {service.name}
                                       </option>
                                     ))}
-                                    {/* Add more options as needed */}
+                                    <option value="other">
+                                      Other (Add Custom Service)
+                                    </option>
                                   </select>
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const trimmed = serviceInput.trim();
-                                      if (
-                                        trimmed &&
-                                        !services.includes(trimmed) &&
-                                        services.length < 20
-                                      ) {
-                                        setServices([...services, trimmed]);
-                                        setServiceInput("");
+
+                                  {showCustomInput ? (
+                                    <>
+                                      <input
+                                        type="text"
+                                        value={customServiceInput}
+                                        onChange={(e) =>
+                                          setCustomServiceInput(e.target.value)
+                                        }
+                                        placeholder="Enter custom service"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const trimmed =
+                                            customServiceInput.trim();
+                                          if (
+                                            trimmed &&
+                                            !services.includes(trimmed) &&
+                                            services.length < 20
+                                          ) {
+                                            setServices([...services, trimmed]);
+                                            setCustomServiceInput("");
+                                            setShowCustomInput(false);
+                                          }
+                                        }}
+                                        className="px-3 py-2 text-sm font-bold bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
+                                        disabled={
+                                          services.length >= 20 ||
+                                          !customServiceInput
+                                        }
+                                      >
+                                        +
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const trimmed = serviceInput.trim();
+                                        if (
+                                          trimmed &&
+                                          !services.includes(trimmed) &&
+                                          services.length < 20
+                                        ) {
+                                          setServices([...services, trimmed]);
+                                          setServiceInput("");
+                                        }
+                                      }}
+                                      className="px-3 py-2 text-sm font-bold bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
+                                      disabled={
+                                        services.length >= 20 || !serviceInput
                                       }
-                                    }}
-                                    className="px-3 py-2 text-sm font-bold bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
-                                    disabled={
-                                      services.length >= 20 || !serviceInput
-                                    }
-                                  >
-                                    +
-                                  </button>
+                                    >
+                                      +
+                                    </button>
+                                  )}
                                 </div>
 
                                 {/* Display added services */}
                                 {services.length > 0 && (
                                   <div className="mt-3 flex flex-wrap gap-2">
                                     {services.map(
-                                      (
-                                        serviceItem: string | Service,
-                                        index
-                                      ) => {
-                                        const serviceId =
-                                          typeof serviceItem === "object"
-                                            ? serviceItem.id
-                                            : serviceItem;
-                                        // Loose equality check (== instead of ===) to handle string/number mismatches
+                                      (serviceId: string, index) => {
+                                        // Find the corresponding service in serviceData
                                         const foundService = serviceData?.find(
-                                          (svc: Service) => {
-                                            return svc.id == serviceId; // Note: using == for type coercion
-                                          }
+                                          (svc: any) => svc.id === serviceId
                                         );
-                                        if (!foundService) {
-                                          console.warn(
-                                            `No service found for ID: ${serviceId}`
-                                          );
-                                        }
 
+                                        // If service is found in serviceData, use its name, otherwise use the ID
                                         const displayName =
                                           foundService?.name || serviceId;
 
                                         return (
                                           <span
-                                            key={serviceId || index} // Prefer serviceId, fallback to index
+                                            key={`${serviceId}-${index}`}
                                             className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm flex items-center"
                                           >
                                             {displayName}
