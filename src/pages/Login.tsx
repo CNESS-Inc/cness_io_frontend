@@ -797,6 +797,17 @@ export default function Login() {
         setActiveModal("organizationPricing");
       } else if (res.success.statusCode === 201) {
         navigate("/dashboard");
+        const response = await MeDetails();
+        localStorage.setItem(
+          "profile_picture",
+          response?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          response?.data?.data?.user.margaret_name
+        );
         localStorage.setItem("is_disqualify", "true");
       }
       // onSuccess();
@@ -876,6 +887,17 @@ export default function Login() {
         setActiveModal("personPricing");
       } else if (res.success.statusCode === 201) {
         navigate("/dashboard");
+        const response = await MeDetails();
+        localStorage.setItem(
+          "profile_picture",
+          response?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          response?.data?.data?.user.margaret_name
+        );
         localStorage.setItem("is_disqualify", "true");
       }
     } catch (error) {
