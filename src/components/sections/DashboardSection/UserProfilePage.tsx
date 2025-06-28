@@ -9,6 +9,7 @@ import {
   GetProfessionalDetails,
   GetProfileDetails,
   GetPublicProfileDetails,
+  GetServiceDetails,
   GetStateDetails,
   MeDetails,
   SubmitProfileDetails,
@@ -40,6 +41,13 @@ const UserProfilePage = () => {
   const [professional, setProfessionalData] = useState<any>(null);
   const [Country, setCountry] = useState<any>(null);
   const [states, setStates] = useState<any[]>([]);
+  const [serviceData, setServiceData] = useState<any>(null);
+  const [customServiceInput, setCustomServiceInput] = useState("");
+  const [showCustomInput, setShowCustomInput] = useState(false);
+  const [services, setServices] = useState<any[]>([]);
+  console.log("🚀 ~ UserProfilePage ~ services:", services)
+  const [serviceInput, setServiceInput] = useState("");
+  console.log("🚀 ~ UserProfilePage ~ serviceInput:", serviceInput)
   const public_organization = localStorage.getItem("person_organization");
   const is_disqualify = localStorage.getItem("is_disqualify");
 
@@ -125,6 +133,21 @@ const UserProfilePage = () => {
     newTags.splice(index, 1);
     setTags(newTags);
   };
+
+
+    const GetService = async () => {
+      try {
+        const response = await GetServiceDetails();
+        setServiceData(response.data.data);
+      } catch (error: any) {
+        console.error("Error fetching profile:", error);
+        showToast({
+          message: error?.response?.data?.error?.message,
+          type: "error",
+          duration: 5000,
+        });
+      }
+    };
 
   // const handleCancel = () => {
   //   // Reset all forms
@@ -317,41 +340,46 @@ const UserProfilePage = () => {
   };
 
   const handlePublicProfileSubmit = async (data: any) => {
-    setIsSubmitting((prev) => ({ ...prev, public: true }));
+  setIsSubmitting((prev) => ({ ...prev, public: true }));
 
-    try {
-      const formData = new FormData();
+  try {
+    const formData = new FormData();
 
-      formData.append("service_offered", data.services);
-      formData.append("tags", JSON.stringify(tags));
-      formData.append("notify_email", data.notifyEmail);
-      formData.append("title", data.title);
-      formData.append("about_us", data.aboutUs);
+    // Convert services array to JSON string if it's not already
+    const servicesValue = Array.isArray(services) 
+      ? JSON.stringify(services)
+      : services;
 
-      const email = data.emailAddress || data.notifyEmail;
-      formData.append("email_address", email);
+    formData.append("person_service", servicesValue);
+    formData.append("tags", JSON.stringify(tags));
+    formData.append("notify_email", data.notifyEmail);
+    formData.append("title", data.title);
+    formData.append("about_us", data.aboutUs);
 
-      if (data.featuredImage && data.featuredImage[0]) {
-        formData.append("file", data.featuredImage[0]);
-      }
+    const email = data.emailAddress || data.notifyEmail;
+    formData.append("email_address", email);
 
-      const response = await SubmitPublicProfileDetails(formData);
-      showToast({
-        message: response?.success?.message,
-        type: "success",
-        duration: 5000,
-      });
-    } catch (error: any) {
-      console.error("Error saving public profile:", error);
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    } finally {
-      setIsSubmitting((prev) => ({ ...prev, public: false }));
+    if (data.featuredImage && data.featuredImage[0]) {
+      formData.append("file", data.featuredImage[0]);
     }
-  };
+
+    const response = await SubmitPublicProfileDetails(formData);
+    showToast({
+      message: response?.success?.message,
+      type: "success",
+      duration: 5000,
+    });
+  } catch (error: any) {
+    console.error("Error saving public profile:", error);
+    showToast({
+      message: error?.response?.data?.error?.message,
+      type: "error",
+      duration: 5000,
+    });
+  } finally {
+    setIsSubmitting((prev) => ({ ...prev, public: false }));
+  }
+};
 
   const GetProfile = async () => {
     try {
@@ -378,7 +406,7 @@ const UserProfilePage = () => {
             response.data.data?.professions?.map((p: any) => p.profession_id) ||
             [],
           vision: response.data.data?.personal_vision_statement,
-          identify_uploaded : response.data.data?.identify_uploaded,
+          identify_uploaded: response.data.data?.identify_uploaded,
         });
 
         // Contact Info
@@ -483,13 +511,19 @@ const UserProfilePage = () => {
 
       publicProfileForm.reset({
         title: profileData?.title || "",
-        services: profileData?.service_offered || "",
         notifyEmail: profileData?.notify_email || "",
         emailAddress: profileData?.email_address || "",
         aboutUs: profileData?.about_us || "",
       });
       if (profileData?.tags) {
         setTags(profileData?.tags);
+      }
+      if (profileData?.person_service) {
+        // Extract just the id values from each object in the array
+        const serviceIds = profileData.person_service.map(
+          (service: any) => service.id
+        );
+        setServices(serviceIds);
       }
     } catch (error: any) {
       console.error("Error fetching profile:", error);
@@ -563,6 +597,7 @@ const UserProfilePage = () => {
       GetInterest();
       GetProfessional();
       GetCountry();
+      GetService()
       hasFetched.current = true;
     }
   }, []);
@@ -576,32 +611,31 @@ const UserProfilePage = () => {
     }
   }, [contactInfoForm.watch("country")]);
 
-
   const fetchVerifyOrganizationNumber = async (file: File) => {
-      try {
-        const formData = new FormData();
-        formData.append("file", file);
-        const res = await GetOrganiZationNumberVerify(formData);
-        // Handle the response
-        if (res.success) {
-          return res;
-        }
-  
-        showToast({
-          message: res?.success?.message,
-          type: "success",
-          duration: 5000,
-        });
-        throw new Error(res.message || "Verification failed");
-      } catch (error: any) {
-        console.error("Verification error:", error);
-        showToast({
-          message: error?.response?.data?.error?.message,
-          type: "error",
-          duration: 5000,
-        });
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await GetOrganiZationNumberVerify(formData);
+      // Handle the response
+      if (res.success) {
+        return res;
       }
-    };
+
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+      throw new Error(res.message || "Verification failed");
+    } catch (error: any) {
+      console.error("Verification error:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
 
   return (
     <>
@@ -862,143 +896,137 @@ const UserProfilePage = () => {
                                 )}
                               </div>
 
-
                               <div>
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
                                   Upload Document{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
                                 {basicInfoForm.watch("identify_uploaded") ==
-                                  null ? (
-                                    <>
-                                      <input
-                                        type="file"
-                                        id="registrationFile"
-                                        accept=".pdf,.jpg,.jpeg,.png"
-                                        className="hidden"
-                                        onChange={async (e) => {
-                                          if (
-                                            e.target.files &&
-                                            e.target.files[0]
-                                          ) {
-                                            try {
-                                              const file = e.target.files[0];
-                                              await fetchVerifyOrganizationNumber(
-                                                file
-                                              );
-                                            } catch (error) {
-                                              console.error(
-                                                "File upload failed:",
-                                                error
-                                              );
-                                            }
+                                null ? (
+                                  <>
+                                    <input
+                                      type="file"
+                                      id="registrationFile"
+                                      accept=".pdf,.jpg,.jpeg,.png"
+                                      className="hidden"
+                                      onChange={async (e) => {
+                                        if (
+                                          e.target.files &&
+                                          e.target.files[0]
+                                        ) {
+                                          try {
+                                            const file = e.target.files[0];
+                                            await fetchVerifyOrganizationNumber(
+                                              file
+                                            );
+                                          } catch (error) {
+                                            console.error(
+                                              "File upload failed:",
+                                              error
+                                            );
                                           }
-                                        }}
+                                        }
+                                      }}
+                                    />
+                                    <label
+                                      htmlFor="registrationFile"
+                                      className="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                                    >
+                                      Verify Identity
+                                    </label>
+                                  </>
+                                ) : basicInfoForm.watch("identify_uploaded") ==
+                                  1 ? (
+                                  <span className="px-4 py-2 bg-green-50 border border-green-200 rounded-xl text-sm font-medium text-green-600 flex items-center">
+                                    <svg
+                                      className="w-4 h-4 mr-1"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M5 13l4 4L19 7"
                                       />
-                                      <label
-                                        htmlFor="registrationFile"
-                                        className="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
-                                      >
-                                        Verify Identity
-                                      </label>
-                                    </>
-                                  ) : basicInfoForm.watch(
-                                      "identify_uploaded"
-                                    ) == 1 ? (
-                                    <span className="px-4 py-2 bg-green-50 border border-green-200 rounded-xl text-sm font-medium text-green-600 flex items-center">
-                                      <svg
-                                        className="w-4 h-4 mr-1"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                      >
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          strokeWidth={2}
-                                          d="M5 13l4 4L19 7"
-                                        />
-                                      </svg>
-                                      Verified
-                                    </span>
-                                  ) : basicInfoForm.watch(
-                                      "identify_uploaded"
-                                    ) == 2 ? (
-                                    <span className="px-4 py-2 bg-red-50 border border-red-200 rounded-xl text-sm font-medium text-red-600 flex items-center">
-                                      <svg
-                                        className="w-4 h-4 mr-1"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                      >
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          strokeWidth={2}
-                                          d="M6 18L18 6M6 6l12 12"
-                                        />
-                                      </svg>
-                                      Rejected
-                                    </span>
-                                  ) : basicInfoForm.watch(
-                                      "identify_uploaded"
-                                    ) == 0 ? (
-                                    <span className="px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-xl text-sm font-medium text-yellow-600 flex items-center">
-                                      <svg
-                                        className="w-4 h-4 mr-1"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                      >
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          strokeWidth={2}
-                                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                        />
-                                      </svg>
-                                      Pending
-                                    </span>
-                                  ) : (
-                                    <>
-                                      <input
-                                        type="file"
-                                        id="registrationFile"
-                                        accept=".pdf,.jpg,.jpeg,.png"
-                                        className="hidden"
-                                        onChange={async (e) => {
-                                          if (
-                                            e.target.files &&
-                                            e.target.files[0]
-                                          ) {
-                                            try {
-                                              const file = e.target.files[0];
-                                              await fetchVerifyOrganizationNumber(
-                                                file
-                                              );
-                                            } catch (error) {
-                                              console.error(
-                                                "File upload failed:",
-                                                error
-                                              );
-                                            }
+                                    </svg>
+                                    Verified
+                                  </span>
+                                ) : basicInfoForm.watch("identify_uploaded") ==
+                                  2 ? (
+                                  <span className="px-4 py-2 bg-red-50 border border-red-200 rounded-xl text-sm font-medium text-red-600 flex items-center">
+                                    <svg
+                                      className="w-4 h-4 mr-1"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M6 18L18 6M6 6l12 12"
+                                      />
+                                    </svg>
+                                    Rejected
+                                  </span>
+                                ) : basicInfoForm.watch("identify_uploaded") ==
+                                  0 ? (
+                                  <span className="px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-xl text-sm font-medium text-yellow-600 flex items-center">
+                                    <svg
+                                      className="w-4 h-4 mr-1"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                      />
+                                    </svg>
+                                    Pending
+                                  </span>
+                                ) : (
+                                  <>
+                                    <input
+                                      type="file"
+                                      id="registrationFile"
+                                      accept=".pdf,.jpg,.jpeg,.png"
+                                      className="hidden"
+                                      onChange={async (e) => {
+                                        if (
+                                          e.target.files &&
+                                          e.target.files[0]
+                                        ) {
+                                          try {
+                                            const file = e.target.files[0];
+                                            await fetchVerifyOrganizationNumber(
+                                              file
+                                            );
+                                          } catch (error) {
+                                            console.error(
+                                              "File upload failed:",
+                                              error
+                                            );
                                           }
-                                        }}
-                                      />
-                                      <label
-                                        htmlFor="registrationFile"
-                                        className="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
-                                      >
-                                        Verify Identity
-                                      </label>
-                                    </>
-                                  )}
+                                        }
+                                      }}
+                                    />
+                                    <label
+                                      htmlFor="registrationFile"
+                                      className="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                                    >
+                                      Verify Identity
+                                    </label>
+                                  </>
+                                )}
                               </div>
-
-
 
                               {/* Gender */}
                               <div>
@@ -1933,7 +1961,7 @@ const UserProfilePage = () => {
                               </div>
 
                               {/* Services Offered */}
-                              <div className="md:col-span-2">
+                              {/* <div className="md:col-span-2">
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
                                   Services Offered
                                 </label>
@@ -1943,7 +1971,122 @@ const UserProfilePage = () => {
                                   placeholder="Enter a service you offer"
                                   className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 />
-                              </div>
+                              </div> */}
+
+                              <div className="md:col-span-2">
+  <label className="block text-sm font-medium text-gray-800 mb-2">
+    Services Offered
+  </label>
+  <div className="flex gap-2 items-center">
+    <select
+      value={serviceInput}
+      onChange={(e) => {
+        if (e.target.value === "other") {
+          setShowCustomInput(true);
+          setServiceInput("");
+        } else {
+          setShowCustomInput(false);
+          setServiceInput(e.target.value);
+        }
+      }}
+      className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+    >
+      <option value="">Select a service</option>
+      {serviceData?.map((service: any) => (
+        <option key={service.id} value={service.id}> {/* Use service.name instead of id */}
+          {service.name}
+        </option>
+      ))}
+      <option value="other">Other (Add Custom Service)</option>
+    </select>
+
+    {showCustomInput ? (
+      <>
+        <input
+          type="text"
+          value={customServiceInput}
+          onChange={(e) => setCustomServiceInput(e.target.value)}
+          placeholder="Enter custom service"
+          className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
+        <button
+          type="button"
+          onClick={() => {
+            const trimmed = customServiceInput.trim();
+            if (trimmed && !services.includes(trimmed) && services.length < 20) {
+              const newServices = [...services, trimmed];
+              setServices(newServices);
+              publicProfileForm.setValue("services", newServices); // Update form value
+              setCustomServiceInput("");
+              setShowCustomInput(false);
+            }
+          }}
+          className="px-3 py-2 text-sm font-bold bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
+          disabled={services.length >= 20 || !customServiceInput}
+        >
+          +
+        </button>
+      </>
+    ) : (
+      <button
+        type="button"
+        onClick={() => {
+          const trimmed = serviceInput.trim();
+          if (trimmed && !services.includes(trimmed) && services.length < 20) {
+            const newServices = [...services, trimmed];
+            setServices(newServices);
+            publicProfileForm.setValue("services", newServices); // Update form value
+            setServiceInput("");
+          }
+        }}
+        className="px-3 py-2 text-sm font-bold bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
+        disabled={services.length >= 20 || !serviceInput}
+      >
+        +
+      </button>
+    )}
+  </div>
+  
+  {/* Display selected services */}
+  {services.length > 0 && (
+                                  <div className="mt-3 flex flex-wrap gap-2">
+                                    {services.map(
+                                      (serviceId: string, index) => {
+                                        // Find the corresponding service in serviceData
+                                        const foundService = serviceData?.find(
+                                          (svc: any) => svc.id === serviceId
+                                        );
+
+                                        // If service is found in serviceData, use its name, otherwise use the ID
+                                        const displayName =
+                                          foundService?.name || serviceId;
+
+                                        return (
+                                          <span
+                                            key={`${serviceId}-${index}`}
+                                            className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm flex items-center"
+                                          >
+                                            {displayName}
+                                            <button
+                                              type="button"
+                                              onClick={() => {
+                                                setServices(
+                                                  services.filter(
+                                                    (_, i) => i !== index
+                                                  )
+                                                );
+                                              }}
+                                              className="ml-2 text-purple-600 hover:text-red-500 font-bold"
+                                            >
+                                              ×
+                                            </button>
+                                          </span>
+                                        );
+                                      }
+                                    )}
+                                  </div>
+                                )}
+</div>
 
                               {/* Tags Field */}
                               <div className="md:col-span-2">
