@@ -11,7 +11,7 @@ import {
 
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Modal from "../../ui/Modal";
 import {
   DashboardDetails,
@@ -40,11 +40,6 @@ type PersPricingPlan = {
   borderClass: string;
   popular: boolean;
 };
-
-interface SubDomain {
-  id: string;
-  name: string;
-}
 interface OrganizationForm {
   domain_id: string;
   sub_domain_id: string;
@@ -62,36 +57,12 @@ interface OrganizationForm {
   }>;
 }
 
-interface Interest {
-  id: string | number;
-  name: string;
-}
-
-interface Profession {
-  id: string | number;
-  title: string; // Changed from 'name' to 'title' to match your usage
-}
-// type PartialOrganizationFormData = Partial<OrganizationForm>;
 
 interface QuestionAnswer {
   question_id: string;
   answer: string;
 }
 
-type OrgPricingPlan = {
-  id: any;
-  title: any;
-  description: string;
-  monthlyPrice?: string;
-  yearlyPrice?: string;
-  period: string;
-  billingNote?: string;
-  features: string[];
-  buttonText: string;
-  buttonClass: string;
-  borderClass: string;
-  popular: boolean;
-};
 
 interface FormErrors {
   email?: string;
@@ -102,14 +73,6 @@ interface FormErrors {
   employee_size?: string;
   revenue?: string;
   [key: string]: string | undefined; // For dynamic question errors
-}
-
-interface ValidationRules {
-  required?: boolean;
-  minLength?: number;
-  maxLength?: number;
-  pattern?: RegExp;
-  custom?: (value: string) => string | undefined;
 }
 
 interface PersonForm {
@@ -142,7 +105,6 @@ export default function DashboardSection() {
     question: [],
   });
   const [user, setUser] = useState<any | null>(null);
-  const [isOrgFormSubmitted, setIsOrgFormSubmitted] = useState(false);
   const [organizationForm, setOrganizationForm] = useState<OrganizationForm>({
     domain_id: "",
     sub_domain_id: "",
@@ -155,13 +117,6 @@ export default function DashboardSection() {
     revenue: "",
     question: [],
   });
-
-  const [organizationpricingPlans, setorganizationpricingPlans] = useState<
-    OrgPricingPlan[]
-  >([]);
-
-  const hasFetched = useRef(false);
-
   const fetchDashboard = async () => {
     try {
       const response: any = await DashboardDetails();
