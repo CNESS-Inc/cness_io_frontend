@@ -24,7 +24,7 @@ interface ApiResponse<T> {
 }
 
 const Dashboard = () => {
-  const [user, setUser] = useState<UserData | null>(null);
+  const [_user, setUser] = useState<UserData | null>(null);
     const { showToast } = useToast();
   
 
