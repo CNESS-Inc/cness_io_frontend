@@ -70,10 +70,10 @@ type PublicViewFormData = {
   aboutUs?: string;
 };
 
-interface Service {
-  id: string; // or number, depending on your data
-  name: string;
-}
+// interface Service {
+//   id: string; // or number, depending on your data
+//   name: string;
+// }
 
 const OrganaizationProfilepage = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
