@@ -970,6 +970,7 @@ export default function Login() {
       fetchAllDataDetails();
     }
   }, [activeModal]);
+
   const handlePlanSelection = async (plan: any) => {
     try {
       const payload = {
@@ -1056,7 +1057,6 @@ export default function Login() {
     try {
       const response = await GoogleLoginDetails(token); // ✅ use your centralized API call
       console.log("🚀 ~ handleGoogleLoginSuccess ~ response:", response);
-
       if (response) {
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);
@@ -1083,7 +1083,37 @@ export default function Login() {
           "margaret_name",
           response?.data?.data?.user.margaret_name
         );
-        navigate("/dashboard"); // ✅ optional redirect after login
+        const completionStatus =
+          response.data.data.user.person_organization_complete;
+        const completed_step = response.data.data.user.completed_step;
+        const is_disqualify = response.data.data.user.is_disqualify;
+
+        // Skip type selection and directly set to Person (1)
+        await handleTypeSelection(1);
+
+        if (!is_disqualify) {
+          if (completionStatus === 0 || completed_step === 0) {
+            setActiveModal("person");
+          } else if (completionStatus === 1) {
+            if (completed_step === 0) {
+              setActiveModal("person");
+            } else if (completed_step === 1) {
+              navigate("/dashboard");
+            } else {
+              navigate("/dashboard");
+            }
+          } else if (completionStatus === 2) {
+            if (completed_step === 0) {
+              setActiveModal("organization");
+            } else if (completed_step === 1) {
+              navigate("/dashboard");
+            } else {
+              navigate("/dashboard");
+            }
+          }
+        } else {
+          navigate("/dashboard");
+        }
       } else {
         showToast({
           message: "Google login succeeded, but no JWT received.",
