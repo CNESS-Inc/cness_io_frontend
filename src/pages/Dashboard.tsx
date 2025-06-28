@@ -57,9 +57,7 @@ const Dashboard = () => {
 
   return (
   
-      <DashboardSection user={user}/>
-
-
+      <DashboardSection />
   );
 };
 
