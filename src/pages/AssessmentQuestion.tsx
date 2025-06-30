@@ -74,6 +74,7 @@ const AssessmentQuestion: React.FC = () => {
   const [activeModal, setActiveModal] = useState<"assesment" | null>(null);
   const [isFinalSubmitting, setIsFinalSubmitting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const { showToast } = useToast();
 
   const closeModal = () => {
@@ -185,6 +186,7 @@ const AssessmentQuestion: React.FC = () => {
       setToggles([true]); // Initialize toggle for this section
       setprogress(res.data.data.assesment_progress);
       settotalstep(res.data.data.total_sections);
+      setIsSubmitted(res.data.data.find_answer_submited);
       // Update navigation history
       if (sectionId) {
         setSectionHistory((prev) => [...prev, sectionId]);
@@ -344,16 +346,19 @@ const AssessmentQuestion: React.FC = () => {
   };
 
   const handleNext = async () => {
-    if (!validateForm()) {
-      return;
-    }
+  if (!validateForm()) {
+    return;
+  }
 
+  // Only call handleSave if the form is not submitted
+  if (!isSubmitted) {
     await handleSave();
+  }
 
-    if (currentSection?.next_section_id) {
-      fetchQuestions(currentSection.next_section_id);
-    }
-  };
+  if (currentSection?.next_section_id) {
+    fetchQuestions(currentSection.next_section_id);
+  }
+};
 
   const handlePrevious = () => {
     if (currentSection?.previous_section_id) {
@@ -430,6 +435,10 @@ const AssessmentQuestion: React.FC = () => {
                       onChange={(e) =>
                         handleCheckboxChange(option.id, e.target.checked)
                       }
+                      disabled={isSubmitted}
+                      className={
+                        isSubmitted ? "opacity-50 cursor-not-allowed" : ""
+                      }
                     />
                     <span>{option.option}</span>
                   </label>
@@ -460,6 +469,7 @@ const AssessmentQuestion: React.FC = () => {
                     onChange={(e) =>
                       handlePurposePauseChange(i, e.target.value)
                     }
+                    disabled={isSubmitted}
                   />
                 </div>
               ))}
@@ -473,6 +483,7 @@ const AssessmentQuestion: React.FC = () => {
                   className="sr-only peer"
                   checked={toggles[0]}
                   onChange={(e) => handleToggleChange(e.target.checked)}
+                  disabled={isSubmitted}
                 />
                 <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
               </label>
@@ -510,6 +521,7 @@ const AssessmentQuestion: React.FC = () => {
                         onChange={(e) =>
                           handleFileUpload(i, e.target.files?.[0] || null)
                         }
+                        disabled={isSubmitted}
                       />
                       {formData.uploads[i]?.fileUrl && (
                         <a
@@ -541,44 +553,47 @@ const AssessmentQuestion: React.FC = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-between mt-10 px-4 py-6 bg-white rounded-xl shadow-sm gap-4">
-              {/* Save Button - Gradient */}
-              <Button
-                variant="gradient-primary"
-                onClick={handleSave}
-                disabled={isSubmitting}
-                className="w-full sm:w-auto px-6 py-2 rounded-full text-white font-medium disabled:opacity-60 cursor-pointer"
-              >
-                {isSubmitting ? "Saving..." : "Save"}
-              </Button>
-
-              {/* Prev & Next Buttons */}
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
-                <button
-                  onClick={handlePrevious}
-                  disabled={!currentSection.previous_section_id}
-                  className={`w-full sm:w-auto px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 
-    ${
-      prevVariant === "white-disabled"
-        ? "bg-white text-gray-400 border border-gray-200 shadow-md cursor-pointer"
-        : prevVariant === "blue"
-        ? "bg-[#EEF0FF] text-[#7077FE] cursor-pointer"
-        : "bg-[#EEF0FF] text-[#7077FE] hover:bg-[#DDE1FF] shadow-md cursor-pointer"
-    }`}
-                >
-                  Previous
-                </button>
-
+            {/* {!isSubmitted && ( */}
+              <div className="flex flex-col sm:flex-row items-center justify-between mt-10 px-4 py-6 bg-white rounded-xl shadow-sm gap-4">
+                {/* Save Button - Gradient */}
                 <Button
                   variant="gradient-primary"
-                  onClick={handleNext}
-                  disabled={!currentSection.next_section_id}
-                  className="w-full sm:w-auto px-6 py-2 rounded-full text-white font-medium cursor-pointer transition-colors duration-200"
+                  onClick={handleSave}
+                  // disabled={isSubmitting}
+                        disabled={isSubmitted}
+                  className="w-full sm:w-auto px-6 py-2 rounded-full text-white font-medium disabled:opacity-60 cursor-pointer"
                 >
-                  Save & Next
+                  {isSubmitting ? "Saving..." : "Save"}
                 </Button>
+
+                {/* Prev & Next Buttons */}
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+                  <button
+                    onClick={handlePrevious}
+                    disabled={!currentSection.previous_section_id}
+                    className={`w-full sm:w-auto px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 
+                              ${
+                                prevVariant === "white-disabled"
+                                  ? "bg-white text-gray-400 border border-gray-200 shadow-md cursor-pointer"
+                                  : prevVariant === "blue"
+                                  ? "bg-[#EEF0FF] text-[#7077FE] cursor-pointer"
+                                  : "bg-[#EEF0FF] text-[#7077FE] hover:bg-[#DDE1FF] shadow-md cursor-pointer"
+                              }`}
+                  >
+                    Previous
+                  </button>
+
+                  <Button
+                    variant="gradient-primary"
+                    onClick={handleNext}
+                    disabled={!currentSection.next_section_id}
+                    className="w-full sm:w-auto px-6 py-2 rounded-full text-white font-medium cursor-pointer transition-colors duration-200"
+                  >
+                    Save & Next
+                  </Button>
+                </div>
               </div>
-            </div>
+            {/* )} */}
 
             {/* Pagination Dots (Optional center item) */}
             <div className="mt-4 sm:mt-0 flex justify-center flex-1">
@@ -594,7 +609,7 @@ const AssessmentQuestion: React.FC = () => {
               </div>
             </div>
 
-            {!currentSection.next_section_id && (
+            {!isSubmitted && !currentSection.next_section_id && (
               <>
                 <div className="mt-10 border-t pt-6">
                   <p className="text-gray-600 text-sm mb-3">
