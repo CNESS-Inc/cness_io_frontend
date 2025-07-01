@@ -99,6 +99,7 @@ export const EndPoint = {
   company_profile: "/organization-profile/company-profile",
   user_profile: "/profile/user-profile",
   rating: "/profile/rating",
+  score_result: "/quiz/get/score-result",
   directory_search_profile: "/profile/public-directory",
   public_user_profile: "/profile/public-user-profile",
   get_popular_company: "/profile/get-popular-company",
@@ -499,6 +500,14 @@ export const GetUserRating = (payload: any): ApiResponse => {
     payload,
     EndPoint.rating,
     params
+  );
+};
+export const GetUserScoreResult = (): ApiResponse => {
+  const data: Partial<any> = {};
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    EndPoint.score_result
   );
 };
 export const GetUsersearchProfileDetails = (

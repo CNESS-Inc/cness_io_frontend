@@ -82,7 +82,11 @@ const ProductCard = ({ data }: { data: Product }) => (
   </div>
 );
 
-const MarketplaceSection = ({ title, icon, products }: MarketplaceSectionProps) => {
+const MarketplaceSection = ({
+  title,
+  icon,
+  products,
+}: MarketplaceSectionProps) => {
   return (
     <section className="space-y-10 px-4 pt-6">
       <div className="flex items-center justify-between">
@@ -90,7 +94,7 @@ const MarketplaceSection = ({ title, icon, products }: MarketplaceSectionProps) 
           {icon}
           {title}
         </h2>
-<button className="bg-white px-5 py-2 rounded-full text-sm font-medium shadow hover:shadow-md transition">
+        <button className="bg-white px-5 py-2 rounded-full text-sm font-medium shadow hover:shadow-md transition">
           Show all &gt;&gt;
         </button>
       </div>
