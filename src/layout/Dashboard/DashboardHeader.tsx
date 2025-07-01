@@ -102,20 +102,27 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
 
       {/* Right side - Icons and User Profile */}
       <div className="flex items-center gap-3">
-        <div className="flex w-[41px] h-[41px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d]">
-          <div className="relative">
-            <BellIcon className="w-5 h-5" />
-            <div className="w-4 h-4 absolute -top-1 left-1 bg-[#60c750] rounded-full flex items-center justify-center">
-              <span className="font-['Poppins',Helvetica] font-normal text-white text-[8px]">
-                03
-              </span>
-            </div>
-          </div>
+        <div
+  onClick={() => navigate('/dashboard/notification')}
+  className="flex w-[41px] h-[41px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
+>
+  <div className="relative">
+    <BellIcon className="w-5 h-5" />
+    <div className="w-4 h-4 absolute -top-1 left-1 bg-[#60c750] rounded-full flex items-center justify-center">
+      <span className="font-['Poppins',Helvetica] font-normal text-white text-[8px]">
+        03
+      </span>
+    </div>
+  </div>
+
         </div>
 
-        <div className="flex w-[41px] h-[41px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d]">
-          <SettingsIcon className="w-6 h-6" />
-        </div>
+        <div
+  onClick={() => navigate('/dashboard/setting')}
+  className="flex w-[41px] h-[41px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
+>
+  <SettingsIcon className="w-6 h-6" />
+</div>
 
         <div className="hidden md:flex items-center relative" ref={dropdownRef}>
           <button

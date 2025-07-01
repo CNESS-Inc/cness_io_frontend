@@ -300,3 +300,46 @@ body {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;     /* Firefox */
 }
+
+
+.faq-section {
+  margin-bottom: 2rem;
+  border-bottom: 1px dashed #ccc;
+  padding-bottom: 1rem;
+}
+
+.block {
+  margin: 0.5rem 0;
+}
+
+.expand-btn {
+  background: none;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.expand-btn::before {
+  content: '+';
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.answer {
+  padding-left: 1.5rem;
+  display: none;
+}
+
+/* Active state */
+.block.active .answer {
+  display: block;
+}
+
+.block.active .expand-btn::before {
+  content: '-';
+}
