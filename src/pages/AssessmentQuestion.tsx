@@ -495,6 +495,8 @@ const AssessmentQuestion: React.FC = () => {
               placeholder={currentSection.bestPracticePrompt}
               value={formData.bestPractice.answer || ""}
               onChange={(e) => handleBestPracticeChange(e.target.value)}
+                    disabled={isSubmitted}
+
             />
 
             {/* Section 4: Suggested Uploads */}
