@@ -60,6 +60,7 @@ interface PersonForm {
   last_name: string;
   interests: (string | number)[];
   professions: (string | number)[];
+  custom_profession?: string; 
   question: QuestionAnswer[];
 }
 // type PartialOrganizationFormData = Partial<OrganizationForm>;
@@ -823,13 +824,31 @@ export default function Login() {
     e.preventDefault();
     setIsSubmitting(true);
 
+    if (personForm.professions?.includes("other") && !personForm.custom_profession?.trim()) {
+    setPersonErrors({
+      ...personErrors,
+      custom_profession: "Please specify your profession"
+    });
+    setIsSubmitting(false);
+    return;
+  }
+
+
     if (!validateForm(personForm, "person", 2, true)) {
       setIsSubmitting(false);
       return;
     }
 
     try {
-      const res = await submitPersonDetails(personForm as any);
+      const payload = {
+      ...personForm,
+      // Include custom_profession in the payload if "other" is selected
+      professions: personForm.professions.includes("other") 
+        ? [...personForm.professions.filter(p => p !== "other"), personForm.custom_profession]
+        : personForm.professions
+    };
+    
+    const res = await submitPersonDetails(payload as any);
       localStorage.setItem("person_organization", "1");
       localStorage.setItem("completed_step", "1");
       // Group plans by their range (Basic Plan, Pro Plan, etc.)
@@ -1976,45 +1995,62 @@ export default function Login() {
                     </div>
 
                     <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-800 mb-1">
-                        Professions*
-                      </label>
-                      <Select
-                        isMulti
-                        options={profession?.map(
-                          (professionItem: Profession) => ({
-                            value: professionItem.id,
-                            label: professionItem.title,
-                          })
-                        )}
-                        value={
-                          personForm.professions?.map((professionId: any) => ({
-                            value: professionId,
-                            label: profession?.find(
-                              (p: any) => p.id === professionId
-                            )?.title,
-                          })) || []
-                        }
-                        onChange={(selectedOptions) => {
-                          // Update your form state with the selected values
-                          const selectedValues = selectedOptions?.map(
-                            (option) => option.value
-                          );
-                          setPersonForm({
-                            ...personForm,
-                            professions: selectedValues,
-                          });
-                        }}
-                        className="react-select-container"
-                        classNamePrefix="react-select"
-                        placeholder="Select professions..."
-                      />
-                      {personErrors.professions && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {personErrors.professions}
-                        </p>
-                      )}
-                    </div>
+  <label className="block openSans text-base font-medium text-gray-800 mb-1">
+    Professions*
+  </label>
+  <Select
+    isMulti
+    options={[
+      ...profession?.map((professionItem: Profession) => ({
+        value: professionItem.id,
+        label: professionItem.title,
+      })),
+      { value: "other", label: "Other (please specify)" }
+    ]}
+    value={
+      personForm.professions?.map((professionId: any) => ({
+        value: professionId,
+        label: profession?.find((p: any) => p.id === professionId)?.title || 
+               (professionId === "other" ? "Other" : ""),
+      })) || []
+    }
+    onChange={(selectedOptions) => {
+      const selectedValues = selectedOptions?.map((option) => option.value);
+      setPersonForm({
+        ...personForm,
+        professions: selectedValues,
+      });
+    }}
+    className="react-select-container"
+    classNamePrefix="react-select"
+    placeholder="Select professions..."
+  />
+  {personErrors.professions && (
+    <p className="mt-1 text-sm text-red-600">
+      {personErrors.professions}
+    </p>
+  )}
+</div>
+
+{/* Add this after the Select component */}
+{personForm.professions?.includes("other") && (
+  <div className="mb-4 mt-2">
+    <label className="block openSans text-base font-medium text-gray-800 mb-1">
+      Specify Your Profession
+    </label>
+    <input
+      type="text"
+      name="custom_profession"
+      value={personForm.custom_profession || ""}
+      onChange={(e) => setPersonForm({
+        ...personForm,
+        custom_profession: e.target.value
+      })}
+      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+      placeholder="Enter your profession"
+    />
+  </div>
+)}
                   </>
                 )}
 
