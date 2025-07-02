@@ -5,18 +5,13 @@ import frameqa from "../../../assets/Frame-qa.png";
 import framequ from "../../../assets/Frame-qu.png";
 import cisscore from "../../../assets/cis score.png";
 import framescr from "../../../assets/Frame-scr.png";
-
-
-
 import "react-circular-progressbar/dist/styles.css";
-
 const tabs = [
   "Mission & Vision",
   "Client / Customer / Consumer",
   "Communities & Charities",
   "Vision & Legacy – Long-Term Contribution",
-  "Leadership Best Practices",
- 
+  "Leadership Best Practices", 
 ];
 const scoreData = [
   {
@@ -63,7 +58,6 @@ const scoreData = [
   },
 
 ];
-
 const SegmentedRing = ({
   value,
   label = "Score",
@@ -108,8 +102,7 @@ const SegmentedRing = ({
     const dotOffset = 2.5; // small gap between line end and dot
     const dotX = cx + (radius - tickLength + dotOffset - 6) * Math.cos(rad);
     const dotY = cy + (radius - tickLength + dotOffset - 6) * Math.sin(rad);
-
-    return (
+return (
       <g key={i}>
         <line
           x1={x1}
@@ -124,8 +117,7 @@ const SegmentedRing = ({
       </g>
     );
   });
-
-  return (
+ return (
     <div className="relative" style={{ width: size, height: size }}>
       <svg width={size} height={size}>
         <g>{elements}</g>
@@ -141,15 +133,12 @@ const SegmentedRing = ({
     </div>
   );
 };
-
-
 const ScoreResult = () => {
   const [activeTab, setActiveTab] = useState(0);
   return (
 <div className="w-full overflow-x-hidden">
 <div className="flex flex-col w-full min-h-screen bg-[#f9f9f9] pt-1 pb-10 px-2 sm:px-3 md:px-4 lg:pl-6 lg:pr-4 xl:px-6 font-[Poppins] overflow-x-hidden">
-
-        {/* Header */}
+{/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-[24px] font-semibold text-[#222224]">
             Score & Results
@@ -163,10 +152,7 @@ const ScoreResult = () => {
             </button>
           </div>
         </div>
-
-        {/* Summary Cards */}
-
-        {/* Summary Cards */}
+{/* Summary Cards */}
 <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 mb-2">
           {/* Overall CIS Score Card - will take full width on mobile, 2 cols on larger screens */}
           <div
@@ -207,8 +193,7 @@ const ScoreResult = () => {
               Above 70 is considered inspired
             </div>
           </div>
-
-          {/* Badge Card - will stack below on mobile */}
+{/* Badge Card - will stack below on mobile */}
           <div className="h-[208px] p-3 rounded-[12px] border border-[#eceef2] shadow-sm bg-white">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
@@ -223,10 +208,8 @@ const ScoreResult = () => {
                 ⋯
               </div>
             </div>
-
-            <hr className="border-t border-[#dadce0] mb-2" />
-
-            <div className="flex justify-center items-center h-full">
+<hr className="border-t border-[#dadce0] mb-2" />
+<div className="flex justify-center items-center h-full">
               <img
                 src="/Inspired _ Badge.png"
                 alt="CNESS Inspired"
@@ -235,7 +218,7 @@ const ScoreResult = () => {
             </div>
           </div>
 
-          {/* Certification Level Card - will stack below on mobile */}
+{/* Certification Level Card - will stack below on mobile */}
           <div className="h-[208px] bg-white rounded-[12px] p-3 shadow-sm border border-[#eceef2]">
             <div className="flex items-center gap-2 mb-2">
               <div className="w-6 h-6 bg-[#e2f2ff] rounded-full flex items-center justify-center">

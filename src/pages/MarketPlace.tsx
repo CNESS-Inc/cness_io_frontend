@@ -1,35 +1,22 @@
 
 import { useState } from "react";
-
 import HeroCarousel from "../components/marketplaceComponents/HeroCarousel"; 
 import CnessRecommendations from "../components/marketplaceComponents/CnessRecommendations"; 
 import sorticon from "../assets/sort.png"; // update the path as needed
 import MarketplaceSection from "../components/marketplaceComponents/MarketplaceSection"; 
-
-
-
 import musicimg from "../assets/musicimg.jpg";
 import moviesimg from "../assets/moviesimg.jpg"; // <- exact file name
 import ebookimg from "../assets/ebookimg.jpg";
 import ebookimg1 from "../assets/ebook1img.jpg";
-//import courseimg from "../assets/courseimg.jpg";
 import webinarimg from "../assets/webinarimg.jpg";
-
 import Ebooktag from "../assets/Ebooktag.png";
 import Moviestag from "../assets/Moviestag.png";
 import webinartag from "../assets/webinarstag.png";
 import musictag from "../assets/Musictag.png";
-
-
-
 import person1 from "../assets/person1.jpg";
 import person2 from "../assets/person2.jpg";
 import person3 from "../assets/person3.jpg";
-
 import { Filter, TrendingUp, Star,ClockFading } from "lucide-react";
-
-
-
 const featuredProducts = [
   {
     id: "1",
@@ -41,7 +28,6 @@ const featuredProducts = [
     author: "Alex",
     authorAvatar: person1
   },
-
 {
     id: "2",
     title: "A comprehensive guide to harmonizing your chakras.",
@@ -52,9 +38,7 @@ badgeImage:Moviestag,
     author: "Alex",
     authorAvatar: person3
   },
-
-  
-   {
+  {
     id: "3",
     title: "Yoga routines for mothers on the go.",
     image: webinarimg,
@@ -65,10 +49,6 @@ badgeImage:webinartag,
     authorAvatar: person2
   },
 ];
-
-
-
-
 const trendingProducts = [
   {
     id: "1",
@@ -80,7 +60,6 @@ const trendingProducts = [
     author: "Alex",
     authorAvatar: person1
   },
-
 {
     id: "2",
     title: "A comprehensive guide to harmonizing your chakras.",
@@ -91,9 +70,7 @@ badgeImage:Moviestag,
     author: "Alex",
     authorAvatar: person3
   },
-
-  
-   {
+{
     id: "3",
     title: "Yoga routines for mothers on the go.",
     image: webinarimg,
@@ -103,8 +80,7 @@ badgeImage:webinartag,
     author: "Alex",
     authorAvatar: person2
   },
-
-    {
+{
     id: "4",
     title: "Ways to craft work that adds significance.",
     image: ebookimg1,
@@ -114,8 +90,7 @@ badgeImage:Ebooktag,
     author: "Alex",
     authorAvatar: person2
   },
-
-      {
+ {
     id: "5",
     title: "A comprehensive guide to harmonizing your chakras.",
     image: musicimg,
@@ -126,8 +101,6 @@ badgeImage:musictag,
     authorAvatar: person2
   },
 ];
-
-
 const latestProducts = [
   {
     id: "1",
@@ -139,7 +112,6 @@ const latestProducts = [
     author: "Alex",
     authorAvatar: person1
   },
-
 {
     id: "2",
     title: "A comprehensive guide to harmonizing your chakras.",
@@ -150,9 +122,7 @@ badgeImage:Moviestag,
     author: "Alex",
     authorAvatar: person3
   },
-
-  
-   {
+  {
     id: "3",
     title: "Yoga routines for mothers on the go.",
     image: webinarimg,
@@ -163,26 +133,15 @@ badgeImage:webinartag,
     authorAvatar: person2
   },
 ];
-
-
-
-
-
-
 export default function MarketplacePage() {
-
 const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
-
-  const start = (currentPage - 1) * itemsPerPage;
+const itemsPerPage = 6;
+const start = (currentPage - 1) * itemsPerPage;
   const end = start + itemsPerPage;
   const paginatedProducts = featuredProducts.slice(start, end);
   const totalPages = Math.ceil(featuredProducts.length / itemsPerPage);
-
-
-  return (
-
- <>
+return (
+<>
 <div className="w-full bg-[#f9f9f9] flex">
   <div className="w-full max-w-[1600px] px-2 sm:px-4 lg:px-6">
         {/* Hero + Recommendations */}
