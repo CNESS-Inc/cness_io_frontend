@@ -1229,6 +1229,35 @@ export default function Login() {
             )}
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="mb-4 relative">
+{/* Google Sign-In Button */}
+<div className="flex justify-center gap-4 mt-2">
+  <button
+    type="button"
+    onClick={() => login()}
+    className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-2xl px-4 py-2 bg-white hover:shadow-md hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#F07EFF]"
+  >
+    <img
+      src="/google-icon-logo.svg"
+      alt="Google"
+      className="w-6 h-6"
+    />
+    <span className="text-sm font-medium text-gray-700">Sign in with Google</span>
+  </button>
+</div>
+
+
+  {/* Divider with "Or sign in with" */}
+              <div className="relative my-8">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="bg-white dark:bg-gray-900 px-3 text-gray-500 dark:text-gray-400">
+                    Or sign in with
+                  </span>
+                </div>
+              </div>
+                
                 <label
                   htmlFor="email"
                   className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
@@ -1327,19 +1356,9 @@ export default function Login() {
                 {isSubmitting ? "Loging..." : "Login"}
               </Button>
 
-              {/* Divider with "Or sign in with" */}
-              <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="bg-white dark:bg-gray-900 px-3 text-gray-500 dark:text-gray-400">
-                    Or sign in with
-                  </span>
-                </div>
-              </div>
+            
 
-              {/* Google & Facebook Icons */}
+              {/* Google & Facebook Icons 
               <div className="flex justify-center gap-4 mt-2">
                 <button
                   type="button"
@@ -1366,7 +1385,7 @@ export default function Login() {
                   />
                 </button>
               </div>
-
+*/}
               <p className="text-center text-sm text-gray-600 mt-4">
                 New to Cness?{" "}
                 <Link

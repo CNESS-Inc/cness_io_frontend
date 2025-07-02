@@ -24,8 +24,10 @@ const Image: React.FC<LazyImageProps> = ({
           src={placeholderSrc}
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover rounded-[18px] transition-opacity duration-300"
-          style={{ width, height }}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+          src === '/cnesslogo.png' ? '' : 'rounded-[18px]'
+        }`}
+        style={{ width, height }}
         />
       )}
       <img
@@ -33,12 +35,12 @@ const Image: React.FC<LazyImageProps> = ({
         alt={alt}
         loading={priority ? 'eager' : 'lazy'}
         onLoad={() => setIsLoaded(true)}
-        className={`w-full rounded-[18px] h-full transition-opacity duration-300 ${
-          isLoaded ? 'opacity-100' : 'opacity-0'
-        }`}
-        width={width}
-        height={height}
-        {...props}
+        className={`w-full h-full transition-opacity duration-300 ${
+        src === '/cnesslogo.png' ? '' : 'rounded-[18px]'
+      } ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+      width={width}
+      height={height}
+      {...props}
       />
     </div>
   )
