@@ -3,7 +3,7 @@ import FAQSection from "../components/ui/Faq"; // Adjust the import path as need
 import tollfree from "..//assets/tollfree.png";
 
 const Support = () => {
-  const [activeTab, setActiveTab] = useState<'tickets' | 'faq'>('tickets');
+const [activeTab, setActiveTab] = useState<'tickets' | 'faq'>('faq');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Sample ticket data
@@ -78,17 +78,19 @@ const Support = () => {
 
         {/* Tab Navigation */}
         <div className="flex border-b border-gray-200 mb-6">
-          <button
-            className={`px-4 py-2 font-medium ${activeTab === 'tickets' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
-            onClick={() => setActiveTab('tickets')}
-          >
-            My Tickets
-          </button>
+          
           <button
             className={`px-4 py-2 font-medium ${activeTab === 'faq' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
             onClick={() => setActiveTab('faq')}
           >
             FAQ
+          </button>
+
+          <button
+            className={`px-4 py-2 font-medium ${activeTab === 'tickets' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+            onClick={() => setActiveTab('tickets')}
+          >
+            My Tickets
           </button>
         </div>
 

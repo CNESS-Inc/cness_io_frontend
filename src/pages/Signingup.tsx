@@ -219,7 +219,7 @@ const [isUsernameFocused, setIsUsernameFocused] = useState(false);
 
   return (
     <>
-<div className="relative min-h-screen flex flex-col overflow-hidden bg-white">
+<div className="relative min-h-screen flex flex-col bg-white">
         <div className="relative w-full h-[250px]">
           {/* Diagonal Gradient Background */}
 <div className="absolute top-0 left-0 w-full h-[300px] sm:h-[400px] lg:h-[600px] z-0">
@@ -266,6 +266,34 @@ const [isUsernameFocused, setIsUsernameFocused] = useState(false);
 
             <form className="space-y-4" onSubmit={handleSubmit}>
 <div className="mb-4 relative group">
+
+{/* Google Sign-In Button */}
+<div className="flex justify-center gap-4 mt-2">
+  <button
+    type="button"
+    onClick={() => login()}
+    className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-2xl px-4 py-2 bg-white hover:shadow-md hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#F07EFF]"
+  >
+    <img
+      src="/google-icon-logo.svg"
+      alt="Google"
+      className="w-6 h-6"
+    />
+    <span className="text-sm font-medium text-gray-700">Sign up with Google</span>
+  </button>
+</div>
+
+{/* Divider with "Or sign up with" */}
+<div className="relative my-6">
+  <div className="absolute inset-0 flex items-center">
+    <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+  </div>
+  <div className="relative flex justify-center text-sm">
+    <span className="bg-white dark:bg-gray-900 px-3 text-gray-500 dark:text-gray-400">
+      Or sign up with
+    </span>
+  </div>
+</div>
                 <label
                   htmlFor="username"
                   className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
@@ -405,31 +433,11 @@ onBlur={() => setIsUsernameFocused(false)}
               </div>
 
 
-{/* Divider with "Or sign up with" */}
-<div className="relative my-6">
-  <div className="absolute inset-0 flex items-center">
-    <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
-  </div>
-  <div className="relative flex justify-center text-sm">
-    <span className="bg-white dark:bg-gray-900 px-3 text-gray-500 dark:text-gray-400">
-      Or sign up with
-    </span>
-  </div>
-</div>
 
-{/* Google login via Identity Services */}
-<div className="flex justify-center gap-4 mt-2">
-  <button
-    type="button"
-    onClick={() => login()} // 👈 This calls useGoogleLogin hook
-    className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 transition hover:shadow-md hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#F07EFF] text-sm font-medium text-gray-700 dark:text-gray-200"
-  >
-<img src="/google-icon-logo.svg" alt="Google" className="w-5 h-5" />
-    
 
-  </button>
 
-  {/* Facebook (still inactive) */}
+
+  {/* Facebook (still inactive) 
   <button
     type="button"
     disabled
@@ -438,8 +446,8 @@ onBlur={() => setIsUsernameFocused(false)}
   >
     <img src="/Facebook_Logo.png" alt="Facebook" className="w-7 h-7" />
   </button>
-</div>
 
+*/}
               <div className="mt-2 flex flex-col sm:flex-row sm:items-center justify-center text-sm gap-2 sm:gap-2">
                 <label className="flex items-center gap-2">
                   Already have an account?{" "}
