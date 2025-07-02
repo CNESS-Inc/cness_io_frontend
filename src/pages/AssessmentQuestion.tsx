@@ -496,7 +496,6 @@ const AssessmentQuestion: React.FC = () => {
               value={formData.bestPractice.answer || ""}
               onChange={(e) => handleBestPracticeChange(e.target.value)}
                     disabled={isSubmitted}
-
             />
 
             {/* Section 4: Suggested Uploads */}
@@ -546,6 +545,7 @@ const AssessmentQuestion: React.FC = () => {
                   placeholder="https://example.com"
                   value={formData.referenceLink || ""}
                   onChange={(e) => handleReferenceLinkChange(e.target.value)}
+                  disabled={isSubmitted}
                 />
               </div>
             </div>
