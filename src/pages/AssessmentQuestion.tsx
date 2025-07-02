@@ -346,19 +346,19 @@ const AssessmentQuestion: React.FC = () => {
   };
 
   const handleNext = async () => {
-  if (!validateForm()) {
-    return;
-  }
+    if (!validateForm()) {
+      return;
+    }
 
-  // Only call handleSave if the form is not submitted
-  if (!isSubmitted) {
-    await handleSave();
-  }
+    // Only call handleSave if the form is not submitted
+    if (!isSubmitted) {
+      await handleSave();
+    }
 
-  if (currentSection?.next_section_id) {
-    fetchQuestions(currentSection.next_section_id);
-  }
-};
+    if (currentSection?.next_section_id) {
+      fetchQuestions(currentSection.next_section_id);
+    }
+  };
 
   const handlePrevious = () => {
     if (currentSection?.previous_section_id) {
@@ -393,14 +393,13 @@ const AssessmentQuestion: React.FC = () => {
 
   return (
     <>
-      <div className="w-full px-2 sm:px-6 lg:px-2 mt-6">
-        {/* Header */}
+      {/* <div className="w-full px-2 sm:px-6 lg:px-2 mt-6">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-3">
-            {/* Icon circle with gradient */}
+
             <div className="w-10 h-10  ">
               <img
-                src={missionIcon} // Replace with actual path
+                src={missionIcon} 
                 alt="Mission Icon"
                 className="w-10 h-10"
               />{" "}
@@ -410,10 +409,9 @@ const AssessmentQuestion: React.FC = () => {
             </h1>
           </div>
 
-          {/* Progress pill */}
           <StatusPill status="in_progress" percentage={progress} />
         </div>
-      </div>
+      </div> */}
 
       {completed_step === "2" ? (
         <div className="w-full px-4 sm:px-6 lg:px-2 pt-4 pb-10 space-y-6">
@@ -554,24 +552,24 @@ const AssessmentQuestion: React.FC = () => {
 
             {/* Action Buttons */}
             {/* {!isSubmitted && ( */}
-              <div className="flex flex-col sm:flex-row items-center justify-between mt-10 px-4 py-6 bg-white rounded-xl shadow-sm gap-4">
-                {/* Save Button - Gradient */}
-                <Button
-                  variant="gradient-primary"
-                  onClick={handleSave}
-                  // disabled={isSubmitting}
-                        disabled={isSubmitted}
-                  className="w-full sm:w-auto px-6 py-2 rounded-full text-white font-medium disabled:opacity-60 cursor-pointer"
-                >
-                  {isSubmitting ? "Saving..." : "Save"}
-                </Button>
+            <div className="flex flex-col sm:flex-row items-center justify-between mt-10 px-4 py-6 bg-white rounded-xl shadow-sm gap-4">
+              {/* Save Button - Gradient */}
+              <Button
+                variant="gradient-primary"
+                onClick={handleSave}
+                // disabled={isSubmitting}
+                disabled={isSubmitted}
+                className="w-full sm:w-auto px-6 py-2 rounded-full text-white font-medium disabled:opacity-60 cursor-pointer"
+              >
+                {isSubmitting ? "Saving..." : "Save"}
+              </Button>
 
-                {/* Prev & Next Buttons */}
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
-                  <button
-                    onClick={handlePrevious}
-                    disabled={!currentSection.previous_section_id}
-                    className={`w-full sm:w-auto px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 
+              {/* Prev & Next Buttons */}
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+                <button
+                  onClick={handlePrevious}
+                  disabled={!currentSection.previous_section_id}
+                  className={`w-full sm:w-auto px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 
                               ${
                                 prevVariant === "white-disabled"
                                   ? "bg-white text-gray-400 border border-gray-200 shadow-md cursor-pointer"
@@ -579,20 +577,20 @@ const AssessmentQuestion: React.FC = () => {
                                   ? "bg-[#EEF0FF] text-[#7077FE] cursor-pointer"
                                   : "bg-[#EEF0FF] text-[#7077FE] hover:bg-[#DDE1FF] shadow-md cursor-pointer"
                               }`}
-                  >
-                    Previous
-                  </button>
+                >
+                  Previous
+                </button>
 
-                  <Button
-                    variant="gradient-primary"
-                    onClick={handleNext}
-                    disabled={!currentSection.next_section_id}
-                    className="w-full sm:w-auto px-6 py-2 rounded-full text-white font-medium cursor-pointer transition-colors duration-200"
-                  >
-                    Save & Next
-                  </Button>
-                </div>
+                <Button
+                  variant="gradient-primary"
+                  onClick={handleNext}
+                  disabled={!currentSection.next_section_id}
+                  className="w-full sm:w-auto px-6 py-2 rounded-full text-white font-medium cursor-pointer transition-colors duration-200"
+                >
+                  Save & Next
+                </Button>
               </div>
+            </div>
             {/* )} */}
 
             {/* Pagination Dots (Optional center item) */}
