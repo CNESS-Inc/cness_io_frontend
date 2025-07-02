@@ -1,163 +1,163 @@
 import { useState } from "react";
 
-import HeroCarousel from "../components/marketplaceComponents/HeroCarousel";
-import CnessRecommendations from "../components/marketplaceComponents/CnessRecommendations";
-import sorticon from "../assets/sort.png"; // update the path as needed
-import MarketplaceSection from "../components/marketplaceComponents/MarketplaceSection";
+// import HeroCarousel from "../components/marketplaceComponents/HeroCarousel";
+// import CnessRecommendations from "../components/marketplaceComponents/CnessRecommendations";
+// import sorticon from "../assets/sort.png"; // update the path as needed
+// import MarketplaceSection from "../components/marketplaceComponents/MarketplaceSection";
 
-import musicimg from "../assets/musicimg.jpg";
-import moviesimg from "../assets/moviesimg.jpg"; // <- exact file name
-import ebookimg from "../assets/ebookimg.jpg";
-import ebookimg1 from "../assets/ebook1img.jpg";
-//import courseimg from "../assets/courseimg.jpg";
-import webinarimg from "../assets/webinarimg.jpg";
+// import musicimg from "../assets/musicimg.jpg";
+// import moviesimg from "../assets/moviesimg.jpg"; // <- exact file name
+// import ebookimg from "../assets/ebookimg.jpg";
+// import ebookimg1 from "../assets/ebook1img.jpg";
+// //import courseimg from "../assets/courseimg.jpg";
+// import webinarimg from "../assets/webinarimg.jpg";
 
-import Ebooktag from "../assets/Ebooktag.png";
-import Moviestag from "../assets/Moviestag.png";
-import webinartag from "../assets/webinarstag.png";
-import musictag from "../assets/Musictag.png";
+// import Ebooktag from "../assets/Ebooktag.png";
+// import Moviestag from "../assets/Moviestag.png";
+// import webinartag from "../assets/webinarstag.png";
+// import musictag from "../assets/Musictag.png";
 
-import person1 from "../assets/person1.jpg";
-import person2 from "../assets/person2.jpg";
-import person3 from "../assets/person3.jpg";
+// import person1 from "../assets/person1.jpg";
+// import person2 from "../assets/person2.jpg";
+// import person3 from "../assets/person3.jpg";
 
-import { Filter, TrendingUp, Star, ClockFading } from "lucide-react";
+// import { Filter, TrendingUp, Star, ClockFading } from "lucide-react";
 
-const featuredProducts = [
-  {
-    id: "1",
-    title: "Ways to craft work that adds significance.",
-    image: ebookimg,
-    badge: "Ebook",
-    badgeImage: Ebooktag,
-    rating: 4,
-    author: "Alex",
-    authorAvatar: person1,
-  },
+// const featuredProducts = [
+//   {
+//     id: "1",
+//     title: "Ways to craft work that adds significance.",
+//     image: ebookimg,
+//     badge: "Ebook",
+//     badgeImage: Ebooktag,
+//     rating: 4,
+//     author: "Alex",
+//     authorAvatar: person1,
+//   },
 
-  {
-    id: "2",
-    title: "A comprehensive guide to harmonizing your chakras.",
-    image: moviesimg,
-    badge: "Movies",
-    badgeImage: Moviestag,
-    rating: 4,
-    author: "Alex",
-    authorAvatar: person3,
-  },
+//   {
+//     id: "2",
+//     title: "A comprehensive guide to harmonizing your chakras.",
+//     image: moviesimg,
+//     badge: "Movies",
+//     badgeImage: Moviestag,
+//     rating: 4,
+//     author: "Alex",
+//     authorAvatar: person3,
+//   },
 
-  {
-    id: "3",
-    title: "Yoga routines for mothers on the go.",
-    image: webinarimg,
-    badge: "Movies",
-    badgeImage: webinartag,
-    rating: 4,
-    author: "Alex",
-    authorAvatar: person2,
-  },
-];
+//   {
+//     id: "3",
+//     title: "Yoga routines for mothers on the go.",
+//     image: webinarimg,
+//     badge: "Movies",
+//     badgeImage: webinartag,
+//     rating: 4,
+//     author: "Alex",
+//     authorAvatar: person2,
+//   },
+// ];
 
-const trendingProducts = [
-  {
-    id: "1",
-    title: "Ways to craft work that adds significance.",
-    image: ebookimg,
-    badge: "Ebook",
-    badgeImage: Ebooktag,
-    rating: 4,
-    author: "Alex",
-    authorAvatar: person1,
-  },
+// const trendingProducts = [
+//   {
+//     id: "1",
+//     title: "Ways to craft work that adds significance.",
+//     image: ebookimg,
+//     badge: "Ebook",
+//     badgeImage: Ebooktag,
+//     rating: 4,
+//     author: "Alex",
+//     authorAvatar: person1,
+//   },
 
-  {
-    id: "2",
-    title: "A comprehensive guide to harmonizing your chakras.",
-    image: moviesimg,
-    badge: "Movies",
-    badgeImage: Moviestag,
-    rating: 4,
-    author: "Alex",
-    authorAvatar: person3,
-  },
+//   {
+//     id: "2",
+//     title: "A comprehensive guide to harmonizing your chakras.",
+//     image: moviesimg,
+//     badge: "Movies",
+//     badgeImage: Moviestag,
+//     rating: 4,
+//     author: "Alex",
+//     authorAvatar: person3,
+//   },
 
-  {
-    id: "3",
-    title: "Yoga routines for mothers on the go.",
-    image: webinarimg,
-    badge: "Movies",
-    badgeImage: webinartag,
-    rating: 4,
-    author: "Alex",
-    authorAvatar: person2,
-  },
+//   {
+//     id: "3",
+//     title: "Yoga routines for mothers on the go.",
+//     image: webinarimg,
+//     badge: "Movies",
+//     badgeImage: webinartag,
+//     rating: 4,
+//     author: "Alex",
+//     authorAvatar: person2,
+//   },
 
-  {
-    id: "4",
-    title: "Ways to craft work that adds significance.",
-    image: ebookimg1,
-    badge: "Movies",
-    badgeImage: Ebooktag,
-    rating: 2,
-    author: "Alex",
-    authorAvatar: person2,
-  },
+//   {
+//     id: "4",
+//     title: "Ways to craft work that adds significance.",
+//     image: ebookimg1,
+//     badge: "Movies",
+//     badgeImage: Ebooktag,
+//     rating: 2,
+//     author: "Alex",
+//     authorAvatar: person2,
+//   },
 
-  {
-    id: "5",
-    title: "A comprehensive guide to harmonizing your chakras.",
-    image: musicimg,
-    badge: "Movies",
-    badgeImage: musictag,
-    rating: 2,
-    author: "Alex",
-    authorAvatar: person2,
-  },
-];
+//   {
+//     id: "5",
+//     title: "A comprehensive guide to harmonizing your chakras.",
+//     image: musicimg,
+//     badge: "Movies",
+//     badgeImage: musictag,
+//     rating: 2,
+//     author: "Alex",
+//     authorAvatar: person2,
+//   },
+// ];
 
-const latestProducts = [
-  {
-    id: "1",
-    title: "Ways to craft work that adds significance.",
-    image: ebookimg,
-    badge: "Ebook",
-    badgeImage: Ebooktag,
-    rating: 4,
-    author: "Alex",
-    authorAvatar: person1,
-  },
+// const latestProducts = [
+//   {
+//     id: "1",
+//     title: "Ways to craft work that adds significance.",
+//     image: ebookimg,
+//     badge: "Ebook",
+//     badgeImage: Ebooktag,
+//     rating: 4,
+//     author: "Alex",
+//     authorAvatar: person1,
+//   },
 
-  {
-    id: "2",
-    title: "A comprehensive guide to harmonizing your chakras.",
-    image: moviesimg,
-    badge: "Movies",
-    badgeImage: Moviestag,
-    rating: 4,
-    author: "Alex",
-    authorAvatar: person3,
-  },
+//   {
+//     id: "2",
+//     title: "A comprehensive guide to harmonizing your chakras.",
+//     image: moviesimg,
+//     badge: "Movies",
+//     badgeImage: Moviestag,
+//     rating: 4,
+//     author: "Alex",
+//     authorAvatar: person3,
+//   },
 
-  {
-    id: "3",
-    title: "Yoga routines for mothers on the go.",
-    image: webinarimg,
-    badge: "Movies",
-    badgeImage: webinartag,
-    rating: 4,
-    author: "Alex",
-    authorAvatar: person2,
-  },
-];
+//   {
+//     id: "3",
+//     title: "Yoga routines for mothers on the go.",
+//     image: webinarimg,
+//     badge: "Movies",
+//     badgeImage: webinartag,
+//     rating: 4,
+//     author: "Alex",
+//     authorAvatar: person2,
+//   },
+// ];
 
 export default function MarketplacePage() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const [_currentPage, _setCurrentPage] = useState(1);
+  // const itemsPerPage = 6;
 
-  const start = (currentPage - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-  const paginatedProducts = featuredProducts.slice(start, end);
-  const totalPages = Math.ceil(featuredProducts.length / itemsPerPage);
+  // const start = (currentPage - 1) * itemsPerPage;
+  // const end = start + itemsPerPage;
+  // const paginatedProducts = featuredProducts.slice(start, end);
+  // const totalPages = Math.ceil(featuredProducts.length / itemsPerPage);
 
   return (
     <>

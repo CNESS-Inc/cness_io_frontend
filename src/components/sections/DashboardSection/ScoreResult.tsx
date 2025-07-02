@@ -22,59 +22,59 @@ import {
   FaTwitter,
   FaWhatsapp,
 } from "react-icons/fa";
-import { BiShare } from "react-icons/bi";
+// import { BiShare } from "react-icons/bi";
 
-const tabs = [
-  "Mission & Vision",
-  "Client / Customer / Consumer",
-  "Communities & Charities",
-  "Vision & Legacy – Long-Term Contribution",
-  "Leadership Best Practices",
-];
-const scoreData = [
-  {
-    title: "Mission & Vision",
-    score: 79,
-    scorecolor: "#404040",
-    label: "Excellent",
-    labelColor: "#6B7280",
-    tip: "Almost There",
-    tipColor: "text-[#FF5F7E]",
-    color: "#9747FF",
-  },
-  {
-    title: "Client / Customer / Consumer",
-    score: 100,
-    label: "Average",
-    tip: "Excellence!",
-    tipColor: "text-[#7B61FF]",
-    color: "#9747FF",
-  },
-  {
-    title: "Communities & Charities",
-    score: 80,
-    label: "Excellent",
-    tip: "Verge of Completion!",
-    tipColor: "text-[#4CAF50]",
-    color: "#9747FF",
-  },
-  {
-    title: "Vision & Legacy – Long-Term Contribution",
-    score: 90,
-    label: "Average",
-    tip: "Almost Perfect!",
-    tipColor: "text-[#A259FF]",
-    color: "#9747FF",
-  },
-  {
-    title: "Leadership Best Practices",
-    score: 60,
-    label: "Average",
-    tip: "Almost Perfect!",
-    tipColor: "text-[#A259FF]",
-    color: "#9747FF",
-  },
-];
+// const tabs = [
+//   "Mission & Vision",
+//   "Client / Customer / Consumer",
+//   "Communities & Charities",
+//   "Vision & Legacy – Long-Term Contribution",
+//   "Leadership Best Practices",
+// ];
+// const scoreData = [
+//   {
+//     title: "Mission & Vision",
+//     score: 79,
+//     scorecolor: "#404040",
+//     label: "Excellent",
+//     labelColor: "#6B7280",
+//     tip: "Almost There",
+//     tipColor: "text-[#FF5F7E]",
+//     color: "#9747FF",
+//   },
+//   {
+//     title: "Client / Customer / Consumer",
+//     score: 100,
+//     label: "Average",
+//     tip: "Excellence!",
+//     tipColor: "text-[#7B61FF]",
+//     color: "#9747FF",
+//   },
+//   {
+//     title: "Communities & Charities",
+//     score: 80,
+//     label: "Excellent",
+//     tip: "Verge of Completion!",
+//     tipColor: "text-[#4CAF50]",
+//     color: "#9747FF",
+//   },
+//   {
+//     title: "Vision & Legacy – Long-Term Contribution",
+//     score: 90,
+//     label: "Average",
+//     tip: "Almost Perfect!",
+//     tipColor: "text-[#A259FF]",
+//     color: "#9747FF",
+//   },
+//   {
+//     title: "Leadership Best Practices",
+//     score: 60,
+//     label: "Average",
+//     tip: "Almost Perfect!",
+//     tipColor: "text-[#A259FF]",
+//     color: "#9747FF",
+//   },
+// ];
 
 const SegmentedRing = ({
   value,
@@ -155,7 +155,7 @@ const SegmentedRing = ({
 };
 
 const ScoreResult = () => {
-  const [activeTab, setActiveTab] = useState(0);
+  // const [activeTab, setActiveTab] = useState(0);
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const { showToast } = useToast();
   const [scoreData, setScoreData] = useState<any>(null);
@@ -250,20 +250,20 @@ const ScoreResult = () => {
     }
   };
 
-  const SUB_SECTION_ORDER = [
-    "Select all that apply",
-    "Purpose Pause",
-    "Suggested Uploads",
-    "Best Practice",
-  ];
+  // const SUB_SECTION_ORDER = [
+  //   "Select all that apply",
+  //   "Purpose Pause",
+  //   "Suggested Uploads",
+  //   "Best Practice",
+  // ];
 
-  const sortSubSections = (subSections: any[]) => {
-    return subSections.sort((a, b) => {
-      const indexA = SUB_SECTION_ORDER.indexOf(a.sub_section_name);
-      const indexB = SUB_SECTION_ORDER.indexOf(b.sub_section_name);
-      return indexA - indexB;
-    });
-  };
+  // const sortSubSections = (subSections: any[]) => {
+  //   return subSections.sort((a, b) => {
+  //     const indexA = SUB_SECTION_ORDER.indexOf(a.sub_section_name);
+  //     const indexB = SUB_SECTION_ORDER.indexOf(b.sub_section_name);
+  //     return indexA - indexB;
+  //   });
+  // };
 
   if (loading) {
     return <div>Loading...</div>;

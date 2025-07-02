@@ -10,8 +10,6 @@ import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { EyeIcon } from "lucide-react";
 import Modal from "../components/ui/Modal";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import missionIcon from "../assets/missionicon.png";
-import StatusPill from "../components/ui/StatusPill";
 
 interface Section {
   id: string;
@@ -68,7 +66,7 @@ const AssessmentQuestion: React.FC = () => {
   const [toggles, setToggles] = useState<boolean[]>([]);
   const [formData, setFormData] = useState<FormValues | null>(null);
   const [loading, setLoading] = useState(true);
-  const [progress, setprogress] = useState(0);
+  const [_progress, setprogress] = useState(0);
   const [totalstep, settotalstep] = useState(0);
   const [_sectionHistory, setSectionHistory] = useState<string[]>([]);
   const [activeModal, setActiveModal] = useState<"assesment" | null>(null);
