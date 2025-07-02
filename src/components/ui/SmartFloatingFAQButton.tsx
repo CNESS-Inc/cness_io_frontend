@@ -1,8 +1,6 @@
-import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const SmartFloatingFAQButton: React.FC = () => {
-  const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -12,8 +10,6 @@ const SmartFloatingFAQButton: React.FC = () => {
   return (
     <button
       onClick={() => navigate('/dashboard/support')}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       className={`
         fixed bottom-6 right-6
         bg-gradient-to-r from-indigo-600 to-purple-600
@@ -40,5 +36,5 @@ const SmartFloatingFAQButton: React.FC = () => {
     </button>
   );
 };
- 
+
 export default SmartFloatingFAQButton;
