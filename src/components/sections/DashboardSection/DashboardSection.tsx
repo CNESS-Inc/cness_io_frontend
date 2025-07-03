@@ -721,7 +721,7 @@ const openRetakeAssesmentModal = async () => {
                         }}
                       >
                         <span className="font-['Plus_Jakarta_Sans',Helvetica] text-white text-center">
-                          Start
+                          {user?.profile_progress === 100 ? "Edit" : "Start"}
                         </span>
                       </Button>
                     </div>
