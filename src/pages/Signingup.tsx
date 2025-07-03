@@ -1,12 +1,13 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import SignupAnimation from "../components/ui/SignupAnimation"; // adjust path
-import { RegisterDetails,GoogleLoginDetails  } from "../Common/ServerAPI";
+import { RegisterDetails, GoogleLoginDetails } from "../Common/ServerAPI";
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
 import { Link, useNavigate } from "react-router-dom";
 import cnesslogo from "../assets/cnesslogo.png";
 import { FiMail, FiEye, FiEyeOff } from "react-icons/fi";
-import { useGoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin } from "@react-oauth/google";
+import ReCAPTCHA from "react-google-recaptcha";
 
 // interface SignupFormProps {
 //   onSuccess: () => void;
@@ -32,6 +33,7 @@ interface FormErrors {
   email?: string;
   password?: string;
   confirmPassword?: string;
+  recaptcha?: string;
 }
 
 export default function Signingup() {
@@ -47,11 +49,15 @@ export default function Signingup() {
     confirmPassword: "",
   });
 
-const [emailFocused, setEmailFocused] = useState(false);
-const [showPassword, setShowPassword] = useState(false);
-const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-const [isUsernameFocused, setIsUsernameFocused] = useState(false);
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isUsernameFocused, setIsUsernameFocused] = useState(false);
+  const [recaptchaValue, setRecaptchaValue] = useState<string | null>(null);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
+  // Add your site key (replace with your actual key)
+  const RECAPTCHA_SITE_KEY = "6LcmM3YrAAAAAIoMONSmkAGazWwUXdCE6fzI473L";
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -83,10 +89,10 @@ const [isUsernameFocused, setIsUsernameFocused] = useState(false);
       newErrors.username = "Username must be at least 3 characters";
     } else if (formData.username.length > 20) {
       newErrors.username = "Username must be less than 20 characters";
+    } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
+      newErrors.username =
+        "Username can only contain letters, numbers, and underscores";
     }
-    else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
-  newErrors.username = "Username can only contain letters, numbers, and underscores";
-}
 
     // Email validation
     if (!formData.email.trim()) {
@@ -117,14 +123,31 @@ const [isUsernameFocused, setIsUsernameFocused] = useState(false);
       newErrors.confirmPassword = "Passwords do not match";
     }
 
+    if (!recaptchaValue) {
+      newErrors.recaptcha = "Please verify you're not a robot";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const handleCaptchaChange = (value: string | null) => {
+    setRecaptchaValue(value);
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors.recaptcha;
+      return newErrors;
+    });
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     setApiMessage(null);
+
+    // Reset CAPTCHA on each submission attempt
+    recaptchaRef.current?.reset();
+    setRecaptchaValue(null);
 
     const form = e.currentTarget;
     const formData = {
@@ -191,7 +214,7 @@ const [isUsernameFocused, setIsUsernameFocused] = useState(false);
     navigate("/log-in");
   };
 
- const handleGoogleLoginSuccess = async (tokenResponse: any) => {
+  const handleGoogleLoginSuccess = async (tokenResponse: any) => {
     const token = tokenResponse.access_token;
 
     try {
@@ -199,7 +222,7 @@ const [isUsernameFocused, setIsUsernameFocused] = useState(false);
       console.log("Backend response:", data);
 
       if (data?.jwt) {
-        localStorage.setItem("token", data.jwt);       
+        localStorage.setItem("token", data.jwt);
       } else {
         alert("Google login succeeded, but no JWT received.");
       }
@@ -219,10 +242,10 @@ const [isUsernameFocused, setIsUsernameFocused] = useState(false);
 
   return (
     <>
-<div className="relative min-h-screen flex flex-col bg-white">
+      <div className="relative min-h-screen flex flex-col bg-white">
         <div className="relative w-full h-[250px]">
           {/* Diagonal Gradient Background */}
-<div className="absolute top-0 left-0 w-full h-[300px] sm:h-[400px] lg:h-[600px] z-0">
+          <div className="absolute top-0 left-0 w-full h-[300px] sm:h-[400px] lg:h-[600px] z-0">
             <div
               className="absolute top-0 left-0 w-full h-full"
               style={{
@@ -234,20 +257,19 @@ const [isUsernameFocused, setIsUsernameFocused] = useState(false);
           </div>
 
           <div className="absolute top-40 left-10 z-10">
-<div className="fixed top-0 left-0 p-1 z-50">
-  <img
-    src={cnesslogo}
-    alt="logo"
-    className="w-60 h-60 object-contain"
-  
-  />
-</div>          
-  </div>
+            <div className="fixed top-0 left-0 p-1 z-50">
+              <img
+                src={cnesslogo}
+                alt="logo"
+                className="w-60 h-60 object-contain"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Sign In Form */}
-<div className="absolute top-[100px] sm:top-[140px] md:top-[180px] left-0 right-0 flex justify-center z-10 px-4">
-  <div className="w-full max-w-[600px] bg-white rounded-2xl shadow-xl px-4 sm:px-10 py-8 sm:py-12 space-y-10">
+        <div className="absolute top-[100px] sm:top-[140px] md:top-[180px] left-0 right-0 flex justify-center z-10 px-4">
+          <div className="w-full max-w-[600px] bg-white rounded-2xl shadow-xl px-4 sm:px-10 py-8 sm:py-12 space-y-10">
             <h2 className="text-3xl font-bold text-gray-900">
               Sign up your account
             </h2>
@@ -265,35 +287,36 @@ const [isUsernameFocused, setIsUsernameFocused] = useState(false);
             )}
 
             <form className="space-y-4" onSubmit={handleSubmit}>
-<div className="mb-4 relative group">
+              <div className="mb-4 relative group">
+                {/* Google Sign-In Button */}
+                <div className="flex justify-center gap-4 mt-2">
+                  <button
+                    type="button"
+                    onClick={() => login()}
+                    className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-2xl px-4 py-2 bg-white hover:shadow-md hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#F07EFF]"
+                  >
+                    <img
+                      src="/google-icon-logo.svg"
+                      alt="Google"
+                      className="w-6 h-6"
+                    />
+                    <span className="text-sm font-medium text-gray-700">
+                      Sign up with Google
+                    </span>
+                  </button>
+                </div>
 
-{/* Google Sign-In Button */}
-<div className="flex justify-center gap-4 mt-2">
-  <button
-    type="button"
-    onClick={() => login()}
-    className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-2xl px-4 py-2 bg-white hover:shadow-md hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#F07EFF]"
-  >
-    <img
-      src="/google-icon-logo.svg"
-      alt="Google"
-      className="w-6 h-6"
-    />
-    <span className="text-sm font-medium text-gray-700">Sign up with Google</span>
-  </button>
-</div>
-
-{/* Divider with "Or sign up with" */}
-<div className="relative my-6">
-  <div className="absolute inset-0 flex items-center">
-    <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
-  </div>
-  <div className="relative flex justify-center text-sm">
-    <span className="bg-white dark:bg-gray-900 px-3 text-gray-500 dark:text-gray-400">
-      Or sign up with
-    </span>
-  </div>
-</div>
+                {/* Divider with "Or sign up with" */}
+                <div className="relative my-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="bg-white dark:bg-gray-900 px-3 text-gray-500 dark:text-gray-400">
+                      Or sign up with
+                    </span>
+                  </div>
+                </div>
                 <label
                   htmlFor="username"
                   className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
@@ -308,30 +331,31 @@ const [isUsernameFocused, setIsUsernameFocused] = useState(false);
                   value={formValues.username}
                   onChange={handleInputChange}
                   onFocus={() => setIsUsernameFocused(true)}
-onBlur={() => setIsUsernameFocused(false)}
+                  onBlur={() => setIsUsernameFocused(false)}
                   className={`w-full px-3 py-2 rounded-[12px] border ${
                     errors.username ? "border-red-500" : "border-[#CBD5E1]"
                   } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                 />
 
-  {/* Tooltip on focus/hover */}
-  {isUsernameFocused && (
-    <div className="absolute top-10 right-0 max-w-[240px] bg-gray-700 text-white text-xs px-3 py-2 rounded-md shadow-md z-20 animate-fadeIn">
-      Username must be 3–40 characters and only contain letters, numbers, and underscores.
-    </div>
-  )}
+                {/* Tooltip on focus/hover */}
+                {isUsernameFocused && (
+                  <div className="absolute top-10 right-0 max-w-[240px] bg-gray-700 text-white text-xs px-3 py-2 rounded-md shadow-md z-20 animate-fadeIn">
+                    Username must be 3–40 characters and only contain letters,
+                    numbers, and underscores.
+                  </div>
+                )}
 
-  {/* Error message after submission */}
-  {errors.username && !isUsernameFocused && (
-    <p className="mt-1 text-sm text-red-600">{errors.username}</p>
-  )}
-</div>
+                {/* Error message after submission */}
+                {errors.username && !isUsernameFocused && (
+                  <p className="mt-1 text-sm text-red-600">{errors.username}</p>
+                )}
+              </div>
 
               {/* Email field */}
-<div className="mb-4 relative">
+              <div className="mb-4 relative">
                 <label
                   htmlFor="email"
-    className="block text-[16px] font-normal leading-normal text-[#222224] font-sans mb-1"
+                  className="block text-[16px] font-normal leading-normal text-[#222224] font-sans mb-1"
                 >
                   Email
                 </label>
@@ -342,58 +366,63 @@ onBlur={() => setIsUsernameFocused(false)}
                   placeholder="Enter Your Email"
                   value={formValues.email}
                   onChange={handleInputChange}
-                   onFocus={() => setEmailFocused(true)}
-    onBlur={() => setEmailFocused(false)}
+                  onFocus={() => setEmailFocused(true)}
+                  onBlur={() => setEmailFocused(false)}
                   className={`w-full px-3 py-2 rounded-[12px] border ${
                     errors.email ? "border-red-500" : "border-[#CBD5E1]"
                   } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                 />
 
-                 <FiMail
-    className={`absolute right-3 top-9 text-gray-400 transition-opacity duration-300 ${
-      emailFocused ? "opacity-100" : "opacity-0"
-    }`}
-    size={18}
-  />
+                <FiMail
+                  className={`absolute right-3 top-9 text-gray-400 transition-opacity duration-300 ${
+                    emailFocused ? "opacity-100" : "opacity-0"
+                  }`}
+                  size={18}
+                />
                 {errors.email && (
                   <p className="mt-1 text-sm text-red-600">{errors.email}</p>
                 )}
               </div>
-{/* Password field */}
-<div className="mb-4 relative">
-  <label
-    htmlFor="password"
-    className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
-  >
-    Password
-  </label>
-  <div className="relative">
-    <input
-      type={showPassword ? "text" : "password"}
-      id="password"
-      name="password"
-      placeholder="Enter Your Password"
-      value={formValues.password}
-      onChange={handleInputChange}
-      className={`w-full px-3 pr-10 py-2 rounded-[12px] border ${
-        errors.password ? "border-red-500" : "border-[#CBD5E1]"
-      } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
-    />
-    <div
-      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-      onClick={() => setShowPassword(!showPassword)}
-    >
-      {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-    </div>
-  </div>
-  {errors.password ? (
-    <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-  ) : (
-    <p className="mt-1 text-xs text-gray-500">
-      Password must be at least 8 characters with uppercase, number, and special character
-    </p>
-  )}
-</div>
+              {/* Password field */}
+              <div className="mb-4 relative">
+                <label
+                  htmlFor="password"
+                  className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
+                >
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    placeholder="Enter Your Password"
+                    value={formValues.password}
+                    onChange={handleInputChange}
+                    className={`w-full px-3 pr-10 py-2 rounded-[12px] border ${
+                      errors.password ? "border-red-500" : "border-[#CBD5E1]"
+                    } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                  />
+                  <div
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <FiEyeOff size={18} />
+                    ) : (
+                      <FiEye size={18} />
+                    )}
+                  </div>
+                </div>
+                {errors.password ? (
+                  <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                ) : (
+                  <p className="mt-1 text-xs text-gray-500">
+                    Password must be at least 8 characters with uppercase,
+                    number, and special character
+                  </p>
+                )}
+              </div>
               {/* Confirm Password field */}
               <div className="mb-4">
                 <label
@@ -402,29 +431,32 @@ onBlur={() => setIsUsernameFocused(false)}
                 >
                   Confirm Password
                 </label>
-                  <div className="relative">
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    placeholder="Confirm Your Password"
+                    value={formValues.confirmPassword}
+                    onChange={handleInputChange}
+                    className={`w-full px-3 py-2 rounded-[12px] border ${
+                      errors.confirmPassword
+                        ? "border-red-500"
+                        : "border-[#CBD5E1]"
+                    } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                  />
+                  <div
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <FiEyeOff size={18} />
+                    ) : (
+                      <FiEye size={18} />
+                    )}
+                  </div>
+                </div>
 
-                <input
-      type={showConfirmPassword ? "text" : "password"}
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  placeholder="Confirm Your Password"
-                  value={formValues.confirmPassword}
-                  onChange={handleInputChange}
-                  className={`w-full px-3 py-2 rounded-[12px] border ${
-                    errors.confirmPassword
-                      ? "border-red-500"
-                      : "border-[#CBD5E1]"
-                  } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
-                />
- <div
-      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-    >
-      {showConfirmPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-    </div>
-  </div>
-                
                 {errors.confirmPassword && (
                   <p className="mt-1 text-sm text-red-600">
                     {errors.confirmPassword}
@@ -432,12 +464,31 @@ onBlur={() => setIsUsernameFocused(false)}
                 )}
               </div>
 
+              {/* Divider with "Or sign up with" */}
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="bg-white dark:bg-gray-900 px-3 text-gray-500 dark:text-gray-400">
+                    Or sign up with
+                  </span>
+                </div>
+              </div>
+              <div className="my-4 flex justify-center">
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey={RECAPTCHA_SITE_KEY}
+                  onChange={handleCaptchaChange}
+                />
+                {errors.recaptcha && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.recaptcha}
+                  </p>
+                )}
+              </div>
 
-
-
-
-
-  {/* Facebook (still inactive) 
+              {/* Facebook (still inactive) 
   <button
     type="button"
     disabled
@@ -457,17 +508,15 @@ onBlur={() => setIsUsernameFocused(false)}
                 </Link>
               </div>
 
-<div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+              <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
                 <Button
                   type="submit"
                   variant="gradient-primary"
                   className="rounded-[100px] py-3 px-10 self-stretch transition-colors duration-500 ease-in-out"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !recaptchaValue}
                 >
                   {isSubmitting ? "sign up..." : "Sign Up"}
                 </Button>
-
-              
               </div>
             </form>
           </div>
