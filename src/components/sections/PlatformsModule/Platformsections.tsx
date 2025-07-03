@@ -90,7 +90,7 @@ export default function PlatformSections() {
 
             {/* Content Section */}
             <div className="md:col-span-7 mt-6 md:mt-0">
-              <div className="max-w-2xl mx-auto md:mx-0">
+              <div className="max-w-xl mx-auto md:mx-0">
                 <h2 className="poppins text-base sm:text-lg lg:text-xl tracking-normal leading-none text-[#D748EA] mb-3 sm:mb-4 lg:mb-6">
                   {platform.title}
                 </h2>

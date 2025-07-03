@@ -4,6 +4,8 @@ import { useState } from "react";
 import DashboardHeader from "./DashboardHeader";
 import DashboardNavbar from "./DashboardNavbar";
 import hambur from "../../assets/hambur.png"
+import SmartFloatingFAQButton from "../../components/ui/SmartFloatingFAQButton";
+
 
 import { Outlet } from "react-router-dom";
 
@@ -74,7 +76,7 @@ const DashboardLayout = () => {
     </div>
   </div>
 )}
-
+ <SmartFloatingFAQButton /> 
     </div>
   );
 };
