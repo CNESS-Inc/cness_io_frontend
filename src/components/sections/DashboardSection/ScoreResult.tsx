@@ -197,39 +197,39 @@ const ScoreResult = () => {
   };
 
   const handleReportDownload = async () => {
-  try {
-    setIsGeneratingPDF(true);
-    const response = await GetReport();
-    const data = {
-      array: response.data.data.array,
-      final_score: response.data.data.final_score,
-    };
+    try {
+      setIsGeneratingPDF(true);
+      const response = await GetReport();
+      const data = {
+        array: response.data.data.array,
+        final_score: response.data.data.final_score,
+      };
 
-    let html = "";
+      let html = "";
 
-    // Generate HTML content for sections
-    for (const section of data.array) {
-      html += `<div style="margin-bottom: 25px;"><h2 style="margin-bottom: 10px;">Section: ${section.section.name} - (${section.section.weight} / ${section.section.total_weight})</h2>`;
-      for (const sub of section.question_data) {
-        html += `<div style="margin-bottom: 25px;"><h3>Sub Section: ${sub.sub_section.name} - (${sub.sub_section.weight} / 10)</h3>`;
-        for (const ques of sub.questions) {
-          html += `<p><b>Question:</b> ${ques.question}</p><ul>`;
-          for (const ans of ques.answer) {
-            if (ques.is_link) {
-              html += `<li><a href="${ans}" target="_blank">Click To View Uploaded File</a></li>`;
-            } else {
-              html += `<li>${ans}</li>`;
+      // Generate HTML content for sections
+      for (const section of data.array) {
+        html += `<div style="margin-bottom: 25px;"><h2 style="margin-bottom: 10px;">Section: ${section.section.name} - (${section.section.weight} / ${section.section.total_weight})</h2>`;
+        for (const sub of section.question_data) {
+          html += `<div style="margin-bottom: 25px;"><h3>Sub Section: ${sub.sub_section.name} - (${sub.sub_section.weight} / 10)</h3>`;
+          for (const ques of sub.questions) {
+            html += `<p><b>Question:</b> ${ques.question}</p><ul>`;
+            for (const ans of ques.answer) {
+              if (ques.is_link) {
+                html += `<li><a href="${ans}" target="_blank">Click To View Uploaded File</a></li>`;
+              } else {
+                html += `<li>${ans}</li>`;
+              }
             }
+            html += `</ul>`;
           }
-          html += `</ul>`;
+          html += ` </div><br/> `;
         }
         html += ` </div><br/> `;
       }
-      html += ` </div><br/> `;
-    }
 
-    // Complete HTML template
-    const template = `
+      // Complete HTML template
+      const template = `
       <!DOCTYPE html>
       <html>
       <head>
@@ -325,41 +325,42 @@ const ScoreResult = () => {
       </body>
       </html>`;
 
-    // Generate PDF from HTML with correct typing
-    const options = {
-      margin: 10,
-      filename: `CNESS_Report_${new Date().toISOString().split("T")[0]}.pdf`,
-      image: { type: "jpeg" as const, quality: 0.98 },
-      html2canvas: { 
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        async: true
-      },
-      jsPDF: {
-        unit: "mm" as const,
-        format: "a4" as const,
-        orientation: "portrait" as const,
-      },
-       pagebreak: {
-        mode: "avoid-all" as const,
-        before: ".section , #summary-table",
-        avoid: "img, table" 
-      }
-    };
+      // Generate PDF from HTML with correct typing
+      const options = {
+        margin: 10,
+        filename: `CNESS_Report_${new Date().toISOString().split("T")[0]}.pdf`,
+        image: { type: "jpeg" as const, quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          async: true,
+        },
+        jsPDF: {
+          unit: "mm" as const,
+          format: "a4" as const,
+          orientation: "portrait" as const,
+        },
+        pagebreak: {
+          mode: "avoid-all" as const,
+          before: ".section , #summary-table",
+          avoid: "img, table",
+        },
+      };
 
-    // Generate and download PDF
-    await html2pdf().set(options).from(template).save();
-  } catch (error: any) {
-    showToast({
-      message: error?.response?.data?.error?.message || "Failed to generate report",
-      type: "error",
-      duration: 5000,
-    });
-  } finally {
-    setIsGeneratingPDF(false);
-  }
-};
+      // Generate and download PDF
+      await html2pdf().set(options).from(template).save();
+    } catch (error: any) {
+      showToast({
+        message:
+          error?.response?.data?.error?.message || "Failed to generate report",
+        type: "error",
+        duration: 5000,
+      });
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
