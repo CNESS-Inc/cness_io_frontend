@@ -14,9 +14,9 @@ const OrganaizationProfilepage=lazy(()=>import('../components/sections/Dashboard
 const PublicCompanyProfile =lazy(()=>import('../pages/PublicCompanyProfile'))
 const UserProfileView =lazy(()=>import('../pages/UserProfileView'))
 import TermsAndConditions from '../pages/TermsAndConditions';
-import PrivacyPolicy from "../pages/privacypolicy";
 import Why from "../pages/Why";
 import About from "../pages/About";
+import PrivacyPolicy from "../pages/privacypolicy";
 
 export const router = createBrowserRouter([
   {
