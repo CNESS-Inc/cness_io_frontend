@@ -1,15 +1,18 @@
 import Button from "../../ui/Button";
 import joinImage from "../../../assets/join.png";
-import React, { useState } from "react";
-import ReCAPTCHA from "react-google-recaptcha";
+//import  { useState } from "react";
+//import ReCAPTCHA from "react-google-recaptcha";
 
 export default function JoiningSection()
-  { const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  //const navigate = useNavigate()
+
+  { 
+    //const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   return (
     <section className="flex flex-col items-center relative w-full ">
       <div className="relative w-full max-w-[1488px] h-auto sm:h-[363px] overflow-hidden rounded-xl">
         {/* Gradient orbs background - positioned differently for mobile */}
-        <div className="hidden sm:flex gap-[53.5px] top-2 left-0 inline-flex items-center absolute opacity-50">
+        <div className=" sm:flex gap-[53.5px] top-2 left-0 inline-flex items-center absolute opacity-50">
           <div className="bg-[#00d1ff] relative w-[365px] h-[365px] rounded-[182.5px] blur-[175px]" />
           <div className="bg-[#623fff] relative w-[365px] h-[365px] rounded-[182.5px] blur-[175px]" />
           <div className="bg-[#ff994a] relative w-[365px] h-[365px] rounded-[182.5px] blur-[175px]" />
@@ -36,10 +39,12 @@ export default function JoiningSection()
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-[15px] w-full sm:w-auto">
-           <ReCAPTCHA
-        sitekey="6LePgm4rAAAAAITlhXYYo4QIpQnsRczMa2hJ9UAl"
-        onChange={(token) => setCaptchaToken(token)}
+            {/*
+          <ReCAPTCHA
+       // sitekey="6LePgm4rAAAAAITlhXYYo4QIpQnsRczMa2hJ9UAl"
+        //onChange={(token) => setCaptchaToken(token)}
       />
+      */}
             <Button
               variant="gradient-primary"
               className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
