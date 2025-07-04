@@ -84,12 +84,12 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
           <div className="text-xs md:text-sm">Copyright © {new Date().getFullYear()}</div>
           <div className="flex flex-wrap justify-center gap-2 md:gap-4">
-            <a href="#" className="text-xs md:text-sm hover:underline">
+            <Link to="/terms-and-conditions" className="text-xs md:text-sm hover:underline">
               Terms & Conditions
-            </a>
-            <a href="#" className="text-xs md:text-sm hover:underline">
+            </Link>
+            <Link to="/privacy-policy" className="text-xs md:text-sm hover:underline">
               Privacy Policy
-            </a>
+            </Link>
           </div>
         </div>
       </div>

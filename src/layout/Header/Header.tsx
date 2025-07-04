@@ -1,5 +1,6 @@
 'use client'
 //import NavLinks from './NavLinks'
+import Navilinks from './Navigationlink';
 //import { useState } from 'react'
 //import MobileMenu from './MobileMenu'
 import { Link } from 'react-router-dom'
@@ -27,8 +28,8 @@ export default function Header() {
           </Link>
         </div>
 
-        {/* Desktop Navigation */}
-        {/* <NavLinks className="hidden md:flex" /> */}
+   
+    <Navilinks className="hidden md:flex" /> 
 
         {/* Mobile Menu Button */}
         {/* <button

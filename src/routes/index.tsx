@@ -13,7 +13,10 @@ const UserProfilePage=lazy(()=>import('../components/sections/DashboardSection/U
 const OrganaizationProfilepage=lazy(()=>import('../components/sections/DashboardSection/OrganizationProfile'))
 const PublicCompanyProfile =lazy(()=>import('../pages/PublicCompanyProfile'))
 const UserProfileView =lazy(()=>import('../pages/UserProfileView'))
-
+import TermsAndConditions from '../pages/TermsAndConditions';
+import PrivacyPolicy from '..//pages/privacypolicy';
+import Why from "../pages/Why";
+import About from "../pages/About";
 
 export const router = createBrowserRouter([
   {
@@ -25,6 +28,11 @@ export const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
+   { path: "why", 
+    element: <Why /> },
+      { path: "about",
+         element: <About /> },
+    
 
        { path: 'directory', 
         element: <DirectoryPage /> 
@@ -62,7 +70,15 @@ export const router = createBrowserRouter([
     ],
 
   },
+  {
+  path: '/terms-and-conditions',
+  element: <TermsAndConditions />,
+},
 
+  {
+  path: '/privacy-policy',
+  element: <PrivacyPolicy />,
+},
   {
     path: '/email-verify',
     element: <EmailVerify />,

@@ -5,15 +5,17 @@
 // import Stepper from "../components/sections/Stepper";
 // import Testimonialsection from "../components/sections/Testimonial";
 // import WhySection from "../components/sections/Whysection";
-// import Footer from "../layout/Footer/Footer";
+ //import Footer from "../layout/Footer/Footer";
 import Header from "../layout/Header";
 import HeroSection from "../components/sections/Herosection";
+import Fcopyright from "../layout/Fcopyright";
 
 const Home = () => {
   return (
     <>
       <Header />
       <HeroSection />
+      <Fcopyright/>
       {/* <WhySection />
       <Platformsections />
       <Plateformrootedsection />
