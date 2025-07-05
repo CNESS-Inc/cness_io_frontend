@@ -892,7 +892,7 @@ const ScoreResult = () => {
                           <p
                             className={`text-sm font-semibold ${scoreMeta.tipColor} leading-none mb-0`}
                           >
-                            {scoreMeta.tip}
+                            {section.status}
                           </p>
                           {/* <p className="text-xs text-[#2E2E30] leading-none mt-[10px]">
                             Score: {section.weight}%
