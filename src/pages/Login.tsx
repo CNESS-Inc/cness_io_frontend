@@ -1252,7 +1252,7 @@ export default function Login() {
                   <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="bg-white dark:bg-gray-900 px-3 text-gray-500 dark:text-gray-400">
+                  <span className="bg-white px-3 ">
                     Or sign in with
                   </span>
                 </div>
