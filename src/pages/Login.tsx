@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Modal from "../components/ui/Modal";
 import SignupAnimation from "../components/ui/SignupAnimation"; // adjust path
 import { useEffect, useState, type FormEvent } from "react";
@@ -210,6 +210,14 @@ export default function Login() {
   };
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    if (searchParams.get('google') === 'true') {
+      login(); 
+    }
+  }, [location.search]);
 
   const validateField = (
     name: string,
@@ -1182,6 +1190,7 @@ export default function Login() {
       });
     },
   });
+
 
   return (
     <>

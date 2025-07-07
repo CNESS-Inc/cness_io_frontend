@@ -293,7 +293,10 @@ export default function Signingup() {
                 <div className="flex justify-center gap-4 mt-2">
                   <button
                     type="button"
-                    onClick={() => login()}
+                    onClick={() => {
+                      login()
+                      navigate("/log-in?google=true");
+                    }}
                     className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-2xl px-4 py-2 bg-white hover:shadow-md hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#F07EFF]"
                   >
                     <img
