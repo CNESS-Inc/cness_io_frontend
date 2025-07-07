@@ -211,7 +211,7 @@ const ScoreResult = () => {
       for (const section of data.array) {
         html += `<div style="margin-bottom: 25px;"><h2 style="margin-bottom: 10px;">Section: ${section.section.name} - (${section.section.weight} / ${section.section.total_weight})</h2>`;
         for (const sub of section.question_data) {
-          html += `<div style="margin-bottom: 25px;"><h3>Sub Section: ${sub.sub_section.name} - (${sub.sub_section.weight} / 10)</h3>`;
+          html += `<div style="margin-bottom: 25px;"><h3>Sub Section: ${sub.sub_section.name} - (${sub.sub_section.weight} / 5)</h3>`;
           for (const ques of sub.questions) {
             html += `<p><b>Question:</b> ${ques.question}</p><ul>`;
             for (const ans of ques.answer) {
