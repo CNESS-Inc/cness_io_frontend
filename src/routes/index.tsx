@@ -75,18 +75,18 @@ export const router = createBrowserRouter([
         element: <HomePage />,
       },
 
-  {
-  path: "/why",
-  element: <Why />,
-},
-{
-  path: "/what",
-  element: <What />,
-},
-{
-  path: "/about",
-  element: <About />,
-},
+      {
+        path: "/why",
+        element: <Why />,
+      },
+      {
+        path: "/what",
+        element: <What />,
+      },
+      {
+        path: "/about",
+        element: <About />,
+      },
 
       {
         path: "dashboard",
@@ -152,69 +152,69 @@ export const router = createBrowserRouter([
             path: "search_listing",
             element: <SearchListing />,
           },
-           {
+          {
             path: "digital_products",
             element: <DigitalProducts />,
           },
 
-            {
+          {
             path: "Feed",
             element: <Feed />,
           },
 
-           {
+          {
             path: "SearchExplore",
             element: <SearchExplore />,
           },
-             {
+          {
             path: "Become_mentor",
             element: <BecomeMentor />,
           },
-         {
+          {
             path: "GenerateBadgeCode",
             element: <GenerateBadgeCode />,
           },
-               {
+          {
             path: "UploadProof",
             element: <UploadProof />,
           },
-     {
+          {
             path: "EditPublicListing",
             element: <EditPublicListing />,
           },
 
-             {
+          {
             path: "VisibilitySettings",
             element: <VisibilitySettings />,
           },
 
-    {
+          {
             path: "RatingReviews",
             element: <RatingReviews />,
           },
 
-            {
+          {
             path: "SellProducts",
             element: <SellProducts />,
           },
- {
+          {
             path: "Tracking",
             element: <Tracking />,
           },
 
-           {
+          {
             path: "CreatorGuideline",
             element: <CreatorGuideline />,
           },
-            {
+          {
             path: "Profile",
             element: <Profile />,
           },
- {
+          {
             path: "MyConnection",
             element: <MyConnection />,
           },
-           {
+          {
             path: "ComingSoon",
             element: <ComingSoon />,
           },
@@ -223,7 +223,6 @@ export const router = createBrowserRouter([
             path: "DashboardSocial",
             element: <DashboardSocial />,
           },
-
         ],
       },
     ],
@@ -256,8 +255,6 @@ export const router = createBrowserRouter([
             path: ":subcategory",
             element: <TechnologyAndAIPage />,
           },
-
-          
         ],
       },
     ],
@@ -296,8 +293,10 @@ export const router = createBrowserRouter([
   {
     path: "/log-in",
     element: <Login />,
+    handle: {
+      passProps: true,
+    },
   },
-
   {
     path: "/sign-up",
     element: <Signingup />,
