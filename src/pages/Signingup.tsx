@@ -221,7 +221,7 @@ export default function Signingup() {
       const data = await GoogleLoginDetails(token); // ✅ use your centralized API call
       console.log("Backend response:", data);
 
-      if (data?.jwt) {
+      if (data) {
         localStorage.setItem("token", data.jwt);
       } else {
         alert("Google login succeeded, but no JWT received.");
