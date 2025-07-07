@@ -223,6 +223,7 @@ export default function Signingup() {
 
       if (data) {
         localStorage.setItem("token", data.jwt);
+        navigate("/dashboard");
       } else {
         alert("Google login succeeded, but no JWT received.");
       }
