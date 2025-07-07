@@ -210,14 +210,17 @@ export default function Login() {
   };
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
-  const location = useLocation();
-
+ const location = useLocation();
+  console.log("🚀 ~ Login ~ location:", location)
+  
   useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    if (searchParams.get('google') === 'true') {
-      login(); 
+    if (location.state?.autoGoogleLogin) {
+      alert()
+      login(); // Trigger Google login automatically
+      // Clear the state to prevent retriggering on refresh
+      // window.history.replaceState({}, document.title);
     }
-  }, [location.search]);
+  }, [location.state]);
 
   const validateField = (
     name: string,
