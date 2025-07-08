@@ -1,7 +1,7 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+import {  useLocation } from 'react-router-dom';
 
 const SmartFloatingFAQButton: React.FC = () => {
-  const navigate = useNavigate();
+ // const navigate = useNavigate();
   const location = useLocation();
 
   // Hide on support page
@@ -9,7 +9,7 @@ const SmartFloatingFAQButton: React.FC = () => {
 
   return (
     <button
-      onClick={() => navigate('/dashboard/support')}
+     onClick={() => window.showZForm_982213 && window.showZForm_982213()}
       className={`
         fixed bottom-6 right-6
         bg-gradient-to-r from-indigo-600 to-purple-600

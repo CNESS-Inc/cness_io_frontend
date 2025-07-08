@@ -7,18 +7,40 @@ import {
   ChevronUpIcon,
   LogOutIcon,
   BadgePlus ,
-  ExternalLinkIcon,
+
 } from "lucide-react";
 import { NavLink, useNavigate, useLocation, Link } from "react-router-dom";
 import { iconMap } from '../../assets/icons';
 import hambur from "../../assets/hambur.png";
+import DashboardFilterSidebar from "./DashboardFilterSidebar"; 
 
 
-const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
+
+const DashboardNavbar = ({
+  isMobileNavOpen,
+  toggleMobileNav,
+  currentPath,
+  selectedDomain,
+  setSelectedDomain,
+  sort,
+  setSort
+}: {
+  isMobileNavOpen: boolean;
+  toggleMobileNav: () => void;
+  currentPath: string;
+  selectedDomain: string;
+  setSelectedDomain: React.Dispatch<React.SetStateAction<string>>;
+  sort: "az" | "za";
+  setSort: React.Dispatch<React.SetStateAction<"az" | "za">>;
+}) => {
+  
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+const showFilterSidebar = 
+  currentPath.includes("/dashboard/DashboardDirectory/technology") ||
+  currentPath.includes("/dashboard/search_listing");
 
   useEffect(() => {
     if (
@@ -73,22 +95,12 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
       ],
     },
     {
+       
         id: "directory", 
     icon: <img src={iconMap["directory"]} alt="Directory Icon" className="w-5 h-5" />,
-    label: (
-      <div className="flex items-center gap-3">
-        <span>Directory</span>
-        <a
-          href="/directory"
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()} // Prevents closing dropdown
-          className="text-gray-400 hover:text-[#9747FF]"
-        >
-          <ExternalLinkIcon className="w-3.5 h-3.5" />
-        </a>
-      </div>
-    ),
+  label:"Directory",
+  active:true,
+  path:"/dashboard/DashboardDirectory",
     isDirectoryDropdown: true,
     childPaths: ["/dashboard/search_listing"],
     children: [
@@ -439,11 +451,40 @@ return item.path ? (
 
           {/* Secondary Menu Items */}
 <div className="flex flex-col items-start space-y-3 px-3 w-full">
-            {secondaryNavItems.map((item, index) => (
-              <NavItem key={index} item={item} openDropdown={openDropdown}
-  setOpenDropdown={setOpenDropdown} onClick={toggleMobileNav} />
-            ))}
-          </div>
+           {secondaryNavItems.map((item, index) => (
+
+    <NavItem
+
+      key={index}
+
+      item={item}
+
+      openDropdown={openDropdown}
+
+      setOpenDropdown={setOpenDropdown}
+
+      onClick={toggleMobileNav}
+
+    />
+
+  ))}
+
+
+
+  {/* Show Filter component below Logout only on tech page */}
+
+ {showFilterSidebar && (
+  <div className="mt-6 w-full">
+    <DashboardFilterSidebar
+      selectedDomain={selectedDomain}
+      setSelectedDomain={setSelectedDomain}
+      sort={sort}
+      setSort={setSort}
+    />
+  </div>
+)}
+
+</div>
         </div>
       </nav>
     </>

@@ -291,28 +291,28 @@ export default function Signingup() {
                 {/* Google Sign-In Button */}
                 <div className="flex justify-center gap-4 mt-2">
                   <button
-                    type="button"
-                    onClick={() => login()}
-                    className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-2xl px-4 py-2 bg-white hover:shadow-md hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#F07EFF]"
-                  >
-                    <img
-                      src="/google-icon-logo.svg"
-                      alt="Google"
-                      className="w-6 h-6"
-                    />
-                    <span className="text-sm font-medium text-gray-700">
-                      Sign up with Google
-                    </span>
-                  </button>
+  type="button"
+  onClick={() => login()}
+  className="flex items-center gap-2 border border-gray-300 rounded-3xl px-12 py-3 bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+>
+  <img
+    src="/google-icon-logo.svg"
+    alt="Google"
+    className="w-6 h-6"
+  />
+  <span className="text-sm font-medium text-gray-700">
+    Sign up with Google
+  </span>
+</button>
                 </div>
 
                 {/* Divider with "Or sign up with" */}
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                    <div className="w-full border-t border-gray-300"></div>
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="bg-white dark:bg-gray-900 px-3 text-gray-500 dark:text-gray-400">
+                    <span className="bg-white">
                       Or sign up with
                     </span>
                   </div>
