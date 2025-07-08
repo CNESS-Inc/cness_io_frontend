@@ -13,7 +13,6 @@ interface QRCodeGeneratorProps {
 }
 
 const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({ profileUrl }) => {
-  console.log("🚀 ~ QRCodeGenerator ~ profileUrl:", profileUrl);
   const qrRef = useRef<HTMLDivElement>(null); // Explicitly type useRef
 
   // Download QR Code as an image
@@ -22,7 +21,6 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({ profileUrl }) => {
 
     const canvas = qrRef.current.querySelector("canvas");
     if (!canvas) {
-      console.error("QR code canvas not found!");
       return;
     }
 

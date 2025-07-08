@@ -231,7 +231,6 @@ export const submitOrganizationDetails = (
   );
 };
 export const submitPersonDetails = (formData: any): ApiResponse => {
-  console.log("🚀 ~ formData:", formData);
   const data: Partial<any> = {
     interest_id: formData?.interests,
     profession_id: formData?.professions,
@@ -242,7 +241,6 @@ export const submitPersonDetails = (formData: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.person_profile);
 };
 export const submitAnswerDetails = (formData: any): ApiResponse => {
-  console.log("🚀 ~ submitAnswerDetails ~ formData:", formData);
   // Initialize the data array
   const data: Array<{ question_id: string; answer: any }> = [];
 
@@ -404,7 +402,6 @@ export const GetPopularCompanyDetails = (
   page: number,
   limit: number
 ): ApiResponse => {
-  console.log("🚀 ~ GetPopularCompanyDetails ~ limit:", limit);
   let params: { [key: string]: any } = {};
   params["page_no"] = page;
   params["limit"] = limit;
@@ -419,7 +416,6 @@ export const GetInspiringCompanies = (
   page: number,
   limit: number
 ): ApiResponse => {
-  console.log("🚀 ~ GetPopularCompanyDetails ~ limit:", limit);
   let params: { [key: string]: any } = {};
   params["page_no"] = page;
   params["limit"] = limit;
@@ -579,7 +575,6 @@ export const PostsLike = (formattedData: any) => {
 };
 
 export const GetComment = (id: any) => {
-  console.log("🚀 ~ GetComment ~ id:", id);
   let data = {};
   let params: { [key: string]: any } = {};
   params["post_id"] = id;
@@ -591,7 +586,6 @@ export const GetComment = (id: any) => {
   );
 };
 export const GetSinglePost = (id: any) => {
-  console.log("🚀 ~ GetComment ~ id:", id);
   let data = {};
   return executeAPI(
     ServerAPI.APIMethod.GET,

@@ -60,7 +60,7 @@ interface PersonForm {
   last_name: string;
   interests: (string | number)[];
   professions: (string | number)[];
-  custom_profession?: string; 
+  custom_profession?: string;
   question: QuestionAnswer[];
 }
 // type PartialOrganizationFormData = Partial<OrganizationForm>;
@@ -210,12 +210,12 @@ export default function Login() {
   };
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
- const location = useLocation();
-  console.log("🚀 ~ Login ~ location:", location)
-  
+  const location = useLocation();
+  console.log("🚀 ~ Login ~ location:", location);
+
   useEffect(() => {
     if (location.state?.autoGoogleLogin) {
-      alert()
+      alert();
       login(); // Trigger Google login automatically
       // Clear the state to prevent retriggering on refresh
       // window.history.replaceState({}, document.title);
@@ -835,15 +835,17 @@ export default function Login() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    if (personForm.professions?.includes("other") && !personForm.custom_profession?.trim()) {
-    setPersonErrors({
-      ...personErrors,
-      custom_profession: "Please specify your profession"
-    });
-    setIsSubmitting(false);
-    return;
-  }
-
+    if (
+      personForm.professions?.includes("other") &&
+      !personForm.custom_profession?.trim()
+    ) {
+      setPersonErrors({
+        ...personErrors,
+        custom_profession: "Please specify your profession",
+      });
+      setIsSubmitting(false);
+      return;
+    }
 
     if (!validateForm(personForm, "person", 2, true)) {
       setIsSubmitting(false);
@@ -852,14 +854,17 @@ export default function Login() {
 
     try {
       const payload = {
-      ...personForm,
-      // Include custom_profession in the payload if "other" is selected
-      professions: personForm.professions.includes("other") 
-        ? [...personForm.professions.filter(p => p !== "other"), personForm.custom_profession]
-        : personForm.professions
-    };
-    
-    const res = await submitPersonDetails(payload as any);
+        ...personForm,
+        // Include custom_profession in the payload if "other" is selected
+        professions: personForm.professions.includes("other")
+          ? [
+              ...personForm.professions.filter((p) => p !== "other"),
+              personForm.custom_profession,
+            ]
+          : personForm.professions,
+      };
+
+      const res = await submitPersonDetails(payload as any);
       localStorage.setItem("person_organization", "1");
       localStorage.setItem("completed_step", "1");
       // Group plans by their range (Basic Plan, Pro Plan, etc.)
@@ -1194,7 +1199,6 @@ export default function Login() {
     },
   });
 
-
   return (
     <>
       <div className="relative min-h-screen flex flex-col overflow-hidden bg-white">
@@ -1241,35 +1245,34 @@ export default function Login() {
             )}
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="mb-4 relative">
-{/* Google Sign-In Button */}
-<div className="flex justify-center gap-4 mt-2">
-  <button
-    type="button"
-    onClick={() => login()}
-    className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-2xl px-4 py-2 bg-white hover:shadow-md hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#F07EFF]"
-  >
-    <img
-      src="/google-icon-logo.svg"
-      alt="Google"
-      className="w-6 h-6"
-    />
-    <span className="text-sm font-medium text-gray-700">Sign in with Google</span>
-  </button>
-</div>
-
-
-  {/* Divider with "Or sign in with" */}
-              <div className="relative my-8">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                {/* Google Sign-In Button */}
+                <div className="flex justify-center gap-4 mt-2">
+                  <button
+                    type="button"
+                    onClick={() => login()}
+                    className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-2xl px-4 py-2 bg-white hover:shadow-md hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#F07EFF]"
+                  >
+                    <img
+                      src="/google-icon-logo.svg"
+                      alt="Google"
+                      className="w-6 h-6"
+                    />
+                    <span className="text-sm font-medium text-gray-700">
+                      Sign in with Google
+                    </span>
+                  </button>
                 </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="bg-white px-3 ">
-                    Or sign in with
-                  </span>
+
+                {/* Divider with "Or sign in with" */}
+                <div className="relative my-8">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="bg-white px-3 ">Or sign in with</span>
+                  </div>
                 </div>
-              </div>
-                
+
                 <label
                   htmlFor="email"
                   className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
@@ -1367,8 +1370,6 @@ export default function Login() {
               >
                 {isSubmitting ? "Loging..." : "Login"}
               </Button>
-
-            
 
               {/* Google & Facebook Icons 
               <div className="flex justify-center gap-4 mt-2">
@@ -1553,7 +1554,8 @@ export default function Login() {
                     {/* Organization Name */}
                     <div className="mb-4">
                       <label className="block openSans text-base font-medium text-gray-700 mb-1">
-                        Organization Name*
+                        Organization Name
+                        <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -1576,7 +1578,8 @@ export default function Login() {
 
                     <div className="mb-4">
                       <label className="block openSans text-base font-medium text-gray-700 mb-1">
-                        Domain*
+                        Domain
+                        <span className="text-red-500">*</span>
                       </label>
                       <select
                         name="domain"
@@ -1606,7 +1609,8 @@ export default function Login() {
                     {organizationForm.domain === "other" ? (
                       <div className="mb-4">
                         <label className="block openSans text-base font-medium text-gray-700 mb-1">
-                          Custom Domain Name*
+                          Custom Domain Name
+                        <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
@@ -1655,7 +1659,8 @@ export default function Login() {
                     {/* Employees Size */}
                     <div className="mb-4">
                       <label className="block openSans text-base font-medium text-gray-700 mb-1">
-                        Employees Size*
+                        Employees Size
+                        <span className="text-red-500">*</span>
                       </label>
                       <select
                         name="employee_size"
@@ -1682,7 +1687,8 @@ export default function Login() {
                     {/* Revenue */}
                     <div className="mb-4">
                       <label className="block openSans text-base font-medium text-gray-700 mb-1">
-                        Revenue*
+                        Revenue
+                        <span className="text-red-500">*</span>
                       </label>
                       <select
                         name="revenue"
@@ -1942,7 +1948,8 @@ export default function Login() {
                   <>
                     <div className="mb-4">
                       <label className="block openSans text-base font-medium text-gray-800 mb-1">
-                        First Name*
+                        First Name
+                        <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -1965,7 +1972,8 @@ export default function Login() {
 
                     <div className="mb-4">
                       <label className="block openSans text-base font-medium text-gray-800 mb-1">
-                        Last Name*
+                        Last Name
+                        <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -1988,7 +1996,8 @@ export default function Login() {
 
                     <div className="mb-4">
                       <label className="block openSans text-base font-medium text-gray-800 mb-1">
-                        Interests*
+                        Interests
+                        <span className="text-red-500">*</span>
                       </label>
                       <Select
                         isMulti
@@ -2026,62 +2035,70 @@ export default function Login() {
                     </div>
 
                     <div className="mb-4">
-  <label className="block openSans text-base font-medium text-gray-800 mb-1">
-    Professions*
-  </label>
-  <Select
-    isMulti
-    options={[
-      ...profession?.map((professionItem: Profession) => ({
-        value: professionItem.id,
-        label: professionItem.title,
-      })),
-      { value: "other", label: "Other (please specify)" }
-    ]}
-    value={
-      personForm.professions?.map((professionId: any) => ({
-        value: professionId,
-        label: profession?.find((p: any) => p.id === professionId)?.title || 
-               (professionId === "other" ? "Other" : ""),
-      })) || []
-    }
-    onChange={(selectedOptions) => {
-      const selectedValues = selectedOptions?.map((option) => option.value);
-      setPersonForm({
-        ...personForm,
-        professions: selectedValues,
-      });
-    }}
-    className="react-select-container"
-    classNamePrefix="react-select"
-    placeholder="Select professions..."
-  />
-  {personErrors.professions && (
-    <p className="mt-1 text-sm text-red-600">
-      {personErrors.professions}
-    </p>
-  )}
-</div>
+                      <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                        Professions
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <Select
+                        isMulti
+                        options={[
+                          ...profession?.map((professionItem: Profession) => ({
+                            value: professionItem.id,
+                            label: professionItem.title,
+                          })),
+                          { value: "other", label: "Other (please specify)" },
+                        ]}
+                        value={
+                          personForm.professions?.map((professionId: any) => ({
+                            value: professionId,
+                            label:
+                              profession?.find(
+                                (p: any) => p.id === professionId
+                              )?.title ||
+                              (professionId === "other" ? "Other" : ""),
+                          })) || []
+                        }
+                        onChange={(selectedOptions) => {
+                          const selectedValues = selectedOptions?.map(
+                            (option) => option.value
+                          );
+                          setPersonForm({
+                            ...personForm,
+                            professions: selectedValues,
+                          });
+                        }}
+                        className="react-select-container"
+                        classNamePrefix="react-select"
+                        placeholder="Select professions..."
+                      />
+                      {personErrors.professions && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {personErrors.professions}
+                        </p>
+                      )}
+                    </div>
 
-{/* Add this after the Select component */}
-{personForm.professions?.includes("other") && (
-  <div className="mb-4 mt-2">
-    <label className="block openSans text-base font-medium text-gray-800 mb-1">
-      Specify Your Profession
-    </label>
-    <input
-      type="text"
-      name="custom_profession"
-      value={personForm.custom_profession || ""}
-      onChange={(e) => setPersonForm({
-        ...personForm,
-        custom_profession: e.target.value
-      })}
-      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-      placeholder="Enter your profession"
-    />
-  </div>
-)}
+                    {/* Add this after the Select component */}
+                    {personForm.professions?.includes("other") && (
+                      <div className="mb-4 mt-2">
+                        <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                          Specify Your Profession
+                        </label>
+                        <input
+                          type="text"
+                          name="custom_profession"
+                          value={personForm.custom_profession || ""}
+                          onChange={(e) =>
+                            setPersonForm({
+                              ...personForm,
+                              custom_profession: e.target.value,
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          placeholder="Enter your profession"
+                        />
+                      </div>
+                    )}
                   </>
                 )}
 

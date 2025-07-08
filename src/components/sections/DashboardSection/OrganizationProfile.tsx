@@ -149,7 +149,6 @@ const OrganaizationProfilepage = () => {
           res?.data?.data?.user.profile_picture
         );
       } catch (error: any) {
-        console.error(`Error uploading ${formKey}:`, error);
         showToast({
           message: error?.response?.data?.error?.message,
           type: "error",
@@ -244,7 +243,6 @@ const OrganaizationProfilepage = () => {
         res?.data?.data?.user.margaret_name
       );
     } catch (error: any) {
-      console.error("Error saving basic info:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -284,7 +282,6 @@ const OrganaizationProfilepage = () => {
         res?.data?.data?.user.margaret_name
       );
     } catch (error: any) {
-      console.error("Error saving basic info:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -325,7 +322,6 @@ const OrganaizationProfilepage = () => {
         res?.data?.data?.user.margaret_name
       );
     } catch (error: any) {
-      console.error("Error saving basic info:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -387,7 +383,6 @@ const OrganaizationProfilepage = () => {
         duration: 5000,
       });
     } catch (error: any) {
-      console.error("Error saving basic info:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -450,8 +445,6 @@ const OrganaizationProfilepage = () => {
         setBanner(response?.data?.data?.banner_url);
       }
     } catch (error: any) {
-      console.error("Error fetching profile:", error);
-      // Optionally show error to user
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -485,7 +478,6 @@ const OrganaizationProfilepage = () => {
         setTags(profileData.tags);
       }
     } catch (error: any) {
-      console.error("Error fetching profile:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -499,7 +491,6 @@ const OrganaizationProfilepage = () => {
       const response = await GetIndustryDetails();
       setIndustryData(response.data.data);
     } catch (error: any) {
-      console.error("Error fetching profile:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -513,7 +504,6 @@ const OrganaizationProfilepage = () => {
       const response = await GetServiceDetails();
       setServiceData(response.data.data);
     } catch (error: any) {
-      console.error("Error fetching profile:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -564,7 +554,6 @@ const OrganaizationProfilepage = () => {
       });
       throw new Error(res.message || "Verification failed");
     } catch (error: any) {
-      console.error("Verification error:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",

@@ -17,8 +17,6 @@ const PostLikeButton: React.FC<PostLikeButtonProps> = ({  postId, isLiked, likeC
             const formattedData = { post_id: postId };
             PostsLike(formattedData)
             setLocalIsLiked(!localIsLiked);
-            // console.log("🚀 ~ handleLikeClick ~ res:", res)
-            // toast?.success(res?.success?.message)
             setLocalLikeCount(localIsLiked ? localLikeCount - 1 : localLikeCount + 1);
         } catch (error) {
             console.error("Error fetching like details:", error);

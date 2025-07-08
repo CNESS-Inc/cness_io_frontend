@@ -17,8 +17,9 @@ import {
 } from "../../../Common/ServerAPI";
 import { useToast } from "../../ui/Toast/ToastProvider";
 import Select from "react-select";
-
 import Button from "../../ui/Button";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 const tabNames = [
   "Basic Information",
@@ -45,16 +46,63 @@ const UserProfilePage = () => {
   const [customServiceInput, setCustomServiceInput] = useState("");
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [services, setServices] = useState<any[]>([]);
-  console.log("🚀 ~ UserProfilePage ~ services:", services)
   const [serviceInput, setServiceInput] = useState("");
-  console.log("🚀 ~ UserProfilePage ~ serviceInput:", serviceInput)
   const public_organization = localStorage.getItem("person_organization");
   const is_disqualify = localStorage.getItem("is_disqualify");
 
   const { showToast } = useToast();
 
   // Separate form handlers for each tab
-  const basicInfoForm = useForm();
+  const basicInfoForm = useForm({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      bio: "",
+      gender: "",
+      dob: "",
+      quote: "",
+      vision: "",
+      professions: [],
+      interests: [],
+      identify_uploaded: null,
+    },
+    resolver: yupResolver(
+      yup.object().shape({
+        firstName: yup
+          .string()
+          .required("First name is required")
+          .matches(/^[a-zA-Z\s'-]+$/, "First name can only contain letters."),
+        lastName: yup
+          .string()
+          .required("Last name is required")
+          .matches(/^[a-zA-Z\s'-]+$/, "Last name can only contain letters"),
+        bio: yup
+          .string()
+          .required("Professional bio is required")
+          .matches(
+            /^[a-zA-Z0-9\s.,!?@#$%^&*()_+-=<>;:'"\/\\[\]{}|`~]+$/,
+            "Bio contains invalid characters"
+          ),
+        gender: yup.string().required("Gender is required"),
+        dob: yup.string().required("Date of birth is required"),
+        quote: yup
+          .string()
+          .matches(
+            /^[a-zA-Z0-9\s.,!?@#$%^&*()_+-=<>;:'"\/\\[\]{}|`~]+$/,
+            "Quote contains invalid characters"
+          ),
+        vision: yup
+          .string()
+          .matches(
+            /^[a-zA-Z0-9\s.,!?@#$%^&*()_+-=<>;:'"\/\\[\]{}|`~]+$/,
+            "Vision statement contains invalid characters"
+          ),
+        professions: yup.array().min(1, "At least one profession is required"),
+        interests: yup.array().min(1, "At least one interest is required"),
+        identify_uploaded: yup.mixed().nullable(),
+      })
+    ),
+  });
   const contactInfoForm = useForm();
   const socialLinksForm = useForm();
   const educationForm = useForm({
@@ -68,8 +116,55 @@ const UserProfilePage = () => {
         },
       ],
     },
+    resolver: yupResolver(
+      yup.object().shape({
+        educations: yup
+          .array()
+          .of(
+            yup.object().shape({
+              degree: yup
+                .string()
+                .required("Degree is required")
+                .matches(
+                  /^[a-zA-Z\s.,-]+$/,
+                  "Degree contains invalid characters"
+                ),
+              institution: yup
+                .string()
+                .required("Institution is required")
+                .matches(
+                  /^[a-zA-Z0-9\s.,'-]+$/,
+                  "Institution name contains invalid characters"
+                ),
+              start_date: yup
+                .string()
+                .required("Start date is required")
+                .test(
+                  "is-valid-date",
+                  "Start date must be a valid date",
+                  (value) => {
+                    if (!value) return false;
+                    const date = new Date(value);
+                    const today = new Date();
+                    // today.setHours(0, 0, 0, 0); // Reset time to compare dates only
+                    return !isNaN(date.getTime()) && date <= today;
+                  }
+                ),
+              end_date: yup.string().optional(),
+            })
+          )
+          .min(1, "At least one education entry is required"),
+      })
+    ),
   });
-  const workExperienceForm = useForm({
+  const workExperienceForm = useForm<{
+    workExperiences: {
+      company: string;
+      position: string;
+      start_date: string;
+      end_date?: string;
+    }[];
+  }>({
     defaultValues: {
       workExperiences: [
         {
@@ -80,6 +175,57 @@ const UserProfilePage = () => {
         },
       ],
     },
+    resolver: yupResolver(
+      yup.object().shape({
+        workExperiences: yup
+          .array()
+          .of(
+            yup.object().shape({
+              company: yup
+                .string()
+                .required("Company name is required")
+                .matches(
+                  /^[a-zA-Z0-9\s.,'-]+$/,
+                  "Company name contains invalid characters"
+                ),
+              position: yup
+                .string()
+                .required("Position is required")
+                .matches(
+                  /^[a-zA-Z\s.,-]+$/,
+                  "Position contains invalid characters"
+                ),
+              start_date: yup
+                .string()
+                .required("Start date is required")
+                .test(
+                  "is-valid-date",
+                  "Start date must be a valid date",
+                  (value) => {
+                    if (!value) return false;
+                    const date = new Date(value);
+                    const today = new Date();
+                    return !isNaN(date.getTime()) && date <= today;
+                  }
+                ),
+              end_date: yup
+                .string()
+                .optional()
+                .test(
+                  "is-after-start",
+                  "End date must be after start date",
+                  function (value) {
+                    if (!value) return true; // optional field
+                    const startDate = this.parent.start_date;
+                    if (!startDate) return true; // if no start date, validation passes
+                    return new Date(value) >= new Date(startDate);
+                  }
+                ),
+            })
+          )
+          .required("At least one work experience is required"),
+      })
+    ),
   });
   const publicProfileForm = useForm();
 
@@ -107,7 +253,6 @@ const UserProfilePage = () => {
           duration: 5000,
         });
       } catch (error: any) {
-        console.error(`Error uploading ${formKey}:`, error);
         showToast({
           message: error?.response?.data?.error?.message,
           type: "error",
@@ -134,20 +279,18 @@ const UserProfilePage = () => {
     setTags(newTags);
   };
 
-
-    const GetService = async () => {
-      try {
-        const response = await GetServiceDetails();
-        setServiceData(response.data.data);
-      } catch (error: any) {
-        console.error("Error fetching profile:", error);
-        showToast({
-          message: error?.response?.data?.error?.message,
-          type: "error",
-          duration: 5000,
-        });
-      }
-    };
+  const GetService = async () => {
+    try {
+      const response = await GetServiceDetails();
+      setServiceData(response.data.data);
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
 
   // const handleCancel = () => {
   //   // Reset all forms
@@ -205,7 +348,6 @@ const UserProfilePage = () => {
         response?.data?.data?.user.margaret_name
       );
     } catch (error: any) {
-      console.error("Error saving basic info:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -242,7 +384,6 @@ const UserProfilePage = () => {
         duration: 5000,
       });
     } catch (error: any) {
-      console.error("Error saving contact info:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -273,7 +414,6 @@ const UserProfilePage = () => {
         duration: 5000,
       });
     } catch (error: any) {
-      console.error("Error saving social links:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -300,7 +440,6 @@ const UserProfilePage = () => {
         duration: 5000,
       });
     } catch (error: any) {
-      console.error("Error saving education:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -328,7 +467,6 @@ const UserProfilePage = () => {
         duration: 5000,
       });
     } catch (error: any) {
-      console.error("Error saving work experience:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -340,46 +478,45 @@ const UserProfilePage = () => {
   };
 
   const handlePublicProfileSubmit = async (data: any) => {
-  setIsSubmitting((prev) => ({ ...prev, public: true }));
+    setIsSubmitting((prev) => ({ ...prev, public: true }));
 
-  try {
-    const formData = new FormData();
+    try {
+      const formData = new FormData();
 
-    // Convert services array to JSON string if it's not already
-    const servicesValue = Array.isArray(services) 
-      ? JSON.stringify(services)
-      : services;
+      // Convert services array to JSON string if it's not already
+      const servicesValue = Array.isArray(services)
+        ? JSON.stringify(services)
+        : services;
 
-    formData.append("person_service", servicesValue);
-    formData.append("tags", JSON.stringify(tags));
-    formData.append("notify_email", data.notifyEmail);
-    formData.append("title", data.title);
-    formData.append("about_us", data.aboutUs);
+      formData.append("person_service", servicesValue);
+      formData.append("tags", JSON.stringify(tags));
+      formData.append("notify_email", data.notifyEmail);
+      formData.append("title", data.title);
+      formData.append("about_us", data.aboutUs);
 
-    const email = data.emailAddress || data.notifyEmail;
-    formData.append("email_address", email);
+      const email = data.emailAddress || data.notifyEmail;
+      formData.append("email_address", email);
 
-    if (data.featuredImage && data.featuredImage[0]) {
-      formData.append("file", data.featuredImage[0]);
+      if (data.featuredImage && data.featuredImage[0]) {
+        formData.append("file", data.featuredImage[0]);
+      }
+
+      const response = await SubmitPublicProfileDetails(formData);
+      showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    } finally {
+      setIsSubmitting((prev) => ({ ...prev, public: false }));
     }
-
-    const response = await SubmitPublicProfileDetails(formData);
-    showToast({
-      message: response?.success?.message,
-      type: "success",
-      duration: 5000,
-    });
-  } catch (error: any) {
-    console.error("Error saving public profile:", error);
-    showToast({
-      message: error?.response?.data?.error?.message,
-      type: "error",
-      duration: 5000,
-    });
-  } finally {
-    setIsSubmitting((prev) => ({ ...prev, public: false }));
-  }
-};
+  };
 
   const GetProfile = async () => {
     try {
@@ -495,7 +632,6 @@ const UserProfilePage = () => {
         }
       }
     } catch (error: any) {
-      console.error("Error fetching profile:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -526,7 +662,6 @@ const UserProfilePage = () => {
         setServices(serviceIds);
       }
     } catch (error: any) {
-      console.error("Error fetching profile:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -540,7 +675,6 @@ const UserProfilePage = () => {
       const response = await GetInterestsDetails();
       setInterestData(response.data.data);
     } catch (error: any) {
-      console.error("Error fetching profile:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -553,7 +687,6 @@ const UserProfilePage = () => {
       const response = await GetProfessionalDetails();
       setProfessionalData(response.data.data);
     } catch (error: any) {
-      console.error("Error fetching profile:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -566,7 +699,6 @@ const UserProfilePage = () => {
       const response = await GetCountryDetails();
       setCountry(response.data.data);
     } catch (error: any) {
-      console.error("Error fetching profile:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -579,7 +711,6 @@ const UserProfilePage = () => {
       const response = await GetStateDetails(countryId);
       setStates(response.data.data);
     } catch (error: any) {
-      console.error("Error fetching profile:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -597,7 +728,7 @@ const UserProfilePage = () => {
       GetInterest();
       GetProfessional();
       GetCountry();
-      GetService()
+      GetService();
       hasFetched.current = true;
     }
   }, []);
@@ -628,7 +759,6 @@ const UserProfilePage = () => {
       });
       throw new Error(res.message || "Verification failed");
     } catch (error: any) {
-      console.error("Verification error:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -784,15 +914,24 @@ const UserProfilePage = () => {
                                 </label>
                                 <input
                                   type="text"
-                                  {...basicInfoForm.register("firstName", {
-                                    required: true,
-                                  })}
+                                  {...basicInfoForm.register("firstName")}
                                   placeholder="Enter your First Name"
-                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  className={`w-full px-4 py-2 border ${
+                                    basicInfoForm.formState.errors.firstName
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    basicInfoForm.formState.errors.firstName
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
                                 />
                                 {basicInfoForm.formState.errors.firstName && (
                                   <p className="text-sm text-red-500 mt-1">
-                                    First name is required
+                                    {
+                                      basicInfoForm.formState.errors.firstName
+                                        .message
+                                    }
                                   </p>
                                 )}
                               </div>
@@ -805,15 +944,24 @@ const UserProfilePage = () => {
                                 </label>
                                 <input
                                   type="text"
-                                  {...basicInfoForm.register("lastName", {
-                                    required: true,
-                                  })}
+                                  {...basicInfoForm.register("lastName")}
                                   placeholder="Enter your Last Name"
-                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  className={`w-full px-4 py-2 border ${
+                                    basicInfoForm.formState.errors.lastName
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    basicInfoForm.formState.errors.lastName
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
                                 />
                                 {basicInfoForm.formState.errors.lastName && (
                                   <p className="text-sm text-red-500 mt-1">
-                                    Last name is required
+                                    {
+                                      basicInfoForm.formState.errors.lastName
+                                        .message
+                                    }
                                   </p>
                                 )}
                               </div>
@@ -1070,8 +1218,24 @@ const UserProfilePage = () => {
                                   type="text"
                                   {...basicInfoForm.register("quote")}
                                   placeholder="Enter your quote"
-                                  className="w-full px-4 py-2 border border-purple-400 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  className={`w-full px-4 py-2 border ${
+                                    basicInfoForm.formState.errors.quote
+                                      ? "border-red-500"
+                                      : "border-purple-400"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    basicInfoForm.formState.errors.quote
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
                                 />
+                                {basicInfoForm.formState.errors.quote && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      basicInfoForm.formState.errors.quote
+                                        .message
+                                    }
+                                  </p>
+                                )}
                               </div>
 
                               {/* Professional Bio */}
@@ -1082,12 +1246,23 @@ const UserProfilePage = () => {
                                 </label>
                                 <input
                                   type="text"
-                                  {...basicInfoForm.register("bio", {
-                                    required: true,
-                                  })}
+                                  {...basicInfoForm.register("bio")}
                                   placeholder="Add a short professional bio"
-                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  className={`w-full px-4 py-2 border ${
+                                    basicInfoForm.formState.errors.bio
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    basicInfoForm.formState.errors.bio
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
                                 />
+                                {basicInfoForm.formState.errors.bio && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {basicInfoForm.formState.errors.bio.message}
+                                  </p>
+                                )}
                               </div>
 
                               {/* Vision Statement - Full Width */}
@@ -1099,10 +1274,24 @@ const UserProfilePage = () => {
                                   rows={4}
                                   {...basicInfoForm.register("vision")}
                                   placeholder="What is your conscious vision?"
-                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  className={`w-full px-4 py-2 border ${
+                                    basicInfoForm.formState.errors.vision
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    basicInfoForm.formState.errors.vision
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
                                 />
-
-                                {/*contact info */}
+                                {basicInfoForm.formState.errors.vision && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      basicInfoForm.formState.errors.vision
+                                        .message
+                                    }
+                                  </p>
+                                )}
                               </div>
 
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
@@ -1508,16 +1697,16 @@ const UserProfilePage = () => {
                                     <button
                                       type="button"
                                       onClick={() => {
-                                        const educations = [
-                                          ...educationForm.getValues(
-                                            "educations"
-                                          ),
-                                        ];
-                                        educations.splice(index, 1);
-                                        educationForm.setValue(
-                                          "educations",
-                                          educations
-                                        );
+                                        const educations =
+                                          educationForm.getValues("educations");
+                                        if (educations) {
+                                          const newEducations = [...educations];
+                                          newEducations.splice(index, 1);
+                                          educationForm.setValue(
+                                            "educations",
+                                            newEducations
+                                          );
+                                        }
                                       }}
                                       className="absolute top-2 right-2 text-red-500 hover:text-red-700"
                                     >
@@ -1545,18 +1734,28 @@ const UserProfilePage = () => {
                                     <input
                                       type="text"
                                       {...educationForm.register(
-                                        `educations.${index}.degree`,
-                                        {
-                                          required: true,
-                                        }
+                                        `educations.${index}.degree`
                                       )}
                                       placeholder="Enter your degree"
-                                      className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                      className={`w-full px-4 py-2 border ${
+                                        educationForm.formState.errors
+                                          ?.educations?.[index]?.degree
+                                          ? "border-red-500"
+                                          : "border-gray-300"
+                                      } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                        educationForm.formState.errors
+                                          ?.educations?.[index]?.degree
+                                          ? "focus:ring-red-500"
+                                          : "focus:ring-purple-500"
+                                      }`}
                                     />
                                     {educationForm.formState.errors
                                       ?.educations?.[index]?.degree && (
                                       <p className="text-sm text-red-500 mt-1">
-                                        Degree is required
+                                        {
+                                          educationForm.formState.errors
+                                            .educations[index]?.degree?.message
+                                        }
                                       </p>
                                     )}
                                   </div>
@@ -1570,18 +1769,29 @@ const UserProfilePage = () => {
                                     <input
                                       type="text"
                                       {...educationForm.register(
-                                        `educations.${index}.institution`,
-                                        {
-                                          required: true,
-                                        }
+                                        `educations.${index}.institution`
                                       )}
                                       placeholder="Enter institution name"
-                                      className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                      className={`w-full px-4 py-2 border ${
+                                        educationForm.formState.errors
+                                          ?.educations?.[index]?.institution
+                                          ? "border-red-500"
+                                          : "border-gray-300"
+                                      } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                        educationForm.formState.errors
+                                          ?.educations?.[index]?.institution
+                                          ? "focus:ring-red-500"
+                                          : "focus:ring-purple-500"
+                                      }`}
                                     />
                                     {educationForm.formState.errors
                                       ?.educations?.[index]?.institution && (
                                       <p className="text-sm text-red-500 mt-1">
-                                        Institution is required
+                                        {
+                                          educationForm.formState.errors
+                                            .educations[index]?.institution
+                                            ?.message
+                                        }
                                       </p>
                                     )}
                                   </div>
@@ -1595,17 +1805,28 @@ const UserProfilePage = () => {
                                     <input
                                       type="date"
                                       {...educationForm.register(
-                                        `educations.${index}.start_date`,
-                                        {
-                                          required: true,
-                                        }
+                                        `educations.${index}.start_date`
                                       )}
-                                      className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                      className={`w-full px-4 py-2 border ${
+                                        educationForm.formState.errors
+                                          ?.educations?.[index]?.start_date
+                                          ? "border-red-500"
+                                          : "border-gray-300"
+                                      } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
+                                        educationForm.formState.errors
+                                          ?.educations?.[index]?.start_date
+                                          ? "focus:ring-red-500"
+                                          : "focus:ring-purple-500"
+                                      }`}
                                     />
                                     {educationForm.formState.errors
                                       ?.educations?.[index]?.start_date && (
                                       <p className="text-sm text-red-500 mt-1">
-                                        Start date is required
+                                        {
+                                          educationForm.formState.errors
+                                            .educations[index]?.start_date
+                                            ?.message
+                                        }
                                       </p>
                                     )}
                                   </div>
@@ -1620,8 +1841,28 @@ const UserProfilePage = () => {
                                       {...educationForm.register(
                                         `educations.${index}.end_date`
                                       )}
-                                      className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                      className={`w-full px-4 py-2 border ${
+                                        educationForm.formState.errors
+                                          ?.educations?.[index]?.end_date
+                                          ? "border-red-500"
+                                          : "border-gray-300"
+                                      } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
+                                        educationForm.formState.errors
+                                          ?.educations?.[index]?.end_date
+                                          ? "focus:ring-red-500"
+                                          : "focus:ring-purple-500"
+                                      }`}
                                     />
+                                    {educationForm.formState.errors
+                                      ?.educations?.[index]?.end_date && (
+                                      <p className="text-sm text-red-500 mt-1">
+                                        {
+                                          educationForm.formState.errors
+                                            .educations[index]?.end_date
+                                            ?.message
+                                        }
+                                      </p>
+                                    )}
                                   </div>
                                 </div>
                               ))}
@@ -1630,8 +1871,10 @@ const UserProfilePage = () => {
                               <button
                                 type="button"
                                 onClick={() => {
+                                  const currentEducations =
+                                    educationForm.getValues("educations") || [];
                                   educationForm.setValue("educations", [
-                                    ...educationForm.getValues("educations"),
+                                    ...currentEducations,
                                     {
                                       degree: "",
                                       institution: "",
@@ -1737,18 +1980,29 @@ const UserProfilePage = () => {
                                     <input
                                       type="text"
                                       {...workExperienceForm.register(
-                                        `workExperiences.${index}.company`,
-                                        {
-                                          required: true,
-                                        }
+                                        `workExperiences.${index}.company`
                                       )}
                                       placeholder="Enter Company Name"
-                                      className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                      className={`w-full px-4 py-2 border ${
+                                        workExperienceForm.formState.errors
+                                          ?.workExperiences?.[index]?.company
+                                          ? "border-red-500"
+                                          : "border-gray-300"
+                                      } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                        workExperienceForm.formState.errors
+                                          ?.workExperiences?.[index]?.company
+                                          ? "focus:ring-red-500"
+                                          : "focus:ring-purple-500"
+                                      }`}
                                     />
                                     {workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]?.company && (
                                       <p className="text-sm text-red-500 mt-1">
-                                        Company is required
+                                        {
+                                          workExperienceForm.formState.errors
+                                            .workExperiences[index]?.company
+                                            ?.message
+                                        }
                                       </p>
                                     )}
                                   </div>
@@ -1762,18 +2016,29 @@ const UserProfilePage = () => {
                                     <input
                                       type="text"
                                       {...workExperienceForm.register(
-                                        `workExperiences.${index}.position`,
-                                        {
-                                          required: true,
-                                        }
+                                        `workExperiences.${index}.position`
                                       )}
                                       placeholder="Enter your Designation"
-                                      className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                      className={`w-full px-4 py-2 border ${
+                                        workExperienceForm.formState.errors
+                                          ?.workExperiences?.[index]?.position
+                                          ? "border-red-500"
+                                          : "border-gray-300"
+                                      } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                        workExperienceForm.formState.errors
+                                          ?.workExperiences?.[index]?.position
+                                          ? "focus:ring-red-500"
+                                          : "focus:ring-purple-500"
+                                      }`}
                                     />
                                     {workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]?.position && (
                                       <p className="text-sm text-red-500 mt-1">
-                                        Position is required
+                                        {
+                                          workExperienceForm.formState.errors
+                                            .workExperiences[index]?.position
+                                            ?.message
+                                        }
                                       </p>
                                     )}
                                   </div>
@@ -1787,18 +2052,29 @@ const UserProfilePage = () => {
                                     <input
                                       type="date"
                                       {...workExperienceForm.register(
-                                        `workExperiences.${index}.start_date`,
-                                        {
-                                          required: true,
-                                        }
+                                        `workExperiences.${index}.start_date`
                                       )}
-                                      className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                      className={`w-full px-4 py-2 border ${
+                                        workExperienceForm.formState.errors
+                                          ?.workExperiences?.[index]?.start_date
+                                          ? "border-red-500"
+                                          : "border-gray-300"
+                                      } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
+                                        workExperienceForm.formState.errors
+                                          ?.workExperiences?.[index]?.start_date
+                                          ? "focus:ring-red-500"
+                                          : "focus:ring-purple-500"
+                                      }`}
                                     />
                                     {workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]
                                       ?.start_date && (
                                       <p className="text-sm text-red-500 mt-1">
-                                        Start date is required
+                                        {
+                                          workExperienceForm.formState.errors
+                                            .workExperiences[index]?.start_date
+                                            ?.message
+                                        }
                                       </p>
                                     )}
                                   </div>
@@ -1813,8 +2089,28 @@ const UserProfilePage = () => {
                                       {...workExperienceForm.register(
                                         `workExperiences.${index}.end_date`
                                       )}
-                                      className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                      className={`w-full px-4 py-2 border ${
+                                        workExperienceForm.formState.errors
+                                          ?.workExperiences?.[index]?.end_date
+                                          ? "border-red-500"
+                                          : "border-gray-300"
+                                      } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
+                                        workExperienceForm.formState.errors
+                                          ?.workExperiences?.[index]?.end_date
+                                          ? "focus:ring-red-500"
+                                          : "focus:ring-purple-500"
+                                      }`}
                                     />
+                                    {workExperienceForm.formState.errors
+                                      ?.workExperiences?.[index]?.end_date && (
+                                      <p className="text-sm text-red-500 mt-1">
+                                        {
+                                          workExperienceForm.formState.errors
+                                            .workExperiences[index]?.end_date
+                                            ?.message
+                                        }
+                                      </p>
+                                    )}
                                   </div>
                                 </div>
                               ))}
@@ -1974,81 +2270,116 @@ const UserProfilePage = () => {
                               </div> */}
 
                               <div className="md:col-span-2">
-  <label className="block text-sm font-medium text-gray-800 mb-2">
-    Services Offered
-  </label>
-  <div className="flex gap-2 items-center">
-    <select
-      value={serviceInput}
-      onChange={(e) => {
-        if (e.target.value === "other") {
-          setShowCustomInput(true);
-          setServiceInput("");
-        } else {
-          setShowCustomInput(false);
-          setServiceInput(e.target.value);
-        }
-      }}
-      className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-    >
-      <option value="">Select a service</option>
-      {serviceData?.map((service: any) => (
-        <option key={service.id} value={service.id}> {/* Use service.name instead of id */}
-          {service.name}
-        </option>
-      ))}
-      <option value="other">Other (Add Custom Service)</option>
-    </select>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Services Offered
+                                </label>
+                                <div className="flex gap-2 items-center">
+                                  <select
+                                    value={serviceInput}
+                                    onChange={(e) => {
+                                      if (e.target.value === "other") {
+                                        setShowCustomInput(true);
+                                        setServiceInput("");
+                                      } else {
+                                        setShowCustomInput(false);
+                                        setServiceInput(e.target.value);
+                                      }
+                                    }}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  >
+                                    <option value="">Select a service</option>
+                                    {serviceData?.map((service: any) => (
+                                      <option
+                                        key={service.id}
+                                        value={service.id}
+                                      >
+                                        {" "}
+                                        {/* Use service.name instead of id */}
+                                        {service.name}
+                                      </option>
+                                    ))}
+                                    <option value="other">
+                                      Other (Add Custom Service)
+                                    </option>
+                                  </select>
 
-    {showCustomInput ? (
-      <>
-        <input
-          type="text"
-          value={customServiceInput}
-          onChange={(e) => setCustomServiceInput(e.target.value)}
-          placeholder="Enter custom service"
-          className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-        />
-        <button
-          type="button"
-          onClick={() => {
-            const trimmed = customServiceInput.trim();
-            if (trimmed && !services.includes(trimmed) && services.length < 20) {
-              const newServices = [...services, trimmed];
-              setServices(newServices);
-              publicProfileForm.setValue("services", newServices); // Update form value
-              setCustomServiceInput("");
-              setShowCustomInput(false);
-            }
-          }}
-          className="px-3 py-2 text-sm font-bold bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
-          disabled={services.length >= 20 || !customServiceInput}
-        >
-          +
-        </button>
-      </>
-    ) : (
-      <button
-        type="button"
-        onClick={() => {
-          const trimmed = serviceInput.trim();
-          if (trimmed && !services.includes(trimmed) && services.length < 20) {
-            const newServices = [...services, trimmed];
-            setServices(newServices);
-            publicProfileForm.setValue("services", newServices); // Update form value
-            setServiceInput("");
-          }
-        }}
-        className="px-3 py-2 text-sm font-bold bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
-        disabled={services.length >= 20 || !serviceInput}
-      >
-        +
-      </button>
-    )}
-  </div>
-  
-  {/* Display selected services */}
-  {services.length > 0 && (
+                                  {showCustomInput ? (
+                                    <>
+                                      <input
+                                        type="text"
+                                        value={customServiceInput}
+                                        onChange={(e) =>
+                                          setCustomServiceInput(e.target.value)
+                                        }
+                                        placeholder="Enter custom service"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const trimmed =
+                                            customServiceInput.trim();
+                                          if (
+                                            trimmed &&
+                                            !services.includes(trimmed) &&
+                                            services.length < 20
+                                          ) {
+                                            const newServices = [
+                                              ...services,
+                                              trimmed,
+                                            ];
+                                            setServices(newServices);
+                                            publicProfileForm.setValue(
+                                              "services",
+                                              newServices
+                                            ); // Update form value
+                                            setCustomServiceInput("");
+                                            setShowCustomInput(false);
+                                          }
+                                        }}
+                                        className="px-3 py-2 text-sm font-bold bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
+                                        disabled={
+                                          services.length >= 20 ||
+                                          !customServiceInput
+                                        }
+                                      >
+                                        +
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const trimmed = serviceInput.trim();
+                                        if (
+                                          trimmed &&
+                                          !services.includes(trimmed) &&
+                                          services.length < 20
+                                        ) {
+                                          const newServices = [
+                                            ...services,
+                                            trimmed,
+                                          ];
+                                          setServices(newServices);
+                                          publicProfileForm.setValue(
+                                            "services",
+                                            newServices
+                                          ); // Update form value
+                                          setServiceInput("");
+                                        }
+                                      }}
+                                      className="px-3 py-2 text-sm font-bold bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
+                                      disabled={
+                                        services.length >= 20 || !serviceInput
+                                      }
+                                    >
+                                      +
+                                    </button>
+                                  )}
+                                </div>
+
+                                {/* Display selected services */}
+                                {services.length > 0 && (
                                   <div className="mt-3 flex flex-wrap gap-2">
                                     {services.map(
                                       (serviceId: string, index) => {
@@ -2086,7 +2417,7 @@ const UserProfilePage = () => {
                                     )}
                                   </div>
                                 )}
-</div>
+                              </div>
 
                               {/* Tags Field */}
                               <div className="md:col-span-2">

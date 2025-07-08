@@ -166,7 +166,6 @@ const ScoreResult = () => {
   const fetchRatingDetails = async () => {
     try {
       const res = await GetUserScoreResult();
-      console.log("🚀 ~ fetchRatingDetails ~ res:", res);
       setScoreData(res.data.data);
     } catch (error: any) {
       showToast({

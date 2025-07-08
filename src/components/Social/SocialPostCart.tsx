@@ -80,7 +80,6 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
   profile_picture,
   getUserPosts,
 }) => {
-  console.log("🚀 ~ poll:", poll);
   // const [localLikeCount, setLocalLikeCount] = useState<number>(likeCount ?? 0);
   const [localcommentCount, setCommentCount] = useState<number>(
     commentCount ?? 0
@@ -134,8 +133,6 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
   //     //     apiCall("POST", "/user/posts/like", "like", formattedData)
   //     //   );
 
-  //     //   console.log("🚀 ~ fetchLike ~ res:", res);
-
   //     if (is_liked) {
   //       // If already liked, unlike it
   //       setLiked(false);
@@ -182,7 +179,6 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
   //     //   const res = await dispatch(
   //     //     apiCall("POST", "/user/posts/save", "saved_post", formattedData, {})
   //     //   );
-  //     //   console.log("🚀 ~ fetchSavedPost ~ res:", res);
   //     setSaved(true);
   //   } catch (error) {
   //     console.error("Error fetching selection details:", error);
@@ -193,16 +189,14 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
     ?.filter((option: any) => option?.is_voted)
     ?.map((option: any) => option?.text);
 
-  const [is_voted, setis_voted] = useState(
+  const [is_voted, _setis_voted] = useState(
     votedOptions?.length ? votedOptions.join(", ") : ""
   );
-  console.log("🚀 ~ setis_voted:", setis_voted);
   const pollAnswers = poll?.options?.map((option: any) => ({
     option: option?.text,
     votes: option?.votes,
     id: option?.id,
   }));
-  console.log("🚀 ~ pollAnswers ~ pollAnswers:", pollAnswers);
   // const pollAnswers = poll?.options?.map((option: any) => ({
   //   option: option,
   //   votes: option,
@@ -223,7 +217,6 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
     };
 
     const data = await AddVote(selectedOption);
-    console.log("🚀 ~ data:11", data?.data?.data);
     const vote_data = data?.data?.data?.options?.find(
       (ans: any) => ans?.id === selectedOption?.option_id
     );
@@ -234,10 +227,7 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
           ? { ...ans, votes: vote_data?.votes }
           : ans
       );
-
-      console.log("🚀 ~ vote_data:", vote_data);
     }
-    console.log("🚀 ~ poll:22", poll);
 
     await getUserPosts();
   };
