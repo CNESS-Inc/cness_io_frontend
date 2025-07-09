@@ -40,7 +40,6 @@ const EmailVerify = () => {
       console.log("Verification response:", res);
       setLoginShow(true);
     } catch (error:any) {
-      console.error("Error verifying email:", error);
       setError(error instanceof Error ? error.message : "Verification failed");
       showToast({
         message: error?.response?.data?.error?.message,

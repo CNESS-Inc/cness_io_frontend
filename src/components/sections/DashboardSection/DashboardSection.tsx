@@ -120,14 +120,12 @@ export default function DashboardSection() {
   const fetchDashboard = async () => {
     try {
       const response: any = await DashboardDetails();
-      console.log("🚀 ~ fetchDashboard ~ response:", response);
       if (response?.data?.data) {
         setUser(response.data.data);
         localStorage.setItem("name", response.data.data?.name);
         // localStorage.setItem("profile_picture",response.data.data?.profile_picture);
       }
     } catch (error: any) {
-      console.error("Error fetching dashboard data:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",

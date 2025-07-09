@@ -12,7 +12,6 @@ const FollowButton: React.FC<FollowButtonProps> = ({
   user_id,
   isFollowing,
 }) => {
-  console.log("🚀 ~ isFollowing:", isFollowing);
   const [loading, setLoading] = useState<boolean>(false);
   const [is_Following, set_IsFollowing] = useState<boolean>(false);
 

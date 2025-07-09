@@ -16,6 +16,7 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@headlessui/react": "^2.2.3",
     "@heroicons/react": "^2.2.0",
+    "@hookform/resolvers": "^5.1.1",
     "@radix-ui/react-avatar": "^1.1.9",
     "@react-oauth/google": "^0.12.2",
     "@sayings/react-reels": "^1.0.2",
@@ -27,8 +28,10 @@
     "emoji-picker-react": "^4.12.2",
     "firebase": "^11.9.1",
     "framer-motion": "^12.15.0",
+    "html2pdf.js": "^0.10.3",
     "lodash": "^4.17.21",
     "lucide-react": "^0.509.0",
+    "pdf-lib": "^1.17.1",
     "qrcode.react": "^4.2.0",
     "react": "^19.1.0",
     "react-awesome-stars-rating": "^0.16.2",
@@ -49,7 +52,8 @@
     "react-toastify": "^11.0.5",
     "react-tooltip": "^5.29.0",
     "swiper": "^11.2.8",
-    "tailwind-merge": "^3.2.0"
+    "tailwind-merge": "^3.2.0",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",

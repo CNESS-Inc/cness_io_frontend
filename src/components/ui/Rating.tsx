@@ -15,8 +15,6 @@ export const StarRating = ({
   size = "md",
   allowHalfStars = false,
 }: StarRatingProps) => {
-  console.log("🚀 ~ initialRating:", initialRating)
-  console.log("🚀 ~ initialRating:", typeof initialRating)
 
   const [rating, setRating] = useState(initialRating);
   const [hover, setHover] = useState(0);
