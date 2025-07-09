@@ -278,13 +278,12 @@ export const submitAnswerDetails = (formData: any): ApiResponse => {
   // // Handle referenceLink (if needed)
   // // You'll need to know the question_id for the referenceLink
   // // For example:
-  // if (formData.referenceLink) {
-  //   data.push({
-  //     question_id: "YOUR_REFERENCE_LINK_QUESTION_ID",
-  //     answer: formData.referenceLink
-  //   });
-  // }
-
+if (formData.referenceLink && formData.referenceLinkQuestionId) {
+  data.push({
+    question_id: formData.referenceLinkQuestionId,
+    answer: formData.referenceLink,
+  });
+}
   // Handle uploads (if needed)
   // You'll need to know how to map uploads to question_ids
   // For example:

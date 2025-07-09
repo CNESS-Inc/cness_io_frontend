@@ -36,6 +36,8 @@ interface Section {
     id: string;
     fileUrl?: string | null;
   }>;
+  referenceLinkAnswer?: string;
+  referenceLinkQuestionId?: string;
   next_section_id: string | null;
   previous_section_id: string | null;
 }
@@ -54,6 +56,7 @@ interface FormValues {
     fileUrl?: string | null; // Added this field
   }>;
   referenceLink: string;
+  referenceLinkQuestionId?: string; 
 }
 
 interface PurposePauseAnswer {
@@ -74,7 +77,12 @@ const AssessmentQuestion: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { showToast } = useToast();
+const [errors, setErrors] = useState<FormErrors>({});
 
+
+interface FormErrors {
+  referenceLink?: string;
+}
   const closeModal = () => {
     setActiveModal(null);
   };
@@ -106,6 +114,8 @@ const AssessmentQuestion: React.FC = () => {
     let purposePauseData: any = null;
     let bestPracticeData: any = null;
     let suggestedUploadsData: any = null;
+      let linkReferenceData: any = null;
+
 
     // Iterate through each question_data item and categorize them by sub_section name
     apiData.question_data.forEach((section: any) => {
@@ -117,7 +127,9 @@ const AssessmentQuestion: React.FC = () => {
         bestPracticeData = section;
       } else if (section.sub_section.name === "Suggested Uploads") {
         suggestedUploadsData = section;
-      }
+      } else if (section.sub_section.name === "Link for Reference") {
+      linkReferenceData = section;
+    }
     });
 
     return {
@@ -146,6 +158,8 @@ const AssessmentQuestion: React.FC = () => {
             : ".pdf,.doc,.docx,.jpg,.png,.jpeg",
           fileUrl: q.answer || null,
         })) || [],
+     referenceLinkAnswer: linkReferenceData?.questions[0]?.answer || "",
+    referenceLinkQuestionId: linkReferenceData?.questions[0]?.id || "",
       next_section_id: apiData.next_section_id,
       previous_section_id: apiData.previous_section_id,
     };
@@ -168,8 +182,7 @@ const AssessmentQuestion: React.FC = () => {
         id: upload.id,
         fileUrl: upload.fileUrl || null,
       })),
-      referenceLink: "",
-    };
+referenceLink: section.referenceLinkAnswer || "",    };
   };
 
   const fetchQuestions = async (sectionId?: string) => {
@@ -296,13 +309,23 @@ const AssessmentQuestion: React.FC = () => {
     }
   };
 
-  const handleReferenceLinkChange = (value: string) => {
-    setFormData((prev) => {
-      if (!prev) return null;
-      const newData = { ...prev };
-      newData.referenceLink = value;
-      return newData;
-    });
+const handleReferenceLinkChange = (value: string) => {
+  setFormData((prev) => {
+    if (!prev) return null;
+    const newData = { ...prev, referenceLink: value };
+    return newData;
+  });
+
+    const urlRegex = /^(https?:\/\/)[^\s]+$/i;
+if (!value.trim()) {
+    setErrors((prev) => ({ ...prev, referenceLink: "Link is required." }));
+  } else if (!urlRegex.test(value)) {
+    setErrors((prev) => ({ ...prev, referenceLink: "Please enter a valid URL starting with http:// or https://" }));
+  } else if (value.length < 10) {
+    setErrors((prev) => ({ ...prev, referenceLink: "Please enter a more complete URL." }));
+  } else {
+    setErrors((prev) => ({ ...prev, referenceLink: "" }));
+  }
   };
 
   const validateForm = (): boolean => {
@@ -537,16 +560,19 @@ const AssessmentQuestion: React.FC = () => {
               </div>
               <div>
                 <label className="block font-medium text-sm text-gray-700 mb-1">
-                  Link for Reference
-                </label>
-                <input
-                  type="url"
-                  className="w-full p-2 rounded-lg border border-gray-300"
-                  placeholder="https://example.com"
-                  value={formData.referenceLink || ""}
-                  onChange={(e) => handleReferenceLinkChange(e.target.value)}
-                  disabled={isSubmitted}
-                />
+  Link for Reference
+</label>
+<input
+  type="url"
+  className={`w-full p-2 rounded-lg border ${errors.referenceLink ? "border-red-500" : "border-gray-300"}`}
+  placeholder="https://example.com"
+  value={formData.referenceLink || ""}
+  onChange={(e) => handleReferenceLinkChange(e.target.value)}
+  disabled={isSubmitted}
+/>
+{errors.referenceLink && (
+  <p className="text-sm text-red-600 mt-1">{errors.referenceLink}</p>
+)}
               </div>
             </div>
 
