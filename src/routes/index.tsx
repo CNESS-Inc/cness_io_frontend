@@ -39,6 +39,8 @@ import MyConnection from "../pages/MyConnection";
 import ComingSoon from "../pages/ComingSoon";
 import DashboardLayout from "../layout/Dashboard/dashboardlayout";
 import DashboardSocial from "../pages/DashboardSocial";
+import DashboardDirectory from "../pages/DashboardDirectory";
+import DashboardTechnology from "../pages/DashboardTechnology";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -223,6 +225,17 @@ export const router = createBrowserRouter([
             path: "DashboardSocial",
             element: <DashboardSocial />,
           },
+           {
+            path: "DashboardDirectory",
+            element: <DashboardDirectory />,
+          },
+          
+  {
+  path: "DashboardDirectory/technology",
+  element: <DashboardTechnology />, // reuse or wrap TechnologyAndAI
+}
+
+
         ],
       },
     ],

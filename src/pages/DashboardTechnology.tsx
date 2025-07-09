@@ -8,7 +8,6 @@ import {
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 
-
 interface Company {
   id: string;
   name: string;
@@ -22,7 +21,7 @@ interface Company {
   isCertified?: boolean;
 }
 
-export default function SearchListing() {
+export default function DashboardTechnology() {
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search");
   const domain = searchParams.get("domain");

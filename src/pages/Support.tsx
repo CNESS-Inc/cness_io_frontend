@@ -2,8 +2,16 @@ import { useState } from 'react';
 import FAQSection from "../components/ui/Faq"; // Adjust the import path as needed
 import tollfree from "..//assets/tollfree.png";
 
+declare global {
+  interface Window {
+    showZForm_982213: () => void;
+    showZForm_574943: () => void;
+
+  }
+}
+
 const Support = () => {
-const [activeTab, setActiveTab] = useState<'tickets' | 'faq'>('faq');
+  const [activeTab, setActiveTab] = useState<'tickets' | 'faq'>('faq');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Sample ticket data
@@ -35,16 +43,23 @@ const [activeTab, setActiveTab] = useState<'tickets' | 'faq'>('faq');
 
         {/* Action Buttons and Toll-free Number */}
         <div className="flex flex-wrap items-center gap-4 mb-8">
-<button className="px-6 py-2 rounded-full bg-white text-gray-800 border border-gray-300 shadow-sm hover:shadow-md transition">
-            Create Ticket
+          <button
+          onClick={()=>window.showZForm_574943 && window.showZForm_574943()}
+           className="px-6 py-2 rounded-full bg-white text-gray-800 border border-gray-300 shadow-sm hover:shadow-md transition">
+            Contact Us
           </button>
-<button className="px-6 py-2 rounded-full bg-[#FF5C7C] text-white font-semibold hover:bg-[#ff4065] transition">
+
+          <button
+            onClick={() => window.showZForm_982213 && window.showZForm_982213()}
+            className="px-6 py-2 rounded-full bg-[#FF5C7C] text-white font-semibold hover:bg-[#ff4065] transition"
+          >
             Provide Feedback
           </button>
-      <div className="flex items-center space-x-2 text-blue-600">
-  <img src={tollfree} alt="Toll Free" className="w-6 h-6" />
-  <span>Toll Free: 1-800-555-1234</span>
-</div>
+
+          <div className="flex items-center space-x-2 text-blue-600">
+            <img src={tollfree} alt="Toll Free" className="w-6 h-6" />
+            <span>Toll Free: 1-800-555-1234</span>
+          </div>
         </div>
 
         {/* Search Bar */}
@@ -78,14 +93,12 @@ const [activeTab, setActiveTab] = useState<'tickets' | 'faq'>('faq');
 
         {/* Tab Navigation */}
         <div className="flex border-b border-gray-200 mb-6">
-          
           <button
             className={`px-4 py-2 font-medium ${activeTab === 'faq' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
             onClick={() => setActiveTab('faq')}
           >
             FAQ
           </button>
-
           <button
             className={`px-4 py-2 font-medium ${activeTab === 'tickets' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
             onClick={() => setActiveTab('tickets')}
@@ -110,9 +123,13 @@ const [activeTab, setActiveTab] = useState<'tickets' | 'faq'>('faq');
                 {tickets.map((ticket) => (
                   <tr key={ticket.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        ticket.status === 'General' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'
-                      }`}>
+                      <span
+                        className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          ticket.status === 'General'
+                            ? 'bg-blue-100 text-blue-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}
+                      >
                         {ticket.status}
                       </span>
                     </td>
@@ -125,7 +142,7 @@ const [activeTab, setActiveTab] = useState<'tickets' | 'faq'>('faq');
             </table>
           </div>
         ) : (
-         <FAQSection searchQuery={searchQuery} />
+          <FAQSection searchQuery={searchQuery} />
         )}
       </div>
     </div>

@@ -25,3 +25,10 @@
   animation: bounce-in 0.6s ease-out;
 }
 
+#zf_button_574943, #zf_button_982213 {
+  display: none !important;
+}
+
+[id^="zf_button_"] {
+  display: none !important;
+}

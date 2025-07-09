@@ -343,3 +343,9 @@ body {
 .block.active .expand-btn::before {
   content: '-';
 }
+
+body [id^="zf_button_"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
