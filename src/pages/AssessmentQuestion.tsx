@@ -79,12 +79,12 @@ const AssessmentQuestion: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { showToast } = useToast();
-const [errors, setErrors] = useState<FormErrors>({});
+// const [errors, setErrors] = useState<FormErrors>({});
 
 
-interface FormErrors {
-  referenceLink?: string;
-}
+// interface FormErrors {
+//   referenceLink?: string;
+// }
   const closeModal = () => {
     setActiveModal(null);
   };
