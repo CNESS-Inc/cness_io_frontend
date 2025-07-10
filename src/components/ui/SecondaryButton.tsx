@@ -1,5 +1,11 @@
 // src/components/SecondaryButton.tsx
-export default function SecondaryButton({ children, onClick }) {
+import type { ReactNode, MouseEventHandler } from "react";
+
+interface ButtonProps {
+  children: ReactNode;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+}
+export default function SecondaryButton({ children, onClick }: ButtonProps) {
     return (
       <button
         onClick={onClick}
