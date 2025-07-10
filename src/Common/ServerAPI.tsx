@@ -241,6 +241,7 @@ export const submitPersonDetails = (formData: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.person_profile);
 };
 export const submitAnswerDetails = (formData: any): ApiResponse => {
+  console.log("🚀 ~ submitAnswerDetails ~ formData:", formData)
   // Initialize the data array
   const data: Array<{ question_id: string; answer: any }> = [];
 
@@ -278,12 +279,13 @@ export const submitAnswerDetails = (formData: any): ApiResponse => {
   // // Handle referenceLink (if needed)
   // // You'll need to know the question_id for the referenceLink
   // // For example:
-if (formData.referenceLink && formData.referenceLinkQuestionId) {
-  data.push({
-    question_id: formData.referenceLinkQuestionId,
-    answer: formData.referenceLink,
-  });
-}
+  if (formData.referenceLink) {
+    data.push({
+      question_id: formData.referenceLink.question_id,
+      answer: formData.referenceLink.url
+    });
+  }
+
   // Handle uploads (if needed)
   // You'll need to know how to map uploads to question_ids
   // For example:

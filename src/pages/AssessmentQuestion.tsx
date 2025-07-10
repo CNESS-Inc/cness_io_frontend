@@ -21,7 +21,7 @@ interface Section {
   }>;
   checkboxes_question: string;
   checkboxes_question_id: string;
-  checkboxAnswers: string[]; // Add this field to store checkbox answers
+  checkboxAnswers: string[];
   purposePauseQuestions: Array<{
     question: string;
     id: string;
@@ -36,8 +36,8 @@ interface Section {
     id: string;
     fileUrl?: string | null;
   }>;
-  referenceLinkAnswer?: string;
-  referenceLinkQuestionId?: string;
+  referenceLinkQuestionId: string; // Add this
+  referenceLinkAnswer: string; // Add this
   next_section_id: string | null;
   previous_section_id: string | null;
 }
@@ -55,8 +55,10 @@ interface FormValues {
     id: string;
     fileUrl?: string | null; // Added this field
   }>;
-  referenceLink: string;
-  referenceLinkQuestionId?: string; 
+  referenceLink: {
+    url: string;
+    question_id: string;
+  };
 }
 
 interface PurposePauseAnswer {
@@ -114,8 +116,7 @@ interface FormErrors {
     let purposePauseData: any = null;
     let bestPracticeData: any = null;
     let suggestedUploadsData: any = null;
-      let linkReferenceData: any = null;
-
+    let referenceLinkData: any = null;
 
     // Iterate through each question_data item and categorize them by sub_section name
     apiData.question_data.forEach((section: any) => {
@@ -128,8 +129,8 @@ interface FormErrors {
       } else if (section.sub_section.name === "Suggested Uploads") {
         suggestedUploadsData = section;
       } else if (section.sub_section.name === "Link for Reference") {
-      linkReferenceData = section;
-    }
+        referenceLinkData = section;
+      }
     });
 
     return {
@@ -139,7 +140,7 @@ interface FormErrors {
       checkboxes: checkboxesData?.questions[0]?.options || [],
       checkboxes_question: checkboxesData?.questions[0]?.question || "",
       checkboxes_question_id: checkboxesData?.questions[0]?.id || "",
-      checkboxAnswers: checkboxesData?.questions[0]?.answer || [], // Store the checkbox answers
+      checkboxAnswers: checkboxesData?.questions[0]?.answer || [],
       purposePauseQuestions:
         purposePauseData?.questions?.map((q: any) => ({
           question: q.question,
@@ -158,8 +159,8 @@ interface FormErrors {
             : ".pdf,.doc,.docx,.jpg,.png,.jpeg",
           fileUrl: q.answer || null,
         })) || [],
-     referenceLinkAnswer: linkReferenceData?.questions[0]?.answer || "",
-    referenceLinkQuestionId: linkReferenceData?.questions[0]?.id || "",
+      referenceLinkQuestionId: referenceLinkData?.questions[0]?.id || "", // Add this
+      referenceLinkAnswer: referenceLinkData?.questions[0]?.answer || "", // Add this
       next_section_id: apiData.next_section_id,
       previous_section_id: apiData.previous_section_id,
     };
@@ -182,7 +183,11 @@ interface FormErrors {
         id: upload.id,
         fileUrl: upload.fileUrl || null,
       })),
-referenceLink: section.referenceLinkAnswer || "",    };
+      referenceLink: {
+        url: section.referenceLinkAnswer || "",
+        question_id: section.referenceLinkQuestionId,
+      },
+    };
   };
 
   const fetchQuestions = async (sectionId?: string) => {
@@ -309,23 +314,17 @@ referenceLink: section.referenceLinkAnswer || "",    };
     }
   };
 
-const handleReferenceLinkChange = (value: string) => {
-  setFormData((prev) => {
-    if (!prev) return null;
-    const newData = { ...prev, referenceLink: value };
-    return newData;
-  });
-
-    const urlRegex = /^(https?:\/\/)[^\s]+$/i;
-if (!value.trim()) {
-    setErrors((prev) => ({ ...prev, referenceLink: "Link is required." }));
-  } else if (!urlRegex.test(value)) {
-    setErrors((prev) => ({ ...prev, referenceLink: "Please enter a valid URL starting with http:// or https://" }));
-  } else if (value.length < 10) {
-    setErrors((prev) => ({ ...prev, referenceLink: "Please enter a more complete URL." }));
-  } else {
-    setErrors((prev) => ({ ...prev, referenceLink: "" }));
-  }
+  const handleReferenceLinkChange = (value: string) => {
+    setFormData((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        referenceLink: {
+          ...prev.referenceLink,
+          url: value,
+        },
+      };
+    });
   };
 
   const validateForm = (): boolean => {
@@ -518,7 +517,7 @@ if (!value.trim()) {
               placeholder={currentSection.bestPracticePrompt}
               value={formData.bestPractice.answer || ""}
               onChange={(e) => handleBestPracticeChange(e.target.value)}
-                    disabled={isSubmitted}
+              disabled={isSubmitted}
             />
 
             {/* Section 4: Suggested Uploads */}
@@ -560,19 +559,16 @@ if (!value.trim()) {
               </div>
               <div>
                 <label className="block font-medium text-sm text-gray-700 mb-1">
-  Link for Reference
-</label>
-<input
-  type="url"
-  className={`w-full p-2 rounded-lg border ${errors.referenceLink ? "border-red-500" : "border-gray-300"}`}
-  placeholder="https://example.com"
-  value={formData.referenceLink || ""}
-  onChange={(e) => handleReferenceLinkChange(e.target.value)}
-  disabled={isSubmitted}
-/>
-{errors.referenceLink && (
-  <p className="text-sm text-red-600 mt-1">{errors.referenceLink}</p>
-)}
+                  Link for Reference
+                </label>
+                <input
+                  type="url"
+                  className="w-full p-2 rounded-lg border border-gray-300"
+                  placeholder="https://example.com"
+                  value={formData.referenceLink.url || ""}
+                  onChange={(e) => handleReferenceLinkChange(e.target.value)}
+                  disabled={isSubmitted}
+                />
               </div>
             </div>
 
