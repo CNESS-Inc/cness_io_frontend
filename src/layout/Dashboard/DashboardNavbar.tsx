@@ -117,7 +117,7 @@ const showFilterSidebar =
   icon: <TrendingUp className="w-5 h-5" />,
   label: "Best Practices Hub",
   active:true,
-  path: "/dashboard/bestpracticeshub",
+  path: "/dashboard/bestpractices",
       isbestpractices: true,
   children: [
     { label: "Manage Best Practices", path: "/dashboard/manage_bestpractices" },

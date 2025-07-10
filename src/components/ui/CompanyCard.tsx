@@ -125,7 +125,7 @@ export default function CompanyCard({
         </p>
 
         <div className="flex flex-wrap gap-2 mt-3">
-          {tags.map((tag, index) => (
+          {tags?.map((tag, index) => (
             <span
               key={index}
               className="bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs"

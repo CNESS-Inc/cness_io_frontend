@@ -130,6 +130,9 @@ export const EndPoint = {
   follow: "/user/follow",
   vote: "/poll/vote",
   googleLogin: "/auth/google-login",
+  all_bestPractices: "/best-practice/all",
+  add_bestpractices: "/best-practice",
+  singleBp: "/best-practice/get",
 };
 
 export const GoogleLoginDetails = async (googleToken: string): ApiResponse => {
@@ -426,6 +429,27 @@ export const GetInspiringCompanies = (
     EndPoint.get_inspire_company,
     params
   );
+};
+export const GetAllBestPractices = (
+  page: number,
+  limit: number
+): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["limit"] = limit;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.all_bestPractices,
+    params
+  );
+};
+export const CreateBestPractice = (formData:any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.add_bestpractices);
+};
+export const GetSingleBestPractice = (id:any): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.singleBp}/${id}`);
 };
 export const GetProfileDetails = (): ApiResponse => {
   const data = {};
