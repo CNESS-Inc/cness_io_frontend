@@ -2,6 +2,8 @@
 
 import { Badge } from "lucide-react";
 import Button from "../../ui/Button";
+import PrimaryButton from "../../ui/PrimaryButton";
+import SecondaryButton from "../../ui/SecondaryButton";
 import {
   Card,
   CardContent,
@@ -703,7 +705,7 @@ const openRetakeAssesmentModal = async () => {
                       </p>
                     </div>
                     <div className="w-full">
-                      <Button
+                      {/* <Button
                         variant="gradient-primary"
                         className="rounded-[100px] cursor-pointer py-2 px-8 self-stretch transition-colors duration-500 ease-in-out"
                         onClick={() => {
@@ -721,7 +723,23 @@ const openRetakeAssesmentModal = async () => {
                         <span className="font-['Plus_Jakarta_Sans',Helvetica] text-white text-center">
                           {user?.profile_progress === 100 ? "Edit" : "Start"}
                         </span>
-                      </Button>
+                      </Button> */}
+
+                    <SecondaryButton
+                      onClick={() => {
+                      const personOrganization = localStorage.getItem(
+                        "person_organization"
+                      );
+
+                      if (personOrganization === "2") {
+                        navigate("/dashboard/company-profile");
+                      } else if (personOrganization === "1") {
+                        navigate("/dashboard/user-profile");
+                      }
+                      }}
+                    >
+                      Start
+                    </SecondaryButton>
                     </div>
                   </div>
                 </div>
@@ -729,35 +747,63 @@ const openRetakeAssesmentModal = async () => {
             </Card>
 
             {/* Second Card */}
-            <Card className="flex-1 border-none bg-gradient-to-br from-[rgba(151,71,255,0.1)] to-[rgba(240,126,255,0.1)]">
+           
+            <Card  className="
+     flex p-6 flex-col  gap-6 flex-1
+    rounded-[12px] 
+    bg-[linear-gradient(97deg,rgba(223,214,255,0.30)_-0.01%,rgba(184,166,248,0.30)_49.8%,rgba(196,132,205,0.30)_99.99%)]
+    border-none
+  ">
               <CardContent className="p-4 sm:p-6">
                 <div className="flex flex-col items-center sm:items-start gap-4 sm:gap-6 w-full">
                   <div className="flex flex-col items-center sm:items-start gap-2 sm:gap-3 w-full text-center sm:text-left">
-                    <h2 className="font-['Poppins',Helvetica] font-semibold text-[#222224] text-lg sm:text-xl">
-                      Start Your Journey
-                    </h2>
-                    <p className="font-['Open_Sans',Helvetica] text-[#7a7a7a] text-sm sm:text-base">
+                  <h2
+  className="
+    text-[#222224]
+    font-['Poppins']
+    text-[20px]
+    font-semibold
+    leading-normal
+  "
+  style={{ fontFeatureSettings: "'liga' off, 'clig' off" }}
+>
+  Start Your Journey
+</h2>
+
+                    <p className="
+    text-black 
+    font-['Open_Sans'] 
+    text-[16px] 
+    font-normal 
+    leading-normal
+  "
+  style={{ fontFeatureSettings: "'liga' off, 'clig' off" }}>
                       Complete your profile by providing all the essential
                       information to kickstart your journey and obtain
                       certification.
                     </p>
                   </div>
                   <div className="w-full">
-                    <Button
-                      variant="gradient-primary"
+                    {/* <Button
+                      variant="primary"
                       className="rounded-[100px] py-2 px-8 self-stretch transition-colors duration-500 ease-in-out cursor-pointer"
                       onClick={() => {
                         navigate("/dashboard/assesment");
                       }}
                     >
-                      <span className="font-['Plus_Jakarta_Sans',Helvetica] text-white text-center">
+                      <span className="text-white text-center font-['Plus Jakarta Sans'] text-[12px] font-medium leading-normal">
                         Get Certification
                       </span>
-                    </Button>
+                    </Button> */}
+                    <PrimaryButton onClick={() => navigate("/dashboard/assesment")}>
+                    Get Certification
+                  </PrimaryButton>
+
                   </div>
                 </div>
               </CardContent>
             </Card>
+          
           </div>
 
           <div className="flex flex-col lg:flex-row gap-3 w-full">

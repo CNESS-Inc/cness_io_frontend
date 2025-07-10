@@ -20,6 +20,7 @@ import Select from "react-select";
 import Button from "../../ui/Button";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useSearchParams } from "react-router-dom";
 
 const tabNames = [
   "Basic Information",
@@ -29,6 +30,16 @@ const tabNames = [
   "Work Experience",
   "Public Profile Fields",
 ];
+
+
+const tabMap = {
+  basic: 0,
+  contact: 1,
+  social: 2,
+  education: 3,
+  work: 4,
+  publicProfile: 5
+};
 
 const UserProfilePage = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -49,8 +60,18 @@ const UserProfilePage = () => {
   const [serviceInput, setServiceInput] = useState("");
   const public_organization = localStorage.getItem("person_organization");
   const is_disqualify = localStorage.getItem("is_disqualify");
+const [searchParams] = useSearchParams();
+const tabParam = searchParams.get("tab");
 
   const { showToast } = useToast();
+
+
+useEffect(() => {
+  if (tabParam && Object.keys(tabMap).includes(tabParam)) {
+    setSelectedIndex(tabMap[tabParam as keyof typeof tabMap]);
+  }
+
+}, [tabParam]);
 
   // Separate form handlers for each tab
   const basicInfoForm = useForm({

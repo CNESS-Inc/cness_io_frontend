@@ -7,6 +7,7 @@ import {
   ChevronUpIcon,
   LogOutIcon,
   BadgePlus ,
+  TrendingUp
 
 } from "lucide-react";
 import { NavLink, useNavigate, useLocation, Link } from "react-router-dom";
@@ -67,7 +68,7 @@ const showFilterSidebar =
   const mainNavItems = [
     { id: "dashboard",
       icon: <img src={iconMap["home"]} alt="Home Icon" className="w-5 h-5" />,
-      label: "Home/Dashboard",
+      label: "Home / Dashboard",
       active: true,
       path: "/dashboard",
     },
@@ -106,10 +107,23 @@ const showFilterSidebar =
     children: [
       { label: "Search Listing", path: "/dashboard/search_listing" },
       { label: "Edit Public Listing", path: "/dashboard/editpubliclisting" },
-      { label: "Visibility Settings", path: "/dashboard/VisibilitySettings" },
-      { label: "Rating & Reviews", path: "/dashboard/RatingReviews" },
+    
     ],
     },
+
+
+{
+  id: "Best Practices Hub", 
+  icon: <TrendingUp className="w-5 h-5" />,
+  label: "Best Practices Hub",
+  active:true,
+  path: "/dashboard/bestpracticeshub",
+      isbestpractices: true,
+  children: [
+    { label: "Manage Best Practices", path: "/dashboard/manage_bestpractices" },
+  ],
+},
+
     { id: "market_place", 
       icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
       label: "Market Place",

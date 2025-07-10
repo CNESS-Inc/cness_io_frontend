@@ -26,7 +26,7 @@ import herosection from './Hero section.png'
 // import companycard3 from './companycard3.jpg';
 // import companylogo3 from  './companylogo3.jpg';
 
-import home from './home.png';
+import home from './dash_Icon.svg';
 import learning from './learning.png';
 import market from './market.png';
 import mentor from './mentor.png';
@@ -34,7 +34,7 @@ import social from './social.png';
 import community from './community.png';
 import certify from './certify.png';
 import directory from './directory.png';
-import usericon from './usericon.png';
+import usericon from './Icon.svg';
 
 
 

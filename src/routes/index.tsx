@@ -41,6 +41,8 @@ import DashboardLayout from "../layout/Dashboard/dashboardlayout";
 import DashboardSocial from "../pages/DashboardSocial";
 import DashboardDirectory from "../pages/DashboardDirectory";
 import DashboardTechnology from "../pages/DashboardTechnology";
+import BestPracticesHub from "../pages/BestPracticesHub";
+import ManageBestPractices from "../pages/ManageBestPractices";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -229,12 +231,20 @@ export const router = createBrowserRouter([
             path: "DashboardDirectory",
             element: <DashboardDirectory />,
           },
-          
+           {
+            path: "BestPracticesHub",
+            element: <BestPracticesHub />,
+          },  
+
+{
+            path: "manage_bestpractices",
+            element: <ManageBestPractices />,
+          },  
+
   {
   path: "DashboardDirectory/technology",
   element: <DashboardTechnology />, // reuse or wrap TechnologyAndAI
 }
-
 
         ],
       },
