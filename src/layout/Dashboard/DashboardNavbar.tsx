@@ -68,7 +68,7 @@ const showFilterSidebar =
   const mainNavItems = [
     { id: "dashboard",
       icon: <img src={iconMap["home"]} alt="Home Icon" className="w-5 h-5" />,
-      label: "Home/Dashboard",
+      label: "Home / Dashboard",
       active: true,
       path: "/dashboard",
     },

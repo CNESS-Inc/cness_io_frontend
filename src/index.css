@@ -282,11 +282,14 @@ summary::after {
 
 .dashboard_nav
 {
+  align-self: stretch;
+  font-feature-settings: 'liga' off, 'clig' off;
   font-family: "Poppins", sans-serif;
-  font-weight: 500;
+  font-style: normal;
+  font-weight: 450;
   font-size: 14px;
   line-height: 20px;
-  color:#64748b;
+  color:#64748B;
 }
 
 body {

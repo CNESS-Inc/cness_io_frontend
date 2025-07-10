@@ -11,9 +11,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 
-
-
-
 type Company = {
   is_organization: boolean | undefined;
   is_person: boolean | undefined;
@@ -76,7 +73,14 @@ const handleProfessionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {  s
 const fetchProfession = async () => {
     try {
       const res = await GetAllFormDetails();
-      setProfession(res?.data?.data?.profession);
+      setProfession(
+        res?.data?.data?.profession
+          .filter((item: { is_blocked: boolean }) => !item.is_blocked)
+          .map((item: { id: string; title: string }) => ({
+            id: item.id,
+            title: item.title,
+          }))
+      );
     } catch (error: any) {
       console.error("Error fetching professions:", error);
       showToast({
@@ -215,7 +219,7 @@ const handleSearch = () => {
   <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 text-center">
  
 <h1 className="text-[32px] sm:text-2xl md:text-4xl font-bold text-gray-800 mb-10 -mt-35">
-      Conscious Search Stops here.
+      Find Your Conscious Best Practices here.
     </h1>
 
 <div className="w-full max-w-2xl bg-white border border-gray-200 rounded-full flex items-center px-3 py-2 shadow-sm gap-2 mt-2">
@@ -223,11 +227,7 @@ const handleSearch = () => {
               <select
                 className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold rounded-full px-4 py-2 w-[180px] sm:w-[220px] text-center appearance-none cursor-pointer"
                  value=""
-                onChange={(e) => {
-                  const selected = profession.find((p: any) => p.id === e.target.value);
-                  setSelectedProfession(e.target.value);
-                  setSearchText(selected ? selected.title : "");
-                }}
+                onChange={handleProfessionChange}
               >
                 <option value="">Explore</option>
                 {profession.map((prof: any) => (
