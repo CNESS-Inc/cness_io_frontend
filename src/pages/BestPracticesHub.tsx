@@ -58,20 +58,23 @@ export default function BestPracticesHub() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Pagination states
-  const [popularPagination, setPopularPagination] = useState<PaginationData>({
+  const [pagination, setPagination] = useState<PaginationData>({
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
     itemsPerPage: 10,
   });
-  const [popularCompanies, setPopularCompanies] = useState<Company[]>([]);
+  const [bestPractices, setBestPractices] = useState<Company[]>([]);
   const [isLoading, setIsLoading] = useState({
     popular: false,
   });
 
-  const handleProfessionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedProfession(e.target.value);
-  };
+  const handleProfessionChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const professionId = e.target.value;
+  setSelectedProfession(professionId);
+  // Reset to page 1 when profession changes
+  await fetchBestPractices(1, professionId);
+};
 
   const fetchProfession = async () => {
     try {
@@ -94,12 +97,13 @@ export default function BestPracticesHub() {
     }
   };
 
-  const fetchPopularCompany = async (page: number = 1) => {
+  const fetchBestPractices = async (page: number = 1, professionId: string = "") => {
     setIsLoading((prev) => ({ ...prev, popular: true }));
     try {
       const res = await GetAllBestPractices(
         page,
-        popularPagination.itemsPerPage
+        pagination.itemsPerPage,
+        professionId
       );
       if (res?.data?.data) {
         const transformedCompanies = res.data.data.rows.map(
@@ -121,8 +125,8 @@ export default function BestPracticesHub() {
             commentsCount: practice.total_comment_count || 0,
           })
         );
-        setPopularCompanies(transformedCompanies);
-        setPopularPagination((prev: PaginationData) => ({
+        setBestPractices(transformedCompanies);
+        setPagination((prev: PaginationData) => ({
           ...prev,
           currentPage: page,
           totalPages: Math.ceil(res.data.data.count / prev.itemsPerPage),
@@ -143,7 +147,7 @@ export default function BestPracticesHub() {
 
   useEffect(() => {
     fetchProfession();
-    fetchPopularCompany();
+    fetchBestPractices();
   }, []);
 
   const handleSearch = () => {
@@ -221,7 +225,8 @@ export default function BestPracticesHub() {
       });
 
       closeModal();
-      fetchPopularCompany(); // Refresh the list
+      await fetchBestPractices();
+      setActiveModal(null);
     } catch (error: any) {
       console.error("Error creating best practice:", error);
       showToast({
@@ -320,7 +325,7 @@ export default function BestPracticesHub() {
       <section className="py-16 bg-[#f9f9f9] border-t border-gray-100">
         <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold mb-4">Popular Companies</h2>
+            <h2 className="text-xl font-semibold mb-4">Best Practices</h2>
             <Button
               variant="gradient-primary"
               className="rounded-[100px] py-2 px-8 self-stretch transition-colors duration-500 ease-in-out"
@@ -334,9 +339,9 @@ export default function BestPracticesHub() {
             <div className="flex justify-center py-10">
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
-          ) : popularCompanies.length > 0 ? (
+          ) : bestPractices.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
-              {popularCompanies?.map((company) => (
+              {bestPractices?.map((company) => (
                 <div
                   key={company.id}
                   className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
@@ -385,19 +390,19 @@ export default function BestPracticesHub() {
               ))}
             </div>
           ) : (
-            <p className="text-gray-500">No popular companies found.</p>
+            <p className="text-gray-500">No Best Practices found.</p>
           )}
 
-          {popularPagination.totalPages > 1 && (
+          {pagination.totalPages > 1 && (
             <div className="mt-8">
               <div className="flex justify-center">
                 <nav className="inline-flex rounded-md shadow-sm -space-x-px text-sm">
                   <button
                     onClick={() =>
-                      fetchPopularCompany(popularPagination.currentPage - 1)
+                      fetchBestPractices(pagination.currentPage - 1)
                     }
                     disabled={
-                      popularPagination.currentPage === 1 || isLoading.popular
+                      pagination.currentPage === 1 || isLoading.popular
                     }
                     className="px-3 py-1 rounded-l-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
                   >
@@ -406,10 +411,10 @@ export default function BestPracticesHub() {
 
                   {/* Always show first page */}
                   <button
-                    onClick={() => fetchPopularCompany(1)}
+                    onClick={() => fetchBestPractices(1)}
                     disabled={isLoading.popular}
                     className={`px-3 py-1 border border-gray-300 ${
-                      1 === popularPagination.currentPage
+                      1 === pagination.currentPage
                         ? "bg-indigo-500 text-white"
                         : "bg-white text-gray-700 hover:bg-gray-100"
                     }`}
@@ -418,7 +423,7 @@ export default function BestPracticesHub() {
                   </button>
 
                   {/* Show ellipsis if current page is far from start */}
-                  {popularPagination.currentPage > 3 && (
+                  {pagination.currentPage > 3 && (
                     <span className="px-3 py-1 border border-gray-300 bg-white">
                       ...
                     </span>
@@ -426,22 +431,22 @@ export default function BestPracticesHub() {
 
                   {/* Show pages around current page */}
                   {[
-                    popularPagination.currentPage - 2,
-                    popularPagination.currentPage - 1,
-                    popularPagination.currentPage,
-                    popularPagination.currentPage + 1,
-                    popularPagination.currentPage + 2,
+                    pagination.currentPage - 2,
+                    pagination.currentPage - 1,
+                    pagination.currentPage,
+                    pagination.currentPage + 1,
+                    pagination.currentPage + 2,
                   ]
                     .filter(
-                      (page) => page > 1 && page < popularPagination.totalPages
+                      (page) => page > 1 && page < pagination.totalPages
                     )
                     .map((page) => (
                       <button
                         key={page}
-                        onClick={() => fetchPopularCompany(page)}
+                        onClick={() => fetchBestPractices(page)}
                         disabled={isLoading.popular}
                         className={`px-3 py-1 border border-gray-300 ${
-                          page === popularPagination.currentPage
+                          page === pagination.currentPage
                             ? "bg-indigo-500 text-white"
                             : "bg-white text-gray-700 hover:bg-gray-100"
                         }`}
@@ -451,38 +456,38 @@ export default function BestPracticesHub() {
                     ))}
 
                   {/* Show ellipsis if current page is far from end */}
-                  {popularPagination.currentPage <
-                    popularPagination.totalPages - 2 && (
+                  {pagination.currentPage <
+                    pagination.totalPages - 2 && (
                     <span className="px-3 py-1 border border-gray-300 bg-white">
                       ...
                     </span>
                   )}
 
                   {/* Always show last page if it's not the first page */}
-                  {popularPagination.totalPages > 1 && (
+                  {pagination.totalPages > 1 && (
                     <button
                       onClick={() =>
-                        fetchPopularCompany(popularPagination.totalPages)
+                        fetchBestPractices(pagination.totalPages)
                       }
                       disabled={isLoading.popular}
                       className={`px-3 py-1 border border-gray-300 ${
-                        popularPagination.totalPages ===
-                        popularPagination.currentPage
+                        pagination.totalPages ===
+                        pagination.currentPage
                           ? "bg-indigo-500 text-white"
                           : "bg-white text-gray-700 hover:bg-gray-100"
                       }`}
                     >
-                      {popularPagination.totalPages}
+                      {pagination.totalPages}
                     </button>
                   )}
 
                   <button
                     onClick={() =>
-                      fetchPopularCompany(popularPagination.currentPage + 1)
+                      fetchBestPractices(pagination.currentPage + 1)
                     }
                     disabled={
-                      popularPagination.currentPage ===
-                        popularPagination.totalPages || isLoading.popular
+                      pagination.currentPage ===
+                        pagination.totalPages || isLoading.popular
                     }
                     className="px-3 py-1 rounded-r-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
                   >

@@ -432,11 +432,13 @@ export const GetInspiringCompanies = (
 };
 export const GetAllBestPractices = (
   page: number,
-  limit: number
+  limit: number,
+  professionId: string,
 ): ApiResponse => {
   let params: { [key: string]: any } = {};
   params["page_no"] = page;
   params["limit"] = limit;
+  params["profession"] = professionId;
   return executeAPI(
     ServerAPI.APIMethod.GET,
     null,
