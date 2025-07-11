@@ -10,6 +10,7 @@ import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { EyeIcon } from "lucide-react";
 import Modal from "../components/ui/Modal";
 import { useToast } from "../components/ui/Toast/ToastProvider";
+import missionicon from "../assets/missionicon.svg"
 
 interface Section {
   id: string;
@@ -413,39 +414,39 @@ const AssessmentQuestion: React.FC = () => {
 
   return (
     <>
-      {/* <div className="w-full px-2 sm:px-6 lg:px-2 mt-6">
+      <div className="w-full px-2 sm:px-6 lg:px-2 mt-6">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-3">
 
-            <div className="w-10 h-10  ">
+            <div className="w-6 h-6 ">
               <img
-                src={missionIcon} 
+                src={missionicon} 
                 alt="Mission Icon"
-                className="w-10 h-10"
+                className="w-6 h-6"
               />{" "}
             </div>
-            <h1 className="text-xl font-bold text-gray-800">
+<h1 className="text-[16px] font-bold font-poppins text-gray-800">
               {currentSection.name}
             </h1>
           </div>
 
-          <StatusPill status="in_progress" percentage={progress} />
+          
         </div>
-      </div> */}
+      </div> 
 
       {completed_step === "2" ? (
         <div className="w-full px-4 sm:px-6 lg:px-2 pt-4 pb-10 space-y-6">
           <div className="bg-white rounded-3xl shadow-base p-4 sm:p-6 lg:p-8 space-y-8">
             {/* Section 1: Describe Your Approach */}
             <div className="space-y-4">
-              <h3 className="text-base sm:text-lg font-semibold text-gray-700 pb-2 border-b border-gray-200">
+<h3 className="text-[12px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
                 {currentSection.checkboxes_question}
               </h3>
               <div className="space-y-3">
                 {currentSection.checkboxes.map((option) => (
                   <label
                     key={option.id}
-                    className="flex items-start gap-3 text-gray-700"
+                    className="text-[12px] flex items-start gap-3 text-[#222224]"
                   >
                     <input
                       type="checkbox"
@@ -471,12 +472,13 @@ const AssessmentQuestion: React.FC = () => {
 
             {/* Section 2: Purpose Pause */}
             <div className="space-y-6">
-              <h3 className="text-lg font-semibold text-gray-700 pb-2 border-b border-gray-200">
+<h3 className="text-[12px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
                 Purpose Pause
               </h3>
               {currentSection.purposePauseQuestions.map((q, i) => (
                 <div key={i}>
-                  <p className="text-sm font-medium text-gray-700 mb-1">
+                  <p className="text-[12px] flex items-start gap-3 text-[#222224]
+">
                     {q.question}
                   </p>
                   <textarea
@@ -506,7 +508,7 @@ const AssessmentQuestion: React.FC = () => {
                 <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
               </label>
               {/* Text next to toggle */}
-              <span className="text-sm font-medium text-gray-700 mb-1">
+              <span className="text-[12px] flex items-start gap-3 text-[#222224]">
                 Do you have best practices to highlight?
               </span>
             </div>
@@ -522,21 +524,21 @@ const AssessmentQuestion: React.FC = () => {
 
             {/* Section 4: Suggested Uploads */}
             <div className="space-y-6">
-              <h3 className="text-lg font-semibold text-gray-700 pb-2 border-b border-gray-200">
-                Suggested Uploads
+<h3 className="text-[12px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
+                Purpose Pause
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 {currentSection.suggestedUploads.map((upload, i) => (
                   <div key={i}>
-                    <label className="block text-sm font-medium text-gray-700 mb-4">
+                    <label className="text-[12px] flex items-start gap-3 text-[#222224] mb-4">
                       {upload.label}
                     </label>
                     <div className="flex items-center gap-4">
                       <input
                         type="file"
                         accept={upload.acceptedTypes}
-                        className="w-full h-16 px-2 py-3 cursor-pointer rounded-xl border border-gray-300 file:mr-4 file:rounded-full file:border-0 file:bg-[#7077FE] file:px-4 file:py-2 file:text-white file:font-medium file:cursor-pointer"
+                        className="w-full h-16 px-2 py-3 cursor-pointer rounded-xl border border-gray-300 file:mr-4 file:rounded-full file:border-0 file:bg-[#7077FE] file:px-[12px] file:py-[8px] file:text-white file:text-[14px] file:cursor-pointer"
                         onChange={(e) =>
                           handleFileUpload(i, e.target.files?.[0] || null)
                         }
@@ -558,7 +560,7 @@ const AssessmentQuestion: React.FC = () => {
                 ))}
               </div>
               <div>
-                <label className="block font-medium text-sm text-gray-700 mb-1">
+                <label className="text-[12px] flex items-start gap-3 text-[#222224] mb-1">
                   Link for Reference
                 </label>
                 <input
@@ -574,14 +576,28 @@ const AssessmentQuestion: React.FC = () => {
 
             {/* Action Buttons */}
             {/* {!isSubmitted && ( */}
-            <div className="flex flex-col sm:flex-row items-center justify-between mt-10 px-4 py-6 bg-white rounded-xl shadow-sm gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between mt-10 px-4 py-6 bg-white rounded-xl shadow-sm gap-4 cursor-pointer">
               {/* Save Button - Gradient */}
               <Button
                 variant="gradient-primary"
                 onClick={handleSave}
                 // disabled={isSubmitting}
                 disabled={isSubmitted}
-                className="w-full sm:w-auto px-6 py-2 rounded-full text-white font-medium disabled:opacity-60 cursor-pointer"
+                className="
+    w-[77px] h-[31px]
+    rounded-[70.94px]
+    px-[24px] py-[8px]
+    flex items-center justify-center
+    gap-[7.09px]
+    text-white
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-[100%] text-center
+    disabled:opacity-60
+    transition-colors duration-200 cursor-pointer
+  "
+  style={{
+    opacity: 1,
+    transform: 'rotate(0deg)'
+  }}
               >
                 {isSubmitting ? "Saving..." : "Save"}
               </Button>
@@ -591,10 +607,15 @@ const AssessmentQuestion: React.FC = () => {
                 <button
                   onClick={handlePrevious}
                   disabled={!currentSection.previous_section_id}
-                  className={`w-full sm:w-auto px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 
+                  className={`w-[104px] h-[31px] 
+              px-6 py-2 
+              rounded-[100px] 
+              text-sm font-medium 
+              transition-all duration-200 
+              border  
                               ${
                                 prevVariant === "white-disabled"
-                                  ? "bg-white text-gray-400 border border-gray-200 shadow-md cursor-pointer"
+                                  ? "bg-white font-['Plus Jakarta Sans'] font-medium text-[12px] leading-[100%] text-center text-gray-400 border border-gray-200 shadow-md cursor-pointer"
                                   : prevVariant === "blue"
                                   ? "bg-[#EEF0FF] text-[#7077FE] cursor-pointer"
                                   : "bg-[#EEF0FF] text-[#7077FE] hover:bg-[#DDE1FF] shadow-md cursor-pointer"
@@ -604,13 +625,33 @@ const AssessmentQuestion: React.FC = () => {
                 </button>
 
                 <Button
-                  variant="gradient-primary"
-                  onClick={handleNext}
-                  disabled={!currentSection.next_section_id}
-                  className="w-full sm:w-auto px-6 py-2 rounded-full text-white font-medium cursor-pointer transition-colors duration-200"
-                >
-                  Save & Next
-                </Button>
+  onClick={handleNext}
+  disabled={!currentSection.next_section_id}
+  className="
+    w-[117px] h-[31px]
+    rounded-[70.94px]
+    px-[24px] py-[8px]
+    flex items-center justify-center
+    gap-[7.09px]
+    cursor-pointer
+    transition-colors duration-200
+    text-white
+  "
+  style={{
+    opacity: 1,
+    transform: 'rotate(0deg)'
+  }}
+>
+  <span className="
+    font-['Plus Jakarta Sans']
+    font-medium
+    text-[12px]
+    leading-[100%]
+    text-center
+  ">
+    Save & Next
+  </span>
+</Button>
               </div>
             </div>
             {/* )} */}

@@ -27,6 +27,9 @@ import {
 import { useNavigate } from "react-router-dom";
 import QRCodeGenerator from "../../ui/QRCodeGenerator";
 import { useToast } from "../../ui/Toast/ToastProvider";
+import badgeicon from "../../../assets/badgeicon.svg";
+import badgecness from "../../../assets/Badgecness.svg";
+
 
 type PersPricingPlan = {
   id: any;
@@ -747,17 +750,18 @@ const openRetakeAssesmentModal = async () => {
             </Card>
 
             {/* Second Card */}
-           
-            <Card  className="
+   <Card  className="
      flex p-6 flex-col  gap-6 flex-1
     rounded-[12px] 
     bg-[linear-gradient(97deg,rgba(223,214,255,0.30)_-0.01%,rgba(184,166,248,0.30)_49.8%,rgba(196,132,205,0.30)_99.99%)]
-    border-none
+    border-[#B8A6F8]
   ">
-              <CardContent className="p-4 sm:p-6">
-                <div className="flex flex-col items-center sm:items-start gap-4 sm:gap-6 w-full">
-                  <div className="flex flex-col items-center sm:items-start gap-2 sm:gap-3 w-full text-center sm:text-left">
-                  <h2
+
+  
+ <CardContent className="p-4 sm:p-6">
+<div className="flex flex-col items-center sm:items-start gap-4 sm:gap-6 w-full">
+<div className="flex flex-col items-center sm:items-start gap-2 sm:gap-3 w-full text-center sm:text-left">
+ <h2
   className="
     text-[#222224]
     font-['Poppins']
@@ -770,7 +774,7 @@ const openRetakeAssesmentModal = async () => {
   Start Your Journey
 </h2>
 
-                    <p className="
+<p className="
     text-black 
     font-['Open_Sans'] 
     text-[16px] 
@@ -783,7 +787,7 @@ const openRetakeAssesmentModal = async () => {
                       certification.
                     </p>
                   </div>
-                  <div className="w-full">
+                  <div className="w-full cursor-pointer">
                     {/* <Button
                       variant="primary"
                       className="rounded-[100px] py-2 px-8 self-stretch transition-colors duration-500 ease-in-out cursor-pointer"
@@ -795,7 +799,7 @@ const openRetakeAssesmentModal = async () => {
                         Get Certification
                       </span>
                     </Button> */}
-                    <PrimaryButton onClick={() => navigate("/dashboard/assesment")}>
+                    <PrimaryButton onClick={() => navigate("/dashboard/assesment") }>
                     Get Certification
                   </PrimaryButton>
 
@@ -812,9 +816,9 @@ const openRetakeAssesmentModal = async () => {
               <Card className="w-full h-full border-[#eceef2]">
                 <CardHeader className="flex-row items-center justify-between border-b border-[#0000001a] pb-2 md:pb-3">
                   <div className="flex items-center gap-2 md:gap-3.5">
-                    <div className="bg-[#ff708a33] w-8 h-8 md:w-[38px] md:h-[38px] flex items-center justify-center rounded-full">
+                    <div className="bg-[#ff708a33] w-8 h-8 md:w-[30px] md:h-[30px] flex items-center justify-center rounded-full">
                       <img
-                        className="w-5 h-5 md:w-6 md:h-6"
+                        className="w-2 h-2 md:w-4 md:h-4"
                         alt="Assessment icon"
                         src="https://c.animaapp.com/magahlmqpONVZN/img/frame-2.svg"
                       />
@@ -867,9 +871,9 @@ const openRetakeAssesmentModal = async () => {
                 <Card className="w-full h-full border-[#eceef2] rounded-[10px] overflow-hidden">
                   <CardHeader className="flex-row items-center justify-between border-b border-[#0000001a] pb-2 md:pb-3">
                     <div className="flex items-center gap-2 md:gap-3.5">
-                      <div className="bg-[#e8cdfd33] w-8 h-8 md:w-[38px] md:h-[38px] flex items-center justify-center rounded-full">
+                      <div className="bg-[#e8cdfd33] w-8 h-8 md:w-[30px] md:h-[30px] flex items-center justify-center rounded-full">
                         <img
-                          className="w-4 h-4 md:w-[21.71px] md:h-[21.71px]"
+                          className="w-4 h-4 md:w-4 md:h-4"
                           alt="CIS Score icon"
                           src="https://c.animaapp.com/magahlmqpONVZN/img/frame-1.svg"
                         />
@@ -887,8 +891,8 @@ const openRetakeAssesmentModal = async () => {
                           strokeWidth={10}
                           styles={buildStyles({
                             rotation: 0.6,
-                            pathColor: "url(#gradient)",
-                            trailColor: "#f5f5f5",
+                            pathColor: "url(#cisGradient)",
+                            trailColor: "#F2F2F2",
                             textColor: "#242731",
                             pathTransitionDuration: 0.5,
                           })}
@@ -904,14 +908,14 @@ const openRetakeAssesmentModal = async () => {
                         <svg style={{ height: 0 }}>
                           <defs>
                             <linearGradient
-                              id="gradient"
+                              id="cisGradient"
                               x1="1"
                               y1="0"
                               x2="0"
                               y2="1"
                             >
-                              <stop offset="50%" stopColor="#A162F7" />
-                              <stop offset="100%" stopColor="#F07EFF" />
+                              <stop offset="0%" stopColor="#FFE88F" />
+                              <stop offset="100%" stopColor="#FFA96E" />
                             </linearGradient>
                           </defs>
                         </svg>
@@ -947,11 +951,11 @@ const openRetakeAssesmentModal = async () => {
                 <Card className="w-full h-full border-[#eceef2] rounded-[10px] overflow-hidden">
                   <CardHeader className="flex-row items-center justify-between border-b border-[#0000001a] pb-2 md:pb-3">
                     <div className="flex items-center gap-2 md:gap-3.5">
-                      <div className="bg-[#e8cdfd33] w-8 h-8 md:w-[38px] md:h-[38px] flex items-center justify-center rounded-full">
+                      <div className="bg-[#FFCC0033] w-8 h-8 md:w-[30px] md:h-[30px] flex items-center justify-center rounded-full">
                         <img
-                          className="w-4 h-4 md:w-[21.71px] md:h-[21.71px]"
+                          className="w-6 h-6 md:w-4 md:h-4"
                           alt="Badge icon"
-                          src="https://c.animaapp.com/magahlmqpONVZN/img/frame-1.svg"
+                          src={badgeicon}
                         />
                       </div>
                       <CardTitle className="text-sm md:text-base font-medium text-[#222224]">
@@ -965,7 +969,7 @@ const openRetakeAssesmentModal = async () => {
                         <img
                           className="w-24"
                           alt="Badge vector"
-                          src="https://c.animaapp.com/magahlmqpONVZN/img/vector.svg"
+                          src={badgecness}
                         />
                         <div className="w-full md:w-[118.96px]">
                           <p className="w-full py-1 bg-[#9747ff1a] rounded-[8px] text-center text-[#9747FF] font-medium text-sm">
