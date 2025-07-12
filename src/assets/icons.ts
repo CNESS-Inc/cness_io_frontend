@@ -27,14 +27,16 @@ import herosection from './Hero section.png'
 // import companylogo3 from  './companylogo3.jpg';
 
 import home from './dash_Icon.svg';
-import learning from './learning.png';
-import market from './market.png';
-import mentor from './mentor.png';
-import social from './social.png';
-import community from './community.png';
-import certify from './certify.png';
-import directory from './directory.png';
+import learning from './learning.svg';
+import market from './market.svg';
+import mentor from './mentor.svg';
+import social from './social.svg';
+import community from './community.svg';
+import certify from './certify.svg';
+import directory from './directory.svg';
 import usericon from './Icon.svg';
+import mentor1 from './mentor1.png';
+
 
 
 
@@ -75,6 +77,7 @@ social,
 community,
 directory,
 certify,
-usericon
+usericon,
+mentor1
 
 };

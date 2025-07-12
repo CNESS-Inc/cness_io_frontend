@@ -352,3 +352,9 @@ body [id^="zf_button_"] {
   visibility: hidden !important;
   opacity: 0 !important;
 }
+
+.gradient-border {
+  padding: 1px;
+  border-radius: 12px;
+  background: linear-gradient(to right, rgba(184,166,248,0.5), rgba(223,214,255,0.5));
+}
