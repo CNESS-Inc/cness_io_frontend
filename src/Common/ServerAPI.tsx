@@ -64,6 +64,7 @@ export const API = {
   //  BaseUrl: "http://192.168.1.29:5025/api", //local
  //BaseUrl: "http://localhost:5025/api", //local
  BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
+//  BaseUrl: "https://loud-cats-flash.loca.lt/api", //live
 };
 
 export const EndPoint = {
@@ -716,6 +717,7 @@ export const executeAPI = async <T = any,>(
           : { "Content-Type": "application/json" }),
         Authorization: `Bearer ${token || ""}`,
       },
+      withCredentials:true
     });
 
     return response.data;
