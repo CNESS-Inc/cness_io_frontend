@@ -1,4 +1,4 @@
-  import { useState, useEffect } from "react";
+  import { useState } from "react";
   import {
     BellIcon,
     HelpCircleIcon,
@@ -7,7 +7,8 @@
     ChevronUpIcon,
     LogOutIcon,
     BadgePlus ,
-    TrendingUp
+    TrendingUp,
+    Zap
 
   } from "lucide-react";
   import { NavLink, useNavigate, useLocation, Link } from "react-router-dom";
@@ -35,29 +36,17 @@
     setSort: React.Dispatch<React.SetStateAction<"az" | "za">>;
   }) => {
     
-    const [isProfileOpen, setIsProfileOpen] = useState(false);
-    const location = useLocation();
     const navigate = useNavigate();
 const [openDropdown, setOpenDropdown] = useState<{[key:string]: boolean}>({});
   const showFilterSidebar = 
     currentPath.includes("/dashboard/DashboardDirectory/technology") ||
     currentPath.includes("/dashboard/search_listing");
 
-    useEffect(() => {
-      if (
-        location.pathname.startsWith('/dashboard/user-profile') || 
-        location.pathname.startsWith('/dashboard/company-profile')
-      ) {
-        setIsProfileOpen(true);
-      } else {
-        setIsProfileOpen(false);
-      }
-    }, [location.pathname]);
+
 
     const handleLogout = () => {
       try {
         localStorage.clear();
-        setIsProfileOpen(false);
         toggleMobileNav();
         navigate("/");
       } catch (error) {
@@ -166,7 +155,7 @@ const [openDropdown, setOpenDropdown] = useState<{[key:string]: boolean}>({});
         ],
       },
       {id: "MentorPartnerHub",
-        icon: <img src={iconMap["mentor"]} alt="Home Icon" className="w-5 h-5" />,
+        icon: <Zap className="w-5 h-5 text-gray-500" />,
         label: "Mentor Partner Hub",
         active: false,
         isMentorDropdown: true,
@@ -180,7 +169,7 @@ const [openDropdown, setOpenDropdown] = useState<{[key:string]: boolean}>({});
         ],
       },
       {id: "Learning_Lab",
-        icon: <img src={iconMap["learning"]} alt="Home Icon" className="w-5 h-5" />,
+        icon: <img src={iconMap["learning"]} alt="Home Icon" className="w-6 h-6" />,
         label: "Learning Lab",
         active: false,
         isLearningLabDropdown: true,
@@ -239,9 +228,9 @@ const isDropdownOpen = !!openDropdown[item.id];
       );
 
 const baseClasses = `
-  flex items-center gap-3 px-3 py-2.5 w-full rounded-xl cursor-pointer font-medium leading-[20px]
+  flex items-center gap-3 px-3 py-2.5 w-full rounded-xl cursor-pointer font-medium leading-[20px] 
   transition duration-200 ease-in-out
-  hover:translate-x-[2px] hover:text-black
+  hover:translate-x-[2px] hover:text-black hover:bg-[#CDC1FF1A]
 `;    const activeMainClasses = "bg-[#CDC1FF1A] text-[#9747FF] font-semibold";
     const inactiveMainClasses = "text-gray-600 hover:text-black";
     const activeSubClasses = "text-[#F07EFF] font-semibold";

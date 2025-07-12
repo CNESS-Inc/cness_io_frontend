@@ -35,6 +35,8 @@ import community from './community.svg';
 import certify from './certify.svg';
 import directory from './directory.svg';
 import usericon from './Icon.svg';
+import mentor1 from './mentor1.png';
+
 
 
 
@@ -75,6 +77,7 @@ social,
 community,
 directory,
 certify,
-usericon
+usericon,
+mentor1
 
 };
