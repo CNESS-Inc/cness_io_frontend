@@ -717,19 +717,11 @@ export const executeAPI = async <T = any,>(
           : { "Content-Type": "application/json" }),
         Authorization: `Bearer ${token || ""}`,
       },
-      withCredentials:true
     });
 
     return response.data;
   } catch (error: any) {
     console.log("🚀 ~ error:", error.response.data.error.statusCode)
-
-    if (error.response.data.error.statusCode == 401) {
-      const res = await RefreshTokenDetails()
-      console.log("🚀 ~ resrefresh:", res)
-    } else if (error.response.data.error.statusCode === 428){
-      localStorage.clear()
-    }
     throw error;
   }
 };
