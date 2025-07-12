@@ -461,7 +461,7 @@ export const GetSingleBestPractice = (id:any): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.singleBp}/${id}`);
 };
-export const GetUserNotification = (id:any): ApiResponse => {
+export const GetUserNotification = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.user_notification}`);
 };

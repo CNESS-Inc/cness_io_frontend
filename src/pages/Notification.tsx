@@ -20,12 +20,10 @@ const Notification: React.FC = () => {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const userId = localStorage.getItem("Id");
-
   const getNotification = async () => {
     try {
       setLoading(true);
-      const res = await GetUserNotification(userId);
+      const res = await GetUserNotification();
       if (res?.data?.data) {
         setNotifications(res.data.data);
       }
