@@ -24,7 +24,7 @@ const Image: React.FC<LazyImageProps> = ({
           src={placeholderSrc}
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover rounded-[18px] transition-opacity duration-300"
+          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
           style={{ width, height }}
         />
       )}
@@ -33,7 +33,7 @@ const Image: React.FC<LazyImageProps> = ({
         alt={alt}
         loading={priority ? 'eager' : 'lazy'}
         onLoad={() => setIsLoaded(true)}
-        className={`w-full rounded-[18px] h-full transition-opacity duration-300 ${
+        className={`w-full h-full transition-opacity duration-300 ${
           isLoaded ? 'opacity-100' : 'opacity-0'
         }`}
         width={width}

@@ -1,0 +1,462 @@
+/* Main Section Styles */
+.community-section {
+  width: 100%;
+  /* min-height: 100vh; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  overflow: hidden;
+  padding: 40px 0;
+  position: relative;
+  padding-bottom: 0;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.community-section.animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Header Styles */
+.community-header {
+  text-align: center;
+  margin-bottom: 60px;
+  z-index: 10;
+  position: relative;
+  animation: fadeInUp 1s ease-out 0.5s both;
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px;
+}
+
+/* Animation Container */
+.animation-container {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0;
+}
+
+/* Main Image Container - Base State (Step 0) - Screenshot_1.png */
+.main-image-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  animation: float 4s ease-in-out infinite;
+}
+
+.main-community-image {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 20px;
+  transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Step 1: Full Width Banner - Screenshot_2.png */
+.main-image-container.step-1 {
+  width: 100%;
+  max-width: none;
+  height: 662px;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  border-radius: 0;
+}
+
+.main-image-container.step-1 .main-community-image {
+  width: 100%;
+  height: 662px !important;
+  object-fit: cover;
+  border-radius: 0;
+}
+.main-image-container.step-1 .main-community-image img{
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Step 2: Vertical Thumbnail - Screenshot_3.png */
+.main-image-container.step-2 {
+  width: 300px;
+  max-width: 300px;
+  height: 300px;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  z-index: 15;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+}
+
+.main-image-container.step-2 .main-community-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+/* Step 3: Small Size with Background Cards - Screenshot_4.png */
+.main-image-container.step-3 {
+  width: 250px;
+  max-width: 250px;
+  height: 250px;
+   object-fit: cover;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border-radius: 20px;
+}
+
+.main-image-container.step-3 .main-community-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+/* Step 4: Return to Original - Screenshot_5.png (same as Step 0) */
+.main-image-container.step-4 {
+  width: 200px;
+  height: 200px;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border-radius: 20px;
+   object-fit: cover;
+}
+
+.main-image-container.step-4 .main-community-image {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+/* Background Cards */
+.background-cards {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.background-card {
+  position: absolute;
+  /* background: rgba(255, 255, 255, 0.95); */
+  border-radius: 16px;
+  /* padding: 20px; */
+  max-width: 280px;
+  opacity: 0;
+  transform: scale(0.6) translateY(50px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.background-card.visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  animation: cardFadeIn 0.8s ease-out;
+}
+
+.background-card.fade-out {
+  opacity: 0;
+  transform: scale(0.8) translateY(20px);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bg-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.bg-card-icon {
+  width: 200px;
+  height: 220px;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 0;
+  border: 3px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.background-card.visible .bg-card-icon {
+  /* animation: iconRotate 2s ease-in-out infinite; */
+}
+.bg-card-icon img{
+  border-radius: 16px;
+  /* object-fit: cover; */
+}
+
+.bg-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bg-card-text h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.bg-card-text p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* Background Card Positions - 7 cards positioned around the main image */
+.bg-card-1 {
+  top: 20%;
+  left: 30%;
+  transition-delay: 0.1s;
+}
+
+.bg-card-2 {
+  top: 32%;
+  left: 40%;
+  transition-delay: 0.2s;
+  z-index: 1;
+}
+
+.bg-card-3 {
+  top: 20%;
+  right: 35%;
+  transition-delay: 0.3s;
+}
+
+.bg-card-4 {
+  top: 55%;
+  left: 34%;
+  transform: translateY(-50%);
+  transition-delay: 0.4s;
+}
+
+.bg-card-5 {
+  top: 50%;
+  right: 35%;
+  transform: translateY(-50%);
+  transition-delay: 0.5s;
+}
+
+.bg-card-6 {
+    bottom: 8%;
+    left: 45%;
+    transition-delay: 0.6s;
+}
+
+.bg-card-7 {
+  bottom: 40%;
+  right: 40%;
+  transition-delay: 0.7s;
+}
+
+/* Animation Controls */
+.animation-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+}
+
+.control-btn {
+  background: linear-gradient(135deg, #7077FE, #9747FF);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(112, 119, 254, 0.3);
+}
+
+.control-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(112, 119, 254, 0.4);
+}
+
+.control-btn:active {
+  transform: translateY(0);
+}
+
+/* Bottom Section */
+.community-bottom {
+  margin-top: 60px;
+  border-radius: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
+  width: calc(100% - 40px);
+}
+
+/* Animation Keyframes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(-50%, -50%) translateY(0px);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(-10px);
+  }
+}
+
+@keyframes cardFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(50px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05) translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* @keyframes iconRotate {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+} */
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .animation-container {
+    height: 500px;
+  }
+  
+  .main-image-container.step-1 {
+    height: 350px;
+  }
+  
+  .main-image-container.step-2 {
+    width: 250px;
+    height: 375px;
+  }
+  
+  .main-image-container.step-3 {
+    width: 200px;
+    height: 200px;
+  }
+  
+  .background-card {
+    max-width: 220px;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .animation-container {
+    height: 400px;
+  }
+  
+  .main-image-container.step-1 {
+    height: 300px;
+  }
+  
+  .main-image-container.step-2 {
+    width: 200px;
+    height: 300px;
+  }
+  
+  .main-image-container.step-3 {
+    width: 180px;
+    height: 180px;
+  }
+  
+  .background-card {
+    max-width: 180px;
+    padding: 12px;
+  }
+  
+  .bg-card-icon {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .control-btn {
+    padding: 10px 20px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .community-section {
+    padding: 20px 0;
+  }
+  
+  .animation-container {
+    height: 350px;
+  }
+  
+  .main-image-container.step-1 {
+    height: 250px;
+  }
+  
+  .main-image-container.step-2 {
+    width: 150px;
+    height: 225px;
+  }
+  
+  .main-image-container.step-3 {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .background-card {
+    max-width: 140px;
+    padding: 10px;
+  }
+  
+  .bg-card-text h4 {
+    font-size: 14px;
+  }
+  
+  .bg-card-text p {
+    font-size: 12px;
+  }
+}
+
+/* Smooth scrolling for the entire page */
+html {
+  scroll-behavior: smooth;
+} 

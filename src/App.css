@@ -1,0 +1,31 @@
+.custom-swiper .swiper-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.custom-swiper .swiper-pagination-bullet {
+  width: 12px;
+  height: 12px;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 9999px;
+  margin: 0 4px;
+  opacity: 1;
+  transition: all 300ms ease-in-out;
+}
+
+.custom-swiper .swiper-pagination-bullet-active {
+  width: 40px;
+  height: 12px;
+  background: linear-gradient(to right, #7077FE, #9747FF);
+  border: none;
+  border-radius: 9999px;
+}
+
+/* .glow-hover {
+  transition: filter 0.3s ease;
+}
+.glow-hover:hover {
+  filter: brightness(1.1) ;
+} */
