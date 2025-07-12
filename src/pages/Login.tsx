@@ -23,6 +23,7 @@ import cnesslogo from "../assets/cnesslogo.png";
 import { FiMail, FiEye, FiEyeOff } from "react-icons/fi"; // add if not already
 
 import Select from "react-select";
+import Fcopyright from "../layout/Header/Fcopyright";
 
 interface SubDomain {
   id: string;
@@ -1215,21 +1216,23 @@ export default function Login() {
             <SignupAnimation />
           </div>
 
-          <div className="absolute top-40 left-10 z-10">
-            <div className="fixed top-0 left-0 p-1 z-50">
-              <img
-                src={cnesslogo}
-                alt="logo"
-                className="w-60 h-60 object-contain"
-              />
-            </div>{" "}
-          </div>
+   <div className="relative w-full h-[250px]">
+  <div className="absolute top-1 left-5 z-30 p-0">
+    <img
+      src={cnesslogo}
+      alt="logo"
+      className="w-[150px] h-[150px] object-contain"
+    />
+  </div>
+</div>
+
         </div>
 
         {/* Sign In Form */}
-        <div className="absolute top-[120px] sm:top-[160px] md:top-[200px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
-          <div className="w-full max-w-md bg-white rounded-2xl shadow-xl px-4 sm:px-8 py-8 sm:py-10 space-y-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center">
+<div className="absolute top-[80px] sm:top-[120px] md:top-[160px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
+ <div className="w-[576px] h-[650px] bg-white rounded-[24px] shadow-xl border border-gray-200 px-[42px] py-[52px] flex flex-col gap-8">
+
+    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center">
               Sign in to your account
             </h2>
             {apiMessage && (
@@ -1250,7 +1253,7 @@ export default function Login() {
                   <button
                     type="button"
                     onClick={() => login()}
-                    className="flex items-center gap-2 border border-gray-300 rounded-3xl px-12 py-3 bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex items-center gap-2 border border-gray-300 rounded-3xl px-12 py-3 bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <img
                       src="/google-icon-logo.svg"
@@ -1399,7 +1402,7 @@ export default function Login() {
                 </button>
               </div>
 */}
-              <p className="text-center text-sm text-gray-600 mt-4">
+              <p className="flex flex-col sm:flex-row justify-center items-center text-sm gap-2 sm:gap-2 mt-4">
                 New to Cness?{" "}
                 <Link
                   to={"/sign-up"}
@@ -2631,6 +2634,7 @@ export default function Login() {
           </div>
         </div>
       </Modal>
+      <Fcopyright />
     </>
   );
 }
