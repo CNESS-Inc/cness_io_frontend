@@ -73,7 +73,7 @@ export default function BestPracticesHub() {
   const professionId = e.target.value;
   setSelectedProfession(professionId);
   // Reset to page 1 when profession changes
-  await fetchBestPractices(1, professionId);
+  await fetchBestPractices(1, professionId, searchText);
 };
 
   const fetchProfession = async () => {
@@ -97,13 +97,14 @@ export default function BestPracticesHub() {
     }
   };
 
-  const fetchBestPractices = async (page: number = 1, professionId: string = "") => {
+  const fetchBestPractices = async (page: number = 1, professionId: string = "",searchText: string = "") => {
     setIsLoading((prev) => ({ ...prev, popular: true }));
     try {
       const res = await GetAllBestPractices(
         page,
         pagination.itemsPerPage,
-        professionId
+        professionId,
+        searchText
       );
       if (res?.data?.data) {
         const transformedCompanies = res.data.data.rows.map(
@@ -150,16 +151,9 @@ export default function BestPracticesHub() {
     fetchBestPractices();
   }, []);
 
-  const handleSearch = () => {
-    if (selectedProfession || searchText) {
-      const professionSlug = selectedProfession || "";
-      navigate(
-        `/dashboard/DashboardDirectory/technology?search=${encodeURIComponent(
-          searchText
-        )}&profession=${professionSlug}`
-      );
-    }
-  };
+const handleSearch = () => {
+  fetchBestPractices(1, selectedProfession, searchText);
+};
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {

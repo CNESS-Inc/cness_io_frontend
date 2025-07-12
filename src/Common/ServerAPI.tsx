@@ -61,13 +61,14 @@ export const ServerAPI = {
 };
 
 export const API = {
-  //  BaseUrl: "http://192.168.29.167:5025/api", //local
+  //  BaseUrl: "http://192.168.1.29:5025/api", //local
  //BaseUrl: "http://localhost:5025/api", //local
  BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
 };
 
 export const EndPoint = {
   login: "/auth/login",
+  refreshToken: "/auth/refresh-token",
   forgot: "/auth/forgot-password",
   me: "/auth/me",
   updatepassword: "/auth/update/password",
@@ -133,6 +134,7 @@ export const EndPoint = {
   all_bestPractices: "/best-practice/all",
   add_bestpractices: "/best-practice",
   singleBp: "/best-practice/get",
+  user_notification: "/notification",
 };
 
 export const GoogleLoginDetails = async (googleToken: string): ApiResponse => {
@@ -146,6 +148,10 @@ export const LoginDetails = async (formData: LoginFormData): ApiResponse => {
     password: formData?.password,
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.login);
+};
+export const RefreshTokenDetails = async (): ApiResponse => {
+  const data = {}
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.refreshToken);
 };
 export const MeDetails = async (): ApiResponse => {
   const data = {}
@@ -434,11 +440,13 @@ export const GetAllBestPractices = (
   page: number,
   limit: number,
   professionId: string,
+  searchText: string,
 ): ApiResponse => {
   let params: { [key: string]: any } = {};
   params["page_no"] = page;
   params["limit"] = limit;
   params["profession"] = professionId;
+  params["text"] = searchText;
   return executeAPI(
     ServerAPI.APIMethod.GET,
     null,
@@ -452,6 +460,10 @@ export const CreateBestPractice = (formData:any): ApiResponse => {
 export const GetSingleBestPractice = (id:any): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.singleBp}/${id}`);
+};
+export const GetUserNotification = (id:any): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.user_notification}`);
 };
 export const GetProfileDetails = (): ApiResponse => {
   const data = {};
@@ -708,10 +720,13 @@ export const executeAPI = async <T = any,>(
 
     return response.data;
   } catch (error: any) {
-    if (axios.isAxiosError(error) && error.response) {
-      // toast.error(error.response.data.error.message);
-    } else {
-      // toast.error("An unexpected error occurred");
+    console.log("🚀 ~ error:", error.response.data.error.statusCode)
+
+    if (error.response.data.error.statusCode == 401) {
+      const res = await RefreshTokenDetails()
+      console.log("🚀 ~ resrefresh:", res)
+    } else if (error.response.data.error.statusCode === 428){
+      localStorage.clear()
     }
     throw error;
   }
