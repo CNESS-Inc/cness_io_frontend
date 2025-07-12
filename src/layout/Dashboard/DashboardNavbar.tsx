@@ -16,6 +16,7 @@ import { iconMap } from '../../assets/icons';
 import hambur from "../../assets/hambur.png";
 import DashboardFilterSidebar from "./DashboardFilterSidebar";
 import { LogOut } from "../../Common/ServerAPI";
+import { useToast } from "../../components/ui/Toast/ToastProvider";
 
 
 
@@ -38,6 +39,7 @@ const DashboardNavbar = ({
 }) => {
 
   const navigate = useNavigate();
+    const { showToast } = useToast();
   const [openDropdown, setOpenDropdown] = useState<{ [key: string]: boolean }>({});
   const showFilterSidebar =
     currentPath.includes("/dashboard/DashboardDirectory/technology") ||
@@ -57,8 +59,13 @@ const DashboardNavbar = ({
       }
 
 
-    } catch (error) {
+    } catch (error:any) {
       console.error("Logout failed:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
