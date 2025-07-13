@@ -1,6 +1,7 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { Suspense, useEffect, useState } from "react";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import CookieConsent from "../components/ui/CookieConsent";
 
 const AppLayout = () => {
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ const AppLayout = () => {
       <Suspense fallback={<LoadingSpinner />}>
         <Outlet />
       </Suspense>
+      <CookieConsent /> {/* Add CookieConsent here */}
     </div>
   );
 };

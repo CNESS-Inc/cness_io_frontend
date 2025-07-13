@@ -61,13 +61,14 @@ export const ServerAPI = {
 };
 
 export const API = {
-  //  BaseUrl: "http://192.168.29.167:5025/api", //local
- //BaseUrl: "http://localhost:5025/api", //local
- BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
+  //  BaseUrl: "http://192.168.1.29:5025/api", //local
+  //BaseUrl: "http://localhost:5025/api", //local
+  BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
 };
 
 export const EndPoint = {
   login: "/auth/login",
+  refreshToken: "/auth/refresh-token",
   forgot: "/auth/forgot-password",
   me: "/auth/me",
   updatepassword: "/auth/update/password",
@@ -133,10 +134,12 @@ export const EndPoint = {
   all_bestPractices: "/best-practice/all",
   add_bestpractices: "/best-practice",
   singleBp: "/best-practice/get",
+  user_notification: "/notification",
+  logout: "/auth/logout",
 };
 
 export const GoogleLoginDetails = async (googleToken: string): ApiResponse => {
-  const data = { token: googleToken }; 
+  const data = { token: googleToken };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.googleLogin);
 };
 
@@ -146,6 +149,10 @@ export const LoginDetails = async (formData: LoginFormData): ApiResponse => {
     password: formData?.password,
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.login);
+};
+export const RefreshTokenDetails = async (): ApiResponse => {
+  const data = {}
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.refreshToken);
 };
 export const MeDetails = async (): ApiResponse => {
   const data = {}
@@ -434,11 +441,13 @@ export const GetAllBestPractices = (
   page: number,
   limit: number,
   professionId: string,
+  searchText: string,
 ): ApiResponse => {
   let params: { [key: string]: any } = {};
   params["page_no"] = page;
   params["limit"] = limit;
   params["profession"] = professionId;
+  params["text"] = searchText;
   return executeAPI(
     ServerAPI.APIMethod.GET,
     null,
@@ -446,12 +455,16 @@ export const GetAllBestPractices = (
     params
   );
 };
-export const CreateBestPractice = (formData:any): ApiResponse => {
+export const CreateBestPractice = (formData: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.add_bestpractices);
 };
-export const GetSingleBestPractice = (id:any): ApiResponse => {
+export const GetSingleBestPractice = (id: any): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.singleBp}/${id}`);
+};
+export const GetUserNotification = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.user_notification}`);
 };
 export const GetProfileDetails = (): ApiResponse => {
   const data = {};
@@ -465,7 +478,7 @@ export const GetOrganiZationProfileDetails = (): ApiResponse => {
     EndPoint.organizationProfile
   );
 };
-export const GetOrganiZationNumberVerify = (formData:any): ApiResponse => {
+export const GetOrganiZationNumberVerify = (formData: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
     formData,
@@ -520,7 +533,7 @@ export const AddUserRating = (payload: any): ApiResponse => {
   );
 };
 export const GetUserRating = (payload: any): ApiResponse => {
-    let params: { [key: string]: any } = {};
+  let params: { [key: string]: any } = {};
   params["profile_id"] = payload.profile_id;
   params["user_type"] = payload.user_type;
   return executeAPI(
@@ -682,6 +695,11 @@ export const AddVote = (formattedData: any) => {
   return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.vote);
 };
 
+export const LogOut = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.logout);
+};
+
 export const executeAPI = async <T = any,>(
   method: ApiMethod,
   data: any,
@@ -690,7 +708,6 @@ export const executeAPI = async <T = any,>(
 ): ApiResponse<T> => {
   try {
     const token = localStorage.getItem("jwt");
-
     const isFormData = data instanceof FormData;
 
     const response: AxiosResponse<T> = await axios({
@@ -704,15 +721,26 @@ export const executeAPI = async <T = any,>(
           : { "Content-Type": "application/json" }),
         Authorization: `Bearer ${token || ""}`,
       },
+      ...(API.BaseUrl.trim().toLowerCase().startsWith("https://") && { withCredentials: true })
     });
+
+    const access_token = response.headers['access_token'];
+
+    if (access_token != 'not-provide') {
+      console.log('access token response check sets', true)
+      localStorage.setItem('jwt', access_token)
+    }
 
     return response.data;
   } catch (error: any) {
-    if (axios.isAxiosError(error) && error.response) {
-      // toast.error(error.response.data.error.message);
-    } else {
-      // toast.error("An unexpected error occurred");
+    console.log("🚀 ~ error:", error)
+
+    if (error.response.data.error.statusCode == 401) {
+      localStorage.clear();
+      window.location.href = '/';
     }
+
     throw error;
+
   }
 };
