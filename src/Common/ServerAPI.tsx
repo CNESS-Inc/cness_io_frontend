@@ -61,7 +61,9 @@ export const ServerAPI = {
 };
 
 export const API = {
-  BaseUrl: import.meta.env.VITE_API_BASE_URL+"/api" || "",
+  //  BaseUrl: "http://192.168.1.29:5025/api", //local
+  //BaseUrl: "http://localhost:5025/api", //local
+  BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
 };
 
 export const EndPoint = {
@@ -717,26 +719,26 @@ export const executeAPI = async <T = any,>(
         ...(isFormData
           ? {} // Don't set Content-Type manually for FormData
           : { "Content-Type": "application/json" }),
-        Authorization: `Bearer ${token || ""}`,
-      },
-      ...(API.BaseUrl.trim().toLowerCase().startsWith("https://") && { withCredentials: true })
-    });
+          Authorization: `Bearer ${token || ""}`,
+        },
+        ...(API.BaseUrl.trim().toLowerCase().startsWith("https://") && { withCredentials: false })
+      });
 
     const access_token = response.headers['access_token'];
 
     if (access_token != 'not-provide') {
       console.log('access token response check sets', true)
-      localStorage.setItem('jwt', access_token)
+      // localStorage.setItem('jwt', access_token)
     }
 
     return response.data;
   } catch (error: any) {
-    console.log("🚀 ~ error:", error)
+    // console.log("🚀 ~ error:", error)
 
-    if (error.response.data.error.statusCode == 401) {
-      localStorage.clear();
-      window.location.href = '/';
-    }
+    // if (error.response.data.error.statusCode == 401) {
+    //   localStorage.clear();
+    //   window.location.href = '/';
+    // }
 
     throw error;
 
