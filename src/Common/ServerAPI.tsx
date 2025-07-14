@@ -61,9 +61,7 @@ export const ServerAPI = {
 };
 
 export const API = {
-  //  BaseUrl: "http://192.168.1.29:5025/api", //local
-  //BaseUrl: "http://localhost:5025/api", //local
-  BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
+  BaseUrl: import.meta.env.VITE_API_BASE_URL+"/api" || "",
 };
 
 export const EndPoint = {
