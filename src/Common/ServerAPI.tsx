@@ -719,7 +719,7 @@ export const executeAPI = async <T = any,>(
           : { "Content-Type": "application/json" }),
         Authorization: `Bearer ${token || ""}`,
       },
-      ...(API.BaseUrl.trim().toLowerCase().startsWith("https://") && { withCredentials: true })
+      ...(API.BaseUrl.trim().toLowerCase().startsWith("https://") && { withCredentials: false })
     });
 
     const access_token = response.headers['access_token'];
