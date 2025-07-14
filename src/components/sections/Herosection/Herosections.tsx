@@ -57,20 +57,42 @@ const isLoggedIn = completed_step === "1" || completed_step === "2";
               </>
             ) : (
               <>
+               <Button
+  variant="gradient-primary"
+  className="
+    w-[150px] h-[45px] 
+    rounded-[100px] 
+    px-6 py-4 
+    font-['Plus Jakarta Sans'] font-medium text-[18px] leading-[100%]
+    tracking-[0px]
+    text-center 
+    flex items-center justify-center gap-[10px]
+    opacity-100
+  "
+  onClick={() => navigate('/sign-up')}
+>
+  Get Started
+</Button>
                 <Button
-                  variant="gradient-primary"
-                  className="text-base sm:text-lg font-semibold font-[Plus Jakarta Sans] rounded-full w-full sm:w-auto px-6 py-3 flex items-center justify-center text-center"
-                  onClick={() => navigate("/sign-up")}
-                >
-                  Get Started
-                </Button>
-                <Button
-                  variant="white-outline"
-                  className="bg-white border border-gray-200 text-gray-800 hover:bg-[#F07EFF] hover:text-white focus-visible:ring-pink-300"
-                  onClick={() => navigate("/log-in")}
-                >
-                  Login
-                </Button>
+  variant="white-outline"
+  className="
+    w-[96px] h-[45px]
+    rounded-[100px]
+    border border-gray-200
+    px-6 py-4
+    gap-[10px]
+    bg-white text-gray-800
+    hover:bg-[#F07EFF] hover:text-white
+    focus-visible:ring-pink-300
+    font-['Plus Jakarta Sans'] font-medium text-[18px] leading-[100%] tracking-[0px]
+    text-center
+    opacity-100
+    flex items-center justify-center
+  "
+  onClick={() => navigate('/log-in')}
+>
+  Login
+</Button>
               </>
             )}
           </div>

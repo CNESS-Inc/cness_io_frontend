@@ -44,6 +44,8 @@ import DashboardTechnology from "../pages/DashboardTechnology";
 import BestPracticesHub from "../pages/BestPracticesHub";
 import ManageBestPractices from "../pages/ManageBestPractices";
 import SingleBP from "../pages/SingleBP";
+import TermsAndConditions  from "../pages/TermsAndConditions";
+import PrivacyPolicy from "../pages/Privacypolicy";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -324,6 +326,15 @@ export const router = createBrowserRouter([
       passProps: true,
     },
   },
+    {
+  path: '/terms-and-conditions',
+  element: <TermsAndConditions />,
+},
+
+  {
+  path: '/privacy-policy',
+  element: <PrivacyPolicy />,
+},
   {
     path: "/sign-up",
     element: <Signingup />,

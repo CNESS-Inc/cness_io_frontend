@@ -358,3 +358,33 @@ body [id^="zf_button_"] {
   border-radius: 12px;
   background: linear-gradient(to right, rgba(184,166,248,0.5), rgba(223,214,255,0.5));
 }
+
+
+@media (max-width: 991px) {
+  .your-dashboard-class, .container, .section, .card {
+    padding: 1rem; /* shrink padding for tablets */
+  }
+  h1, h2 {
+    font-size: 1.5rem;
+  }
+  .card-content {
+    flex-direction: column; /* stack cards on top of each other */
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 478px) {
+  .your-dashboard-class, .container, .section, .card {
+    padding: 0.75rem;
+  }
+  h1, h2 {
+    font-size: 1.2rem;
+  }
+  .card-content, .flex-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .button {
+    width: 100%;
+  }
+}
