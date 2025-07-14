@@ -8,6 +8,8 @@ import cnesslogo from "../assets/cnesslogo.png";
 import { FiMail, FiEye, FiEyeOff } from "react-icons/fi";
 import { useGoogleLogin } from "@react-oauth/google";
 import ReCAPTCHA from "react-google-recaptcha";
+import Fcopyright from "../layout/Header/Fcopyright";
+
 
 // interface SignupFormProps {
 //   onSuccess: () => void;
@@ -256,19 +258,22 @@ export default function Signingup() {
             />
             <SignupAnimation />
           </div>
+          
 
-          <div className="absolute top-40 left-10 z-10">
-            <div className="fixed top-0 left-0 p-1 z-50">
-              <img
-                src={cnesslogo}
-                alt="logo"
-                className="w-60 h-60 object-contain"
-              />
-            </div>
-          </div>
-        </div>
-
+          <div className="relative w-full h-[250px]">
+  <div className="absolute top-1 left-5 z-30 p-0">
+    <img
+      src={cnesslogo}
+      alt="logo"
+      className="w-[150px] h-[150px] object-contain"
+    />
+  </div>
+</div>
+       
+ </div>
         {/* Sign In Form */}
+<div className="min-h-screen flex flex-col">
+
         <div className="absolute top-[100px] sm:top-[140px] md:top-[180px] left-0 right-0 flex justify-center z-10 px-4">
           <div className="w-full max-w-[600px] bg-white rounded-2xl shadow-xl px-4 sm:px-10 py-8 sm:py-12 space-y-10">
             <h2 className="text-3xl font-bold text-gray-900">
@@ -505,7 +510,6 @@ export default function Signingup() {
                   Login
                 </Link>
               </div>
-
               <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
                 <Button
                   type="submit"
@@ -519,6 +523,7 @@ export default function Signingup() {
             </form>
           </div>
         </div>
+      </div>
       </div>
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <div className="text-center p-6 max-w-md">
@@ -559,6 +564,7 @@ export default function Signingup() {
           </div>
         </div>
       </Modal>
+      <Fcopyright />
     </>
   );
 }

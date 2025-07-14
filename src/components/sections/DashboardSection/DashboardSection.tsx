@@ -859,7 +859,7 @@ const openRetakeAssesmentModal = async () => {
             {/* CIS Score & Badge Cards */}
             <div className="w-full lg:flex-1 flex flex-col sm:flex-row gap-3">
               {/* CIS Score Card */}
-              <div className="w-full sm:w-1/2 relative">
+            <div className="w-full sm:w-1/2 relative">
                 <Card className="w-full h-full border-[#eceef2] rounded-[10px] overflow-hidden">
                   <CardContent className="flex justify-center items-center pt-4 pb-4 md:pt-6 md:pb-6">
                     <QRCodeGenerator profileUrl={user?.qr_url} />
@@ -867,7 +867,10 @@ const openRetakeAssesmentModal = async () => {
                 </Card>
               </div>
               {/* CIS Score Card */}
-              <div className="w-full sm:w-1/2 relative">
+      <div className="grid grid-cols-2 gap-3  w-full lg:flex">
+
+            <div className="w-full sm:w-1/2 relative">
+
                 <Card className="w-full h-full border-[#eceef2] rounded-[10px] overflow-hidden">
                   <CardHeader className="flex-row items-center justify-between border-b border-[#0000001a] pb-2 md:pb-3">
                     <div className="flex items-center gap-2 md:gap-3.5">
@@ -947,7 +950,7 @@ const openRetakeAssesmentModal = async () => {
               </div>
 
               {/* Badge Card */}
-              <div className="w-full sm:w-1/2 relative">
+            <div className="w-full sm:w-1/2 relative">
                 <Card className="w-full h-full border-[#eceef2] rounded-[10px] overflow-hidden">
                   <CardHeader className="flex-row items-center justify-between border-b border-[#0000001a] pb-2 md:pb-3">
                     <div className="flex items-center gap-2 md:gap-3.5">
@@ -1004,6 +1007,7 @@ const openRetakeAssesmentModal = async () => {
               </div>
             </div>
           </div>
+        </div>
 
           {/* Learning Lab Section */}
           <Card className="w-full border-[#eceef2]">
