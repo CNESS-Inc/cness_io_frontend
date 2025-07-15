@@ -282,10 +282,109 @@ summary::after {
 
 .dashboard_nav
 {
+  align-self: stretch;
+  font-feature-settings: 'liga' off, 'clig' off;
   font-family: "Poppins", sans-serif;
-  font-weight: 500;
+  font-style: normal;
+  font-weight: 450;
   font-size: 14px;
   line-height: 20px;
-  color:#64748b;
+  color:#64748B;
 }
 
+body {
+  overflow-x: hidden;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+
+.faq-section {
+  margin-bottom: 2rem;
+  border-bottom: 1px dashed #ccc;
+  padding-bottom: 1rem;
+}
+
+.block {
+  margin: 0.5rem 0;
+}
+
+.expand-btn {
+  background: none;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.expand-btn::before {
+  content: '+';
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.answer {
+  padding-left: 1.5rem;
+  display: none;
+}
+
+/* Active state */
+.block.active .answer {
+  display: block;
+}
+
+.block.active .expand-btn::before {
+  content: '-';
+}
+
+body [id^="zf_button_"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+.gradient-border {
+  padding: 1px;
+  border-radius: 12px;
+  background: linear-gradient(to right, rgba(184,166,248,0.5), rgba(223,214,255,0.5));
+}
+
+
+@media (max-width: 991px) {
+  .your-dashboard-class, .container, .section, .card {
+    padding: 1rem; /* shrink padding for tablets */
+  }
+  h1, h2 {
+    font-size: 1.5rem;
+  }
+  .card-content {
+    flex-direction: column; /* stack cards on top of each other */
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 478px) {
+  .your-dashboard-class, .container, .section, .card {
+    padding: 0.75rem;
+  }
+  h1, h2 {
+    font-size: 1.2rem;
+  }
+  .card-content, .flex-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .button {
+    width: 100%;
+  }
+}

@@ -61,13 +61,14 @@ export const ServerAPI = {
 };
 
 export const API = {
-  // BaseUrl: "http://192.168.1.31:5025/api", //local
-  // BaseUrl: "http://localhost:5025/api", //local
-  BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
+  //  BaseUrl: "http://192.168.1.29:5025/api", //local
+  //BaseUrl: "http://localhost:5025/api", //local
+  BaseUrl: import.meta.env.VITE_API_BASE_URL || "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api",
 };
 
 export const EndPoint = {
   login: "/auth/login",
+  refreshToken: "/auth/refresh-token",
   forgot: "/auth/forgot-password",
   me: "/auth/me",
   updatepassword: "/auth/update/password",
@@ -99,6 +100,7 @@ export const EndPoint = {
   company_profile: "/organization-profile/company-profile",
   user_profile: "/profile/user-profile",
   rating: "/profile/rating",
+  score_result: "/quiz/get/score-result",
   directory_search_profile: "/profile/public-directory",
   public_user_profile: "/profile/public-user-profile",
   get_popular_company: "/profile/get-popular-company",
@@ -108,6 +110,7 @@ export const EndPoint = {
   questions_file: "/quiz/upload-answer-file",
   answer: "/quiz/answer",
   final_submission: "/quiz/final-submition",
+  report: "/quiz/report",
   get_all_post: "/user/posts/get/all",
   create_post: "/user/posts",
   postComments: "/user/post/comments",
@@ -127,6 +130,17 @@ export const EndPoint = {
   connection_request: "/friend/request",
   follow: "/user/follow",
   vote: "/poll/vote",
+  googleLogin: "/auth/google-login",
+  all_bestPractices: "/best-practice/all",
+  add_bestpractices: "/best-practice",
+  singleBp: "/best-practice/get",
+  user_notification: "/notification",
+  logout: "/auth/logout",
+};
+
+export const GoogleLoginDetails = async (googleToken: string): ApiResponse => {
+  const data = { token: googleToken };
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.googleLogin);
 };
 
 export const LoginDetails = async (formData: LoginFormData): ApiResponse => {
@@ -135,6 +149,10 @@ export const LoginDetails = async (formData: LoginFormData): ApiResponse => {
     password: formData?.password,
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.login);
+};
+export const RefreshTokenDetails = async (): ApiResponse => {
+  const data = {}
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.refreshToken);
 };
 export const MeDetails = async (): ApiResponse => {
   const data = {}
@@ -193,6 +211,10 @@ export const QuestionFinalSubmission = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.final_submission);
 };
+export const GetReport = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.report);
+};
 export const PaymentDetails = (formData: AccountFormData): ApiResponse => {
   const data: Partial<AccountFormData> = {
     plan_id: formData?.plan_id,
@@ -229,6 +251,7 @@ export const submitPersonDetails = (formData: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.person_profile);
 };
 export const submitAnswerDetails = (formData: any): ApiResponse => {
+  console.log("🚀 ~ submitAnswerDetails ~ formData:", formData)
   // Initialize the data array
   const data: Array<{ question_id: string; answer: any }> = [];
 
@@ -266,12 +289,12 @@ export const submitAnswerDetails = (formData: any): ApiResponse => {
   // // Handle referenceLink (if needed)
   // // You'll need to know the question_id for the referenceLink
   // // For example:
-  // if (formData.referenceLink) {
-  //   data.push({
-  //     question_id: "YOUR_REFERENCE_LINK_QUESTION_ID",
-  //     answer: formData.referenceLink
-  //   });
-  // }
+  if (formData.referenceLink) {
+    data.push({
+      question_id: formData.referenceLink.question_id,
+      answer: formData.referenceLink.url
+    });
+  }
 
   // Handle uploads (if needed)
   // You'll need to know how to map uploads to question_ids
@@ -414,6 +437,35 @@ export const GetInspiringCompanies = (
     params
   );
 };
+export const GetAllBestPractices = (
+  page: number,
+  limit: number,
+  professionId: string,
+  searchText: string,
+): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["limit"] = limit;
+  params["profession"] = professionId;
+  params["text"] = searchText;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.all_bestPractices,
+    params
+  );
+};
+export const CreateBestPractice = (formData: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.add_bestpractices);
+};
+export const GetSingleBestPractice = (id: any): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.singleBp}/${id}`);
+};
+export const GetUserNotification = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.user_notification}`);
+};
 export const GetProfileDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.profile);
@@ -426,7 +478,7 @@ export const GetOrganiZationProfileDetails = (): ApiResponse => {
     EndPoint.organizationProfile
   );
 };
-export const GetOrganiZationNumberVerify = (formData:any): ApiResponse => {
+export const GetOrganiZationNumberVerify = (formData: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
     formData,
@@ -481,7 +533,7 @@ export const AddUserRating = (payload: any): ApiResponse => {
   );
 };
 export const GetUserRating = (payload: any): ApiResponse => {
-    let params: { [key: string]: any } = {};
+  let params: { [key: string]: any } = {};
   params["profile_id"] = payload.profile_id;
   params["user_type"] = payload.user_type;
   return executeAPI(
@@ -489,6 +541,14 @@ export const GetUserRating = (payload: any): ApiResponse => {
     payload,
     EndPoint.rating,
     params
+  );
+};
+export const GetUserScoreResult = (): ApiResponse => {
+  const data: Partial<any> = {};
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    EndPoint.score_result
   );
 };
 export const GetUsersearchProfileDetails = (
@@ -635,6 +695,11 @@ export const AddVote = (formattedData: any) => {
   return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.vote);
 };
 
+export const LogOut = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.logout);
+};
+
 export const executeAPI = async <T = any,>(
   method: ApiMethod,
   data: any,
@@ -643,7 +708,6 @@ export const executeAPI = async <T = any,>(
 ): ApiResponse<T> => {
   try {
     const token = localStorage.getItem("jwt");
-
     const isFormData = data instanceof FormData;
 
     const response: AxiosResponse<T> = await axios({
@@ -655,17 +719,28 @@ export const executeAPI = async <T = any,>(
         ...(isFormData
           ? {} // Don't set Content-Type manually for FormData
           : { "Content-Type": "application/json" }),
-        Authorization: `Bearer ${token || ""}`,
-      },
-    });
+          Authorization: `Bearer ${token || ""}`,
+        },
+        ...(API.BaseUrl.trim().toLowerCase().startsWith("https://") && { withCredentials: false })
+      });
+
+    const access_token = response.headers['access_token'];
+
+    if (access_token != 'not-provide') {
+      console.log('access token response check sets', true)
+      // localStorage.setItem('jwt', access_token)
+    }
 
     return response.data;
   } catch (error: any) {
-    if (axios.isAxiosError(error) && error.response) {
-      // toast.error(error.response.data.error.message);
-    } else {
-      // toast.error("An unexpected error occurred");
-    }
+    // console.log("🚀 ~ error:", error)
+
+    // if (error.response.data.error.statusCode == 401) {
+    //   localStorage.clear();
+    //   window.location.href = '/';
+    // }
+
     throw error;
+
   }
 };

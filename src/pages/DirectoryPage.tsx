@@ -285,55 +285,42 @@ const isInDashboard = location.pathname.includes("/dashboard");
       </section>
 
       {/* Marquee Section */}
-      <div className="bg-white py-10 ">
-        <div className="max-w-screen-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="space-y-6">
-            {[topRow, bottomRow].map((row, rowIndex) => (
-<div key={rowIndex} className="overflow-x-auto whitespace-nowrap no-scrollbar">
-                 <div className={`flex gap-4 sm:gap-6 w-max animate-bounce-x-${
-                    rowIndex === 0 ? "left" : "right"
-                  }`}
-                >
-                  {row.map((domain: any, i) => {
-                    const iconKeys = Object.keys(iconMap);
-                    const validIconKeys = iconKeys.filter(
-                      (key) =>
-                        ![
-                          "domain1Icon",
-                          "domain2Icon" /*...other excluded icons...*/,
-                        ].includes(key)
-                    );
-                    const randomIconKey =
-                      validIconKeys[
-                        Math.floor(Math.random() * validIconKeys.length)
-                      ];
-                    const icon = iconMap[randomIconKey];
+<div className="bg-white py-10">
+  <div className="max-w-screen-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="flex flex-wrap gap-x-6 gap-y-4 justify-center">
+      {[...topRow, ...bottomRow].map((domain: any, i: any) => {
+        const iconKeys = Object.keys(iconMap);
+        const validIconKeys = iconKeys.filter(
+          (key) =>
+            !["domain1Icon", "domain2Icon"].includes(key)
+        );
+        const randomIconKey =
+          validIconKeys[Math.floor(Math.random() * validIconKeys.length)];
+        const icon = iconMap[randomIconKey];
 
-                    return (
-                      <div
-                        key={`${rowIndex}-${i}`}
-                        onClick={() => setSelectedDomain(domain.slug)}
-                        className="h-[48px] border border-purple-100 rounded-[24px] px-5 py-2 sm:px-6 sm:py-3 flex items-center gap-2 sm:gap-3 bg-white shadow-sm hover:shadow-md cursor-pointer transition"
-                      >
-                        {icon && (
-                          <img
-                            src={icon}
-                            alt={domain.name}
-                            className="w-6 h-6 min-w-[24px] object-contain shrink-0"
-                          />
-                        )}
-                        <span className="text-sm font-medium text-gray-800 leading-none">
-                          {domain.name}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
+        return (
+          <div
+            key={i}
+            onClick={() => setSelectedDomain(domain.slug)}
+  className="border border-purple-100 rounded-[24px] px-6 py-2 flex items-center gap-2 sm:gap-3 bg-white shadow-sm hover:shadow-md cursor-pointer transition"
+
+          >
+            {icon && (
+              <img
+                src={icon}
+                alt={domain.name}
+                className="w-5 h-5 min-w-[20px] object-contain shrink-0"
+              />
+            )}
+            <span className="text-sm font-medium text-gray-800 leading-none">
+              {domain.name}
+            </span>
           </div>
-        </div>
-      </div>
+        );
+      })}
+    </div>
+  </div>
+</div>
 
       {/* Why List Section */}
       <section className="bg-[#FAFAFA] py-16">
@@ -378,6 +365,7 @@ const isInDashboard = location.pathname.includes("/dashboard");
               <div className="mt-6 flex justify-center md:justify-start">
                 <Button
                 variant="gradient-primary"
+                onClick={() => navigate("/sign-up")}
                 >
                   Register Now
                 </Button>
@@ -390,7 +378,7 @@ const isInDashboard = location.pathname.includes("/dashboard");
       {/* Popular Companies Section */}
       <section className="py-16 border-t border-gray-100">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-xl font-semibold mb-4">Aspiring Companies</h2>
+          <h2 className="text-xl font-semibold mb-4">Aspiring Professionals</h2>
 
           {isLoading.popular ? (
             <div className="flex justify-center py-10">
@@ -479,7 +467,7 @@ const isInDashboard = location.pathname.includes("/dashboard");
       {/* Inspiring Companies Section */}
       <section className="py-16 border-t border-gray-100">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-xl font-semibold mb-4">Inspiring Companies</h2>
+          <h2 className="text-xl font-semibold mb-4">Inspiring Professionals</h2>
 
           {isLoading.inspiring ? (
             <div className="flex justify-center py-10">

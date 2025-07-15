@@ -62,18 +62,13 @@ const SinglePost = () => {
 
   const [comment, setComment] = useState("");
   const [postComment, setPostComment] = useState([]);
-  console.log("🚀 ~ SinglePost ~ postComment:", postComment);
   const [singlepost, setSinglePost] = useState<any>(null);
-  console.log("🚀 ~ SinglePost ~ singlepost=========:", singlepost);
   const [localLikeCount, setLocalLikeCount] = useState("");
   const [is_liked, setIs_Liked] = useState();
   const [commentCount, setCommentCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  console.log("🚀 ~ SinglePost ~ setCurrentPage:", setCurrentPage);
-  console.log("🚀 ~ SinglePost ~ currentPage:", singlepost);
-  const [totalPages, setTotalPages] = useState(1);
-  console.log("🚀 ~ SinglePost ~ setTotalPages:", setTotalPages);
-  const [userInfo, setUserInfo] = useState({
+  const [currentPage, _setCurrentPage] = useState(1);
+  const [totalPages, _setTotalPages] = useState(1);
+  const [_userInfo, setUserInfo] = useState({
     userId: null,
     userdocumentId: null,
     firstName: "Unknown user",
@@ -85,11 +80,6 @@ const SinglePost = () => {
   });
   const myid = localStorage.getItem("Id");
   const urldata = `https://test.cness.ai/profile/public?id=${myid}`;
-  console.log("🚀 ~ SinglePost ~ userInfo:", userInfo);
-  console.log("🚀 ~ SinglePost ~ localLikeCount:", localLikeCount);
-  const [saved, setSaved] = useState(false);
-  console.log("🚀 ~ SinglePost ~ setSaved:", setSaved);
-  console.log("🚀 ~ SinglePost ~ saved:", saved);
   const profilePicture = localStorage.getItem("profile_picture");
   const handleCommentChange = (event: any) => {
     const newPostContent = event.target.value;
@@ -98,33 +88,28 @@ const SinglePost = () => {
   };
 
   const { id } = useParams();
-  console.log("🚀 ~ SinglePost ~ id:", id);
 
   useEffect(() => {
     fetchSinglePost(id);
     fetchComments(currentPage);
   }, []);
   const fetchComments = async (page = 1) => {
-    console.log("🚀 ~ fetchComments ~ page:", page);
+    console.log("🚀 ~ fetchComments ~ page:", page)
     try {
       // const formattedData = {
       //   text: comment,
       //   post_id: id,
       // };
       const res = await GetComment(id);
-      console.log("🚀 ~ fetchComments ~ res:", res);
       setPostComment(res?.data?.data?.rows);
       // const newComments = res?.data;
-      // console.log("🚀 ~ fetchComments ~ res?.data:", res?.data);
       // setCommentCount(res.meta?.pagination?.total);
       // setPostComment(newComments);
       // setPostComment(() => {
       //   const existingIds = new Set(newComments?.map((comment:any) => comment?.id));
-      //   console.log("🚀 ~ setPostComment ~ existingIds:", existingIds)
       //   const filteredComments = newComments.filter(
       //     (comment:any) => !existingIds.has(comment.id)
       //   );
-      //   console.log("🚀 ~ setPostComment ~ filteredComments:", filteredComments)
       //   return [...filteredComments];
       // });
       // setTotalPages(res?.meta?.pagination?.pageCount);
@@ -153,7 +138,6 @@ const SinglePost = () => {
     try {
       const res = await GetSinglePost(id);
       // setCommentCount(res.data?.length)
-      console.log("🚀 ~ fetchSinglePost ~ res:", res);
       setSinglePost(res?.data?.data);
       // setMedia(res?.data?.media[0]);
       setLocalLikeCount(res?.data?.data?.likes_count);
@@ -182,8 +166,6 @@ const SinglePost = () => {
   //     const res = await dispatch(
   //       apiCall("POST", "/user/posts/like", "like", formattedData, {})
   //     );
-
-  //     console.log("🚀 ~ fetchLike ~ res:", res);
   //     if (liked) {
   //       // If already liked, unlike it
   //       setLiked(false);
@@ -206,7 +188,6 @@ const SinglePost = () => {
   //     const res = await dispatch(
   //       apiCall("POST", "/user/posts/save", "saved_post", formattedData, {})
   //     );
-  //     console.log("🚀 ~ fetchSavedPost ~ res:", res);
   //     setSaved(true);
   //   } catch (error) {
   //     console.error("Error fetching selection details:", error);
@@ -226,8 +207,6 @@ const SinglePost = () => {
 
   const handleReply = async (commentId: any, post_id: any) => {
     try {
-      // Log reply data
-      console.log(`Replying to comment ${commentId} with:`, replyComment);
 
       // Prepare the data for the API call
       const formattedData = {
@@ -255,7 +234,6 @@ const SinglePost = () => {
     };
     await PostCommentLike(formattedData);
     fetchComments();
-    // console.log("🚀 ~ handlebpcommentlike ~ res:", res);
   };
 
   const [showMenu, setShowMenu] = useState(false);
@@ -288,8 +266,6 @@ const SinglePost = () => {
     ?.filter((option: any) => option?.is_voted)
     ?.map((option: any) => option?.text);
 
-  console.log("🚀 ~ SinglePost ~ votedOptions:", votedOptions);
-
   const [is_voted, setIsVoted] = useState("");
 
   useEffect(() => {
@@ -297,8 +273,6 @@ const SinglePost = () => {
       setIsVoted(votedOptions.join(", "));
     }
   }, [votedOptions]); // Runs when `votedOptions` updates
-
-  console.log("🚀 ~ is_voted:", is_voted);
 
   const totalVotes = singlepost?.poll?.options?.reduce(
     (sum: any, option: any) => sum + Number(option?.votes || 0),
@@ -314,10 +288,6 @@ const SinglePost = () => {
         ? ((Number(option?.votes || 0) / totalVotes) * 100).toFixed(2) + "%"
         : "0%",
   }));
-
-  console.log("🚀 ~ pollAnswers ~ pollAnswers:", pollAnswers);
-
-  console.log("🚀 ~ pollAnswers ~ pollAnswers:", pollAnswers);
 
   const handleVote = async (selectedAnswer: any) => {
     const selectedOption = {

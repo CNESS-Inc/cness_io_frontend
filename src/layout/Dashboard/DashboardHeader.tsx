@@ -9,12 +9,13 @@ import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import hambur from "../../assets/hambur.png"
+import { LogOut } from "../../Common/ServerAPI";
 
 const DashboardHeader = ({ toggleMobileNav }: any) => {
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  
+
   // Add state for name values
   const [name, setName] = useState(localStorage.getItem("main_name") || "");
   const [margaretName, setMargaretName] = useState(localStorage.getItem("margaret_name") || "");
@@ -30,10 +31,10 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
 
     // Listen for storage events (changes from other tabs)
     window.addEventListener('storage', handleStorageChange);
-    
+
     // Also check for changes periodically (in case changes happen in the same tab)
     const interval = setInterval(handleStorageChange, 1000);
-    
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       clearInterval(interval);
@@ -57,11 +58,16 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
     };
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     try {
-      localStorage.clear();
-      setIsDropdownOpen(false);
-      navigate("/");
+      const response = await LogOut();
+
+      if (response) {
+        localStorage.clear();
+        setIsDropdownOpen(false);
+        navigate("/");
+      }
+
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -89,7 +95,7 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
             <img src={hambur} alt="Menu" className="w-8 h-8" />
           </button>
         </div>
-        
+
         {/* Search bar */}
         <div className="flex items-center justify-between p-3 relative bg-white rounded-xl border border-solid border-slate-300 w-full md:w-[440px]">
           <Input
@@ -102,7 +108,10 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
 
       {/* Right side - Icons and User Profile */}
       <div className="flex items-center gap-3">
-        <div className="flex w-[41px] h-[41px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d]">
+        <div
+          onClick={() => navigate('/dashboard/notification')}
+          className="flex w-[41px] h-[41px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
+        >
           <div className="relative">
             <BellIcon className="w-5 h-5" />
             <div className="w-4 h-4 absolute -top-1 left-1 bg-[#60c750] rounded-full flex items-center justify-center">
@@ -111,9 +120,13 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
               </span>
             </div>
           </div>
+
         </div>
 
-        <div className="flex w-[41px] h-[41px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d]">
+        <div
+          onClick={() => navigate('/dashboard/setting')}
+          className="flex w-[41px] h-[41px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
+        >
           <SettingsIcon className="w-6 h-6" />
         </div>
 

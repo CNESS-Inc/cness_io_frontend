@@ -4,13 +4,17 @@ import './index.css';
 import { RouterProvider } from 'react-router-dom'; // ✅ add this
 import { router } from './routes'; // ✅ this must point to your router config
 import { ToastProvider } from './components/ui/Toast/ToastProvider';
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
+const GOOGLE_CLIENT_ID = "250284924610-m8nc17asodpusamdg8910t8sck6acp16.apps.googleusercontent.com";
+
 
 createRoot(document.getElementById('root')!).render(
   <>
-   {/* <StrictMode> */}
-   <ToastProvider>
-    <RouterProvider router={router} /> {/* ✅ this enables /directory route */}
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+    <ToastProvider>
+      <RouterProvider router={router} />
     </ToastProvider>
-   {/* </StrictMode> */}
+  </GoogleOAuthProvider>
   </>
 );

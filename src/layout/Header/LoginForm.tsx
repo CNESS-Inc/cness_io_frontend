@@ -151,7 +151,6 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
 
   const [loginErrors, setLoginErrors] = useState<FormErrors>({});
   const [organizationErrors, setOrganizationErrors] = useState<FormErrors>({});
-  console.log("🚀 ~ organizationErrors:", organizationErrors);
   const [personErrors, setPersonErrors] = useState<FormErrors>({});
   const [resetPasswordErrors] = useState<FormErrors>({});
   const [apiMessage, setApiMessage] = useState<string | null>(null);
@@ -505,7 +504,6 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
         // navigate("/dashboard");
       }
     } catch (error) {
-      console.error("Error setting account type:", error);
       toast.error("Failed to set account type. Please try again.");
     }
   };

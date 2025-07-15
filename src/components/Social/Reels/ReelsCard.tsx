@@ -129,12 +129,10 @@ const ReelsCard = () => {
 
     const handleSlideChange = () => {
       const activeIndex = swiperInstance.activeIndex;
-      console.log("🚀 ~ handleSlideChange ~ activeIndex:", activeIndex);
 
       const activePost = storyData[activeIndex];
 
       if (selectedReelId !== activePost?.id) {
-        console.log("🚀 Active Post ID:", activePost?.id);
         setSelectedReelId(null);
       }
 

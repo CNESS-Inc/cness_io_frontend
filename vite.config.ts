@@ -13,18 +13,18 @@ resolve: {
     },
   },
   // ✅ Add server config here
-  server: {
-    port: 3000,    
-     host: '0.0.0.0',   // fixed port
-    strictPort: true,  // error if port is taken, instead of switching
-    hmr: {
-      overlay: true,   // shows error overlay in browser
-    },
-    watch: {
-      usePolling: true,  // improves stability, especially on macOS
-      interval: 300,
-    },
-  },
+  // server: {
+  //   port: 3000,    
+  //    host: '0.0.0.0',   // fixed port
+  //   strictPort: true,  // error if port is taken, instead of switching
+  //   hmr: {
+  //     overlay: true,   // shows error overlay in browser
+  //   },
+  //   watch: {
+  //     usePolling: true,  // improves stability, especially on macOS
+  //     interval: 300,
+  //   },
+  // },
 
   build: {
     rollupOptions: {

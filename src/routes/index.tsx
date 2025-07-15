@@ -38,6 +38,16 @@ import Profile from "../pages/Profile";
 import MyConnection from "../pages/MyConnection";
 import ComingSoon from "../pages/ComingSoon";
 import DashboardLayout from "../layout/Dashboard/dashboardlayout";
+import DashboardSocial from "../pages/DashboardSocial";
+import DashboardDirectory from "../pages/DashboardDirectory";
+import DashboardTechnology from "../pages/DashboardTechnology";
+import BestPracticesHub from "../pages/BestPracticesHub";
+import ManageBestPractices from "../pages/ManageBestPractices";
+import SingleBP from "../pages/SingleBP";
+import TermsAndConditions  from "../pages/TermsAndConditions";
+import PrivacyPolicy from "../pages/Privacypolicy";
+
+
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
 const DirectoryPage = lazy(() => import("../pages/DirectoryPage"));
@@ -73,18 +83,18 @@ export const router = createBrowserRouter([
         element: <HomePage />,
       },
 
-  {
-  path: "/why",
-  element: <Why />,
-},
-{
-  path: "/what",
-  element: <What />,
-},
-{
-  path: "/about",
-  element: <About />,
-},
+      {
+        path: "/why",
+        element: <Why />,
+      },
+      {
+        path: "/what",
+        element: <What />,
+      },
+      {
+        path: "/about",
+        element: <About />,
+      },
 
       {
         path: "dashboard",
@@ -114,10 +124,13 @@ export const router = createBrowserRouter([
             path: "assesment",
             element: <AssessmentQuestion />,
           },
-          {
-            path: "setting",
-            element: <Setting />,
-          },
+         {
+  path: "setting",
+      element:
+        import.meta.env.VITE_ENV_STAGE === "test"
+          ? <Setting />
+          : <ComingSoon />,
+    },
           {
             path: "upload-proof",
             element: <UploadProof />,
@@ -148,75 +161,107 @@ export const router = createBrowserRouter([
           },
           {
             path: "search_listing",
-            element: <SearchListing />,
+             element:
+        import.meta.env.VITE_ENV_STAGE === "test"
+          ? <SearchListing />
+          : <ComingSoon />,
           },
-           {
+          {
             path: "digital_products",
             element: <DigitalProducts />,
           },
 
-            {
+          {
             path: "Feed",
             element: <Feed />,
           },
 
-           {
+          {
             path: "SearchExplore",
             element: <SearchExplore />,
           },
-             {
+          {
             path: "Become_mentor",
             element: <BecomeMentor />,
           },
-         {
+          {
             path: "GenerateBadgeCode",
             element: <GenerateBadgeCode />,
           },
-               {
+          {
             path: "UploadProof",
             element: <UploadProof />,
           },
-     {
+          {
             path: "EditPublicListing",
-            element: <EditPublicListing />,
+             element:
+        import.meta.env.VITE_ENV_STAGE === "test"
+          ? <EditPublicListing />
+          : <ComingSoon />,
           },
 
-             {
+          {
             path: "VisibilitySettings",
             element: <VisibilitySettings />,
           },
 
-    {
+          {
             path: "RatingReviews",
             element: <RatingReviews />,
           },
 
-            {
+          {
             path: "SellProducts",
             element: <SellProducts />,
           },
- {
+          {
             path: "Tracking",
             element: <Tracking />,
           },
 
-           {
+          {
             path: "CreatorGuideline",
             element: <CreatorGuideline />,
           },
-            {
+          {
             path: "Profile",
             element: <Profile />,
           },
- {
+          {
             path: "MyConnection",
             element: <MyConnection />,
           },
-           {
+          {
             path: "ComingSoon",
             element: <ComingSoon />,
           },
 
+          {
+            path: "DashboardSocial",
+            element: <DashboardSocial />,
+          },
+          {
+            path: "DashboardDirectory",
+            element: <DashboardDirectory />,
+          },
+          {
+            path: "bestpractices",
+            element: <BestPracticesHub />,
+          },
+          {
+            path: "bestpractices/:id/:slug",
+            element: <SingleBP />,
+          },
+
+          {
+            path: "manage_bestpractices",
+            element: <ManageBestPractices />,
+          },
+
+          {
+            path: "DashboardDirectory/technology",
+            element: <DashboardTechnology />, // reuse or wrap TechnologyAndAI
+          },
         ],
       },
     ],
@@ -226,7 +271,12 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <DirectoryPage />,
+        element:
+        import.meta.env.VITE_ENV_STAGE === "test"
+          ? <DirectoryPage />
+          : <ComingSoon />,
+
+        
       },
 
       {
@@ -249,8 +299,6 @@ export const router = createBrowserRouter([
             path: ":subcategory",
             element: <TechnologyAndAIPage />,
           },
-
-          
         ],
       },
     ],
@@ -261,7 +309,11 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Social />,
+element:
+        import.meta.env.VITE_ENV_STAGE === "test"
+          ? <Social />
+          : <ComingSoon />,
+
       },
 
       {
@@ -289,8 +341,19 @@ export const router = createBrowserRouter([
   {
     path: "/log-in",
     element: <Login />,
+    handle: {
+      passProps: true,
+    },
   },
+    {
+  path: '/terms-and-conditions',
+  element: <TermsAndConditions />,
+},
 
+  {
+  path: '/privacy-policy',
+  element: <PrivacyPolicy />,
+},
   {
     path: "/sign-up",
     element: <Signingup />,

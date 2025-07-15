@@ -15,6 +15,7 @@ import msc from "../assets/msc.png";
 import education from "../assets/education.png";
 import google from "../assets/google.png";
 import review from "../assets/review.png";
+import bestprac from "../assets/bestprac.png";
 import { useEffect, useState } from "react";
 import {
   AddUserRating,
@@ -27,7 +28,12 @@ import { StarRating } from "../components/ui/Rating";
 import Button from "../components/ui/Button";
 import Modal from "../components/ui/Modal";
 import { FacebookIcon, LinkedinIcon, TwitterIcon } from "react-share";
-import { Instagram } from "lucide-react";
+import { Instagram,Briefcase } from "lucide-react";
+import userlogo4 from "../assets/userlogo4.webp";
+import banner2 from  "../assets/banner2.png";
+import indv_aspiring from "../assets/indv_aspiring.svg";
+import indv_inspried from "../assets/indv_inspired.svg";
+import indv_leader from "../assets/indv_leader.svg";
 
 export default function UserProfileView() {
   const { id } = useParams();
@@ -68,6 +74,7 @@ export default function UserProfileView() {
   const [breakDown, setBreakDown] = useState<any>();
   const [ratingPercentage, setratingPercentage] = useState<any>();
   const [userReviewData, setUserReviewData] = useState<any>([]);
+ const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   const [breakdowns, setBreakdowns] = useState({
     one: 0,
@@ -237,7 +244,7 @@ export default function UserProfileView() {
         {/* Header Banner */}
         <div
           className="relative w-full h-[150px] mt-[1px] bg-cover bg-center"
-          style={{ backgroundImage: `url(${userDetails?.profile_banner})` }}
+          style={{ backgroundImage: `url(${userDetails?.profile_banner||banner2})` }}
         >
           <button
             onClick={() => window.history.back()}
@@ -246,9 +253,7 @@ export default function UserProfileView() {
             <ArrowLeftIcon className="h-5 w-5 text-[#7077FE]" />
           </button>
 
-          <button className="absolute top-4 right-4 bg-white text-sm px-4 py-1 rounded-full shadow-md">
-            Enquire with us
-          </button>
+      
         </div>
 
         {/* Overlapping Logo - Left Aligned */}
@@ -258,8 +263,8 @@ export default function UserProfileView() {
           <div className="absolute -top-25 left-1/2 -translate-x-1/2 sm:-translate-x-[45%] z-20">
             <div className="w-40 h-40 md:w-52 md:h-52 rounded-full border-8 border-white shadow-lg bg-white overflow-hidden">
               <img
-                src={userDetails?.profile_picture}
-                alt="Logo"
+                src={userDetails?.profile_picture || userlogo4}
+                alt="userlogo1"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -352,16 +357,27 @@ export default function UserProfileView() {
             </div>
 
             {/* Badge Card */}
+              <div className="sticky top-30">
+
             <div className="bg-white rounded-xl shadow-sm px-4 py-4 md:py-6">
               <div className="flex items-center justify-center gap-4 text-center">
                 <p className="text-sm font-medium">CNESS Badge:</p>
                 <img
-                  src={inspiredbadge}
-                  alt="CNESS Badge"
-                  className="w-[120px] md:w-[150px] object-contain"
-                />
+  src={
+    userDetails?.badge?.level === "Aspiring"
+      ? indv_aspiring
+      : userDetails?.badge?.level === "Inspiring"
+      ? indv_inspried
+      : userDetails?.badge?.level === "Leader"
+      ? indv_leader
+      : inspiredbadge // fallback if no level
+  }
+  alt={`${userDetails?.badge?.level || "CNESS"} Badge`}
+  className="w-[159px] md:w-[180px] h-auto object-contain mt-[-10px]"
+/>
               </div>
             </div>
+          </div>
           </div>
 
           {/* RIGHT COLUMN */}
@@ -469,36 +485,69 @@ export default function UserProfileView() {
               </div>
             </div>
 
-            <div className=" flex flex-col  mt-4">
-              <div className="bg-white rounded-xl shadow-sm p-5">
-                <h3 className="text-base font-semibold text-black mb-2 flex items-center gap-2">
-                  <span className="bg-purple-50 p-2 rounded-full">
-                    <img
-                      src={tag}
-                      alt="tags Icon"
-                      className="w-5 h-5 object-contain"
-                    />
-                  </span>
-                  Tags
-                </h3>
-                <div
-                  className="border-t my-4"
-                  style={{ borderColor: "#0000001A" }}
+<div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
+  <h3 className="text-base font-semibold text-black mb-2 flex items-center gap-2">
+    <span className="bg-purple-50 p-2 rounded-full">
+      <Briefcase className="w-4 h-4 text-purple-500" />
+    </span>
+    Services
+  </h3>
+  <div
+    className="border-t my-2"
+    style={{ borderColor: "#0000001A" }}
+  />
+  <div className="flex flex-wrap gap-5">
+    {/* services go here */}
+  </div>
+</div>
+
+
+
+
+   <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
+    <h3 className="text-base font-semibold text-black mb-2 flex items-center gap-2">
+      <span className="bg-purple-50 p-2 rounded-full">
+        <img src={tag} alt="tags Icon" className="w-5 h-5 object-contain" />
+      </span>
+      Tags
+    </h3>
+    <div
+      className="border-t my-2"
+      style={{ borderColor: "#0000001A" }}
+    />
+    <div className="flex flex-wrap gap-5">
+      {userDetails?.person_tags?.map((tag: any, index: any) => (
+        <span
+          key={index}
+          className="bg-[#EEF3FF] text-[#7077FE] text-xs font-medium px-7 py-2 rounded"
+        >
+          {tag}
+        </span>
+      ))}
+    </div>
+  </div>
+
+       
+
+       <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
+  <h3 className="text-base font-semibold text-black mb-2 flex items-center gap-2">
+   <span className="bg-green-50 p-2 rounded-full">
+                <img
+                  src={bestprac}
+                  alt="Best Practices Icon"
+                  className="w-5 h-5 object-contain"
                 />
-                <div className="flex flex-wrap gap-5">
-                  {userDetails?.person_tags?.map((tag: any, index: any) => (
-                    <span
-                      key={index}
-                      className="bg-[#EEF3FF] text-[#7077FE] text-xs font-medium px-7 py-2 semi rounded"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+              </span>{" "}
+              Best Practices
+            </h3>
+  <div
+    className="border-t my-2"
+    style={{ borderColor: "#0000001A" }}
+  />
+  <div className="flex flex-wrap gap-5">
+    {/* services go here */}
+  </div>
+</div>
 
         {/* <div className="w-full px-6 md:px-5 mt-2">
           <div className="bg-white rounded-xl shadow-sm px-6 py-8">
@@ -618,8 +667,8 @@ export default function UserProfileView() {
 
         {/* Overall Ratings */}
 
-        <div className="w-full px-6 md:px-5 mt-2">
-          <div className="bg-white rounded-xl shadow-sm px-6 py-8">
+
+   <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
             {/* Title */}
             <div className="flex items-center">
               <h3 className="text-lg font-semibold text-[#000000] flex items-center gap-2">
@@ -643,7 +692,7 @@ export default function UserProfileView() {
                       if (token) {
                         setActiveModal("rating");
                       } else {
-                        navigate("/log-in");
+                        setShowLoginPrompt(true);
                       }
                     }}
                   >
@@ -733,10 +782,10 @@ export default function UserProfileView() {
               </div>
             </div>
           </div>
-        </div>
+     
 
         {/* Reviews & Ratings */}
-        <div className="w-full px-10 md:px-5 bg-[#ECEEF2] rounded-xl shadow-sm p-2 mt-2">
+<div className="bg-[#ECEEF2] rounded-xl shadow-sm px-6 py-6 -mt-3">
           {/* Title */}
           <h3 className="text-lg font-semibold text-black mb-4 flex items-center gap-2">
             <span className="bg-[#F5EDFF] p-2 rounded-full">
@@ -813,219 +862,229 @@ export default function UserProfileView() {
             </div>
           )}
         </div>
-      </div>
-
+     
+    </div>
+        </div>
+           </div>
       <Footer />
 
-      <Modal isOpen={activeModal === "rating"} onClose={closeModal}>
-        <div className="text-center p-6 max-w-md">
-          <h2 className="text-4xl font-bold text-purple-500 mb-5">
-            Leave a Review
-          </h2>
-          <form onSubmit={handleSubmit}>
-            <div>
-              {/* Breakdown Ratings */}
-              <div className="mb-4">
-                <label className="text-[#E57CFF] font-semibold mb-2 block">
-                  Breakdown One:
-                </label>
-                <div className="flex justify-center">
-                  <StarRating
-                    initialRating={breakdowns.one}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, one: newRating }));
-                      if (errors.breakdowns.one) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, one: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.one && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.breakdowns.one}
-                  </p>
-                )}
-              </div>
+      <Modal isOpen={showLoginPrompt} onClose={() => setShowLoginPrompt(false)}>
+  <div className="text-center space-y-4">
+    <h2 className="text-xl font-semibold text-gray-800">Login Required</h2>
+    <p className="text-sm text-gray-600">
+      To write a review, please log in to your account.
+    </p>
+    <button
+      className="bg-[#7077FE] text-white px-4 py-2 rounded-full"
+      onClick={() => {
+        navigate("/log-in");
+      }}
+    >
+      Go to Login
+    </button>
+    <button
+      className="block mx-auto mt-2 text-xs text-gray-400 underline"
+      onClick={() => setShowLoginPrompt(false)}
+    >
+      Cancel
+    </button>
+  </div>
+</Modal>
 
-              <div className="mb-4">
-                <label className="text-[#E57CFF] font-semibold mb-2 block">
-                  Breakdown Two:
-                </label>
-                <div className="flex justify-center">
-                  <StarRating
-                    initialRating={breakdowns.two}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, two: newRating }));
-                      if (errors.breakdowns.two) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, two: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.two && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.breakdowns.two}
-                  </p>
-                )}
-              </div>
 
-              <div className="mb-4">
-                <label className="text-[#E57CFF] font-semibold mb-2 block">
-                  Breakdown Three:
-                </label>
-                <div className="flex justify-center">
-                  <StarRating
-                    initialRating={breakdowns.three}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, three: newRating }));
-                      if (errors.breakdowns.three) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, three: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.three && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.breakdowns.three}
-                  </p>
-                )}
-              </div>
-              <div className="mb-4">
-                <label className="text-[#E57CFF] font-semibold mb-2 block">
-                  Breakdown Four:
-                </label>
-                <div className="flex justify-center">
-                  <StarRating
-                    initialRating={breakdowns.four}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, four: newRating }));
-                      if (errors.breakdowns.four) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, four: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.four && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.breakdowns.four}
-                  </p>
-                )}
-              </div>
-              <div className="mb-4">
-                <label className="text-[#E57CFF] font-semibold mb-2 block">
-                  Breakdown Five:
-                </label>
-                <div className="flex justify-center">
-                  <StarRating
-                    initialRating={breakdowns.five}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, five: newRating }));
-                      if (errors.breakdowns.five) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, five: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.five && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.breakdowns.five}
-                  </p>
-                )}
-              </div>
-              <div className="mb-4">
-                <label className="text-[#E57CFF] font-semibold mb-2 block">
-                  Breakdown Six:
-                </label>
-                <div className="flex justify-center">
-                  <StarRating
-                    initialRating={breakdowns.six}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, six: newRating }));
-                      if (errors.breakdowns.six) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, six: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.six && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.breakdowns.six}
-                  </p>
-                )}
-              </div>
-
-              {/* Review Text */}
-              <div className="mb-4">
-                <label
-                  className="text-[#E57CFF] font-semibold mt-5"
-                  htmlFor="review"
-                >
-                  Your Review:
-                </label>
-                <textarea
-                  id="review"
-                  className={`w-full mt-3 px-4 py-2 border ${
-                    errors.reviewText ? "border-red-500" : "border-gray-300"
-                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500`}
-                  rows={4}
-                  placeholder="Share your experience..."
-                  value={reviewText}
-                  onChange={(e) => {
-                    setReviewText(e.target.value);
-                    if (errors.reviewText) {
-                      setErrors((prev) => ({ ...prev, reviewText: "" }));
-                    }
-                  }}
-                />
-                {errors.reviewText && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.reviewText}
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="">
-              <Button
-                variant="gradient-primary"
-                className="rounded-[100px] cursor-pointer py-3 px-8 transition-colors duration-500 ease-in-out"
-                type="submit"
-              >
-                Submit Review
-              </Button>
-            </div>
-          </form>
+<Modal isOpen={activeModal === "rating"} onClose={closeModal}>
+  <div className="p-6 max-w-xl w-full mx-auto bg-white rounded-xl">
+    <h2 className="text-3xl font-bold text-center text-purple-600 mb-8">
+      Leave a Review
+    </h2>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Star Rating Sections */}
+      <div className="space-y-5">
+        {/* 1. Mission & Vision */}
+<div className="flex items-center justify-between gap-4 mb-4">
+  <label className="w-1/2 text-sm font-medium text-purple-800">
+            <span className="font-semibold">Mission & Vision:</span>
+          </label>
+  <div className="w-1/2 flex justify-start">
+            <StarRating
+              initialRating={breakdowns.one}
+              allowHalfStars={true}
+              size="4xl"
+              onRatingChange={(newRating: number) => {
+                setBreakdowns((prev) => ({ ...prev, one: newRating }));
+                if (errors.breakdowns.one) {
+                  setErrors((prev) => ({
+                    ...prev,
+                    breakdowns: { ...prev.breakdowns, one: "" },
+                  }));
+                }
+              }}
+            />
+          </div>
+          {errors.breakdowns.one && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.breakdowns.one}
+            </p>
+          )}
         </div>
-      </Modal>
+
+        {/* 2. Client / Customer / Consumer */}
+<div className="flex items-center justify-between gap-4 mb-4">
+  <label className="w-1/2 text-sm font-medium text-purple-800">
+            <span className="font-semibold">Client / Customer / Consumer:</span>
+          </label>
+  <div className="w-1/2 flex justify-start">
+            <StarRating
+              initialRating={breakdowns.two}
+              allowHalfStars={true}
+              size="4xl"
+              onRatingChange={(newRating: number) => {
+                setBreakdowns((prev) => ({ ...prev, two: newRating }));
+                if (errors.breakdowns.two) {
+                  setErrors((prev) => ({
+                    ...prev,
+                    breakdowns: { ...prev.breakdowns, two: "" },
+                  }));
+                }
+              }}
+            />
+          </div>
+          {errors.breakdowns.two && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.breakdowns.two}
+            </p>
+          )}
+        </div>
+
+        {/* 3. Communities & Charities */}
+<div className="flex items-center justify-between gap-4 mb-4">
+  <label className="w-1/2 text-sm font-medium text-purple-800">
+            <span className="font-semibold">Communities & Charities:</span>
+          </label>
+  <div className="w-1/2 flex justify-start">
+            <StarRating
+              initialRating={breakdowns.three}
+              allowHalfStars={true}
+              size="4xl"
+              onRatingChange={(newRating: number) => {
+                setBreakdowns((prev) => ({ ...prev, three: newRating }));
+                if (errors.breakdowns.three) {
+                  setErrors((prev) => ({
+                    ...prev,
+                    breakdowns: { ...prev.breakdowns, three: "" },
+                  }));
+                }
+              }}
+            />
+          </div>
+          {errors.breakdowns.three && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.breakdowns.three}
+            </p>
+          )}
+        </div>
+
+        {/* 4. Vision & Legacy */}
+<div className="flex items-center justify-between gap-4 mb-4">
+  <label className="w-1/2 text-sm font-medium text-purple-800">
+            <span className="font-semibold">
+              Vision & Legacy – Long-Term Contribution:
+            </span>
+          </label>
+  <div className="w-1/2 flex justify-start">
+            <StarRating
+              initialRating={breakdowns.four}
+              allowHalfStars={true}
+              size="4xl"
+              onRatingChange={(newRating: number) => {
+                setBreakdowns((prev) => ({ ...prev, four: newRating }));
+                if (errors.breakdowns.four) {
+                  setErrors((prev) => ({
+                    ...prev,
+                    breakdowns: { ...prev.breakdowns, four: "" },
+                  }));
+                }
+              }}
+            />
+          </div>
+          {errors.breakdowns.four && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.breakdowns.four}
+            </p>
+          )}
+        </div>
+
+        {/* 5. Leadership Best Practices */}
+<div className="flex items-center justify-between gap-4 mb-4">
+  <label className="w-1/2 text-sm font-medium text-purple-800">
+            <span className="font-semibold">Leadership Best Practices:</span>
+          </label>
+  <div className="w-1/2 flex justify-start">
+            <StarRating
+              initialRating={breakdowns.five}
+              allowHalfStars={true}
+              size="4xl"
+              onRatingChange={(newRating: number) => {
+                setBreakdowns((prev) => ({ ...prev, five: newRating }));
+                if (errors.breakdowns.five) {
+                  setErrors((prev) => ({
+                    ...prev,
+                    breakdowns: { ...prev.breakdowns, five: "" },
+                  }));
+                }
+              }}
+            />
+          </div>
+          {errors.breakdowns.five && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.breakdowns.five}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Review Text */}
+      <div>
+        <label
+          htmlFor="review"
+          className="block text-sm font-semibold text-purple-800 mb-1"
+        >
+          Your Review:
+        </label>
+        <textarea
+          id="review"
+          className={`w-full px-4 py-3 rounded-lg border ${
+            errors.reviewText ? "border-red-500" : "border-gray-300"
+          } focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm resize-none`}
+          rows={4}
+          placeholder="Share your experience..."
+          value={reviewText}
+          onChange={(e) => {
+            setReviewText(e.target.value);
+            if (errors.reviewText) {
+              setErrors((prev) => ({ ...prev, reviewText: "" }));
+            }
+          }}
+        />
+        {errors.reviewText && (
+          <p className="text-red-500 text-xs mt-1">{errors.reviewText}</p>
+        )}
+      </div>
+
+      {/* Submit Button */}
+      <div className="text-center pt-4">
+        <Button
+          variant="gradient-primary"
+          className="rounded-full py-3 px-8 text-white font-medium shadow-md hover:shadow-lg transition"
+          type="submit"
+        >
+          Submit Review
+        </Button>
+      </div>
+    </form>
+  </div>
+</Modal>
+
     </>
   );
 }

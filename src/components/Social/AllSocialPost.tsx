@@ -239,8 +239,8 @@ export default function AllSocialPost() {
         setIsUploading(true); // Show loader before starting the API call
 
         const res = await AddStory(formData);
+        console.log("🚀 ~ AllSocialPost ~ res:", res)
         await GetStoryData();
-        console.log("🚀 ~ handleFileUpload ~ res:", res);
       } catch (error) {
         console.error("Error uploading file:", error);
       } finally {
@@ -345,12 +345,10 @@ export default function AllSocialPost() {
         }
 
         const res = await AddPost(formData);
-        console.log("🚀 ~ CreatePost ~ res:", res);
 
         if (res?.success?.status === true) {
           // Create a new post object using the response data
           const newPost = res?.data?.data;
-          console.log("🚀 ~ CreatePost ~ newPost:", newPost);
 
           // Immediately update userPosts state without API call
           setUserPosts((prevPosts) => [newPost, ...prevPosts]);

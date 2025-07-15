@@ -1,37 +1,152 @@
+import React, { useEffect, useState } from 'react';
+import { FiX } from 'react-icons/fi';
+import { GetUserNotification } from '../Common/ServerAPI';
 
-const Notification = () => {
-  return (
-    <>
- 
-        <div className="max-w-6xl mt-0 shadow overflow-hidden p-8 text-center">
-          <div className="py-12">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">
-              Notification Feature Coming Soon
-            </h2>
-            <p className="text-gray-600 mb-6">
-              We're working hard to bring this feature to you. Please check back
-              later!
-            </p>
-            <div className="flex justify-center">
-              <svg
-                className="w-24 h-24 text-purple-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                />
-              </svg>
-            </div>
+interface NotificationItem {
+  id: string;
+  notification_type: string;
+  is_read: boolean;
+  sender_id: string | null;
+  receiver_id: string;
+  title: string;
+  description: string;
+  createdAt: string;
+  sender_user: any | null;
+  sender_profile: any | null;
+}
+
+const Notification: React.FC = () => {
+  const [selectedNotification, setSelectedNotification] = useState<NotificationItem | null>(null);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const getNotification = async () => {
+    try {
+      setLoading(true);
+      const res = await GetUserNotification();
+      if (res?.data?.data) {
+        setNotifications(res.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getNotification();
+  }, []);
+
+  const formatTime = (dateString: string) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    return `${Math.floor(diffInSeconds / 604800)}w ago`;
+  };
+
+  if (loading) {
+    return (
+      <div className="flex h-screen overflow-hidden">
+        <div className="w-[440px] bg-white border-r border-gray-200 p-4 overflow-y-auto">
+          <div className="space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="p-4 rounded-lg shadow-sm border bg-gray-50 border-gray-200 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            ))}
           </div>
         </div>
-    
-    </>
+        <main className="flex-1 bg-[#F9F9FF] p-6 overflow-y-auto flex items-center justify-center">
+          <div className="text-gray-500">Loading notification details...</div>
+        </main>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-screen overflow-hidden">
+      {/* Notification Panel */}
+      <aside className="w-[440px] bg-white border-r border-gray-200 p-4 overflow-y-auto">
+        <div className="space-y-4">
+          {notifications.length > 0 ? (
+            notifications.map((notification) => (
+              <div
+                key={notification.id}
+                onClick={() => setSelectedNotification(notification)}
+                className={`cursor-pointer p-4 rounded-lg shadow-sm border transform transition hover:-translate-y-1 hover:shadow-md ${
+                  !notification.is_read
+                    ? 'bg-purple-100 border-purple-500'
+                    : 'bg-gray-50 border-gray-200'
+                }`}
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-medium mb-1 text-gray-900 flex items-center gap-2">
+                      {!notification.is_read && (
+                        <span className="w-2 h-2 bg-purple-600 rounded-full inline-block"></span>
+                      )}
+                      {notification.title}
+                    </h3>
+                    <p className="text-gray-700 text-sm leading-relaxed line-clamp-2">
+                      {notification.description}
+                    </p>
+                  </div>
+                  <div className="flex items-start flex-col-reverse">
+                    <button 
+                      className="text-gray-500 hover:text-gray-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Add delete functionality here
+                      }}
+                    >
+                      <FiX size={14} />
+                    </button>
+                    <span className="text-xs text-gray-500 mb-1">
+                      {formatTime(notification.createdAt)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center text-sm text-gray-700 py-4">
+              No notifications found
+            </div>
+          )}
+        </div>
+      </aside>
+
+      {/* Content View */}
+      <main className="flex-1 bg-[#F9F9FF] p-6 overflow-y-auto">
+        {selectedNotification ? (
+          <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow">
+            <h2 className="text-xl font-semibold text-[#222224] mb-2">
+              {selectedNotification.title}
+            </h2>
+            <p className="text-sm text-gray-600 mb-4">
+              {formatTime(selectedNotification.createdAt)}
+            </p>
+            <p className="text-gray-700 text-base leading-relaxed">
+              {selectedNotification.description}
+            </p>
+          </div>
+        ) : (
+          <div className="text-center text-gray-500 mt-20">
+            {notifications.length > 0 
+              ? "Select a notification to view details" 
+              : "You don't have any notifications yet"}
+          </div>
+        )}
+      </main>
+    </div>
   );
 };
 

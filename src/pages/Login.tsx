@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Modal from "../components/ui/Modal";
 import SignupAnimation from "../components/ui/SignupAnimation"; // adjust path
 import { useEffect, useState, type FormEvent } from "react";
@@ -12,15 +12,18 @@ import {
   PaymentDetails,
   submitOrganizationDetails,
   submitPersonDetails,
+  GoogleLoginDetails,
 } from "../Common/ServerAPI";
 import Button from "../components/ui/Button";
 import { Link } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
+import { useGoogleLogin } from "@react-oauth/google";
 
 import cnesslogo from "../assets/cnesslogo.png";
 import { FiMail, FiEye, FiEyeOff } from "react-icons/fi"; // add if not already
 
 import Select from "react-select";
+import Fcopyright from "../layout/Header/Fcopyright";
 
 interface SubDomain {
   id: string;
@@ -58,6 +61,7 @@ interface PersonForm {
   last_name: string;
   interests: (string | number)[];
   professions: (string | number)[];
+  custom_profession?: string;
   question: QuestionAnswer[];
 }
 // type PartialOrganizationFormData = Partial<OrganizationForm>;
@@ -205,8 +209,19 @@ export default function Login() {
       return "Password must contain at least one special character";
     return undefined;
   };
-const [showLoginPassword, setShowLoginPassword] = useState(false);
-const [emailFocused, setEmailFocused] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [emailFocused, setEmailFocused] = useState(false);
+  const location = useLocation();
+  console.log("🚀 ~ Login ~ location:", location);
+
+  useEffect(() => {
+    if (location.state?.autoGoogleLogin) {
+      alert();
+      login(); // Trigger Google login automatically
+      // Clear the state to prevent retriggering on refresh
+      // window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const validateField = (
     name: string,
@@ -445,6 +460,7 @@ const [emailFocused, setEmailFocused] = useState(false);
         setIsSubmitting(false);
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);
+        console.log("🚀 ~ handleSubmit ~ response?.data?.data?.jwt:", response?.data?.data?.jwt)
         localStorage.setItem(
           "is_disqualify",
           response?.data?.data?.user?.is_disqualify
@@ -474,54 +490,126 @@ const [emailFocused, setEmailFocused] = useState(false);
         const completed_step = response.data.data.user.completed_step;
         const is_disqualify = response.data.data.user.is_disqualify;
 
+        //   if (!is_disqualify) {
+        //     if (completionStatus === 0 || completed_step === 0) {
+        //       setActiveModal("type");
+        //     } else if (completionStatus === 1) {
+        //       if (completed_step === 0) {
+        //         setActiveModal("person");
+        //       } else if (completed_step === 1) {
+        //         // const res = await GetAllPlanDetails();
+        //         // const plansByRange: Record<string, any> = {};
+        //         // res?.data?.data?.forEach((plan: any) => {
+        //         //   if (!plansByRange[plan.plan_range]) {
+        //         //     plansByRange[plan.plan_range] = {};
+        //         //   }
+        //         //   plansByRange[plan.plan_range][plan.plan_type] = plan;
+        //         // });
+        //         // const updatedPlans = Object.values(plansByRange)?.map(
+        //         //   (planGroup: any) => {
+        //         //     const monthlyPlan = planGroup.monthly;
+        //         //     const yearlyPlan = planGroup.yearly;
+
+        //         //     return {
+        //         //       id: monthlyPlan?.id || yearlyPlan?.id,
+        //         //       title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+        //         //       description: "Customized pricing based on your selection",
+        //         //       monthlyPrice: monthlyPlan
+        //         //         ? `$${monthlyPlan.amount}`
+        //         //         : undefined,
+        //         //       yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+        //         //       period: isAnnual ? "/year" : "/month",
+        //         //       billingNote: yearlyPlan
+        //         //         ? isAnnual
+        //         //           ? `billed annually ($${yearlyPlan.amount})`
+        //         //           : `or $${monthlyPlan?.amount}/month`
+        //         //         : undefined,
+        //         //       features: [], // Add any features you need here
+        //         //       buttonText: "Get Started",
+        //         //       buttonClass: yearlyPlan
+        //         //         ? ""
+        //         //         : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+        //         //       borderClass: yearlyPlan
+        //         //         ? "border-2 border-[#F07EFF]"
+        //         //         : "border",
+        //         //       popular: !!yearlyPlan,
+        //         //     };
+        //         //   }
+        //         // );
+        //         // setPersonPricing(updatedPlans);
+        //         // setActiveModal("personPricing");
+        //         navigate("/dashboard");
+        //       } else {
+        //         navigate("/dashboard");
+        //       }
+        //     } else if (completionStatus === 2) {
+        //       if (completed_step === 0) {
+        //         setActiveModal("organization");
+        //       } else if (completed_step === 1) {
+        //         // const res = await GetAllPlanDetails();
+        //         // const plansByRange: Record<string, any> = {};
+        //         // res?.data?.data?.forEach((plan: any) => {
+        //         //   if (!plansByRange[plan.plan_range]) {
+        //         //     plansByRange[plan.plan_range] = {};
+        //         //   }
+        //         //   plansByRange[plan.plan_range][plan.plan_type] = plan;
+        //         // });
+        //         // const updatedPlans = Object.values(plansByRange)?.map(
+        //         //   (planGroup: any) => {
+        //         //     const monthlyPlan = planGroup.monthly;
+        //         //     const yearlyPlan = planGroup.yearly;
+
+        //         //     return {
+        //         //       id: monthlyPlan?.id || yearlyPlan?.id,
+        //         //       title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+        //         //       description: "Customized pricing based on your selection",
+        //         //       monthlyPrice: monthlyPlan
+        //         //         ? `$${monthlyPlan.amount}`
+        //         //         : undefined,
+        //         //       yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+        //         //       period: isAnnual ? "/year" : "/month",
+        //         //       billingNote: yearlyPlan
+        //         //         ? isAnnual
+        //         //           ? `billed annually ($${yearlyPlan.amount})`
+        //         //           : `or $${monthlyPlan?.amount}/month`
+        //         //         : undefined,
+        //         //       features: [], // Add any features you need here
+        //         //       buttonText: "Get Started",
+        //         //       buttonClass: yearlyPlan
+        //         //         ? ""
+        //         //         : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+        //         //       borderClass: yearlyPlan
+        //         //         ? "border-2 border-[#F07EFF]"
+        //         //         : "border",
+        //         //       popular: !!yearlyPlan,
+        //         //     };
+        //         //   }
+        //         // );
+        //         // setorganizationpricingPlans(updatedPlans);
+        //         // setActiveModal("organizationPricing");
+        //         navigate("/dashboard");
+        //       } else {
+        //         navigate("/dashboard");
+        //       }
+        //     }
+        //   } else {
+        //     navigate("/dashboard");
+        //   }
+        // } else {
+        //   setIsSubmitting(false);
+        //   setApiMessage("Login failed");
+        // }
         if (!is_disqualify) {
+          // Skip type selection and directly set to Person (1)
+          await handleTypeSelection(1);
+
           if (completionStatus === 0 || completed_step === 0) {
-            setActiveModal("type");
+            // This will now directly open the person form
+            setActiveModal("person");
           } else if (completionStatus === 1) {
             if (completed_step === 0) {
               setActiveModal("person");
             } else if (completed_step === 1) {
-              // const res = await GetAllPlanDetails();
-              // const plansByRange: Record<string, any> = {};
-              // res?.data?.data?.forEach((plan: any) => {
-              //   if (!plansByRange[plan.plan_range]) {
-              //     plansByRange[plan.plan_range] = {};
-              //   }
-              //   plansByRange[plan.plan_range][plan.plan_type] = plan;
-              // });
-              // const updatedPlans = Object.values(plansByRange)?.map(
-              //   (planGroup: any) => {
-              //     const monthlyPlan = planGroup.monthly;
-              //     const yearlyPlan = planGroup.yearly;
-
-              //     return {
-              //       id: monthlyPlan?.id || yearlyPlan?.id,
-              //       title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-              //       description: "Customized pricing based on your selection",
-              //       monthlyPrice: monthlyPlan
-              //         ? `$${monthlyPlan.amount}`
-              //         : undefined,
-              //       yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-              //       period: isAnnual ? "/year" : "/month",
-              //       billingNote: yearlyPlan
-              //         ? isAnnual
-              //           ? `billed annually ($${yearlyPlan.amount})`
-              //           : `or $${monthlyPlan?.amount}/month`
-              //         : undefined,
-              //       features: [], // Add any features you need here
-              //       buttonText: "Get Started",
-              //       buttonClass: yearlyPlan
-              //         ? ""
-              //         : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-              //       borderClass: yearlyPlan
-              //         ? "border-2 border-[#F07EFF]"
-              //         : "border",
-              //       popular: !!yearlyPlan,
-              //     };
-              //   }
-              // );
-              // setPersonPricing(updatedPlans);
-              // setActiveModal("personPricing");
               navigate("/dashboard");
             } else {
               navigate("/dashboard");
@@ -530,47 +618,6 @@ const [emailFocused, setEmailFocused] = useState(false);
             if (completed_step === 0) {
               setActiveModal("organization");
             } else if (completed_step === 1) {
-              // const res = await GetAllPlanDetails();
-              // const plansByRange: Record<string, any> = {};
-              // res?.data?.data?.forEach((plan: any) => {
-              //   if (!plansByRange[plan.plan_range]) {
-              //     plansByRange[plan.plan_range] = {};
-              //   }
-              //   plansByRange[plan.plan_range][plan.plan_type] = plan;
-              // });
-              // const updatedPlans = Object.values(plansByRange)?.map(
-              //   (planGroup: any) => {
-              //     const monthlyPlan = planGroup.monthly;
-              //     const yearlyPlan = planGroup.yearly;
-
-              //     return {
-              //       id: monthlyPlan?.id || yearlyPlan?.id,
-              //       title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-              //       description: "Customized pricing based on your selection",
-              //       monthlyPrice: monthlyPlan
-              //         ? `$${monthlyPlan.amount}`
-              //         : undefined,
-              //       yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-              //       period: isAnnual ? "/year" : "/month",
-              //       billingNote: yearlyPlan
-              //         ? isAnnual
-              //           ? `billed annually ($${yearlyPlan.amount})`
-              //           : `or $${monthlyPlan?.amount}/month`
-              //         : undefined,
-              //       features: [], // Add any features you need here
-              //       buttonText: "Get Started",
-              //       buttonClass: yearlyPlan
-              //         ? ""
-              //         : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-              //       borderClass: yearlyPlan
-              //         ? "border-2 border-[#F07EFF]"
-              //         : "border",
-              //       popular: !!yearlyPlan,
-              //     };
-              //   }
-              // );
-              // setorganizationpricingPlans(updatedPlans);
-              // setActiveModal("organizationPricing");
               navigate("/dashboard");
             } else {
               navigate("/dashboard");
@@ -764,6 +811,17 @@ const [emailFocused, setEmailFocused] = useState(false);
         setActiveModal("organizationPricing");
       } else if (res.success.statusCode === 201) {
         navigate("/dashboard");
+        const response = await MeDetails();
+        localStorage.setItem(
+          "profile_picture",
+          response?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          response?.data?.data?.user.margaret_name
+        );
         localStorage.setItem("is_disqualify", "true");
       }
       // onSuccess();
@@ -779,13 +837,36 @@ const [emailFocused, setEmailFocused] = useState(false);
     e.preventDefault();
     setIsSubmitting(true);
 
+    if (
+      personForm.professions?.includes("other") &&
+      !personForm.custom_profession?.trim()
+    ) {
+      setPersonErrors({
+        ...personErrors,
+        custom_profession: "Please specify your profession",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
     if (!validateForm(personForm, "person", 2, true)) {
       setIsSubmitting(false);
       return;
     }
 
     try {
-      const res = await submitPersonDetails(personForm as any);
+      const payload = {
+        ...personForm,
+        // Include custom_profession in the payload if "other" is selected
+        professions: personForm.professions.includes("other")
+          ? [
+              ...personForm.professions.filter((p) => p !== "other"),
+              personForm.custom_profession,
+            ]
+          : personForm.professions,
+      };
+
+      const res = await submitPersonDetails(payload as any);
       localStorage.setItem("person_organization", "1");
       localStorage.setItem("completed_step", "1");
       // Group plans by their range (Basic Plan, Pro Plan, etc.)
@@ -843,6 +924,17 @@ const [emailFocused, setEmailFocused] = useState(false);
         setActiveModal("personPricing");
       } else if (res.success.statusCode === 201) {
         navigate("/dashboard");
+        const response = await MeDetails();
+        localStorage.setItem(
+          "profile_picture",
+          response?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          response?.data?.data?.user.margaret_name
+        );
         localStorage.setItem("is_disqualify", "true");
       }
     } catch (error) {
@@ -937,6 +1029,7 @@ const [emailFocused, setEmailFocused] = useState(false);
       fetchAllDataDetails();
     }
   }, [activeModal]);
+
   const handlePlanSelection = async (plan: any) => {
     try {
       const payload = {
@@ -1017,6 +1110,97 @@ const [emailFocused, setEmailFocused] = useState(false);
     }
   };
 
+  const handleGoogleLoginSuccess = async (tokenResponse: any) => {
+    const token = tokenResponse.access_token;
+
+    try {
+      const response = await GoogleLoginDetails(token); // ✅ use your centralized API call
+      console.log("🚀 ~ handleGoogleLoginSuccess ~ response:", response);
+      if (response) {
+        localStorage.setItem("authenticated", "true");
+        localStorage.setItem("jwt", response?.data?.data?.jwt);
+        localStorage.setItem(
+          "is_disqualify",
+          response?.data?.data?.user?.is_disqualify
+        );
+        localStorage.setItem(
+          "person_organization",
+          response?.data?.data?.user.person_organization_complete
+        );
+        localStorage.setItem("Id", response?.data?.data?.user.id.toString());
+        localStorage.setItem(
+          "completed_step",
+          response?.data?.data?.user.completed_step
+        );
+        localStorage.setItem(
+          "profile_picture",
+          response?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          response?.data?.data?.user.margaret_name
+        );
+        const completionStatus =
+          response.data.data.user.person_organization_complete;
+        const completed_step = response.data.data.user.completed_step;
+        const is_disqualify = response.data.data.user.is_disqualify;
+
+        // Skip type selection and directly set to Person (1)
+        await handleTypeSelection(1);
+
+        if (!is_disqualify) {
+          if (completionStatus === 0 || completed_step === 0) {
+            setActiveModal("person");
+          } else if (completionStatus === 1) {
+            if (completed_step === 0) {
+              setActiveModal("person");
+            } else if (completed_step === 1) {
+              navigate("/dashboard");
+            } else {
+              navigate("/dashboard");
+            }
+          } else if (completionStatus === 2) {
+            if (completed_step === 0) {
+              setActiveModal("organization");
+            } else if (completed_step === 1) {
+              navigate("/dashboard");
+            } else {
+              navigate("/dashboard");
+            }
+          }
+        } else {
+          navigate("/dashboard");
+        }
+      } else {
+        showToast({
+          message: "Google login succeeded, but no JWT received.",
+          type: "error",
+          duration: 5000,
+        });
+      }
+    } catch (error: any) {
+      console.error("Google login error:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
+  const login = useGoogleLogin({
+    onSuccess: handleGoogleLoginSuccess,
+    onError: () => {
+      showToast({
+        message: "Google login failed.",
+        type: "error",
+        duration: 5000,
+      });
+    },
+  });
+
   return (
     <>
       <div className="relative min-h-screen flex flex-col overflow-hidden bg-white">
@@ -1033,21 +1217,23 @@ const [emailFocused, setEmailFocused] = useState(false);
             <SignupAnimation />
           </div>
 
-          <div className="absolute top-40 left-10 z-10">
-<div className="fixed top-0 left-0 p-1 z-50">
-  <img
-    src={cnesslogo}
-    alt="logo"
-    className="w-60 h-60 object-contain"
-  
-  />
-</div>      </div>
+   <div className="relative w-full h-[250px]">
+  <div className="absolute top-1 left-5 z-30 p-0">
+    <img
+      src={cnesslogo}
+      alt="logo"
+      className="w-[150px] h-[150px] object-contain"
+    />
+  </div>
+</div>
+
         </div>
 
         {/* Sign In Form */}
-<div className="absolute top-[120px] sm:top-[160px] md:top-[200px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
-          <div className="w-full max-w-md bg-white rounded-2xl shadow-xl px-4 sm:px-8 py-8 sm:py-10 space-y-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center">
+<div className="absolute top-[80px] sm:top-[120px] md:top-[160px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
+ <div className="w-[576px] h-[650px] bg-white rounded-[24px] shadow-xl border border-gray-200 px-[42px] py-[52px] flex flex-col gap-8">
+
+    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center">
               Sign in to your account
             </h2>
             {apiMessage && (
@@ -1062,35 +1248,62 @@ const [emailFocused, setEmailFocused] = useState(false);
               </div>
             )}
             <form className="space-y-4" onSubmit={handleSubmit}>
-<div className="mb-4 relative">
+              <div className="mb-4 relative">
+                {/* Google Sign-In Button */}
+                <div className="flex justify-center gap-4 mt-2">
+                  <button
+                    type="button"
+                    onClick={() => login()}
+          className="flex items-center gap-2 border border-gray-300 rounded-3xl px-12 py-3 bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <img
+                      src="/google-icon-logo.svg"
+                      alt="Google"
+                      className="w-6 h-6"
+                    />
+                    <span className="text-sm font-medium text-gray-700">
+                      Sign in with Google
+                    </span>
+                  </button>
+                </div>
+
+                {/* Divider with "Or sign in with" */}
+                <div className="relative my-8">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="bg-white px-3 ">Or sign in with</span>
+                  </div>
+                </div>
+
                 <label
                   htmlFor="email"
                   className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
                 >
                   Email
                 </label>
-                  <div className="relative">
+                <div className="relative">
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                    placeholder="Enter your email"
+                    onFocus={() => setEmailFocused(true)}
+                    onBlur={() => setEmailFocused(false)}
+                    className={`w-full px-3 py-2 rounded-[12px] border ${
+                      loginErrors.email ? "border-red-500" : "border-[#CBD5E1]"
+                    } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                  />
 
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  required
-                  placeholder="Enter your email"
-      onFocus={() => setEmailFocused(true)}
-    onBlur={() => setEmailFocused(false)}
-                  className={`w-full px-3 py-2 rounded-[12px] border ${
-                    loginErrors.email ? "border-red-500" : "border-[#CBD5E1]"
-                  } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
-                />
-
-<FiMail
-      className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-opacity duration-300 ${
-      emailFocused ? "opacity-100" : "opacity-0"
-    }`}
-    size={18}
-  />
-</div>
+                  <FiMail
+                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-opacity duration-300 ${
+                      emailFocused ? "opacity-100" : "opacity-0"
+                    }`}
+                    size={18}
+                  />
+                </div>
                 {loginErrors.email && (
                   <p className="mt-1 text-sm text-red-600">
                     {loginErrors.email}
@@ -1098,33 +1311,38 @@ const [emailFocused, setEmailFocused] = useState(false);
                 )}
               </div>
 
-<div className="mb-4 relative">
+              <div className="mb-4 relative">
                 <label
                   htmlFor="password"
                   className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
                 >
                   Password
                 </label>
-                  <div className="relative">
+                <div className="relative">
+                  <input
+                    type={showLoginPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    required
+                    placeholder="Enter your Password"
+                    className={`w-full px-3 py-2 rounded-[12px] border ${
+                      loginErrors.password
+                        ? "border-red-500"
+                        : "border-[#CBD5E1]"
+                    } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                  />
 
-                <input
-      type={showLoginPassword ? "text" : "password"}
-                  id="password"
-                  name="password"
-                  required
-                  placeholder="Enter your Password"
-                  className={`w-full px-3 py-2 rounded-[12px] border ${
-                    loginErrors.password ? "border-red-500" : "border-[#CBD5E1]"
-                  } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
-                />
-
-                 <div
-      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-      onClick={() => setShowLoginPassword(!showLoginPassword)}
-    >
-      {showLoginPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-    </div>
-  </div>
+                  <div
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                    onClick={() => setShowLoginPassword(!showLoginPassword)}
+                  >
+                    {showLoginPassword ? (
+                      <FiEyeOff size={18} />
+                    ) : (
+                      <FiEye size={18} />
+                    )}
+                  </div>
+                </div>
                 {loginErrors.password && (
                   <p className="mt-1 text-sm text-red-600">
                     {loginErrors.password}
@@ -1157,9 +1375,35 @@ const [emailFocused, setEmailFocused] = useState(false);
                 {isSubmitting ? "Loging..." : "Login"}
               </Button>
 
-              <div className="text-center text-sm text-gray-500">OR</div>
+              {/* Google & Facebook Icons 
+              <div className="flex justify-center gap-4 mt-2">
+                <button
+                  type="button"
+                  onClick={() => login()}
+                  className="flex items-center justify-center border border-gray-300 dark:border-gray-600 rounded-md w-12 h-12 bg-white hover:shadow-md hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#F07EFF]"
+                >
+                  <img
+                    src="/google-icon-logo.svg"
+                    alt="Google"
+                    className="w-5 h-5"
+                  />
+                </button>
 
-              <p className="text-center text-sm text-gray-600 mt-4">
+                <button
+                  type="button"
+                  disabled
+                  title="Coming soon"
+                  className="flex items-center justify-center border border-gray-300 dark:border-gray-600 rounded-md w-12 h-12 opacity-50 cursor-not-allowed bg-white"
+                >
+                  <img
+                    src="/Facebook_Logo.png"
+                    alt="Facebook"
+                    className="w-7 h-7"
+                  />
+                </button>
+              </div>
+*/}
+              <p className="flex flex-col sm:flex-row justify-center items-center text-sm gap-2 sm:gap-2 mt-4">
                 New to Cness?{" "}
                 <Link
                   to={"/sign-up"}
@@ -1207,12 +1451,12 @@ const [emailFocused, setEmailFocused] = useState(false);
 
       {/* Organization Form Modal - only shows when activeModal is "organization" */}
       <Modal isOpen={activeModal === "organization"} onClose={closeModal}>
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           {" "}
           {/* Ensures center + padding on small screens */}
-          <div className="w-full max-w-[1100px] h-[80vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+          <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex flex-col items-center justify-center text-center p-10">
+            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -1303,7 +1547,7 @@ const [emailFocused, setEmailFocused] = useState(false);
             </div>
 
             {/* Right Form Panel */}
-            <div className="w-full lg:w-[60%] bg-white p-6 md:p-10 overflow-y-auto">
+            <div className="w-full lg:w-[60%] bg-white px-4 py-6 sm:px-6 sm:py-8 md:p-10 overflow-y-auto">
               <h2 className="text-xl font-bold text-gray-800 mb-6">
                 Let’s Set Up Your Organization
               </h2>
@@ -1314,7 +1558,8 @@ const [emailFocused, setEmailFocused] = useState(false);
                     {/* Organization Name */}
                     <div className="mb-4">
                       <label className="block openSans text-base font-medium text-gray-700 mb-1">
-                        Organization Name*
+                        Organization Name
+                        <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -1337,7 +1582,8 @@ const [emailFocused, setEmailFocused] = useState(false);
 
                     <div className="mb-4">
                       <label className="block openSans text-base font-medium text-gray-700 mb-1">
-                        Domain*
+                        Domain
+                        <span className="text-red-500">*</span>
                       </label>
                       <select
                         name="domain"
@@ -1367,7 +1613,8 @@ const [emailFocused, setEmailFocused] = useState(false);
                     {organizationForm.domain === "other" ? (
                       <div className="mb-4">
                         <label className="block openSans text-base font-medium text-gray-700 mb-1">
-                          Custom Domain Name*
+                          Custom Domain Name
+                          <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
@@ -1416,7 +1663,8 @@ const [emailFocused, setEmailFocused] = useState(false);
                     {/* Employees Size */}
                     <div className="mb-4">
                       <label className="block openSans text-base font-medium text-gray-700 mb-1">
-                        Employees Size*
+                        Employees Size
+                        <span className="text-red-500">*</span>
                       </label>
                       <select
                         name="employee_size"
@@ -1443,7 +1691,8 @@ const [emailFocused, setEmailFocused] = useState(false);
                     {/* Revenue */}
                     <div className="mb-4">
                       <label className="block openSans text-base font-medium text-gray-700 mb-1">
-                        Revenue*
+                        Revenue
+                        <span className="text-red-500">*</span>
                       </label>
                       <select
                         name="revenue"
@@ -1544,7 +1793,7 @@ const [emailFocused, setEmailFocused] = useState(false);
                 {/* Form Footer Actions */}
 
                 {/* Form Footer Actions */}
-                <div className="flex justify-end mt-6 gap-3">
+                <div className="flex justify-end mt-6 gap-3 flex-wrap">
                   {orgFormStep === 2 && (
                     <>
                       <Button
@@ -1660,10 +1909,10 @@ const [emailFocused, setEmailFocused] = useState(false);
       </Modal>
 
       <Modal isOpen={activeModal === "person"} onClose={closeModal}>
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-4">
-          <div className="w-full max-w-[1100px] h-[80vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
+          <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex flex-col items-center justify-center text-center p-10">
+            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -1693,7 +1942,7 @@ const [emailFocused, setEmailFocused] = useState(false);
             </div>
 
             {/* Right Form Panel */}
-            <div className="w-full lg:w-[60%] bg-white p-6 md:p-10 overflow-y-auto">
+            <div className="w-full lg:w-[60%] bg-white px-4 py-6 sm:px-6 sm:py-8 md:p-10 overflow-y-auto">
               <h2 className="text-xl font-bold text-gray-800 mb-6">
                 Tell Us About Yourself
               </h2>
@@ -1703,7 +1952,8 @@ const [emailFocused, setEmailFocused] = useState(false);
                   <>
                     <div className="mb-4">
                       <label className="block openSans text-base font-medium text-gray-800 mb-1">
-                        First Name*
+                        First Name
+                        <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -1726,7 +1976,8 @@ const [emailFocused, setEmailFocused] = useState(false);
 
                     <div className="mb-4">
                       <label className="block openSans text-base font-medium text-gray-800 mb-1">
-                        Last Name*
+                        Last Name
+                        <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -1749,7 +2000,8 @@ const [emailFocused, setEmailFocused] = useState(false);
 
                     <div className="mb-4">
                       <label className="block openSans text-base font-medium text-gray-800 mb-1">
-                        Interests*
+                        Interests
+                        <span className="text-red-500">*</span>
                       </label>
                       <Select
                         isMulti
@@ -1778,6 +2030,10 @@ const [emailFocused, setEmailFocused] = useState(false);
                         className="react-select-container"
                         classNamePrefix="react-select"
                         placeholder="Select interests..."
+                        menuPortalTarget={document.body}
+                        styles={{
+                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                        }}
                       />
                       {personErrors.interests && (
                         <p className="mt-1 text-sm text-red-600">
@@ -1788,26 +2044,29 @@ const [emailFocused, setEmailFocused] = useState(false);
 
                     <div className="mb-4">
                       <label className="block openSans text-base font-medium text-gray-800 mb-1">
-                        Professions*
+                        Professions
+                        <span className="text-red-500">*</span>
                       </label>
                       <Select
                         isMulti
-                        options={profession?.map(
-                          (professionItem: Profession) => ({
+                        options={[
+                          ...profession?.map((professionItem: Profession) => ({
                             value: professionItem.id,
                             label: professionItem.title,
-                          })
-                        )}
+                          })),
+                          { value: "other", label: "Other (please specify)" },
+                        ]}
                         value={
                           personForm.professions?.map((professionId: any) => ({
                             value: professionId,
-                            label: profession?.find(
-                              (p: any) => p.id === professionId
-                            )?.title,
+                            label:
+                              profession?.find(
+                                (p: any) => p.id === professionId
+                              )?.title ||
+                              (professionId === "other" ? "Other" : ""),
                           })) || []
                         }
                         onChange={(selectedOptions) => {
-                          // Update your form state with the selected values
                           const selectedValues = selectedOptions?.map(
                             (option) => option.value
                           );
@@ -1819,6 +2078,10 @@ const [emailFocused, setEmailFocused] = useState(false);
                         className="react-select-container"
                         classNamePrefix="react-select"
                         placeholder="Select professions..."
+                        menuPortalTarget={document.body}
+                        styles={{
+                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                        }}
                       />
                       {personErrors.professions && (
                         <p className="mt-1 text-sm text-red-600">
@@ -1826,6 +2089,28 @@ const [emailFocused, setEmailFocused] = useState(false);
                         </p>
                       )}
                     </div>
+
+                    {/* Add this after the Select component */}
+                    {personForm.professions?.includes("other") && (
+                      <div className="mb-4 mt-2">
+                        <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                          Specify Your Profession
+                        </label>
+                        <input
+                          type="text"
+                          name="custom_profession"
+                          value={personForm.custom_profession || ""}
+                          onChange={(e) =>
+                            setPersonForm({
+                              ...personForm,
+                              custom_profession: e.target.value,
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          placeholder="Enter your profession"
+                        />
+                      </div>
+                    )}
                   </>
                 )}
 
@@ -1898,7 +2183,7 @@ const [emailFocused, setEmailFocused] = useState(false);
                 )}
 
                 {/* Form Footer Actions */}
-                <div className="flex justify-end mt-6 gap-3">
+                <div className="flex justify-end mt-6 gap-3 flex-wrap">
                   {personFormStep === 2 && (
                     <>
                       <Button
@@ -1959,10 +2244,10 @@ const [emailFocused, setEmailFocused] = useState(false);
       </Modal>
 
       <Modal isOpen={activeModal === "personPricing"} onClose={closeModal}>
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-4">
-          <div className="w-full max-w-[1100px] h-[80vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
+          <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex flex-col items-center justify-center text-center p-10">
+            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -2075,10 +2360,10 @@ const [emailFocused, setEmailFocused] = useState(false);
         isOpen={activeModal === "organizationPricing"}
         onClose={closeModal}
       >
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-4">
-          <div className="w-full max-w-[1100px] h-[80vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
+          <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex flex-col items-center justify-center text-center p-10">
+            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -2350,6 +2635,7 @@ const [emailFocused, setEmailFocused] = useState(false);
           </div>
         </div>
       </Modal>
+      <Fcopyright />
     </>
   );
 }

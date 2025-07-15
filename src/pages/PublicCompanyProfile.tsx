@@ -23,6 +23,9 @@ import { useToast } from "../components/ui/Toast/ToastProvider";
 import { StarRating } from "../components/ui/Rating";
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
+import userlogo4 from "../assets/userlogo4.webp"
+
+import banner2 from "../assets/banner2.png"
 
 interface Organization {
   organization_name: string;
@@ -49,7 +52,7 @@ export default function PublicCompanyProfile() {
   const [companyDetails, setCompanyDetails] = useState<Organization>();
   const { showToast } = useToast();
   const [activeModal, setActiveModal] = useState<"rating" | null>(null);
-
+ const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const navigate = useNavigate();
 
   const fetchCompanyDetails = async () => {
@@ -243,7 +246,7 @@ export default function PublicCompanyProfile() {
         {/* Header Banner */}
         <div
           className="relative w-full h-[150px] mt-[1px] bg-cover bg-center"
-          style={{ backgroundImage: `url(${companyDetails?.banner_url})` }}
+          style={{ backgroundImage: `url(${companyDetails?.banner_url|| banner2})` }}
         >
           <button
             onClick={() => window.history.back()}
@@ -263,7 +266,7 @@ export default function PublicCompanyProfile() {
           <div className="absolute -top-20 left-1/2 -translate-x-1/2 z-20">
             <div className="w-40 h-40 md:w-52 md:h-52 rounded-full border-8 border-white shadow-lg bg-white overflow-hidden">
               <img
-                src={companyDetails?.profile_url}
+                src={companyDetails?.profile_url|| userlogo4}
                 alt="Logo"
                 className="w-full h-full object-cover"
               />
@@ -602,20 +605,45 @@ export default function PublicCompanyProfile() {
       </div>
 
       <Footer />
+ <Modal isOpen={showLoginPrompt} onClose={() => setShowLoginPrompt(false)}>
+  <div className="text-center space-y-4">
+    <h2 className="text-xl font-semibold text-gray-800">Login Required</h2>
+    <p className="text-sm text-gray-600">
+      To write a review, please log in to your account.
+    </p>
+    <button
+      className="bg-[#7077FE] text-white px-4 py-2 rounded-full"
+      onClick={() => {
+        navigate("/log-in");
+      }}
+    >
+      Go to Login
+    </button>
+    <button
+      className="block mx-auto mt-2 text-xs text-gray-400 underline"
+      onClick={() => setShowLoginPrompt(false)}
+    >
+      Cancel
+    </button>
+  </div>
+</Modal>
+
+
+
 
       <Modal isOpen={activeModal === "rating"} onClose={closeModal}>
-        <div className="text-center p-6 max-w-md">
-          <h2 className="text-4xl font-bold text-purple-500 mb-5">
+  <div className="p-6 max-w-xl w-full mx-auto bg-white rounded-xl">
+    <h2 className="text-3xl font-bold text-center text-purple-600 mb-8">
             Leave a Review
           </h2>
           <form onSubmit={handleSubmit}>
             <div>
               {/* Breakdown Ratings */}
-              <div className="mb-4">
-                <label className="text-[#E57CFF] font-semibold mb-2 block">
-                  Breakdown One:
+<div className="flex items-center justify-between gap-4 mb-4">
+  <label className="w-1/2 text-sm font-medium text-purple-800">
+                   <span className="font-semibold">Mission & Vision:</span>
                 </label>
-                <div className="flex justify-center">
+  <div className="w-1/2 flex justify-start">
                   <StarRating
                     initialRating={breakdowns.one}
                     allowHalfStars={true}
@@ -638,11 +666,11 @@ export default function PublicCompanyProfile() {
                 )}
               </div>
 
-              <div className="mb-4">
-                <label className="text-[#E57CFF] font-semibold mb-2 block">
-                  Breakdown Two:
+<div className="flex items-center justify-between gap-4 mb-4">
+  <label className="w-1/2 text-sm font-medium text-purple-800">
+                  <span className="font-semibold">Team Spirit:</span>
                 </label>
-                <div className="flex justify-center">
+  <div className="w-1/2 flex justify-start">
                   <StarRating
                     initialRating={breakdowns.two}
                     allowHalfStars={true}
@@ -665,11 +693,11 @@ export default function PublicCompanyProfile() {
                 )}
               </div>
 
-              <div className="mb-4">
-                <label className="text-[#E57CFF] font-semibold mb-2 block">
-                  Breakdown Three:
+<div className="flex items-center justify-between gap-4 mb-4">
+  <label className="w-1/2 text-sm font-medium text-purple-800">
+            <span className="font-semibold">Client / Customer / Consumer:</span>
                 </label>
-                <div className="flex justify-center">
+  <div className="w-1/2 flex justify-start">
                   <StarRating
                     initialRating={breakdowns.three}
                     allowHalfStars={true}
@@ -691,11 +719,11 @@ export default function PublicCompanyProfile() {
                   </p>
                 )}
               </div>
-              <div className="mb-4">
-                <label className="text-[#E57CFF] font-semibold mb-2 block">
-                  Breakdown Four:
+<div className="flex items-center justify-between gap-4 mb-4">
+  <label className="w-1/2 text-sm font-medium text-purple-800">
+            <span className="font-semibold">Communities & Charities:</span>
                 </label>
-                <div className="flex justify-center">
+  <div className="w-1/2 flex justify-start">
                   <StarRating
                     initialRating={breakdowns.four}
                     allowHalfStars={true}
@@ -717,11 +745,13 @@ export default function PublicCompanyProfile() {
                   </p>
                 )}
               </div>
-              <div className="mb-4">
-                <label className="text-[#E57CFF] font-semibold mb-2 block">
-                  Breakdown Five:
-                </label>
-                <div className="flex justify-center">
+<div className="flex items-center justify-between gap-4 mb-4">
+  <label className="w-1/2 text-sm font-medium text-purple-800">
+ <span className="font-semibold">
+              Vision & Legacy – Long-Term Contribution:
+            </span>
+              </label>
+  <div className="w-1/2 flex justify-start">
                   <StarRating
                     initialRating={breakdowns.five}
                     allowHalfStars={true}
@@ -743,11 +773,11 @@ export default function PublicCompanyProfile() {
                   </p>
                 )}
               </div>
-              <div className="mb-4">
-                <label className="text-[#E57CFF] font-semibold mb-2 block">
-                  Breakdown Six:
+<div className="flex items-center justify-between gap-4 mb-4">
+  <label className="w-1/2 text-sm font-medium text-purple-800">
+            <span className="font-semibold">Leadership Best Practices:</span>
                 </label>
-                <div className="flex justify-center">
+  <div className="w-1/2 flex justify-start">
                   <StarRating
                     initialRating={breakdowns.six}
                     allowHalfStars={true}
@@ -771,18 +801,19 @@ export default function PublicCompanyProfile() {
               </div>
 
               {/* Review Text */}
-              <div className="mb-4">
+              <div>
                 <label
-                  className="text-[#E57CFF] font-semibold mt-5"
                   htmlFor="review"
+                  className="block text-sm font-semibold text-purple-800 mb-1"
+
                 >
                   Your Review:
                 </label>
                 <textarea
                   id="review"
-                  className={`w-full mt-3 px-4 py-2 border ${
+                  className={`w-full px-4 py-3 rounded-lg border ${
                     errors.reviewText ? "border-red-500" : "border-gray-300"
-                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500`}
+                  } focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm resize-none`}
                   rows={4}
                   placeholder="Share your experience..."
                   value={reviewText}
@@ -800,10 +831,10 @@ export default function PublicCompanyProfile() {
                 )}
               </div>
             </div>
-            <div className="">
+            <div className="text-center pt-4">
               <Button
                 variant="gradient-primary"
-                className="rounded-[100px] cursor-pointer py-3 px-8 transition-colors duration-500 ease-in-out"
+                className="rounded-full py-3 px-8 text-white font-medium shadow-md hover:shadow-lg transition"
                 type="submit"
               >
                 Submit Review
