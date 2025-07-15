@@ -1,5 +1,5 @@
 import {
-  BellIcon,
+  // BellIcon,
   SearchIcon,
   SettingsIcon,
   LogOutIcon,
