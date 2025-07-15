@@ -1219,11 +1219,13 @@ export default function Login() {
 
    <div className="relative w-full h-[250px]">
   <div className="absolute top-1 left-5 z-30 p-0">
-    <img
-      src={cnesslogo}
-      alt="logo"
-      className="w-[150px] h-[150px] object-contain"
-    />
+   <Link to="/">
+                 <img
+                   src={cnesslogo}
+                   alt="logo"
+                   className="w-48 h-48 object-contain"
+                 />
+               </Link>
   </div>
 </div>
 
