@@ -20,7 +20,13 @@ const PrivacyPolicy = () => {
 
       {/* Logo */}
       <div className="fixed top-4 left-4 z-20">
-        <img src={cnesslogo} alt="logo" className="w-48 h-48 object-contain" />
+        <Link to="/">
+                      <img
+                        src={cnesslogo}
+                        alt="logo"
+                        className="w-48 h-48 object-contain"
+                      />
+                    </Link>
       </div>
 
       {/* Terms content overlay */}
