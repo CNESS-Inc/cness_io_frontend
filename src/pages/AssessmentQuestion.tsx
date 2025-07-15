@@ -599,14 +599,14 @@ const AssessmentQuestion: React.FC = () => {
           <div className="bg-white rounded-3xl shadow-base p-4 sm:p-6 lg:p-8 space-y-8">
             {/* Section 1: Describe Your Approach */}
             <div className="space-y-4">
-              <h3 className="text-[12px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
+              <h3 className="text-[14px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
                 {currentSection.checkboxes_question}
               </h3>
               <div className="space-y-3">
                 {currentSection.checkboxes.map((option) => (
                   <label
                     key={option.id}
-                    className="text-[12px] flex items-start gap-3 text-[#222224]"
+                    className="text-[14px] flex items-start gap-3 text-[#222224]"
                   >
                     <input
                       type="checkbox"
@@ -632,20 +632,20 @@ const AssessmentQuestion: React.FC = () => {
 
             {/* Section 2: Purpose Pause */}
             <div className="space-y-6">
-              <h3 className="text-[12px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
+              <h3 className="text-[14px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
                 Purpose Pause
               </h3>
               {currentSection.purposePauseQuestions.map((q, i) => (
                 <div key={i}>
                   <p
-                    className="text-[12px] flex items-start gap-3 text-[#222224]
+                    className="text-[14px] flex items-start gap-3 text-[#222224]
 "
                   >
                     {q.question}
                   </p>
                   <textarea
                     placeholder="Enter Text here"
-                    className="w-full p-2 sm:p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full p-2 sm:p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 mt-3"
                     rows={3}
                     value={formData.purposePauseAnswers[i]?.answer || ""}
                     onChange={(e) =>
@@ -670,7 +670,7 @@ const AssessmentQuestion: React.FC = () => {
                 <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
               </label>
               {/* Text next to toggle */}
-              <span className="text-[12px] flex items-start gap-3 text-[#222224]">
+              <span className="text-[14px] flex items-start gap-3 text-[#222224]">
                 Do you have best practices to highlight?
               </span>
             </div>
@@ -686,17 +686,17 @@ const AssessmentQuestion: React.FC = () => {
 
             {/* Section 4: Suggested Uploads */}
             <div className="space-y-6">
-              <h3 className="text-[12px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
+              <h3 className="text-[14px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
                 Purpose Pause
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 {currentSection.suggestedUploads.map((upload, i) => (
                   <div key={i}>
-                    <label className="text-[12px] flex items-start gap-3 text-[#222224] mb-4">
+                    <label className="text-[14px] flex items-start gap-3 text-[#222224] mb-2">
                       {upload.label}
                     </label>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 mt-4">
                       <input
                         type="file"
                         accept={upload.acceptedTypes}
@@ -722,7 +722,7 @@ const AssessmentQuestion: React.FC = () => {
                 ))}
               </div>
               <div>
-                <label className="text-[12px] flex items-start gap-3 text-[#222224] mb-1">
+                <label className="text-[14px] flex items-start gap-3 text-[#222224] mb-1">
                   Link for Reference
                 </label>
                 <input
@@ -752,7 +752,7 @@ const AssessmentQuestion: React.FC = () => {
     flex items-center justify-center
     gap-[7.09px]
     text-white
-    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-[100%] text-center
+    font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center
     disabled:opacity-60
     transition-colors duration-200 cursor-pointer
   "
@@ -777,7 +777,7 @@ const AssessmentQuestion: React.FC = () => {
               border  
                               ${
                                 prevVariant === "white-disabled"
-                                  ? "bg-white font-['Plus Jakarta Sans'] font-medium text-[12px] leading-[100%] text-center text-gray-400 border border-gray-200 shadow-md cursor-pointer"
+                                  ? "bg-white font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center text-gray-400 border border-gray-200 shadow-md cursor-pointer"
                                   : prevVariant === "blue"
                                   ? "bg-[#EEF0FF] text-[#7077FE] cursor-pointer"
                                   : "bg-[#EEF0FF] text-[#7077FE] hover:bg-[#DDE1FF] shadow-md cursor-pointer"
@@ -806,11 +806,12 @@ const AssessmentQuestion: React.FC = () => {
                 >
                   <span
                     className="
-    font-['Plus Jakarta Sans']
-    font-medium
-    text-[12px]
-    leading-[100%]
-    text-center
+   font-['Plus Jakarta Sans']
+      font-medium
+      text-[14px]
+      leading-[100%]
+      text-center
+      whitespace-nowrap
   "
                   >
                     Save & Next
@@ -843,11 +844,22 @@ const AssessmentQuestion: React.FC = () => {
                     within 5–7 business days. You won’t be able to make changes
                     after submission.
                   </p>
-                  <div className="flex justify-center">
-                    <Button onClick={handleconfirm}>
-                      Submit For Assessment
-                    </Button>
-                  </div>
+              <div className="flex justify-center">
+  <Button
+    onClick={handleconfirm}
+    className="
+      w-[162px] h-[45px]
+      rounded-[100px]
+      px-[24px] py-[16px]
+      flex items-center justify-center
+      gap-[10px]
+      text-white
+      whitespace-nowrap
+    "
+  >
+    Submit For Assessment
+  </Button>
+</div>
                 </div>
               </>
             )}

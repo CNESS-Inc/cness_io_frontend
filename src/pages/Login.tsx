@@ -1809,6 +1809,9 @@ export default function Login() {
                           setOrganizationErrors({});
                         }}
                         variant="white-outline"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center"
                       >
                         Back
                       </Button>
@@ -1817,6 +1820,9 @@ export default function Login() {
                         type="button"
                         onClick={closeModal}
                         variant="white-outline"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center"
                       >
                         Cancel
                       </Button>
@@ -1824,8 +1830,10 @@ export default function Login() {
                       <Button
                         type="submit"
                         variant="gradient-primary"
-                        className="rounded-full py-3 px-8 transition-all"
-                        disabled={isSubmitting}
+className="w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center"
+                            disabled={isSubmitting}
                       >
                         {isSubmitting ? "Submitting..." : "Submit"}
                       </Button>
@@ -1918,7 +1926,7 @@ export default function Login() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2]  w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -1938,9 +1946,10 @@ export default function Login() {
                 </div>
 
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                  Let's Get to Know You Better
+                  Let's Get to <br></br>
+                  Know You Better
                 </h2>
-                <p className="text-gray-900 text-sm">
+                <p className="text-gray-700 text-sm">
                   This information helps us understand your conscious impact
                   better.
                 </p>
@@ -1964,14 +1973,21 @@ export default function Login() {
                       <input
                         type="text"
                         name="first_name"
+                         placeholder="Enter your first name"
                         value={personForm.first_name}
                         onChange={handlePersonFormChange}
-                        className={`w-full px-3 py-2 border ${
+                        className={`w-[440px] h-[41px]
+    rounded-[12px]
+    border-[0.82px]
+    p-[12px] mt-2 ${
                           personErrors.first_name
                             ? "border-red-500"
                             : "border-gray-300"
-                        } rounded-md`}
-                        placeholder="Enter your first name"
+                        } rounded-md`
+                        
+                      }
+                       
+                        
                       />
                       {personErrors.first_name && (
                         <p className="mt-1 text-sm text-red-600">
@@ -1990,7 +2006,10 @@ export default function Login() {
                         name="last_name"
                         value={personForm.last_name}
                         onChange={handlePersonFormChange}
-                        className={`w-full px-3 py-2 border ${
+                        className={`w-[440px] h-[41px]
+    rounded-[12px]
+    border-[0.82px]
+    p-[12px] mt-2 ${
                           personErrors.last_name
                             ? "border-red-500"
                             : "border-gray-300"
@@ -2005,10 +2024,11 @@ export default function Login() {
                     </div>
 
                     <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                      <label className="block openSans text-base font-medium text-gray-800 mb-1 ">
                         Interests
                         <span className="text-red-500">*</span>
                       </label>
+                      <div className="mt-4">
                       <Select
                         isMulti
                         options={interest?.map((interestItem: Interest) => ({
@@ -2041,6 +2061,7 @@ export default function Login() {
                           menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                         }}
                       />
+                      </div>
                       {personErrors.interests && (
                         <p className="mt-1 text-sm text-red-600">
                           {personErrors.interests}
@@ -2052,7 +2073,9 @@ export default function Login() {
                       <label className="block openSans text-base font-medium text-gray-800 mb-1">
                         Professions
                         <span className="text-red-500">*</span>
+
                       </label>
+                            <div className="mt-4">
                       <Select
                         isMulti
                         options={[
@@ -2089,13 +2112,14 @@ export default function Login() {
                           menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                         }}
                       />
+                   </div>
                       {personErrors.professions && (
                         <p className="mt-1 text-sm text-red-600">
                           {personErrors.professions}
                         </p>
                       )}
-                    </div>
-
+                 
+</div>
                     {/* Add this after the Select component */}
                     {personForm.professions?.includes("other") && (
                       <div className="mb-4 mt-2">
@@ -2132,7 +2156,11 @@ export default function Login() {
 
                         return (
                           <div key={question.id} className="mb-4">
-                            <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                            
+                            <label 
+                            style={{ lineHeight: '1.8' }}
+  className="block openSans text-base font-medium text-gray-800 mb-3 mt-4"
+                           >
                               {question.question}
                             </label>
 
@@ -2154,7 +2182,7 @@ export default function Login() {
                                     />
                                     <label
                                       htmlFor={`question_${question.id}_${option.id}`}
-                                      className="ml-3 block openSans text-base text-gray-700"
+                                      className="ml-3 block openSans text-base text-gray-700 "
                                     >
                                       {option.option}
                                     </label>
@@ -2199,6 +2227,9 @@ export default function Login() {
                           setPersonErrors({});
                         }}
                         variant="white-outline"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center"
                       >
                         Back
                       </Button>
@@ -2207,6 +2238,9 @@ export default function Login() {
                         type="button"
                         onClick={closeModal}
                         variant="white-outline"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center"
                       >
                         Cancel
                       </Button>
@@ -2214,8 +2248,10 @@ export default function Login() {
                       <Button
                         type="submit"
                         variant="gradient-primary"
-                        className="rounded-full py-3 px-8 transition-all"
-                        disabled={isSubmitting}
+className="w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center"
+                            disabled={isSubmitting}
                       >
                         {isSubmitting ? "Submitting..." : "Submit"}
                       </Button>
@@ -2228,6 +2264,9 @@ export default function Login() {
                         type="button"
                         onClick={closeModal}
                         variant="white-outline"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center"
                       >
                         Cancel
                       </Button>
@@ -2236,8 +2275,9 @@ export default function Login() {
                         type="button"
                         onClick={handleNextPersonClick}
                         variant="gradient-primary"
-                        className="rounded-full py-3 px-8 transition-all"
-                      >
+className="w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center"                      >
                         Next
                       </Button>
                     </>
@@ -2273,9 +2313,10 @@ export default function Login() {
                 </div>
 
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                  Let's Get to Know You Better
+                  Let's Get to <br></br>
+                  Know You Better
                 </h2>
-                <p className="text-gray-900 text-sm">
+                <p className="text-gray-700 text-sm">
                   This information helps us understand your conscious impact
                   better.
                 </p>
