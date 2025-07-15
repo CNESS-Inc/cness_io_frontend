@@ -358,7 +358,22 @@ body [id^="zf_button_"] {
   border-radius: 12px;
   background: linear-gradient(to right, rgba(184,166,248,0.5), rgba(223,214,255,0.5));
 }
-
+h2 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 32px;
+  color: #281D1B; /* Gray-800 */
+}
+label {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 14px;
+  line-height: 100%;
+  color: #222224; /* Gray-800 */
+  margin: 0.5rem 0;
+}
 
 @media (max-width: 991px) {
   .your-dashboard-class, .container, .section, .card {
