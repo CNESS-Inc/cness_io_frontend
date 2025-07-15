@@ -29,6 +29,10 @@ import QRCodeGenerator from "../../ui/QRCodeGenerator";
 import { useToast } from "../../ui/Toast/ToastProvider";
 import badgeicon from "../../../assets/badgeicon.svg";
 import badgecness from "../../../assets/Badgecness.svg";
+import indv_aspiring from "../../../assets/indv_aspiring.svg"
+import indv_inspried from "../../../assets/indv_inspired.svg";
+import indv_leader from "../../../assets/indv_leader.svg";
+
 
 
 type PersPricingPlan = {
@@ -574,6 +578,21 @@ const openRetakeAssesmentModal = async () => {
     }
   };
 
+  const getBadgeImage = (level: string) => {
+  if (!level) return null;
+
+  switch (level.toLowerCase()) {
+    case "aspiring":
+      return indv_aspiring;
+    case "inspiring":
+      return indv_inspried;
+    case "leader":
+      return indv_leader;
+    default:
+      return null;
+  }
+};
+
   return (
     <>
       <section className="w-full px-2 sm:px-4 lg:px-0.5 pt-4 pb-10">
@@ -903,7 +922,7 @@ const openRetakeAssesmentModal = async () => {
                         {/* Custom-styled text overlaid manually */}
                         <div className="absolute inset-0 flex items-center justify-center">
                           <span className="font-['open sans'] font-bold text-[12px] sm:text-[16px] text-[#242731]">
-                            {user?.cis_score}%
+                            {user?.cis_score}
                           </span>
                         </div>
 
@@ -970,10 +989,10 @@ const openRetakeAssesmentModal = async () => {
                     <div className="flex flex-col md:flex-row items-center justify-around gap-2">
                       <div className="flex flex-col md:flex-column items-center gap-2 md:gap-[20px]">
                         <img
-                          className="w-24"
-                          alt="Badge vector"
-                          src={badgecness}
-                        />
+    className="w-[136.22px] h-[74.58px]"
+    alt={`${user?.level} Badge`}
+    src={getBadgeImage(user?.level) || badgecness}
+  />
                         <div className="w-full md:w-[118.96px]">
                           <p className="w-full py-1 bg-[#9747ff1a] rounded-[8px] text-center text-[#9747FF] font-medium text-sm">
                             {user?.level}

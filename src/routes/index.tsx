@@ -47,6 +47,7 @@ import SingleBP from "../pages/SingleBP";
 import TermsAndConditions  from "../pages/TermsAndConditions";
 import PrivacyPolicy from "../pages/Privacypolicy";
 
+
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
 const DirectoryPage = lazy(() => import("../pages/DirectoryPage"));
@@ -123,10 +124,13 @@ export const router = createBrowserRouter([
             path: "assesment",
             element: <AssessmentQuestion />,
           },
-          {
-            path: "setting",
-            element: <Setting />,
-          },
+         {
+  path: "setting",
+      element:
+        import.meta.env.VITE_ENV_STAGE === "test"
+          ? <Setting />
+          : <ComingSoon />,
+    },
           {
             path: "upload-proof",
             element: <UploadProof />,
@@ -157,7 +161,10 @@ export const router = createBrowserRouter([
           },
           {
             path: "search_listing",
-            element: <SearchListing />,
+             element:
+        import.meta.env.VITE_ENV_STAGE === "test"
+          ? <SearchListing />
+          : <ComingSoon />,
           },
           {
             path: "digital_products",
@@ -187,7 +194,10 @@ export const router = createBrowserRouter([
           },
           {
             path: "EditPublicListing",
-            element: <EditPublicListing />,
+             element:
+        import.meta.env.VITE_ENV_STAGE === "test"
+          ? <EditPublicListing />
+          : <ComingSoon />,
           },
 
           {
@@ -261,7 +271,12 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <DirectoryPage />,
+        element:
+        import.meta.env.VITE_ENV_STAGE === "test"
+          ? <DirectoryPage />
+          : <ComingSoon />,
+
+        
       },
 
       {
@@ -294,7 +309,11 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Social />,
+element:
+        import.meta.env.VITE_ENV_STAGE === "test"
+          ? <Social />
+          : <ComingSoon />,
+
       },
 
       {

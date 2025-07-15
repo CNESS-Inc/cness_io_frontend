@@ -31,7 +31,9 @@ import { FacebookIcon, LinkedinIcon, TwitterIcon } from "react-share";
 import { Instagram,Briefcase } from "lucide-react";
 import userlogo4 from "../assets/userlogo4.webp";
 import banner2 from  "../assets/banner2.png";
-
+import indv_aspiring from "../assets/indv_aspiring.svg";
+import indv_inspried from "../assets/indv_inspired.svg";
+import indv_leader from "../assets/indv_leader.svg";
 
 export default function UserProfileView() {
   const { id } = useParams();
@@ -361,10 +363,18 @@ export default function UserProfileView() {
               <div className="flex items-center justify-center gap-4 text-center">
                 <p className="text-sm font-medium">CNESS Badge:</p>
                 <img
-                  src={inspiredbadge}
-                  alt="CNESS Badge"
-                  className="w-[120px] md:w-[150px] object-contain"
-                />
+  src={
+    userDetails?.badge?.level === "Aspiring"
+      ? indv_aspiring
+      : userDetails?.badge?.level === "Inspiring"
+      ? indv_inspried
+      : userDetails?.badge?.level === "Leader"
+      ? indv_leader
+      : inspiredbadge // fallback if no level
+  }
+  alt={`${userDetails?.badge?.level || "CNESS"} Badge`}
+  className="w-[159px] md:w-[180px] h-auto object-contain mt-[-10px]"
+/>
               </div>
             </div>
           </div>

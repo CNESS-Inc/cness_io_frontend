@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect  } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import DashboardHeader from "./DashboardHeader";
 import DashboardNavbar from "./DashboardNavbar";
@@ -7,13 +7,19 @@ import hambur from "../../assets/hambur.png";
 
 const DashboardLayout = () => {
   const location = useLocation();
-  const [isMobileNavOpen, setIsMobileNavOpen] = useState(true);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [selectedDomain, setSelectedDomain] = useState<string>("");
 const [sort, setSort] = useState<"az" | "za">("az");
 
   const toggleMobileNav = () => {
     setIsMobileNavOpen((prev) => !prev);
   };
+
+  useEffect(() => {
+    if (window.innerWidth >= 768) {
+      setIsMobileNavOpen(true);
+    }
+  }, []);
 
   const isDashboardTechPage = location.pathname === "/DashboardDirectory/dashboardtechnology";
 
