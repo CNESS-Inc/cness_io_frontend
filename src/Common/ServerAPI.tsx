@@ -721,24 +721,24 @@ export const executeAPI = async <T = any,>(
           : { "Content-Type": "application/json" }),
           Authorization: `Bearer ${token || ""}`,
         },
-        ...(API.BaseUrl.trim().toLowerCase().startsWith("https://") && { withCredentials: false })
+        ...(API.BaseUrl.trim().toLowerCase().startsWith("https://") && { withCredentials: true })
       });
 
     const access_token = response.headers['access_token'];
 
     if (access_token != 'not-provide') {
       console.log('access token response check sets', true)
-      // localStorage.setItem('jwt', access_token)
+      localStorage.setItem('jwt', access_token)
     }
 
     return response.data;
   } catch (error: any) {
     // console.log("🚀 ~ error:", error)
 
-    // if (error.response.data.error.statusCode == 401) {
-    //   localStorage.clear();
-    //   window.location.href = '/';
-    // }
+    if (error.response.data.error.statusCode == 401) {
+      localStorage.clear();
+      window.location.href = '/';
+    }
 
     throw error;
 
