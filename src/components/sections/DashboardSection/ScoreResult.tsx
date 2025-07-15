@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 // import frameim from "../../../assets/Frame-im.png";
 // import frameqa from "../../../assets/Frame-qa.png";
 // import framequ from "../../../assets/Frame-qu.png";
-import cisscore from "../../../assets/cis score.png";
+import cisscore from "../../../assets/cisscore.svg";
 import framescr from "../../../assets/Frame-scr.png";
 import html2pdf from "html2pdf.js";
 import "react-circular-progressbar/dist/styles.css";
@@ -22,6 +22,11 @@ import {
   FaTwitter,
   FaWhatsapp,
 } from "react-icons/fa";
+import badgeicon from "../../../assets/badgeicon.svg";
+import indv_aspiring from "../../../assets/indv_aspiring.svg"
+import indv_inspried from "../../../assets/indv_inspired.svg";
+import indv_leader from "../../../assets/indv_leader.svg";
+
 // import { BiShare } from "react-icons/bi";
 
 // const tabs = [
@@ -424,10 +429,10 @@ const ScoreResult = () => {
     <>
       {scoreData ? (
         <div className="w-full overflow-x-hidden">
-          <div className="flex flex-col w-full min-h-screen bg-[#f9f9f9] pt-1 pb-10 px-2 sm:px-3 md:px-4 lg:pl-6 lg:pr-4 xl:px-6 font-[Poppins] overflow-x-hidden">
+<div className="flex flex-col w-full min-h-screen bg-[#f9f9f9] pt-1 pb-10 px-2 sm:px-3 md:px-4 lg:pl-6 lg:pr-4 xl:px-6 font-[Poppins] overflow-x-hidden max-w-full lg:max-w-none">
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <p className="text-[24px] font-semibold text-[#000]">
+<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+              <p className="text-[20px] sm:text-[22px] md:text-[24px] font-semibold text-[#000]">
                 Score & Results
               </p>
                 {scoreData.cis_result.length > 0 ? (
@@ -556,7 +561,7 @@ const ScoreResult = () => {
             </div>
 
             {/* Summary Cards */}
-            <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 mb-2">
+<div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-2">
               {/* Overall CIS Score Card */}
               <div
                 className="min-h-[208px] p-4 rounded-[12px] border border-[#eceef2] shadow-sm sm:col-span-2 lg:col-span-2"
@@ -566,7 +571,8 @@ const ScoreResult = () => {
                 }}
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-6 h-6 bg-[#e3d1f6] rounded-full flex items-center justify-center">
+                  <div className="bg-[#E8CDFD] w-7 h-7 flex items-center justify-center rounded-full p-2">
+
                     <img
                       src={cisscore}
                       alt="Lightning Icon"
@@ -635,10 +641,13 @@ const ScoreResult = () => {
                 {/* Original badge content */}
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-[#fff3c4] rounded-full flex items-center justify-center">
-                      <span className="text-xs font-bold text-[#FFCC00]">
-                        ⚡
-                      </span>
+<div className="bg-[#FFCC0033] w-8 h-8 flex items-center justify-center rounded-full p-2">
+                    
+  <img
+    className="w-6 h-6"
+    alt="Badge icon"
+    src={badgeicon}
+  />
                     </div>
                     <span className="text-[16px] font-medium text-[#222224]">
                       Badge
@@ -653,14 +662,21 @@ const ScoreResult = () => {
 
                 <div className="flex justify-center items-center h-full">
                   {scoreData?.badge?.level ? (
-                    <>
-                      <img
-                        src="/Inspired _ Badge.png"
-                        alt="CNESS Inspired"
-                        className="h-[87px] object-contain"
-                      />
-                    </>
-                  ) : (
+                <div className="flex justify-center items-center py-[17px] -mt-[50px]">
+  <img
+    src={
+      scoreData.badge.level === "Aspiring"
+        ? indv_aspiring
+        : scoreData.badge.level === "Inspired"
+        ? indv_inspried
+        : indv_leader
+    }
+    alt={`${scoreData.badge.level} Badge`}
+    className="h-[87px] w-auto object-contain"
+  />
+</div>
+   
+  ) : (
                     <div className="h-[87px]"></div>
                   )}
                 </div>
@@ -693,7 +709,7 @@ const ScoreResult = () => {
 
                 {/* Original content */}
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="w-6 h-6 bg-[#e2f2ff] rounded-full flex items-center justify-center">
+                  <div className="w-7 h-7 bg-[#e2f2ff] rounded-full flex items-center justify-center">
                     <img
                       src="../public/Vector.png"
                       alt="icon"
@@ -902,16 +918,16 @@ const ScoreResult = () => {
             <div className="w-full px-0 md:px-0">
               {/* Section Wrapper */}
               <div className="bg-[#F8F3FF] rounded-[12px] border border-[#ECEEF2] p-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4 lg:gap-6">
                   {scoreData.cis_result.map((section: any) => {
                     const scoreMeta = getScoreMeta(section.weight);
                     return (
                       <div
                         key={section.section_id}
-                        className="bg-white rounded-[12px] p-4 w-full max-w-[258px] h-[303px] flex flex-col justify-between text-center border border-[#ECEEF2]"
+  className="bg-white rounded-[12px] p-3 sm:p-4 w-full lg:max-w-[258px] min-h-[303px] flex flex-col justify-between text-center border border-[#ECEEF2]"
                       >
                         <div>
-                          <h3 className="text-[14px] font-semibold text-gray-800">
+<h3 className="text-[13px] sm:text-[14px] font-semibold text-gray-800">
                             {section.section_name}
                           </h3>
                           <hr className="border-t border-gray-200 my-2" />

@@ -306,7 +306,7 @@ const DashboardNavbar = ({
           </button>
 
           {isProfileOpen && (
-            <div className="flex flex-col gap-[2px] mt-[2px] ml-[52px]">
+            <div className="flex flex-col gap-1 mt-[2px] pl-8">
               <NavLink
                 to="/dashboard/user-profile"
 
@@ -355,7 +355,7 @@ const DashboardNavbar = ({
           </button>
 
           {isDropdownOpen && (
-            <div className="flex flex-col gap-1 mt-1 ml-[36px]">
+            <div className="flex flex-col gap-1 mt-1 pl-8">
               {item.children.map((child: any, idx: number) => (
                 <NavLink
                   key={idx}
