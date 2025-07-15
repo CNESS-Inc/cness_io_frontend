@@ -940,8 +940,8 @@ const UserProfilePage = () => {
                                   border
                                   ${
                                     selected
-                                      ? "text-purple-600 bg-[#F8F3FF] shadow-md border-[#ECEEF2]"
-                                      : "text-gray-500 bg-white border-[#ECEEF2] border-b-0   hover:text-purple-500"
+                                      ? "text-purple-600 bg-[#F8F3FF] shadow-md border-[#ECEEF2] transform"
+                                      : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
                                   }`
                                 }
                               >
@@ -960,7 +960,7 @@ const UserProfilePage = () => {
                               handleBasicInfoSubmit
                             )}
                           >
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4 border border-gray-200 rounded-lg rounded-tl-none rounded-tr-none relative">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4 border border-[#ECEEF2] rounded-lg rounded-tl-none rounded-tr-none relative">
                               {/* First Name */}
                               <div>
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1380,7 +1380,7 @@ const UserProfilePage = () => {
                               handleContactInfoSubmit
                             )}
                           >
-                            <div className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4 border border-gray-200 rounded-lg rounded-tl-none rounded-tr-none relative">
                               {/* Phone Number */}
                               <div>
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1656,7 +1656,7 @@ const UserProfilePage = () => {
                               handleSocialLinksSubmit
                             )}
                           >
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4 border border-gray-200 rounded-lg relative">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4 border border-gray-200 rounded-lg rounded-tl-none rounded-tr-none relative">
                               {/* Facebook */}
                               <div>
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1745,7 +1745,7 @@ const UserProfilePage = () => {
                               ?.map((_education, index) => (
                                 <div
                                   key={index}
-                                  className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative"
+                                  className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4 border border-gray-200 rounded-lg rounded-tl-none rounded-tr-none relative"
                                 >
                                   {/* Add remove button */}
                                   {index > 0 && (
@@ -1991,7 +1991,7 @@ const UserProfilePage = () => {
                               ?.map((_experience, index) => (
                                 <div
                                   key={index}
-                                  className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative"
+                                  className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4 border border-gray-200 rounded-lg rounded-tl-none rounded-tr-none relative"
                                 >
                                   {/* Add remove button */}
                                   {index > 0 && (
@@ -2237,7 +2237,7 @@ const UserProfilePage = () => {
                               handlePublicProfileSubmit
                             )}
                           >
-                            <div className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4 border border-gray-200 rounded-lg rounded-tl-none rounded-tr-none relative">
                               {/* Title */}
                               <div className="md:col-span-2">
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
