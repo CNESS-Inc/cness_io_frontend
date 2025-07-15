@@ -31,14 +31,13 @@ const tabNames = [
   "Public Profile Fields",
 ];
 
-
 const tabMap = {
   basic: 0,
   contact: 1,
   social: 2,
   education: 3,
   work: 4,
-  publicProfile: 5
+  publicProfile: 5,
 };
 
 const UserProfilePage = () => {
@@ -60,18 +59,16 @@ const UserProfilePage = () => {
   const [serviceInput, setServiceInput] = useState("");
   const public_organization = localStorage.getItem("person_organization");
   const is_disqualify = localStorage.getItem("is_disqualify");
-const [searchParams] = useSearchParams();
-const tabParam = searchParams.get("tab");
+  const [searchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab");
 
   const { showToast } = useToast();
 
-
-useEffect(() => {
-  if (tabParam && Object.keys(tabMap).includes(tabParam)) {
-    setSelectedIndex(tabMap[tabParam as keyof typeof tabMap]);
-  }
-
-}, [tabParam]);
+  useEffect(() => {
+    if (tabParam && Object.keys(tabMap).includes(tabParam)) {
+      setSelectedIndex(tabMap[tabParam as keyof typeof tabMap]);
+    }
+  }, [tabParam]);
 
   // Separate form handlers for each tab
   const basicInfoForm = useForm({
@@ -824,9 +821,18 @@ useEffect(() => {
               <div className="bg-white rounded-xl shadow overflow-hidden">
                 <div className="relative h-[300px] bg-gray-100">
                   <img
-                    src={banner || "/default-banner.jpg"}
+                    src={
+                      banner && banner !== "http://localhost:5026/file/"
+                        ? banner
+                        : "/banner.jpg"
+                    }
                     alt="Banner"
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback if the image fails to load
+                      const target = e.target as HTMLImageElement;
+                      target.src = "/banner.jpg";
+                    }}
                   />
                   <div className="absolute top-3 right-3 flex gap-2 z-10">
                     <label className="cursor-pointer bg-white p-2 rounded-full shadow hover:bg-gray-200">
@@ -853,10 +859,15 @@ useEffect(() => {
                   <div className="absolute -bottom-0 left-6 sm:left-10 z-20 group">
                     <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100">
                       <img
-                        src={logoPreview || "/default-logo.jpg"}
-                        alt="Profile"
-                        className="object-cover w-full h-full"
-                      />
+  src={logoPreview && logoPreview !== "http://localhost:5026/file/" ? logoPreview : "/profile.png"}
+  alt="Profile"
+  className="object-cover w-full h-full"
+  onError={(e) => {
+    // Fallback if the image fails to load
+    const target = e.target as HTMLImageElement;
+    target.src = "/profile.png";
+  }}
+/>
                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <div className="flex gap-2">
                           <label
