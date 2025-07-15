@@ -1,5 +1,5 @@
 import {
-  BellIcon,
+  // BellIcon,
   SearchIcon,
   SettingsIcon,
   LogOutIcon,
@@ -108,7 +108,7 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
 
       {/* Right side - Icons and User Profile */}
       <div className="flex items-center gap-3">
-        <div
+        {/* <div
           onClick={() => navigate('/dashboard/notification')}
           className="flex w-[41px] h-[41px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
         >
@@ -121,7 +121,7 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
             </div>
           </div>
 
-        </div>
+        </div> */}
 
         <div
           onClick={() => navigate('/dashboard/setting')}
