@@ -10,7 +10,7 @@ import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { EyeIcon } from "lucide-react";
 import Modal from "../components/ui/Modal";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import missionicon from "../assets/missionicon.svg"
+import missionicon from "../assets/missionicon.svg";
 
 interface Section {
   id: string;
@@ -80,12 +80,11 @@ const AssessmentQuestion: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { showToast } = useToast();
-// const [errors, setErrors] = useState<FormErrors>({});
+  // const [errors, setErrors] = useState<FormErrors>({});
 
-
-// interface FormErrors {
-//   referenceLink?: string;
-// }
+  // interface FormErrors {
+  //   referenceLink?: string;
+  // }
   const closeModal = () => {
     setActiveModal(null);
   };
@@ -392,7 +391,32 @@ const AssessmentQuestion: React.FC = () => {
   }
 
   if (!currentSection || !formData) {
-    return <div className="p-6 text-center">No section data available</div>;
+    return  <div className="mt-0 shadow overflow-hidden p-8 text-center">
+          <div className="py-12">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+              Assessment Access Restricted
+            </h2>
+            <p className="text-gray-600 mb-6">
+              You can access your assessment after completing your payment.
+            </p>
+            <div className="flex justify-center">
+              <svg
+                className="w-24 h-24 text-purple-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>;
   }
 
   const completed_step = localStorage.getItem("completed_step");
@@ -412,34 +436,29 @@ const AssessmentQuestion: React.FC = () => {
   //   prevVariant = "white-disabled"; // Last page (or if no prev)
   // }
 
+  const isDisqualified = localStorage.getItem("is_disqualify") === "true";
+
   return (
     <>
       <div className="w-full px-2 sm:px-6 lg:px-2 mt-6">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-3">
-
             <div className="w-6 h-6 ">
-              <img
-                src={missionicon} 
-                alt="Mission Icon"
-                className="w-6 h-6"
-              />{" "}
+              <img src={missionicon} alt="Mission Icon" className="w-6 h-6" />{" "}
             </div>
-<h1 className="text-[16px] font-bold font-poppins text-gray-800">
+            <h1 className="text-[16px] font-bold font-poppins text-gray-800">
               {currentSection.name}
             </h1>
           </div>
-
-          
         </div>
-      </div> 
+      </div>
 
-      {completed_step === "2" ? (
+      {completed_step === "2" && !isDisqualified ? (
         <div className="w-full px-4 sm:px-6 lg:px-2 pt-4 pb-10 space-y-6">
           <div className="bg-white rounded-3xl shadow-base p-4 sm:p-6 lg:p-8 space-y-8">
             {/* Section 1: Describe Your Approach */}
             <div className="space-y-4">
-<h3 className="text-[12px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
+              <h3 className="text-[12px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
                 {currentSection.checkboxes_question}
               </h3>
               <div className="space-y-3">
@@ -472,13 +491,15 @@ const AssessmentQuestion: React.FC = () => {
 
             {/* Section 2: Purpose Pause */}
             <div className="space-y-6">
-<h3 className="text-[12px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
+              <h3 className="text-[12px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
                 Purpose Pause
               </h3>
               {currentSection.purposePauseQuestions.map((q, i) => (
                 <div key={i}>
-                  <p className="text-[12px] flex items-start gap-3 text-[#222224]
-">
+                  <p
+                    className="text-[12px] flex items-start gap-3 text-[#222224]
+"
+                  >
                     {q.question}
                   </p>
                   <textarea
@@ -524,7 +545,7 @@ const AssessmentQuestion: React.FC = () => {
 
             {/* Section 4: Suggested Uploads */}
             <div className="space-y-6">
-<h3 className="text-[12px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
+              <h3 className="text-[12px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
                 Purpose Pause
               </h3>
 
@@ -594,10 +615,10 @@ const AssessmentQuestion: React.FC = () => {
     disabled:opacity-60
     transition-colors duration-200 cursor-pointer
   "
-  style={{
-    opacity: 1,
-    transform: 'rotate(0deg)'
-  }}
+                style={{
+                  opacity: 1,
+                  transform: "rotate(0deg)",
+                }}
               >
                 {isSubmitting ? "Saving..." : "Save"}
               </Button>
@@ -625,9 +646,9 @@ const AssessmentQuestion: React.FC = () => {
                 </button>
 
                 <Button
-  onClick={handleNext}
-  disabled={!currentSection.next_section_id}
-  className="
+                  onClick={handleNext}
+                  disabled={!currentSection.next_section_id}
+                  className="
     w-[117px] h-[31px]
     rounded-[70.94px]
     px-[24px] py-[8px]
@@ -637,21 +658,23 @@ const AssessmentQuestion: React.FC = () => {
     transition-colors duration-200
     text-white
   "
-  style={{
-    opacity: 1,
-    transform: 'rotate(0deg)'
-  }}
->
-  <span className="
+                  style={{
+                    opacity: 1,
+                    transform: "rotate(0deg)",
+                  }}
+                >
+                  <span
+                    className="
     font-['Plus Jakarta Sans']
     font-medium
     text-[12px]
     leading-[100%]
     text-center
-  ">
-    Save & Next
-  </span>
-</Button>
+  "
+                  >
+                    Save & Next
+                  </span>
+                </Button>
               </div>
             </div>
             {/* )} */}
