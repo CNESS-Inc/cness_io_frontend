@@ -1260,7 +1260,7 @@ export default function Login() {
                   <button
                     type="button"
                     onClick={() => login()}
-          className="flex items-center gap-2 border border-gray-300 rounded-3xl px-12 py-3 bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex items-center gap-2 border border-gray-300 rounded-3xl px-12 py-3 bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 hover:cursor-pointer"
                   >
                     <img
                       src="/google-icon-logo.svg"
