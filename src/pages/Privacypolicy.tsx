@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import cnesslogo from "../assets/cnesslogo.png";
 import SignupAnimation from "../components/ui/SignupAnimation";
+import { Link } from "react-router-dom";
 
 const PrivacyPolicy = () => {
   const [content, setContent] = useState('');
