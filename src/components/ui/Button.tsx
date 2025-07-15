@@ -98,9 +98,18 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             Loading...
           </span>
         ) : (
-          <div className="relative jakarta flex items-center gap-2">
+            <div
+            className="relative flex items-center gap-2"
+            style={{
+              fontFamily: "Poppins",
+              fontWeight: 500,
+              fontStyle: "Medium",
+              fontSize: "15px",
+              lineHeight: "20px",
+            }}
+            >
             {children}
-          </div>
+            </div>
         )}
       </button>
     );
