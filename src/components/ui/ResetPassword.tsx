@@ -5,6 +5,7 @@ import { ForgotPasswordDetailsSubmit } from "../../Common/ServerAPI";
 import SignupAnimation from "../ui/SignupAnimation";
 import Footer from "../../layout/Footer/Footer";
 import cnesslogo from "../../assets/cnesslogo.png";
+import { Link } from "react-router-dom";
 
 
 
@@ -66,11 +67,13 @@ const ResetPassword = () => {
 
   <div className="relative w-full h-[250px]">
   <div className="absolute top-1 left-5 z-30 p-0">
-    <img
-      src={cnesslogo}
-      alt="logo"
-      className="w-[150px] h-[150px] object-contain"
-    />
+    <Link to="/">
+      <img
+        src={cnesslogo}
+        alt="logo"
+        className="w-48 h-48 object-contain"
+      />
+    </Link>
   </div>
 </div>
 
