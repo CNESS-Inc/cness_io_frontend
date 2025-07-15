@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { GetPaymentVerify } from "../../Common/ServerAPI";
 import Button from "./Button";
+import { useToast } from "./Toast/ToastProvider";
 
 interface PaymentVerifyData {
   session_id: string;
@@ -11,6 +12,7 @@ const PaymentVerify = () => {
   const location = useLocation();
   const [loginShow, setLoginShow] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { showToast } = useToast()
   
   const getQueryParams = () => {
     const params = new URLSearchParams(location.search);
@@ -36,9 +38,13 @@ const PaymentVerify = () => {
       const res = await GetPaymentVerify(verifyData);
       console.log("Verification response:", res);
       setLoginShow(true);
-    } catch (error) {
-      console.error("Error verifying email:", error);
+    } catch (error:any) {
       setError(error instanceof Error ? error.message : "Verification failed");
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
@@ -62,11 +68,11 @@ const PaymentVerify = () => {
             <h1 className="text-lg font-semibold">
               {loginShow 
                 ? "Your Payment is confirmed. Click on Go to Dashboard button to continue."
-                : "Verifying your email..."}
+                : "Verifying your payment..."}
             </h1>
             {loginShow && (
               <Button
-                className="bg-[#7077FE] py-3 sm:py-[16px] px-6 sm:px-[24px] rounded-full text-sm sm:text-base w-full sm:w-auto text-center mt-3"
+                className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-3 sm:py-[16px] px-6 sm:px-[24px] rounded-full text-sm sm:text-base w-full sm:w-auto text-center mt-3"
                 withGradientOverlay
                 onClick={handleLoginClick}
               >

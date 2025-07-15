@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import { cn } from "../../lib/utils";
 import { useState } from "react";
@@ -10,7 +10,8 @@ const links = [
   { name: "Why", href: "/why" },
   { name: "What", href: "/what" },
   { name: "About", href: "/about" },
-  { name: "Directory", href: "/directory" } 
+  { name: "Directory", href: "/directory" },
+  { name: "Social", href: "/social" },
 ];
 
 export default function NavLinks({ className }: { className?: string }) {
@@ -18,12 +19,24 @@ export default function NavLinks({ className }: { className?: string }) {
     null
   );
 
-  const openSignupModal = () => setActiveModal("signup");
-  const openLoginModal = () => setActiveModal("login");
+  const navigate = useNavigate()
+
+  const openSignupModal = () => navigate("/sign-up");
+  const openLoginModal = () => navigate("/log-in");
   const closeModal = () => setActiveModal(null);
 
   const completed_step = localStorage.getItem("completed_step"); 
   const showDashboardButton = completed_step === "1" || completed_step === "2";
+  const personOrganization = localStorage.getItem("person_organization");
+  const showSocialLink = personOrganization === "1";
+
+  // Filter links based on conditions
+  const filteredLinks = links.filter(link => {
+    if (link.name === "Social") {
+      return showSocialLink;
+    }
+    return true;
+  });
 
   return (
     <>
@@ -32,7 +45,7 @@ export default function NavLinks({ className }: { className?: string }) {
         className={cn("flex items-center gap-8", className)}
       >
         <ul className="flex space-x-8">
-          {links.map((link) => (
+          {filteredLinks.map((link) => (
             <li key={link.name}>
               <Link
                 to={link.href}
@@ -55,16 +68,24 @@ export default function NavLinks({ className }: { className?: string }) {
             </Link>
           ) : (
             <>
-              <Button variant="white-outline" size="md" onClick={openSignupModal}>
-                Sign Up
+              <Button 
+              variant="white-outline"   
+              className="w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center"
+              onClick={openSignupModal}>
+                <span className="relative top-[0.5px]">Sign Up</span>
               </Button>
+              
               <Button
                 variant="gradient-primary"
-                className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+               className="w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center"
                 onClick={openLoginModal}
               >
-                Login
-              </Button>
+ <span className="relative top-[0.5px]">Login</span>
+               </Button>
             </>
           )}
         </div>

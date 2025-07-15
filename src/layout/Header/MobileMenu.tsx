@@ -8,9 +8,9 @@ import SignupForm from "./SignupForm";
 import LoginForm from "./LoginForm";
 
 const links = [
-  { name: "Why", href: "/" },
-  { name: "What", href: "/" },
-  { name: "About", href: "/" },
+{ name: "Why", href: "/why" },
+  { name: "What", href: "/what" },
+  { name: "About", href: "/about" },
   { name: "Directory", href: "/directory" },
 ];
 
@@ -29,7 +29,7 @@ export default function MobileMenu({ isOpen }: { isOpen: boolean }) {
     <>
       <div
         className={`md:hidden bg-white transition-all duration-300 ease-in-out overflow-hidden ${
-          isOpen ? "max-h-96 py-4" : "max-h-0 py-0"
+          isOpen ? "max-h-[1000px] py-4" : "max-h-0 py-0"
         }`}
       >
         <nav aria-label="Mobile navigation" className="px-4">
@@ -38,6 +38,7 @@ export default function MobileMenu({ isOpen }: { isOpen: boolean }) {
               <li key={link.name}>
                 <Link
                   to={link.href}
+                  
                   className="block text-gray-700 hover:text-primary-600 transition-colors py-2 px-4"
                 >
                   {link.name}
@@ -62,27 +63,32 @@ export default function MobileMenu({ isOpen }: { isOpen: boolean }) {
                 <li>
                   <Button
                     variant="white-outline"
-                    className="w-full"
-                    size="md"
+                    className="w-[104px] h-[39px] rounded-[100px] px-6 py-3 gap-3 border 
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-[12px]"
+                 
                     onClick={openSignupModal}
                   >
                     Sign Up
                   </Button>
                 </li>
                 <li>
-                  <Button
-                    variant="gradient-primary"
-                    className="rounded-[100px] py-3 px-8 w-full transition-colors duration-500 ease-in-out"
-                    onClick={openLoginModal}
-                  >
-                    Login
-                  </Button>
+<Button
+  variant="gradient-primary"
+  className="
+    w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center
+  "
+  onClick={openLoginModal}
+>
+  <span className="w-full text-center">Login</span>
+</Button>
                 </li>
               </>
             )}
             {/* <li>
               <Button
-                className="w-full bg-[#7077FE] py-3 px-6 rounded-full transition-colors duration-500 ease-in-out"
+                className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 py-3 px-6 rounded-full transition-colors duration-500 ease-in-out"
                 variant="primary"
                 withGradientOverlay
                 onClick={openSignupModal}
@@ -92,7 +98,7 @@ export default function MobileMenu({ isOpen }: { isOpen: boolean }) {
             </li>
             <li>
               <Button
-                className="w-full bg-[#7077FE] py-3 px-6 rounded-full transition-colors duration-500 ease-in-out"
+                className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 py-3 px-6 rounded-full transition-colors duration-500 ease-in-out"
                 variant="primary"
                 withGradientOverlay
                 onClick={openSignupModal}

@@ -1,64 +1,105 @@
 "use client";
+import { useNavigate } from "react-router-dom";
 import Button from "../../ui/Button";
-
-import CountdownTimer from "./CountDownTimer";
+import HomeHeroBackground from "../../ui/HomeHeroBackground";
 
 export default function HeroSection() {
-  const launchDate = new Date();
-  launchDate.setDate(launchDate.getDate() + 10); // Launching in 10 days
-  
-  
- 
+
+const completed_step = localStorage.getItem("completed_step");
+const isLoggedIn = completed_step === "1" || completed_step === "2";
+
+
+  const navigate = useNavigate();
   return (
-    <section className="relative h-[692px] rounded-[12px] overflow-hidden lg:mx-[12px]">
-      {/* Background image with overlay */}
-      <div className="flex items-center gap-[53.5px] absolute top-[-139px] left-[-743px] opacity-50">
-        <div className="bg-[#00d1ff] relative w-[365px] h-[365px] rounded-[182.5px] blur-[175px]" />
-        <div className="bg-[#623fff] relative w-[365px] h-[365px] rounded-[182.5px] blur-[175px]" />
-        <div className="bg-[#ff994a] relative w-[365px] h-[365px] rounded-[182.5px] blur-[175px]" />
-      </div>
+<section className="relative min-h-[600px] sm:min-h-[692px] py-12 sm:py-0 rounded-[12px] overflow-hidden mx-4 md:mx-8 lg:mx-[12px]">
+      <div className="absolute inset-0 z-[-2] bg-[#FAFAFA]" />
+      {/* 🌈 Animated Canvas Background */}
+      <HomeHeroBackground />
+
+      {/* Optional overlay image */}
       <div
         className="absolute inset-0 bg-cover bg-center z-0"
         style={{ backgroundImage: "url('/hero_bg.png')" }}
       ></div>
 
-      {/* Content container with flex centering */}
-      <div className="absolute inset-0 flex items-center justify-center z-10">
-        <div className="text-center px-4">
+      {/* Content */}
+      <div className="absolute inset-0 flex items-center justify-center z-10 px-4">
+        <div className="text-center w-full max-w-screen-lg">
           {/* Heading */}
-          <h1
-            className="jakarta text-4xl sm:text-5xl md:text-6xl font-bold mb-6 
-               bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
-               text-transparent bg-clip-text"
-          >
-            Build with Consciousness <br /> Website is Launching soon! <br />
+          <h1 className="poppins text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text">
+            Build with Consciousness
           </h1>
 
           {/* Description */}
-          <p className="openSans text-lg sm:text-xl text-[#7A7A7A] mb-10 max-w-2xl mx-auto">
+          <p className="openSans text-base sm:text-lg md:text-xl text-[#494949] mb-10 max-w-2xl mx-auto">
             The world's first conscious business platform — where individuals
             and organizations certify, connect, grow, and lead with integrity.
           </p>
 
-          {/* Buttons */}
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button
-              variant="gradient-primary"
-              className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
-            >
-              Get Started
-            </Button>
-            <Button variant="white-outline" size="md" onClick={() => window.location.href = "https://visionary.cness.io"}>
-              Join the Visionary Council
-            </Button>
-            
+ {/* ✅ Wrap the buttons in a container */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md mx-auto">
+            {isLoggedIn ? (
+              <>
+                <Button
+                  variant="gradient-primary"
+                  className="text-base sm:text-lg font-semibold font-[Plus Jakarta Sans] rounded-full w-full sm:w-auto px-6 py-3 flex items-center justify-center text-center"
+                  onClick={() => navigate("/dashboard/assesment")}
+                >
+                  Get Certified
+                </Button>
+                <Button
+                  variant="white-outline"
+                  className="bg-white border border-gray-200 text-gray-800 hover:bg-[#F07EFF] hover:text-white focus-visible:ring-pink-300"
+                  onClick={() => navigate("/dashboard")}
+                >
+                  Dashboard
+                </Button>
+              </>
+            ) : (
+              <>
+               <Button
+  variant="gradient-primary"
+  className="
+    w-[150px] h-[45px] 
+    rounded-[100px] 
+    px-6 py-4 
+    font-['Plus Jakarta Sans'] font-medium text-[18px] leading-[100%]
+    tracking-[0px]
+    text-center 
+    flex items-center justify-center gap-[10px]
+    opacity-100
+  "
+  onClick={() => navigate('/sign-up')}
+>
+  Get Started
+</Button>
+                <Button
+  variant="white-outline"
+  className="
+    w-[96px] h-[45px]
+    rounded-[100px]
+    border border-gray-200
+    px-6 py-4
+    gap-[10px]
+    bg-white text-gray-800
+    hover:bg-[#F07EFF] hover:text-white
+    focus-visible:ring-pink-300
+    font-['Plus Jakarta Sans'] font-medium text-[18px] leading-[100%] tracking-[0px]
+    text-center
+    opacity-100
+    flex items-center justify-center
+  "
+  onClick={() => navigate('/log-in')}
+>
+  Login
+</Button>
+              </>
+            )}
           </div>
-         
-          <CountdownTimer targetDate={launchDate} />
-        
-          
         </div>
       </div>
+
+      <div className="absolute bottom-0 left-0 w-full h-80 z-80 bg-gradient-to-b from-transparent to-white pointer-events-none" />
     </section>
   );
 }

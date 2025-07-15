@@ -1,13 +1,12 @@
 'use client'
-//import NavLinks from './NavLinks'
-import Navilinks from './Navigationlink';
-//import { useState } from 'react'
-//import MobileMenu from './MobileMenu'
+import NavLinks from './NavLinks'
+import { useState } from 'react'
+import MobileMenu from './MobileMenu'
 import { Link } from 'react-router-dom'
 import Image from '../../components/ui/Image'
 
 export default function Header() {
- // const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
     <header 
@@ -20,7 +19,7 @@ export default function Header() {
         <div className="flex items-center">
           <Link to="/" className="flex items-center" aria-label="Home">
             <Image
-              src="/logo.png"
+              src="/cnesslogo.png"
               alt="Company Logo"
               width={120}
               className="h-auto w-[144.16px]"
@@ -28,11 +27,11 @@ export default function Header() {
           </Link>
         </div>
 
-   
-    <Navilinks className="hidden md:flex" /> 
+        {/* Desktop Navigation */}
+        <NavLinks className="hidden md:flex" />
 
         {/* Mobile Menu Button */}
-        {/* <button
+        <button
           className="md:hidden p-2 rounded-md text-gray-700 hover:text-primary-600 focus:outline-none"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="Toggle menu"
@@ -61,11 +60,11 @@ export default function Header() {
               />
             )}
           </svg>
-        </button> */}
+        </button>
       </div>
 
       {/* Mobile Menu */}
-      {/* <MobileMenu isOpen={isMobileMenuOpen} /> */}
+      <MobileMenu isOpen={isMobileMenuOpen} />
     </header>
   )
 }
