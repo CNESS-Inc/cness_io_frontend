@@ -278,8 +278,8 @@ export default function Signingup() {
 
         <div className="absolute top-[100px] sm:top-[140px] md:top-[180px] left-0 right-0 flex justify-center z-10 px-4">
           <div className="w-full max-w-[600px] bg-white rounded-2xl shadow-xl px-4 sm:px-10 py-8 sm:py-12 space-y-10">
-            <h2 className="text-3xl font-bold text-gray-900">
-              Sign up your account
+            <h2 >
+              Sign up
             </h2>
 
             {apiMessage && (
@@ -304,8 +304,8 @@ export default function Signingup() {
                       login()
                       navigate("/log-in", { state: { autoGoogleLogin: true } });
                     }}
-                    className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-2xl px-4 py-2 bg-white hover:shadow-md hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#F07EFF]"
-                  >
+                    className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-2xl px-4 py-2 bg-white hover:shadow-md hover:font-bold hover:cursor-pointer"
+                    >
                     <img
                       src="/google-icon-logo.svg"
                       alt="Google"
@@ -330,7 +330,7 @@ export default function Signingup() {
                 </div>
                 <label
                   htmlFor="username"
-                  className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
+                  className="block"
                 >
                   Username
                 </label>
@@ -366,7 +366,7 @@ export default function Signingup() {
               <div className="mb-4 relative">
                 <label
                   htmlFor="email"
-                  className="block text-[16px] font-normal leading-normal text-[#222224] font-sans mb-1"
+                  className="block"
                 >
                   Email
                 </label>
@@ -398,7 +398,7 @@ export default function Signingup() {
               <div className="mb-4 relative">
                 <label
                   htmlFor="password"
-                  className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
+                   className="block"
                 >
                   Password
                 </label>
@@ -438,7 +438,7 @@ export default function Signingup() {
               <div className="mb-4">
                 <label
                   htmlFor="confirmPassword"
-                  className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
+                   className="block"
                 >
                   Confirm Password
                 </label>
@@ -516,7 +516,7 @@ export default function Signingup() {
                 <Button
                   type="submit"
                   variant="gradient-primary"
-                  className="rounded-[100px] py-3 px-10 self-stretch transition-colors duration-500 ease-in-out"
+                  className="w-full flex justify-center rounded-[100px] py-3 px-10 self-stretch transition-colors duration-500 ease-in-out"
                   disabled={isSubmitting || !recaptchaValue}
                 >
                   {isSubmitting ? "sign up..." : "Sign Up"}
