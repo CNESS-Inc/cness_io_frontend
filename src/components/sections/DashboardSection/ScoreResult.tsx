@@ -165,6 +165,7 @@ const ScoreResult = () => {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const { showToast } = useToast();
   const [scoreData, setScoreData] = useState<any>(null);
+  console.log("🚀 ~ ScoreResult ~ scoreData:", scoreData);
   const [loading, setLoading] = useState(true);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -435,78 +436,111 @@ const ScoreResult = () => {
               <p className="text-[20px] sm:text-[22px] md:text-[24px] font-semibold text-[#000]">
                 Score & Results
               </p>
-                {scoreData.cis_result.length > 0 ? (
+              {scoreData.cis_result.length > 0 ? (
                 <div className="flex gap-2">
                   <div className="relative">
-                  <button
-                    className="bg-white border cursor-pointer border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 rounded-full shadow-md"
-                    onClick={toggleMenu}
-                    style={{ cursor: "pointer" }}
-                  >
-                    Share
-                  </button>
-                  {showMenu && (
-                    <div
-                    className="absolute top-10 right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
-                    ref={menuRef}
+                    <button
+                      className="bg-white border cursor-pointer border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 rounded-full shadow-md"
+                      onClick={toggleMenu}
+                      style={{ cursor: "pointer" }}
                     >
-                    <ul className="flex items-center gap-4">
-                      <li>
-                      <FacebookShareButton url={urldata}>
-                        <FaFacebook size={32} color="#4267B2" />
-                      </FacebookShareButton>
-                      </li>
-                      <li>
-                      <LinkedinShareButton url={urldata}>
-                        <FaLinkedin size={32} color="#0077B5" />
-                      </LinkedinShareButton>
-                      </li>
-                      <li>
-                      <FaInstagram size={32} color="#C13584" />
-                      </li>
-                      <TwitterShareButton url={urldata} title={tweetText}>
-                      <FaTwitter size={32} color="#1DA1F2" />
-                      </TwitterShareButton>
-                      <li>
-                      <WhatsappShareButton url={urldata}>
-                        <FaWhatsapp size={32} color="#1DA1F2" />
-                      </WhatsappShareButton>
-                      </li>
-                    </ul>
-                    </div>
-                  )}
+                      Share
+                    </button>
+                    {showMenu && (
+                      <div
+                        className="absolute top-10 right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
+                        ref={menuRef}
+                      >
+                        <ul className="flex items-center gap-4">
+                          <li>
+                            <FacebookShareButton url={urldata}>
+                              <FaFacebook size={32} color="#4267B2" />
+                            </FacebookShareButton>
+                          </li>
+                          <li>
+                            <LinkedinShareButton url={urldata}>
+                              <FaLinkedin size={32} color="#0077B5" />
+                            </LinkedinShareButton>
+                          </li>
+                          <li>
+                            <FaInstagram size={32} color="#C13584" />
+                          </li>
+                          <TwitterShareButton url={urldata} title={tweetText}>
+                            <FaTwitter size={32} color="#1DA1F2" />
+                          </TwitterShareButton>
+                          <li>
+                            <WhatsappShareButton url={urldata}>
+                              <FaWhatsapp size={32} color="#1DA1F2" />
+                            </WhatsappShareButton>
+                          </li>
+                        </ul>
+                      </div>
+                    )}
                   </div>
                   <button
-                  className="bg-[#FF6B81] text-white cursor-pointer text-sm font-medium px-5 py-2 rounded-full shadow-md flex items-center justify-center gap-2"
-                  onClick={handleReportDownload}
-                  disabled={isGeneratingPDF}
+                    className="bg-[#FF6B81] text-white cursor-pointer text-sm font-medium px-5 py-2 rounded-full shadow-md flex items-center justify-center gap-2"
+                    onClick={handleReportDownload}
+                    disabled={isGeneratingPDF}
                   >
-                  {isGeneratingPDF ? (
-                    <>
-                    <svg
-                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
+                    {isGeneratingPDF ? (
+                      <>
+                        <svg
+                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                          />
+                        </svg>
+                        Report
+                      </>
+                    )}
+                  </button>
+                </div>
+              ) : (
+                <div className="flex gap-2 items-center">
+                  <div className="relative">
+                    <button
+                      className="bg-white border cursor-not-allowed border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 rounded-full shadow-md"
+                      disabled
                     >
-                      <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      ></circle>
-                      <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Generating...
-                    </>
-                  ) : (
-                    <>
+                      Share
+                    </button>
+                  </div>
+                  <button
+                    className="bg-[#FF6B81] text-white cursor-not-allowed text-sm font-medium px-5 py-2 rounded-full shadow-md flex items-center justify-center gap-2"
+                    disabled
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-4 w-4"
@@ -515,61 +549,52 @@ const ScoreResult = () => {
                       stroke="currentColor"
                     >
                       <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
                       />
                     </svg>
                     Report
-                    </>
-                  )}
                   </button>
                 </div>
-                ) : (
-                <div className="flex gap-2 items-center">
-                  <div className="relative">
-                  <button
-                    className="bg-white border cursor-not-allowed border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 rounded-full shadow-md"
-                    disabled
-                  >
-                    Share
-                  </button>
-                  </div>
-                  <button
-                  className="bg-[#FF6B81] text-white cursor-not-allowed text-sm font-medium px-5 py-2 rounded-full shadow-md flex items-center justify-center gap-2"
-                  disabled
-                  >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                    />
-                  </svg>
-                  Report
-                  </button>
-                </div>
-                )}
+              )}
             </div>
 
             {/* Summary Cards */}
 <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-2">
               {/* Overall CIS Score Card */}
+              {/* Overall CIS Score Card */}
               <div
-                className="min-h-[208px] p-4 rounded-[12px] border border-[#eceef2] shadow-sm sm:col-span-2 lg:col-span-2"
+                className="min-h-[208px] p-4 rounded-[12px] border border-[#eceef2] shadow-sm sm:col-span-2 lg:col-span-2 relative"
                 style={{
                   background:
                     "linear-gradient(135deg, #f5f2fc 0%, #fef3f8 100%)",
                 }}
               >
+                {/* Lock overlay - shown when cis_score is 0 */}
+                {scoreData.cis_score === 0 && (
+                  <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-[12px] shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
+                    <svg
+                      className="w-8 h-8 text-gray-700 opacity-80 mb-2"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill="#4F46E5"
+                        d="M10 2a4 4 0 00-4 4v3H5a1 1 0 000 2h10a1 1 0 000-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v3H8V6z"
+                      />
+                      <path
+                        fill="#4F46E5"
+                        d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"
+                      />
+                    </svg>
+                    <p className="text-sm text-gray-700 font-medium">
+                      Score Under Review
+                    </p>
+                  </div>
+                )}
+
                 <div className="flex items-center gap-3 mb-2">
                   <div className="bg-[#E8CDFD] w-7 h-7 flex items-center justify-center rounded-full p-2">
 
@@ -579,15 +604,9 @@ const ScoreResult = () => {
                       className="w-6 h-6"
                     />
                   </div>
-                    {scoreData.cis_result.length > 0 ? (
-                    <span className="text-[16px] font-medium text-[#222224]">
-                      Overall CIS Score
-                    </span>
-                    ) : (
-                    <span className="text-[16px] font-medium text-[#222224]">
-                      Assessment is under review. Please wait for the overall CIS score.
-                    </span>
-                    )}
+                  <span className="text-[16px] font-medium text-[#222224]">
+                    Overall CIS Score
+                  </span>
                 </div>
                 <hr className="border-t border-[#DADCE0] mb-3" />
 
@@ -817,15 +836,15 @@ const ScoreResult = () => {
                 alt="Score Breakdown Icon"
                 className="w-8 h-8"
               />
-                {scoreData.cis_result.length > 0 ? (
+              {scoreData.cis_result.length > 0 ? (
                 <span className="text-[16px] font-semibold text-[#222224]">
                   Score Breakdown
                 </span>
-                ) : (
+              ) : (
                 <span className="text-[16px] font-semibold text-[#222224]">
                   Assessment Under review - Please wait for the score breakdown
                 </span>
-                )}
+              )}
             </div>
             <hr className="border-t border-gray-200 mb-2" />
 
