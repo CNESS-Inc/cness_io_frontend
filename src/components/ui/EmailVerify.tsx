@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { GetEmailVerify } from "../../Common/ServerAPI";
 import Button from "./Button";
-import { useToast } from "./Toast/ToastProvider";
 
 interface EmailVerifyData {
   token: string;
@@ -12,8 +11,6 @@ const EmailVerify = () => {
   const location = useLocation();
   const [loginShow, setLoginShow] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const { showToast } = useToast()
   
   const getQueryParams = () => {
     const params = new URLSearchParams(location.search);
@@ -39,13 +36,9 @@ const EmailVerify = () => {
       const res = await GetEmailVerify(verifyData);
       console.log("Verification response:", res);
       setLoginShow(true);
-    } catch (error:any) {
+    } catch (error) {
+      console.error("Error verifying email:", error);
       setError(error instanceof Error ? error.message : "Verification failed");
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
     }
   };
 
@@ -55,7 +48,7 @@ const EmailVerify = () => {
 
   const navigate = useNavigate();
   const handleLoginClick = () => {
-    navigate("/log-in");
+    navigate("/");
   };
 
   return (
@@ -72,7 +65,7 @@ const EmailVerify = () => {
             </h1>
             {loginShow && (
               <Button
-                className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-3 sm:py-[16px] px-6 sm:px-[24px] rounded-full text-sm sm:text-base w-full sm:w-auto text-center mt-3"
+                className="bg-[#7077FE] py-3 sm:py-[16px] px-6 sm:px-[24px] rounded-full text-sm sm:text-base w-full sm:w-auto text-center mt-3"
                 withGradientOverlay
                 onClick={handleLoginClick}
               >

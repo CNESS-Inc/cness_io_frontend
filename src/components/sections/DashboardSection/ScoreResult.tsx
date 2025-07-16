@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 // import frameim from "../../../assets/Frame-im.png";
 // import frameqa from "../../../assets/Frame-qa.png";
 // import framequ from "../../../assets/Frame-qu.png";
-import cisscore from "../../../assets/cisscore.svg";
+import cisscore from "../../../assets/cis score.png";
 import framescr from "../../../assets/Frame-scr.png";
 import html2pdf from "html2pdf.js";
 import "react-circular-progressbar/dist/styles.css";
@@ -22,11 +22,6 @@ import {
   FaTwitter,
   FaWhatsapp,
 } from "react-icons/fa";
-import badgeicon from "../../../assets/badgeicon.svg";
-import indv_aspiring from "../../../assets/indv_aspiring.svg";
-import indv_inspried from "../../../assets/indv_inspired.svg";
-import indv_leader from "../../../assets/indv_leader.svg";
-
 // import { BiShare } from "react-icons/bi";
 
 // const tabs = [
@@ -165,7 +160,6 @@ const ScoreResult = () => {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const { showToast } = useToast();
   const [scoreData, setScoreData] = useState<any>(null);
-  console.log("🚀 ~ ScoreResult ~ scoreData:", scoreData);
   const [loading, setLoading] = useState(true);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -430,118 +424,84 @@ const ScoreResult = () => {
     <>
       {scoreData ? (
         <div className="w-full overflow-x-hidden">
-          <div className="flex flex-col w-full min-h-screen bg-[#f9f9f9] pt-1 pb-10 px-2 sm:px-3 md:px-4 lg:pl-6 lg:pr-4 xl:px-6 font-[Poppins] overflow-x-hidden max-w-full lg:max-w-none">
+          <div className="flex flex-col w-full min-h-screen bg-[#f9f9f9] pt-1 pb-10 px-2 sm:px-3 md:px-4 lg:pl-6 lg:pr-4 xl:px-6 font-[Poppins] overflow-x-hidden">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-              <p className="text-[20px] sm:text-[22px] md:text-[24px] font-semibold text-[#000]">
+            <div className="flex items-center justify-between mb-6">
+              <p className="text-[24px] font-semibold text-[#000]">
                 Score & Results
               </p>
-              {scoreData.is_submitted_by_head &&
-              scoreData.cis_result.length > 0 ? (
+                {scoreData.cis_result.length > 0 ? (
                 <div className="flex gap-2">
                   <div className="relative">
-                    <button
-                      className="bg-white border cursor-pointer border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 rounded-full shadow-md"
-                      onClick={toggleMenu}
-                      style={{ cursor: "pointer" }}
-                    >
-                      Share
-                    </button>
-                    {showMenu && (
-                      <div
-                        className="absolute top-10 right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
-                        ref={menuRef}
-                      >
-                        <ul className="flex items-center gap-4">
-                          <li>
-                            <FacebookShareButton url={urldata}>
-                              <FaFacebook size={32} color="#4267B2" />
-                            </FacebookShareButton>
-                          </li>
-                          <li>
-                            <LinkedinShareButton url={urldata}>
-                              <FaLinkedin size={32} color="#0077B5" />
-                            </LinkedinShareButton>
-                          </li>
-                          <li>
-                            <FaInstagram size={32} color="#C13584" />
-                          </li>
-                          <TwitterShareButton url={urldata} title={tweetText}>
-                            <FaTwitter size={32} color="#1DA1F2" />
-                          </TwitterShareButton>
-                          <li>
-                            <WhatsappShareButton url={urldata}>
-                              <FaWhatsapp size={32} color="#1DA1F2" />
-                            </WhatsappShareButton>
-                          </li>
-                        </ul>
-                      </div>
-                    )}
-                  </div>
                   <button
-                    className="bg-[#FF6B81] text-white cursor-pointer text-sm font-medium px-5 py-2 rounded-full shadow-md flex items-center justify-center gap-2"
-                    onClick={handleReportDownload}
-                    disabled={isGeneratingPDF}
+                    className="bg-white border cursor-pointer border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 rounded-full shadow-md"
+                    onClick={toggleMenu}
+                    style={{ cursor: "pointer" }}
                   >
-                    {isGeneratingPDF ? (
-                      <>
-                        <svg
-                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        Generating...
-                      </>
-                    ) : (
-                      <>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                          />
-                        </svg>
-                        Report
-                      </>
-                    )}
+                    Share
                   </button>
-                </div>
-              ) : (
-                <div className="flex gap-2 items-center">
-                  <div className="relative">
-                    <button
-                      className="bg-white border cursor-not-allowed border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 rounded-full shadow-md"
-                      disabled
+                  {showMenu && (
+                    <div
+                    className="absolute top-10 right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
+                    ref={menuRef}
                     >
-                      Share
-                    </button>
+                    <ul className="flex items-center gap-4">
+                      <li>
+                      <FacebookShareButton url={urldata}>
+                        <FaFacebook size={32} color="#4267B2" />
+                      </FacebookShareButton>
+                      </li>
+                      <li>
+                      <LinkedinShareButton url={urldata}>
+                        <FaLinkedin size={32} color="#0077B5" />
+                      </LinkedinShareButton>
+                      </li>
+                      <li>
+                      <FaInstagram size={32} color="#C13584" />
+                      </li>
+                      <TwitterShareButton url={urldata} title={tweetText}>
+                      <FaTwitter size={32} color="#1DA1F2" />
+                      </TwitterShareButton>
+                      <li>
+                      <WhatsappShareButton url={urldata}>
+                        <FaWhatsapp size={32} color="#1DA1F2" />
+                      </WhatsappShareButton>
+                      </li>
+                    </ul>
+                    </div>
+                  )}
                   </div>
                   <button
-                    className="bg-[#FF6B81] text-white cursor-not-allowed text-sm font-medium px-5 py-2 rounded-full shadow-md flex items-center justify-center gap-2"
-                    disabled
+                  className="bg-[#FF6B81] text-white cursor-pointer text-sm font-medium px-5 py-2 rounded-full shadow-md flex items-center justify-center gap-2"
+                  onClick={handleReportDownload}
+                  disabled={isGeneratingPDF}
                   >
+                  {isGeneratingPDF ? (
+                    <>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      ></circle>
+                      <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Generating...
+                    </>
+                  ) : (
+                    <>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-4 w-4"
@@ -550,68 +510,78 @@ const ScoreResult = () => {
                       stroke="currentColor"
                     >
                       <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
                       />
                     </svg>
                     Report
+                    </>
+                  )}
                   </button>
                 </div>
-              )}
+                ) : (
+                <div className="flex gap-2 items-center">
+                  <div className="relative">
+                  <button
+                    className="bg-white border cursor-not-allowed border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 rounded-full shadow-md"
+                    disabled
+                  >
+                    Share
+                  </button>
+                  </div>
+                  <button
+                  className="bg-[#FF6B81] text-white cursor-not-allowed text-sm font-medium px-5 py-2 rounded-full shadow-md flex items-center justify-center gap-2"
+                  disabled
+                  >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                    />
+                  </svg>
+                  Report
+                  </button>
+                </div>
+                )}
             </div>
 
             {/* Summary Cards */}
-            <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-2">
+            <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 mb-2">
               {/* Overall CIS Score Card */}
               <div
-                className="min-h-[208px] p-4 rounded-[12px] border border-[#eceef2] shadow-sm sm:col-span-2 lg:col-span-2 relative"
+                className="min-h-[208px] p-4 rounded-[12px] border border-[#eceef2] shadow-sm sm:col-span-2 lg:col-span-2"
                 style={{
                   background:
                     "linear-gradient(135deg, #f5f2fc 0%, #fef3f8 100%)",
                 }}
               >
-                {/* Lock overlay - shown when cis_score is 0 */}
-                {(!scoreData.is_assessment_submited ||
-                  !scoreData.is_submitted_by_head ||
-                  scoreData.cis_score === 0) && (
-                  <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-[12px] shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
-                    <svg
-                      className="w-8 h-8 text-gray-700 opacity-80 mb-2"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fill="#4F46E5"
-                        d="M10 2a4 4 0 00-4 4v3H5a1 1 0 000 2h10a1 1 0 000-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v3H8V6z"
-                      />
-                      <path
-                        fill="#4F46E5"
-                        d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"
-                      />
-                    </svg>
-                    <p className="text-sm text-gray-700 font-medium">
-                      {!scoreData.is_assessment_submited
-                        ? "Complete Assessment to Unlock"
-                        : !scoreData.is_submitted_by_head
-                        ? "Score Under Review"
-                        : "Score Not Available"}
-                    </p>
-                  </div>
-                )}
-
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="bg-[#E8CDFD] w-7 h-7 flex items-center justify-center rounded-full p-2">
+                  <div className="w-6 h-6 bg-[#e3d1f6] rounded-full flex items-center justify-center">
                     <img
                       src={cisscore}
                       alt="Lightning Icon"
                       className="w-6 h-6"
                     />
                   </div>
-                  <span className="text-[16px] font-medium text-[#222224]">
-                    Overall CIS Score
-                  </span>
+                    {scoreData.cis_result.length > 0 ? (
+                    <span className="text-[16px] font-medium text-[#222224]">
+                      Overall CIS Score
+                    </span>
+                    ) : (
+                    <span className="text-[16px] font-medium text-[#222224]">
+                      Assessment is under review. Please wait for the overall CIS score.
+                    </span>
+                    )}
                 </div>
                 <hr className="border-t border-[#DADCE0] mb-3" />
 
@@ -665,12 +635,10 @@ const ScoreResult = () => {
                 {/* Original badge content */}
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <div className="bg-[#FFCC0033] w-8 h-8 flex items-center justify-center rounded-full p-2">
-                      <img
-                        className="w-6 h-6"
-                        alt="Badge icon"
-                        src={badgeicon}
-                      />
+                    <div className="w-6 h-6 bg-[#fff3c4] rounded-full flex items-center justify-center">
+                      <span className="text-xs font-bold text-[#FFCC00]">
+                        ⚡
+                      </span>
                     </div>
                     <span className="text-[16px] font-medium text-[#222224]">
                       Badge
@@ -685,19 +653,13 @@ const ScoreResult = () => {
 
                 <div className="flex justify-center items-center h-full">
                   {scoreData?.badge?.level ? (
-                    <div className="flex justify-center items-center py-[17px] -mt-[50px]">
+                    <>
                       <img
-                        src={
-                          scoreData.badge.level === "Aspiring"
-                            ? indv_aspiring
-                            : scoreData.badge.level === "Inspired"
-                            ? indv_inspried
-                            : indv_leader
-                        }
-                        alt={`${scoreData.badge.level} Badge`}
-                        className="h-[87px] w-auto object-contain"
+                        src="/Inspired _ Badge.png"
+                        alt="CNESS Inspired"
+                        className="h-[87px] object-contain"
                       />
-                    </div>
+                    </>
                   ) : (
                     <div className="h-[87px]"></div>
                   )}
@@ -731,7 +693,7 @@ const ScoreResult = () => {
 
                 {/* Original content */}
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="w-7 h-7 bg-[#e2f2ff] rounded-full flex items-center justify-center">
+                  <div className="w-6 h-6 bg-[#e2f2ff] rounded-full flex items-center justify-center">
                     <img
                       src="../public/Vector.png"
                       alt="icon"
@@ -832,29 +794,26 @@ const ScoreResult = () => {
               </div>
             </div> */}
 
-            {scoreData.is_assessment_submited ? (
-              <>
-                {/* Section Header: Score Breakdown */}
-                <div className="flex items-center gap-2 mt-1 mb-2">
-                  <img
-                    src={framescr}
-                    alt="Score Breakdown Icon"
-                    className="w-8 h-8"
-                  />
-                  {scoreData.cis_result.length > 0 ? (
-                    <span className="text-[16px] font-semibold text-[#222224]">
-                      Score Breakdown
-                    </span>
-                  ) : (
-                    <span className="text-[16px] font-semibold text-[#222224]">
-                      Assessment Under review - Please wait for the score
-                      breakdown
-                    </span>
-                  )}
-                </div>
-                <hr className="border-t border-gray-200 mb-2" />
+            {/* Section Header: Score Breakdown */}
+            <div className="flex items-center gap-2 mt-1 mb-2">
+              <img
+                src={framescr}
+                alt="Score Breakdown Icon"
+                className="w-8 h-8"
+              />
+                {scoreData.cis_result.length > 0 ? (
+                <span className="text-[16px] font-semibold text-[#222224]">
+                  Score Breakdown
+                </span>
+                ) : (
+                <span className="text-[16px] font-semibold text-[#222224]">
+                  Assessment Under review - Please wait for the score breakdown
+                </span>
+                )}
+            </div>
+            <hr className="border-t border-gray-200 mb-2" />
 
-                {/* <div className="w-full px-0 md:px-0">
+            {/* <div className="w-full px-0 md:px-0">
               <div className="w-full overflow-x-auto no-scrollbar">
                 <div className="inline-flex gap-2 w-full max-w-full px-2 sm:px-4">
                   {scoreData.cis_result.map((section: any, index: number) => (
@@ -940,84 +899,53 @@ const ScoreResult = () => {
               </div>
             </div> */}
 
-                {scoreData.is_submitted_by_head ? (
-                  <div className="w-full px-0 md:px-0">
-                    {/* Section Wrapper */}
-                    <div className="bg-[#F8F3FF] rounded-[12px] border border-[#ECEEF2] p-6">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4 lg:gap-6">
-                        {scoreData.cis_result.map((section: any) => {
-                          const scoreMeta = getScoreMeta(section.weight);
-                          return (
-                            <div
-                              key={section.section_id}
-                              className="bg-white rounded-[12px] p-3 sm:p-4 w-full lg:max-w-[258px] min-h-[303px] flex flex-col justify-between text-center border border-[#ECEEF2]"
-                            >
-                              <div>
-                                <h3 className="text-[13px] sm:text-[14px] font-semibold text-gray-800">
-                                  {section.section_name}
-                                </h3>
-                                <hr className="border-t border-gray-200 my-2" />
-                              </div>
-
-                              <div className="flex justify-center items-center">
-                                <SegmentedRing
-                                  value={section.weight}
-                                  color="#9747FF"
-                                  scoreColor="#404040"
-                                  labelColor="#6B7280"
-                                />
-                              </div>
-
-                              <div>
-                                <p
-                                  className={`text-sm font-semibold ${scoreMeta.tipColor} leading-none mb-0`}
-                                >
-                                  {section.status}
-                                </p>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="bg-[#F8F3FF] rounded-[12px] border border-[#ECEEF2] p-6 text-center">
-                    <div className="flex flex-col items-center justify-center py-8">
-                      <svg
-                        className="w-12 h-12 text-purple-500 mb-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
+            <div className="w-full px-0 md:px-0">
+              {/* Section Wrapper */}
+              <div className="bg-[#F8F3FF] rounded-[12px] border border-[#ECEEF2] p-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                  {scoreData.cis_result.map((section: any) => {
+                    const scoreMeta = getScoreMeta(section.weight);
+                    return (
+                      <div
+                        key={section.section_id}
+                        className="bg-white rounded-[12px] p-4 w-full max-w-[258px] h-[303px] flex flex-col justify-between text-center border border-[#ECEEF2]"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                        />
-                      </svg>
-                      <h3 className="text-lg font-medium text-gray-800 mb-2">
-                        Your Score is Under Review
-                      </h3>
-                      <p className="text-sm text-gray-600 max-w-md">
-                        Your assessment has been submitted and is currently
-                        being reviewed. You'll be able to see your detailed
-                        score breakdown once approved.
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-gray-600">
-                  Please complete and submit your assessment to view your scores
-                  and results.
-                </p>
+                        <div>
+                          <h3 className="text-[14px] font-semibold text-gray-800">
+                            {section.section_name}
+                          </h3>
+                          <hr className="border-t border-gray-200 my-2" />
+                          {/* <p className="text-xs text-gray-500">
+                            Weight: {section.section_total_weight}%
+                          </p> */}
+                        </div>
+
+                        <div className="flex justify-center items-center">
+                          <SegmentedRing
+                            value={section.weight}
+                            // label={`Weight: ${section.section_total_weight}%`}
+                            color="#9747FF"
+                            scoreColor="#404040"
+                            labelColor="#6B7280"
+                          />
+                        </div>
+
+                        <div>
+                          <p
+                            className={`text-sm font-semibold ${scoreMeta.tipColor} leading-none mb-0`}
+                          >
+                            {section.status}
+                          </p>
+                          {/* <p className="text-xs text-[#2E2E30] leading-none mt-[10px]">
+                            Score: {section.weight}%
+                          </p> */}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            )}
+            </div>
           </div>
         </div>
       ) : (

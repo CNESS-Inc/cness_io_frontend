@@ -4,10 +4,9 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
-  position?: 'center' | 'bottom'; // Add position prop
 }
 
-export default function Modal({ isOpen, onClose, children, position = 'center' }: ModalProps) {
+export default function Modal({ isOpen, onClose, children }: ModalProps) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -22,20 +21,9 @@ export default function Modal({ isOpen, onClose, children, position = 'center' }
 
   if (!isOpen) return null;
 
-  // Determine positioning classes based on position prop
-  const positionClasses = {
-    center: "items-center justify-center",
-    bottom: "items-end justify-center"
-  };
-
-  const modalSizeClasses = {
-    center: "max-w-lg mx-auto my-8",
-    bottom: "w-full max-w-full my-0"
-  };
-
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className={`flex min-h-screen p-4 sm:p-0 ${positionClasses[position]}`}>
+      <div className="flex items-center justify-center min-h-screen p-4 sm:p-0">
         <div 
           className={`fixed inset-0 transition-opacity duration-1000 ease-in-out opacity-75 bg-black`}
           onClick={onClose}
@@ -44,7 +32,7 @@ export default function Modal({ isOpen, onClose, children, position = 'center' }
 
         {/* Modal content */}
         <div 
-          className={`relative overflow-hidden bg-white rounded-lg shadow-xl transition-all transform ${modalSizeClasses[position]}`}
+          className="relative w-full max-w-lg mx-auto my-8 overflow-hidden bg-white rounded-lg shadow-xl transition-all transform"
           style={{
             maxHeight: "90vh",
             overflowY: "auto"

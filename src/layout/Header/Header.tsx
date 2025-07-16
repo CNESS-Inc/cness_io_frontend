@@ -1,37 +1,44 @@
 'use client'
-import NavLinks from './NavLinks'
-import { useState } from 'react'
-import MobileMenu from './MobileMenu'
+//import NavLinks from './NavLinks'
+import Navilinks from './Navigationlink';
+//import { useState } from 'react'
+//import MobileMenu from './MobileMenu'
 import { Link } from 'react-router-dom'
 import Image from '../../components/ui/Image'
 
 export default function Header() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  // const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
-    <header 
+    <header
       className="bg-white "
       role="banner"
       aria-label="Main navigation"
     >
-      <div className="mx-4 px-4 py-3 flex items-center justify-between">
+      <div className="mx-4 lg:px-4 md:px-4 px-0 py-3 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
           <Link to="/" className="flex items-center" aria-label="Home">
             <Image
-              src="/cnesslogo.png"
+              src="/logo.png"
               alt="Company Logo"
               width={120}
-              className="h-auto w-[144.16px]"
+              className="h-auto w-[144.16px] lg:block md:block hidden"
+            />
+            <Image
+              src="/responsive-logo.png"
+              alt="Company Logo"
+              width={30}
+              className="h-auto w-[120px] md:w-[144.16px] lg:hidden md:hidden block"
             />
           </Link>
         </div>
 
-        {/* Desktop Navigation */}
-        <NavLinks className="hidden md:flex" />
+
+        <Navilinks className="md:flex" />
 
         {/* Mobile Menu Button */}
-        <button
+        {/* <button
           className="md:hidden p-2 rounded-md text-gray-700 hover:text-primary-600 focus:outline-none"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="Toggle menu"
@@ -60,11 +67,11 @@ export default function Header() {
               />
             )}
           </svg>
-        </button>
+        </button> */}
       </div>
 
       {/* Mobile Menu */}
-      <MobileMenu isOpen={isMobileMenuOpen} />
+      {/* <MobileMenu isOpen={isMobileMenuOpen} /> */}
     </header>
   )
 }

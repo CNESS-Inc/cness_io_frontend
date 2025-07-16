@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import cnesslogo from "../assets/cnesslogo.png";
 import SignupAnimation from "../components/ui/SignupAnimation";
-import { Link } from "react-router-dom";
 
 const PrivacyPolicy = () => {
   const [content, setContent] = useState('');
@@ -21,13 +20,7 @@ const PrivacyPolicy = () => {
 
       {/* Logo */}
       <div className="fixed top-4 left-4 z-20">
-        <Link to="/">
-                      <img
-                        src={cnesslogo}
-                        alt="logo"
-                        className="w-48 h-48 object-contain"
-                      />
-                    </Link>
+        <img src={cnesslogo} alt="logo" className="w-48 h-48 object-contain" />
       </div>
 
       {/* Terms content overlay */}

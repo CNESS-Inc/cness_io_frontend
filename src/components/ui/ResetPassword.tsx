@@ -2,13 +2,6 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "./Button";
 import { ForgotPasswordDetailsSubmit } from "../../Common/ServerAPI";
-import SignupAnimation from "../ui/SignupAnimation";
-import Footer from "../../layout/Footer/Footer";
-import cnesslogo from "../../assets/cnesslogo.png";
-import { Link } from "react-router-dom";
-
-
-
 
 interface QueryParams {
   token: string | null;
@@ -59,28 +52,10 @@ const ResetPassword = () => {
   setFormData({ new_password: "", confirm_password: "" });
 };
   return (
-    
-      <div className="flex flex-col min-h-screen">
-      <div className="flex-1 relative">
-        {/* Animated background */}
-        <SignupAnimation />
-
-  <div className="relative w-full h-[250px]">
-  <div className="absolute top-1 left-5 z-30 p-0">
-    <Link to="/">
-      <img
-        src={cnesslogo}
-        alt="logo"
-        className="w-48 h-48 object-contain"
-      />
-    </Link>
-  </div>
-</div>
-
-
-<div className="absolute top-[80px] sm:top-[120px] md:top-[150px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
-          <div className="w-full max-w-md bg-white rounded-2xl shadow-xl px-4 sm:px-8 py-8 sm:py-10 space-y-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center">
+    <>
+      <div className="flex justify-center items-center ">
+        <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 m-10">
+          <h2 className="text-2xl font-semibold text-center text-gray-700">
             Reset Password
           </h2>
           <form onSubmit={makeResetPasswordRequest} className="space-y-6 mt-4">
@@ -123,11 +98,8 @@ const ResetPassword = () => {
             </Button>
           </form>
         </div>
-        </div>
       </div>
-
-      <Footer />
-    </div>
+    </>
   );
 };
 

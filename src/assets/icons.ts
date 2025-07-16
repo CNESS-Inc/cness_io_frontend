@@ -23,21 +23,6 @@ import companylogo2 from './comlogo2.png';
 import aspcompany1 from './aspcom1.png';
 import aspcompany2 from './aspcom2.png';
 import herosection from './Hero section.png'
-// import companycard3 from './companycard3.jpg';
-// import companylogo3 from  './companylogo3.jpg';
-
-import home from './dash_Icon.svg';
-import learning from './learning.svg';
-import market from './market.svg';
-import mentor from './mentor.svg';
-import social from './social.svg';
-import community from './community.svg';
-import certify from './certify.svg';
-import directory from './directory.svg';
-import usericon from './Icon.svg';
-import mentor1 from './mentor1.png';
-
-
 
 
 
@@ -63,21 +48,10 @@ heroimg: herosection,
 inslogo,
 companycard1,
 companycard2,
-// companycard3,
 companylogo2,
 companylogo1,
 aspcompany1,
 aspcompany2,
-// companylogo3
-home,
-learning,
-market,
-mentor,
-social,
-community,
-directory,
-certify,
-usericon,
-mentor1
+
 
 };

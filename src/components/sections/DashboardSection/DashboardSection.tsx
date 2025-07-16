@@ -29,9 +29,7 @@ import QRCodeGenerator from "../../ui/QRCodeGenerator";
 import { useToast } from "../../ui/Toast/ToastProvider";
 import badgeicon from "../../../assets/badgeicon.svg";
 import badgecness from "../../../assets/Badgecness.svg";
-import indv_aspiring from "../../../assets/indv_aspiring.svg";
-import indv_inspried from "../../../assets/indv_inspired.svg";
-import indv_leader from "../../../assets/indv_leader.svg";
+
 
 type PersPricingPlan = {
   id: any;
@@ -64,10 +62,12 @@ interface OrganizationForm {
   }>;
 }
 
+
 interface QuestionAnswer {
   question_id: string;
   answer: string;
 }
+
 
 interface FormErrors {
   email?: string;
@@ -110,7 +110,6 @@ export default function DashboardSection() {
     question: [],
   });
   const [user, setUser] = useState<any | null>(null);
-  console.log("🚀 ~ DashboardSection ~ user:", user);
   const [organizationForm, setOrganizationForm] = useState<OrganizationForm>({
     domain_id: "",
     sub_domain_id: "",
@@ -242,25 +241,25 @@ export default function DashboardSection() {
       });
     }
   };
-  const openRetakeAssesmentModal = async () => {
-    try {
-      const personOrganization = localStorage.getItem("person_organization");
-      if (personOrganization === "2") {
-        setActiveModal("organization");
-      } else {
-        setActiveModal("person");
-      }
-
-      const response = await GetAllFormDetails();
-      setReadlineQuestion(response?.data?.data?.questions);
-    } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
+const openRetakeAssesmentModal = async () => {
+  try {
+    const personOrganization = localStorage.getItem('person_organization');
+    if (personOrganization === '2') {
+      setActiveModal("organization");
+    } else {
+      setActiveModal("person");
     }
-  };
+    
+    const response = await GetAllFormDetails();
+    setReadlineQuestion(response?.data?.data?.questions);
+  } catch (error: any) {
+    showToast({
+      message: error?.response?.data?.error?.message,
+      type: "error",
+      duration: 5000,
+    });
+  }
+};
   const closeModal = async () => {
     setActiveModal(null);
     await fetchDashboard();
@@ -575,21 +574,6 @@ export default function DashboardSection() {
     }
   };
 
-  const getBadgeImage = (level: string) => {
-    if (!level) return null;
-
-    switch (level.toLowerCase()) {
-      case "aspiring":
-        return indv_aspiring;
-      case "inspiring":
-        return indv_inspried;
-      case "leader":
-        return indv_leader;
-      default:
-        return null;
-    }
-  };
-
   return (
     <>
       <section className="w-full px-2 sm:px-4 lg:px-0.5 pt-4 pb-10">
@@ -744,21 +728,21 @@ export default function DashboardSection() {
                         </span>
                       </Button> */}
 
-                      <SecondaryButton
-                        onClick={() => {
-                          const personOrganization = localStorage.getItem(
-                            "person_organization"
-                          );
+                    <SecondaryButton
+                      onClick={() => {
+                      const personOrganization = localStorage.getItem(
+                        "person_organization"
+                      );
 
-                          if (personOrganization === "2") {
-                            navigate("/dashboard/company-profile");
-                          } else if (personOrganization === "1") {
-                            navigate("/dashboard/user-profile");
-                          }
-                        }}
-                      >
-                        Start
-                      </SecondaryButton>
+                      if (personOrganization === "2") {
+                        navigate("/dashboard/company-profile");
+                      } else if (personOrganization === "1") {
+                        navigate("/dashboard/user-profile");
+                      }
+                      }}
+                    >
+                      Start
+                    </SecondaryButton>
                     </div>
                   </div>
                 </div>
@@ -766,40 +750,38 @@ export default function DashboardSection() {
             </Card>
 
             {/* Second Card */}
-            <Card
-              className="
-     flex flex-col  gap-6 flex-1
+   <Card  className="
+     flex p-6 flex-col  gap-6 flex-1
     rounded-[12px] 
     bg-[linear-gradient(97deg,rgba(223,214,255,0.30)_-0.01%,rgba(184,166,248,0.30)_49.8%,rgba(196,132,205,0.30)_99.99%)]
     border-[#B8A6F8]
-  "
-            >
-              <CardContent className="p-4 sm:p-6">
-                <div className="flex flex-col items-center sm:items-start gap-4 sm:gap-6 w-full">
-                  <div className="flex flex-col items-center sm:items-start gap-2 sm:gap-3 w-full text-center sm:text-left">
-                    <h2
-                      className="
+  ">
+
+  
+ <CardContent className="p-4 sm:p-6">
+<div className="flex flex-col items-center sm:items-start gap-4 sm:gap-6 w-full">
+<div className="flex flex-col items-center sm:items-start gap-2 sm:gap-3 w-full text-center sm:text-left">
+ <h2
+  className="
     text-[#222224]
     font-['Poppins']
     text-[20px]
     font-semibold
     leading-normal
   "
-                      style={{ fontFeatureSettings: "'liga' off, 'clig' off" }}
-                    >
-                      Start Your Journey
-                    </h2>
+  style={{ fontFeatureSettings: "'liga' off, 'clig' off" }}
+>
+  Start Your Journey
+</h2>
 
-                    <p
-                      className="
+<p className="
     text-black 
     font-['Open_Sans'] 
     text-[16px] 
     font-normal 
     leading-normal
   "
-                      style={{ fontFeatureSettings: "'liga' off, 'clig' off" }}
-                    >
+  style={{ fontFeatureSettings: "'liga' off, 'clig' off" }}>
                       Complete your profile by providing all the essential
                       information to kickstart your journey and obtain
                       certification.
@@ -817,15 +799,15 @@ export default function DashboardSection() {
                         Get Certification
                       </span>
                     </Button> */}
-                    <PrimaryButton
-                      onClick={() => navigate("/dashboard/assesment")}
-                    >
-                      Get Certification
-                    </PrimaryButton>
+                    <PrimaryButton onClick={() => navigate("/dashboard/assesment") }>
+                    Get Certification
+                  </PrimaryButton>
+
                   </div>
                 </div>
               </CardContent>
             </Card>
+          
           </div>
 
           <div className="flex flex-col lg:flex-row gap-3 w-full">
@@ -851,16 +833,8 @@ export default function DashboardSection() {
                     <div className="text-xl md:text-2xl text-[#222224] font-medium">
                       {user?.assesment_progress || 0}%
                     </div>
-                    <div
-                      className={`text-sm md:text-base font-medium ${
-                        (user?.assesment_progress || 0) >= 100
-                          ? "text-[#4CAF50]" // Green color for completed
-                          : "text-[#9747ff]" // Purple color for in progress
-                      }`}
-                    >
-                      {(user?.assesment_progress || 0) >= 100
-                        ? "Completed"
-                        : "In Progress"}
+                    <div className="text-sm md:text-base text-[#9747ff] font-medium">
+                      In Progress
                     </div>
                   </div>
                   <div className="flex items-center gap-1 w-full">
@@ -893,142 +867,140 @@ export default function DashboardSection() {
                 </Card>
               </div>
               {/* CIS Score Card */}
-              <div className="grid grid-cols-2 gap-3  w-full lg:flex">
-                <div className="w-full sm:w-1/2 relative">
-                  <Card className="w-full h-full border-[#eceef2] rounded-[10px] overflow-hidden">
-                    <CardHeader className="flex-row items-center justify-between border-b border-[#0000001a] pb-2 md:pb-3">
-                      <div className="flex items-center gap-2 md:gap-3.5">
-                        <div className="bg-[#e8cdfd33] w-8 h-8 md:w-[30px] md:h-[30px] flex items-center justify-center rounded-full">
-                          <img
-                            className="w-4 h-4 md:w-4 md:h-4"
-                            alt="CIS Score icon"
-                            src="https://c.animaapp.com/magahlmqpONVZN/img/frame-1.svg"
-                          />
-                        </div>
-                        <CardTitle className="text-sm md:text-base font-medium text-[#222224]">
-                          CIS Score
-                        </CardTitle>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="flex justify-center items-center pt-4 pb-4 md:pt-6 md:pb-6">
-                      <div className="flex justify-center sm:justify-start">
-                        <div className="relative w-[50px] h-[50px] sm:w-[70px] sm:h-[70px] md:w-[90px] md:h-[90px]">
-                          <CircularProgressbar
-                            value={user?.cis_score}
-                            strokeWidth={10}
-                            styles={buildStyles({
-                              rotation: 0.6,
-                              pathColor: "url(#cisGradient)",
-                              trailColor: "#F2F2F2",
-                              textColor: "#242731",
-                              pathTransitionDuration: 0.5,
-                            })}
-                          />
-                          {/* Custom-styled text overlaid manually */}
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="font-['open sans'] font-bold text-[12px] sm:text-[16px] text-[#242731]">
-                              {user?.cis_score}
-                            </span>
-                          </div>
-
-                          {/* Gradient definition */}
-                          <svg style={{ height: 0 }}>
-                            <defs>
-                              <linearGradient
-                                id="cisGradient"
-                                x1="1"
-                                y1="0"
-                                x2="0"
-                                y2="1"
-                              >
-                                <stop offset="0%" stopColor="#FFE88F" />
-                                <stop offset="100%" stopColor="#FFA96E" />
-                              </linearGradient>
-                            </defs>
-                          </svg>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  {user?.cis_score == 0 && (
-                    <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/40 rounded-[10px] shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
-                      <svg
-                        className="w-8 h-8 text-gray-700 opacity-80 mb-2"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fill="#4F46E5"
-                          d="M10 2a4 4 0 00-4 4v3H5a1 1 0 000 2h10a1 1 0 000-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v3H8V6z"
+              <div className="w-full sm:w-1/2 relative">
+                <Card className="w-full h-full border-[#eceef2] rounded-[10px] overflow-hidden">
+                  <CardHeader className="flex-row items-center justify-between border-b border-[#0000001a] pb-2 md:pb-3">
+                    <div className="flex items-center gap-2 md:gap-3.5">
+                      <div className="bg-[#e8cdfd33] w-8 h-8 md:w-[30px] md:h-[30px] flex items-center justify-center rounded-full">
+                        <img
+                          className="w-4 h-4 md:w-4 md:h-4"
+                          alt="CIS Score icon"
+                          src="https://c.animaapp.com/magahlmqpONVZN/img/frame-1.svg"
                         />
-                        <path
-                          fill="#4F46E5"
-                          d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"
-                        />
-                      </svg>
-                      <p className="text-sm text-gray-700 font-medium">
-                        CIS Score Locked
-                      </p>
+                      </div>
+                      <CardTitle className="text-sm md:text-base font-medium text-[#222224]">
+                        CIS Score
+                      </CardTitle>
                     </div>
-                  )}
-                </div>
+                  </CardHeader>
+                  <CardContent className="flex justify-center items-center pt-4 pb-4 md:pt-6 md:pb-6">
+                    <div className="flex justify-center sm:justify-start">
+                      <div className="relative w-[50px] h-[50px] sm:w-[70px] sm:h-[70px] md:w-[90px] md:h-[90px]">
+                        <CircularProgressbar
+                          value={user?.cis_score}
+                          strokeWidth={10}
+                          styles={buildStyles({
+                            rotation: 0.6,
+                            pathColor: "url(#cisGradient)",
+                            trailColor: "#F2F2F2",
+                            textColor: "#242731",
+                            pathTransitionDuration: 0.5,
+                          })}
+                        />
+                        {/* Custom-styled text overlaid manually */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="font-['open sans'] font-bold text-[12px] sm:text-[16px] text-[#242731]">
+                            {user?.cis_score}%
+                          </span>
+                        </div>
 
-                {/* Badge Card */}
-                <div className="w-full sm:w-1/2 relative">
-                  <Card className="w-full h-full border-[#eceef2] rounded-[10px] overflow-hidden">
-                    <CardHeader className="flex-row items-center justify-between border-b border-[#0000001a] pb-2 md:pb-3">
-                      <div className="flex items-center gap-2 md:gap-3.5">
-                        <div className="bg-[#FFCC0033] w-8 h-8 md:w-[30px] md:h-[30px] flex items-center justify-center rounded-full">
-                          <img
-                            className="w-6 h-6 md:w-4 md:h-4"
-                            alt="Badge icon"
-                            src={badgeicon}
-                          />
-                        </div>
-                        <CardTitle className="text-sm md:text-base font-medium text-[#222224]">
-                          Badge
-                        </CardTitle>
+                        {/* Gradient definition */}
+                        <svg style={{ height: 0 }}>
+                          <defs>
+                            <linearGradient
+                              id="cisGradient"
+                              x1="1"
+                              y1="0"
+                              x2="0"
+                              y2="1"
+                            >
+                              <stop offset="0%" stopColor="#FFE88F" />
+                              <stop offset="100%" stopColor="#FFA96E" />
+                            </linearGradient>
+                          </defs>
+                        </svg>
                       </div>
-                    </CardHeader>
-                    <CardContent className="py-3 md:py-[17px]">
-                      <div className="flex flex-col md:flex-row items-center justify-around gap-2">
-                        <div className="flex flex-col md:flex-column items-center gap-2 md:gap-[20px]">
-                          <img
-                            className="w-[136.22px] h-[74.58px]"
-                            alt={`${user?.level} Badge`}
-                            src={getBadgeImage(user?.level) || badgecness}
-                          />
-                          <div className="w-full md:w-[118.96px]">
-                            <p className="w-full py-1 bg-[#9747ff1a] rounded-[8px] text-center text-[#9747FF] font-medium text-sm">
-                              {user?.level}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  {!user?.level && (
-                    <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-[10px] shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
-                      <svg
-                        className="w-8 h-8 text-gray-700 opacity-80 mb-2"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fill="#4F46E5"
-                          d="M10 2a4 4 0 00-4 4v3H5a1 1 0 000 2h10a1 1 0 000-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v3H8V6z"
-                        />
-                        <path
-                          fill="#4F46E5"
-                          d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"
-                        />
-                      </svg>
-                      <p className="text-sm text-gray-700 font-medium">
-                        Badge Locked
-                      </p>
                     </div>
-                  )}
-                </div>
+                  </CardContent>
+                </Card>
+                {user?.cis_score == 0 && (
+                  <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/40 rounded-[10px] shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
+                    <svg
+                      className="w-8 h-8 text-gray-700 opacity-80 mb-2"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill="#4F46E5"
+                        d="M10 2a4 4 0 00-4 4v3H5a1 1 0 000 2h10a1 1 0 000-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v3H8V6z"
+                      />
+                      <path
+                        fill="#4F46E5"
+                        d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"
+                      />
+                    </svg>
+                    <p className="text-sm text-gray-700 font-medium">
+                      CIS Score Locked
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Badge Card */}
+              <div className="w-full sm:w-1/2 relative">
+                <Card className="w-full h-full border-[#eceef2] rounded-[10px] overflow-hidden">
+                  <CardHeader className="flex-row items-center justify-between border-b border-[#0000001a] pb-2 md:pb-3">
+                    <div className="flex items-center gap-2 md:gap-3.5">
+                      <div className="bg-[#FFCC0033] w-8 h-8 md:w-[30px] md:h-[30px] flex items-center justify-center rounded-full">
+                        <img
+                          className="w-6 h-6 md:w-4 md:h-4"
+                          alt="Badge icon"
+                          src={badgeicon}
+                        />
+                      </div>
+                      <CardTitle className="text-sm md:text-base font-medium text-[#222224]">
+                        Badge
+                      </CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="py-3 md:py-[17px]">
+                    <div className="flex flex-col md:flex-row items-center justify-around gap-2">
+                      <div className="flex flex-col md:flex-column items-center gap-2 md:gap-[20px]">
+                        <img
+                          className="w-24"
+                          alt="Badge vector"
+                          src={badgecness}
+                        />
+                        <div className="w-full md:w-[118.96px]">
+                          <p className="w-full py-1 bg-[#9747ff1a] rounded-[8px] text-center text-[#9747FF] font-medium text-sm">
+                            {user?.level}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                {!user?.level && (
+                  <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-[10px] shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
+                    <svg
+                      className="w-8 h-8 text-gray-700 opacity-80 mb-2"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill="#4F46E5"
+                        d="M10 2a4 4 0 00-4 4v3H5a1 1 0 000 2h10a1 1 0 000-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v3H8V6z"
+                      />
+                      <path
+                        fill="#4F46E5"
+                        d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"
+                      />
+                    </svg>
+                    <p className="text-sm text-gray-700 font-medium">
+                      Badge Locked
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

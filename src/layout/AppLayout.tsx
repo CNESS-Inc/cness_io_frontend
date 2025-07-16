@@ -1,7 +1,6 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { Suspense, useEffect, useState } from "react";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
-import CookieConsent from "../components/ui/CookieConsent";
 
 const AppLayout = () => {
   const navigate = useNavigate();
@@ -9,9 +8,9 @@ const AppLayout = () => {
 
   useEffect(() => {
     const checkAuth = () => {
-      const token = localStorage.getItem("jwt");
-      const completed_step = localStorage.getItem("completed_step");
-      if (!token || completed_step === "0") {
+      const token = localStorage.getItem("jwt"); 
+      const completed_step = localStorage.getItem("completed_step"); 
+      if (!token || completed_step === "0" || completed_step === null) {
         navigate("/");
       }
       setIsCheckingAuth(false);
@@ -20,11 +19,7 @@ const AppLayout = () => {
   }, [navigate]);
 
   if (isCheckingAuth) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
-        <LoadingSpinner />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
@@ -32,7 +27,6 @@ const AppLayout = () => {
       <Suspense fallback={<LoadingSpinner />}>
         <Outlet />
       </Suspense>
-      <CookieConsent /> {/* Add CookieConsent here */}
     </div>
   );
 };

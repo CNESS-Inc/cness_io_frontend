@@ -334,7 +334,7 @@ export default function SignupForm({
         <div className="text-center p-6 max-w-md">
           <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] ">
             <svg
-              className="h-30 w-30 text-white"
+              className="h-30 w-30 text-white animate-bounce"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
