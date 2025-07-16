@@ -22,8 +22,6 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useSearchParams } from "react-router-dom";
 
-
-
 const tabNames = [
   "Basic Information",
   "Contact Information",
@@ -914,7 +912,7 @@ const UserProfilePage = () => {
                     selectedIndex={selectedIndex}
                     onChange={setSelectedIndex}
                   >
-                    <div className="px-4 sm:px-6 pt-6">
+                    <div className="">
                       <div className="w-full overflow-x-auto no-scrollbar">
                         <div className="inline-block min-w-[900px] lg:min-w-full">
                           <Tab.List className="flex gap-2  flex-wrap sm:flex-nowrap overflow-x-auto no-scrollbar">
@@ -1051,7 +1049,7 @@ const UserProfilePage = () => {
                                       )
                                     );
                                   }}
-                                  className="react-select-container"
+                                  className="react-select-container rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2"
                                   classNamePrefix="react-select"
                                   placeholder="Select interests..."
                                 />
@@ -1133,13 +1131,13 @@ const UserProfilePage = () => {
                                         }
                                       }}
                                     />
-                                     <div className="mt-2">
-                                    <label
-                                      htmlFor="registrationFile"
-                                      className="px-4  py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
-                                    >
-                                      Verify Identity
-                                    </label>
+                                    <div className="mt-5">
+                                      <label
+                                        htmlFor="registrationFile"
+                                        className="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                                      >
+                                        Verify Identity
+                                      </label>
                                     </div>
                                   </>
                                 ) : basicInfoForm.watch("identify_uploaded") ==
@@ -1225,12 +1223,14 @@ const UserProfilePage = () => {
                                         }
                                       }}
                                     />
-                                    <label
-                                      htmlFor="registrationFile"
-                                      className="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
-                                    >
-                                      Verify Identity
-                                    </label>
+                                    <div className="mt-5">
+                                      <label
+                                        htmlFor="registrationFile"
+                                        className="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                                      >
+                                        Verify Identity
+                                      </label>
+                                    </div>
                                   </>
                                 )}
                               </div>
@@ -1244,14 +1244,15 @@ const UserProfilePage = () => {
                                   {...basicInfoForm.register("gender", {
                                     required: true,
                                   })}
-className="
+                                  className="
     w-full h-[41px] bg-white
     border border-gray-300 rounded-[12px]
     px-[12px] mt-2
     font-normal text-[14px] leading-5
     text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500
   "
-  style={{ fontFamily: 'Rubik, sans-serif' }}                                >
+                                  style={{ fontFamily: "Rubik, sans-serif" }}
+                                >
                                   <option value="">Select your gender</option>
                                   <option value="Male">Male</option>
                                   <option value="Female">Female</option>
@@ -1270,15 +1271,30 @@ className="
                                   {...basicInfoForm.register("dob", {
                                     required: true,
                                   })}
-                                  className="w-full px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                               />
+                                  onClick={(
+                                    e: React.MouseEvent<HTMLInputElement>
+                                  ) => e.currentTarget.showPicker()}
+                                  className={`w-full px-4 py-2 border bg-white ${
+                                    basicInfoForm.formState.errors.dob
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${
+                                    basicInfoForm.formState.errors.dob
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {basicInfoForm.formState.errors.dob && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {basicInfoForm.formState.errors.dob
+                                      .message || "This field is required"}
+                                  </p>
+                                )}
                               </div>
 
                               {/* Quote on Consciousness */}
                               <div>
-                                <label>
-                                  Your Quote on Consciousness
-                                </label>
+                                <label>Your Quote on Consciousness</label>
                                 <input
                                   type="text"
                                   {...basicInfoForm.register("quote")}
@@ -1305,7 +1321,7 @@ className="
 
                               {/* Professional Bio */}
                               <div>
-                                <label >
+                                <label>
                                   Professional Bio{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1362,7 +1378,7 @@ className="
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                  className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                  className="font-[Plus Jakarta Sans] bg-white flex justify-center w-full sm:w-auto text-[18px] px-6 py-3 rounded-full text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                   type="button"
                                   onClick={() => basicInfoForm.reset()}
                                 >
@@ -1370,7 +1386,7 @@ className="
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="w-full sm:w-auto rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
+                                  className="w-full sm:w-auto rounded-full py-3 flex justify-center px-8 transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   disabled={isSubmitting.basic}
                                 >
@@ -1399,6 +1415,7 @@ className="
                                 </label>
                                 <input
                                   type="tel"
+                                  placeholder="Enter Your Phone Number"
                                   {...contactInfoForm.register("phone", {
                                     required: "Phone number is required",
                                     pattern: {
@@ -1442,6 +1459,7 @@ className="
                                 </label>
                                 <input
                                   type="email"
+                                  placeholder="Enter Your Email "
                                   {...contactInfoForm.register("email", {
                                     required: "Email is required",
                                     pattern: {
@@ -1503,14 +1521,15 @@ className="
                                   {...contactInfoForm.register("country", {
                                     required: "Country is required",
                                   })}
-                              className="
+                                  className="
                                   w-full h-[41px]
+                                  bg-white
                                   border border-gray-300 rounded-[12px]
                                   px-[12px] mt-2
                                   font-normal text-[14px] leading-5
                                   text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500
                                 "
-                               >                               
+                                >
                                   <option value="">Select your country</option>
                                   Country
                                   {Country?.map((country: any) => (
@@ -1538,14 +1557,16 @@ className="
                                   {...contactInfoForm.register("state", {
                                     required: "State is required",
                                   })}
- className="
-    w-full h-[41px]
-    border border-gray-300 rounded-[12px]
-    px-[12px] mt-2
-    font-normal text-[14px] leading-5
-    text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500
-  "
-  style={{ fontFamily: 'Rubik, sans-serif' }}                                >
+                                  className="
+                                    w-full h-[41px]
+                                    bg-white
+                                    border border-gray-300 rounded-[12px]
+                                    px-[12px] mt-2
+                                    font-normal text-[14px] leading-5
+                                    text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500
+                                  "
+                                  style={{ fontFamily: "Rubik, sans-serif" }}
+                                >
                                   <option value="">Select your state</option>
                                   {states?.map((state: any) => (
                                     <option key={state.id} value={state.id}>
@@ -1650,7 +1671,7 @@ className="
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                  className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                  className="font-[Plus Jakarta Sans] flex justify-center w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                   type="button"
                                   onClick={() => contactInfoForm.reset()}
                                 >
@@ -1658,7 +1679,7 @@ className="
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="w-full sm:w-auto rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
+                                  className="w-full sm:w-auto rounded-full flex justify-center py-3 px-8 transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   disabled={isSubmitting.contact}
                                 >
@@ -1734,7 +1755,7 @@ className="
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                  className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                  className="font-[Plus Jakarta Sans] flex justify-center w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                   type="button"
                                   onClick={() => socialLinksForm.reset()}
                                 >
@@ -1742,7 +1763,7 @@ className="
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="w-full sm:w-auto rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
+                                  className="w-full sm:w-auto flex justify-center rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   disabled={isSubmitting.social}
                                 >
@@ -1981,7 +2002,7 @@ className="
                             <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                               <Button
                                 variant="white-outline"
-                                className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                className="font-[Plus Jakarta Sans] flex justify-center w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                 type="button"
                                 onClick={() => educationForm.reset()}
                               >
@@ -1989,7 +2010,7 @@ className="
                               </Button>
                               <Button
                                 variant="gradient-primary"
-                                className="w-full sm:w-auto rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
+                                className="w-full sm:w-auto flex justify-center rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
                                 type="submit"
                                 disabled={isSubmitting.education}
                               >
@@ -2232,7 +2253,7 @@ className="
                             <div className="md:col-span-2 flex flex-col sm:flex-row sm:justify-end items-center gap-4 mt-6">
                               <Button
                                 variant="white-outline"
-                                className="font-[Plus Jakarta Sans] w-full sm:w-auto max-w-[280px] text-[16px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                className="font-[Plus Jakarta Sans] flex justify-center w-full sm:w-auto max-w-[280px] text-[16px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                 type="button"
                                 onClick={() => workExperienceForm.reset()}
                               >
@@ -2240,7 +2261,7 @@ className="
                               </Button>
                               <Button
                                 variant="gradient-primary"
-                                className="w-full sm:w-auto max-w-[280px] rounded-full py-3 px-6 text-white text-[16px] font-semibold shadow-md transition duration-300 ease-in-out"
+                                className="w-full sm:w-auto flex justify-center max-w-[280px] rounded-full py-3 px-6 text-white text-[16px] font-semibold shadow-md transition duration-300 ease-in-out"
                                 type="submit"
                                 disabled={isSubmitting.work}
                               >
@@ -2324,7 +2345,6 @@ className="
                                   </span>
                                 </label>
                                 <input
-                                
                                   type="file"
                                   accept="image/*"
                                   {...publicProfileForm.register(
@@ -2359,64 +2379,92 @@ className="
                                         setShowCustomInput(true);
                                         setServiceInput("");
                                       } else if (e.target.value !== "") {
-          const trimmed = e.target.value.trim();
-          if (
-            trimmed &&
-            !services.includes(trimmed) &&
-            services.length < 20
-          ) {
-            const newServices = [...services, trimmed];
-            setServices(newServices);
-            publicProfileForm.setValue("services", newServices);
-            setServiceInput(""); // reset
-          }
-          setShowCustomInput(false);
-        }
+                                        const trimmed = e.target.value.trim();
+                                        if (
+                                          trimmed &&
+                                          !services.includes(trimmed) &&
+                                          services.length < 20
+                                        ) {
+                                          const newServices = [
+                                            ...services,
+                                            trimmed,
+                                          ];
+                                          setServices(newServices);
+                                          publicProfileForm.setValue(
+                                            "services",
+                                            newServices
+                                          );
+                                          setServiceInput(""); // reset
+                                        }
+                                        setShowCustomInput(false);
+                                      }
                                     }}
-                                   className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-    >
-      <option value="">Select a service</option>
-      {serviceData?.map((service: { id: string; name: string }) => (
-  <option key={service.id} value={service.id}>
-    {service.name}
-  </option>
-))}
-      <option value="other">Other (Add Custom Service)</option>
-    </select>
+                                    className="w-full px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  >
+                                    <option value="">Select a service</option>
+                                    {serviceData?.map(
+                                      (service: {
+                                        id: string;
+                                        name: string;
+                                      }) => (
+                                        <option
+                                          key={service.id}
+                                          value={service.id}
+                                        >
+                                          {service.name}
+                                        </option>
+                                      )
+                                    )}
+                                    <option value="other">
+                                      Other (Add Custom Service)
+                                    </option>
+                                  </select>
 
-    {showCustomInput && (
-      <>
-        <input
-          type="text"
-          value={customServiceInput}
-          onChange={(e) => setCustomServiceInput(e.target.value)}
-          placeholder="Enter custom service"
-          className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-        />
-        <button
-          type="button"
-          onClick={() => {
-            const trimmed = customServiceInput.trim();
-            if (
-              trimmed &&
-              !services.includes(trimmed) &&
-              services.length < 20
-            ) {
-              const newServices = [...services, trimmed];
-              setServices(newServices);
-              publicProfileForm.setValue("services", newServices);
-              setCustomServiceInput("");
-              setShowCustomInput(false);
-            }
-          }}
-          className="px-3 py-2 text-sm font-bold bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
-          disabled={services.length >= 20 || !customServiceInput}
-        >
-          +
-        </button>
-      </>
-    )}
-    </div>
+                                  {showCustomInput && (
+                                    <>
+                                      <input
+                                        type="text"
+                                        value={customServiceInput}
+                                        onChange={(e) =>
+                                          setCustomServiceInput(e.target.value)
+                                        }
+                                        placeholder="Enter custom service"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const trimmed =
+                                            customServiceInput.trim();
+                                          if (
+                                            trimmed &&
+                                            !services.includes(trimmed) &&
+                                            services.length < 20
+                                          ) {
+                                            const newServices = [
+                                              ...services,
+                                              trimmed,
+                                            ];
+                                            setServices(newServices);
+                                            publicProfileForm.setValue(
+                                              "services",
+                                              newServices
+                                            );
+                                            setCustomServiceInput("");
+                                            setShowCustomInput(false);
+                                          }
+                                        }}
+                                        className="px-3 py-2 text-sm font-bold bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
+                                        disabled={
+                                          services.length >= 20 ||
+                                          !customServiceInput
+                                        }
+                                      >
+                                        +
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
 
                                 {/* Display selected services */}
                                 {services.length > 0 && (
@@ -2538,7 +2586,7 @@ className="
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                  className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                  className="font-[Plus Jakarta Sans] flex justify-center w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                   type="button"
                                   onClick={() => publicProfileForm.reset()}
                                 >
@@ -2546,7 +2594,7 @@ className="
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="w-full sm:w-auto rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
+                                  className="w-full sm:w-auto rounded-full flex justify-center py-3 px-8 transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   disabled={isSubmitting.public}
                                 >
