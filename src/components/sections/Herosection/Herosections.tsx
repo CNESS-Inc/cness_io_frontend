@@ -11,7 +11,7 @@ const isLoggedIn = completed_step === "1" || completed_step === "2";
 
   const navigate = useNavigate();
   return (
-<section className="relative min-h-[600px] sm:min-h-[692px] py-12 sm:py-0 rounded-[12px] overflow-hidden mx-4 md:mx-8 lg:mx-[12px]">
+<section className="relative -z-1 min-h-[600px] sm:min-h-[692px] py-12 sm:py-0 rounded-[12px] overflow-hidden mx-4 md:mx-8 lg:mx-[12px]">
       <div className="absolute inset-0 z-[-2] bg-[#FAFAFA]" />
       {/* 🌈 Animated Canvas Background */}
       <HomeHeroBackground />
