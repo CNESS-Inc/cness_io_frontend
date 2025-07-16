@@ -254,7 +254,7 @@ summary::after {
   font-size: 0.875rem;
 }
 .react-select__control {
-width: 440px;
+/* width: 440px; */
  height: auto !important;
   border-radius: 12px;
   border-width: 0.82px;
@@ -441,7 +441,7 @@ input[type="email"],
 input[type="password"],
 
 select {
-  width: 440px;
+  /* width: 440px; */
   height: 41px;
   border-radius: 12px;
   border: 0.82px solid #ccc; /* fallback border */

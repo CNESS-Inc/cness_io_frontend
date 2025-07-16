@@ -1245,7 +1245,7 @@ const UserProfilePage = () => {
                                     required: true,
                                   })}
 className="
-    w-[440px] h-[41px]
+    w-full h-[41px] bg-white
     border border-gray-300 rounded-[12px]
     px-[12px] mt-2
     font-normal text-[14px] leading-5
@@ -1270,7 +1270,7 @@ className="
                                   {...basicInfoForm.register("dob", {
                                     required: true,
                                   })}
-                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  className="w-full px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                />
                               </div>
 
@@ -1339,7 +1339,7 @@ className="
                                   rows={4}
                                   {...basicInfoForm.register("vision")}
                                   placeholder="What is your conscious vision?"
-                                  className={`w-full px-4 py-2  border ${
+                                  className={`w-full px-4 py-2  border bg-white ${
                                     basicInfoForm.formState.errors.vision
                                       ? "border-red-500"
                                       : "border-gray-300"
@@ -1504,7 +1504,7 @@ className="
                                     required: "Country is required",
                                   })}
                               className="
-                                  w-[440px] h-[41px]
+                                  w-full h-[41px]
                                   border border-gray-300 rounded-[12px]
                                   px-[12px] mt-2
                                   font-normal text-[14px] leading-5
@@ -1539,7 +1539,7 @@ className="
                                     required: "State is required",
                                   })}
  className="
-    w-[440px] h-[41px]
+    w-full h-[41px]
     border border-gray-300 rounded-[12px]
     px-[12px] mt-2
     font-normal text-[14px] leading-5
