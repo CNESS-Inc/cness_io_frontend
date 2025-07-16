@@ -22,6 +22,8 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useSearchParams } from "react-router-dom";
 
+
+
 const tabNames = [
   "Basic Information",
   "Contact Information",
@@ -963,7 +965,7 @@ const UserProfilePage = () => {
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4 border border-[#ECEEF2] rounded-lg rounded-tl-none rounded-tr-none relative">
                               {/* First Name */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                <label>
                                   First Name{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -993,7 +995,7 @@ const UserProfilePage = () => {
 
                               {/* Last Name */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                <label>
                                   Last Name{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1023,7 +1025,7 @@ const UserProfilePage = () => {
 
                               {/* Interests */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                <label>
                                   Interests{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1062,7 +1064,7 @@ const UserProfilePage = () => {
 
                               {/* Profession */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                <label>
                                   Professions{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1131,12 +1133,14 @@ const UserProfilePage = () => {
                                         }
                                       }}
                                     />
+                                     <div className="mt-2">
                                     <label
                                       htmlFor="registrationFile"
-                                      className="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                                      className="px-4  py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
                                     >
                                       Verify Identity
                                     </label>
+                                    </div>
                                   </>
                                 ) : basicInfoForm.watch("identify_uploaded") ==
                                   1 ? (
@@ -1233,15 +1237,21 @@ const UserProfilePage = () => {
 
                               {/* Gender */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                <label>
                                   Gender <span className="text-red-500">*</span>
                                 </label>
                                 <select
                                   {...basicInfoForm.register("gender", {
                                     required: true,
                                   })}
-                                  className="w-full px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                >
+className="
+    w-[440px] h-[41px]
+    border border-gray-300 rounded-[12px]
+    px-[12px] mt-2
+    font-normal text-[14px] leading-5
+    text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500
+  "
+  style={{ fontFamily: 'Rubik, sans-serif' }}                                >
                                   <option value="">Select your gender</option>
                                   <option value="Male">Male</option>
                                   <option value="Female">Female</option>
@@ -1251,7 +1261,7 @@ const UserProfilePage = () => {
 
                               {/* Date of Birth */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                <label>
                                   Date of Birth{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1260,13 +1270,20 @@ const UserProfilePage = () => {
                                   {...basicInfoForm.register("dob", {
                                     required: true,
                                   })}
+<<<<<<< HEAD
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                               
+                               
+                               />
+=======
                                   className="w-full px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 />
+>>>>>>> 0d2b115d145cc3300c81a117cad7989e2217feae
                               </div>
 
                               {/* Quote on Consciousness */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                <label>
                                   Your Quote on Consciousness
                                 </label>
                                 <input
@@ -1295,7 +1312,7 @@ const UserProfilePage = () => {
 
                               {/* Professional Bio */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                <label >
                                   Professional Bio{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1329,7 +1346,7 @@ const UserProfilePage = () => {
                                   rows={4}
                                   {...basicInfoForm.register("vision")}
                                   placeholder="What is your conscious vision?"
-                                  className={`w-full px-4 py-2 border bg-white ${
+                                  className={`w-full px-4 py-2  border ${
                                     basicInfoForm.formState.errors.vision
                                       ? "border-red-500"
                                       : "border-gray-300"
@@ -1493,8 +1510,14 @@ const UserProfilePage = () => {
                                   {...contactInfoForm.register("country", {
                                     required: "Country is required",
                                   })}
-                                  className="w-full px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                >
+                              className="
+                                  w-[440px] h-[41px]
+                                  border border-gray-300 rounded-[12px]
+                                  px-[12px] mt-2
+                                  font-normal text-[14px] leading-5
+                                  text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500
+                                "
+                               >                               
                                   <option value="">Select your country</option>
                                   Country
                                   {Country?.map((country: any) => (
@@ -1522,8 +1545,14 @@ const UserProfilePage = () => {
                                   {...contactInfoForm.register("state", {
                                     required: "State is required",
                                   })}
-                                  className="w-full px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                >
+ className="
+    w-[440px] h-[41px]
+    border border-gray-300 rounded-[12px]
+    px-[12px] mt-2
+    font-normal text-[14px] leading-5
+    text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500
+  "
+  style={{ fontFamily: 'Rubik, sans-serif' }}                                >
                                   <option value="">Select your state</option>
                                   {states?.map((state: any) => (
                                     <option key={state.id} value={state.id}>
@@ -2302,6 +2331,7 @@ const UserProfilePage = () => {
                                   </span>
                                 </label>
                                 <input
+                                
                                   type="file"
                                   accept="image/*"
                                   {...publicProfileForm.register(
@@ -2335,103 +2365,65 @@ const UserProfilePage = () => {
                                       if (e.target.value === "other") {
                                         setShowCustomInput(true);
                                         setServiceInput("");
-                                      } else {
-                                        setShowCustomInput(false);
-                                        setServiceInput(e.target.value);
-                                      }
+                                      } else if (e.target.value !== "") {
+          const trimmed = e.target.value.trim();
+          if (
+            trimmed &&
+            !services.includes(trimmed) &&
+            services.length < 20
+          ) {
+            const newServices = [...services, trimmed];
+            setServices(newServices);
+            publicProfileForm.setValue("services", newServices);
+            setServiceInput(""); // reset
+          }
+          setShowCustomInput(false);
+        }
                                     }}
-                                    className="w-full px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                  >
-                                    <option value="">Select a service</option>
-                                    {serviceData?.map((service: any) => (
-                                      <option
-                                        key={service.id}
-                                        value={service.id}
-                                      >
-                                        {" "}
-                                        {/* Use service.name instead of id */}
-                                        {service.name}
-                                      </option>
-                                    ))}
-                                    <option value="other">
-                                      Other (Add Custom Service)
-                                    </option>
-                                  </select>
+                                   className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+    >
+      <option value="">Select a service</option>
+      {serviceData?.map((service: { id: string; name: string }) => (
+  <option key={service.id} value={service.id}>
+    {service.name}
+  </option>
+))}
+      <option value="other">Other (Add Custom Service)</option>
+    </select>
 
-                                  {showCustomInput ? (
-                                    <>
-                                      <input
-                                        type="text"
-                                        value={customServiceInput}
-                                        onChange={(e) =>
-                                          setCustomServiceInput(e.target.value)
-                                        }
-                                        placeholder="Enter custom service"
-                                        className="w-full px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                      />
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          const trimmed =
-                                            customServiceInput.trim();
-                                          if (
-                                            trimmed &&
-                                            !services.includes(trimmed) &&
-                                            services.length < 20
-                                          ) {
-                                            const newServices = [
-                                              ...services,
-                                              trimmed,
-                                            ];
-                                            setServices(newServices);
-                                            publicProfileForm.setValue(
-                                              "services",
-                                              newServices
-                                            ); // Update form value
-                                            setCustomServiceInput("");
-                                            setShowCustomInput(false);
-                                          }
-                                        }}
-                                        className="px-3 py-2 text-sm font-bold bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
-                                        disabled={
-                                          services.length >= 20 ||
-                                          !customServiceInput
-                                        }
-                                      >
-                                        +
-                                      </button>
-                                    </>
-                                  ) : (
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        const trimmed = serviceInput.trim();
-                                        if (
-                                          trimmed &&
-                                          !services.includes(trimmed) &&
-                                          services.length < 20
-                                        ) {
-                                          const newServices = [
-                                            ...services,
-                                            trimmed,
-                                          ];
-                                          setServices(newServices);
-                                          publicProfileForm.setValue(
-                                            "services",
-                                            newServices
-                                          ); // Update form value
-                                          setServiceInput("");
-                                        }
-                                      }}
-                                      className="px-3 py-2 text-sm font-bold bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
-                                      disabled={
-                                        services.length >= 20 || !serviceInput
-                                      }
-                                    >
-                                      +
-                                    </button>
-                                  )}
-                                </div>
+    {showCustomInput && (
+      <>
+        <input
+          type="text"
+          value={customServiceInput}
+          onChange={(e) => setCustomServiceInput(e.target.value)}
+          placeholder="Enter custom service"
+          className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
+        <button
+          type="button"
+          onClick={() => {
+            const trimmed = customServiceInput.trim();
+            if (
+              trimmed &&
+              !services.includes(trimmed) &&
+              services.length < 20
+            ) {
+              const newServices = [...services, trimmed];
+              setServices(newServices);
+              publicProfileForm.setValue("services", newServices);
+              setCustomServiceInput("");
+              setShowCustomInput(false);
+            }
+          }}
+          className="px-3 py-2 text-sm font-bold bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
+          disabled={services.length >= 20 || !customServiceInput}
+        >
+          +
+        </button>
+      </>
+    )}
+    </div>
 
                                 {/* Display selected services */}
                                 {services.length > 0 && (
@@ -2450,7 +2442,7 @@ const UserProfilePage = () => {
                                         return (
                                           <span
                                             key={`${serviceId}-${index}`}
-                                            className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm flex items-center"
+                                            className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-[14px] flex items-center"
                                           >
                                             {displayName}
                                             <button
@@ -2484,12 +2476,12 @@ const UserProfilePage = () => {
                                     {tags.map((tag, idx) => (
                                       <span
                                         key={idx}
-                                        className="flex items-center bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs"
+                                        className="flex items-center bg-[#f3f1ff] text-[#6269FF] px-3 py-1 rounded-full text-[14px]"
                                       >
                                         {tag}
                                         <button
                                           onClick={() => removeTag(idx)}
-                                          className="ml-1 text-purple-600 hover:text-red-500 font-bold"
+                                          className="ml-1 text-[#6269FF] hover:text-red-500 font-bold"
                                         >
                                           ×
                                         </button>

@@ -78,6 +78,7 @@ const DashboardNavbar = ({
       path: "/dashboard",
     },
     {
+        id: "TrueProfile",
       icon: <img src={iconMap["usericon"]} alt="Home Icon" className="w-5 h-5" />,
       label: "True Profile",
       active: false,
@@ -250,7 +251,8 @@ const DashboardNavbar = ({
     );
 
     const baseClasses = `
-  flex items-center gap-3 px-3 py-2.5 w-full rounded-xl cursor-pointer font-medium leading-[20px] 
+  flex items-center gap-3 px-3 py-2.5 w-full rounded-xl cursor-pointer 
+  font-poppins font-normal text-[14px] leading-[20px]
   transition duration-200 ease-in-out
   hover:translate-x-[2px] hover:text-black hover:bg-[#CDC1FF1A]
 `; const activeMainClasses = "bg-[#CDC1FF1A] text-[#9747FF] font-semibold";
@@ -287,10 +289,7 @@ const DashboardNavbar = ({
         <div className="w-full">
           <button
             onClick={() => {
-              setOpenDropdown(prev => ({
-                ...prev,
-                TrueProfile: !prev.TrueProfile
-              }));
+             setOpenDropdown({ [item.id]: true });
             }}
             className={`${baseClasses} ${isProfileActive || isProfileOpen ? activeMainClasses : inactiveMainClasses
               }`}
@@ -306,12 +305,12 @@ const DashboardNavbar = ({
           </button>
 
           {isProfileOpen && (
-            <div className="flex flex-col gap-1 mt-[2px] pl-8">
+            <div className="flex flex-col gap-1 mt-3 pl-8">
               <NavLink
                 to="/dashboard/user-profile"
 
                 className={({ isActive }) =>
-                  `px-3 py-[6px] rounded-lg w-full transition whitespace-nowrap ${isActive ? activeSubClasses : inactiveSubClasses
+                  `px-3 py-3 rounded-lg w-full transition whitespace-nowrap ${isActive ? activeSubClasses : inactiveSubClasses
                   }`
                 }
               >
@@ -321,7 +320,7 @@ const DashboardNavbar = ({
                 to="/dashboard/company-profile"
 
                 className={({ isActive }) =>
-                  `px-3 py-[6px] rounded-lg w-full transition whitespace-nowrap ${isActive ? activeSubClasses : inactiveSubClasses
+                  `px-3 py-3 rounded-lg w-full transition whitespace-nowrap ${isActive ? activeSubClasses : inactiveSubClasses
                   }`
                 }
               >
@@ -338,10 +337,7 @@ const DashboardNavbar = ({
         <div className="w-full">
           <button
             onClick={() => {
-              setOpenDropdown(prev => ({
-                ...prev,
-                [item.id]: !prev[item.id]
-              }));
+              setOpenDropdown({ [item.id]: !openDropdown[item.id] });
             }}
             className={`${baseClasses} ${isDropdownOpen || isActiveChild ? activeMainClasses : inactiveMainClasses
               }`}
@@ -355,14 +351,14 @@ const DashboardNavbar = ({
           </button>
 
           {isDropdownOpen && (
-            <div className="flex flex-col gap-1 mt-1 pl-8">
+            <div className="flex flex-col gap-1 mt-3 pl-8">
               {item.children.map((child: any, idx: number) => (
                 <NavLink
                   key={idx}
                   to={child.path}
 
                   className={({ isActive }) =>
-                    `px-4 py-2 w-full rounded-md transition whitespace-nowrap ${isActive ? activeSubClasses : inactiveSubClasses
+                    `px-4 py-3 w-full rounded-md transition whitespace-nowrap ${isActive ? activeSubClasses : inactiveSubClasses
                     }`
                   }
                 >
