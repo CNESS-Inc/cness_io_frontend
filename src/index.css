@@ -435,27 +435,27 @@ input::placeholder {
   }
 }
 
-
+/* Base - Desktop (default) */
 input[type="text"],
 input[type="email"],
 input[type="password"],
 input[type="date"],
-
 select {
-  /* width: 440px; */
   height: 41px;
   border-radius: 12px;
-  border: 0.82px solid #ccc; /* fallback border */
+  border: 0.82px solid #ccc;
   padding: 12px;
   font-family: 'Rubik', sans-serif;
   font-weight: 400;
   font-size: 14px;
   line-height: 100%;
-  letter-spacing: 0;
   color: #222224;
   outline: none;
+  width: 100%;
+  box-sizing: border-box;
 }
 
+/* Placeholders */
 input[type="text"]::placeholder,
 input[type="email"]::placeholder,
 input[type="password"]::placeholder,
@@ -467,7 +467,7 @@ textarea::placeholder {
   color: #aaa;
 }
 
-/* Focus state */
+/* Focus styles */
 input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="password"]:focus,
@@ -477,9 +477,48 @@ select:focus {
   box-shadow: 0 0 0 2px rgba(112, 119, 254, 0.2);
 }
 
+/* Margin after label */
 label + input,
 label + textarea,
 label + select,
 label + .react-select-container {
-  margin-top: 8px; /* same as mt-2 in tailwind (0.5rem = 8px) */
+  margin-top: 8px;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="date"],
+  select {
+    height: 38px;
+    padding: 10px;
+    font-size: 13px;
+  }
+  input[type="text"]::placeholder,
+  input[type="email"]::placeholder,
+  input[type="password"]::placeholder,
+  textarea::placeholder {
+    font-size: 13px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="date"],
+  select {
+    height: 35px;
+    padding: 8px;
+    font-size: 12px;
+  }
+  input[type="text"]::placeholder,
+  input[type="email"]::placeholder,
+  input[type="password"]::placeholder,
+  textarea::placeholder {
+    font-size: 12px;
+  }
 }
