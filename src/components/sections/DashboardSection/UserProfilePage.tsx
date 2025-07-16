@@ -1270,15 +1270,8 @@ className="
                                   {...basicInfoForm.register("dob", {
                                     required: true,
                                   })}
-<<<<<<< HEAD
                                   className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                               
-                               
                                />
-=======
-                                  className="w-full px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                />
->>>>>>> 0d2b115d145cc3300c81a117cad7989e2217feae
                               </div>
 
                               {/* Quote on Consciousness */}
