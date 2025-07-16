@@ -244,10 +244,10 @@ export default function Signingup() {
 
   return (
     <>
-      <div className="relative min-h-screen flex flex-col bg-white">
+<div className="flex flex-col min-h-screen relative">
         <div className="relative w-full h-[250px]">
           {/* Diagonal Gradient Background */}
-          <div className="absolute top-0 left-0 w-full h-[300px] sm:h-[400px] lg:h-[600px] z-0">
+    <div className="absolute top-0 left-0 w-full h-[600px] z-0">
             <div
               className="absolute top-0 left-0 w-full h-full"
               style={{
@@ -271,9 +271,8 @@ export default function Signingup() {
           </div>
         </div>
         {/* Sign In Form */}
-        <div className="min-h-screen flex flex-col">
-          <div className="absolute top-[100px] sm:top-[140px] md:top-[180px] left-0 right-0 flex justify-center z-10 px-4">
-            <div className="w-full max-w-[600px] bg-white rounded-2xl shadow-xl px-4 sm:px-10 py-8 sm:py-12 space-y-10">
+      <div className="flex-grow flex items-start justify-center -mt-32 z-20 relative px-4 sm:px-6">
+        <div className="w-full max-w-[600px] bg-white rounded-2xl shadow-xl px-4 sm:px-10 py-8 sm:py-12 space-y-10">
               <h2>Sign up</h2>
 
               {apiMessage && (
@@ -513,8 +512,10 @@ export default function Signingup() {
               </form>
             </div>
           </div>
+                <Fcopyright />
+
         </div>
-      </div>
+     
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <div className="text-center p-6 max-w-md">
           <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] ">
@@ -554,7 +555,6 @@ export default function Signingup() {
           </div>
         </div>
       </Modal>
-      <Fcopyright />
     </>
   );
 }

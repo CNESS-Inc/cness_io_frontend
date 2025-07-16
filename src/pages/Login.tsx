@@ -1217,9 +1217,9 @@ export default function Login() {
             <SignupAnimation />
           </div>
 
-   <div className="relative w-full h-[250px]">
-  <div className="absolute top-1 left-5 z-30 p-0">
-   <Link to="/">
+          <div className="relative w-full h-[250px]">
+  <       div className="absolute top-1 left-5 z-30 p-0">
+          <Link to="/">
                  <img
                    src={cnesslogo}
                    alt="logo"
@@ -1232,7 +1232,7 @@ export default function Login() {
         </div>
 
         {/* Sign In Form */}
-<div className="absolute top-[80px] sm:top-[120px] md:top-[160px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
+<div className="flex-grow flex items-start justify-center px-4 sm:px-6 -mt-32 z-20 relative">
  <div className="w-[576px] h-[650px] bg-white rounded-[24px] shadow-xl border border-gray-200 px-[42px] py-[52px] flex flex-col gap-8">
 
     <h2 className="text-left" >
@@ -1421,6 +1421,7 @@ export default function Login() {
             </form>
           </div>
         </div>
+     <Fcopyright />
       </div>
 
       {/* Type Selection Modal - only shows when activeModal is "type" */}
@@ -2680,9 +2681,11 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
               Got it!
             </Button>
           </div>
+
         </div>
+        
       </Modal>
-      <Fcopyright />
+         
     </>
   );
 }
