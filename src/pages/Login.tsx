@@ -1298,7 +1298,7 @@ export default function Login() {
                     placeholder="Enter your email"
                     onFocus={() => setEmailFocused(true)}
                     onBlur={() => setEmailFocused(false)}
-                    className={`w-full px-3 py-2 rounded-[12px] border ${
+                    className={`w-full px-3 py-2 h-[41px] rounded-[12px] border ${
                       loginErrors.email ? "border-red-500" : "border-[#CBD5E1]"
                     } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                   />
@@ -1331,7 +1331,7 @@ export default function Login() {
                     name="password"
                     required
                     placeholder="Enter your Password"
-                    className={`w-full px-3 py-2 rounded-[12px] border ${
+                    className={`w-full px-3 h-[41px] py-2 rounded-[12px] border ${
                       loginErrors.password
                         ? "border-red-500"
                         : "border-[#CBD5E1]"
@@ -2054,7 +2054,7 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
                             interests: selectedValues,
                           });
                         }}
-                        className="react-select-container"
+                        className="react-select-container h-[41px]"
                         classNamePrefix="react-select"
                         placeholder="Select interests..."
                         menuPortalTarget={document.body}
@@ -2105,7 +2105,7 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
                             professions: selectedValues,
                           });
                         }}
-                        className="react-select-container"
+                        className="react-select-container h-[41px]"
                         classNamePrefix="react-select"
                         placeholder="Select professions..."
                         menuPortalTarget={document.body}
@@ -2137,7 +2137,7 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
                               custom_profession: e.target.value,
                             })
                           }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          className="w-full px-3 py-2 h-[41px] border border-gray-300 rounded-md"
                           placeholder="Enter your profession"
                         />
                       </div>

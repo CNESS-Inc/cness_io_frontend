@@ -441,15 +441,15 @@ input[type="email"],
 input[type="password"],
 input[type="date"],
 select {
-  height: 41px;
+  /* height: 41px; */
   border-radius: 12px;
-  border: 0.82px solid #ccc;
-  padding: 12px;
+  /* border: 0.82px solid #ccc; */
+  /* padding: 12px; */
   font-family: 'Rubik', sans-serif;
   font-weight: 400;
   font-size: 14px;
   line-height: 100%;
-  color: #222224;
+  /* color: #222224; */
   outline: none;
   width: 100%;
   box-sizing: border-box;
@@ -468,14 +468,14 @@ textarea::placeholder {
 }
 
 /* Focus styles */
-input[type="text"]:focus,
+/* input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="password"]:focus,
 textarea:focus,
 select:focus {
   border-color: #7077FE;
   box-shadow: 0 0 0 2px rgba(112, 119, 254, 0.2);
-}
+} */
 
 /* Margin after label */
 label + input,

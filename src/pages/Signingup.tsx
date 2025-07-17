@@ -333,7 +333,7 @@ export default function Signingup() {
                     onChange={handleInputChange}
                     onFocus={() => setIsUsernameFocused(true)}
                     onBlur={() => setIsUsernameFocused(false)}
-                    className={`w-full px-3 py-2 rounded-[12px] border ${
+                    className={`w-full px-3 py-2 h-[41px] rounded-[12px] border ${
                       errors.username ? "border-red-500" : "border-[#CBD5E1]"
                     } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                   />
@@ -368,7 +368,7 @@ export default function Signingup() {
                     onChange={handleInputChange}
                     onFocus={() => setEmailFocused(true)}
                     onBlur={() => setEmailFocused(false)}
-                    className={`w-full px-3 py-2 rounded-[12px] border ${
+                    className={`w-full px-3 py-2 h-[41px] rounded-[12px] border ${
                       errors.email ? "border-red-500" : "border-[#CBD5E1]"
                     } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                   />
@@ -396,7 +396,7 @@ export default function Signingup() {
                       placeholder="Enter Your Password"
                       value={formValues.password}
                       onChange={handleInputChange}
-                      className={`w-full px-3 pr-10 py-2 rounded-[12px] border ${
+                      className={`w-full px-3 pr-10 h-[41px] py-2 rounded-[12px] border ${
                         errors.password ? "border-red-500" : "border-[#CBD5E1]"
                       } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                     />
@@ -435,7 +435,7 @@ export default function Signingup() {
                       placeholder="Confirm Your Password"
                       value={formValues.confirmPassword}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 rounded-[12px] border ${
+                      className={`w-full px-3 py-2 h-[41px] rounded-[12px] border ${
                         errors.confirmPassword
                           ? "border-red-500"
                           : "border-[#CBD5E1]"

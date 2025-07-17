@@ -23,6 +23,8 @@ import companylogo2 from './comlogo2.png';
 import aspcompany1 from './aspcom1.png';
 import aspcompany2 from './aspcom2.png';
 import herosection from './Hero section.png'
+import herosections from './banner3.png'
+
 // import companycard3 from './companycard3.jpg';
 // import companylogo3 from  './companylogo3.jpg';
 
@@ -60,6 +62,7 @@ export const iconMap: Record<string, string> = {
  domain13: domain13Icon,
   domain14: domain14Icon,
 heroimg: herosection,
+heroimgs: herosections,
 inslogo,
 companycard1,
 companycard2,
