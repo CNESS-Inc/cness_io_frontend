@@ -1,5 +1,5 @@
-import { FaCheck } from "react-icons/fa";
-import Lottie from 'lottie-react';
+import { FaCheck } from "react-icons/fa"; 
+import LottieOnView from "../../ui/LottieOnView";
 import Cardbg from '../../../assets/lottie-files/Cards/Card-bg.json';
 
 const Certification = () => {
@@ -45,10 +45,10 @@ const Certification = () => {
           </div>
 
           <div className='certificate-animation md:h-[100%] rounded-2xl lg:w-[40%] w-full lg:mt-0 mt-15 '>
-            <Lottie
+            <LottieOnView
               animationData={Cardbg}
               loop
-              autoplay
+              // autoplay
               // style={{width: "100%", height: 550 }}
               className="w-full lg:h-full lg:scale-120"
             />

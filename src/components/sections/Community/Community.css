@@ -168,7 +168,7 @@
   opacity: 0;
   transform: scale(0.6) translateY(50px);
   transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(10px);
+  /* backdrop-filter: blur(10px); */
   /* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); */
 }
 
@@ -201,9 +201,6 @@
   transition: all 0.3s ease;
 }
 
-.background-card.visible .bg-card-icon {
-  /* animation: iconRotate 2s ease-in-out infinite; */
-}
 
 .bg-card-icon img {
   border-radius: 16px;
@@ -310,17 +307,17 @@
   transform: translateY(0);
 }
 
-.main-image-container h2 {
+/* .main-image-container h2 {
   display: none;
 }
 
 .main-image-container.step-1 h2 {
   display: block;
-}
+} */
 
-.girl-img {
-  display: block;
-}
+  /* .girl-img {
+    display: block;
+  } */
 
 /* .main-image-container.step-1 .girl-img {
   display: block;
@@ -352,22 +349,26 @@
   width: 300px;
   height: 300px;
   top: 0;
-  left: 0;
+  left: 0; 
 }
 
 .main-image-container.step-3 .girl-img {
   width: 300px;
   height: 300px;
   top: -42px;
-  left: -15px;
+  left: -15px; 
 }
 
 .main-image-container.step-4 .girl-img {
   width: 250px;
   height: 250px;
   top: -40px;
-  left: -20px;
+  left: -20px; 
 }
+.main-community-image {
+  transition: opacity 0.7s ease-in-out;
+}
+
 
 /* Animation Keyframes */
 @keyframes fadeInUp {
@@ -564,7 +565,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .animation-container {
     height: 700px;
   }

@@ -1,6 +1,6 @@
 import Image from "../../ui/Image";
 import Button from "../../ui/Button";
-import Lottie from 'lottie-react';
+import LottieOnView from "../../ui/LottieOnView";
 import PurpuleCircle from '../../../assets/lottie-files/Circle-Beams/purpule-circle-out.json';
 
 
@@ -24,17 +24,17 @@ export default function MobileSection() {
           </div>
 
           <div className="lg:w-5/12 w-full overflow-hidden flex lg:justify-end justify-center relative">
-            <Lottie
+            <LottieOnView
               animationData={PurpuleCircle}
               loop
-              autoplay
+              // autoplay
               style={{ width: 420, height: 420 }}
             />
             <div className="absolute lg:right-[12%] lg:top-5 md:right-54 right-5 md:top-5 top-10">
               <Image
                 src="/mobile.png"
                 alt="Company Logo"
-                className="lg:w-40 lg:h-70 md:w-40 md:h-70 w-35 h-60 mt-[52px] ms-auto lg:me-16 md:me-16 me-20 object-contain"
+                className="lg:w-40 lg:h-70 md:w-40 md:h-70 w-35 h-60 lg:mt-[52px] md:mt-[52px] mt-[12px] ms-auto lg:me-16 md:me-21 me-20 object-contain"
 
               />
             </div>

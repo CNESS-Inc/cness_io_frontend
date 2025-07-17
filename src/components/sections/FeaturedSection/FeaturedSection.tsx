@@ -47,11 +47,11 @@ export default function FeaturedSection() {
     setImagesIn(0);
     setImagesMove(false);
    
-    timeouts.current.push(window.setTimeout(() => setStep(1), 800)); //1000
+    timeouts.current.push(window.setTimeout(() => setStep(1), 500)); //1000
    
-    timeouts.current.push(window.setTimeout(() => setStep(2), 1200)); //2200
+    timeouts.current.push(window.setTimeout(() => setStep(2), 1000)); //2200
     
-    timeouts.current.push(window.setTimeout(() => setStep(3), 1800)); //3400
+    timeouts.current.push(window.setTimeout(() => setStep(3), 1500)); //3400
    
     timeouts.current.push(window.setTimeout(() => {
       setStep(4);
@@ -126,9 +126,9 @@ export default function FeaturedSection() {
                     ? "opacity-100 scale-105 "
                     : imagesMove
                     ? `opacity-100 -rotate-45 ` 
-                    : "opacity-0 scale-90 ")
+                    : "opacity-0 scale-90")
                 }
-                style={{ zIndex: 2, transitionDelay: `${i * 0.18}s` }}
+                style={{ zIndex: 2, transitionDelay: `${i * 0.1}s` }}
               >
                 <Image
                   src={thumb.src}

@@ -1,6 +1,6 @@
 import Button from "../../ui/Button";
 import Image from "../../ui/Image";
-import Lottie from 'lottie-react';
+import LottieOnView from "../../ui/LottieOnView";
 import NotificationPop from '../../../assets/lottie-files/Notification-Pop/not-out.json'
 import Socialicons from '../../../assets/lottie-files/Icons/Social-icons.json';
 
@@ -30,16 +30,16 @@ export default function SocialMedia() {
             className="w-14 h-14 mt-[52px] media-img object-cover"
             
           />
-          <Lottie
+          <LottieOnView
             animationData={NotificationPop}
             loop
-            autoplay
+            // autoplay
             className="absolute lg:top-0 md:top-0 lg:left-0 md:left-0 lg:w-120 lg:h-120 md:w-60 md:h-80 w-90 -top-20 -left-5"
           />
-          <Lottie
+          <LottieOnView
             animationData={Socialicons}
             loop
-            autoplay
+            // autoplay
             style={{ width: 200, height: 200 }}
             className="absolute lg:bottom-20 lg:right-25 bottom-10 right-0 lg:block md:block hidden "
           />
