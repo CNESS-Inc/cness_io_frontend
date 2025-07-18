@@ -246,7 +246,10 @@ export const router = createBrowserRouter([
           },
           {
             path: "bestpractices",
-            element: <BestPracticesHub />,
+        element:
+        import.meta.env.VITE_ENV_STAGE === "test"
+          ? <BestPracticesHub />
+          : <ComingSoon />,
           },
           {
             path: "bestpractices/:id/:slug",
