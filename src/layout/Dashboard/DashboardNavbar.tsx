@@ -43,7 +43,7 @@ const DashboardNavbar = ({
   const [openDropdown, setOpenDropdown] = useState<{ [key: string]: boolean }>({});
   const showFilterSidebar =
     currentPath.includes("/dashboard/DashboardDirectory/technology") ||
-    currentPath.includes("/dashboard/search_listing");
+    currentPath.includes("/dashboard/search-listing");
 
 
 
@@ -110,9 +110,9 @@ const DashboardNavbar = ({
       active: true,
       path: "/dashboard/DashboardDirectory",
       isDirectoryDropdown: true,
-      childPaths: ["/dashboard/search_listing"],
+      childPaths: ["/dashboard/search-listing"],
       children: [
-        { label: "Search Listing", path: "/dashboard/search_listing" },
+        { label: "Search Listing", path: "/dashboard/search-listing" },
         { label: "Edit Public Listing", path: "/dashboard/editpubliclisting" },
 
       ],
@@ -139,11 +139,11 @@ const DashboardNavbar = ({
   ],
 },
     {
-      id: "market_place",
+      id: "market-place",
       icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
       label: "Market Place",
       active: true,
-      path: "/dashboard/market_place",
+      path: "/dashboard/market-place",
       isMarketplaceDropdown: true,
       childPaths: ["/dashboard/DigitalProducts"],
       children: [
@@ -416,7 +416,7 @@ const DashboardNavbar = ({
       >
         <div className="flex flex-col h-full overflow-y-auto font-poppins leading-[20px]">
           <div className="flex items-center justify-between w-full py-[18px] px-4 md:px-6">
-            <Link to="/">
+            <Link to="/dashboard">
               <img
                 className="w-[108.12px] h-[46.51px]"
                 alt="Company Logo"

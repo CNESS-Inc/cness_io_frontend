@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import CompanyCard from "../components/ui/CompanyCard";
 import { iconMap } from "../assets/icons";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
-  GetDomainDetails,
+  GetProfessionalDetails,
   GetUsersearchProfileDetails,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -39,8 +39,9 @@ export default function DashboardTechnology() {
   const [error, setError] = useState<string | null>(null);
   const [selectedDomainText, setSelectedDomainText] = useState("All Domains");
   const [textWidth, setTextWidth] = useState(0);
-  console.log("🚀 ~ DashboardTechnology ~ textWidth:", textWidth)
+  console.log("🚀 ~ DashboardTechnology ~ textWidth:", textWidth);
   const measureRef = useRef<HTMLSpanElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (measureRef.current) {
@@ -79,6 +80,7 @@ export default function DashboardTechnology() {
             isCertified: Math.random() > 0.5,
             is_organization: company?.is_organization,
             is_person: company?.is_person,
+            level: company?.level?.level,
           }))
           .sort((a: Company, b: Company) => {
             if (sort === "az") return a.name.localeCompare(b.name);
@@ -102,12 +104,12 @@ export default function DashboardTechnology() {
 
   const fetchDomain = async () => {
     try {
-      const res = await GetDomainDetails();
+      const res = await GetProfessionalDetails();
       setDomain(res?.data?.data);
-      const foundDomain = res?.data?.data?.find((d: any) => d.slug === domain);
-      if (foundDomain) {
-        setSelectedDomain(foundDomain.slug);
-      }
+      // const foundDomain = res?.data?.data?.find((d: any) => d.slug === domain);
+      // if (foundDomain) {
+      //   setSelectedDomain(foundDomain.slug);
+      // }
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message,
@@ -198,7 +200,7 @@ export default function DashboardTechnology() {
         />
 
         <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 py-8 md:py-20 max-w-4xl mx-auto">
-          <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-800 mb-4">
+          <h1 className="text-center font-poppins font-semibold mb-6 text-[32px] leading-[100%] tracking-[0px] bg-gradient-to-b from-[#4E4E4E] to-[#232323] bg-clip-text text-transparent">
             Conscious Search Stops here.
           </h1>
 
@@ -207,16 +209,16 @@ export default function DashboardTechnology() {
             {/* Domain Selector - now full width on mobile */}
             <div className="relative rounded-full">
               <span
-                className="invisible rounded-full md:rounded-full absolute whitespace-nowrap font-semibold px-3 md:px-4 text-sm md:text-base"
+                className="invisible rounded-full text-[12px] md:rounded-full absolute whitespace-nowrap font-semibold px-3 md:px-4 md:text-base"
                 ref={measureRef}
               >
                 {selectedDomainText || "All Domains"}
               </span>
 
               <select
-                className="bg-[#7077FE] py-2 rounded-full md:rounded-full text-white h-full w-full font-semibold px-3 md:px-4 appearance-none focus:outline-none cursor-pointer text-center text-sm md:text-base"
+                className="bg-[#7077FE] py-2 rounded-full text-[12px] md:rounded-full text-white h-full w-full font-semibold px-3 md:px-4 appearance-none focus:outline-none cursor-pointer "
                 style={{
-                  width: `${textWidth + (window.innerWidth < 768 ? 24 : 32)}px`,
+                  width: `${textWidth}px`,
                   maxWidth: "100%",
                 }}
                 value={selectedDomain}
@@ -228,19 +230,19 @@ export default function DashboardTechnology() {
                 }}
               >
                 <option value="" className="text-white">
-                  All Domains
+                  All Profession
                 </option>
                 {Domain.map((domain: any) => (
                   <option
                     key={domain.id}
-                    value={domain.slug}
+                    value={domain.id}
                     className="text-white"
                   >
-                    {domain.name}
+                    {domain.title}
                   </option>
                 ))}
               </select>
-              <div className="absolute top-1.5 right-2 text-white text-xs pointer-events-none">
+              <div className="absolute top-1.5 right-2 text-white text-xs pointer-events-none hidden sm:block">
                 ▼
               </div>
             </div>
@@ -261,7 +263,10 @@ export default function DashboardTechnology() {
           </div>
 
           <p className="text-gray-700 text-sm mt-4 md:mt-6">
-            <span className="font-medium text-[#F07EFF] underline cursor-pointer">
+            <span
+              className="font-medium text-[#F07EFF] underline cursor-pointer"
+              onClick={() => navigate("/dashboard/company-profile")}
+            >
               List your company now
             </span>{" "}
             and connect with conscious audience
@@ -270,7 +275,7 @@ export default function DashboardTechnology() {
       </section>
 
       <div className="w-full max-w-[2100px] mx-auto py-6">
-        <main className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8 items-stretch px-4">
+        <main className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-8 items-stretch px-4">
           {isLoading ? (
             <div className="col-span-full flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
@@ -285,7 +290,11 @@ export default function DashboardTechnology() {
             </div>
           ) : (
             companies.map((company) => (
-              <CompanyCard key={company.id} {...company} />
+              <CompanyCard
+                key={company.id}
+                {...company}
+                routeKey={company.id}
+              />
             ))
           )}
         </main>
