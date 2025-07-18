@@ -35,8 +35,7 @@ const Notification: React.FC = () => {
   };
 
   useEffect(() => {
-  getNotification();
-     
+    getNotification();
   }, []);
 
   const formatTime = (dateString: string) => {
@@ -75,7 +74,7 @@ const Notification: React.FC = () => {
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Notification Panel */}
-      <aside className="w-[540px] bg-white border-r border-gray-200 p-4 overflow-y-auto">
+      <aside className="w-[440px] bg-white border-r border-gray-200 p-4 overflow-y-auto">
         <div className="space-y-4">
           {notifications.length > 0 ? (
             notifications.map((notification) => (
@@ -84,8 +83,8 @@ const Notification: React.FC = () => {
                 onClick={() => setSelectedNotification(notification)}
                 className={`cursor-pointer p-4 rounded-lg shadow-sm border transform transition hover:-translate-y-1 hover:shadow-md ${
                   !notification.is_read
-                    ? 'bg-purple-100 border-purple-200'
-                    : 'bg-gray-50 border-gray-100'
+                    ? 'bg-purple-100 border-purple-500'
+                    : 'bg-gray-50 border-gray-200'
                 }`}
               >
                 <div className="flex justify-between items-start">
@@ -110,7 +109,7 @@ const Notification: React.FC = () => {
                     >
                       <FiX size={14} />
                     </button>
-                    <span className="text-[10px] text-gray-400 mb-1">
+                    <span className="text-xs text-gray-500 mb-1">
                       {formatTime(notification.createdAt)}
                     </span>
                   </div>

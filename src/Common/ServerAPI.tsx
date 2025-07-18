@@ -22,6 +22,13 @@ type RegisterFormData = {
   username: string;
   email: string;
   password: string;
+  referral_code: string;
+};
+type GenerateAffiliateFromData = {
+  user_id: string;
+};
+type getReferredUsersFromData = {
+  referralcode: string;
 };
 type AccountFormData = {
   plan_id: string;
@@ -62,8 +69,8 @@ export const ServerAPI = {
 
 export const API = {
   //  BaseUrl: "http://192.168.1.29:5025/api", //local
-  //BaseUrl: "http://localhost:5025/api", //local
-  BaseUrl: import.meta.env.VITE_API_BASE_URL || "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api",
+  BaseUrl: "http://localhost:3000/api", //local
+  // BaseUrl: import.meta.env.VITE_API_BASE_URL || "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api",
 };
 
 export const EndPoint = {
@@ -136,6 +143,8 @@ export const EndPoint = {
   singleBp: "/best-practice/get",
   user_notification: "/notification",
   logout: "/auth/logout",
+  gernerate_affiliate_code: "/profile/user/generate_referral_code",
+  get_my_referrals: "/profile/user/getmyreferrals",
 };
 
 export const GoogleLoginDetails = async (googleToken: string): ApiResponse => {
@@ -190,8 +199,24 @@ export const RegisterDetails = (formData: RegisterFormData): ApiResponse => {
     username: formData?.username,
     email: formData?.email,
     password: formData?.password,
+    referral_code: formData?.referral_code,
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.register);
+};
+
+export const GenerateAffiliateCode = (formData: GenerateAffiliateFromData): ApiResponse => {
+  const data: Partial<GenerateAffiliateFromData> = {
+    user_id: formData?.user_id,
+  };
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.gernerate_affiliate_code);
+};
+
+export const getReferredUsers = (formData: getReferredUsersFromData): ApiResponse => {
+  // const data: Partial<getReferredUsersFromData> = {
+  //   referralcode: formData?.referralcode,
+  // };
+  
+  return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.get_my_referrals}?referralcode=${formData.referralcode}`);
 };
 
 export const AccountDetails = (formData: AccountData): ApiResponse => {

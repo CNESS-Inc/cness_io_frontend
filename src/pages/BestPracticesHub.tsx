@@ -6,16 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import Button from "../components/ui/Button";
 import Modal from "../components/ui/Modal"; // Assuming you have a Modal component
-import cnesslogo from "../assets/cnesslogo.png";
-import certifiedbadge from "../assets/indv_aspiring.svg";
-import banner from "../assets/companycard1.png";
-import like from "../assets/like.svg";
-import comment from "../assets/comment.svg";
 
-const truncateText = (text: string, maxLength: number): string => {
-  if (!text) return '';
-  return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
-};
 type Company = {
   file: any;
   title: string;
@@ -275,28 +266,28 @@ const handleSearch = () => {
             Find Your Conscious Best Practices here.
           </h1>
 
-<div className="w-full max-w-3xl mx-auto bg-white border border-gray-200 rounded-full flex flex-nowrap items-center px-3 py-2 shadow-sm gap-2">
-<div className="relative">
+          <div className="w-full max-w-2xl bg-white border border-gray-200 rounded-full flex items-center px-3 py-2 shadow-sm gap-2 mt-2">
+            <div className="relative">
               <select
-  className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold rounded-full px-4 py-2 appearance-none focus:outline-none cursor-pointer w-[130px] text-center"
+                className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold rounded-full px-4 py-2 w-[180px] sm:w-[220px] text-center appearance-none cursor-pointer"
                 value=""
                 onChange={handleProfessionChange}
               >
-                <option value="">Profession</option>
+                <option value="">Explore</option>
                 {profession.map((prof: any) => (
                   <option key={prof.id} value={prof.id} className="text-black">
                     {prof.title}
                   </option>
                 ))}
               </select>
-  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white text-xs pointer-events-none">
+              <div className="absolute top-2.5 right-3 text-white text-xs pointer-events-none">
                 ▼
               </div>
             </div>
 
             <div className="relative flex-grow">
               <input
-               
+                type="text"
                 placeholder="Find & Choose your perfect organization"
                 className="w-full px-4 py-2 pr-10 text-sm text-gray-700 placeholder:text-gray-400 bg-transparent outline-none"
                 value={searchText}
@@ -331,7 +322,7 @@ const handleSearch = () => {
             <h2 className="text-xl font-semibold mb-4">Best Practices</h2>
             <Button
               variant="gradient-primary"
-  className="w-[168px] h-[45px] rounded-[100px] px-6 py-4 text-[18px] leading-[100%] font-medium font-[Plus Jakarta Sans] text-center tracking-[0px] transition-colors duration-500 ease-in-out whitespace-nowrap flex items-center justify-center"
+              className="rounded-[100px] py-2 px-8 self-stretch transition-colors duration-500 ease-in-out"
               onClick={openModal}
             >
               Add Best Practices
@@ -343,78 +334,53 @@ const handleSearch = () => {
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : bestPractices.length > 0 ? (
-<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
               {bestPractices?.map((company) => (
                 <div
                   key={company.id}
+                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
                   onClick={() => navigate(`/dashboard/bestpractices/${company.id}/${slugify(company.title)}`)}
-  className="w-[359px] h-[388px]  border border-gray-200 rounded-[12px] bg-white p-4 shadow-sm cursor-pointer hover:shadow-md transition-all flex flex-col justify-between"
-
-
-
                 >
-
-                  {/* Badge or Logo */}
-<img
-  src={company.isCertified ? certifiedbadge : cnesslogo}
-  alt="Badge"
-  className="absolute top-2 right-2 w-8 h-8 rounded-full border border-white shadow-md z-10"
-/>
-<div className="flex items-center gap-3 mb-3">
-      <img
-        src={company.user.profilePicture}
-        className="w-10 h-10 rounded-full object-cover"
-        alt={company.user.username}
-      />
-      <div>
-        <h3 className="font-semibold text-sm">{company.user.firstName} {company.user.lastName}</h3>
-        <p className="text-xs text-gray-500">{company.location}</p>
-                <p className="text-xs text-gray-500">{company.profession}</p>
-
-      </div>
-  </div>
                   {company.file && (
                     <img
                       src={company.file}
                       alt={company.title}
-                      className="w-full h-40 object-cover rounded-md mb-3"
+                      className="w-full h-48 object-cover"
                     />
                   )}
-
-{/* Second image: Best Practice Banner or Default */}
-  <img
-    src={banner}
-    alt="Best Practice Banner"
-    className="w-full h-[150px] object-cover rounded-md mb-3"
-  />
-
-{/* About + Description */}
-
-
-  <h4 className="text-sm font-semibold mb-1 text-gray-700">About</h4>
-    <p className="text-sm text-gray-600">
-  {truncateText(company.description, 80)}
- 
-    <span className="text-[#F07EFF] underline">Read More
-  
-  </span>
-</p>
-   
-
-
-  {/* Like / Comment Bottom Right */}
-  <div className="flex justify-end gap-4 pt-4 text-sm text-gray-500">
-    <div className="flex items-center gap-1">
-      <img src={like} alt="Like Icon" className="w-6 h-6" />
-      <span>{company?.likesCount || 0}</span>
-    </div>
-    <div className="flex items-center gap-1">
-      <img src={comment} alt="Comment Icon" className="w-6 h-6" />
-      <span>{company?.commentsCount || 0}</span>
-    </div>
-  </div>
-</div>
-               
+                  <div className="p-4">
+                    <div className="flex items-center mb-3">
+                      <img
+                        src={company.user.profilePicture}
+                        alt={company.user.username}
+                        className="w-10 h-10 rounded-full object-cover mr-3"
+                      />
+                      <div>
+                        <h3 className="font-semibold">
+                          {company.user.firstName} {company.user.lastName}
+                        </h3>
+                        <p className="text-sm text-gray-500 break-all">
+                          @{company.user.username}
+                        </p>
+                      </div>
+                    </div>
+                    <h3 className="text-lg font-bold mb-2">{company.title}</h3>
+                    <p className="text-gray-600 mb-4 line-clamp-3">
+                      {company.description}
+                    </p>
+                    <div className="flex justify-between items-center text-sm text-gray-500">
+                      <span>{company.profession}</span>
+                      <div className="flex space-x-4">
+                        <span className="flex items-center">
+                          ♥️ {company.likesCount}
+                        </span>
+                        <span className="flex items-center">
+                          💬 {company.commentsCount}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           ) : (
