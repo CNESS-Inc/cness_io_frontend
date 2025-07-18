@@ -262,10 +262,10 @@ const DashboardNavbar = ({
   font-poppins font-normal text-[14px] leading-[20px]
   transition duration-200 ease-in-out
   hover:translate-x-[2px] hover:text-black hover:bg-[#CDC1FF1A]
-`; const activeMainClasses = "text-gray-500  bg-[#CDC1FF1A] text-[#9747FF] font-poppins font-normal text-[14px]";
+`; const activeMainClasses = "bg-[#CDC1FF1A] text-[#9747FF] font-poppins font-normal text-[14px]";
     const inactiveMainClasses = "text-gray-500 hover:text-black font-poppins font-normal text-[14px]";
-    const activeSubClasses = "text-gray-400 text-[#F07EFF] font-poppins font-normal text-[14px]";
-    const inactiveSubClasses = "text-gray-400 hover:text-[#F07EFF] font-poppins font-normal text-[14px] transition duration-200 ease-in-out hover:translate-x-[2px]";
+    const activeSubClasses = "text-[#F07EFF]  font-poppins font-normal text-[14px]";
+    const inactiveSubClasses = "text-gray-500 text-[14px] hover:text-[#F07EFF]font-poppins font-normal transition duration-200 ease-in-out hover:translate-x-[2px]";
 
     const content = (
       <>
@@ -296,7 +296,10 @@ const DashboardNavbar = ({
         <div className="w-full">
           <button
             onClick={() => {
-             setOpenDropdown({ [item.id]: true });
+             setOpenDropdown(prev => ({
+            ...prev,
+            [item.id]: !prev[item.id],
+          }));
             }}
             className={`${baseClasses} ${isProfileActive || isProfileOpen ? activeMainClasses : inactiveMainClasses
               }`}

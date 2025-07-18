@@ -282,7 +282,7 @@ const handleSearch = () => {
                 value=""
                 onChange={handleProfessionChange}
               >
-                <option value="">Profession</option>
+                <option value="">Explore</option>
                 {profession.map((prof: any) => (
                   <option key={prof.id} value={prof.id} className="text-black">
                     {prof.title}
