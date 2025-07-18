@@ -846,7 +846,7 @@ const UserProfilePage = () => {
                       />
                       <PhotoIcon className="w-5 h-5 text-gray-600" />
                     </label>
-                    {banner && (
+                    { banner && banner !== "http://localhost:5026/file/" && (
                       <button
                         onClick={() => setBanner(null)}
                         className="bg-white p-2 rounded-full shadow hover:bg-red-100"
@@ -859,15 +859,20 @@ const UserProfilePage = () => {
                   <div className="absolute -bottom-0 left-6 sm:left-10 z-20 group">
                     <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100">
                       <img
-  src={logoPreview && logoPreview !== "http://localhost:5026/file/" ? logoPreview : "/profile.png"}
-  alt="Profile"
-  className="object-cover w-full h-full"
-  onError={(e) => {
-    // Fallback if the image fails to load
-    const target = e.target as HTMLImageElement;
-    target.src = "/profile.png";
-  }}
-/>
+                        src={
+                          logoPreview &&
+                          logoPreview !== "http://localhost:5026/file/"
+                            ? logoPreview
+                            : "/profile.png"
+                        }
+                        alt="Profile"
+                        className="object-cover w-full h-full"
+                        onError={(e) => {
+                          // Fallback if the image fails to load
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/profile.png";
+                        }}
+                      />
                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <div className="flex gap-2">
                           <label
@@ -884,7 +889,8 @@ const UserProfilePage = () => {
                             />
                             <PhotoIcon className="w-4 h-4 text-gray-600" />
                           </label>
-                          {logoPreview && (
+                          {logoPreview &&
+                          logoPreview !== "http://localhost:5026/file/" && (
                             <button
                               onClick={() => setLogoPreview(null)}
                               className="bg-white p-1.5 rounded-full shadow hover:bg-red-100"
@@ -899,7 +905,7 @@ const UserProfilePage = () => {
                   </div>
                 </div>
                 <div className="max-w-6xl mx-auto px-6 py-10">
-                  <h2 className="text-[24px] font-bold text-[#9747FF] mb-6">
+                  <h2 className="text-[24px] poppins font-bold text-[#9747FF] mb-6">
                     My Profile
                   </h2>
 
@@ -907,18 +913,37 @@ const UserProfilePage = () => {
                     selectedIndex={selectedIndex}
                     onChange={setSelectedIndex}
                   >
-                    <div className="px-4 sm:px-6 pt-6">
-                      <div className="w-full overflow-x-auto no-scrollbar px-2 sm:px-4">
+                    <div className="">
+                      <div className="w-full overflow-x-auto no-scrollbar ">
                         <div className="inline-block min-w-[900px] lg:min-w-full">
-                          <Tab.List className="flex gap-3 flex-wrap sm:flex-nowrap overflow-x-auto no-scrollbar px-2">
+                          <Tab.List className="flex gap-2 items-end sm:flex-nowrap overflow-x-auto no-scrollbar">
                             {tabNames.map((tab, index) => (
                               <Tab
                                 key={index}
                                 className={({ selected }) =>
-                                  `px-4 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 focus:outline-none ${
+                                  `flex-shrink-0 
+                                  min-w-[120px] 
+                                  max-w-[200px] 
+                                  text-sm 
+                                  font-medium 
+                                  poppins
+                                  py-2.5 
+                                  px-4 
+                                  rounded-lg 
+                                  rounded-bl-none
+                                  rounded-br-none
+                                  whitespace-nowrap 
+                                  overflow-hidden 
+                                  text-ellipsis 
+                                  text-center
+                                  transition-all 
+                                  duration-200 
+                                  focus:outline-none
+                                  border
+                                  ${
                                     selected
-                                      ? "text-purple-600 bg-white shadow-md border-t-2 border-x-2 border-purple-600 -mb-[1px]"
-                                      : "text-gray-500 bg-transparent hover:text-purple-500"
+                                      ? "text-purple-600 h-[50px] bg-[#F8F3FF] shadow-md border-[#ECEEF2] border-b-0 transform"
+                                      : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
                                   }`
                                 }
                               >
@@ -930,17 +955,17 @@ const UserProfilePage = () => {
                       </div>
                       {/* Tab Content Panel */}
 
-                      <Tab.Panels className="pt-6">
+                      <Tab.Panels className="">
                         <Tab.Panel>
                           <form
                             onSubmit={basicInfoForm.handleSubmit(
                               handleBasicInfoSubmit
                             )}
                           >
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative">
                               {/* First Name */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                <label>
                                   First Name{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -948,7 +973,7 @@ const UserProfilePage = () => {
                                   type="text"
                                   {...basicInfoForm.register("firstName")}
                                   placeholder="Enter your First Name"
-                                  className={`w-full px-4 py-2 border ${
+                                  className={`w-full px-4 py-2 h-[41px] border bg-white ${
                                     basicInfoForm.formState.errors.firstName
                                       ? "border-red-500"
                                       : "border-gray-300"
@@ -970,7 +995,7 @@ const UserProfilePage = () => {
 
                               {/* Last Name */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                <label>
                                   Last Name{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -978,7 +1003,7 @@ const UserProfilePage = () => {
                                   type="text"
                                   {...basicInfoForm.register("lastName")}
                                   placeholder="Enter your Last Name"
-                                  className={`w-full px-4 py-2 border ${
+                                  className={`w-full px-4 py-2 border h-[41px] bg-white ${
                                     basicInfoForm.formState.errors.lastName
                                       ? "border-red-500"
                                       : "border-gray-300"
@@ -1000,7 +1025,7 @@ const UserProfilePage = () => {
 
                               {/* Interests */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                <label>
                                   Interests{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1026,7 +1051,7 @@ const UserProfilePage = () => {
                                       )
                                     );
                                   }}
-                                  className="react-select-container"
+                                  className="react-select-container h-[41px] rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2"
                                   classNamePrefix="react-select"
                                   placeholder="Select interests..."
                                 />
@@ -1039,7 +1064,7 @@ const UserProfilePage = () => {
 
                               {/* Profession */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                <label>
                                   Professions{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1065,7 +1090,7 @@ const UserProfilePage = () => {
                                       )
                                     );
                                   }}
-                                  className="react-select-container"
+                                  className="react-select-container h-[41px] rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2"
                                   classNamePrefix="react-select"
                                   placeholder="Select professions..."
                                 />
@@ -1108,16 +1133,18 @@ const UserProfilePage = () => {
                                         }
                                       }}
                                     />
-                                    <label
-                                      htmlFor="registrationFile"
-                                      className="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
-                                    >
-                                      Verify Identity
-                                    </label>
+                                    <div className="mt-5">
+                                      <label
+                                        htmlFor="registrationFile"
+                                        className="px-4 py-2 h-[41px] bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                                      >
+                                        Verify Identity
+                                      </label>
+                                    </div>
                                   </>
                                 ) : basicInfoForm.watch("identify_uploaded") ==
                                   1 ? (
-                                  <span className="px-4 py-2 bg-green-50 border border-green-200 rounded-xl text-sm font-medium text-green-600 flex items-center">
+                                  <span className="px-4 py-2 h-[41px] bg-green-50 border border-green-200 rounded-xl text-sm font-medium text-green-600 flex items-center">
                                     <svg
                                       className="w-4 h-4 mr-1"
                                       fill="none"
@@ -1136,7 +1163,7 @@ const UserProfilePage = () => {
                                   </span>
                                 ) : basicInfoForm.watch("identify_uploaded") ==
                                   2 ? (
-                                  <span className="px-4 py-2 bg-red-50 border border-red-200 rounded-xl text-sm font-medium text-red-600 flex items-center">
+                                  <span className="px-4 py-2 h-[41px] bg-red-50 border border-red-200 rounded-xl text-sm font-medium text-red-600 flex items-center">
                                     <svg
                                       className="w-4 h-4 mr-1"
                                       fill="none"
@@ -1155,7 +1182,7 @@ const UserProfilePage = () => {
                                   </span>
                                 ) : basicInfoForm.watch("identify_uploaded") ==
                                   0 ? (
-                                  <span className="px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-xl text-sm font-medium text-yellow-600 flex items-center">
+                                  <span className="px-4 py-2 h-[41px] bg-yellow-50 border border-yellow-200 rounded-xl text-sm font-medium text-yellow-600 flex items-center">
                                     <svg
                                       className="w-4 h-4 mr-1"
                                       fill="none"
@@ -1198,26 +1225,35 @@ const UserProfilePage = () => {
                                         }
                                       }}
                                     />
-                                    <label
-                                      htmlFor="registrationFile"
-                                      className="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
-                                    >
-                                      Verify Identity
-                                    </label>
+                                    <div className="mt-5">
+                                      <label
+                                        htmlFor="registrationFile"
+                                        className="px-4 py-2 h-[41px] bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                                      >
+                                        Verify Identity
+                                      </label>
+                                    </div>
                                   </>
                                 )}
                               </div>
 
                               {/* Gender */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                <label>
                                   Gender <span className="text-red-500">*</span>
                                 </label>
                                 <select
                                   {...basicInfoForm.register("gender", {
                                     required: true,
                                   })}
-                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  className="
+    w-full h-[41px] bg-white
+    border border-gray-300 rounded-[12px]
+    px-[12px] mt-2
+    font-normal text-[14px] leading-5
+    text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500
+  "
+                                  style={{ fontFamily: "Rubik, sans-serif" }}
                                 >
                                   <option value="">Select your gender</option>
                                   <option value="Male">Male</option>
@@ -1228,7 +1264,7 @@ const UserProfilePage = () => {
 
                               {/* Date of Birth */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                <label>
                                   Date of Birth{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1237,23 +1273,38 @@ const UserProfilePage = () => {
                                   {...basicInfoForm.register("dob", {
                                     required: true,
                                   })}
-                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  onClick={(
+                                    e: React.MouseEvent<HTMLInputElement>
+                                  ) => e.currentTarget.showPicker()}
+                                  className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                    basicInfoForm.formState.errors.dob
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${
+                                    basicInfoForm.formState.errors.dob
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
                                 />
+                                {basicInfoForm.formState.errors.dob && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {basicInfoForm.formState.errors.dob
+                                      .message || "This field is required"}
+                                  </p>
+                                )}
                               </div>
 
                               {/* Quote on Consciousness */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-800 mb-2">
-                                  Your Quote on Consciousness
-                                </label>
+                                <label>Your Quote on Consciousness</label>
                                 <input
                                   type="text"
                                   {...basicInfoForm.register("quote")}
                                   placeholder="Enter your quote"
-                                  className={`w-full px-4 py-2 border ${
+                                  className={`w-full px-4 py-2 h-[41px] border bg-white ${
                                     basicInfoForm.formState.errors.quote
                                       ? "border-red-500"
-                                      : "border-purple-400"
+                                      : "border-gray-300"
                                   } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
                                     basicInfoForm.formState.errors.quote
                                       ? "focus:ring-red-500"
@@ -1272,7 +1323,7 @@ const UserProfilePage = () => {
 
                               {/* Professional Bio */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                <label>
                                   Professional Bio{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1280,11 +1331,11 @@ const UserProfilePage = () => {
                                   type="text"
                                   {...basicInfoForm.register("bio")}
                                   placeholder="Add a short professional bio"
-                                  className={`w-full px-4 py-2 border ${
+                                  className={`w-full px-4 py-2 border bg-white ${
                                     basicInfoForm.formState.errors.bio
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                  } rounded-xl h-[41px] text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
                                     basicInfoForm.formState.errors.bio
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
@@ -1306,7 +1357,7 @@ const UserProfilePage = () => {
                                   rows={4}
                                   {...basicInfoForm.register("vision")}
                                   placeholder="What is your conscious vision?"
-                                  className={`w-full px-4 py-2 border ${
+                                  className={`w-full px-4 py-2  border bg-white ${
                                     basicInfoForm.formState.errors.vision
                                       ? "border-red-500"
                                       : "border-gray-300"
@@ -1329,7 +1380,7 @@ const UserProfilePage = () => {
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                  className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                  className="font-[Plus Jakarta Sans] bg-white flex justify-center w-full sm:w-auto text-[18px] px-6 py-3 rounded-full text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                   type="button"
                                   onClick={() => basicInfoForm.reset()}
                                 >
@@ -1337,7 +1388,7 @@ const UserProfilePage = () => {
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="w-full sm:w-auto rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
+                                  className="w-full sm:w-auto rounded-full py-3 flex justify-center px-8 transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   disabled={isSubmitting.basic}
                                 >
@@ -1357,7 +1408,7 @@ const UserProfilePage = () => {
                               handleContactInfoSubmit
                             )}
                           >
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4 rounded-lg rounded-tl-none rounded-tr-none relative">
                               {/* Phone Number */}
                               <div>
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1366,6 +1417,7 @@ const UserProfilePage = () => {
                                 </label>
                                 <input
                                   type="tel"
+                                  placeholder="Enter Your Phone Number"
                                   {...contactInfoForm.register("phone", {
                                     required: "Phone number is required",
                                     pattern: {
@@ -1382,11 +1434,11 @@ const UserProfilePage = () => {
                                       e.preventDefault();
                                     }
                                   }}
-                                  className={`w-full px-4 py-2 border ${
+                                  className={`w-full px-4 py-2 border bg-white ${
                                     contactInfoForm.formState.errors.phone
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl focus:outline-none focus:ring-2 ${
+                                  } rounded-xl h-[41px] focus:outline-none focus:ring-2 ${
                                     contactInfoForm.formState.errors.phone
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
@@ -1409,6 +1461,7 @@ const UserProfilePage = () => {
                                 </label>
                                 <input
                                   type="email"
+                                  placeholder="Enter Your Email "
                                   {...contactInfoForm.register("email", {
                                     required: "Email is required",
                                     pattern: {
@@ -1416,11 +1469,11 @@ const UserProfilePage = () => {
                                       message: "Enter a valid email",
                                     },
                                   })}
-                                  className={`w-full px-4 py-2 border ${
+                                  className={`w-full px-4 py-2 border bg-white ${
                                     contactInfoForm.formState.errors.email
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl focus:outline-none focus:ring-2 ${
+                                  } rounded-xl focus:outline-none h-[41px] focus:ring-2 ${
                                     contactInfoForm.formState.errors.email
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
@@ -1448,7 +1501,7 @@ const UserProfilePage = () => {
                                     required: "Address is required",
                                   })}
                                   placeholder="Enter your address"
-                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 />
                                 {contactInfoForm.formState.errors.address && (
                                   <p className="text-sm text-red-500 mt-1">
@@ -1470,7 +1523,14 @@ const UserProfilePage = () => {
                                   {...contactInfoForm.register("country", {
                                     required: "Country is required",
                                   })}
-                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  className="
+                                  w-full h-[41px]
+                                  bg-white
+                                  border border-gray-300 rounded-[12px]
+                                  px-[12px] mt-2
+                                  font-normal text-[14px] leading-5
+                                  text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500
+                                "
                                 >
                                   <option value="">Select your country</option>
                                   Country
@@ -1499,7 +1559,15 @@ const UserProfilePage = () => {
                                   {...contactInfoForm.register("state", {
                                     required: "State is required",
                                   })}
-                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  className="
+                                    w-full h-[41px]
+                                    bg-white
+                                    border border-gray-300 rounded-[12px]
+                                    px-[12px] mt-2
+                                    font-normal text-[14px] leading-5
+                                    text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500
+                                  "
+                                  style={{ fontFamily: "Rubik, sans-serif" }}
                                 >
                                   <option value="">Select your state</option>
                                   {states?.map((state: any) => (
@@ -1527,7 +1595,7 @@ const UserProfilePage = () => {
                                   type="text"
                                   {...contactInfoForm.register("city")}
                                   placeholder="Enter city"
-                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 />
                               </div>
 
@@ -1543,7 +1611,7 @@ const UserProfilePage = () => {
                                     required: "Postal code is required",
                                   })}
                                   placeholder="Enter postal code"
-                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  className="w-full px-4 py-2 border h-[41px] bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 />
                                 {contactInfoForm.formState.errors
                                   .postalCode && (
@@ -1605,7 +1673,7 @@ const UserProfilePage = () => {
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                  className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                  className="font-[Plus Jakarta Sans] flex justify-center w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                   type="button"
                                   onClick={() => contactInfoForm.reset()}
                                 >
@@ -1613,7 +1681,7 @@ const UserProfilePage = () => {
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="w-full sm:w-auto rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
+                                  className="w-full sm:w-auto rounded-full flex justify-center py-3 px-8 transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   disabled={isSubmitting.contact}
                                 >
@@ -1633,7 +1701,7 @@ const UserProfilePage = () => {
                               handleSocialLinksSubmit
                             )}
                           >
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative">
                               {/* Facebook */}
                               <div>
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1643,7 +1711,7 @@ const UserProfilePage = () => {
                                   type="url"
                                   {...socialLinksForm.register("facebook")}
                                   placeholder="Enter Facebook profile URL"
-                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  className="w-full px-4 py-2 h-[41px] border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 />
                               </div>
 
@@ -1656,7 +1724,7 @@ const UserProfilePage = () => {
                                   type="url"
                                   {...socialLinksForm.register("twitter")}
                                   placeholder="Enter Twitter profile URL"
-                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  className="w-full px-4 py-2 h-[41px] border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 />
                               </div>
 
@@ -1669,7 +1737,7 @@ const UserProfilePage = () => {
                                   type="url"
                                   {...socialLinksForm.register("linkedin")}
                                   placeholder="Enter LinkedIn profile URL"
-                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  className="w-full px-4 py-2 h-[41px] border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 />
                               </div>
 
@@ -1682,14 +1750,14 @@ const UserProfilePage = () => {
                                   type="url"
                                   {...socialLinksForm.register("instagram")}
                                   placeholder="Enter Instagram profile URL"
-                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  className="w-full px-4 py-2 h-[41px] border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 />
                               </div>
 
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                  className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                  className="font-[Plus Jakarta Sans] flex justify-center w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                   type="button"
                                   onClick={() => socialLinksForm.reset()}
                                 >
@@ -1697,7 +1765,7 @@ const UserProfilePage = () => {
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="w-full sm:w-auto rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
+                                  className="w-full sm:w-auto flex justify-center rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   disabled={isSubmitting.social}
                                 >
@@ -1722,7 +1790,7 @@ const UserProfilePage = () => {
                               ?.map((_education, index) => (
                                 <div
                                   key={index}
-                                  className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative"
+                                  className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative"
                                 >
                                   {/* Add remove button */}
                                   {index > 0 && (
@@ -1769,12 +1837,12 @@ const UserProfilePage = () => {
                                         `educations.${index}.degree`
                                       )}
                                       placeholder="Enter your degree"
-                                      className={`w-full px-4 py-2 border ${
+                                      className={`w-full px-4 py-2 border bg-white ${
                                         educationForm.formState.errors
                                           ?.educations?.[index]?.degree
                                           ? "border-red-500"
                                           : "border-gray-300"
-                                      } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                      } rounded-xl h-[41px] text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
                                         educationForm.formState.errors
                                           ?.educations?.[index]?.degree
                                           ? "focus:ring-red-500"
@@ -1804,7 +1872,7 @@ const UserProfilePage = () => {
                                         `educations.${index}.institution`
                                       )}
                                       placeholder="Enter institution name"
-                                      className={`w-full px-4 py-2 border ${
+                                      className={`w-full h-[41px] px-4 py-2 border bg-white ${
                                         educationForm.formState.errors
                                           ?.educations?.[index]?.institution
                                           ? "border-red-500"
@@ -1839,7 +1907,7 @@ const UserProfilePage = () => {
                                       {...educationForm.register(
                                         `educations.${index}.start_date`
                                       )}
-                                      className={`w-full px-4 py-2 border ${
+                                      className={`w-full h-[41px] px-4 py-2 border bg-white ${
                                         educationForm.formState.errors
                                           ?.educations?.[index]?.start_date
                                           ? "border-red-500"
@@ -1873,7 +1941,7 @@ const UserProfilePage = () => {
                                       {...educationForm.register(
                                         `educations.${index}.end_date`
                                       )}
-                                      className={`w-full px-4 py-2 border ${
+                                      className={`w-full h-[41px] px-4 py-2 border bg-white ${
                                         educationForm.formState.errors
                                           ?.educations?.[index]?.end_date
                                           ? "border-red-500"
@@ -1936,7 +2004,7 @@ const UserProfilePage = () => {
                             <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                               <Button
                                 variant="white-outline"
-                                className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                className="font-[Plus Jakarta Sans] flex justify-center w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                 type="button"
                                 onClick={() => educationForm.reset()}
                               >
@@ -1944,7 +2012,7 @@ const UserProfilePage = () => {
                               </Button>
                               <Button
                                 variant="gradient-primary"
-                                className="w-full sm:w-auto rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
+                                className="w-full sm:w-auto flex justify-center rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
                                 type="submit"
                                 disabled={isSubmitting.education}
                               >
@@ -1968,7 +2036,7 @@ const UserProfilePage = () => {
                               ?.map((_experience, index) => (
                                 <div
                                   key={index}
-                                  className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative"
+                                  className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative"
                                 >
                                   {/* Add remove button */}
                                   {index > 0 && (
@@ -2015,7 +2083,7 @@ const UserProfilePage = () => {
                                         `workExperiences.${index}.company`
                                       )}
                                       placeholder="Enter Company Name"
-                                      className={`w-full px-4 py-2 border ${
+                                      className={`w-full h-[41px] px-4 py-2 border bg-white ${
                                         workExperienceForm.formState.errors
                                           ?.workExperiences?.[index]?.company
                                           ? "border-red-500"
@@ -2051,7 +2119,7 @@ const UserProfilePage = () => {
                                         `workExperiences.${index}.position`
                                       )}
                                       placeholder="Enter your Designation"
-                                      className={`w-full px-4 py-2 border ${
+                                      className={`w-full h-[41px] px-4 py-2 border bg-white ${
                                         workExperienceForm.formState.errors
                                           ?.workExperiences?.[index]?.position
                                           ? "border-red-500"
@@ -2086,7 +2154,7 @@ const UserProfilePage = () => {
                                       {...workExperienceForm.register(
                                         `workExperiences.${index}.start_date`
                                       )}
-                                      className={`w-full px-4 py-2 border ${
+                                      className={`w-full h-[41px] px-4 py-2 border bg-white ${
                                         workExperienceForm.formState.errors
                                           ?.workExperiences?.[index]?.start_date
                                           ? "border-red-500"
@@ -2121,7 +2189,7 @@ const UserProfilePage = () => {
                                       {...workExperienceForm.register(
                                         `workExperiences.${index}.end_date`
                                       )}
-                                      className={`w-full px-4 py-2 border ${
+                                      className={`w-full h-[41px] px-4 py-2 border bg-white ${
                                         workExperienceForm.formState.errors
                                           ?.workExperiences?.[index]?.end_date
                                           ? "border-red-500"
@@ -2187,7 +2255,7 @@ const UserProfilePage = () => {
                             <div className="md:col-span-2 flex flex-col sm:flex-row sm:justify-end items-center gap-4 mt-6">
                               <Button
                                 variant="white-outline"
-                                className="font-[Plus Jakarta Sans] w-full sm:w-auto max-w-[280px] text-[16px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                className="font-[Plus Jakarta Sans] flex justify-center w-full sm:w-auto max-w-[280px] text-[16px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                 type="button"
                                 onClick={() => workExperienceForm.reset()}
                               >
@@ -2195,7 +2263,7 @@ const UserProfilePage = () => {
                               </Button>
                               <Button
                                 variant="gradient-primary"
-                                className="w-full sm:w-auto max-w-[280px] rounded-full py-3 px-6 text-white text-[16px] font-semibold shadow-md transition duration-300 ease-in-out"
+                                className="w-full sm:w-auto flex justify-center max-w-[280px] rounded-full py-3 px-6 text-white text-[16px] font-semibold shadow-md transition duration-300 ease-in-out"
                                 type="submit"
                                 disabled={isSubmitting.work}
                               >
@@ -2214,7 +2282,7 @@ const UserProfilePage = () => {
                               handlePublicProfileSubmit
                             )}
                           >
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative">
                               {/* Title */}
                               <div className="md:col-span-2">
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -2226,7 +2294,7 @@ const UserProfilePage = () => {
                                   })}
                                   rows={3}
                                   placeholder="Enter a brief title or role"
-                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  className="w-full px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 />
                                 {publicProfileForm.formState.errors.title && (
                                   <p className="text-sm text-red-500 mt-1">
@@ -2257,7 +2325,7 @@ const UserProfilePage = () => {
                                   })}
                                   rows={5}
                                   placeholder="Tell us about yourself, your services, and your approach..."
-                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  className="w-full px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 />
                                 {publicProfileForm.formState.errors.aboutUs && (
                                   <p className="text-sm text-red-500 mt-1">
@@ -2284,7 +2352,7 @@ const UserProfilePage = () => {
                                   {...publicProfileForm.register(
                                     "featuredImage"
                                   )}
-                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 />
                               </div>
 
@@ -2312,30 +2380,49 @@ const UserProfilePage = () => {
                                       if (e.target.value === "other") {
                                         setShowCustomInput(true);
                                         setServiceInput("");
-                                      } else {
+                                      } else if (e.target.value !== "") {
+                                        const trimmed = e.target.value.trim();
+                                        if (
+                                          trimmed &&
+                                          !services.includes(trimmed) &&
+                                          services.length < 20
+                                        ) {
+                                          const newServices = [
+                                            ...services,
+                                            trimmed,
+                                          ];
+                                          setServices(newServices);
+                                          publicProfileForm.setValue(
+                                            "services",
+                                            newServices
+                                          );
+                                          setServiceInput(""); // reset
+                                        }
                                         setShowCustomInput(false);
-                                        setServiceInput(e.target.value);
                                       }
                                     }}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                   >
                                     <option value="">Select a service</option>
-                                    {serviceData?.map((service: any) => (
-                                      <option
-                                        key={service.id}
-                                        value={service.id}
-                                      >
-                                        {" "}
-                                        {/* Use service.name instead of id */}
-                                        {service.name}
-                                      </option>
-                                    ))}
+                                    {serviceData?.map(
+                                      (service: {
+                                        id: string;
+                                        name: string;
+                                      }) => (
+                                        <option
+                                          key={service.id}
+                                          value={service.id}
+                                        >
+                                          {service.name}
+                                        </option>
+                                      )
+                                    )}
                                     <option value="other">
                                       Other (Add Custom Service)
                                     </option>
                                   </select>
 
-                                  {showCustomInput ? (
+                                  {showCustomInput && (
                                     <>
                                       <input
                                         type="text"
@@ -2364,7 +2451,7 @@ const UserProfilePage = () => {
                                             publicProfileForm.setValue(
                                               "services",
                                               newServices
-                                            ); // Update form value
+                                            );
                                             setCustomServiceInput("");
                                             setShowCustomInput(false);
                                           }
@@ -2378,35 +2465,6 @@ const UserProfilePage = () => {
                                         +
                                       </button>
                                     </>
-                                  ) : (
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        const trimmed = serviceInput.trim();
-                                        if (
-                                          trimmed &&
-                                          !services.includes(trimmed) &&
-                                          services.length < 20
-                                        ) {
-                                          const newServices = [
-                                            ...services,
-                                            trimmed,
-                                          ];
-                                          setServices(newServices);
-                                          publicProfileForm.setValue(
-                                            "services",
-                                            newServices
-                                          ); // Update form value
-                                          setServiceInput("");
-                                        }
-                                      }}
-                                      className="px-3 py-2 text-sm font-bold bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
-                                      disabled={
-                                        services.length >= 20 || !serviceInput
-                                      }
-                                    >
-                                      +
-                                    </button>
                                   )}
                                 </div>
 
@@ -2427,7 +2485,7 @@ const UserProfilePage = () => {
                                         return (
                                           <span
                                             key={`${serviceId}-${index}`}
-                                            className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm flex items-center"
+                                            className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-[14px] flex items-center"
                                           >
                                             {displayName}
                                             <button
@@ -2456,17 +2514,17 @@ const UserProfilePage = () => {
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
                                   Tags <span className="text-red-500">*</span>
                                 </label>
-                                <div className="w-full border border-gray-300 rounded-xl px-3 py-2">
+                                <div className="w-full border border-gray-300 bg-white rounded-xl px-3 py-2">
                                   <div className="flex flex-wrap gap-2 mb-1">
                                     {tags.map((tag, idx) => (
                                       <span
                                         key={idx}
-                                        className="flex items-center bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs"
+                                        className="flex items-center bg-[#f3f1ff] text-[#6269FF] px-3 py-1 rounded-full text-[14px]"
                                       >
                                         {tag}
                                         <button
                                           onClick={() => removeTag(idx)}
-                                          className="ml-1 text-purple-600 hover:text-red-500 font-bold"
+                                          className="ml-1 text-[#6269FF] hover:text-red-500 font-bold"
                                         >
                                           ×
                                         </button>
@@ -2475,7 +2533,7 @@ const UserProfilePage = () => {
                                   </div>
                                   <input
                                     type="text"
-                                    className="w-full text-sm focus:outline-none placeholder-gray-400"
+                                    className="w-full text-sm bg-white focus:outline-none placeholder-gray-400"
                                     placeholder="Add tags (e.g. therapy, online, free-consult)"
                                     value={inputValue}
                                     onChange={(e) =>
@@ -2494,6 +2552,7 @@ const UserProfilePage = () => {
                                 </label>
                                 <input
                                   type="email"
+                                  placeholder="Enter Yor notify Email"
                                   {...publicProfileForm.register(
                                     "notifyEmail",
                                     {
@@ -2504,7 +2563,7 @@ const UserProfilePage = () => {
                                       },
                                     }
                                   )}
-                                  className={`w-full px-4 py-2 border ${
+                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
                                     publicProfileForm.formState.errors
                                       .notifyEmail
                                       ? "border-red-500"
@@ -2530,7 +2589,7 @@ const UserProfilePage = () => {
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                  className="font-[Plus Jakarta Sans] w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                  className="font-[Plus Jakarta Sans] flex justify-center w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
                                   type="button"
                                   onClick={() => publicProfileForm.reset()}
                                 >
@@ -2538,7 +2597,7 @@ const UserProfilePage = () => {
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="w-full sm:w-auto rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
+                                  className="w-full sm:w-auto rounded-full flex justify-center py-3 px-8 transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   disabled={isSubmitting.public}
                                 >

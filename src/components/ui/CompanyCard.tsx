@@ -9,6 +9,7 @@ import {
 
 import { iconMap } from "../../assets/icons";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 interface CompanyCardProps {
   id: string;
@@ -63,7 +64,9 @@ export default function CompanyCard({
   is_person,
   is_organization,
 }: CompanyCardProps) {
+  console.log("🚀 ~ rating:", rating);
   const navigate = useNavigate();
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
   const handleCardClick = () => {
     if (is_person) {
@@ -71,6 +74,17 @@ export default function CompanyCard({
     } else if (is_organization) {
       navigate(`/directory/company-profile/${id}`);
     }
+  };
+
+  const maxDescriptionLength = 100;
+  const truncatedDescription =
+    description.length > maxDescriptionLength
+      ? description.substring(0, maxDescriptionLength) + "..."
+      : description;
+
+  const toggleDescription = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowFullDescription(!showFullDescription);
   };
   return (
     <Card
@@ -87,9 +101,18 @@ export default function CompanyCard({
       <CardHeader className="px-4 pt-4 pb-0 relative z-0">
         <div className="flex items-start gap-1 pr-12">
           <img
-            src={logoUrl}
+            src={
+              logoUrl && logoUrl !== "http://localhost:5026/file/"
+                ? logoUrl
+                : "/profile.png"
+            }
             alt={`${name} logo`}
             className="h-8 w-8 rounded-full"
+            onError={(e) => {
+              // Fallback if the image fails to load
+              const target = e.target as HTMLImageElement;
+              target.src = "/profile.png";
+            }}
           />
           <div>
             <CardTitle className="text-sm font-semibold">{name}</CardTitle>
@@ -103,9 +126,17 @@ export default function CompanyCard({
       <CardContent className="px-4 pt-2 pb-0">
         <div className="rounded-xl overflow-hidden mb-3">
           <img
-            src={bannerUrl}
+            src={
+              bannerUrl && bannerUrl !== "http://localhost:5026/file/"
+                ? bannerUrl
+                : iconMap["companycard1"]
+            }
             alt={`${name} banner`}
             className="w-full h-36 object-cover"
+            onError={(e) => {
+              // Fallback in case the image fails to load
+              (e.target as HTMLImageElement).src = iconMap["companycard1"];
+            }}
           />
         </div>
 
@@ -118,10 +149,15 @@ export default function CompanyCard({
         </div>
 
         <p className="text-sm text-gray-600 leading-snug">
-          {description}{" "}
-          <span className="text-purple-600 underline cursor-pointer">
-            Read More
-          </span>
+          {showFullDescription ? description : truncatedDescription}
+          {description.length > maxDescriptionLength && (
+            <span
+              className="text-purple-600 underline cursor-pointer ml-1"
+              onClick={toggleDescription}
+            >
+              {showFullDescription ? "Read Less" : "Read More"}
+            </span>
+          )}
         </p>
 
         <div className="flex flex-wrap gap-2 mt-3">
