@@ -896,18 +896,65 @@ useEffect(() => {
                     selectedIndex={selectedIndex}
                     onChange={setSelectedIndex}
                   >
+<<<<<<< Updated upstream
                     <div className="px-4 sm:px-6 pt-6">
                       <div className="w-full overflow-x-auto no-scrollbar px-2 sm:px-4">
                         <div className="inline-block min-w-[900px] lg:min-w-full">
                           <Tab.List className="flex gap-3 flex-wrap sm:flex-nowrap overflow-x-auto no-scrollbar px-2">
+=======
+<<<<<<< HEAD
+                    <div className="px-4 sm:px-6 pt-6">
+                      <div className="w-full overflow-x-auto no-scrollbar px-2 sm:px-4">
+                        <div className="inline-block min-w-[900px] lg:min-w-full">
+                          <Tab.List className="flex gap-3 flex-wrap sm:flex-nowrap overflow-x-auto no-scrollbar px-2">
+=======
+                    <div className="">
+                      <div className="w-full overflow-x-auto no-scrollbar ">
+                        <div className="inline-block min-w-[900px] lg:min-w-full">
+                          <Tab.List className="flex gap-2 items-end sm:flex-nowrap overflow-x-auto no-scrollbar">
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                             {tabNames.map((tab, index) => (
                               <Tab
                                 key={index}
                                 className={({ selected }) =>
+<<<<<<< Updated upstream
                                   `px-4 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 focus:outline-none ${
                                     selected
                                       ? "text-purple-600 bg-white shadow-md border-t-2 border-x-2 border-purple-600 -mb-[1px]"
                                       : "text-gray-500 bg-transparent hover:text-purple-500"
+=======
+<<<<<<< HEAD
+                                  `px-4 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 focus:outline-none ${
+                                    selected
+                                      ? "text-purple-600 bg-white shadow-md border-t-2 border-x-2 border-purple-600 -mb-[1px]"
+                                      : "text-gray-500 bg-transparent hover:text-purple-500"
+=======
+                                  `flex-shrink-0 
+                                  min-w-[120px] 
+                                  max-w-[200px] 
+                                  text-sm 
+                                  font-medium 
+                                  poppins
+                                  py-2.5 
+                                  px-4 
+                                  rounded-lg 
+                                  rounded-bl-none
+                                  rounded-br-none
+                                  whitespace-nowrap 
+                                  overflow-hidden 
+                                  text-ellipsis 
+                                  text-center
+                                  transition-all 
+                                  duration-200 
+                                  focus:outline-none
+                                  border
+                                  ${
+                                    selected
+                                      ? "text-purple-600 h-[50px] bg-[#F8F3FF] shadow-md border-[#ECEEF2] border-b-0 transform"
+                                      : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                   }`
                                 }
                               >
@@ -926,7 +973,15 @@ useEffect(() => {
                               handleBasicInfoSubmit
                             )}
                           >
+<<<<<<< Updated upstream
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
+=======
+<<<<<<< HEAD
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
+=======
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative">
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                               {/* First Name */}
                               <div>
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -937,7 +992,15 @@ useEffect(() => {
                                   type="text"
                                   {...basicInfoForm.register("firstName")}
                                   placeholder="Enter your First Name"
+<<<<<<< Updated upstream
                                   className={`w-full px-4 py-2 border ${
+=======
+<<<<<<< HEAD
+                                  className={`w-full px-4 py-2 border ${
+=======
+                                  className={`w-full px-4 py-2 h-[41px] border bg-white ${
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                     basicInfoForm.formState.errors.firstName
                                       ? "border-red-500"
                                       : "border-gray-300"
@@ -967,7 +1030,15 @@ useEffect(() => {
                                   type="text"
                                   {...basicInfoForm.register("lastName")}
                                   placeholder="Enter your Last Name"
+<<<<<<< Updated upstream
                                   className={`w-full px-4 py-2 border ${
+=======
+<<<<<<< HEAD
+                                  className={`w-full px-4 py-2 border ${
+=======
+                                  className={`w-full px-4 py-2 border h-[41px] bg-white ${
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                     basicInfoForm.formState.errors.lastName
                                       ? "border-red-500"
                                       : "border-gray-300"
@@ -1015,7 +1086,15 @@ useEffect(() => {
                                       )
                                     );
                                   }}
+<<<<<<< Updated upstream
                                   className="react-select-container"
+=======
+<<<<<<< HEAD
+                                  className="react-select-container"
+=======
+                                  className="react-select-container h-[41px] rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2"
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                   classNamePrefix="react-select"
                                   placeholder="Select interests..."
                                 />
@@ -1097,12 +1176,29 @@ useEffect(() => {
                                         }
                                       }}
                                     />
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+>>>>>>> Stashed changes
                                     <label
                                       htmlFor="registrationFile"
                                       className="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
                                     >
                                       Verify Identity
                                     </label>
+<<<<<<< Updated upstream
+=======
+=======
+                                    <div className="mt-5">
+                                      <label
+                                        htmlFor="registrationFile"
+                                        className="px-4 py-2 h-[41px] bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                                      >
+                                        Verify Identity
+                                      </label>
+                                    </div>
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                   </>
                                 ) : basicInfoForm.watch("identify_uploaded") ==
                                   1 ? (
@@ -1187,12 +1283,29 @@ useEffect(() => {
                                         }
                                       }}
                                     />
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+>>>>>>> Stashed changes
                                     <label
                                       htmlFor="registrationFile"
                                       className="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
                                     >
                                       Verify Identity
                                     </label>
+<<<<<<< Updated upstream
+=======
+=======
+                                    <div className="mt-5">
+                                      <label
+                                        htmlFor="registrationFile"
+                                        className="px-4 py-2 h-[41px] bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                                      >
+                                        Verify Identity
+                                      </label>
+                                    </div>
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                   </>
                                 )}
                               </div>
@@ -1226,7 +1339,26 @@ useEffect(() => {
                                   {...basicInfoForm.register("dob", {
                                     required: true,
                                   })}
+<<<<<<< Updated upstream
                                   className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+=======
+<<<<<<< HEAD
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+=======
+                                  onClick={(
+                                    e: React.MouseEvent<HTMLInputElement>
+                                  ) => e.currentTarget.showPicker()}
+                                  className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                    basicInfoForm.formState.errors.dob
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${
+                                    basicInfoForm.formState.errors.dob
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                 />
                               </div>
 
@@ -1239,7 +1371,15 @@ useEffect(() => {
                                   type="text"
                                   {...basicInfoForm.register("quote")}
                                   placeholder="Enter your quote"
+<<<<<<< Updated upstream
                                   className={`w-full px-4 py-2 border ${
+=======
+<<<<<<< HEAD
+                                  className={`w-full px-4 py-2 border ${
+=======
+                                  className={`w-full px-4 py-2 h-[41px] border bg-white ${
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                     basicInfoForm.formState.errors.quote
                                       ? "border-red-500"
                                       : "border-purple-400"
@@ -1346,7 +1486,15 @@ useEffect(() => {
                               handleContactInfoSubmit
                             )}
                           >
+<<<<<<< Updated upstream
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
+=======
+<<<<<<< HEAD
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
+=======
+                            <div className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4 rounded-lg rounded-tl-none rounded-tr-none relative">
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                               {/* Phone Number */}
                               <div>
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1437,7 +1585,15 @@ useEffect(() => {
                                     required: "Address is required",
                                   })}
                                   placeholder="Enter your address"
+<<<<<<< Updated upstream
                                   className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+=======
+<<<<<<< HEAD
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+=======
+                                  className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                 />
                                 {contactInfoForm.formState.errors.address && (
                                   <p className="text-sm text-red-500 mt-1">
@@ -1516,7 +1672,15 @@ useEffect(() => {
                                   type="text"
                                   {...contactInfoForm.register("city")}
                                   placeholder="Enter city"
+<<<<<<< Updated upstream
                                   className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+=======
+<<<<<<< HEAD
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+=======
+                                  className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                 />
                               </div>
 
@@ -1532,7 +1696,15 @@ useEffect(() => {
                                     required: "Postal code is required",
                                   })}
                                   placeholder="Enter postal code"
+<<<<<<< Updated upstream
                                   className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+=======
+<<<<<<< HEAD
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+=======
+                                  className="w-full px-4 py-2 border h-[41px] bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                 />
                                 {contactInfoForm.formState.errors
                                   .postalCode && (
@@ -1622,7 +1794,15 @@ useEffect(() => {
                               handleSocialLinksSubmit
                             )}
                           >
+<<<<<<< Updated upstream
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
+=======
+<<<<<<< HEAD
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
+=======
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative">
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                               {/* Facebook */}
                               <div>
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1632,7 +1812,15 @@ useEffect(() => {
                                   type="url"
                                   {...socialLinksForm.register("facebook")}
                                   placeholder="Enter Facebook profile URL"
+<<<<<<< Updated upstream
                                   className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+=======
+<<<<<<< HEAD
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+=======
+                                  className="w-full px-4 py-2 h-[41px] border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                 />
                               </div>
 
@@ -1645,7 +1833,15 @@ useEffect(() => {
                                   type="url"
                                   {...socialLinksForm.register("twitter")}
                                   placeholder="Enter Twitter profile URL"
+<<<<<<< Updated upstream
                                   className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+=======
+<<<<<<< HEAD
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+=======
+                                  className="w-full px-4 py-2 h-[41px] border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                 />
                               </div>
 
@@ -1658,7 +1854,15 @@ useEffect(() => {
                                   type="url"
                                   {...socialLinksForm.register("linkedin")}
                                   placeholder="Enter LinkedIn profile URL"
+<<<<<<< Updated upstream
                                   className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+=======
+<<<<<<< HEAD
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+=======
+                                  className="w-full px-4 py-2 h-[41px] border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                 />
                               </div>
 
@@ -1671,7 +1875,15 @@ useEffect(() => {
                                   type="url"
                                   {...socialLinksForm.register("instagram")}
                                   placeholder="Enter Instagram profile URL"
+<<<<<<< Updated upstream
                                   className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+=======
+<<<<<<< HEAD
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+=======
+                                  className="w-full px-4 py-2 h-[41px] border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                 />
                               </div>
 
@@ -1711,7 +1923,15 @@ useEffect(() => {
                               ?.map((_education, index) => (
                                 <div
                                   key={index}
+<<<<<<< Updated upstream
                                   className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative"
+=======
+<<<<<<< HEAD
+                                  className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative"
+=======
+                                  className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative"
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                 >
                                   {/* Add remove button */}
                                   {index > 0 && (
@@ -1793,7 +2013,15 @@ useEffect(() => {
                                         `educations.${index}.institution`
                                       )}
                                       placeholder="Enter institution name"
+<<<<<<< Updated upstream
                                       className={`w-full px-4 py-2 border ${
+=======
+<<<<<<< HEAD
+                                      className={`w-full px-4 py-2 border ${
+=======
+                                      className={`w-full h-[41px] px-4 py-2 border bg-white ${
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                         educationForm.formState.errors
                                           ?.educations?.[index]?.institution
                                           ? "border-red-500"
@@ -1828,7 +2056,15 @@ useEffect(() => {
                                       {...educationForm.register(
                                         `educations.${index}.start_date`
                                       )}
+<<<<<<< Updated upstream
                                       className={`w-full px-4 py-2 border ${
+=======
+<<<<<<< HEAD
+                                      className={`w-full px-4 py-2 border ${
+=======
+                                      className={`w-full h-[41px] px-4 py-2 border bg-white ${
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                         educationForm.formState.errors
                                           ?.educations?.[index]?.start_date
                                           ? "border-red-500"
@@ -1862,7 +2098,15 @@ useEffect(() => {
                                       {...educationForm.register(
                                         `educations.${index}.end_date`
                                       )}
+<<<<<<< Updated upstream
                                       className={`w-full px-4 py-2 border ${
+=======
+<<<<<<< HEAD
+                                      className={`w-full px-4 py-2 border ${
+=======
+                                      className={`w-full h-[41px] px-4 py-2 border bg-white ${
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                         educationForm.formState.errors
                                           ?.educations?.[index]?.end_date
                                           ? "border-red-500"
@@ -1957,7 +2201,15 @@ useEffect(() => {
                               ?.map((_experience, index) => (
                                 <div
                                   key={index}
+<<<<<<< Updated upstream
                                   className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative"
+=======
+<<<<<<< HEAD
+                                  className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative"
+=======
+                                  className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative"
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                 >
                                   {/* Add remove button */}
                                   {index > 0 && (
@@ -2004,7 +2256,15 @@ useEffect(() => {
                                         `workExperiences.${index}.company`
                                       )}
                                       placeholder="Enter Company Name"
+<<<<<<< Updated upstream
                                       className={`w-full px-4 py-2 border ${
+=======
+<<<<<<< HEAD
+                                      className={`w-full px-4 py-2 border ${
+=======
+                                      className={`w-full h-[41px] px-4 py-2 border bg-white ${
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                         workExperienceForm.formState.errors
                                           ?.workExperiences?.[index]?.company
                                           ? "border-red-500"
@@ -2040,7 +2300,15 @@ useEffect(() => {
                                         `workExperiences.${index}.position`
                                       )}
                                       placeholder="Enter your Designation"
+<<<<<<< Updated upstream
                                       className={`w-full px-4 py-2 border ${
+=======
+<<<<<<< HEAD
+                                      className={`w-full px-4 py-2 border ${
+=======
+                                      className={`w-full h-[41px] px-4 py-2 border bg-white ${
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                         workExperienceForm.formState.errors
                                           ?.workExperiences?.[index]?.position
                                           ? "border-red-500"
@@ -2075,7 +2343,15 @@ useEffect(() => {
                                       {...workExperienceForm.register(
                                         `workExperiences.${index}.start_date`
                                       )}
+<<<<<<< Updated upstream
                                       className={`w-full px-4 py-2 border ${
+=======
+<<<<<<< HEAD
+                                      className={`w-full px-4 py-2 border ${
+=======
+                                      className={`w-full h-[41px] px-4 py-2 border bg-white ${
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                         workExperienceForm.formState.errors
                                           ?.workExperiences?.[index]?.start_date
                                           ? "border-red-500"
@@ -2110,7 +2386,15 @@ useEffect(() => {
                                       {...workExperienceForm.register(
                                         `workExperiences.${index}.end_date`
                                       )}
+<<<<<<< Updated upstream
                                       className={`w-full px-4 py-2 border ${
+=======
+<<<<<<< HEAD
+                                      className={`w-full px-4 py-2 border ${
+=======
+                                      className={`w-full h-[41px] px-4 py-2 border bg-white ${
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                         workExperienceForm.formState.errors
                                           ?.workExperiences?.[index]?.end_date
                                           ? "border-red-500"
@@ -2203,7 +2487,15 @@ useEffect(() => {
                               handlePublicProfileSubmit
                             )}
                           >
+<<<<<<< Updated upstream
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
+=======
+<<<<<<< HEAD
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-4 border border-gray-200 rounded-lg relative">
+=======
+                            <div className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative">
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                               {/* Title */}
                               <div className="md:col-span-2">
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -2273,7 +2565,15 @@ useEffect(() => {
                                   {...publicProfileForm.register(
                                     "featuredImage"
                                   )}
+<<<<<<< Updated upstream
                                   className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+=======
+<<<<<<< HEAD
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+=======
+                                  className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                 />
                               </div>
 
@@ -2306,7 +2606,15 @@ useEffect(() => {
                                         setServiceInput(e.target.value);
                                       }
                                     }}
+<<<<<<< Updated upstream
                                     className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+=======
+<<<<<<< HEAD
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+=======
+                                    className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                   >
                                     <option value="">Select a service</option>
                                     {serviceData?.map((service: any) => (
@@ -2493,7 +2801,15 @@ useEffect(() => {
                                       },
                                     }
                                   )}
+<<<<<<< Updated upstream
                                   className={`w-full px-4 py-2 border ${
+=======
+<<<<<<< HEAD
+                                  className={`w-full px-4 py-2 border ${
+=======
+                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
                                     publicProfileForm.formState.errors
                                       .notifyEmail
                                       ? "border-red-500"

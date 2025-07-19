@@ -55,8 +55,19 @@ export const ServerAPI = {
 };
 
 export const API = {
+<<<<<<< Updated upstream
   // BaseUrl: "http://192.168.1.5:5025/api", //local
   BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
+=======
+<<<<<<< HEAD
+  // BaseUrl: "http://192.168.1.5:5025/api", //local
+  BaseUrl: "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api", //live
+=======
+  //  BaseUrl: "http://192.168.1.29:5025/api", //local
+  BaseUrl: "http://localhost:3000/api", //local
+  // BaseUrl: import.meta.env.VITE_API_BASE_URL || "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api",
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
 };
 
 export const EndPoint = {
@@ -72,6 +83,10 @@ export const EndPoint = {
   domain: "/domain",
   subdomain: "/sub-domain/by-domain",
   readinessQuestion: "/readiness-question",
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+>>>>>>> Stashed changes
   allFormData:"/readiness-question/get-formdata",
   allPlanData:"/person-plan/user/plan",
   emailverify:"/auth/email-verify",
@@ -86,6 +101,67 @@ export const EndPoint = {
   country:"/country",
   service:"/service",
   state:"/state",
+<<<<<<< Updated upstream
+=======
+=======
+  allFormData: "/readiness-question/get-formdata",
+  allPlanData: "/person-plan/user/plan",
+  emailverify: "/auth/email-verify",
+  paymentverify: "/payment/payment-confirm",
+  profile: "/profile",
+  organizationProfile: "/organization-profile",
+  organizationNumber: "/organization-profile/verify-identify",
+  organization_profile_create: "/organization-profile",
+  organization_Listing_profile_create: "/organization-listing",
+  interests: "/interests",
+  industry: "/industry",
+  profession: "/profession",
+  country: "/country",
+  service: "/service",
+  state: "/state",
+  company_profile: "/organization-profile/company-profile",
+  user_profile: "/profile/user-profile",
+  rating: "/profile/rating",
+  score_result: "/quiz/get/score-result",
+  directory_search_profile: "/profile/public-directory",
+  public_user_profile: "/profile/public-user-profile",
+  get_popular_company: "/profile/get-popular-company",
+  get_inspire_company: "/profile/get-inspire-company",
+  org_type: "/organization",
+  questions: "/quiz/get/question",
+  questions_file: "/quiz/upload-answer-file",
+  answer: "/quiz/answer",
+  final_submission: "/quiz/final-submition",
+  report: "/quiz/report",
+  get_all_post: "/user/posts/get/all",
+  create_post: "/user/posts",
+  postComments: "/user/post/comments",
+  postChildComment: "/user/post/comments/child",
+  postCommentLike: "/user/post/comments/like",
+  like: "/user/posts/like",
+  Post_AllComments: "/user/post/comments",
+  single_post: "/user/posts/get",
+  story: "/story",
+  story_like: "/story/like",
+  story_comment: "/story/comment",
+  event: "/event",
+  trending_post: "/user/posts/trending",
+  trending_movie: "/movie/trending",
+  following: "/user/following",
+  connection: "/friend",
+  connection_request: "/friend/request",
+  follow: "/user/follow",
+  vote: "/poll/vote",
+  googleLogin: "/auth/google-login",
+  all_bestPractices: "/best-practice/all",
+  add_bestpractices: "/best-practice",
+  singleBp: "/best-practice/get",
+  user_notification: "/notification",
+  logout: "/auth/logout",
+  gernerate_affiliate_code: "/profile/user/generate_referral_code",
+  get_my_referrals: "/profile/user/getmyreferrals",
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
 };
 
 export const LoginDetails = (formData: LoginFormData): ApiResponse => {
@@ -117,6 +193,28 @@ export const RegisterDetails = (formData: RegisterFormData): ApiResponse => {
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.register);
 };
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+=======
+
+export const GenerateAffiliateCode = (formData: GenerateAffiliateFromData): ApiResponse => {
+  const data: Partial<GenerateAffiliateFromData> = {
+    user_id: formData?.user_id,
+  };
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.gernerate_affiliate_code);
+};
+
+export const getReferredUsers = (formData: getReferredUsersFromData): ApiResponse => {
+  // const data: Partial<getReferredUsersFromData> = {
+  //   referralcode: formData?.referralcode,
+  // };
+  
+  return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.get_my_referrals}?referralcode=${formData.referralcode}`);
+};
+
+>>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
+>>>>>>> Stashed changes
 export const AccountDetails = (formData: AccountData): ApiResponse => {
   const data: Partial<AccountData> = {
     person_organization_complete: formData?.person_organization_complete,
