@@ -481,7 +481,7 @@ export default function Signingup() {
                       id="referralCode"
                       name="referralCode"
                       placeholder="Enter referral code"
-                      value={formValues.referralCode}
+                      value={formValues?.referralCode || ''}
                       onFocus={() => setreferralCodeFocused(true)}
                       onChange={handleInputChange}
                       className={`w-full px-3 py-2 rounded-[12px] border border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
