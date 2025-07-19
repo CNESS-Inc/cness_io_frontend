@@ -14,7 +14,6 @@ import { useToast } from "../components/ui/Toast/ToastProvider";
 import Button from "../components/ui/Button";
 import { useLocation } from "react-router-dom";
 
-
 type Company = {
   is_organization: boolean | undefined;
   is_person: boolean | undefined;
@@ -67,7 +66,7 @@ export default function DirectoryPage() {
   });
 
   const [popularCompanies, setPopularCompanies] = useState<Company[]>([]);
-  console.log("🚀 ~ DirectoryPage ~ popularCompanies:", popularCompanies)
+  console.log("🚀 ~ DirectoryPage ~ popularCompanies:", popularCompanies);
   const [aspiringCompanies, setAspiringCompanies] = useState<Company[]>([]);
   const [isLoading, setIsLoading] = useState({
     popular: false,
@@ -86,10 +85,10 @@ export default function DirectoryPage() {
     try {
       const res = await GetProfessionalDetails();
       setDomain(res?.data?.data);
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error fetching domains:", error);
       showToast({
-        message:error?.response?.data?.error?.message,
+        message: error?.response?.data?.error?.message,
         type: "error",
         duration: 5000,
       });
@@ -99,7 +98,10 @@ export default function DirectoryPage() {
   const fetchPopularCompany = async (page: number = 1) => {
     setIsLoading((prev) => ({ ...prev, popular: true }));
     try {
-      const res = await GetPopularCompanyDetails(page,popularPagination.itemsPerPage);
+      const res = await GetPopularCompanyDetails(
+        page,
+        popularPagination.itemsPerPage
+      );
 
       if (res?.data?.data) {
         const transformedCompanies = res.data.data.rows.map((company: any) => ({
@@ -114,7 +116,7 @@ export default function DirectoryPage() {
           tags: company.tags || [],
           rating: company.average,
           isCertified: company.is_certified || true,
-          is_person: company.is_person ,
+          is_person: company.is_person,
           is_organization: company.is_organization,
         }));
 
@@ -127,10 +129,10 @@ export default function DirectoryPage() {
           totalItems: res.data.data.count,
         }));
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error fetching popular companies:", error);
       showToast({
-        message:error?.response?.data?.error?.message,
+        message: error?.response?.data?.error?.message,
         type: "error",
         duration: 5000,
       });
@@ -142,7 +144,10 @@ export default function DirectoryPage() {
   const fetchInspiringCompany = async (page: number = 1) => {
     setIsLoading((prev) => ({ ...prev, inspiring: true }));
     try {
-      const res = await GetInspiringCompanies(page,aspiringPagination.itemsPerPage);
+      const res = await GetInspiringCompanies(
+        page,
+        aspiringPagination.itemsPerPage
+      );
       if (res?.data?.data) {
         const transformedCompanies = res.data.data.rows.map((company: any) => ({
           id: company.id,
@@ -155,20 +160,20 @@ export default function DirectoryPage() {
           description: company.bio || "No description available",
           tags: company.tags || [],
           rating: company.rating || 3,
-          isCertified: company.is_certified || false
+          isCertified: company.is_certified || false,
         }));
         setAspiringCompanies(transformedCompanies);
-        setAspiringPagination(prev => ({
+        setAspiringPagination((prev) => ({
           ...prev,
           currentPage: page,
           totalPages: Math.ceil(res.data.data.count / prev.itemsPerPage),
-          totalItems: res.data.data.count
+          totalItems: res.data.data.count,
         }));
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error fetching inspiring companies:", error);
       showToast({
-        message:error?.response?.data?.error?.message,
+        message: error?.response?.data?.error?.message,
         type: "error",
         duration: 5000,
       });
@@ -209,13 +214,12 @@ export default function DirectoryPage() {
   const topRow = Domain.slice(0, 7);
   const bottomRow = Domain.slice(7);
 
- 
   return (
     <>
-     {!isInDashboard && <Header />}
+      {!isInDashboard && <Header />}
 
       {/* Hero Section */}
-<section className="relative h-auto md:h-[692px] rounded-[12px] overflow-hidden mx-4 sm:mx-6 md:mx-8">
+      <section className="relative h-auto md:h-[692px] rounded-[12px] overflow-hidden mx-4 sm:mx-6 md:mx-8">
         <AnimatedBackground />
 
         <img
@@ -224,11 +228,11 @@ export default function DirectoryPage() {
           className="absolute bottom-[-150px] left-0 w-full object-cover z-0 pointer-events-none"
         />
 
-  <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 py-12 md:py-20 max-w-4xl mx-auto">
+        <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 py-12 md:py-20 max-w-4xl mx-auto">
           <p className="text-lg sm:text-xl text-[#7077FE] font-bold mb-4">
             Conscious Directory
           </p>
-    <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-800 mb-4">
+          <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-800 mb-4">
             Conscious Search Stops here.
           </h1>
 
@@ -272,17 +276,17 @@ export default function DirectoryPage() {
                 ▼
               </div>
             </div>
-  <div className="relative flex-grow">
+            <div className="relative flex-grow">
               <input
                 type="text"
                 placeholder="Find & Choose your perfect organization"
-      className="w-full px-4 py-2 pr-10 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none border-none"
+                className="w-full px-4 py-2 pr-10 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none border-none"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 onKeyDown={handleKeyPress}
               />
               <button
-      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE]"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE]"
                 onClick={handleSearch}
               >
                 🔍
@@ -318,18 +322,17 @@ export default function DirectoryPage() {
       </section>
 
       {/* Marquee Section */}
-<div className="bg-white py-10">
-  <div className="max-w-screen-3xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="flex flex-wrap gap-x-6 gap-y-4 justify-center">
-      {[...topRow, ...bottomRow].map((domain: any, i: any) => {
-        const iconKeys = Object.keys(iconMap);
-        const validIconKeys = iconKeys.filter(
-          (key) =>
-            !["domain1Icon", "domain2Icon"].includes(key)
-        );
-        const randomIconKey =
-          validIconKeys[Math.floor(Math.random() * validIconKeys.length)];
-        const icon = iconMap[randomIconKey];
+      <div className="bg-white py-10">
+        <div className="max-w-screen-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap gap-x-6 gap-y-4 justify-center">
+            {[...topRow, ...bottomRow].map((domain: any, i: any) => {
+              const iconKeys = Object.keys(iconMap);
+              const validIconKeys = iconKeys.filter(
+                (key) => !["domain1Icon", "domain2Icon"].includes(key)
+              );
+              const randomIconKey =
+                validIconKeys[Math.floor(Math.random() * validIconKeys.length)];
+              const icon = iconMap[randomIconKey];
 
               return (
                 <div
@@ -357,7 +360,7 @@ export default function DirectoryPage() {
       {/* Why List Section */}
       <section className="bg-[#FAFAFA] py-16">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-<div className="flex flex-col md:flex-row items-center md:items-start gap-10">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-10">
             <div className="w-full md:w-auto flex justify-center">
               <img
                 src={iconMap["leftimg"]}
@@ -396,8 +399,8 @@ export default function DirectoryPage() {
 
               <div className="mt-6 flex justify-center md:justify-start">
                 <Button
-                variant="gradient-primary"
-                onClick={() => navigate("/sign-up")}
+                  variant="gradient-primary"
+                  onClick={() => navigate("/sign-up")}
                 >
                   Register Now
                 </Button>
@@ -417,7 +420,7 @@ export default function DirectoryPage() {
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : popularCompanies.length > 0 ? (
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {popularCompanies.map((company) => (
                 <CompanyCard
                   id={company.id}
@@ -499,14 +502,16 @@ export default function DirectoryPage() {
       {/* Inspiring Companies Section */}
       <section className="py-16 border-t border-gray-100">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-xl font-semibold mb-4">Inspiring Professionals</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            Inspiring Professionals
+          </h2>
 
           {isLoading.inspiring ? (
             <div className="flex justify-center py-10">
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : aspiringCompanies.length > 0 ? (
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {aspiringCompanies.map((company) => (
                 <CompanyCard
                   id={company.id}
@@ -528,8 +533,8 @@ export default function DirectoryPage() {
           )}
 
           {aspiringPagination.totalPages > 1 && (
-<div className="mt-8 overflow-x-auto">
-  <div className="flex justify-center sm:justify-end flex-wrap gap-2">
+            <div className="mt-8 overflow-x-auto">
+              <div className="flex justify-center sm:justify-end flex-wrap gap-2">
                 <nav
                   className="inline-flex rounded-md shadow-sm -space-x-px text-sm"
                   aria-label="Pagination"
@@ -539,7 +544,8 @@ export default function DirectoryPage() {
                       fetchInspiringCompany(aspiringPagination.currentPage - 1)
                     }
                     disabled={
-                      aspiringPagination.currentPage === 1 || isLoading.inspiring
+                      aspiringPagination.currentPage === 1 ||
+                      isLoading.inspiring
                     }
                     className="px-3 py-1 rounded-l-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
                   >
@@ -583,7 +589,7 @@ export default function DirectoryPage() {
         </div>
       </section>
 
-{!isInDashboard && <Footer />}
+      {!isInDashboard && <Footer />}
     </>
   );
 }
