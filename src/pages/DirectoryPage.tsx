@@ -214,6 +214,11 @@ export default function DirectoryPage() {
   const topRow = Domain.slice(0, 7);
   const bottomRow = Domain.slice(7);
 
+  // Add this near the top of your file (with other imports)
+const hasJWT = () => {
+  return !!localStorage.getItem('jwt'); // or whatever your JWT key is
+};
+
   return (
     <>
       {!isInDashboard && <Header />}
@@ -295,11 +300,23 @@ export default function DirectoryPage() {
           </div>
 
           <p className="text-gray-700 text-sm mt-6">
-            <span className="font-medium underline cursor-pointer">
-              List your company now
-            </span>{" "}
-            and connect with conscious audience
-          </p>
+  {hasJWT() ? (
+    <span 
+      className="font-medium underline cursor-pointer"
+      onClick={() => navigate('/dashboard/company-profile')} // or your listing route
+    >
+      List your company now
+    </span>
+  ) : (
+    <span 
+      className="font-medium underline cursor-pointer"
+      onClick={() => navigate('/sign-up')}
+    >
+      Register now
+    </span>
+  )}{' '}
+  and connect with conscious audience
+</p>
 
           <div className="flex justify-center gap-3 flex-wrap mt-6">
             {["Get certified", "Listed on the top", "15+ Domains"].map(
@@ -413,7 +430,7 @@ export default function DirectoryPage() {
       {/* Popular Companies Section */}
       <section className="py-16 border-t border-gray-100">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-xl font-semibold mb-4">Aspiring Professionals</h2>
+          <h2 className="text-xl font-semibold mb-4">Popular People</h2>
 
           {isLoading.popular ? (
             <div className="flex justify-center py-10">
@@ -440,7 +457,7 @@ export default function DirectoryPage() {
               ))}
             </div>
           ) : (
-            <p className="text-gray-500">No popular companies found.</p>
+            <p className="text-gray-500">No Popular People found.</p>
           )}
 
           {popularPagination.totalPages > 1 && (
@@ -503,7 +520,7 @@ export default function DirectoryPage() {
       <section className="py-16 border-t border-gray-100">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-xl font-semibold mb-4">
-            Inspiring Professionals
+            Aspiring People
           </h2>
 
           {isLoading.inspiring ? (

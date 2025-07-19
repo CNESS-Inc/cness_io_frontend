@@ -688,7 +688,7 @@ export default function DashboardUserProfile() {
                         }
                       }}
                     >
-                      write Review
+                      Write Review
                     </Button>
                   </div>
                 )}
