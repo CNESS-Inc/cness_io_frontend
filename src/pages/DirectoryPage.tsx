@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CompanyCard from "../components/ui/CompanyCard";
 import Header from "../layout/Header/Header";
 import Footer from "../layout/Footer/Footer";
 import { iconMap } from "../assets/icons";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
 import {
-  GetDomainDetails,
   GetInspiringCompanies,
   GetPopularCompanyDetails,
+  GetProfessionalDetails,
 } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -46,7 +46,10 @@ export default function DirectoryPage() {
   const { showToast } = useToast();
 
   const location = useLocation();
-const isInDashboard = location.pathname.includes("/dashboard");
+  const isInDashboard = location.pathname.includes("/dashboard");
+  const measureRef = useRef<HTMLSpanElement>(null);
+  const [selectedDomainText, setSelectedDomainText] = useState("All Profession");
+  const [textWidth, setTextWidth] = useState(0);
 
   // Pagination states
   const [popularPagination, setPopularPagination] = useState<PaginationData>({
@@ -71,9 +74,17 @@ const isInDashboard = location.pathname.includes("/dashboard");
     inspiring: false,
   });
 
+
+
+    useEffect(() => {
+    if (measureRef.current) {
+      setTextWidth(measureRef.current.offsetWidth);
+    }
+  }, [selectedDomainText]);
+
   const fetchDomain = async () => {
     try {
-      const res = await GetDomainDetails();
+      const res = await GetProfessionalDetails();
       setDomain(res?.data?.data);
     } catch (error:any) {
       console.error("Error fetching domains:", error);
@@ -101,7 +112,7 @@ const isInDashboard = location.pathname.includes("/dashboard");
           banner: company.profile_banner || iconMap["companycard1"],
           description: company.bio || "No description available",
           tags: company.tags || [],
-          rating: company.rating || 4,
+          rating: company.average,
           isCertified: company.is_certified || true,
           is_person: company.is_person ,
           is_organization: company.is_organization,
@@ -178,16 +189,16 @@ const isInDashboard = location.pathname.includes("/dashboard");
       navigate(
         `/directory/technology-ai?search=${encodeURIComponent(
           searchText
-        )}&domain=${domainSlug}`
+        )}&profession=${domainSlug}`
       );
     }
   };
 
-  const handleDomainChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newDomain = e.target.value;
-    console.log("🚀 ~ handleDomainChange ~ newDomain:", newDomain)
-    setSelectedDomain(newDomain);
-  };
+  // const handleDomainChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  //   const newDomain = e.target.value;
+  //   console.log("🚀 ~ handleDomainChange ~ newDomain:", newDomain);
+  //   setSelectedDomain(newDomain);
+  // };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -221,21 +232,43 @@ const isInDashboard = location.pathname.includes("/dashboard");
             Conscious Search Stops here.
           </h1>
 
-<div className="w-full max-w-3xl mx-auto bg-white border border-gray-200 rounded-full flex flex-nowrap items-center px-3 py-2 shadow-sm gap-2">
-  <div className="relative flex-shrink-0">
-              <select
-  className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold rounded-full px-4 py-2 appearance-none focus:outline-none cursor-pointer w-[130px] text-center"
-                value={selectedDomain}
-                onChange={handleDomainChange}
+          <div className="w-full max-w-3xl mx-auto bg-white border border-gray-200 rounded-full flex flex-nowrap items-center px-3 py-2 shadow-sm gap-2">
+            <div className="relative rounded-full">
+              <span
+                className="invisible rounded-full text-[12px] md:rounded-full absolute whitespace-nowrap font-semibold px-3 md:px-4 md:text-base"
+                ref={measureRef}
               >
-  <option value="" className="text-white bg-indigo-500">All Domains</option>
+                {selectedDomainText || "All Domains"}
+              </span>
+
+              <select
+                className="bg-[#7077FE] py-2 rounded-full text-[12px] md:rounded-full text-white h-full w-full font-semibold px-3 md:px-4 appearance-none focus:outline-none cursor-pointer "
+                style={{
+                  width: `${textWidth}px`,
+                  maxWidth: "100%",
+                }}
+                value={selectedDomain}
+                onChange={(e) => {
+                  setSelectedDomain(e.target.value);
+                  const selectedText =
+                    e.target.options[e.target.selectedIndex].text;
+                  setSelectedDomainText(selectedText);
+                }}
+              >
+                <option value="" className="text-white">
+                  All Profession
+                </option>
                 {Domain.map((domain: any) => (
-                  <option key={domain.id} value={domain.slug} className="text-black">
-                    {domain.name}
+                  <option
+                    key={domain.id}
+                    value={domain.id}
+                    className="text-white"
+                  >
+                    {domain.title}
                   </option>
                 ))}
               </select>
-    <div className="absolute top-3 right-2 text-white text-xs pointer-events-none">
+              <div className="absolute top-1.5 right-2 text-white text-xs pointer-events-none">
                 ▼
               </div>
             </div>
@@ -298,29 +331,28 @@ const isInDashboard = location.pathname.includes("/dashboard");
           validIconKeys[Math.floor(Math.random() * validIconKeys.length)];
         const icon = iconMap[randomIconKey];
 
-        return (
-          <div
-            key={i}
-            onClick={() => setSelectedDomain(domain.slug)}
-  className="border border-purple-100 rounded-[24px] px-6 py-2 flex items-center gap-2 sm:gap-3 bg-white shadow-sm hover:shadow-md cursor-pointer transition"
-
-          >
-            {icon && (
-              <img
-                src={icon}
-                alt={domain.name}
-                className="w-5 h-5 min-w-[20px] object-contain shrink-0"
-              />
-            )}
-            <span className="text-sm font-medium text-gray-800 leading-none">
-              {domain.name}
-            </span>
+              return (
+                <div
+                  key={i}
+                  onClick={() => setSelectedDomain(domain.slug)}
+                  className="border border-purple-100 rounded-[24px] px-6 py-2 flex items-center gap-2 sm:gap-3 bg-white shadow-sm hover:shadow-md cursor-pointer transition"
+                >
+                  {icon && (
+                    <img
+                      src={icon}
+                      alt={domain.name}
+                      className="w-5 h-5 min-w-[20px] object-contain shrink-0"
+                    />
+                  )}
+                  <span className="text-sm font-medium text-gray-800 leading-none">
+                    {domain.title}
+                  </span>
+                </div>
+              );
+            })}
           </div>
-        );
-      })}
-    </div>
-  </div>
-</div>
+        </div>
+      </div>
 
       {/* Why List Section */}
       <section className="bg-[#FAFAFA] py-16">

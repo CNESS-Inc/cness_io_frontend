@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import CompanyCard from "../components/ui/CompanyCard";
 import { iconMap } from "../assets/icons";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
-  GetDomainDetails,
+  GetProfessionalDetails,
   GetUsersearchProfileDetails,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -36,6 +36,17 @@ const [sort] = useState<"az" | "za">("az");
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedDomainText, setSelectedDomainText] = useState("All Domains");
+  const [textWidth, setTextWidth] = useState(0);
+  console.log("🚀 ~ DashboardTechnology ~ textWidth:", textWidth);
+  const measureRef = useRef<HTMLSpanElement>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (measureRef.current) {
+      setTextWidth(measureRef.current.offsetWidth);
+    }
+  }, [selectedDomainText]);
 
   const itemsPerPage = 10;
   const totalPages = Math.ceil(totalCount / itemsPerPage);
@@ -54,26 +65,27 @@ const [sort] = useState<"az" | "za">("az");
       if (res?.data) {
         setTotalCount(res.data.data.count);
 
-        const transformedCompanies = res.data.data.rows.map((company: any) => ({
-          id: company.id,
-          name: company.name,
-          domain: selectedDomain || "Technology and AI",
-          logoUrl: company.profile_picture || iconMap["comlogo"],
-          bannerUrl: company.profile_banner || iconMap["companycard1"],
-          location: company.location || "Unknown location",
-          description: company.bio || "No description available",
-          tags: company.tags || [],
-          rating: Math.floor(Math.random() * 5) + 1,
-          isCertified: Math.random() > 0.5,
-          is_organization: company?.is_organization,
-          is_person: company?.is_person,
-          
-        }))
-.sort((a: Company, b: Company) => {
-    if (sort === "az") return a.name.localeCompare(b.name);
-    if (sort === "za") return b.name.localeCompare(a.name);
-    return 0;
-  });
+        const transformedCompanies = res.data.data.rows
+          .map((company: any) => ({
+            id: company.id,
+            name: company.name,
+            domain: selectedDomain || "Technology and AI",
+            logoUrl: company.profile_picture || iconMap["comlogo"],
+            bannerUrl: company.profile_banner || iconMap["companycard1"],
+            location: company.location || "Unknown location",
+            description: company.bio || "No description available",
+            tags: company.tags || [],
+            rating: company?.average,
+            isCertified: Math.random() > 0.5,
+            is_organization: company?.is_organization,
+            is_person: company?.is_person,
+            level: company?.level?.level,
+          }))
+          .sort((a: Company, b: Company) => {
+            if (sort === "az") return a.name.localeCompare(b.name);
+            if (sort === "za") return b.name.localeCompare(a.name);
+            return 0;
+          });
         setCompanies(transformedCompanies);
       }
     } catch (err: any) {
@@ -91,12 +103,12 @@ const [sort] = useState<"az" | "za">("az");
 
   const fetchDomain = async () => {
     try {
-      const res = await GetDomainDetails();
+      const res = await GetProfessionalDetails();
       setDomain(res?.data?.data);
-      const foundDomain = res?.data?.data?.find((d: any) => d.slug === domain);
-      if (foundDomain) {
-        setSelectedDomain(foundDomain.slug);
-      }
+      // const foundDomain = res?.data?.data?.find((d: any) => d.slug === domain);
+      // if (foundDomain) {
+      //   setSelectedDomain(foundDomain.slug);
+      // }
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message,
@@ -176,10 +188,93 @@ const [sort] = useState<"az" | "za">("az");
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
-      <div className="w-full max-w-[2100px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <main className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8 items-stretch">
+      <section className="relative h-auto md:h-[325px] rounded-[12px] overflow-hidden">
+        <AnimatedBackground />
+        <img
+          src={iconMap["heroimgs"]}
+          alt="City Skyline"
+          className="absolute bottom-[0px] left-0 w-full object-cover z-0 pointer-events-none"
+        />
+
+        <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 py-8 md:py-20 max-w-4xl mx-auto">
+          <h1 className="text-center font-poppins font-semibold mb-6 text-[32px] leading-[100%] tracking-[0px] bg-gradient-to-b from-[#4E4E4E] to-[#232323] bg-clip-text text-transparent">
+            Conscious Search Stops here.
+          </h1>
+
+          {/* Updated responsive container */}
+          <div className="w-full mx-auto bg-white border border-gray-200 rounded-full md:rounded-full flex flex-col md:flex-row items-stretch md:items-center px-3 py-2 shadow-sm gap-2">
+            {/* Domain Selector - now full width on mobile */}
+            <div className="relative rounded-full">
+              <span
+                className="invisible rounded-full text-[12px] md:rounded-full absolute whitespace-nowrap font-semibold px-3 md:px-4 md:text-base"
+                ref={measureRef}
+              >
+                {selectedDomainText || "All Domains"}
+              </span>
+
+              <select
+                className="bg-[#7077FE] py-2 rounded-full text-[12px] md:rounded-full text-white h-full w-full font-semibold px-3 md:px-4 appearance-none focus:outline-none cursor-pointer "
+                style={{
+                  width: `${textWidth}px`,
+                  maxWidth: "100%",
+                }}
+                value={selectedDomain}
+                onChange={(e) => {
+                  setSelectedDomain(e.target.value);
+                  const selectedText =
+                    e.target.options[e.target.selectedIndex].text;
+                  setSelectedDomainText(selectedText);
+                }}
+              >
+                <option value="" className="text-white">
+                  All Profession
+                </option>
+                {Domain.map((domain: any) => (
+                  <option
+                    key={domain.id}
+                    value={domain.id}
+                    className="text-white"
+                  >
+                    {domain.title}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute top-1.5 right-2 text-white text-xs pointer-events-none hidden sm:block">
+                ▼
+              </div>
+            </div>
+
+            {/* Search Input - full width on mobile */}
+            <div className="relative flex-grow">
+              <input
+                type="text"
+                placeholder="Technology and AI"
+                className="w-full py-2 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none border-none h-[29px] px-2"
+                value={searchQuery || ""}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE]">
+                🔍
+              </button>
+            </div>
+          </div>
+
+          <p className="text-gray-700 text-sm mt-4 md:mt-6">
+            <span
+              className="font-medium text-[#F07EFF] underline cursor-pointer"
+              onClick={() => navigate("/dashboard/company-profile")}
+            >
+              List your company now
+            </span>{" "}
+            and connect with conscious audience
+          </p>
+        </div>
+      </section>
+
+      <div className="w-full max-w-[2100px] mx-auto py-6">
+        <main className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-8 items-stretch px-4">
           {isLoading ? (
             <div className="col-span-full flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
@@ -194,7 +289,11 @@ const [sort] = useState<"az" | "za">("az");
             </div>
           ) : (
             companies.map((company) => (
-              <CompanyCard key={company.id} {...company} />
+              <CompanyCard
+                key={company.id}
+                {...company}
+                routeKey={company.id}
+              />
             ))
           )}
         </main>

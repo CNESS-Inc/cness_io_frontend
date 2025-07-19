@@ -10,6 +10,9 @@ import {
 import { iconMap } from "../../assets/icons";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import indv_aspiring from "../../assets/indv_aspiring.svg";
+import indv_inspried from "../../assets/indv_inspired.svg";
+import indv_leader from "../../assets/indv_leader.svg";
 
 interface CompanyCardProps {
   id: string;
@@ -24,6 +27,8 @@ interface CompanyCardProps {
   isCertified?: boolean;
   is_person?: boolean;
   is_organization?: boolean;
+  level?: any;
+  routeKey?:string
 }
 
 // const StarRating = ({ rating }: { rating: number }) => {
@@ -61,18 +66,18 @@ export default function CompanyCard({
   description,
   tags,
   rating,
-  is_person,
-  is_organization,
+  level,
+  routeKey
 }: CompanyCardProps) {
   console.log("🚀 ~ rating:", rating);
   const navigate = useNavigate();
   const [showFullDescription, setShowFullDescription] = useState(false);
 
   const handleCardClick = () => {
-    if (is_person) {
+    if (routeKey) {
+      navigate(`/dashboard/userprofile/${id}`);
+    } else {
       navigate(`/directory/user-profile/${id}`);
-    } else if (is_organization) {
-      navigate(`/directory/company-profile/${id}`);
     }
   };
 
@@ -92,11 +97,26 @@ export default function CompanyCard({
       onClick={handleCardClick}
     >
       {/* Absolute Badge Logo */}
-      <img
+      {/* <img
         src={iconMap["inslogo"]}
         alt="CNESS Logo"
         className="absolute top-3 right-3 w-8 sm:w-10 h-auto object-contain z-10"
-      />
+      /> */}
+      {level && (
+        <img
+          src={
+            level == "Aspiring"
+              ? indv_aspiring
+              : level == "Inspiring"
+              ? indv_inspried
+              : level == "Leader"
+              ? indv_leader
+              : indv_inspried // fallback if no level
+          }
+          alt={`${level || "CNESS"} Badge`}
+          className="absolute top-3 right-3 w-8 sm:w-[58px] h-[32px] object-contain z-10"
+        />
+      )}
 
       <CardHeader className="px-4 pt-4 pb-0 relative z-0">
         <div className="flex items-start gap-1 pr-12">
