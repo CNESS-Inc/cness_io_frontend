@@ -7,7 +7,6 @@ import {
   GetUsersearchProfileDetails,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import AnimatedBackground from "../components/ui/AnimatedBackground";
 
 interface Company {
   id: string;
@@ -31,7 +30,7 @@ export default function DashboardTechnology() {
   const [selectedDomain, setSelectedDomain] = useState<any>(domain);
   const hasFetched = useRef(false);
   const [searchQuery, setSearchQuery] = useState<any>(search);
-  const [sort] = useState<"az" | "za">("az");
+const [sort] = useState<"az" | "za">("az");
   const [companies, setCompanies] = useState<Company[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -139,7 +138,7 @@ export default function DashboardTechnology() {
 
   return (
     <>
-      {/* <div className="w-full bg-[#f9f7ff] px-4 sm:px-6 py-[34px]">
+      <div className="w-full bg-[#f9f7ff] px-4 sm:px-6 py-[34px]">
         <h1 className="text-xl font-bold text-gray-900 mb-4">
           Technology and AI
         </h1>
@@ -370,7 +369,9 @@ export default function DashboardTechnology() {
           </div>
           <div className="text-center mt-2 text-sm text-gray-500">
             Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
+
             {Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount}{" "}
+
             companies
           </div>
         </div>

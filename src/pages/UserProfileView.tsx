@@ -70,7 +70,7 @@ export default function UserProfileView() {
   const [breakDown, setBreakDown] = useState<any>();
   const [ratingPercentage, setratingPercentage] = useState<any>();
   const [userReviewData, setUserReviewData] = useState<any>([]);
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+ const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   const [breakdowns, setBreakdowns] = useState({
     one: 0,
@@ -78,6 +78,7 @@ export default function UserProfileView() {
     three: 0,
     four: 0,
     five: 0,
+    six: 0,
   });
 
   // State for errors
@@ -89,6 +90,7 @@ export default function UserProfileView() {
       three: "",
       four: "",
       five: "",
+      six: "",
     },
   });
 
@@ -103,6 +105,7 @@ export default function UserProfileView() {
         three: "",
         four: "",
         five: "",
+        six: "",
       },
     };
 
@@ -144,6 +147,7 @@ export default function UserProfileView() {
           breakdown_three: breakdowns.three.toString(),
           breakdown_four: breakdowns.four.toString(),
           breakdown_five: breakdowns.five.toString(),
+          breakdown_six: breakdowns.six.toString(),
         };
         await AddUserRating(payload);
         setActiveModal(null);
@@ -155,6 +159,7 @@ export default function UserProfileView() {
           three: 0,
           four: 0,
           five: 0,
+          six: 0,
         });
         await fetchRatingDetails();
       } catch (error: any) {
@@ -165,6 +170,7 @@ export default function UserProfileView() {
           three: 0,
           four: 0,
           five: 0,
+          six: 0,
         });
         setActiveModal(null);
         showToast({
@@ -213,6 +219,7 @@ export default function UserProfileView() {
         three: "",
         four: "",
         five: "",
+        six: "",
       },
     });
   };
@@ -233,9 +240,7 @@ export default function UserProfileView() {
         {/* Header Banner */}
         <div
           className="relative w-full h-[150px] mt-[1px] bg-cover bg-center"
-          style={{
-            backgroundImage: `url(${userDetails?.profile_banner || banner2})`,
-          }}
+          style={{ backgroundImage: `url(${userDetails?.profile_banner||banner2})` }}
         >
           <button
             onClick={() => window.history.back()}
@@ -243,6 +248,8 @@ export default function UserProfileView() {
           >
             <ArrowLeftIcon className="h-5 w-5 text-[#7077FE]" />
           </button>
+
+      
         </div>
 
         {/* Overlapping Logo - Left Aligned */}
@@ -499,32 +506,30 @@ export default function UserProfileView() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
-              <h3 className="text-base font-semibold text-black mb-2 flex items-center gap-2">
-                <span className="bg-purple-50 p-2 rounded-full">
-                  <img
-                    src={tag}
-                    alt="tags Icon"
-                    className="w-5 h-5 object-contain"
-                  />
-                </span>
-                Tags
-              </h3>
-              <div
-                className="border-t my-2"
-                style={{ borderColor: "#0000001A" }}
-              />
-              <div className="flex flex-wrap gap-5">
-                {userDetails?.person_tags?.map((tag: any, index: any) => (
-                  <span
-                    key={index}
-                    className="bg-[#EEF3FF] text-[#7077FE] text-xs font-medium px-7 py-2 rounded"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
+   <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
+    <h3 className="text-base font-semibold text-black mb-2 flex items-center gap-2">
+      <span className="bg-purple-50 p-2 rounded-full">
+        <img src={tag} alt="tags Icon" className="w-5 h-5 object-contain" />
+      </span>
+      Tags
+    </h3>
+    <div
+      className="border-t my-2"
+      style={{ borderColor: "#0000001A" }}
+    />
+    <div className="flex flex-wrap gap-5">
+      {userDetails?.person_tags?.map((tag: any, index: any) => (
+        <span
+          key={index}
+          className="bg-[#EEF3FF] text-[#7077FE] text-xs font-medium px-7 py-2 rounded"
+        >
+          {tag}
+        </span>
+      ))}
+    </div>
+  </div>
+
+       
 
             <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
               <h3 className="text-base font-semibold text-black mb-2 flex items-center gap-2">
@@ -546,7 +551,7 @@ export default function UserProfileView() {
               </div>
             </div> */}
 
-            {/* <div className="w-full px-6 md:px-5 mt-2">
+        {/* <div className="w-full px-6 md:px-5 mt-2">
           <div className="bg-white rounded-xl shadow-sm px-6 py-8">
             <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
               <span className="bg-green-50 p-2 rounded-full">
@@ -662,41 +667,42 @@ export default function UserProfileView() {
           </div>
         </div> */}
 
-            {/* Overall Ratings */}
+        {/* Overall Ratings */}
 
-            <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
-              {/* Title */}
-              <div className="flex items-center">
-                <h3 className="text-lg font-semibold text-[#000000] flex items-center gap-2">
-                  <span className="bg-[#F5EDFF] p-2 rounded-full">
-                    <img
-                      src={overallrating}
-                      alt="overallrating Icon"
-                      className="w-5 h-5 object-contain"
-                    />
-                  </span>
-                  Overall Ratings
-                </h3>
-                {!userDetails?.is_rated && (
-                  <div className="ms-3">
-                    <Button
-                      variant="gradient-primary"
-                      className="rounded-[100px] cursor-pointer py-2 px-4 transition-colors duration-500 ease-in-out"
-                      type="button"
-                      onClick={() => {
-                        const token = localStorage.getItem("jwt");
-                        if (token) {
-                          setActiveModal("rating");
-                        } else {
-                          setShowLoginPrompt(true);
-                        }
-                      }}
-                    >
-                      write Review
-                    </Button>
-                  </div>
-                )}
-              </div>
+
+   <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
+            {/* Title */}
+            <div className="flex items-center">
+              <h3 className="text-lg font-semibold text-[#000000] flex items-center gap-2">
+                <span className="bg-[#F5EDFF] p-2 rounded-full">
+                  <img
+                    src={overallrating}
+                    alt="overallrating Icon"
+                    className="w-5 h-5 object-contain"
+                  />
+                </span>
+                Overall Ratings
+              </h3>
+              {!userDetails?.is_rated && (
+                <div className="ms-3">
+                  <Button
+                    variant="gradient-primary"
+                    className="rounded-[100px] cursor-pointer py-2 px-4 transition-colors duration-500 ease-in-out"
+                    type="button"
+                    onClick={() => {
+                      const token = localStorage.getItem("jwt");
+                      if (token) {
+                        setActiveModal("rating");
+                      } else {
+                        setShowLoginPrompt(true);
+                      }
+                    }}
+                  >
+                    write Review
+                  </Button>
+                </div>
+              )}
+            </div>
 
               <div
                 className="border-t my-4"
@@ -723,79 +729,77 @@ export default function UserProfileView() {
                     <p className="text-sm text-gray-500">{totalrate}</p>
                   </div>
 
-                  {/* Center: Rating Bars */}
+                {/* Center: Rating Bars */}
 
-                  <div className="flex flex-col gap-2 w-full max-w-md">
-                    {[5, 4, 3, 2, 1].map((star) => (
-                      <div key={star} className="flex items-center gap-2">
-                        <span className="text-sm text-gray-700 w-4 text-right">
-                          {star}
-                        </span>
-                        <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-purple-500"
-                            style={{
-                              width: `${
-                                ratingPercentage?.[
-                                  star === 5
-                                    ? "five"
-                                    : star === 4
-                                    ? "four"
-                                    : star === 3
-                                    ? "three"
-                                    : star === 2
-                                    ? "two"
-                                    : "one"
-                                ] || 0
-                              }%`,
-                            }}
-                          />
-                        </div>
+                <div className="flex flex-col gap-2 w-full max-w-md">
+                  {[5, 4, 3, 2, 1].map((star) => (
+                    <div key={star} className="flex items-center gap-2">
+                      <span className="text-sm text-gray-700 w-4 text-right">
+                        {star}
+                      </span>
+                      <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-purple-500"
+                          style={{
+                            width: `${
+                              ratingPercentage?.[
+                                star === 5
+                                  ? "five"
+                                  : star === 4
+                                  ? "four"
+                                  : star === 3
+                                  ? "three"
+                                  : star === 2
+                                  ? "two"
+                                  : "one"
+                              ] || 0
+                            }%`,
+                          }}
+                        />
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))}
                 </div>
+              </div>
 
-                {/* Right: Breakdown */}
-                <div className="w-full xl:w-1/2 text-sm text-gray-800">
-                  <p className="text-[#E57CFF] font-semibold mb-5 mt-5">
-                    Ratings Breakdown
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-10  w-full max-w-[400px]">
-                    {breakDown?.map((item: any, i: any) => (
-                      <div
-                        key={i}
-                        className="flex justify-between items-center w-full gap-1"
-                      >
-                        <span>{formatBreakdownName(item.breakdown_name)}</span>
-                        <span className="flex items-center gap-2 text-sm text-gray-800 font-medium">
-                          <span className="text-yellow-500">⭐</span>
-                          {item?.value}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+              {/* Right: Breakdown */}
+              <div className="w-full xl:w-1/2 text-sm text-gray-800">
+                <p className="text-[#E57CFF] font-semibold mb-5 mt-5">
+                  Ratings Breakdown
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-10  w-full max-w-[400px]">
+                  {breakDown?.map((item: any, i: any) => (
+                    <div
+                      key={i}
+                      className="flex justify-between items-center w-full gap-1"
+                    >
+                      <span>{formatBreakdownName(item.breakdown_name)}</span>
+                      <span className="flex items-center gap-2 text-sm text-gray-800 font-medium">
+                        <span className="text-yellow-500">⭐</span>
+                        {item?.value}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
+          </div>
+     
 
-            {/* Reviews & Ratings */}
-            <div className="bg-[#ECEEF2] rounded-xl shadow-sm px-6 py-6 -mt-3">
-              {/* Title */}
-              <h3 className="text-lg font-semibold text-black mb-4 flex items-center gap-2">
-                <span className="bg-[#F5EDFF] p-2 rounded-full">
-                  <img
-                    src={review}
-                    alt="overallrating Icon"
-                    className="w-5 h-5 object-contain"
-                  />
-                </span>{" "}
-                Reviews & Ratings
-              </h3>
-              <div
-                className="border-t my-4"
-                style={{ borderColor: "#0000001A" }}
+        {/* Reviews & Ratings */}
+<div className="bg-[#ECEEF2] rounded-xl shadow-sm px-6 py-6 -mt-3">
+          {/* Title */}
+          <h3 className="text-lg font-semibold text-black mb-4 flex items-center gap-2">
+            <span className="bg-[#F5EDFF] p-2 rounded-full">
+              <img
+                src={review}
+                alt="overallrating Icon"
+                className="w-5 h-5 object-contain"
               />
+            </span>{" "}
+            Reviews & Ratings
+          </h3>
+          <div className="border-t my-4" style={{ borderColor: "#0000001A" }} />
 
               {/* Reviews List */}
               {userReviewData.length > 0 ? (
@@ -861,244 +865,239 @@ export default function UserProfileView() {
                       {reviewItem.review.description ||
                         "No detailed review provided."}
                     </p> */}
-                      </>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm text-center">
-                  <p className="text-gray-600">No reviews yet.</p>
-                </div>
-              )}
+                  </>
+                )}
+              </div>
+            ))
+          ) : (
+            <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm text-center">
+              <p className="text-gray-600">No reviews yet.</p>
             </div>
-          </div>
+          )}
         </div>
-      </div>
+     
+    </div>
+        </div>
+           </div>
       <Footer />
 
       <Modal isOpen={showLoginPrompt} onClose={() => setShowLoginPrompt(false)}>
-        <div className="text-center space-y-4">
-          <h2 className="text-xl font-semibold text-gray-800">
-            Login Required
-          </h2>
-          <p className="text-sm text-gray-600">
-            To write a review, please log in to your account.
-          </p>
-          <button
-            className="bg-[#7077FE] text-white px-4 py-2 rounded-full"
-            onClick={() => {
-              navigate("/log-in");
-            }}
-          >
-            Go to Login
-          </button>
-          <button
-            className="block mx-auto mt-2 text-xs text-gray-400 underline"
-            onClick={() => setShowLoginPrompt(false)}
-          >
-            Cancel
-          </button>
+  <div className="text-center space-y-4">
+    <h2 className="text-xl font-semibold text-gray-800">Login Required</h2>
+    <p className="text-sm text-gray-600">
+      To write a review, please log in to your account.
+    </p>
+    <button
+      className="bg-[#7077FE] text-white px-4 py-2 rounded-full"
+      onClick={() => {
+        navigate("/log-in");
+      }}
+    >
+      Go to Login
+    </button>
+    <button
+      className="block mx-auto mt-2 text-xs text-gray-400 underline"
+      onClick={() => setShowLoginPrompt(false)}
+    >
+      Cancel
+    </button>
+  </div>
+</Modal>
+
+
+<Modal isOpen={activeModal === "rating"} onClose={closeModal}>
+  <div className="p-6 max-w-xl w-full mx-auto bg-white rounded-xl">
+    <h2 className="text-3xl font-bold text-center text-purple-600 mb-8">
+      Leave a Review
+    </h2>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Star Rating Sections */}
+      <div className="space-y-5">
+        {/* 1. Mission & Vision */}
+<div className="flex items-center justify-between gap-4 mb-4">
+  <label className="w-1/2 text-sm font-medium text-purple-800">
+            <span className="font-semibold">Mission & Vision:</span>
+          </label>
+  <div className="w-1/2 flex justify-start">
+            <StarRating
+              initialRating={breakdowns.one}
+              allowHalfStars={true}
+              size="4xl"
+              onRatingChange={(newRating: number) => {
+                setBreakdowns((prev) => ({ ...prev, one: newRating }));
+                if (errors.breakdowns.one) {
+                  setErrors((prev) => ({
+                    ...prev,
+                    breakdowns: { ...prev.breakdowns, one: "" },
+                  }));
+                }
+              }}
+            />
+          </div>
+          {errors.breakdowns.one && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.breakdowns.one}
+            </p>
+          )}
         </div>
-      </Modal>
 
-      <Modal isOpen={activeModal === "rating"} onClose={closeModal}>
-        <div className="p-6 max-w-xl w-full mx-auto bg-white rounded-xl">
-          <h2 className="text-3xl font-bold text-center text-purple-600 mb-8">
-            Leave a Review
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Star Rating Sections */}
-            <div className="space-y-5">
-              {/* 1. Mission & Vision */}
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <label className="w-1/2 text-sm font-medium text-purple-800">
-                  <span className="font-semibold">Mission & Vision:</span>
-                </label>
-                <div className="w-1/2 flex justify-start">
-                  <StarRating
-                    initialRating={breakdowns.one}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, one: newRating }));
-                      if (errors.breakdowns.one) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, one: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.one && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.breakdowns.one}
-                  </p>
-                )}
-              </div>
-
-              {/* 2. Client / Customer / Consumer */}
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <label className="w-1/2 text-sm font-medium text-purple-800">
-                  <span className="font-semibold">
-                    Client / Customer / Consumer:
-                  </span>
-                </label>
-                <div className="w-1/2 flex justify-start">
-                  <StarRating
-                    initialRating={breakdowns.two}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, two: newRating }));
-                      if (errors.breakdowns.two) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, two: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.two && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.breakdowns.two}
-                  </p>
-                )}
-              </div>
-
-              {/* 3. Communities & Charities */}
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <label className="w-1/2 text-sm font-medium text-purple-800">
-                  <span className="font-semibold">
-                    Communities & Charities:
-                  </span>
-                </label>
-                <div className="w-1/2 flex justify-start">
-                  <StarRating
-                    initialRating={breakdowns.three}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, three: newRating }));
-                      if (errors.breakdowns.three) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, three: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.three && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.breakdowns.three}
-                  </p>
-                )}
-              </div>
-
-              {/* 4. Vision & Legacy */}
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <label className="w-1/2 text-sm font-medium text-purple-800">
-                  <span className="font-semibold">
-                    Vision & Legacy – Long-Term Contribution:
-                  </span>
-                </label>
-                <div className="w-1/2 flex justify-start">
-                  <StarRating
-                    initialRating={breakdowns.four}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, four: newRating }));
-                      if (errors.breakdowns.four) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, four: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.four && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.breakdowns.four}
-                  </p>
-                )}
-              </div>
-
-              {/* 5. Leadership Best Practices */}
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <label className="w-1/2 text-sm font-medium text-purple-800">
-                  <span className="font-semibold">
-                    Leadership Best Practices:
-                  </span>
-                </label>
-                <div className="w-1/2 flex justify-start">
-                  <StarRating
-                    initialRating={breakdowns.five}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, five: newRating }));
-                      if (errors.breakdowns.five) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, five: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.five && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.breakdowns.five}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Review Text */}
-            <div>
-              <label
-                htmlFor="review"
-                className="block text-sm font-semibold text-purple-800 mb-1"
-              >
-                Your Review:
-              </label>
-              <textarea
-                id="review"
-                className={`w-full px-4 py-3 rounded-lg border ${
-                  errors.reviewText ? "border-red-500" : "border-gray-300"
-                } focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm resize-none`}
-                rows={4}
-                placeholder="Share your experience..."
-                value={reviewText}
-                onChange={(e) => {
-                  setReviewText(e.target.value);
-                  if (errors.reviewText) {
-                    setErrors((prev) => ({ ...prev, reviewText: "" }));
-                  }
-                }}
-              />
-              {errors.reviewText && (
-                <p className="text-red-500 text-xs mt-1">{errors.reviewText}</p>
-              )}
-            </div>
-
-            {/* Submit Button */}
-            <div className="text-center pt-4">
-              <Button
-                variant="gradient-primary"
-                className="rounded-full py-3 px-8 text-white font-medium shadow-md hover:shadow-lg transition"
-                type="submit"
-              >
-                Submit Review
-              </Button>
-            </div>
-          </form>
+        {/* 2. Client / Customer / Consumer */}
+<div className="flex items-center justify-between gap-4 mb-4">
+  <label className="w-1/2 text-sm font-medium text-purple-800">
+            <span className="font-semibold">Client / Customer / Consumer:</span>
+          </label>
+  <div className="w-1/2 flex justify-start">
+            <StarRating
+              initialRating={breakdowns.two}
+              allowHalfStars={true}
+              size="4xl"
+              onRatingChange={(newRating: number) => {
+                setBreakdowns((prev) => ({ ...prev, two: newRating }));
+                if (errors.breakdowns.two) {
+                  setErrors((prev) => ({
+                    ...prev,
+                    breakdowns: { ...prev.breakdowns, two: "" },
+                  }));
+                }
+              }}
+            />
+          </div>
+          {errors.breakdowns.two && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.breakdowns.two}
+            </p>
+          )}
         </div>
-      </Modal>
+
+        {/* 3. Communities & Charities */}
+<div className="flex items-center justify-between gap-4 mb-4">
+  <label className="w-1/2 text-sm font-medium text-purple-800">
+            <span className="font-semibold">Communities & Charities:</span>
+          </label>
+  <div className="w-1/2 flex justify-start">
+            <StarRating
+              initialRating={breakdowns.three}
+              allowHalfStars={true}
+              size="4xl"
+              onRatingChange={(newRating: number) => {
+                setBreakdowns((prev) => ({ ...prev, three: newRating }));
+                if (errors.breakdowns.three) {
+                  setErrors((prev) => ({
+                    ...prev,
+                    breakdowns: { ...prev.breakdowns, three: "" },
+                  }));
+                }
+              }}
+            />
+          </div>
+          {errors.breakdowns.three && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.breakdowns.three}
+            </p>
+          )}
+        </div>
+
+        {/* 4. Vision & Legacy */}
+<div className="flex items-center justify-between gap-4 mb-4">
+  <label className="w-1/2 text-sm font-medium text-purple-800">
+            <span className="font-semibold">
+              Vision & Legacy – Long-Term Contribution:
+            </span>
+          </label>
+  <div className="w-1/2 flex justify-start">
+            <StarRating
+              initialRating={breakdowns.four}
+              allowHalfStars={true}
+              size="4xl"
+              onRatingChange={(newRating: number) => {
+                setBreakdowns((prev) => ({ ...prev, four: newRating }));
+                if (errors.breakdowns.four) {
+                  setErrors((prev) => ({
+                    ...prev,
+                    breakdowns: { ...prev.breakdowns, four: "" },
+                  }));
+                }
+              }}
+            />
+          </div>
+          {errors.breakdowns.four && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.breakdowns.four}
+            </p>
+          )}
+        </div>
+
+        {/* 5. Leadership Best Practices */}
+<div className="flex items-center justify-between gap-4 mb-4">
+  <label className="w-1/2 text-sm font-medium text-purple-800">
+            <span className="font-semibold">Leadership Best Practices:</span>
+          </label>
+  <div className="w-1/2 flex justify-start">
+            <StarRating
+              initialRating={breakdowns.five}
+              allowHalfStars={true}
+              size="4xl"
+              onRatingChange={(newRating: number) => {
+                setBreakdowns((prev) => ({ ...prev, five: newRating }));
+                if (errors.breakdowns.five) {
+                  setErrors((prev) => ({
+                    ...prev,
+                    breakdowns: { ...prev.breakdowns, five: "" },
+                  }));
+                }
+              }}
+            />
+          </div>
+          {errors.breakdowns.five && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.breakdowns.five}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Review Text */}
+      <div>
+        <label
+          htmlFor="review"
+          className="block text-sm font-semibold text-purple-800 mb-1"
+        >
+          Your Review:
+        </label>
+        <textarea
+          id="review"
+          className={`w-full px-4 py-3 rounded-lg border ${
+            errors.reviewText ? "border-red-500" : "border-gray-300"
+          } focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm resize-none`}
+          rows={4}
+          placeholder="Share your experience..."
+          value={reviewText}
+          onChange={(e) => {
+            setReviewText(e.target.value);
+            if (errors.reviewText) {
+              setErrors((prev) => ({ ...prev, reviewText: "" }));
+            }
+          }}
+        />
+        {errors.reviewText && (
+          <p className="text-red-500 text-xs mt-1">{errors.reviewText}</p>
+        )}
+      </div>
+
+      {/* Submit Button */}
+      <div className="text-center pt-4">
+        <Button
+          variant="gradient-primary"
+          className="rounded-full py-3 px-8 text-white font-medium shadow-md hover:shadow-lg transition"
+          type="submit"
+        >
+          Submit Review
+        </Button>
+      </div>
+    </form>
+  </div>
+</Modal>
+
     </>
   );
 }
