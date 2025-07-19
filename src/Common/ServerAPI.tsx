@@ -22,10 +22,10 @@ type RegisterFormData = {
   username: string;
   email: string;
   password: string;
-  referral_code: string;
+  referral_code?: string;
 };
 type GenerateAffiliateFromData = {
-  user_id: string;
+  user_id: any;
 };
 type getReferredUsersFromData = {
   referralcode: string;
@@ -212,10 +212,7 @@ export const GenerateAffiliateCode = (formData: GenerateAffiliateFromData): ApiR
 };
 
 export const getReferredUsers = (formData: getReferredUsersFromData): ApiResponse => {
-  // const data: Partial<getReferredUsersFromData> = {
-  //   referralcode: formData?.referralcode,
-  // };
-  
+ 
   return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.get_my_referrals}?referralcode=${formData.referralcode}`);
 };
 
