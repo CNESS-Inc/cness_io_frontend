@@ -3,19 +3,24 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   20% {
     opacity: 1;
     transform: translateY(-10px);
   }
+
   40% {
     transform: translateY(5px);
   }
+
   60% {
     transform: translateY(-2px);
   }
+
   80% {
     transform: translateY(0);
   }
+
   100% {
     transform: translateY(0);
   }
@@ -25,7 +30,8 @@
   animation: bounce-in 0.6s ease-out;
 }
 
-#zf_button_574943, #zf_button_982213 {
+#zf_button_574943,
+#zf_button_982213 {
   display: none !important;
 }
 
@@ -33,3 +39,262 @@
   display: none !important;
 }
 
+
+body {
+  overflow-x: hidden;
+}
+
+.custom-swiper .swiper-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.custom-swiper .swiper-pagination-bullet {
+  width: 12px;
+  height: 12px;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 9999px;
+  margin: 0 4px;
+  opacity: 1;
+  transition: all 300ms ease-in-out;
+}
+
+.custom-swiper .swiper-pagination-bullet-active {
+  width: 40px;
+  height: 12px;
+  background: linear-gradient(to right, #7077FE, #9747FF);
+  border: none;
+  border-radius: 9999px;
+}
+
+.main-image-container {
+  position: relative;
+}
+
+.main-image-container h2 {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  z-index: 9;
+  color: #fff;
+  font-size: 104px;
+  font-weight: bold;
+  width: 70%;
+  transform: translateX(-50%);
+  text-align: center;
+  line-height: normal;
+}
+
+.hero-section {
+  position: relative;
+}
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  background: #f0f8f9;
+  left: 0;
+  width: 30%;
+  height: 100%;
+  border-radius: 100%;
+  filter: blur(100px);
+}
+
+.hero-section::after {
+  content: "";
+  position: absolute;
+  background: #f9f5f2;
+  right: 0;
+  width: 30%;
+  height: 100%;
+  border-radius: 100%;
+  filter: blur(100px);
+}
+
+
+
+.highlight-right-content-box::-webkit-scrollbar-track {
+  -webkit-box-shadow: transparent;
+  border-radius: 10px;
+  background-color: transparent;
+}
+
+.highlight-right-content-box::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  background-color: transparent;
+}
+
+.highlight-right-content-box::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  height: 5px;
+  -webkit-box-shadow: transparent;
+  background-color: transparent;
+}
+
+.card-flash-area {
+  line-height: normal;
+}
+
+.certificate-animation {
+  height: 650px;
+}
+
+.rotate-fix {
+  transform: rotate(-45deg);
+}
+
+.awareness-btn div {
+  justify-content: center;
+}
+
+
+@media (max-width:1536px) {
+  .certificate-animation {
+    height: 480px;
+  }
+}
+
+@media (max-width:1280px) {
+  .certificate-animation {
+    height: 480px;
+    width: 32%;
+    margin-right: 30px;
+  }
+}
+
+@media (max-width:991px) {
+  .socail-media-image .media-img {
+    height: 380px !important;
+  }
+
+  .hero-round-circle {
+    width: 150vw !important;
+    height: 95vh !important;
+    top: 70% !important;
+  }
+
+  .community-heading br {
+    display: none;
+  }
+
+  .bg-first {
+    width: 120px;
+  }
+
+  .bg-second {
+    width: 200px;
+  }
+
+  .bg-third {
+    width: 400px;
+  }
+
+  .hero-section {
+    height: calc(100vh - 91.8px);
+  }
+
+  .certificate-animation {
+    height: 820px;
+    width: 100%;
+  }
+}
+
+@media (max-width:767px) {
+  .hight-box-img {
+    width: 30px !important;
+    height: 30px !important;
+  }
+
+  .socail-media-image .media-img {
+    height: 300px !important;
+  }
+
+  .featured-heading br {
+    display: none;
+  }
+
+  .thumb-img {
+    width: 100px !important;
+    height: 100px !important;
+  }
+
+  header nav ul li {
+    margin-right: 10px;
+  }
+
+  header nav ul li:last-child {
+    margin-right: 0;
+  }
+
+  .highlight-section {
+    background-position: 100% 20%;
+    background-size: 30%;
+  }
+
+  .mobile-section br {
+    display: none;
+  }
+
+  .bg-third {
+    width: 220px;
+  }
+
+  .bg-second {
+    width: 80px;
+  }
+
+  .bg-first {
+    width: 80px;
+  }
+
+  .hero-section br {
+    display: none;
+  }
+
+  .hero-round-circle {
+    height: 75vh !important;
+    max-height: 75vh !important;
+    top: 75% !important;
+  }
+
+  /* .hero-section {
+    height: calc(100vh - 280px);
+  } */
+  .certificate-animation {
+    height: 350px;
+  }
+
+  .team-section p br {
+    display: none;
+  }
+
+  .join-section-bg {
+    gap: 0;
+  }
+
+  .joining-btn button {
+    width: 100%;
+  }
+
+  .joining-btn button div {
+    justify-content: center;
+  }
+
+  .awareness-btn:last-child {
+    width: 60%;
+  }
+
+  .awareness-btn:first-child {
+    width: 40%;
+  }
+  .hero-section-btn{
+    width: 100% !important;
+  }
+  .hero-section-btn div{
+    justify-content: center;
+  }
+
+}
