@@ -45,9 +45,8 @@ import DashboardTechnology from "../pages/DashboardTechnology";
 import BestPracticesHub from "../pages/BestPracticesHub";
 import ManageBestPractices from "../pages/ManageBestPractices";
 import SingleBP from "../pages/SingleBP";
-import TermsAndConditions  from "../pages/TermsAndConditions";
+import TermsAndConditions from "../pages/TermsAndConditions";
 import PrivacyPolicy from "../pages/Privacypolicy";
-
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -125,13 +124,15 @@ export const router = createBrowserRouter([
             path: "assesment",
             element: <AssessmentQuestion />,
           },
-         {
-  path: "setting",
-      element:
-        import.meta.env.VITE_ENV_STAGE === "test"
-          ? <Setting />
-          : <ComingSoon />,
-    },
+          {
+            path: "setting",
+            element:
+              import.meta.env.VITE_ENV_STAGE === "test" ? (
+                <Setting />
+              ) : (
+                <ComingSoon />
+              ),
+          },
           {
             path: "upload-proof",
             element: <UploadProof />,
@@ -161,11 +162,13 @@ export const router = createBrowserRouter([
             element: <MarketPlace />,
           },
           {
-            path: "search_listing",
-             element:
-        import.meta.env.VITE_ENV_STAGE === "test"
-          ? <SearchListing />
-          : <ComingSoon />,
+            path: "search-listing",
+            element:
+              import.meta.env.VITE_ENV_STAGE === "test" ? (
+                <SearchListing />
+              ) : (
+                <ComingSoon />
+              ),
           },
           {
             path: "digital_products",
@@ -199,10 +202,12 @@ export const router = createBrowserRouter([
           },
           {
             path: "EditPublicListing",
-             element:
-        import.meta.env.VITE_ENV_STAGE === "test"
-          ? <EditPublicListing />
-          : <ComingSoon />,
+            element:
+              import.meta.env.VITE_ENV_STAGE === "test" ? (
+                <EditPublicListing />
+              ) : (
+                <ComingSoon />
+              ),
           },
 
           {
@@ -277,11 +282,11 @@ export const router = createBrowserRouter([
       {
         index: true,
         element:
-        import.meta.env.VITE_ENV_STAGE === "test"
-          ? <DirectoryPage />
-          : <ComingSoon />,
-
-        
+          import.meta.env.VITE_ENV_STAGE === "test" ? (
+            <DirectoryPage />
+          ) : (
+            <ComingSoon />
+          ),
       },
 
       {
@@ -314,11 +319,12 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-element:
-        import.meta.env.VITE_ENV_STAGE === "test"
-          ? <Social />
-          : <ComingSoon />,
-
+        element:
+          import.meta.env.VITE_ENV_STAGE === "test" ? (
+            <Social />
+          ) : (
+            <ComingSoon />
+          ),
       },
 
       {
@@ -350,15 +356,15 @@ element:
       passProps: true,
     },
   },
-    {
-  path: '/terms-and-conditions',
-  element: <TermsAndConditions />,
-},
+  {
+    path: "/terms-and-conditions",
+    element: <TermsAndConditions />,
+  },
 
   {
-  path: '/privacy-policy',
-  element: <PrivacyPolicy />,
-},
+    path: "/privacy-policy",
+    element: <PrivacyPolicy />,
+  },
   {
     path: "/sign-up",
     element: <Signingup />,
