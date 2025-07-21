@@ -47,6 +47,7 @@ import ManageBestPractices from "../pages/ManageBestPractices";
 import SingleBP from "../pages/SingleBP";
 import TermsAndConditions from "../pages/TermsAndConditions";
 import PrivacyPolicy from "../pages/Privacypolicy";
+import DashboardUserProfile from "../pages/DashboardUserProfile";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -169,6 +170,10 @@ export const router = createBrowserRouter([
               ) : (
                 <ComingSoon />
               ),
+          },
+          {
+            path: "userprofile/:id",
+            element: <DashboardUserProfile />,
           },
           {
             path: "digital_products",
