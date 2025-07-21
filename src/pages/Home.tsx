@@ -1,26 +1,53 @@
 import AwarenessSection from "../components/sections/Awareness";
-import HeroSection from "../components/sections/Herosection";
 import JoiningSection from "../components/sections/Joiningsection";
-import Plateformrootedsection from "../components/sections/PlatformRooted";
-import Platformsections from "../components/sections/PlatformsModule";
-import Stepper from "../components/sections/Stepper";
-import Testimonialsection from "../components/sections/Testimonial";
-import WhySection from "../components/sections/Whysection";
-import Footer from "../layout/Footer/Footer";
+import MobileSection from "../components/sections/MobileSection";
+import SocialMedia from "../components/sections/SocialMedia";
+// import Stepper from "../components/sections/Stepper";
+import Community from "../components/sections/Community";
+import Highlight from "../components/sections/Highlight";
+ import Footer from "../layout/Footer/Footer";
 import Header from "../layout/Header";
+import HeroSection from "../components/sections/Herosection";
+import Certification from "../components/sections/Certification";
+import Team from "../components/sections/Team";
+import FeaturedSection from "../components/sections/FeaturedSection";
+import LazySection from "../components/ui/LazySection";
 
 const Home = () => {
   return (
-    <>
-      <Header />
-      <HeroSection />
-      <WhySection />
-      <Platformsections />
-      <Plateformrootedsection />
-      <Testimonialsection />
-      <Stepper />
-      <AwarenessSection />
-      <JoiningSection />
+    <>  
+      <Header />    
+      <LazySection effect="fade-up" delay={0.2}>
+        <HeroSection />
+      </LazySection>
+      <LazySection effect="fade-up" delay={0.1}>
+        <Highlight />
+      </LazySection>
+      <LazySection effect="fade-up" delay={0.1}>
+        <SocialMedia />
+      </LazySection>
+      <LazySection effect="fade-up" delay={0.2}>
+        <FeaturedSection/>
+      </LazySection>
+      <LazySection effect="fade-up" delay={0.1}>
+        <MobileSection />
+      </LazySection>
+      <LazySection effect="fade-up" delay={0.1}>
+        <Community />
+      </LazySection>
+      {/* <Stepper /> */}
+      <LazySection effect="fade-up" delay={0.3}>
+        <AwarenessSection />
+      </LazySection>
+      <LazySection effect="fade-up" delay={0.2}>
+        <Certification />
+      </LazySection>
+      <LazySection effect="fade-up" delay={0.1}>
+        <Team />
+      </LazySection>
+      <LazySection effect="fade-up" delay={0.2}>
+        <JoiningSection />
+      </LazySection>
       <Footer/>
     </>
   );
