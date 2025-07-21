@@ -3,7 +3,7 @@ import Button from "../../ui/Button";
 import Image from "../../ui/Image";
 
 export default function Highlight() {
-  const [openIndex, setOpenIndex] = useState(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -13,7 +13,7 @@ export default function Highlight() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const handleClick = (index) => {
+  const handleClick = (index: number) => {
     if (isMobile) {
       setOpenIndex(openIndex === index ? null : index);
     }
