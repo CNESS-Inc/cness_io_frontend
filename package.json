@@ -31,7 +31,7 @@
     "html2pdf.js": "^0.10.3",
     "js-cookie": "^3.0.5",
     "lodash": "^4.17.21",
-    "lottie-react": "^2.4.1",
+     "lottie-react": "^2.4.1",
     "lucide-react": "^0.509.0",
     "pdf-lib": "^1.17.1",
     "qrcode.react": "^4.2.0",

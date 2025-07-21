@@ -97,7 +97,7 @@ export default function HeroSection() {
 
   return (
     <>
-      <section className="relative  rounded-[12px] overflow-hidden lg:mx-[12px] bg-[#f4f3f9] hero-section overflow-hidden
+      <section className="relative  rounded-[12px] hero-section lg:mx-[12px] bg-[#f4f3f9] hero-section overflow-hidden
             min-[1024px]:h-[100vh] 
             min-[1536px]:h-[100vh]
             
@@ -132,7 +132,7 @@ export default function HeroSection() {
               (step >= 5 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6')
             }>
               <Button
-                className="rounded-[100px] lg:py-3 py-2 lg:px-8 px-4 lg:text-base text-[14px] self-stretch  bg-linear-to-r from-[#7077FE] to-[#9747FF]"
+                className="rounded-[100px] w-fit lg:py-3 py-2 lg:px-8 px-4 lg:text-base text-[14px] self-stretch  bg-linear-to-r from-[#7077FE] to-[#9747FF]"
               >
                 Get Started
               </Button>

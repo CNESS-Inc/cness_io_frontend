@@ -34,11 +34,11 @@ export default function JoiningSection()
             <p className="text-center w-full openSans">Join a movement that sees you, supports you, and helps your conscious work shine.</p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-[15px] w-full ">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-[15px] w-full  joining-section-btn">
            
             <Button
               // variant="gradient-primary"
-              className="jakarta rounded-[100px] h-[42px] py-1 px-8 self-stretch text-[14px]  bg-linear-to-r from-[#7077FE] to-[#9747FF]"
+              className="jakarta w-fit rounded-[100px] h-[42px] py-1 px-8 self-stretch text-[14px]  bg-linear-to-r from-[#7077FE] to-[#9747FF]"
             >
               Create Your Profile
             </Button>

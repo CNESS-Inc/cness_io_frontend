@@ -37,21 +37,23 @@ const Support = () => {
       <div className="max-w-8xl mx-auto">
         {/* Header Section */}
         <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Support Center</h1>
-          <p className="text-gray-600">Find answers to your questions or get help from our support team</p>
+ <h1 className="font-['Poppins',Helvetica] text-2xl md:text-[32px] leading-8 mb-5">
+                    <span className="font-semibold text-[#222224]">Support Center </span></h1>
+                  
+                              <p className="text-gray-600">Find answers to your questions or get help from our support team</p>
         </header>
 
         {/* Action Buttons and Toll-free Number */}
         <div className="flex flex-wrap items-center gap-4 mb-8">
-          <button
+          <button disabled
           onClick={()=>window.showZForm_574943 && window.showZForm_574943()}
-           className="px-6 py-2 rounded-full bg-white text-gray-800 border border-gray-300 shadow-sm hover:shadow-md transition">
+           className="px-6 py-2 rounded-full bg-white text-gray-400 border border-gray-200 shadow-sm cursor-not-allowed opacity-50">
             Contact Us
           </button>
 
-          <button
+          <button disabled
             onClick={() => window.showZForm_982213 && window.showZForm_982213()}
-            className="px-6 py-2 rounded-full bg-[#FF5C7C] text-white font-semibold hover:bg-[#ff4065] transition"
+            className="px-6 py-2 rounded-full bg-[#FF5C7C] text-white font-semibold cursor-not-allowed opacity-50"
           >
             Provide Feedback
           </button>
@@ -99,7 +101,7 @@ const Support = () => {
           >
             FAQ
           </button>
-          <button
+          <button disabled
             className={`px-4 py-2 font-medium ${activeTab === 'tickets' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
             onClick={() => setActiveTab('tickets')}
           >

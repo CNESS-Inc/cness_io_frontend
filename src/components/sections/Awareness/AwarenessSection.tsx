@@ -284,10 +284,10 @@ export default function AwarenessSection() {
                                     {card.price}
                                   </p>
                                   <Button
-                                    className="rounded-full py-2 px-6 bg-[#F07EFF] text-[12px] cursor-default"
+                                    className="rounded-full w-fit font-regular py-2 px-6 bg-[#F07EFF] text-[12px] cursor-default"
                                     style={{ pointerEvents: "none" }}
                                   >
-                                    {card.button}
+                                    <p className="text-[12px] font-normal">{card.button}</p>
                                   </Button>
                                 </div>
                               </div>

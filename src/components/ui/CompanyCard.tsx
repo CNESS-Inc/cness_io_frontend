@@ -1,5 +1,3 @@
-
-
 import {
   Card,
   CardHeader,
@@ -7,27 +5,17 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from '../ui/DashboardCard';
-<<<<<<< Updated upstream
+} from "../ui/DashboardCard";
 
-import { iconMap } from '../../assets/icons';
-
-=======
-
-import { iconMap } from '../../assets/icons';
-
-<<<<<<< HEAD
-=======
 import { iconMap } from "../../assets/icons";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import indv_aspiring from "../../assets/indv_aspiring.svg";
 import indv_inspried from "../../assets/indv_inspired.svg";
 import indv_leader from "../../assets/indv_leader.svg";
->>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
->>>>>>> Stashed changes
 
 interface CompanyCardProps {
+  id: string;
   name: string;
   domain: string;
   logoUrl: string;
@@ -37,16 +25,10 @@ interface CompanyCardProps {
   tags: string[];
   rating?: number;
   isCertified?: boolean;
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
-=======
   is_person?: boolean;
   is_organization?: boolean;
   level?: any;
   routeKey?:string
->>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
->>>>>>> Stashed changes
 }
 
 // const StarRating = ({ rating }: { rating: number }) => {
@@ -76,6 +58,7 @@ interface CompanyCardProps {
 // };
 
 export default function CompanyCard({
+  id,
   name,
   location,
   logoUrl,
@@ -83,109 +66,83 @@ export default function CompanyCard({
   description,
   tags,
   rating,
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
-}: CompanyCardProps) {
-  return (
-    
- <Card className="bg-white max-w-sm rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40">
-  <CardHeader className="px-4 pt-4 pb-0">
-    <div className="flex justify-between items-start">
-        <div className="flex items-center gap-2">
-      <img src={logoUrl} alt={`${name} logo`} className="h-8 w-8 rounded-full" />
-      <div>
-        <CardTitle className="text-sm font-semibold">{name}</CardTitle>
-        <CardDescription className="text-xs text-gray-500">{location}</CardDescription>
-      </div>
-    </div>
-    <img src={iconMap['inslogo']} alt="CNESS Logo"className="h-8 w-auto object-contain" />
-    </div>
-  </CardHeader>
-
-  <CardContent className="px-4 pt-2 pb-0">
-    <div className="rounded-xl overflow-hidden mb-3">
-      <img
-        src={bannerUrl}
-        alt={`${name} banner`}
-        className="w-full h-36 object-cover"
-      />
-    </div>
-
-   <div className="flex justify-between items-center mb-1">
-  <p className="text-sm font-semibold text-gray-800">Overview</p>
-  <div className="flex items-center text-yellow-500 text-sm">
-    {'★'.repeat(rating || 0)}
-    {'☆'.repeat(5 - (rating || 0))}
-  </div>
-</div>
-
-    <p className="text-sm text-gray-600 leading-snug">
-      {description}{' '}
-      <span className="text-purple-600 underline cursor-pointer">Read More</span>
-    </p>
-   
-=======
   level,
   routeKey
->>>>>>> Stashed changes
 }: CompanyCardProps) {
+  console.log("🚀 ~ rating:", rating);
+  const navigate = useNavigate();
+  const [showFullDescription, setShowFullDescription] = useState(false);
+
+  const handleCardClick = () => {
+    if (routeKey) {
+      navigate(`/dashboard/userprofile/${id}`);
+    } else {
+      navigate(`/directory/user-profile/${id}`);
+    }
+  };
+
+  const maxDescriptionLength = 100;
+  const truncatedDescription =
+    description.length > maxDescriptionLength
+      ? description.substring(0, maxDescriptionLength) + "..."
+      : description;
+
+  const toggleDescription = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowFullDescription(!showFullDescription);
+  };
   return (
-    
- <Card className="bg-white max-w-sm rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40">
-  <CardHeader className="px-4 pt-4 pb-0">
-    <div className="flex justify-between items-start">
-        <div className="flex items-center gap-2">
-      <img src={logoUrl} alt={`${name} logo`} className="h-8 w-8 rounded-full" />
-      <div>
-        <CardTitle className="text-sm font-semibold">{name}</CardTitle>
-        <CardDescription className="text-xs text-gray-500">{location}</CardDescription>
-      </div>
-    </div>
-    <img src={iconMap['inslogo']} alt="CNESS Logo"className="h-8 w-auto object-contain" />
-    </div>
-  </CardHeader>
+    <Card
+      className="relative bg-white max-w-sm cursor-pointer rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
+      onClick={handleCardClick}
+    >
+      {/* Absolute Badge Logo */}
+      {/* <img
+        src={iconMap["inslogo"]}
+        alt="CNESS Logo"
+        className="absolute top-3 right-3 w-8 sm:w-10 h-auto object-contain z-10"
+      /> */}
+      {level && (
+        <img
+          src={
+            level == "Aspiring"
+              ? indv_aspiring
+              : level == "Inspiring"
+              ? indv_inspried
+              : level == "Leader"
+              ? indv_leader
+              : indv_inspried // fallback if no level
+          }
+          alt={`${level || "CNESS"} Badge`}
+          className="absolute top-3 right-3 w-8 sm:w-[58px] h-[32px] object-contain z-10"
+        />
+      )}
 
-  <CardContent className="px-4 pt-2 pb-0">
-    <div className="rounded-xl overflow-hidden mb-3">
-      <img
-        src={bannerUrl}
-        alt={`${name} banner`}
-        className="w-full h-36 object-cover"
-      />
-    </div>
+      <CardHeader className="px-4 pt-4 pb-0 relative z-0">
+        <div className="flex items-start gap-1 pr-12">
+          <img
+            src={
+              logoUrl && logoUrl !== "http://localhost:5026/file/"
+                ? logoUrl
+                : "/profile.png"
+            }
+            alt={`${name} logo`}
+            className="h-8 w-8 rounded-full"
+            onError={(e) => {
+              // Fallback if the image fails to load
+              const target = e.target as HTMLImageElement;
+              target.src = "/profile.png";
+            }}
+          />
+          <div>
+            <CardTitle className="text-sm font-semibold">{name}</CardTitle>
+            <CardDescription className="text-xs text-gray-500">
+              {location}
+            </CardDescription>
+          </div>
+        </div>
+      </CardHeader>
 
-<<<<<<< Updated upstream
-   <div className="flex justify-between items-center mb-1">
-  <p className="text-sm font-semibold text-gray-800">Overview</p>
-  <div className="flex items-center text-yellow-500 text-sm">
-    {'★'.repeat(rating || 0)}
-    {'☆'.repeat(5 - (rating || 0))}
-  </div>
-</div>
-
-    <p className="text-sm text-gray-600 leading-snug">
-      {description}{' '}
-      <span className="text-purple-600 underline cursor-pointer">Read More</span>
-    </p>
-   
-
-    <div className="flex flex-wrap gap-2 mt-3">
-      {tags.map((tag, index) => (
-        <span
-          key={index}
-          className="bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs"
-        >
-          {tag}
-        </span>
-      ))}
-    </div>
-  </CardContent>
-
-  <CardFooter className="flex justify-between items-center px-4 py-3">
-  
-
-=======
       <CardContent className="px-4 pt-2 pb-0">
         <div className="rounded-xl overflow-hidden mb-3">
           <img
@@ -202,24 +159,15 @@ export default function CompanyCard({
             }}
           />
         </div>
->>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
 
-    <div className="flex flex-wrap gap-2 mt-3">
-      {tags.map((tag, index) => (
-        <span
-          key={index}
-          className="bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs"
-        >
-          {tag}
-        </span>
-      ))}
-    </div>
-  </CardContent>
+        <div className="flex justify-between items-center mb-1">
+          <p className="text-sm font-semibold text-gray-800">Overview</p>
+          <div className="flex items-center text-yellow-500 text-sm">
+            {"★".repeat(rating || 0)}
+            {"☆".repeat(5 - (rating || 0))}
+          </div>
+        </div>
 
-<<<<<<< HEAD
-  <CardFooter className="flex justify-between items-center px-4 py-3">
-  
-=======
         <p className="text-sm text-gray-600 leading-snug">
           {showFullDescription ? description : truncatedDescription}
           {description.length > maxDescriptionLength && (
@@ -231,11 +179,22 @@ export default function CompanyCard({
             </span>
           )}
         </p>
->>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
 
->>>>>>> Stashed changes
-  </CardFooter>
-</Card>
+        <div className="flex flex-wrap gap-2 mt-3">
+          {tags?.map((tag, index) => (
+            <span
+              key={index}
+              className="bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      </CardContent>
 
+      <CardFooter className="flex justify-between items-center px-4 py-3">
+        {/* Optional footer content */}
+      </CardFooter>
+    </Card>
   );
 }

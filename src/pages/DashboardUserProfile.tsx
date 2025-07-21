@@ -1,6 +1,4 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
-import Header from "../layout/Header/Header";
-import Footer from "../layout/Footer/Footer";
 import inspiredbadge from "../assets/Inspired _ Badge.png";
 // import bestprac from "../assets/bestprac.png";
 // import bcard1 from "../assets/Bcard1.png";
@@ -30,10 +28,10 @@ import indv_aspiring from "../assets/indv_aspiring.svg";
 import indv_inspried from "../assets/indv_inspired.svg";
 import indv_leader from "../assets/indv_leader.svg";
 
-export default function UserProfileView() {
+export default function DashboardUserProfile() {
   const { id } = useParams();
   const [userDetails, setUserDetails] = useState<any>();
-  console.log("🚀 ~ UserProfileView ~ userDetails:", userDetails);
+  console.log("🚀 ~ DashboardUserProfile ~ userDetails:", userDetails?.level?.level)
   const [activeModal, setActiveModal] = useState<"rating" | null>(null);
 
   const { showToast } = useToast();
@@ -78,7 +76,6 @@ export default function UserProfileView() {
     three: 0,
     four: 0,
     five: 0,
-    six: 0,
   });
 
   // State for errors
@@ -90,7 +87,6 @@ export default function UserProfileView() {
       three: "",
       four: "",
       five: "",
-      six: "",
     },
   });
 
@@ -105,7 +101,6 @@ export default function UserProfileView() {
         three: "",
         four: "",
         five: "",
-        six: "",
       },
     };
 
@@ -147,7 +142,6 @@ export default function UserProfileView() {
           breakdown_three: breakdowns.three.toString(),
           breakdown_four: breakdowns.four.toString(),
           breakdown_five: breakdowns.five.toString(),
-          breakdown_six: breakdowns.six.toString(),
         };
         await AddUserRating(payload);
         setActiveModal(null);
@@ -159,7 +153,6 @@ export default function UserProfileView() {
           three: 0,
           four: 0,
           five: 0,
-          six: 0,
         });
         await fetchRatingDetails();
       } catch (error: any) {
@@ -170,7 +163,6 @@ export default function UserProfileView() {
           three: 0,
           four: 0,
           five: 0,
-          six: 0,
         });
         setActiveModal(null);
         showToast({
@@ -219,7 +211,6 @@ export default function UserProfileView() {
         three: "",
         four: "",
         five: "",
-        six: "",
       },
     });
   };
@@ -234,7 +225,6 @@ export default function UserProfileView() {
 
   return (
     <>
-      <Header />
 
       <div className="min-h-screen bg-[#ECEEF2]">
         {/* Header Banner */}
@@ -246,7 +236,7 @@ export default function UserProfileView() {
         >
           <button
             onClick={() => window.history.back()}
-            className="absolute cursor-pointer top-4 left-4 bg-white rounded-full p-2 shadow-md"
+            className="absolute top-4 left-4 bg-white rounded-full p-2 shadow-md cursor-pointer"
           >
             <ArrowLeftIcon className="h-5 w-5 text-[#7077FE]" />
           </button>
@@ -307,17 +297,13 @@ export default function UserProfileView() {
                   <p className="text-xs text-gray-400">Official mail</p>
                 </div>
                 <div>
-                  <p className="font-medium break-all">
-                    {userDetails?.phone_no}
-                  </p>
+                  <p className="font-medium break-all">{userDetails?.phone_no}</p>
                   <p className="text-xs text-gray-400">
                     Official Contact Number
                   </p>
                 </div>
                 <div>
-                  <p className="font-medium break-all">
-                    {userDetails?.address}
-                  </p>
+                  <p className="font-medium break-all">{userDetails?.address}</p>
                   <p className="text-xs text-gray-400">Address</p>
                 </div>
               </div>
@@ -375,13 +361,13 @@ export default function UserProfileView() {
                     src={
                       userDetails?.level?.level == "Aspiring"
                         ? indv_aspiring
-                        : userDetails?.level?.level == "Inspired"
+                        : userDetails?.level?.level == "Inspiring"
                         ? indv_inspried
                         : userDetails?.level?.level == "Leader"
                         ? indv_leader
                         : inspiredbadge // fallback if no level
                     }
-                    alt={`${userDetails?.badge?.level || "CNESS"} Badge`}
+                    alt={`${userDetails?.level?.level || "CNESS"} Badge`}
                     className="w-[159px] md:w-[180px] h-auto object-contain mt-[-10px]"
                   />
                 </div>
@@ -402,7 +388,7 @@ export default function UserProfileView() {
                 </span>{" "}
                 About
               </h3>
-              <p className="text-sm text-gray-700 leading-relaxed">
+              <p className="text-sm text-gray-700 leading-relaxed break-all">
                 {userDetails?.about_us}
               </p>
             </div>
@@ -506,34 +492,35 @@ export default function UserProfileView() {
                 style={{ borderColor: "#0000001A" }}
               />
               <div className="flex flex-wrap gap-5">
-
               </div>
             </div>
 
-   <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
-    <h3 className="text-base font-semibold text-black mb-2 flex items-center gap-2">
-      <span className="bg-purple-50 p-2 rounded-full">
-        <img src={tag} alt="tags Icon" className="w-5 h-5 object-contain" />
-      </span>
-      Tags
-    </h3>
-    <div
-      className="border-t my-2"
-      style={{ borderColor: "#0000001A" }}
-    />
-    <div className="flex flex-wrap gap-5">
-      {userDetails?.person_tags?.map((tag: any, index: any) => (
-        <span
-          key={index}
-          className="bg-[#EEF3FF] text-[#7077FE] text-xs font-medium px-7 py-2 rounded"
-        >
-          {tag}
-        </span>
-      ))}
-    </div>
-  </div>
-
-       
+            <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
+              <h3 className="text-base font-semibold text-black mb-2 flex items-center gap-2">
+                <span className="bg-purple-50 p-2 rounded-full">
+                  <img
+                    src={tag}
+                    alt="tags Icon"
+                    className="w-5 h-5 object-contain"
+                  />
+                </span>
+                Tags
+              </h3>
+              <div
+                className="border-t my-2"
+                style={{ borderColor: "#0000001A" }}
+              />
+              <div className="flex flex-wrap gap-5">
+                {userDetails?.person_tags?.map((tag: any, index: any) => (
+                  <span
+                    key={index}
+                    className="bg-[#EEF3FF] text-[#7077FE] text-xs font-medium px-7 py-2 rounded"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
 
             <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
               <h3 className="text-base font-semibold text-black mb-2 flex items-center gap-2">
@@ -701,7 +688,7 @@ export default function UserProfileView() {
                         }
                       }}
                     >
-                      write Review
+                      Write Review
                     </Button>
                   </div>
                 )}
@@ -718,7 +705,7 @@ export default function UserProfileView() {
                   <div className="flex flex-col items-center xl:items-start">
                     {typeof avgrating === "number" && !isNaN(avgrating) && (
                       <>
-                        <p className="text-4xl font-bold text-purple-500 ">
+                        <p className="text-4xl font-bold text-purple-500">
                           {avgrating}
                         </p>
                         <StarRating
@@ -862,7 +849,7 @@ export default function UserProfileView() {
                     </div>
                     {reviewItem.review && (
                       <>
-                        <p className="font-semibold text-sm text-gray-800 mb-1 break-all">
+                        <p className="font-semibold text-sm text-gray-800 mb-1">
                           {reviewItem.review}
                           {/* Add a fallback if no title */}
                         </p>
@@ -883,7 +870,6 @@ export default function UserProfileView() {
           </div>
         </div>
       </div>
-      <Footer />
 
       <Modal isOpen={showLoginPrompt} onClose={() => setShowLoginPrompt(false)}>
         <div className="text-center space-y-4">

@@ -53,7 +53,7 @@ const GenerateBadgeCode = () => {
 
   return (
     <>
-      <div className="p-4 mx-auto">
+<div className="max-w-6xl mx-auto my-10 p-10 bg-white rounded-xl shadow-md min-h-[750px]">
         {/* <h2 className="text-xl font-bold mb-4">Embed Code Generator</h2>
 
         <div className="flex items-center space-x-4 mb-4">
@@ -66,7 +66,7 @@ const GenerateBadgeCode = () => {
         </div> */}
 
         {embedCodes.length > 0 && (
-          <div className="space-y-6 grid grid-cols-3 gap-3">
+          <div className="space-y-6 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               {/* <label className="font-medium">Iframe Embed Preview:</label>
               <div

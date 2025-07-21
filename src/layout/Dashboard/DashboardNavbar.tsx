@@ -1,78 +1,113 @@
 import { useState } from "react";
 import {
-  AwardIcon,
-  BadgePlusIcon,
   BellIcon,
-  FileBarChartIcon,
-  GraduationCapIcon,
   HelpCircleIcon,
-  LayoutDashboardIcon,
   SettingsIcon,
-  UploadIcon,
-  UserIcon,
-  XIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   LogOutIcon,
+  BadgePlus,
+  TrendingUp,
+  Zap
+
 } from "lucide-react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation, Link } from "react-router-dom";
+import { iconMap } from '../../assets/icons';
+import hambur from "../../assets/hambur.png";
+import DashboardFilterSidebar from "./DashboardFilterSidebar";
+import { LogOut } from "../../Common/ServerAPI";
+import { useToast } from "../../components/ui/Toast/ToastProvider";
 
-const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
+
+const DashboardNavbar = ({
+  isMobileNavOpen,
+  toggleMobileNav,
+  currentPath,
+  selectedDomain,
+  setSelectedDomain,
+  sort,
+  setSort
+}: {
+  isMobileNavOpen: boolean;
+  toggleMobileNav: () => void;
+  currentPath: string;
+  selectedDomain: string;
+  setSelectedDomain: React.Dispatch<React.SetStateAction<string>>;
+  sort: "az" | "za";
+  setSort: React.Dispatch<React.SetStateAction<"az" | "za">>;
+}) => {
 
   const navigate = useNavigate();
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
-=======
     const { showToast } = useToast();
   const [openDropdown, setOpenDropdown] = useState<{ [key: string]: boolean }>({});
   const showFilterSidebar =
     currentPath.includes("/dashboard/DashboardDirectory/technology") ||
     currentPath.includes("/dashboard/search-listing");
->>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
->>>>>>> Stashed changes
 
-  const handleLogout = () => {
+
+
+  const handleLogout = async () => {
     try {
-      localStorage.clear();
-      setIsProfileOpen(false); // if dropdown open, close it
-      toggleMobileNav(); // close sidebar on mobile
-      navigate("/");
-    } catch (error) {
+
+      const response = await LogOut();
+
+      if (response) {
+        localStorage.clear();
+        toggleMobileNav();
+        navigate("/");
+      }
+
+
+    } catch (error:any) {
       console.error("Logout failed:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
-  // Navigation items data
   const mainNavItems = [
     {
-      icon: <LayoutDashboardIcon className="w-5 h-5" />,
-      label: "Dashboard",
+      id: "dashboard",
+      icon: <img src={iconMap["home"]} alt="Home Icon" className="w-5 h-5" />,
+      label: "Home / Dashboard",
       active: true,
       path: "/dashboard",
     },
     {
-      icon: <AwardIcon className="w-5 h-5" />,
-      label: "Get Certified",
+        id: "TrueProfile",
+      icon: <img src={iconMap["usericon"]} alt="Home Icon" className="w-5 h-5" />,
+      label: "True Profile",
       active: false,
+      isProfileDropdown: true,
+      childPaths: [
+        "/dashboard/user-profile",
+        "/dashboard/company-profile"
+      ]
     },
     {
-      icon: <UploadIcon className="w-5 h-5" />,
-      label: "Upload Proof",
+      id: "Certifications",
+      icon: <img src={iconMap["certify"]} alt="Home Icon" className="w-5 h-5" />,
+      label: "Certifications",
       active: false,
+      isCertificationsDropdown: true,
+      childPaths: ["/dashboard/assesment", "/dashboard/score-result", "/dashboard/upgrade-badge"],
+      children: [
+        { label: "Get Certified", path: "/dashboard/assesment" },
+        //{ label: "Upload Proof", path: "/dashboard/UploadProof" },
+        { label: "Score & Results", path: "/dashboard/score-result" },
+        { label: "Upgrade Badge", path: "/dashboard/upgrade-badge" },
+      ],
     },
     {
-      icon: <FileBarChartIcon className="w-5 h-5" />,
-      label: "Score & Results",
+
+      id: "directory",
+      icon: <img src={iconMap["directory"]} alt="Directory Icon" className="w-5 h-5" />,
+      label: "Directory",
       active: true,
-<<<<<<< Updated upstream
-      path: "/score-result",
-=======
-<<<<<<< HEAD
-      path: "/score-result",
-=======
       path: "/dashboard/DashboardDirectory",
       isDirectoryDropdown: true,
       childPaths: ["/dashboard/search-listing"],
@@ -110,28 +145,65 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
         { label: "Track Purchase & Sales", path: "/dashboard/Tracking" },
         { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
       ],
->>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
->>>>>>> Stashed changes
     },
     {
-      icon: <GraduationCapIcon className="w-5 h-5" />,
-      label: "Learning Lab (LMS)",
-      active: false,
+      id: "Social",
+      icon: <img src={iconMap["social"]} alt="Home Icon" className="w-5 h-5" />,
+      label: "Social",
+      active: true,
+      path: "/dashboard/DashboardSocial",
+      isSocialDropdown: true,
+      childPaths: ["/dashboard/Feed"],
+      children: [
+        { label: "Feed", path: "/dashboard/Feed" },
+        { label: "Profile", path: "/dashboard/Profile" },
+        { label: "My Connections", path: "/dashboard/MyConnection" },
+        { label: "Messagings", path: "/dashboard/ComingSoon" },
+      ],
     },
     {
-      icon: <BadgePlusIcon className="w-5 h-5" />,
-      label: "Upgrade Badge",
+      id: "Community",
+      icon: <img src={iconMap["community"]} alt="Home Icon" className="w-5 h-5" />,
+      label: "Community",
       active: false,
+      isCommunityDropdown: true,
+      childPaths: ["/dashboard/SearchExplore"],
+      children: [
+        { label: "Search & Explore", path: "/dashboard/SearchExplore" },
+        { label: "Create Circles (Coming Soon)", path: "/dashboard/ComingSoon" },
+        { label: "Manage Circles (Coming Soon)", path: "/dashboard/ComingSoon" },
+        { label: "Messagings", path: "/dashboard/ComingSoon" },
+      ],
     },
     {
-      icon: <UserIcon className="w-5 h-5" />,
-      label: "Directory Profile",
+      id: "MentorPartnerHub",
+      icon: <Zap className="w-5 h-5 text-gray-500" />,
+      label: "Mentor Partner Hub",
       active: false,
+      isMentorDropdown: true,
+      childPaths: ["/dashboard/BecomeMentor"],
+      children: [
+        { label: "Became an Mentor", path: "/dashboard/Become_mentor" },
+        { label: "Mentor Dashboard", path: "/dashboard/ComingSoon" },
+        { label: "Track Progress", path: "/dashboard/ComingSoon" },
+        { label: "Partner License & Toolkit", path: "/dashboard/ComingSoon" },
+        { label: "Partner Dashboard", path: "/dashboard/ComingSoon" },
+      ],
     },
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
-=======
+    {
+      id: "Learning_Lab",
+      icon: <img src={iconMap["learning"]} alt="Home Icon" className="w-6 h-6" />,
+      label: "Learning Lab",
+      active: false,
+      isLearningLabDropdown: true,
+      childPaths: ["/dashboard/learning-lab"],
+      children: [
+        { label: "Modules", path: "/dashboard/learning-lab" },
+        { label: "Learning Progress", path: "/dashboard/ComingSoon" },
+        { label: "Renewal", path: "/dashboard/ComingSoon" },
+        { label: "Resources", path: "/dashboard/ComingSoon" },
+      ],
+    },
 
     {
       icon: <BadgePlus className="w-5 h-5" />,
@@ -146,8 +218,6 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
       path: "/dashboard/GenerateAffiliateCode",
     },
 
->>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
->>>>>>> Stashed changes
   ];
 
   const secondaryNavItems = [
@@ -156,16 +226,19 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
       label: "Notifications",
       active: false,
       hasNotification: true,
+      path: "/dashboard/notification",
     },
     {
       icon: <SettingsIcon className="w-5 h-5" />,
       label: "Settings",
       active: false,
+      path: "/dashboard/setting",
     },
     {
       icon: <HelpCircleIcon className="w-5 h-5" />,
       label: "Support",
       active: false,
+      path: "/dashboard/support",
     },
     {
       icon: <LogOutIcon className="w-5 h-5" />,
@@ -174,41 +247,171 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
       customAction: handleLogout,
     },
   ];
+  // NavItem component with profile dropdown support
+  const NavItem = ({ item }: any) => {
+    const location = useLocation();
+    const isDropdownOpen = !!openDropdown[item.id];
+    const isActiveChild = item.childPaths?.some((path: any) =>
+      location.pathname.startsWith(path)
+    );
+
+    const baseClasses = `
+  flex items-center gap-3 px-3 py-2.5 w-full rounded-xl cursor-pointer 
+  font-poppins font-normal text-[14px] leading-[20px]
+  transition duration-200 ease-in-out
+  hover:translate-x-[2px] hover:text-black hover:bg-[#CDC1FF1A]
+`; const activeMainClasses = "bg-[#CDC1FF1A] text-[#9747FF] font-semibold";
+    const inactiveMainClasses = "text-gray-600 hover:text-black";
+    const activeSubClasses = "text-[#F07EFF] font-semibold";
+    const inactiveSubClasses = "text-gray-600 hover:text-[#F07EFF] transition duration-200 ease-in-out hover:translate-x-[2px]";
+
+    const content = (
+      <>
+        <div className={`inline-flex items-start gap-2.5 ${isActiveChild || location.pathname.startsWith(item.path || "")
+          ? "text-[#9747FF]"
+          : "text-gray-600"
+          }`}>
+          {item.icon}
+        </div>
+        <div className="whitespace-nowrap">{item.label}</div>
+        {item.hasNotification && (
+          <div className="absolute w-2 h-2 top-[13px] -left-px bg-orange-500 rounded-full border border-white" />
+        )}
+      </>
+    );
+
+    const handleClick = () => {
+      if (item.customAction) {
+        item.customAction();
+      }
+    };
+
+    if (item.isProfileDropdown) {
+      const isProfileActive = location.pathname.startsWith('/dashboard/user-profile') ||
+        location.pathname.startsWith('/dashboard/company-profile');
+      const isProfileOpen = !!openDropdown['TrueProfile'];
+      return (
+        <div className="w-full">
+          <button
+            onClick={() => {
+             setOpenDropdown({ [item.id]: true });
+            }}
+            className={`${baseClasses} ${isProfileActive || isProfileOpen ? activeMainClasses : inactiveMainClasses
+              }`}
+          >
+            <div className="flex items-start gap-3 w-full relative">
+              {content}
+            </div>
+            {isProfileOpen ? (
+              <ChevronUpIcon className={`w-4 h-4 ${isProfileActive ? "text-[#9747FF]" : "text-gray-600"}`} />
+            ) : (
+              <ChevronDownIcon className={`w-4 h-4 ${isProfileActive ? "text-[#9747FF]" : "text-gray-600"}`} />
+            )}
+          </button>
+
+          {isProfileOpen && (
+            <div className="flex flex-col gap-1 mt-3 pl-8">
+              <NavLink
+                to="/dashboard/user-profile"
+
+                className={({ isActive }) =>
+                  `px-3 py-3 rounded-lg w-full transition whitespace-nowrap ${isActive ? activeSubClasses : inactiveSubClasses
+                  }`
+                }
+              >
+                My Profile
+              </NavLink>
+              <NavLink
+                to="/dashboard/company-profile"
+
+                className={({ isActive }) =>
+                  `px-3 py-3 rounded-lg w-full transition whitespace-nowrap ${isActive ? activeSubClasses : inactiveSubClasses
+                  }`
+                }
+              >
+                Company Profile
+              </NavLink>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    if (item.children?.length > 0) {
+      return (
+        <div className="w-full">
+          <button
+            onClick={() => {
+              setOpenDropdown({ [item.id]: !openDropdown[item.id] });
+            }}
+            className={`${baseClasses} ${isDropdownOpen || isActiveChild ? activeMainClasses : inactiveMainClasses
+              }`}
+          >
+            <div className="flex items-start gap-3 w-full relative">{content}</div>
+            {isDropdownOpen ? (
+              <ChevronUpIcon className={`w-4 h-4 ${isActiveChild ? "text-[#9747FF]" : "text-gray-600"}`} />
+            ) : (
+              <ChevronDownIcon className={`w-4 h-4 ${isActiveChild ? "text-[#9747FF]" : "text-gray-600"}`} />
+            )}
+          </button>
+
+          {isDropdownOpen && (
+            <div className="flex flex-col gap-1 mt-3 pl-8">
+              {item.children.map((child: any, idx: number) => (
+                <NavLink
+                  key={idx}
+                  to={child.path}
+
+                  className={({ isActive }) =>
+                    `px-4 py-3 w-full rounded-md transition whitespace-nowrap ${isActive ? activeSubClasses : inactiveSubClasses
+                    }`
+                  }
+                >
+                  {child.label}
+                </NavLink>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return item.path ? (
+      <NavLink
+        to={item.path}
+        end={item.path === "/dashboard"}
+        onClick={handleClick}
+        className={({ isActive }) =>
+          `${baseClasses} ${isActive ? activeMainClasses : inactiveMainClasses
+          }`
+        }
+      >
+        <div className="flex items-start gap-3 w-full relative">{content}</div>
+      </NavLink>
+    ) : (
+      <div
+        className={`${baseClasses} ${inactiveMainClasses}`}
+        onClick={handleClick}
+      >
+        <div className="flex items-start gap-3 w-full relative">{content}</div>
+      </div>
+    );
+  };
 
   return (
     <>
-      {/* Mobile Overlay */}
       {isMobileNavOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
           onClick={toggleMobileNav}
+          className="fixed inset-0 bg-transparent z-40 md:hidden"
         />
       )}
-
-      {/* Navbar Container */}
       <nav
-        className={`
-        fixed md:relative
-        h-full w-[280px]
-        bg-white border-r border-[#0000001a]
-        transition-all duration-300 ease-in-out
-        z-50
-        ${isMobileNavOpen ? "left-0" : "-left-full md:left-0"}
-      `}
+        className={`fixed top-0 left-0 z-40 h-full w-64 bg-white border-r border-gray-200
+          transform transition-transform duration-300 ease-in-out
+          ${isMobileNavOpen ? "translate-x-0" : "-translate-x-full"}
+        `}
       >
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
->>>>>>> Stashed changes
-        <div className="flex flex-col h-full overflow-y-auto">
-          {/* Mobile Close Button */}
-          <div className="md:hidden flex justify-end px-2">
-            <button onClick={toggleMobileNav} className="p-2">
-              <XIcon className="w-6 h-6 text-gray-500" />
-            </button>
-<<<<<<< Updated upstream
-=======
-=======
         <div className="flex flex-col h-full overflow-y-auto font-poppins leading-[20px]">
           <div className="flex items-center justify-between w-full py-[18px] px-4 md:px-6">
             <Link to="/dashboard">
@@ -227,28 +430,20 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
                 <img src={hambur} alt="Toggle Menu" className="w-6 h-6" />
               </button>
             </div>
->>>>>>> bffa1a25b402748218cbdde95389950382c4d8dc
->>>>>>> Stashed changes
           </div>
 
-          {/* Logo */}
-          <div className="flex flex-col items-start gap-[7.5px] py-[18px] px-6">
-            <img
-              className="w-[108.12px] h-[46.51px]"
-              alt="Company Logo"
-              src="https://c.animaapp.com/magahlmqpONVZN/img/component-1.svg"
-            />
-          </div>
-
-          {/* Main Menu Items */}
-          <div className="flex flex-col items-start gap-1 px-3 w-full">
+          <div className="flex flex-col items-start space-y-3 px-3 w-full">
             {mainNavItems.map((item, index) => (
-              <NavItem key={index} item={item} onClick={toggleMobileNav} />
+              <NavItem
+                key={index}
+                item={item}
+                openDropdown={openDropdown}
+                setOpenDropdown={setOpenDropdown}
+              />
             ))}
           </div>
 
-          {/* Divider */}
-          <div className="w-full h-px">
+          <div className="w-full my-3">
             <img
               className="w-full h-px object-cover"
               alt="Divider"
@@ -256,106 +451,31 @@ const DashboardNavbar = ({ isMobileNavOpen, toggleMobileNav }: any) => {
             />
           </div>
 
-          {/* Profile Dropdown (tight, clean layout) */}
-          <div className="w-full px-3">
-            <button
-              onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center justify-between w-full px-4 py-[10px] rounded-xl cursor-pointer text-slate-500 hover:bg-[#f3e8ff] transition"
-            >
-              <div className="flex items-center gap-3">
-                <UserIcon className="w-5 h-5" />
-                <span className="text-sm font-medium">Profile</span>
-              </div>
-              {isProfileOpen ? (
-                <ChevronUpIcon className="w-4 h-4" />
-              ) : (
-                <ChevronDownIcon className="w-4 h-4" />
-              )}
-            </button>
+          <div className="flex flex-col items-start space-y-3 px-3 w-full">
+            {secondaryNavItems.map((item, index) => (
+              <NavItem
+                key={index}
+                item={item}
+                onClick={toggleMobileNav}
+                isDropdownOpen={false}
+                setOpenDropdown={setOpenDropdown}
+              />
+            ))}
 
-            {isProfileOpen && (
-              <div className="flex flex-col gap-[2px] mt-[2px] ml-[52px]">
-                <NavLink
-                  to="/user-profile"
-                  onClick={toggleMobileNav}
-                  className={({ isActive }) =>
-                    `text-sm px-3 py-[6px] rounded-lg w-full transition ${
-                      isActive
-                        ? "bg-[#f3e8ff] text-[#9747FF] font-semibold"
-                        : "text-slate-500 hover:bg-[#f9f9f9]"
-                    }`
-                  }
-                >
-                  My Profile
-                </NavLink>
-                <NavLink
-                  to="/company-profile"
-                  onClick={toggleMobileNav}
-                  className={({ isActive }) =>
-                    `text-sm px-3 py-[6px] rounded-lg w-full transition ${
-                      isActive
-                        ? "bg-[#f3e8ff] text-[#9747FF] font-semibold"
-                        : "text-slate-500 hover:bg-[#f9f9f9]"
-                    }`
-                  }
-                >
-                  Company Profile
-                </NavLink>
+            {showFilterSidebar && (
+              <div className="mt-6 w-full">
+                <DashboardFilterSidebar
+                  selectedDomain={selectedDomain}
+                  setSelectedDomain={setSelectedDomain}
+                  sort={sort}
+                  setSort={setSort}
+                />
               </div>
             )}
-          </div>
-
-          {/* Secondary Menu Items */}
-          <div className="flex flex-col items-start gap-1 px-3 w-full">
-            {secondaryNavItems.map((item, index) => (
-              <NavItem key={index} item={item} onClick={toggleMobileNav} />
-            ))}
           </div>
         </div>
       </nav>
     </>
-  );
-};
-
-// Extracted NavItem component for cleaner code
-const NavItem = ({ item, onClick }: any) => {
-  const baseClasses =
-    "flex items-center gap-3 px-4 py-3 w-full rounded-xl cursor-pointer";
-  const activeClasses = "bg-[#f3e8ff] text-[#9747FF] font-semibold";
-  const inactiveClasses = "text-slate-500 hover:bg-[#f3e8ff]";
-
-  const content = (
-    <>
-      <div className="inline-flex items-start gap-2.5">{item.icon}</div>
-      <div className="font-medium text-sm">{item.label}</div>
-      {item.hasNotification && (
-        <div className="absolute w-2 h-2 top-[13px] -left-px bg-orange-500 rounded-full border border-white" />
-      )}
-    </>
-  );
-
-  const handleClick = () => {
-    if (item.customAction) {
-      item.customAction(); 
-    } else {
-      onClick();
-    }
-  };
-
-  return item.path ? (
-    <NavLink
-      to={item.path}
-      onClick={handleClick}
-      className={({ isActive }) =>
-        `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`
-      }
-    >
-      <div className="flex items-start gap-3 w-full relative">{content}</div>
-    </NavLink>
-  ) : (
-    <div className={`${baseClasses} ${inactiveClasses}`} onClick={handleClick}>
-      <div className="flex items-start gap-3 w-full relative">{content}</div>
-    </div>
   );
 };
 

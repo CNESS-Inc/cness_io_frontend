@@ -1,24 +1,20 @@
-import { lazy } from 'react'
-import { createBrowserRouter } from 'react-router-dom'
-import AppLayout from '../layout/AppLayout'
-import EmailVerify from '../components/ui/EmailVerify';
-import PaymentVerify from '../components/ui/PaymentVerify';
-import ResetPassword from '../components/ui/ResetPassword';
-const HomePage = lazy(() => import('../pages/Home'))
-const DirectoryPage= lazy(()=> import('../pages/DirectoryPage'))
-const Dashboard = lazy(() => import('../pages/Dashboard'))
-const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
-// const ScoreResult = lazy(() => import('../components/sections/DashboardSection/ScoreResult'))
-// const UserProfilePage=lazy(()=>import('../components/sections/DashboardSection/UserProfilePage'))1
-// const OrganaizationProfilepage=lazy(()=>import('../components/sections/DashboardSection/OrganizationProfile'))
-const PublicCompanyProfile =lazy(()=>import('../pages/PublicCompanyProfile'))
-const UserProfileView =lazy(()=>import('../pages/UserProfileView'))
-import TermsAndConditions from '../pages/TermsAndConditions';
+import { lazy } from "react";
+import { createBrowserRouter } from "react-router-dom";
+import AppLayout from "../layout/AppLayout";
+import EmailVerify from "../components/ui/EmailVerify";
+import PaymentVerify from "../components/ui/PaymentVerify";
+import ResetPassword from "../components/ui/ResetPassword";
 import Why from "../pages/Why";
+// import What from "../pages/What";
+import GenerateBadgeCode from "../pages/GenerateBadgeCode";
+import GenerateAffiliateCode from "../pages/GenerateAffiliateCode";
+import AssessmentQuestion from "../pages/AssessmentQuestion";
+import Setting from "../pages/Setting";
+import What from "../pages/What";
+import Social from "../pages/Social";
+import SinglePost from "../components/Social/SinglePost";
+import ReelsCard from "../components/Social/Reels/ReelsCard";
 import About from "../pages/About";
-import PrivacyPolicy from "../pages/privacypolicy";
-<<<<<<< Updated upstream
-=======
 import SocialLayout from "../layout/SocialLayout";
 import UploadProof from "../pages/UploadProof";
 import LearningLab from "../pages/LearningLab";
@@ -76,11 +72,10 @@ const Login = lazy(() => import("../pages/Login"));
 const Signingup = lazy(() => import("../pages/Signingup"));
 const UserProfileView = lazy(() => import("../pages/UserProfileView"));
 const TechnologyAndAIPage = lazy(() => import("../pages/TechnologyandAI"));
->>>>>>> Stashed changes
 
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <AppLayout />,
     errorElement: <NotFoundPage />,
     children: [
@@ -88,21 +83,21 @@ export const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
-   { path: "why", 
-    element: <Why /> },
-      { path: "about",
-         element: <About /> },
-    
 
-       { path: 'directory', 
-        element: <DirectoryPage /> 
+      {
+        path: "/why",
+        element: <Why />,
+      },
+      {
+        path: "/what",
+        element: <What />,
+      },
+      {
+        path: "/about",
+        element: <About />,
       },
 
       {
-        path: 'dashboard',
-        element: <Dashboard />,
-<<<<<<< Updated upstream
-=======
         path: "dashboard",
         element: <DashboardLayout />, // ✅ now it's wrapped!
         children: [
@@ -164,7 +159,7 @@ export const router = createBrowserRouter([
             element: <Support />,
           },
           {
-            path: "market-place",
+            path: "market_place",
             element: <MarketPlace />,
           },
           {
@@ -184,6 +179,7 @@ export const router = createBrowserRouter([
             path: "digital_products",
             element: <DigitalProducts />,
           },
+
           {
             path: "Feed",
             element: <Feed />,
@@ -200,6 +196,10 @@ export const router = createBrowserRouter([
           {
             path: "GenerateBadgeCode",
             element: <GenerateBadgeCode />,
+          },
+          {
+            path: "GenerateAffiliateCode",
+            element: <GenerateAffiliateCode />,
           },
           {
             path: "UploadProof",
@@ -261,12 +261,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "bestpractices",
-            element:
-              import.meta.env.VITE_ENV_STAGE === "test" ? (
-                <BestPracticesHub />
-              ) : (
-                <ComingSoon />
-              ),
+            element: <BestPracticesHub />,
           },
           {
             path: "bestpractices/:id/:slug",
@@ -283,43 +278,9 @@ export const router = createBrowserRouter([
             element: <DashboardTechnology />, // reuse or wrap TechnologyAndAI
           },
         ],
->>>>>>> Stashed changes
       },
-      // {
-      //   path: 'score-result',
-      //   element: <ScoreResult />,
-      // },
-      // {
-      //   path: 'user-profile',
-      //   element: <UserProfilePage />,
-      // },
-
-      //  {
-      //   path: 'company-profile',
-      //   element: <OrganaizationProfilepage />,
-      // },
-
-{
-  path:'public_companyprofile',
-  element:<PublicCompanyProfile />,
-},
-
-{
-  path:'user_profileview',
-  element:<UserProfileView />,
-},
-
-
     ],
-
   },
-  {
-  path: '/terms-and-conditions',
-  element: <TermsAndConditions />,
-},
-<<<<<<< Updated upstream
-=======
-  
   {
     path: "directory",
     children: [
@@ -332,26 +293,67 @@ export const router = createBrowserRouter([
             <ComingSoon />
           ),
       },
->>>>>>> Stashed changes
 
+      {
+        path: "company-profile/:id",
+        element: <PublicCompanyProfile />,
+      },
+
+      {
+        path: "user-profile/:id",
+        element: <UserProfileView />,
+      },
+      {
+        path: "technology-ai",
+        children: [
+          {
+            index: true,
+            element: <TechnologyAndAIPage />,
+          },
+          {
+            path: ":subcategory",
+            element: <TechnologyAndAIPage />,
+          },
+        ],
+      },
+    ],
+  },
   {
-  path: '/privacy-policy',
-  element: <PrivacyPolicy />,
-},
+    path: "social",
+    element: <SocialLayout />,
+    children: [
+      {
+        index: true,
+        element:
+          import.meta.env.VITE_ENV_STAGE === "test" ? (
+            <Social />
+          ) : (
+            <ComingSoon />
+          ),
+      },
+
+      {
+        path: "singlepost/:id?",
+        element: <SinglePost />,
+      },
+      {
+        path: "reel/:id?",
+        element: <ReelsCard />,
+      },
+    ],
+  },
   {
-    path: '/email-verify',
+    path: "/email-verify",
     element: <EmailVerify />,
   },
   {
-    path: '/payment-confirmation',
+    path: "/payment-confirmation",
     element: <PaymentVerify />,
   },
   {
-    path: '/reset-password',
+    path: "/reset-password",
     element: <ResetPassword />,
   },
-<<<<<<< Updated upstream
-=======
   {
     path: "/log-in",
     element: <Login />,
@@ -369,16 +371,7 @@ export const router = createBrowserRouter([
     element: <PrivacyPolicy />,
   },
   {
-    path: '/email-verify',
-    element: <EmailVerify />,
+    path: "/sign-up",
+    element: <Signingup />,
   },
-  {
-    path: '/payment-confirmation',
-    element: <PaymentVerify />,
-  },
-  {
-    path: '/reset-password',
-    element: <ResetPassword />,
-  },
->>>>>>> Stashed changes
 ]);

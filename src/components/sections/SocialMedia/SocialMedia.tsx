@@ -15,7 +15,7 @@ export default function SocialMedia() {
           <div className="lg:w-6/12 md:w-6/12 w-full">
             <p className="openSans text-[#64748B] text-[18px] font-[400] capitalize">Share reflections, life moments, and conscious thoughts.<br />React, repost, and respond to what moves you. CNESS is where like-<br />hearted creators, thinkers, and changemakers meet — not to<br /> impress, but to express.</p>
             <Button
-              className="jakarta rounded-[100px] h-[38px] text-[16px]  font-[400] text-[#fff] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#F07EFF]  mt-6"
+              className="jakarta w-fit rounded-[100px] h-[38px] text-[16px]  font-[400] text-[#fff] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#F07EFF]  mt-6"
             >
               Join the Conscious Conversation
             </Button>
