@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "../../ui/Button";
 import Image from "../../ui/Image";
 
@@ -16,7 +16,7 @@ export default function FeaturedSection() {
   const [step, setStep] = useState(0); 
   const [imagesIn, setImagesIn] = useState(0); 
   const [imagesMove, setImagesMove] = useState(false); 
-  const [looping, setLooping] = useState(false); 
+  //const [looping, setLooping] = useState(false); 
   const timeouts = useRef<number[]>([]);
   const triggered = useRef(false);
 
@@ -26,7 +26,7 @@ export default function FeaturedSection() {
       ([entry]) => {
         if (entry.isIntersecting && !triggered.current) {
           triggered.current = true;
-          setLooping(true);
+         // setLooping(true);
           // console.log("FeaturedSection animation triggered by scroll!");
           startSequence();
         }

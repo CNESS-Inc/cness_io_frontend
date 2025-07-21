@@ -3,7 +3,6 @@ import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import { motion } from "framer-motion";
 import Image from "../../ui/Image";
 
 import Button from "../../ui/Button";
@@ -133,70 +132,59 @@ export default function AwarenessSection() {
             >
               {cards.map((card, index) => (
                 <SwiperSlide key={index}>
-                  <div className="transition-all duration-300">
-                    <Card
-                      className="flex flex-col h-full gap-3 w-full rounded-[12px] overflow-hidden transition-all duration-300"
-                      style={{
-                        transition: "filter 0.3s ease",
-                      }}
-                    >
-                      <CardContent
-                        className="flex flex-col w-full p-0"
-                        style={{
-                          transition: "filter 0.3s ease",
-                        }}
-                      >
-                        <div
-                          className="relative w-full bg-cover bg-center rounded-t-[12px] group-hover:brightness-110"
-                          style={{
-                            height: "250px",
-                            backgroundImage: `url(${card.image})`,
-                            filter: "brightness(1)",
-                          }}
-                        >
-                          {card.badge && (
-                            <div
-                              className="absolute top-3 left-3 text-[11px] font-medium px-3 py-1 rounded-full text-white shadow-md flex items-center gap-2"
-                              style={{
-                                backgroundImage: card.badge.gradient,
-                              }}
-                            >
-                              <span className="inline-block w-[6px] h-[6px] bg-[#60C750] rounded-full"></span>
-                              <span className="text-[#fff] text-[11px] font-semibold">
-                                {card.badge.label}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-
-                        <div
-                          className="flex flex-col gap-2 px-5 py-4 w-full rounded-b-[12px] bg-cover bg-center group-hover:brightness-110"
-                          style={{
-                            backgroundImage: card.bg_image,
-                            filter: "brightness(1) drop-shadow(0 0 10px rgba(148, 114, 255, 0.6))",
-                          }}
-                        >
-                          <h2 className="text-[14px] font-semibold text-white leading-7 md:leading-8">
-                            {card.title}
-                          </h2>
-                          <p className="text-[11px] text-[#ECEEF2] leading-6">
-                            {card.description}
-                          </p>
-                          <div className="flex justify-between mt-0 items-center">
-                            <p className="text-white text-[14px] font-semibold">
-                              {card.price}
-                            </p>
-                            <Button
-                              className="rounded-full py-2 px-6 bg-[#F07EFF] text-[12px] cursor-default"
-                              style={{ pointerEvents: "none" }}
-                            >
-                              {card.button}
-                            </Button>
+                 <div className="relative h-full">
+                        <Card className="flex flex-col md:h-[350px] h-full w-full rounded-[12px] overflow-hidden">
+                          {/* Image section */}
+                          <div
+                            className="relative w-full rounded-t-[12px] overflow-hidden"
+                            style={{ height: "200px" }} // 👈 fixed image height
+                          >
+                            <img
+                              src={card.image}
+                              alt={card.altText}
+                              className="w-full h-full object-cover rounded-t-[12px]"
+                            />
+                            {card.badge && (
+                              <div
+                                className="absolute top-3 left-3 text-[11px] font-medium px-3 py-1 rounded-full text-white shadow-md flex items-center gap-2"
+                                style={{ backgroundImage: card.badge.gradient }}
+                              >
+                                <span className="inline-block w-[6px] h-[6px] bg-[#60C750] rounded-full"></span>
+                                <span className="text-[#fff] text-[11px] font-semibold">{card.badge.label}</span>
+                              </div>
+                            )}
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
+
+                          {/* Flash effect + content */}
+                          <div className="card-flash-area relative flex-grow flex flex-col">
+                            {isFlashing && <span className="flash-blink-effect" />}
+                            <CardContent className="flex flex-col w-full p-0 h-full">
+                              <div
+                                className="flex flex-col gap-2 px-5 py-4 w-full rounded-b-[12px] bg-cover bg-center h-full"
+                                style={{ backgroundImage: card.bg_image, marginTop: 0 }}
+                              >
+                                <h2 className="text-[14px] font-semibold text-white leading-7 md:leading-8">
+                                  {card.title}
+                                </h2>
+                                <p className="text-[11px] text-[#ECEEF2] leading-6">
+                                  {card.description}
+                                </p>
+                                <div className="flex justify-between mt-auto items-center">
+                                  <p className="text-white text-[14px] font-semibold">
+                                    {card.price}
+                                  </p>
+                                  <Button
+                                    className="rounded-full w-fit py-2 px-6 bg-[#F07EFF] text-[12px] cursor-default"
+                                    style={{ pointerEvents: "none" }}
+                                  >
+                                    <p className="text-[12px]">{card.button}</p>
+                                  </Button>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </div>
+                        </Card>
+                      </div>
                 </SwiperSlide>
               ))}
             </Swiper>
