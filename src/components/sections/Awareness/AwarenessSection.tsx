@@ -1,8 +1,7 @@
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation, Autoplay } from "swiper/modules";
+import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-import "swiper/css/navigation";
 import Image from "../../ui/Image";
 import Button from "../../ui/Button";
 import { Card, CardContent } from "../../ui/Card";
@@ -238,7 +237,7 @@ export default function AwarenessSection() {
                     767: { slidesPerView: 2 },
                     1024: { slidesPerView: 4 },
                   }}
-                  modules={[Pagination, Navigation, Autoplay]}
+                  modules={[Pagination, Autoplay]}
                 >
                   {cards.map((card, index) => (
                     <SwiperSlide key={index} className="h-full"> {/* 👈 make slide full height */}

@@ -2,11 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import CompanyCard from "../components/ui/CompanyCard";
 import { iconMap } from "../assets/icons";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import {
-  GetProfessionalDetails,
-  GetUsersearchProfileDetails,
-  GetValidProfessionalDetails,
-} from "../Common/ServerAPI";
+// this function is not define in serverapi.tsx so I just commented. 22july 2025
+// import {  GetUsersearchProfileDetails, GetValidProfessionalDetails} from "../Common/ServerAPI";
+import {  GetUsersearchProfileDetails} from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
 
@@ -28,7 +26,8 @@ export default function DashboardTechnology() {
   const search = searchParams.get("search");
   const domain = searchParams.get("domain");
   const { showToast } = useToast();
-  const [Domain, setDomain] = useState([]);
+  // const [Domain, setDomain] = useState([]);
+  const [Domain] = useState([]);
   const [selectedDomain, setSelectedDomain] = useState<any>(domain);
   const hasFetched = useRef(false);
   const [searchQuery, setSearchQuery] = useState<any>(search);
@@ -105,8 +104,10 @@ export default function DashboardTechnology() {
 
   const fetchDomain = async () => {
     try {
-      const res = await GetValidProfessionalDetails();
-      setDomain(res?.data?.data);
+      // this function is not define in serverapi.tsx so I just commented. 22july 2025
+
+      // const res = await GetValidProfessionalDetails();
+      // setDomain(res?.data?.data);
       // const foundDomain = res?.data?.data?.find((d: any) => d.slug === domain);
       // if (foundDomain) {
       //   setSelectedDomain(foundDomain.slug);
