@@ -1,9 +1,8 @@
 import "../../../App.css"
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation, Autoplay } from "swiper/modules";
+import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-import "swiper/css/navigation";
 
 import { Card, CardContent } from "../../ui/Card";
 
@@ -91,7 +90,7 @@ export default function Team() {
               767: { slidesPerView: 2 },
               1024: { slidesPerView: 4 },
             }}
-            modules={[Pagination, Navigation, Autoplay]}
+            modules={[Pagination, Autoplay]}
             className="w-full custom-swiper"
           >
             {cards.map((card, index) => (

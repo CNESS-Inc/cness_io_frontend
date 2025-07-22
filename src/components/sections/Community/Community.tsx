@@ -39,7 +39,7 @@ const Community: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [cardsVisible, setCardsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
-  const animationRef = useRef<number | null>(null);
+  const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const startAnimation = () => {
@@ -68,7 +68,7 @@ const Community: React.FC = () => {
         setCardsVisible(false);
       }
 
-      animationRef.current = setTimeout(() => {
+     animationRef.current = setTimeout(() => {
         runStep((step + 1) % totalSteps);
       }, stepDuration);
     };
