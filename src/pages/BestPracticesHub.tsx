@@ -1,11 +1,16 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { iconMap } from "../assets/icons";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
-import { CreateBestPractice, GetAllBestPractices, GetAllFormDetails } from "../Common/ServerAPI";
+import {
+  CreateBestPractice,
+  GetAllBestPractices,
+  GetAllFormDetails,
+} from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import Button from "../components/ui/Button";
-import Modal from "../components/ui/Modal"; // Assuming you have a Modal component
+import Modal from "../components/ui/Modal";
+import { useMediaQuery } from "../hooks/useMediaQuery";
 
 type Company = {
   file: any;
@@ -48,6 +53,10 @@ export default function BestPracticesHub() {
   const [profession, setProfession] = useState<Profession[]>([]);
   const [selectedProfession, setSelectedProfession] = useState("");
   const [activeModal, setActiveModal] = useState<"bestpractices" | null>(null);
+  const [textWidth, setTextWidth] = useState(0);
+  const measureRef = useRef<HTMLSpanElement>(null);
+  const isMobile = useMediaQuery("(max-width: 640px)");
+
   // Modal states
   const [newPractice, setNewPractice] = useState({
     title: "",
@@ -65,16 +74,24 @@ export default function BestPracticesHub() {
     itemsPerPage: 10,
   });
   const [bestPractices, setBestPractices] = useState<Company[]>([]);
+  console.log("🚀 ~ BestPracticesHub ~ bestPractices:", bestPractices);
   const [isLoading, setIsLoading] = useState({
     popular: false,
   });
 
-  const handleProfessionChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-  const professionId = e.target.value;
-  setSelectedProfession(professionId);
-  // Reset to page 1 when profession changes
-  await fetchBestPractices(1, professionId, searchText);
-};
+  useEffect(() => {
+    if (measureRef.current) {
+      setTextWidth(measureRef.current.offsetWidth);
+    }
+  }, [selectedProfession]);
+
+  const handleProfessionChange = async (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const professionId = e.target.value;
+    setSelectedProfession(professionId);
+    await fetchBestPractices(1, professionId, searchText);
+  };
 
   const fetchProfession = async () => {
     try {
@@ -97,7 +114,11 @@ export default function BestPracticesHub() {
     }
   };
 
-  const fetchBestPractices = async (page: number = 1, professionId: string = "",searchText: string = "") => {
+  const fetchBestPractices = async (
+    page: number = 1,
+    professionId: string = "",
+    searchText: string = ""
+  ) => {
     setIsLoading((prev) => ({ ...prev, popular: true }));
     try {
       const res = await GetAllBestPractices(
@@ -151,9 +172,9 @@ export default function BestPracticesHub() {
     fetchBestPractices();
   }, []);
 
-const handleSearch = () => {
-  fetchBestPractices(1, selectedProfession, searchText);
-};
+  const handleSearch = () => {
+    fetchBestPractices(1, selectedProfession, searchText);
+  };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -232,25 +253,25 @@ const handleSearch = () => {
       });
     } finally {
       setIsSubmitting(false);
-    setActiveModal("bestpractices");
+      setActiveModal("bestpractices");
     }
   };
 
   const slugify = (str: string) => {
-  return str
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')     // Replace spaces with -
-    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
-    .replace(/\-\-+/g, '-')   // Replace multiple - with single -
-    .replace(/^-+/, '')       // Trim - from start of text
-    .replace(/-+$/, '');      // Trim - from end of text
-};
+    return str
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w\-]+/g, "")
+      .replace(/\-\-+/g, "-")
+      .replace(/^-+/, "")
+      .replace(/-+$/, "");
+  };
 
   return (
     <>
-      <section className="relative w-full h-[500px] mx-auto rounded-[12px] overflow-hidden">
+      <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] mx-auto rounded-[12px] overflow-hidden">
         <AnimatedBackground />
 
         {/* Background Image (city illustration) */}
@@ -261,35 +282,50 @@ const handleSearch = () => {
         />
 
         {/* Foreground Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 text-center">
-          <h1 className="text-[32px] sm:text-2xl md:text-4xl font-bold text-gray-800 mb-10 -mt-35">
+        <div className="relative z-10 flex flex-col items-center justify-center max-w-4xl mx-auto h-full px-4 text-center">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-6 sm:mb-10 mt-0 sm:-mt-35">
             Find Your Conscious Best Practices here.
           </h1>
 
-          <div className="w-full max-w-2xl bg-white border border-gray-200 rounded-full flex items-center px-3 py-2 shadow-sm gap-2 mt-2">
-            <div className="relative">
+          <div className="w-full mx-auto bg-white border border-gray-200 rounded-lg md:rounded-full flex flex-col md:flex-row items-stretch md:items-center px-3 py-2 shadow-sm gap-2">
+            {/* Profession Selector */}
+            <div className="relative rounded-lg md:rounded-full">
+              <span
+                className="invisible rounded-lg md:rounded-full text-xs md:text-sm absolute whitespace-nowrap font-semibold px-3 md:px-4"
+                ref={measureRef}
+              >
+                {selectedProfession || "All Domains"}
+              </span>
+
               <select
-                className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold rounded-full px-4 py-2 w-[180px] sm:w-[220px] text-center appearance-none cursor-pointer"
-                value=""
+                className="bg-[#7077FE] py-2 rounded-lg md:rounded-full text-xs md:text-sm text-white h-full w-full font-semibold px-3 md:px-4 appearance-none focus:outline-none cursor-pointer"
+                style={{
+                  width: `${textWidth}px`,
+                  maxWidth: "100%",
+                }}
+                value={selectedProfession}
                 onChange={handleProfessionChange}
               >
-                <option value="">Explore</option>
+                <option value="" className="text-white">
+                  All Profession
+                </option>
                 {profession.map((prof: any) => (
                   <option key={prof.id} value={prof.id} className="text-black">
                     {prof.title}
                   </option>
                 ))}
               </select>
-              <div className="absolute top-2.5 right-3 text-white text-xs pointer-events-none">
+              <div className="absolute top-1/2 right-2 transform -translate-y-1/2 text-white text-xs pointer-events-none">
                 ▼
               </div>
             </div>
 
+            {/* Search Input */}
             <div className="relative flex-grow">
               <input
                 type="text"
-                placeholder="Find & Choose your perfect organization"
-                className="w-full px-4 py-2 pr-10 text-sm text-gray-700 placeholder:text-gray-400 bg-transparent outline-none"
+                placeholder="Search best practices..."
+                className="w-full py-2 bg-transparent text-xs md:text-sm text-gray-700 placeholder:text-gray-400 outline-none border-none h-[29px] px-2"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 onKeyDown={handleKeyPress}
@@ -303,7 +339,7 @@ const handleSearch = () => {
             </div>
           </div>
 
-          <p className="text-gray-700 text-[12px] mt-5">
+          <p className="text-gray-700 text-xs md:text-sm mt-3 md:mt-5">
             <span
               className="font-medium underline cursor-pointer text-[#F07EFF]"
               onClick={openModal}
@@ -315,18 +351,11 @@ const handleSearch = () => {
         </div>
       </section>
 
-      {/* Popular Companies Section */}
-      <section className="py-16 bg-[#f9f9f9] border-t border-gray-100">
+      {/* Best Practices Section */}
+      <section className="py-8 sm:py-16 bg-[#f9f9f9] border-t border-gray-100">
         <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold mb-4">Best Practices</h2>
-            <Button
-              variant="gradient-primary"
-              className="rounded-[100px] py-2 px-8 self-stretch transition-colors duration-500 ease-in-out"
-              onClick={openModal}
-            >
-              Add Best Practices
-            </Button>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
+            <h2 className="text-lg sm:text-xl font-semibold">Best Practices</h2>
           </div>
 
           {isLoading.popular ? (
@@ -334,43 +363,74 @@ const handleSearch = () => {
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : bestPractices.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {bestPractices?.map((company) => (
                 <div
                   key={company.id}
-                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
-                  onClick={() => navigate(`/dashboard/bestpractices/${company.id}/${slugify(company.title)}`)}
+                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+                  onClick={() =>
+                    navigate(
+                      `/dashboard/bestpractices/${company.id}/${slugify(
+                        company.title
+                      )}`
+                    )
+                  }
                 >
                   {company.file && (
                     <img
-                      src={company.file}
+                      src={
+                        company.file &&
+                        company.file !== "http://localhost:5026/file/"
+                          ? company.file
+                          : iconMap["companycard1"]
+                      }
                       alt={company.title}
-                      className="w-full h-48 object-cover"
+                      className="w-full h-40 sm:h-48 object-cover"
+                      onError={(e) => {
+                        // Fallback in case the image fails to load
+                        (e.target as HTMLImageElement).src =
+                          iconMap["companycard1"];
+                      }}
                     />
                   )}
-                  <div className="p-4">
-                    <div className="flex items-center mb-3">
+                  <div className="p-3 sm:p-4">
+                    <div className="flex items-center mb-2 sm:mb-3">
                       <img
-                        src={company.user.profilePicture}
+                        src={
+                          company?.user?.profilePicture &&
+                          company?.user?.profilePicture !==
+                            "http://localhost:5026/file/"
+                            ? company?.user?.profilePicture
+                            : "/profile.png"
+                        }
                         alt={company.user.username}
-                        className="w-10 h-10 rounded-full object-cover mr-3"
+                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover mr-2 sm:mr-3"
+                        onError={(e) => {
+                          // Fallback if the image fails to load
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/profile.png";
+                        }}
                       />
-                      <div>
-                        <h3 className="font-semibold">
+                      <div className="overflow-hidden">
+                        <h3 className="font-semibold text-sm sm:text-base truncate">
                           {company.user.firstName} {company.user.lastName}
                         </h3>
-                        <p className="text-sm text-gray-500 break-all">
+                        <p className="text-xs text-gray-500 truncate">
                           @{company.user.username}
                         </p>
                       </div>
                     </div>
-                    <h3 className="text-lg font-bold mb-2">{company.title}</h3>
-                    <p className="text-gray-600 mb-4 line-clamp-3">
+                    <h3 className="text-base sm:text-lg font-bold mb-1 sm:mb-2 line-clamp-2">
+                      {company.title}
+                    </h3>
+                    <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-3">
                       {company.description}
                     </p>
-                    <div className="flex justify-between items-center text-sm text-gray-500">
-                      <span>{company.profession}</span>
-                      <div className="flex space-x-4">
+                    <div className="flex justify-between items-center text-xs sm:text-sm text-gray-500">
+                      <span className="truncate max-w-[50%]">
+                        {company.profession}
+                      </span>
+                      <div className="flex space-x-2 sm:space-x-4">
                         <span className="flex items-center">
                           ♥️ {company.likesCount}
                         </span>
@@ -384,62 +444,62 @@ const handleSearch = () => {
               ))}
             </div>
           ) : (
-            <p className="text-gray-500">No Best Practices found.</p>
+            <p className="text-gray-500 py-10 text-center">
+              No Best Practices found.
+            </p>
           )}
 
           {pagination.totalPages > 1 && (
-            <div className="mt-8">
+            <div className="mt-6 sm:mt-8">
               <div className="flex justify-center">
-                <nav className="inline-flex rounded-md shadow-sm -space-x-px text-sm">
+                <nav className="inline-flex rounded-md shadow-sm -space-x-px text-xs sm:text-sm">
                   <button
                     onClick={() =>
                       fetchBestPractices(pagination.currentPage - 1)
                     }
-                    disabled={
-                      pagination.currentPage === 1 || isLoading.popular
-                    }
-                    className="px-3 py-1 rounded-l-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
+                    disabled={pagination.currentPage === 1 || isLoading.popular}
+                    className="px-2 sm:px-3 py-1 rounded-l-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
                   >
                     «
                   </button>
 
-                  {/* Always show first page */}
-                  <button
-                    onClick={() => fetchBestPractices(1)}
-                    disabled={isLoading.popular}
-                    className={`px-3 py-1 border border-gray-300 ${
-                      1 === pagination.currentPage
-                        ? "bg-indigo-500 text-white"
-                        : "bg-white text-gray-700 hover:bg-gray-100"
-                    }`}
-                  >
-                    1
-                  </button>
+                  {!isMobile && (
+                    <>
+                      {/* Always show first page */}
+                      <button
+                        onClick={() => fetchBestPractices(1)}
+                        disabled={isLoading.popular}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
+                          1 === pagination.currentPage
+                            ? "bg-indigo-500 text-white"
+                            : "bg-white text-gray-700 hover:bg-gray-100"
+                        }`}
+                      >
+                        1
+                      </button>
 
-                  {/* Show ellipsis if current page is far from start */}
-                  {pagination.currentPage > 3 && (
-                    <span className="px-3 py-1 border border-gray-300 bg-white">
-                      ...
-                    </span>
+                      {/* Show ellipsis if current page is far from start */}
+                      {pagination.currentPage > 3 && (
+                        <span className="px-2 sm:px-3 py-1 border border-gray-300 bg-white">
+                          ...
+                        </span>
+                      )}
+                    </>
                   )}
 
                   {/* Show pages around current page */}
                   {[
-                    pagination.currentPage - 2,
                     pagination.currentPage - 1,
                     pagination.currentPage,
                     pagination.currentPage + 1,
-                    pagination.currentPage + 2,
                   ]
-                    .filter(
-                      (page) => page > 1 && page < pagination.totalPages
-                    )
+                    .filter((page) => page > 1 && page < pagination.totalPages)
                     .map((page) => (
                       <button
                         key={page}
                         onClick={() => fetchBestPractices(page)}
                         disabled={isLoading.popular}
-                        className={`px-3 py-1 border border-gray-300 ${
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
                           page === pagination.currentPage
                             ? "bg-indigo-500 text-white"
                             : "bg-white text-gray-700 hover:bg-gray-100"
@@ -449,30 +509,32 @@ const handleSearch = () => {
                       </button>
                     ))}
 
-                  {/* Show ellipsis if current page is far from end */}
-                  {pagination.currentPage <
-                    pagination.totalPages - 2 && (
-                    <span className="px-3 py-1 border border-gray-300 bg-white">
-                      ...
-                    </span>
-                  )}
+                  {!isMobile && (
+                    <>
+                      {/* Show ellipsis if current page is far from end */}
+                      {pagination.currentPage < pagination.totalPages - 2 && (
+                        <span className="px-2 sm:px-3 py-1 border border-gray-300 bg-white">
+                          ...
+                        </span>
+                      )}
 
-                  {/* Always show last page if it's not the first page */}
-                  {pagination.totalPages > 1 && (
-                    <button
-                      onClick={() =>
-                        fetchBestPractices(pagination.totalPages)
-                      }
-                      disabled={isLoading.popular}
-                      className={`px-3 py-1 border border-gray-300 ${
-                        pagination.totalPages ===
-                        pagination.currentPage
-                          ? "bg-indigo-500 text-white"
-                          : "bg-white text-gray-700 hover:bg-gray-100"
-                      }`}
-                    >
-                      {pagination.totalPages}
-                    </button>
+                      {/* Always show last page if it's not the first page */}
+                      {pagination.totalPages > 1 && (
+                        <button
+                          onClick={() =>
+                            fetchBestPractices(pagination.totalPages)
+                          }
+                          disabled={isLoading.popular}
+                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${
+                            pagination.totalPages === pagination.currentPage
+                              ? "bg-indigo-500 text-white"
+                              : "bg-white text-gray-700 hover:bg-gray-100"
+                          }`}
+                        >
+                          {pagination.totalPages}
+                        </button>
+                      )}
+                    </>
                   )}
 
                   <button
@@ -480,10 +542,10 @@ const handleSearch = () => {
                       fetchBestPractices(pagination.currentPage + 1)
                     }
                     disabled={
-                      pagination.currentPage ===
-                        pagination.totalPages || isLoading.popular
+                      pagination.currentPage === pagination.totalPages ||
+                      isLoading.popular
                     }
-                    className="px-3 py-1 rounded-r-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
+                    className="px-2 sm:px-3 py-1 rounded-r-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
                   >
                     »
                   </button>
@@ -495,8 +557,9 @@ const handleSearch = () => {
       </section>
 
       <Modal isOpen={activeModal === "bestpractices"} onClose={closeModal}>
-        <div className="p-6 max-w-md">
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
+          <h2 className="text-xl font-bold mb-4">Add Best Practice</h2>
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             <div>
               <label
                 htmlFor="title"
@@ -510,7 +573,7 @@ const handleSearch = () => {
                 name="title"
                 value={newPractice.title}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
                 required
               />
             </div>
@@ -528,7 +591,7 @@ const handleSearch = () => {
                 value={newPractice.description}
                 onChange={handleInputChange}
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
                 required
               />
             </div>
@@ -545,7 +608,7 @@ const handleSearch = () => {
                 name="profession"
                 value={newPractice.profession}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
                 required
               >
                 <option value="">Select a profession</option>
@@ -569,23 +632,24 @@ const handleSearch = () => {
                 id="file"
                 name="file"
                 onChange={handleFileChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
                 accept="image/*, .pdf, .doc, .docx"
               />
             </div>
 
-            <div className="flex justify-end space-x-3 pt-4">
+            <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4">
               <Button
                 type="button"
                 onClick={closeModal}
                 variant="white-outline"
+                className="w-full sm:w-auto"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 variant="gradient-primary"
-                className="rounded-full py-3 px-8 transition-all"
+                className="w-full sm:w-auto py-2 px-6 sm:py-3 sm:px-8"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Submitting..." : "Submit"}

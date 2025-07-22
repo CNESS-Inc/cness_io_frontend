@@ -122,7 +122,46 @@ const UserProfilePage = () => {
     ),
   });
   const contactInfoForm = useForm();
-  const socialLinksForm = useForm();
+  // Update the socialLinksForm initialization with validation
+  const socialLinksForm = useForm({
+    resolver: yupResolver(
+      yup.object().shape({
+        facebook: yup
+          .string()
+          .url("Must be a valid URL")
+          .test(
+            "is-facebook",
+            "Must be a valid Facebook URL",
+            (value) => !value || value.includes("facebook.com")
+          ),
+        twitter: yup
+          .string()
+          .url("Must be a valid URL")
+          .test(
+            "is-twitter",
+            "Must be a valid Twitter URL",
+            (value) =>
+              !value || value.includes("twitter.com") || value.includes("x.com")
+          ),
+        linkedin: yup
+          .string()
+          .url("Must be a valid URL")
+          .test(
+            "is-linkedin",
+            "Must be a valid LinkedIn URL",
+            (value) => !value || value.includes("linkedin.com")
+          ),
+        instagram: yup
+          .string()
+          .url("Must be a valid URL")
+          .test(
+            "is-instagram",
+            "Must be a valid Instagram URL",
+            (value) => !value || value.includes("instagram.com")
+          ),
+      })
+    ),
+  });
   const educationForm = useForm({
     defaultValues: {
       educations: [
@@ -846,7 +885,7 @@ const UserProfilePage = () => {
                       />
                       <PhotoIcon className="w-5 h-5 text-gray-600" />
                     </label>
-                    { banner && banner !== "http://localhost:5026/file/" && (
+                    {banner && banner !== "http://localhost:5026/file/" && (
                       <button
                         onClick={() => setBanner(null)}
                         className="bg-white p-2 rounded-full shadow hover:bg-red-100"
@@ -890,15 +929,15 @@ const UserProfilePage = () => {
                             <PhotoIcon className="w-4 h-4 text-gray-600" />
                           </label>
                           {logoPreview &&
-                          logoPreview !== "http://localhost:5026/file/" && (
-                            <button
-                              onClick={() => setLogoPreview(null)}
-                              className="bg-white p-1.5 rounded-full shadow hover:bg-red-100"
-                              title="Remove Photo"
-                            >
-                              <TrashIcon className="w-4 h-4 text-red-600" />
-                            </button>
-                          )}
+                            logoPreview !== "http://localhost:5026/file/" && (
+                              <button
+                                onClick={() => setLogoPreview(null)}
+                                className="bg-white p-1.5 rounded-full shadow hover:bg-red-100"
+                                title="Remove Photo"
+                              >
+                                <TrashIcon className="w-4 h-4 text-red-600" />
+                              </button>
+                            )}
                         </div>
                       </div>
                     </div>
@@ -1695,13 +1734,14 @@ const UserProfilePage = () => {
                         </Tab.Panel>
 
                         {/* Social Links Tab */}
+                        {/* Social Links Tab */}
                         <Tab.Panel>
                           <form
                             onSubmit={socialLinksForm.handleSubmit(
                               handleSocialLinksSubmit
                             )}
                           >
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4 rounded-lg rounded-tl-none rounded-tr-none relative">
                               {/* Facebook */}
                               <div>
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1710,9 +1750,25 @@ const UserProfilePage = () => {
                                 <input
                                   type="url"
                                   {...socialLinksForm.register("facebook")}
-                                  placeholder="Enter Facebook profile URL"
-                                  className="w-full px-4 py-2 h-[41px] border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  placeholder="https://facebook.com/yourprofile"
+                                  className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                    socialLinksForm.formState.errors.facebook
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    socialLinksForm.formState.errors.facebook
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
                                 />
+                                {socialLinksForm.formState.errors.facebook && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      socialLinksForm.formState.errors.facebook
+                                        .message
+                                    }
+                                  </p>
+                                )}
                               </div>
 
                               {/* Twitter */}
@@ -1723,9 +1779,25 @@ const UserProfilePage = () => {
                                 <input
                                   type="url"
                                   {...socialLinksForm.register("twitter")}
-                                  placeholder="Enter Twitter profile URL"
-                                  className="w-full px-4 py-2 h-[41px] border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  placeholder="https://twitter.com/yourprofile"
+                                  className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                    socialLinksForm.formState.errors.twitter
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    socialLinksForm.formState.errors.twitter
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
                                 />
+                                {socialLinksForm.formState.errors.twitter && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      socialLinksForm.formState.errors.twitter
+                                        .message
+                                    }
+                                  </p>
+                                )}
                               </div>
 
                               {/* LinkedIn */}
@@ -1736,9 +1808,25 @@ const UserProfilePage = () => {
                                 <input
                                   type="url"
                                   {...socialLinksForm.register("linkedin")}
-                                  placeholder="Enter LinkedIn profile URL"
-                                  className="w-full px-4 py-2 h-[41px] border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  placeholder="https://linkedin.com/in/yourprofile"
+                                  className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                    socialLinksForm.formState.errors.linkedin
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    socialLinksForm.formState.errors.linkedin
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
                                 />
+                                {socialLinksForm.formState.errors.linkedin && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      socialLinksForm.formState.errors.linkedin
+                                        .message
+                                    }
+                                  </p>
+                                )}
                               </div>
 
                               {/* Instagram */}
@@ -1749,9 +1837,25 @@ const UserProfilePage = () => {
                                 <input
                                   type="url"
                                   {...socialLinksForm.register("instagram")}
-                                  placeholder="Enter Instagram profile URL"
-                                  className="w-full px-4 py-2 h-[41px] border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  placeholder="https://instagram.com/yourprofile"
+                                  className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                    socialLinksForm.formState.errors.instagram
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    socialLinksForm.formState.errors.instagram
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
                                 />
+                                {socialLinksForm.formState.errors.instagram && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      socialLinksForm.formState.errors.instagram
+                                        .message
+                                    }
+                                  </p>
+                                )}
                               </div>
 
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">

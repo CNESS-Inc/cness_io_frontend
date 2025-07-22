@@ -337,44 +337,47 @@ const DashboardNavbar = ({
       );
     }
 
-    if (item.children?.length > 0) {
-      return (
-        <div className="w-full">
-          <button
-            onClick={() => {
-              setOpenDropdown({ [item.id]: !openDropdown[item.id] });
-            }}
-            className={`${baseClasses} ${isDropdownOpen || isActiveChild ? activeMainClasses : inactiveMainClasses
-              }`}
-          >
-            <div className="flex items-start gap-3 w-full relative">{content}</div>
-            {isDropdownOpen ? (
-              <ChevronUpIcon className={`w-4 h-4 ${isActiveChild ? "text-[#9747FF]" : "text-gray-600"}`} />
-            ) : (
-              <ChevronDownIcon className={`w-4 h-4 ${isActiveChild ? "text-[#9747FF]" : "text-gray-600"}`} />
-            )}
-          </button>
+if (item.children?.length > 0) {
+  return (
+    <div className="w-full">
+      <button
+        onClick={() => {
+          // If the item has a path, navigate to it when clicking the main item
+          if (item.path) {
+            navigate(item.path);
+          }
+          setOpenDropdown({ [item.id]: !openDropdown[item.id] });
+        }}
+        className={`${baseClasses} ${isDropdownOpen || isActiveChild ? activeMainClasses : inactiveMainClasses
+          }`}
+      >
+        <div className="flex items-start gap-3 w-full relative">{content}</div>
+        {isDropdownOpen ? (
+          <ChevronUpIcon className={`w-4 h-4 ${isActiveChild ? "text-[#9747FF]" : "text-gray-600"}`} />
+        ) : (
+          <ChevronDownIcon className={`w-4 h-4 ${isActiveChild ? "text-[#9747FF]" : "text-gray-600"}`} />
+        )}
+      </button>
 
-          {isDropdownOpen && (
-            <div className="flex flex-col gap-1 mt-3 pl-8">
-              {item.children.map((child: any, idx: number) => (
-                <NavLink
-                  key={idx}
-                  to={child.path}
-
-                  className={({ isActive }) =>
-                    `px-4 py-3 w-full rounded-md transition whitespace-nowrap ${isActive ? activeSubClasses : inactiveSubClasses
-                    }`
-                  }
-                >
-                  {child.label}
-                </NavLink>
-              ))}
-            </div>
-          )}
+      {isDropdownOpen && (
+        <div className="flex flex-col gap-1 mt-3 pl-8">
+          {item.children.map((child: any, idx: number) => (
+            <NavLink
+              key={idx}
+              to={child.path}
+              className={({ isActive }) =>
+                `px-4 py-3 w-full rounded-md transition whitespace-nowrap ${isActive ? activeSubClasses : inactiveSubClasses
+                }`
+              }
+            >
+              {child.label}
+            </NavLink>
+          ))}
         </div>
-      );
-    }
+      )}
+    </div>
+  );
+}
 
     return item.path ? (
       <NavLink
