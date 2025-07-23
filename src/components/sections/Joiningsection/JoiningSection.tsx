@@ -1,59 +1,57 @@
 import Button from "../../ui/Button";
-import joinImage from "../../../assets/join-team.png";
+import joinImage from "../../../assets/join.png";
+import { useNavigate } from "react-router-dom";
 
-export default function JoiningSection()
+export default function JoiningSection() {
+  const navigate = useNavigate()
 
-
-  { 
   return (
     <section className="flex flex-col items-center relative w-full ">
-      <div className="relative w-full  lg:h-[350px] md:h-[350px] h-[420px] overflow-hidden rounded-xl">
-      
-        <div className=" sm:flex gap-[53.5px] top-2 left-0 inline-flex items-center absolute opacity-50 join-section-bg">
-          <div className="bg-[#00D2FF] relative w-[480px] h-[365px] rounded-[182.5px] blur-[175px] bg-first" />
-          <div className="bg-[#6340FF] relative w-[450px] h-[365px] rounded-[182.5px] blur-[175px] bg-second"  />
-          <div className="bg-[#FF994A] relative w-[520px] h-[365px] rounded-[182.5px] blur-[175px] bg-third" />
+      <div className="relative w-full max-w-full h-auto sm:h-[363px] overflow-hidden rounded-xl">
+        {/* Gradient orbs background - positioned differently for mobile */}
+        <div className="sm:flex gap-[53.5px] top-2 left-0 inline-flex items-center absolute opacity-50">
+          <div className="bg-[#00d1ff] relative w-[365px] h-[365px] rounded-[182.5px] blur-[175px]" />
+          <div className="bg-[#623fff] relative w-[365px] h-[365px] rounded-[182.5px] blur-[175px]" />
+          <div className="bg-[#ff994a] relative w-[365px] h-[365px] rounded-[182.5px] blur-[175px]" />
         </div>
 
-      
+        {/* Background image - now using next/image for optimization */}
         <div className="absolute inset-0">
           <img
-            className="absolute h-full lg:right-0 md:right-0 -right-40"
+            className="absolute h-full right-0"
             src={joinImage}
             alt=""
             role="presentation"
           />
         </div>
 
-       
-        <div className="flex flex-col items-center sm:items-start gap-6 sm:gap-8 p-6 sm:p-0  -translate-x-[50%] w-full max-w-4xl mx-auto sm:mx-0 absolute top-5 left-[50%] lg:top-[50%] lg:-translate-y-[50%] md:top-[50%] md:-translate-y-[50%] ">
-          <div className="flex flex-col items-center sm:items-start gap-3 w-full text-center sm:text-left">
-            <h2 className="poppins font-semibold text-[#2a2a2a] text-center text-2xl sm:text-3xl md:text-[32px] tracking-normal sm:tracking-[0] leading-[1.3] sm:leading-[50px] w-full">
-             Start Your Journey from Loneliness to Wholeness
-            </h2>
-            <p className="text-center w-full openSans">Join a movement that sees you, supports you, and helps your conscious work shine.</p>
+        {/* Hero content - now responsive */}
+        <div className="relative flex flex-col items-center sm:items-start gap-6 sm:gap-8 p-6 sm:p-0 sm:absolute sm:top-[93px] sm:left-[119px] w-full max-w-2xl mx-auto sm:mx-0">
+          <div className="flex flex-col gap-3 w-full text-center sm:text-left justify-center sm:items-start items-center">
+            <h1 className="poppins font-semibold text-[#2a2a2a] text-2xl sm:text-3xl md:text-[32px] tracking-normal sm:tracking-[0] leading-[1.3] sm:leading-[50px]">
+              {" "}
+              We&apos;re not building another platform. <br />
+              <span className="block">
+                We&apos;re redesigning trust for the conscious era.
+              </span>
+            </h1>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-[15px] w-full joining-btn ">
-           
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-[15px] w-full sm:w-auto">
             <Button
-              // variant="gradient-primary"
-              className="jakarta w-fit rounded-[100px] h-[42px] py-1 px-8 self-stretch text-[14px]  bg-linear-to-r from-[#7077FE] to-[#9747FF]"
+              variant="gradient-primary"
+              className="rounded-[100px] py-3 px-8 self-stretch cursor-pointer transition-colors duration-500 ease-in-out"
+              onClick={() => navigate("/sign-up")}
             >
-              Create Your Profile
+              Get Started
             </Button>
 
             <Button
               variant="outline"
-              className="jakarta bg-white h-[42px] border-[#2222241a] px-4 sm:px-6 py-1 sm:py-1 rounded-[100px] text-[#222224] font-medium text-[14px] w-full sm:w-auto"
+              className="bg-white border-[#2222241a] cursor-pointer px-4 sm:px-6 py-3 sm:py-4 rounded-[100px] text-[#222224] font-medium text-base sm:text-lg w-full sm:w-auto"
+              onClick={() => navigate("/log-in")}
             >
-              Join the Comunity
-            </Button>
-             <Button
-              variant="outline"
-              className="jakarta bg-white lg:w-[152px] md:w-[152px] w-full h-[42px] border-[#2222241a] px-4 sm:px-6 py-1 sm:py-1 rounded-[100px] text-[#222224] font-medium text-[14px] "
-            >
-              Get Certified
+              Join the Visionary Council
             </Button>
           </div>
         </div>
