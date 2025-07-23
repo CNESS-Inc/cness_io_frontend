@@ -13,6 +13,7 @@ import { EyeIcon } from "lucide-react";
 import Modal from "../components/ui/Modal";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import missionicon from "../assets/missionicon.svg";
+import { Check } from "lucide-react";
 
 interface Section {
   id: string;
@@ -88,6 +89,8 @@ const AssessmentQuestion: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { showToast } = useToast();
   const completed_step = localStorage.getItem("completed_step");
+  const [urlError, setUrlError] = useState("");
+
   // const [errors, setErrors] = useState<FormErrors>({});
 
   // interface FormErrors {
@@ -372,18 +375,26 @@ const AssessmentQuestion: React.FC = () => {
     }
   };
 
-  const handleReferenceLinkChange = (value: string) => {
-    setFormData((prev) => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        referenceLink: {
-          ...prev.referenceLink,
-          url: value,
-        },
-      };
-    });
-  };
+const handleReferenceLinkChange = (value: string) => {
+  const urlPattern = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/;
+
+  if (value && !urlPattern.test(value)) {
+    setUrlError("Enter a valid URL");
+  } else {
+    setUrlError("");
+  }
+
+  setFormData((prev) => {
+    if (!prev) return null;
+    return {
+      ...prev,
+      referenceLink: {
+        ...prev.referenceLink,
+        url: value,
+      },
+    };
+  });
+};
 
   const validateForm = (): boolean => {
     if (!formData) return false;
@@ -608,17 +619,34 @@ const AssessmentQuestion: React.FC = () => {
                     key={option.id}
                     className="text-[14px] flex items-start gap-3 text-[#222224]"
                   >
-                    <input
-                      type="checkbox"
-                      checked={formData.selectedCheckboxIds.includes(option.id)}
-                      onChange={(e) =>
-                        handleCheckboxChange(option.id, e.target.checked)
-                      }
-                      disabled={isSubmitted}
-                      className={
-                        isSubmitted ? "opacity-50 cursor-not-allowed" : ""
-                      }
-                    />
+<label className="relative inline-flex items-center">
+  <input
+    type="checkbox"
+    checked={formData.selectedCheckboxIds.includes(option.id)}
+    onChange={(e) => handleCheckboxChange(option.id, e.target.checked)}
+    disabled={isSubmitted}
+    className={`
+      appearance-none
+      w-[16px] h-[16px] sm:w-[17px] sm:h-[17px]
+      rounded-[4px]
+      border
+      transition-all duration-300 ease-in-out
+      bg-white 
+   
+      ${formData.selectedCheckboxIds.includes(option.id)
+        ? "border-[#7077ef] shadow-[2px_2px_4px_rgba(59,130,246,0.3)]"
+        : "border-[#D0D5DD] shadow-inner"}
+      ${isSubmitted ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+    `}
+  
+  />
+  {formData.selectedCheckboxIds.includes(option.id) && (
+    <Check
+      className="absolute left-[3px] top-[2px] text-[#6269FF] w-[12px] h-[12px] pointer-events-none transition-transform duration-200 scale-100"
+      strokeWidth={5}
+    />
+  )}
+</label>
                     <span>{option.option}</span>
                   </label>
                 ))}
@@ -700,7 +728,7 @@ const AssessmentQuestion: React.FC = () => {
                       <input
                         type="file"
                         accept={upload.acceptedTypes}
-                        className="w-full h-16 px-2 py-3 cursor-pointer rounded-xl border border-gray-300 file:mr-4 file:rounded-full file:border-0 file:bg-[#7077FE] file:px-[12px] file:py-[8px] file:text-white file:text-[14px] file:cursor-pointer"
+                        className="w-full h-16 px-2 py-3 cursor-pointer rounded-xl border border-gray-300 file:mr-4 file:rounded-full file:border-0 file:bg-[#7077FE] file:px-[24px] file:py-[8px] file:text-white  file:font-['Plus Jakarta Sans'] file:font-medium  file:text-[14px] file:cursor-pointer"
                         onChange={(e) =>
                           handleFileUpload(i, e.target.files?.[0] || null)
                         }
@@ -722,18 +750,21 @@ const AssessmentQuestion: React.FC = () => {
                 ))}
               </div>
               <div>
-                <label className="text-[14px] flex items-start gap-3 text-[#222224] mb-1">
-                  Link for Reference
-                </label>
-                <input
-                  type="url"
-                  className="w-full p-2 rounded-lg border border-gray-300"
-                  placeholder="https://example.com"
-                  value={formData.referenceLink.url || ""}
-                  onChange={(e) => handleReferenceLinkChange(e.target.value)}
-                  disabled={isSubmitted}
-                />
-              </div>
+  <label className="text-[14px] flex items-start gap-3 text-[#222224] mb-1">
+    Link for Reference
+  </label>
+  <input
+    type="url"
+    className={`w-full p-2 rounded-lg border ${
+      urlError ? "border-red-500" : "border-gray-300"
+    }`}
+    placeholder="https://example.com"
+    value={formData.referenceLink.url || ""}
+    onChange={(e) => handleReferenceLinkChange(e.target.value)}
+    disabled={isSubmitted}
+  />
+  {urlError && <p className="text-red-500 text-sm mt-1">{urlError}</p>}
+</div>
             </div>
 
             {/* Action Buttons */}
