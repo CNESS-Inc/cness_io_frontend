@@ -68,7 +68,7 @@ export const ServerAPI = {
 };
 
 export const API = {
-  //  BaseUrl: "http://192.168.1.29:5025/api", //local
+  //  BaseUrl: "http://192.168.1.30:5025/api", //local
   //BaseUrl: "http://localhost:3000/api", //local
   BaseUrl: import.meta.env.VITE_API_BASE_URL || "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api",
 };
@@ -100,7 +100,9 @@ export const EndPoint = {
   organization_Listing_profile_create: "/organization-listing",
   interests: "/interests",
   industry: "/industry",
+  badge_list: "/profile/person-badge-list",
   profession: "/profession",
+  valid_profession: "/profession/get-valid-profession",
   country: "/country",
   service: "/service",
   state: "/state",
@@ -145,6 +147,7 @@ export const EndPoint = {
   logout: "/auth/logout",
   gernerate_affiliate_code: "/profile/user/generate_referral_code",
   get_my_referrals: "/profile/user/getmyreferrals",
+  subscription: "/subscription",
 };
 
 export const GoogleLoginDetails = async (googleToken: string): ApiResponse => {
@@ -214,6 +217,10 @@ export const GenerateAffiliateCode = (formData: GenerateAffiliateFromData): ApiR
 export const getReferredUsers = (formData: getReferredUsersFromData): ApiResponse => {
  
   return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.get_my_referrals}?referralcode=${formData.referralcode}`);
+};
+export const getSubscriptionDetails = (): ApiResponse => {
+ 
+  return executeAPI(ServerAPI.APIMethod.GET, null, EndPoint.subscription);
 };
 
 export const AccountDetails = (formData: AccountData): ApiResponse => {
@@ -515,9 +522,17 @@ export const GetIndustryDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.industry);
 };
+export const GetBadgeListDetails = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.badge_list);
+};
 export const GetProfessionalDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.profession);
+};
+export const GetValidProfessionalDetails = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.valid_profession);
 };
 export const GetCountryDetails = (): ApiResponse => {
   const data = {};
@@ -574,16 +589,13 @@ export const GetUserScoreResult = (): ApiResponse => {
   );
 };
 export const GetUsersearchProfileDetails = (
-  selectedDomain: any,
-  searchQuery: any,
-  page: any,
-  limit: any
-): ApiResponse => {
+selectedDomain: any, searchQuery: any, page: any, limit: any, selectedCert: string, _sort: string): ApiResponse => {
   const data: Partial<any> = {
-    domain: selectedDomain,
+    profession: selectedDomain,
     text: searchQuery,
     page_no: page,
     limit: limit,
+    badge: selectedCert,
   };
   return executeAPI(
     ServerAPI.APIMethod.POST,

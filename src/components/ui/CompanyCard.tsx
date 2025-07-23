@@ -114,7 +114,7 @@ export default function CompanyCard({
               : indv_inspried // fallback if no level
           }
           alt={`${level || "CNESS"} Badge`}
-          className="absolute top-3 right-3 w-8 sm:w-[58px] h-[32px] object-contain z-10"
+          className="absolute top-3 right-3 w-8 sm:w-[58px] h-[32px] object-contain z-1"
         />
       )}
 

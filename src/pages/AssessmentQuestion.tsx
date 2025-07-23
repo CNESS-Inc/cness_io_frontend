@@ -375,26 +375,27 @@ const AssessmentQuestion: React.FC = () => {
     }
   };
 
-const handleReferenceLinkChange = (value: string) => {
-  const urlPattern = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/;
+  const handleReferenceLinkChange = (value: string) => {
+    const urlPattern =
+      /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/;
 
-  if (value && !urlPattern.test(value)) {
-    setUrlError("Enter a valid URL");
-  } else {
-    setUrlError("");
-  }
+    if (value && !urlPattern.test(value)) {
+      setUrlError("Enter a valid URL");
+    } else {
+      setUrlError("");
+    }
 
-  setFormData((prev) => {
-    if (!prev) return null;
-    return {
-      ...prev,
-      referenceLink: {
-        ...prev.referenceLink,
-        url: value,
-      },
-    };
-  });
-};
+    setFormData((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        referenceLink: {
+          ...prev.referenceLink,
+          url: value,
+        },
+      };
+    });
+  };
 
   const validateForm = (): boolean => {
     if (!formData) return false;
@@ -617,15 +618,19 @@ const handleReferenceLinkChange = (value: string) => {
                 {currentSection.checkboxes.map((option) => (
                   <label
                     key={option.id}
-                    className="text-[14px] flex items-start gap-3 text-[#222224]"
+                    className="text-[14px] flex items-center gap-3 text-[#222224]"
                   >
-<label className="relative inline-flex items-center">
-  <input
-    type="checkbox"
-    checked={formData.selectedCheckboxIds.includes(option.id)}
-    onChange={(e) => handleCheckboxChange(option.id, e.target.checked)}
-    disabled={isSubmitted}
-    className={`
+                    <label className="relative inline-flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={formData.selectedCheckboxIds.includes(
+                          option.id
+                        )}
+                        onChange={(e) =>
+                          handleCheckboxChange(option.id, e.target.checked)
+                        }
+                        disabled={isSubmitted}
+                        className={`
       appearance-none
       w-[16px] h-[16px] sm:w-[17px] sm:h-[17px]
       rounded-[4px]
@@ -633,20 +638,21 @@ const handleReferenceLinkChange = (value: string) => {
       transition-all duration-300 ease-in-out
       bg-white 
    
-      ${formData.selectedCheckboxIds.includes(option.id)
-        ? "border-[#7077ef] shadow-[2px_2px_4px_rgba(59,130,246,0.3)]"
-        : "border-[#D0D5DD] shadow-inner"}
+      ${
+        formData.selectedCheckboxIds.includes(option.id)
+          ? "border-[#7077ef] shadow-[2px_2px_4px_rgba(59,130,246,0.3)]"
+          : "border-[#D0D5DD] shadow-inner"
+      }
       ${isSubmitted ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
     `}
-  
-  />
-  {formData.selectedCheckboxIds.includes(option.id) && (
-    <Check
-      className="absolute left-[3px] top-[2px] text-[#6269FF] w-[12px] h-[12px] pointer-events-none transition-transform duration-200 scale-100"
-      strokeWidth={5}
-    />
-  )}
-</label>
+                      />
+                      {formData.selectedCheckboxIds.includes(option.id) && (
+                        <Check
+                          className="absolute left-[3px] top-[2px] text-[#6269FF] w-[12px] h-[12px] pointer-events-none transition-transform duration-200 scale-100"
+                          strokeWidth={5}
+                        />
+                      )}
+                    </label>
                     <span>{option.option}</span>
                   </label>
                 ))}
@@ -750,34 +756,35 @@ const handleReferenceLinkChange = (value: string) => {
                 ))}
               </div>
               <div>
-  <label className="text-[14px] flex items-start gap-3 text-[#222224] mb-1">
-    Link for Reference
-  </label>
-  <input
-    type="url"
-    className={`w-full p-2 rounded-lg border ${
-      urlError ? "border-red-500" : "border-gray-300"
-    }`}
-    placeholder="https://example.com"
-    value={formData.referenceLink.url || ""}
-    onChange={(e) => handleReferenceLinkChange(e.target.value)}
-    disabled={isSubmitted}
-  />
-  {urlError && <p className="text-red-500 text-sm mt-1">{urlError}</p>}
-</div>
+                <label className="text-[14px] flex items-start gap-3 text-[#222224] mb-1">
+                  Link for Reference
+                </label>
+                <input
+                  type="url"
+                  className={`w-full p-2 rounded-lg border ${
+                    urlError ? "border-red-500" : "border-gray-300"
+                  }`}
+                  placeholder="https://example.com"
+                  value={formData.referenceLink.url || ""}
+                  onChange={(e) => handleReferenceLinkChange(e.target.value)}
+                  disabled={isSubmitted}
+                />
+                {urlError && (
+                  <p className="text-red-500 text-sm mt-1">{urlError}</p>
+                )}
+              </div>
             </div>
 
             {/* Action Buttons */}
             {/* {!isSubmitted && ( */}
-<div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between sm:items-center sm:gap-4 w-full">
+            <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between sm:items-center sm:gap-4 w-full">
               {/* Save Button - Gradient */}
               <Button
                 variant="gradient-primary"
                 onClick={handleSave}
                 // disabled={isSubmitting}
                 disabled={isSubmitted}
-         className="w-[77px] h-[31px] rounded-[70.94px] px-[24px] py-[8px] flex items-center justify-center gap-[7.09px] text-white font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center disabled:opacity-60 transition-colors duration-200"
-
+                className="w-[77px] h-[31px] rounded-[70.94px] px-[24px] py-[8px] flex items-center justify-center gap-[7.09px] text-white font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center disabled:opacity-60 transition-colors duration-200"
                 style={{
                   opacity: 1,
                   transform: "rotate(0deg)",
@@ -787,7 +794,7 @@ const handleReferenceLinkChange = (value: string) => {
               </Button>
 
               {/* Prev & Next Buttons */}
-<div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
+              <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
                 <button
                   onClick={handlePrevious}
                   disabled={!currentSection.previous_section_id}
@@ -814,9 +821,7 @@ const handleReferenceLinkChange = (value: string) => {
                     transform: "rotate(0deg)",
                   }}
                 >
-                  <span
-                    className="font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center whitespace-nowrap "
-                  >
+                  <span className="font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center whitespace-nowrap ">
                     Save & Next
                   </span>
                 </Button>
@@ -847,10 +852,10 @@ const handleReferenceLinkChange = (value: string) => {
                     within 5–7 business days. You won’t be able to make changes
                     after submission.
                   </p>
-              <div className="flex justify-center">
-  <Button
-    onClick={handleconfirm}
-    className="
+                  <div className="flex justify-center">
+                    <Button
+                      onClick={handleconfirm}
+                      className="
       w-[200px] h-[45px]
       rounded-[100px]
       px-[24px] py-[16px]
@@ -859,10 +864,10 @@ const handleReferenceLinkChange = (value: string) => {
       text-white
       whitespace-nowrap
     "
-  >
-    Submit For Assessment
-  </Button>
-</div>
+                    >
+                      Submit For Assessment
+                    </Button>
+                  </div>
                 </div>
               </>
             )}

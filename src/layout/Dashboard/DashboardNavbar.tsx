@@ -14,7 +14,6 @@ import {
 import { NavLink, useNavigate, useLocation, Link } from "react-router-dom";
 import { iconMap } from '../../assets/icons';
 import hambur from "../../assets/hambur.png";
-import DashboardFilterSidebar from "./DashboardFilterSidebar";
 import { LogOut } from "../../Common/ServerAPI";
 import { useToast } from "../../components/ui/Toast/ToastProvider";
 
@@ -23,11 +22,11 @@ import { useToast } from "../../components/ui/Toast/ToastProvider";
 const DashboardNavbar = ({
   isMobileNavOpen,
   toggleMobileNav,
-  currentPath,
-  selectedDomain,
-  setSelectedDomain,
-  sort,
-  setSort
+  // currentPath,
+  // selectedDomain,
+  // setSelectedDomain,
+  // sort,
+  // setSort
 }: {
   isMobileNavOpen: boolean;
   toggleMobileNav: () => void;
@@ -41,9 +40,9 @@ const DashboardNavbar = ({
   const navigate = useNavigate();
     const { showToast } = useToast();
   const [openDropdown, setOpenDropdown] = useState<{ [key: string]: boolean }>({});
-  const showFilterSidebar =
-    currentPath.includes("/dashboard/DashboardDirectory/technology") ||
-    currentPath.includes("/dashboard/search-listing");
+  // const showFilterSidebar =
+  //   currentPath.includes("/dashboard/DashboardDirectory/technology") ||
+  //   currentPath.includes("/dashboard/search-listing");
 
 
 
@@ -481,7 +480,7 @@ if (item.children?.length > 0) {
               />
             ))}
 
-            {showFilterSidebar && (
+            {/* {showFilterSidebar && (
               <div className="mt-6 w-full">
                 <DashboardFilterSidebar
                   selectedDomain={selectedDomain}
@@ -490,7 +489,7 @@ if (item.children?.length > 0) {
                   setSort={setSort}
                 />
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </nav>
