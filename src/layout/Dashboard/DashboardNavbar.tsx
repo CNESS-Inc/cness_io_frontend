@@ -120,13 +120,20 @@ const DashboardNavbar = ({
 
     {
       id: "Best Practices Hub",
-      icon: <TrendingUp className="w-5 h-5" />,
+      icon: <TrendingUp className="w-5 h-5 text-[#64748B]" />,
       label: "Best Practices Hub",
-      active: true,
-      path: "/dashboard/bestpractices",
+      active: false,
+     // path: "/dashboard/bestpractices",
       isbestpractices: true,
       children: [
-        { label: "Manage Best Practices", path: "/dashboard/manage_bestpractices" },
+         {
+      label: "Best Practices",
+      path: "/dashboard/bestpractices", // matches parent if it's a hub/overview
+    },
+    {
+      label: "Manage Best Practices",
+      path: "/dashboard/manage_bestpractices",
+    },
       ],
     },
 
@@ -135,7 +142,7 @@ const DashboardNavbar = ({
       icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
       label: "Market Place",
       active: true,
-      path: "/dashboard/market-place",
+      //path: "/dashboard/market-place",
       isMarketplaceDropdown: true,
       childPaths: ["/dashboard/DigitalProducts"],
       children: [
@@ -259,10 +266,10 @@ const DashboardNavbar = ({
   font-poppins font-normal text-[14px] leading-[20px]
   transition duration-200 ease-in-out
   hover:translate-x-[2px] hover:text-black hover:bg-[#CDC1FF1A]
-`; const activeMainClasses = "bg-[#CDC1FF1A] text-[#9747FF] font-semibold";
-    const inactiveMainClasses = "text-gray-600 hover:text-black";
-    const activeSubClasses = "text-[#F07EFF] font-semibold";
-    const inactiveSubClasses = "text-gray-600 hover:text-[#F07EFF] transition duration-200 ease-in-out hover:translate-x-[2px]";
+`; const activeMainClasses = "bg-[#CDC1FF1A] text-[#9747FF] font-poppins font-normal text-[14px]";
+    const inactiveMainClasses = "text-gray-500 hover:text-black font-poppins font-normal text-[14px]";
+    const activeSubClasses = "text-[#F07EFF]  font-poppins font-normal text-[14px]";
+    const inactiveSubClasses = "text-gray-500 text-[14px] hover:text-[#F07EFF]font-poppins font-normal transition duration-200 ease-in-out hover:translate-x-[2px]";
 
     const content = (
       <>
@@ -292,9 +299,18 @@ const DashboardNavbar = ({
       return (
         <div className="w-full">
           <button
-            onClick={() => {
-             setOpenDropdown({ [item.id]: true });
-            }}
+          onClick={() => {
+  setOpenDropdown(prev => {
+    const newState: { [key: string]: boolean } = {};
+    Object.keys(prev).forEach(key => {
+      newState[key] = false;
+    });
+    return {
+      ...newState,
+      [item.id]: !prev[item.id],
+    };
+  });
+}}
             className={`${baseClasses} ${isProfileActive || isProfileOpen ? activeMainClasses : inactiveMainClasses
               }`}
           >

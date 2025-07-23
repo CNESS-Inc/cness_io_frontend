@@ -22,6 +22,8 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useSearchParams } from "react-router-dom";
 
+
+
 const tabNames = [
   "Basic Information",
   "Contact Information",
@@ -30,6 +32,49 @@ const tabNames = [
   "Work Experience",
   "Public Profile Fields",
 ];
+
+
+
+
+const customStyles = {
+  control: (base: any, state: any) => ({
+    ...base,
+    minHeight: '41px',
+    borderRadius: '12px',
+    paddingLeft: '8px',
+    fontSize: '14px',
+    fontWeight: 400,
+    borderWidth: '1px',
+    borderColor: state.isFocused ? '#A259FF' : '#D1D5DB', // Purple on focus
+    boxShadow: state.isFocused ? '0 0 0 2px rgba(162, 89, 255, 0.5)' : 'none', // smooth glow
+    transition: 'all 0.2s ease-in-out',
+   
+    backgroundColor: 'white',
+  }),
+  valueContainer: (base: any) => ({
+    ...base,
+    flexWrap: 'wrap', // Ensure items wrap inside the value container
+    maxHeight: 'auto',
+    gap: '6px',
+    paddingTop: '6px',
+    paddingBottom: '6px',
+  }),
+  multiValue: (base: any) => ({
+    ...base,
+    backgroundColor: '#E5E7EB',
+    color: '#000',
+    borderRadius: '8px',
+    fontSize: '13px',
+    padding: '2px 6px',
+  }),
+  placeholder: (base: any) => ({
+    ...base,
+    fontSize: 14,
+    color: '#9CA3AF',
+  }),
+};
+
+
 
 const tabMap = {
   basic: 0,
@@ -824,6 +869,7 @@ const UserProfilePage = () => {
     }
   };
 
+
   return (
     <>
       <section className="w-full px-2 sm:px-4 lg:px-2 pt-4 pb-10">
@@ -1001,7 +1047,7 @@ const UserProfilePage = () => {
                               handleBasicInfoSubmit
                             )}
                           >
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative ">
                               {/* First Name */}
                               <div>
                                 <label>
@@ -1012,7 +1058,7 @@ const UserProfilePage = () => {
                                   type="text"
                                   {...basicInfoForm.register("firstName")}
                                   placeholder="Enter your First Name"
-                                  className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                  className={`w-full px-4 py-2 h-[41px]  mt-2 border bg-white ${
                                     basicInfoForm.formState.errors.firstName
                                       ? "border-red-500"
                                       : "border-gray-300"
@@ -1042,7 +1088,7 @@ const UserProfilePage = () => {
                                   type="text"
                                   {...basicInfoForm.register("lastName")}
                                   placeholder="Enter your Last Name"
-                                  className={`w-full px-4 py-2 border h-[41px] bg-white ${
+                                  className={`w-full px-4 py-2 border h-[41px] mt-2 bg-white ${
                                     basicInfoForm.formState.errors.lastName
                                       ? "border-red-500"
                                       : "border-gray-300"
@@ -1064,8 +1110,8 @@ const UserProfilePage = () => {
 
                               {/* Interests */}
                               <div>
-                                <label>
-                                  Interests{" "}
+<label className="block mb-2">
+                                    Interests{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
                                 <Select
@@ -1090,8 +1136,7 @@ const UserProfilePage = () => {
                                       )
                                     );
                                   }}
-                                  className="react-select-container h-[41px] rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2"
-                                  classNamePrefix="react-select"
+ styles={customStyles}             classNamePrefix="react-select"
                                   placeholder="Select interests..."
                                 />
                                 {basicInfoForm.formState.errors.interests && (
@@ -1103,7 +1148,7 @@ const UserProfilePage = () => {
 
                               {/* Profession */}
                               <div>
-                                <label>
+<label className="block mb-2">
                                   Professions{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1129,8 +1174,7 @@ const UserProfilePage = () => {
                                       )
                                     );
                                   }}
-                                  className="react-select-container h-[41px] rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2"
-                                  classNamePrefix="react-select"
+styles={customStyles}                                      classNamePrefix="react-select"
                                   placeholder="Select professions..."
                                 />
                                 {basicInfoForm.formState.errors.professions && (
@@ -1141,7 +1185,7 @@ const UserProfilePage = () => {
                               </div>
 
                               <div>
-                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                <label className="block text-[14px] font-medium text-gray-800 mb-4">
                                   Upload Document{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1189,7 +1233,7 @@ const UserProfilePage = () => {
                                     <div className="mt-5">
                                       <label
                                         htmlFor="registrationFile"
-                                        className="px-4 py-2 h-[41px] bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                                        className="px-4 py-2  h-[41px] bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
                                       >
                                         Verify Identity
                                       </label>
@@ -1256,29 +1300,35 @@ const UserProfilePage = () => {
                               </div>
 
                               {/* Gender */}
-                              <div>
-                                <label>
-                                  Gender <span className="text-red-500">*</span>
-                                </label>
-                                <select
-                                  {...basicInfoForm.register("gender", {
-                                    required: true,
-                                  })}
-                                  className="
-    w-full h-[41px] bg-white
-    border border-gray-300 rounded-[12px]
-    px-[12px] mt-2
-    font-normal text-[14px] leading-5
-    text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500
-  "
-                                  style={{ fontFamily: "Rubik, sans-serif" }}
-                                >
-                                  <option value="">Select your gender</option>
-                                  <option value="Male">Male</option>
-                                  <option value="Female">Female</option>
-                                  <option value="Non-binary">Non-binary</option>
-                                </select>
-                              </div>
+                              <div className="relative w-full">
+  <label className="block text-sm font-medium text-gray-800 mb-2">
+    Gender <span className="text-red-500">*</span>
+  </label>
+
+  <select
+    {...basicInfoForm.register("gender", { required: true })}
+    className="
+      w-full h-[41px] bg-white
+      border border-gray-300 rounded-[12px]
+      px-[12px] pr-[40px] mt-2
+      font-normal text-[14px] leading-5
+      text-gray-700 appearance-none
+      focus:outline-none focus:ring-2 focus:ring-purple-500
+    "
+    style={{ fontFamily: "Rubik, sans-serif" }}
+  >
+    <option value="">Select your gender</option>
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+    <option value="Non-binary">Non-binary</option>
+  </select>
+
+  <img
+    src="/chevron-down.svg"
+    alt="Dropdown"
+    className="w-4 h-4 absolute right-4 top-[73%] transform -translate-y-1/2 pointer-events-none"
+  />
+</div>
 
                               {/* Date of Birth */}
                               <div>
@@ -1294,7 +1344,7 @@ const UserProfilePage = () => {
                                   onClick={(
                                     e: React.MouseEvent<HTMLInputElement>
                                   ) => e.currentTarget.showPicker()}
-                                  className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                  className={`w-full px-4 py-2 h-[41px] mt-2 border bg-white ${
                                     basicInfoForm.formState.errors.dob
                                       ? "border-red-500"
                                       : "border-gray-300"
@@ -1319,7 +1369,7 @@ const UserProfilePage = () => {
                                   type="text"
                                   {...basicInfoForm.register("quote")}
                                   placeholder="Enter your quote"
-                                  className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                  className={`w-full px-4 py-2 h-[41px] mt-2 border bg-white ${
                                     basicInfoForm.formState.errors.quote
                                       ? "border-red-500"
                                       : "border-gray-300"
@@ -1353,7 +1403,7 @@ const UserProfilePage = () => {
                                     basicInfoForm.formState.errors.bio
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl h-[41px] text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                  } rounded-xl h-[41px] mt-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
                                     basicInfoForm.formState.errors.bio
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
@@ -1368,7 +1418,7 @@ const UserProfilePage = () => {
 
                               {/* Vision Statement - Full Width */}
                               <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                <label className="block text-[14px] font-medium text-gray-800 mb-2">
                                   Personal Vision Statement
                                 </label>
                                 <textarea
@@ -1398,7 +1448,17 @@ const UserProfilePage = () => {
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                  className="font-[Plus Jakarta Sans] bg-white flex justify-center w-full sm:w-auto text-[18px] px-6 py-3 rounded-full text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                  className=" font-['Plus Jakarta Sans'] 
+  text-[14px] 
+  px-6 py-2  
+  rounded-full 
+  border border-[#ddd] 
+  text-black 
+  bg-white 
+  hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+  transition-colors duration-300 
+  w-full sm:w-auto 
+  flex justify-center"
                                   type="button"
                                   onClick={() => basicInfoForm.reset()}
                                 >
@@ -1406,7 +1466,8 @@ const UserProfilePage = () => {
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="w-full sm:w-auto rounded-full py-3 flex justify-center px-8 transition-colors duration-500 ease-in-out"
+ className="w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
+
                                   type="submit"
                                   disabled={isSubmitting.basic}
                                 >
@@ -1509,7 +1570,7 @@ const UserProfilePage = () => {
 
                               {/* Address */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-4">
                                   Address{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1532,8 +1593,8 @@ const UserProfilePage = () => {
                               </div>
 
                               {/* Country */}
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+<div className="relative w-full">
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
                                   Country{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1541,14 +1602,15 @@ const UserProfilePage = () => {
                                   {...contactInfoForm.register("country", {
                                     required: "Country is required",
                                   })}
-                                  className="
-                                  w-full h-[41px]
-                                  bg-white
-                                  border border-gray-300 rounded-[12px]
-                                  px-[12px] mt-2
-                                  font-normal text-[14px] leading-5
-                                  text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500
-                                "
+                                    className="
+   w-full h-[41px] bg-white
+      border border-gray-300 rounded-[12px]
+      px-[12px] pr-[40px] mt-2
+      font-normal text-[14px] leading-5
+      text-gray-700 appearance-none
+      focus:outline-none focus:ring-2 focus:ring-purple-500
+    "
+     style={{ fontFamily: "Rubik, sans-serif" }}
                                 >
                                   <option value="">Select your country</option>
                                   Country
@@ -1558,6 +1620,12 @@ const UserProfilePage = () => {
                                     </option>
                                   ))}
                                 </select>
+                                <img
+    src="/chevron-down.svg"
+    alt="Dropdown"
+    className="w-4 h-4 absolute right-4 top-[75%] transform -translate-y-1/2 pointer-events-none"
+  />
+                                
                                 {contactInfoForm.formState.errors.country && (
                                   <p className="text-sm text-red-500 mt-1">
                                     {
@@ -1565,11 +1633,12 @@ const UserProfilePage = () => {
                                         .message as string
                                     }
                                   </p>
+                                  
                                 )}
                               </div>
 
                               {/* State */}
-                              <div>
+<div className="relative w-full">
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                   State <span className="text-red-500">*</span>
                                 </label>
@@ -1578,13 +1647,13 @@ const UserProfilePage = () => {
                                     required: "State is required",
                                   })}
                                   className="
-                                    w-full h-[41px]
-                                    bg-white
-                                    border border-gray-300 rounded-[12px]
-                                    px-[12px] mt-2
-                                    font-normal text-[14px] leading-5
-                                    text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500
-                                  "
+                                    w-full h-[41px] bg-white
+      border border-gray-300 rounded-[12px]
+      px-[12px] pr-[40px] mt-2
+      font-normal text-[14px] leading-5
+      text-gray-700 appearance-none
+      focus:outline-none focus:ring-2 focus:ring-purple-500
+    "
                                   style={{ fontFamily: "Rubik, sans-serif" }}
                                 >
                                   <option value="">Select your state</option>
@@ -1594,6 +1663,11 @@ const UserProfilePage = () => {
                                     </option>
                                   ))}
                                 </select>
+                                <img
+    src="/chevron-down.svg"
+    alt="Dropdown"
+    className="w-4 h-4 absolute right-4 top-[75%] transform -translate-y-1/2 pointer-events-none"
+  />
                                 {contactInfoForm.formState.errors.state && (
                                   <p className="text-sm text-red-500 mt-1">
                                     {
@@ -1606,7 +1680,7 @@ const UserProfilePage = () => {
 
                               {/* City */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-4">
                                   City
                                 </label>
                                 <input
@@ -1691,7 +1765,17 @@ const UserProfilePage = () => {
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                  className="font-[Plus Jakarta Sans] flex justify-center w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                 className=" font-['Plus Jakarta Sans'] 
+  text-[14px] 
+  px-6 py-2  
+  rounded-full 
+  border border-[#ddd] 
+  text-black 
+  bg-white 
+  hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+  transition-colors duration-300 
+  w-full sm:w-auto 
+  flex justify-center"
                                   type="button"
                                   onClick={() => contactInfoForm.reset()}
                                 >
@@ -1699,7 +1783,7 @@ const UserProfilePage = () => {
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="w-full sm:w-auto rounded-full flex justify-center py-3 px-8 transition-colors duration-500 ease-in-out"
+ className="w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   disabled={isSubmitting.contact}
                                 >
@@ -1840,7 +1924,17 @@ const UserProfilePage = () => {
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                  className="font-[Plus Jakarta Sans] flex justify-center w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                  className=" font-['Plus Jakarta Sans'] 
+  text-[14px] 
+  px-6 py-2  
+  rounded-full 
+  border border-[#ddd] 
+  text-black 
+  bg-white 
+  hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+  transition-colors duration-300 
+  w-full sm:w-auto 
+  flex justify-center"
                                   type="button"
                                   onClick={() => socialLinksForm.reset()}
                                 >
@@ -1848,7 +1942,7 @@ const UserProfilePage = () => {
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="w-full sm:w-auto flex justify-center rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
+ className="w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   disabled={isSubmitting.social}
                                 >
@@ -2087,7 +2181,17 @@ const UserProfilePage = () => {
                             <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                               <Button
                                 variant="white-outline"
-                                className="font-[Plus Jakarta Sans] flex justify-center w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                className=" font-['Plus Jakarta Sans'] 
+  text-[14px] 
+  px-6 py-2  
+  rounded-full 
+  border border-[#ddd] 
+  text-black 
+  bg-white 
+  hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+  transition-colors duration-300 
+  w-full sm:w-auto 
+  flex justify-center"
                                 type="button"
                                 onClick={() => educationForm.reset()}
                               >
@@ -2095,7 +2199,7 @@ const UserProfilePage = () => {
                               </Button>
                               <Button
                                 variant="gradient-primary"
-                                className="w-full sm:w-auto flex justify-center rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
+ className="w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                                 type="submit"
                                 disabled={isSubmitting.education}
                               >
@@ -2338,7 +2442,17 @@ const UserProfilePage = () => {
                             <div className="md:col-span-2 flex flex-col sm:flex-row sm:justify-end items-center gap-4 mt-6">
                               <Button
                                 variant="white-outline"
-                                className="font-[Plus Jakarta Sans] flex justify-center w-full sm:w-auto max-w-[280px] text-[16px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                               className=" font-['Plus Jakarta Sans'] 
+  text-[14px] 
+  px-6 py-2  
+  rounded-full 
+  border border-[#ddd] 
+  text-black 
+  bg-white 
+  hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+  transition-colors duration-300 
+  w-full sm:w-auto 
+  flex justify-center"
                                 type="button"
                                 onClick={() => workExperienceForm.reset()}
                               >
@@ -2346,7 +2460,7 @@ const UserProfilePage = () => {
                               </Button>
                               <Button
                                 variant="gradient-primary"
-                                className="w-full sm:w-auto flex justify-center max-w-[280px] rounded-full py-3 px-6 text-white text-[16px] font-semibold shadow-md transition duration-300 ease-in-out"
+ className="w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                                 type="submit"
                                 disabled={isSubmitting.work}
                               >
@@ -2456,6 +2570,7 @@ const UserProfilePage = () => {
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
                                   Services Offered
                                 </label>
+                                
                                 <div className="flex gap-2 items-center">
                                   <select
                                     value={serviceInput}
@@ -2484,7 +2599,13 @@ const UserProfilePage = () => {
                                         setShowCustomInput(false);
                                       }
                                     }}
-                                    className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                       className="
+    w-full h-[41px] bg-white
+    border border-gray-300 rounded-[12px]
+    px-[12px] mt-2
+    font-normal text-[14px] leading-5
+    text-gray-700  focus:outline-none focus:ring-2 focus:ring-purple-500
+  "
                                   >
                                     <option value="">Select a service</option>
                                     {serviceData?.map(
@@ -2672,7 +2793,17 @@ const UserProfilePage = () => {
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                  className="font-[Plus Jakarta Sans] flex justify-center w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                 className=" font-['Plus Jakarta Sans'] 
+  text-[14px] 
+  px-6 py-2  
+  rounded-full 
+  border border-[#ddd] 
+  text-black 
+  bg-white 
+  hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+  transition-colors duration-300 
+  w-full sm:w-auto 
+  flex justify-center"
                                   type="button"
                                   onClick={() => publicProfileForm.reset()}
                                 >
@@ -2680,7 +2811,7 @@ const UserProfilePage = () => {
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="w-full sm:w-auto rounded-full flex justify-center py-3 px-8 transition-colors duration-500 ease-in-out"
+ className="w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   disabled={isSubmitting.public}
                                 >

@@ -13,6 +13,7 @@ import { EyeIcon } from "lucide-react";
 import Modal from "../components/ui/Modal";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import missionicon from "../assets/missionicon.svg";
+import { Check } from "lucide-react";
 
 interface Section {
   id: string;
@@ -88,6 +89,8 @@ const AssessmentQuestion: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { showToast } = useToast();
   const completed_step = localStorage.getItem("completed_step");
+  const [urlError, setUrlError] = useState("");
+
   // const [errors, setErrors] = useState<FormErrors>({});
 
   // interface FormErrors {
@@ -372,18 +375,26 @@ const AssessmentQuestion: React.FC = () => {
     }
   };
 
-  const handleReferenceLinkChange = (value: string) => {
-    setFormData((prev) => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        referenceLink: {
-          ...prev.referenceLink,
-          url: value,
-        },
-      };
-    });
-  };
+const handleReferenceLinkChange = (value: string) => {
+  const urlPattern = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/;
+
+  if (value && !urlPattern.test(value)) {
+    setUrlError("Enter a valid URL");
+  } else {
+    setUrlError("");
+  }
+
+  setFormData((prev) => {
+    if (!prev) return null;
+    return {
+      ...prev,
+      referenceLink: {
+        ...prev.referenceLink,
+        url: value,
+      },
+    };
+  });
+};
 
   const validateForm = (): boolean => {
     if (!formData) return false;
@@ -608,17 +619,34 @@ const AssessmentQuestion: React.FC = () => {
                     key={option.id}
                     className="text-[14px] flex items-start gap-3 text-[#222224]"
                   >
-                    <input
-                      type="checkbox"
-                      checked={formData.selectedCheckboxIds.includes(option.id)}
-                      onChange={(e) =>
-                        handleCheckboxChange(option.id, e.target.checked)
-                      }
-                      disabled={isSubmitted}
-                      className={
-                        isSubmitted ? "opacity-50 cursor-not-allowed" : ""
-                      }
-                    />
+<label className="relative inline-flex items-center">
+  <input
+    type="checkbox"
+    checked={formData.selectedCheckboxIds.includes(option.id)}
+    onChange={(e) => handleCheckboxChange(option.id, e.target.checked)}
+    disabled={isSubmitted}
+    className={`
+      appearance-none
+      w-[16px] h-[16px] sm:w-[17px] sm:h-[17px]
+      rounded-[4px]
+      border
+      transition-all duration-300 ease-in-out
+      bg-white 
+   
+      ${formData.selectedCheckboxIds.includes(option.id)
+        ? "border-[#7077ef] shadow-[2px_2px_4px_rgba(59,130,246,0.3)]"
+        : "border-[#D0D5DD] shadow-inner"}
+      ${isSubmitted ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+    `}
+  
+  />
+  {formData.selectedCheckboxIds.includes(option.id) && (
+    <Check
+      className="absolute left-[3px] top-[2px] text-[#6269FF] w-[12px] h-[12px] pointer-events-none transition-transform duration-200 scale-100"
+      strokeWidth={5}
+    />
+  )}
+</label>
                     <span>{option.option}</span>
                   </label>
                 ))}
@@ -700,7 +728,7 @@ const AssessmentQuestion: React.FC = () => {
                       <input
                         type="file"
                         accept={upload.acceptedTypes}
-                        className="w-full h-16 px-2 py-3 cursor-pointer rounded-xl border border-gray-300 file:mr-4 file:rounded-full file:border-0 file:bg-[#7077FE] file:px-[12px] file:py-[8px] file:text-white file:text-[14px] file:cursor-pointer"
+                        className="w-full h-16 px-2 py-3 cursor-pointer rounded-xl border border-gray-300 file:mr-4 file:rounded-full file:border-0 file:bg-[#7077FE] file:px-[24px] file:py-[8px] file:text-white  file:font-['Plus Jakarta Sans'] file:font-medium  file:text-[14px] file:cursor-pointer"
                         onChange={(e) =>
                           handleFileUpload(i, e.target.files?.[0] || null)
                         }
@@ -722,40 +750,34 @@ const AssessmentQuestion: React.FC = () => {
                 ))}
               </div>
               <div>
-                <label className="text-[14px] flex items-start gap-3 text-[#222224] mb-1">
-                  Link for Reference
-                </label>
-                <input
-                  type="url"
-                  className="w-full p-2 rounded-lg border border-gray-300"
-                  placeholder="https://example.com"
-                  value={formData.referenceLink.url || ""}
-                  onChange={(e) => handleReferenceLinkChange(e.target.value)}
-                  disabled={isSubmitted}
-                />
-              </div>
+  <label className="text-[14px] flex items-start gap-3 text-[#222224] mb-1">
+    Link for Reference
+  </label>
+  <input
+    type="url"
+    className={`w-full p-2 rounded-lg border ${
+      urlError ? "border-red-500" : "border-gray-300"
+    }`}
+    placeholder="https://example.com"
+    value={formData.referenceLink.url || ""}
+    onChange={(e) => handleReferenceLinkChange(e.target.value)}
+    disabled={isSubmitted}
+  />
+  {urlError && <p className="text-red-500 text-sm mt-1">{urlError}</p>}
+</div>
             </div>
 
             {/* Action Buttons */}
             {/* {!isSubmitted && ( */}
-            <div className="flex flex-col sm:flex-row items-center justify-between mt-10 px-4 py-6 bg-white rounded-xl shadow-sm gap-4 cursor-pointer">
+<div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between sm:items-center sm:gap-4 w-full">
               {/* Save Button - Gradient */}
               <Button
                 variant="gradient-primary"
                 onClick={handleSave}
                 // disabled={isSubmitting}
                 disabled={isSubmitted}
-                className="
-    w-[77px] h-[31px]
-    rounded-[70.94px]
-    px-[24px] py-[8px]
-    flex items-center justify-center
-    gap-[7.09px]
-    text-white
-    font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center
-    disabled:opacity-60
-    transition-colors duration-200 cursor-pointer
-  "
+         className="w-[77px] h-[31px] rounded-[70.94px] px-[24px] py-[8px] flex items-center justify-center gap-[7.09px] text-white font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center disabled:opacity-60 transition-colors duration-200"
+
                 style={{
                   opacity: 1,
                   transform: "rotate(0deg)",
@@ -765,16 +787,11 @@ const AssessmentQuestion: React.FC = () => {
               </Button>
 
               {/* Prev & Next Buttons */}
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+<div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
                 <button
                   onClick={handlePrevious}
                   disabled={!currentSection.previous_section_id}
-                  className={`w-[104px] h-[31px] 
-              px-6 py-2 
-              rounded-[100px] 
-              text-sm font-medium 
-              transition-all duration-200 
-              border  
+                  className={`w-[104px] h-[31px] px-6 py-2 rounded-[100px] text-sm font-medium transition-all duration-200 border
                               ${
                                 prevVariant === "white-disabled"
                                   ? "bg-white font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center text-gray-400 border border-gray-200 shadow-md cursor-pointer"
@@ -790,14 +807,7 @@ const AssessmentQuestion: React.FC = () => {
                   onClick={handleNext}
                   disabled={!currentSection.next_section_id}
                   className="
-    w-[117px] h-[31px]
-    rounded-[70.94px]
-    px-[24px] py-[8px]
-    flex items-center justify-center
-    gap-[7.09px]
-    cursor-pointer
-    transition-colors duration-200
-    text-white
+   w-[117px] h-[31px] rounded-[70.94px] px-[24px] py-[8px] flex items-center justify-center gap-[7.09px] cursor-pointer transition-colors duration-200 text-white
   "
                   style={{
                     opacity: 1,
@@ -805,14 +815,7 @@ const AssessmentQuestion: React.FC = () => {
                   }}
                 >
                   <span
-                    className="
-   font-['Plus Jakarta Sans']
-      font-medium
-      text-[14px]
-      leading-[100%]
-      text-center
-      whitespace-nowrap
-  "
+                    className="font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center whitespace-nowrap "
                   >
                     Save & Next
                   </span>
@@ -848,7 +851,7 @@ const AssessmentQuestion: React.FC = () => {
   <Button
     onClick={handleconfirm}
     className="
-      w-[162px] h-[45px]
+      w-[200px] h-[45px]
       rounded-[100px]
       px-[24px] py-[16px]
       flex items-center justify-center

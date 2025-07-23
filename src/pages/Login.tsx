@@ -1240,14 +1240,16 @@ export default function Login() {
         </div>
 
         {/* Sign In Form */}
-        <div className="absolute top-[80px] sm:top-[120px] md:top-[160px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
-          <div className="w-[576px] h-[650px] bg-white rounded-[24px] shadow-xl border border-gray-200 px-[42px] py-[52px] flex flex-col gap-8">
-            <h2 className="text-left">
-              Sign in to your account
-              <br />
-              <span className="font-publicSans font-normal text-[15px] leading-[20px] text-[#281D1B]">
-                Please enter your login details to access your account
-              </span>
+
+<div className="absolute top-[80px] sm:top-[120px] md:top-[160px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
+ <div className="w-[576px] h-[650px] bg-white rounded-[24px] shadow-xl border border-gray-200 px-[42px] py-[52px] flex flex-col gap-8">
+
+  <h2 className="font-poppins font-semibold text-[28px] leading-[32px] tracking-[-0.02em] text-gray-900">
+              Sign in to your account<br />
+             <span className="font-publicSans font-normal text-[15px] leading-[20px] tracking-[-0.005em] text-[#281D1B]">
+  Please enter your login details to access your account
+</span>
+
             </h2>
 
             {apiMessage && (
