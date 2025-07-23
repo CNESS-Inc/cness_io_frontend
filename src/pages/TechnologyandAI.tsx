@@ -6,6 +6,7 @@ import { iconMap } from "../assets/icons";
 import { Filter, SortAsc, SortDesc, X } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import {
+  GetBadgeListDetails,
   GetProfessionalDetails,
   GetUsersearchProfileDetails,
 } from "../Common/ServerAPI";
@@ -22,6 +23,7 @@ interface Company {
   tags: string[];
   rating?: number;
   isCertified?: boolean;
+  certificationLevel?: string;
 }
 
 export default function TechnologyAndAIPage() {
@@ -43,6 +45,13 @@ export default function TechnologyAndAIPage() {
   const [selectedDomainText, setSelectedDomainText] = useState("All Domains");
   const [textWidth, setTextWidth] = useState(0);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [certificationLevels, setCertificationLevels] = useState<any[]>([]);
+  const [selectedCertificationLevel, setSelectedCertificationLevel] =
+    useState<string>("");
+  console.log(
+    "🚀 ~ TechnologyAndAIPage ~ selectedCertificationLevel:",
+    selectedCertificationLevel
+  );
 
   useEffect(() => {
     if (measureRef.current) {
@@ -61,28 +70,35 @@ export default function TechnologyAndAIPage() {
         selectedDomain,
         searchQuery,
         page,
-        itemsPerPage
+        itemsPerPage,
+        selectedCertificationLevel,
+        sort
       );
 
       if (res?.data) {
         setTotalCount(res.data.data.count);
 
-        const transformedCompanies = res.data.data.rows.map((company: any) => ({
-          id: company.id,
-          name: company.name,
-          domain: selectedDomain || "Technology and AI",
-          logoUrl: company.profile_picture || iconMap["comlogo"],
-          bannerUrl: company.profile_banner || iconMap["companycard1"],
-          location: company.location || "Unknown location",
-          description: company.bio || "No description available",
-          tags: company.tags || [],
-          rating: company.average,
-          isCertified: Math.random() > 0.5,
-          is_organization: company?.is_organization,
-          is_person: company?.is_person,
-          level: company?.level?.level,
-        }));
-
+        const transformedCompanies = res.data.data.rows
+          .map((company: any) => ({
+            id: company.id,
+            name: company.name,
+            domain: selectedDomain || "Technology and AI",
+            logoUrl: company.profile_picture || iconMap["comlogo"],
+            bannerUrl: company.profile_banner || iconMap["companycard1"],
+            location: company.location || "Unknown location",
+            description: company.bio || "No description available",
+            tags: company.tags || [],
+            rating: company.average,
+            isCertified: Math.random() > 0.5,
+            is_organization: company?.is_organization,
+            is_person: company?.is_person,
+            level: company?.level?.level,
+          }))
+          .sort((a: Company, b: Company) => {
+            if (sort === "az") return a.name.localeCompare(b.name);
+            if (sort === "za") return b.name.localeCompare(a.name);
+            return 0;
+          });
         setCompanies(transformedCompanies);
       }
     } catch (err: any) {
@@ -114,10 +130,28 @@ export default function TechnologyAndAIPage() {
       });
     }
   };
+  const fetchBadge = async () => {
+    try {
+      const res = await GetBadgeListDetails();
+      // Transform the badge data to have label and value properties
+      const transformedBadges = res?.data?.data.map((badge: any) => ({
+        label: badge.level,
+        value: badge.slug,
+      }));
+      setCertificationLevels(transformedBadges);
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
 
   useEffect(() => {
     if (!hasFetched.current) {
       fetchDomain();
+      fetchBadge();
       hasFetched.current = true;
     }
     fetchUsersearchProfileDetails(currentPage);
@@ -126,7 +160,7 @@ export default function TechnologyAndAIPage() {
   useEffect(() => {
     setCurrentPage(1);
     fetchUsersearchProfileDetails(1);
-  }, [searchQuery, sort, selectedDomain]);
+  }, [searchQuery, sort, selectedDomain, selectedCertificationLevel]);
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
@@ -231,7 +265,30 @@ export default function TechnologyAndAIPage() {
 
           <div className="mt-4">
             <h3 className="text-sm font-semibold text-gray-900 mb-5">Filter</h3>
-            <ul className="space-y-8 text-sm text-gray-800">
+            <div className="mb-6">
+              <h4 className="text-xs font-medium text-gray-500 mb-2">
+                Certification Level
+              </h4>
+              <ul className="space-y-2 text-sm text-gray-800">
+                {certificationLevels.map((level) => (
+                  <li
+                    key={level.value}
+                    className={`flex items-center gap-2 cursor-pointer p-2 rounded ${
+                      selectedCertificationLevel === level.value
+                        ? "bg-gray-100"
+                        : ""
+                    }`}
+                    onClick={() => {
+                      setSelectedCertificationLevel(level.value);
+                      setMobileFiltersOpen(false);
+                    }}
+                  >
+                    {level.label}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {/* <ul className="space-y-8 text-sm text-gray-800">
               <li className="flex items-center gap-2 cursor-pointer">
                 <Filter size={16} /> Certification Level
               </li>
@@ -244,7 +301,7 @@ export default function TechnologyAndAIPage() {
               <li className="flex items-center gap-2 cursor-pointer">
                 <Filter size={16} /> Tags
               </li>
-            </ul>
+            </ul> */}
           </div>
 
           <div className="mt-8">
@@ -278,7 +335,27 @@ export default function TechnologyAndAIPage() {
         <aside className="hidden lg:block w-64 px-4 py-8 border-r border-gray-100 bg-white">
           <div className="mb-6">
             <h2 className="text-sm font-semibold text-gray-900 mb-5">Filter</h2>
-            <ul className="space-y-8 text-sm text-gray-800">
+            <div className="mb-6">
+              <h4 className="text-xs font-medium text-gray-500 mb-2">
+                Certification Level
+              </h4>
+              <ul className="space-y-2 text-sm text-gray-800">
+                {certificationLevels.map((level) => (
+                  <li
+                    key={level.value}
+                    className={`flex items-center gap-2 cursor-pointer p-2 rounded ${
+                      selectedCertificationLevel === level.value
+                        ? "bg-gray-100"
+                        : ""
+                    }`}
+                    onClick={() => setSelectedCertificationLevel(level.value)}
+                  >
+                    {level.label}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {/* <ul className="space-y-8 text-sm text-gray-800">
               <li className="flex items-center gap-2 cursor-pointer">
                 <Filter size={16} /> Certification Level
               </li>
@@ -291,7 +368,7 @@ export default function TechnologyAndAIPage() {
               <li className="flex items-center gap-2 cursor-pointer">
                 <Filter size={16} /> Tags
               </li>
-            </ul>
+            </ul> */}
           </div>
 
           <div>

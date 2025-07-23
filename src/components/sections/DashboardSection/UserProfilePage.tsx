@@ -1145,8 +1145,10 @@ const UserProfilePage = () => {
                                   Upload Document{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
-                                {basicInfoForm.watch("identify_uploaded") ==
-                                null ? (
+                                {basicInfoForm.watch("identify_uploaded") ===
+                                  null ||
+                                basicInfoForm.watch("identify_uploaded") ===
+                                  undefined ? (
                                   <>
                                     <input
                                       type="file"
@@ -1158,15 +1160,27 @@ const UserProfilePage = () => {
                                           e.target.files &&
                                           e.target.files[0]
                                         ) {
+                                          // Set pending state immediately
+                                          basicInfoForm.setValue(
+                                            "identify_uploaded",
+                                            0
+                                          );
+
                                           try {
                                             const file = e.target.files[0];
                                             await fetchVerifyOrganizationNumber(
                                               file
                                             );
+                                            // API response will update the state accordingly
                                           } catch (error) {
                                             console.error(
                                               "File upload failed:",
                                               error
+                                            );
+                                            // Optionally set back to null or show error state
+                                            basicInfoForm.setValue(
+                                              "identify_uploaded",
+                                              null
                                             );
                                           }
                                         }
@@ -1181,7 +1195,7 @@ const UserProfilePage = () => {
                                       </label>
                                     </div>
                                   </>
-                                ) : basicInfoForm.watch("identify_uploaded") ==
+                                ) : basicInfoForm.watch("identify_uploaded") ===
                                   1 ? (
                                   <span className="px-4 py-2 h-[41px] bg-green-50 border border-green-200 rounded-xl text-sm font-medium text-green-600 flex items-center">
                                     <svg
@@ -1200,7 +1214,7 @@ const UserProfilePage = () => {
                                     </svg>
                                     Verified
                                   </span>
-                                ) : basicInfoForm.watch("identify_uploaded") ==
+                                ) : basicInfoForm.watch("identify_uploaded") ===
                                   2 ? (
                                   <span className="px-4 py-2 h-[41px] bg-red-50 border border-red-200 rounded-xl text-sm font-medium text-red-600 flex items-center">
                                     <svg
@@ -1219,7 +1233,7 @@ const UserProfilePage = () => {
                                     </svg>
                                     Rejected
                                   </span>
-                                ) : basicInfoForm.watch("identify_uploaded") ==
+                                ) : basicInfoForm.watch("identify_uploaded") ===
                                   0 ? (
                                   <span className="px-4 py-2 h-[41px] bg-yellow-50 border border-yellow-200 rounded-xl text-sm font-medium text-yellow-600 flex items-center">
                                     <svg
@@ -1238,42 +1252,7 @@ const UserProfilePage = () => {
                                     </svg>
                                     Pending
                                   </span>
-                                ) : (
-                                  <>
-                                    <input
-                                      type="file"
-                                      id="registrationFile"
-                                      accept=".pdf,.jpg,.jpeg,.png"
-                                      className="hidden"
-                                      onChange={async (e) => {
-                                        if (
-                                          e.target.files &&
-                                          e.target.files[0]
-                                        ) {
-                                          try {
-                                            const file = e.target.files[0];
-                                            await fetchVerifyOrganizationNumber(
-                                              file
-                                            );
-                                          } catch (error) {
-                                            console.error(
-                                              "File upload failed:",
-                                              error
-                                            );
-                                          }
-                                        }
-                                      }}
-                                    />
-                                    <div className="mt-5">
-                                      <label
-                                        htmlFor="registrationFile"
-                                        className="px-4 py-2 h-[41px] bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
-                                      >
-                                        Verify Identity
-                                      </label>
-                                    </div>
-                                  </>
-                                )}
+                                ) : null}
                               </div>
 
                               {/* Gender */}

@@ -460,7 +460,10 @@ export default function Login() {
         setIsSubmitting(false);
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);
-        console.log("🚀 ~ handleSubmit ~ response?.data?.data?.jwt:", response?.data?.data?.jwt)
+        console.log(
+          "🚀 ~ handleSubmit ~ response?.data?.data?.jwt:",
+          response?.data?.data?.jwt
+        );
         localStorage.setItem(
           "is_disqualify",
           response?.data?.data?.user?.is_disqualify
@@ -485,9 +488,11 @@ export default function Login() {
           response?.data?.data?.user.margaret_name
         );
         const myReferralCode = response?.data?.data?.user.my_referral_code;
-        if(myReferralCode)
-        {
-          localStorage.setItem("referral_code", response?.data?.data?.user.my_referral_code);
+        if (myReferralCode) {
+          localStorage.setItem(
+            "referral_code",
+            response?.data?.data?.user.my_referral_code
+          );
         }
         const completionStatus =
           response.data.data.user.person_organization_complete;
@@ -1221,31 +1226,30 @@ export default function Login() {
             <SignupAnimation />
           </div>
 
-   <div className="relative w-full h-[250px]">
-  <div className="absolute top-1 left-5 z-30 p-0">
-   <Link to="/">
-                 <img
-                   src={cnesslogo}
-                   alt="logo"
-                   className="w-48 h-48 object-contain"
-                 />
-               </Link>
-  </div>
-</div>
-
+          <div className="relative w-full h-[250px]">
+            <div className="absolute top-1 left-5 z-30 p-0">
+              <Link to="/">
+                <img
+                  src={cnesslogo}
+                  alt="logo"
+                  className="w-48 h-48 object-contain"
+                />
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Sign In Form */}
-<div className="absolute top-[80px] sm:top-[120px] md:top-[160px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
- <div className="w-[576px] h-[650px] bg-white rounded-[24px] shadow-xl border border-gray-200 px-[42px] py-[52px] flex flex-col gap-8">
-
-    <h2 className="text-left" >
-              Sign in to your account<br />
-                <span className="font-publicSans font-normal text-[15px] leading-[20px] text-[#281D1B]">
+        <div className="absolute top-[80px] sm:top-[120px] md:top-[160px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
+          <div className="w-[576px] h-[650px] bg-white rounded-[24px] shadow-xl border border-gray-200 px-[42px] py-[52px] flex flex-col gap-8">
+            <h2 className="text-left">
+              Sign in to your account
+              <br />
+              <span className="font-publicSans font-normal text-[15px] leading-[20px] text-[#281D1B]">
                 Please enter your login details to access your account
-                </span>
+              </span>
             </h2>
-            
+
             {apiMessage && (
               <div
                 className={`text-center mb-4 ${
@@ -1264,7 +1268,7 @@ export default function Login() {
                   <button
                     type="button"
                     onClick={() => login()}
-          className="flex items-center gap-2 border border-gray-300 rounded-3xl px-12 py-3 bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 hover:cursor-pointer"
+                    className="flex items-center gap-2 border border-gray-300 rounded-3xl px-12 py-3 bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 hover:cursor-pointer"
                   >
                     <img
                       src="/google-icon-logo.svg"
@@ -1283,7 +1287,9 @@ export default function Login() {
                     <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="bg-white px-3 font-publicSans font-normal text-[15px] leading-[20px] text-[#281D1B]">Or sign in with</span>
+                    <span className="bg-white px-3 font-publicSans font-normal text-[15px] leading-[20px] text-[#281D1B]">
+                      Or sign in with
+                    </span>
                   </div>
                 </div>
 
@@ -1834,10 +1840,10 @@ export default function Login() {
                       <Button
                         type="submit"
                         variant="gradient-primary"
-className="w-[104px] h-[39px] rounded-[100px] p-0
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
     flex items-center justify-center"
-                            disabled={isSubmitting}
+                        disabled={isSubmitting}
                       >
                         {isSubmitting ? "Submitting..." : "Submit"}
                       </Button>
@@ -1977,21 +1983,15 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
                       <input
                         type="text"
                         name="first_name"
-                         placeholder="Enter your first name"
+                        placeholder="Enter your first name"
                         value={personForm.first_name}
                         onChange={handlePersonFormChange}
                         className={`w-[440px] h-[41px]
     rounded-[12px]
     border-[0.82px]
     p-[12px] mt-2 ${
-                          personErrors.first_name
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        } rounded-md`
-                        
-                      }
-                       
-                        
+      personErrors.first_name ? "border-red-500" : "border-gray-300"
+    } rounded-md`}
                       />
                       {personErrors.first_name && (
                         <p className="mt-1 text-sm text-red-600">
@@ -2014,10 +2014,8 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
     rounded-[12px]
     border-[0.82px]
     p-[12px] mt-2 ${
-                          personErrors.last_name
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        } rounded-md`}
+      personErrors.last_name ? "border-red-500" : "border-gray-300"
+    } rounded-md`}
                         placeholder="Enter your last name"
                       />
                       {personErrors.last_name && (
@@ -2033,38 +2031,38 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
                         <span className="text-red-500">*</span>
                       </label>
                       <div className="mt-4">
-                      <Select
-                        isMulti
-                        options={interest?.map((interestItem: Interest) => ({
-                          value: interestItem.id,
-                          label: interestItem.name,
-                        }))}
-                        value={
-                          personForm.interests?.map((interestId: any) => ({
-                            value: interestId,
-                            label: interest?.find(
-                              (i: any) => i.id === interestId
-                            )?.name,
-                          })) || []
-                        }
-                        onChange={(selectedOptions) => {
-                          // Update your form state with the selected values
-                          const selectedValues = selectedOptions?.map(
-                            (option) => option.value
-                          );
-                          setPersonForm({
-                            ...personForm,
-                            interests: selectedValues,
-                          });
-                        }}
-                        className="react-select-container"
-                        classNamePrefix="react-select"
-                        placeholder="Select interests..."
-                        menuPortalTarget={document.body}
-                        styles={{
-                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                        }}
-                      />
+                        <Select
+                          isMulti
+                          options={interest?.map((interestItem: Interest) => ({
+                            value: interestItem.id,
+                            label: interestItem.name,
+                          }))}
+                          value={
+                            personForm.interests?.map((interestId: any) => ({
+                              value: interestId,
+                              label: interest?.find(
+                                (i: any) => i.id === interestId
+                              )?.name,
+                            })) || []
+                          }
+                          onChange={(selectedOptions) => {
+                            // Update your form state with the selected values
+                            const selectedValues = selectedOptions?.map(
+                              (option) => option.value
+                            );
+                            setPersonForm({
+                              ...personForm,
+                              interests: selectedValues,
+                            });
+                          }}
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          placeholder="Select interests..."
+                          menuPortalTarget={document.body}
+                          styles={{
+                            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                          }}
+                        />
                       </div>
                       {personErrors.interests && (
                         <p className="mt-1 text-sm text-red-600">
@@ -2077,53 +2075,55 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
                       <label className="block openSans text-base font-medium text-gray-800 mb-1">
                         Professions
                         <span className="text-red-500">*</span>
-
                       </label>
-                            <div className="mt-4">
-                      <Select
-                        isMulti
-                        options={[
-                          ...profession?.map((professionItem: Profession) => ({
-                            value: professionItem.id,
-                            label: professionItem.title,
-                          })),
-                          { value: "other", label: "Other (please specify)" },
-                        ]}
-                        value={
-                          personForm.professions?.map((professionId: any) => ({
-                            value: professionId,
-                            label:
-                              profession?.find(
-                                (p: any) => p.id === professionId
-                              )?.title ||
-                              (professionId === "other" ? "Other" : ""),
-                          })) || []
-                        }
-                        onChange={(selectedOptions) => {
-                          const selectedValues = selectedOptions?.map(
-                            (option) => option.value
-                          );
-                          setPersonForm({
-                            ...personForm,
-                            professions: selectedValues,
-                          });
-                        }}
-                        className="react-select-container"
-                        classNamePrefix="react-select"
-                        placeholder="Select professions..."
-                        menuPortalTarget={document.body}
-                        styles={{
-                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                        }}
-                      />
-                   </div>
+                      <div className="mt-4">
+                        <Select
+                          isMulti
+                          options={[
+                            ...profession?.map(
+                              (professionItem: Profession) => ({
+                                value: professionItem.id,
+                                label: professionItem.title,
+                              })
+                            ),
+                            { value: "other", label: "Other (please specify)" },
+                          ]}
+                          value={
+                            personForm.professions?.map(
+                              (professionId: any) => ({
+                                value: professionId,
+                                label:
+                                  profession?.find(
+                                    (p: any) => p.id === professionId
+                                  )?.title ||
+                                  (professionId === "other" ? "Other" : ""),
+                              })
+                            ) || []
+                          }
+                          onChange={(selectedOptions) => {
+                            const selectedValues = selectedOptions?.map(
+                              (option) => option.value
+                            );
+                            setPersonForm({
+                              ...personForm,
+                              professions: selectedValues,
+                            });
+                          }}
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          placeholder="Select professions..."
+                          menuPortalTarget={document.body}
+                          styles={{
+                            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                          }}
+                        />
+                      </div>
                       {personErrors.professions && (
                         <p className="mt-1 text-sm text-red-600">
                           {personErrors.professions}
                         </p>
                       )}
-                 
-</div>
+                    </div>
                     {/* Add this after the Select component */}
                     {personForm.professions?.includes("other") && (
                       <div className="mb-4 mt-2">
@@ -2160,11 +2160,10 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
 
                         return (
                           <div key={question.id} className="mb-4">
-                            
-                            <label 
-                            style={{ lineHeight: '1.8' }}
-  className="block openSans text-base font-medium text-gray-800 mb-3 mt-4"
-                           >
+                            <label
+                              style={{ lineHeight: "1.8" }}
+                              className="block openSans text-base font-medium text-gray-800 mb-3 mt-4"
+                            >
                               {question.question}
                             </label>
 
@@ -2252,10 +2251,10 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
                       <Button
                         type="submit"
                         variant="gradient-primary"
-className="w-[104px] h-[39px] rounded-[100px] p-0
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
     flex items-center justify-center"
-                            disabled={isSubmitting}
+                        disabled={isSubmitting}
                       >
                         {isSubmitting ? "Submitting..." : "Submit"}
                       </Button>
@@ -2279,9 +2278,10 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
                         type="button"
                         onClick={handleNextPersonClick}
                         variant="gradient-primary"
-className="w-[104px] h-[39px] rounded-[100px] p-0
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
-    flex items-center justify-center"                      >
+    flex items-center justify-center"
+                      >
                         Next
                       </Button>
                     </>

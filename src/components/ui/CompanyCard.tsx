@@ -93,7 +93,7 @@ export default function CompanyCard({
   };
   return (
     <Card
-      className="relative bg-white max-w-sm cursor-pointer rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
+      className="relative bg-white  max-w-sm cursor-pointer rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
       onClick={handleCardClick}
     >
       {/* Absolute Badge Logo */}
@@ -114,7 +114,7 @@ export default function CompanyCard({
               : indv_inspried // fallback if no level
           }
           alt={`${level || "CNESS"} Badge`}
-          className="absolute top-3 right-3 w-8 sm:w-[58px] h-[32px] object-contain z-10"
+          className="absolute top-3  right-3 w-8 sm:w-[58px] h-[32px] object-contain z-1"
         />
       )}
 
