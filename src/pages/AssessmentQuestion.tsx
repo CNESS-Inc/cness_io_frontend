@@ -769,24 +769,15 @@ const handleReferenceLinkChange = (value: string) => {
 
             {/* Action Buttons */}
             {/* {!isSubmitted && ( */}
-            <div className="flex flex-col sm:flex-row items-center justify-between mt-10 px-4 py-6 bg-white rounded-xl shadow-sm gap-4 cursor-pointer">
+<div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between sm:items-center sm:gap-4 w-full">
               {/* Save Button - Gradient */}
               <Button
                 variant="gradient-primary"
                 onClick={handleSave}
                 // disabled={isSubmitting}
                 disabled={isSubmitted}
-                className="
-    w-[77px] h-[31px]
-    rounded-[70.94px]
-    px-[24px] py-[8px]
-    flex items-center justify-center
-    gap-[7.09px]
-    text-white
-    font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center
-    disabled:opacity-60
-    transition-colors duration-200 cursor-pointer
-  "
+         className="w-[77px] h-[31px] rounded-[70.94px] px-[24px] py-[8px] flex items-center justify-center gap-[7.09px] text-white font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center disabled:opacity-60 transition-colors duration-200"
+
                 style={{
                   opacity: 1,
                   transform: "rotate(0deg)",
@@ -796,16 +787,11 @@ const handleReferenceLinkChange = (value: string) => {
               </Button>
 
               {/* Prev & Next Buttons */}
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+<div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
                 <button
                   onClick={handlePrevious}
                   disabled={!currentSection.previous_section_id}
-                  className={`w-[104px] h-[31px] 
-              px-6 py-2 
-              rounded-[100px] 
-              text-sm font-medium 
-              transition-all duration-200 
-              border  
+                  className={`w-[104px] h-[31px] px-6 py-2 rounded-[100px] text-sm font-medium transition-all duration-200 border
                               ${
                                 prevVariant === "white-disabled"
                                   ? "bg-white font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center text-gray-400 border border-gray-200 shadow-md cursor-pointer"
@@ -821,14 +807,7 @@ const handleReferenceLinkChange = (value: string) => {
                   onClick={handleNext}
                   disabled={!currentSection.next_section_id}
                   className="
-    w-[117px] h-[31px]
-    rounded-[70.94px]
-    px-[24px] py-[8px]
-    flex items-center justify-center
-    gap-[7.09px]
-    cursor-pointer
-    transition-colors duration-200
-    text-white
+   w-[117px] h-[31px] rounded-[70.94px] px-[24px] py-[8px] flex items-center justify-center gap-[7.09px] cursor-pointer transition-colors duration-200 text-white
   "
                   style={{
                     opacity: 1,
@@ -836,14 +815,7 @@ const handleReferenceLinkChange = (value: string) => {
                   }}
                 >
                   <span
-                    className="
-   font-['Plus Jakarta Sans']
-      font-medium
-      text-[14px]
-      leading-[100%]
-      text-center
-      whitespace-nowrap
-  "
+                    className="font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center whitespace-nowrap "
                   >
                     Save & Next
                   </span>
@@ -879,7 +851,7 @@ const handleReferenceLinkChange = (value: string) => {
   <Button
     onClick={handleconfirm}
     className="
-      w-[162px] h-[45px]
+      w-[200px] h-[45px]
       rounded-[100px]
       px-[24px] py-[16px]
       flex items-center justify-center

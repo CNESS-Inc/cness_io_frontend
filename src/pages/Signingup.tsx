@@ -282,7 +282,7 @@ export default function Signingup() {
         <div className="min-h-screen flex flex-col">
           <div className="absolute top-[100px] sm:top-[140px] md:top-[180px] left-0 right-0 flex justify-center z-10 px-4">
           <div className="w-full max-w-[600px] bg-white rounded-2xl shadow-xl px-4 sm:px-10 py-8 sm:py-12 space-y-10">
-  <h2 className="font-poppins font-semibold text-[28px] leading-[32px] tracking-[-0.02em] text-gray-900">
+  <h2 className="font-poppins font-semibold text-[28px] leading-[32px] tracking-[-0.02em] text-[gray-900]">
                 Sign up</h2>
 
               {apiMessage && (
