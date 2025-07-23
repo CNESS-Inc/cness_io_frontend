@@ -450,7 +450,7 @@ export default function PublicCompanyProfile() {
                       }
                     }}
                   >
-                    write Review
+                    Write Review
                   </Button>
                 </div>
               )}

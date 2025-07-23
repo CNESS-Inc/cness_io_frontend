@@ -484,7 +484,11 @@ export default function Login() {
           "margaret_name",
           response?.data?.data?.user.margaret_name
         );
-
+        const myReferralCode = response?.data?.data?.user.my_referral_code;
+        if(myReferralCode)
+        {
+          localStorage.setItem("referral_code", response?.data?.data?.user.my_referral_code);
+        }
         const completionStatus =
           response.data.data.user.person_organization_complete;
         const completed_step = response.data.data.user.completed_step;
@@ -1217,9 +1221,9 @@ export default function Login() {
             <SignupAnimation />
           </div>
 
-          <div className="relative w-full h-[250px]">
-  <       div className="absolute top-1 left-5 z-30 p-0">
-          <Link to="/">
+   <div className="relative w-full h-[250px]">
+  <div className="absolute top-1 left-5 z-30 p-0">
+   <Link to="/">
                  <img
                    src={cnesslogo}
                    alt="logo"
@@ -1232,7 +1236,7 @@ export default function Login() {
         </div>
 
         {/* Sign In Form */}
-<div className="flex-grow flex items-start justify-center px-4 sm:px-6 -mt-32 z-20 relative">
+<div className="absolute top-[80px] sm:top-[120px] md:top-[160px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
  <div className="w-[576px] h-[650px] bg-white rounded-[24px] shadow-xl border border-gray-200 px-[42px] py-[52px] flex flex-col gap-8">
 
     <h2 className="text-left" >
@@ -1298,7 +1302,7 @@ export default function Login() {
                     placeholder="Enter your email"
                     onFocus={() => setEmailFocused(true)}
                     onBlur={() => setEmailFocused(false)}
-                    className={`w-full px-3 py-2 h-[41px] rounded-[12px] border ${
+                    className={`w-full px-3 py-2 rounded-[12px] border ${
                       loginErrors.email ? "border-red-500" : "border-[#CBD5E1]"
                     } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                   />
@@ -1331,7 +1335,7 @@ export default function Login() {
                     name="password"
                     required
                     placeholder="Enter your Password"
-                    className={`w-full px-3 h-[41px] py-2 rounded-[12px] border ${
+                    className={`w-full px-3 py-2 rounded-[12px] border ${
                       loginErrors.password
                         ? "border-red-500"
                         : "border-[#CBD5E1]"
@@ -1421,7 +1425,6 @@ export default function Login() {
             </form>
           </div>
         </div>
-     <Fcopyright />
       </div>
 
       {/* Type Selection Modal - only shows when activeModal is "type" */}
@@ -2054,7 +2057,7 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
                             interests: selectedValues,
                           });
                         }}
-                        className="react-select-container h-[41px]"
+                        className="react-select-container"
                         classNamePrefix="react-select"
                         placeholder="Select interests..."
                         menuPortalTarget={document.body}
@@ -2105,7 +2108,7 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
                             professions: selectedValues,
                           });
                         }}
-                        className="react-select-container h-[41px]"
+                        className="react-select-container"
                         classNamePrefix="react-select"
                         placeholder="Select professions..."
                         menuPortalTarget={document.body}
@@ -2137,7 +2140,7 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
                               custom_profession: e.target.value,
                             })
                           }
-                          className="w-full px-3 py-2 h-[41px] border border-gray-300 rounded-md"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
                           placeholder="Enter your profession"
                         />
                       </div>
@@ -2681,11 +2684,9 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
               Got it!
             </Button>
           </div>
-
         </div>
-        
       </Modal>
-         
+      <Fcopyright />
     </>
   );
 }

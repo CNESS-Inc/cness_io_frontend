@@ -1,4 +1,4 @@
-import { useState,useEffect  } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import DashboardHeader from "./DashboardHeader";
 import DashboardNavbar from "./DashboardNavbar";
@@ -9,7 +9,7 @@ const DashboardLayout = () => {
   const location = useLocation();
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [selectedDomain, setSelectedDomain] = useState<string>("");
-const [sort, setSort] = useState<"az" | "za">("az");
+  const [sort, setSort] = useState<"az" | "za">("az");
 
   const toggleMobileNav = () => {
     setIsMobileNavOpen((prev) => !prev);
@@ -21,7 +21,8 @@ const [sort, setSort] = useState<"az" | "za">("az");
     }
   }, []);
 
-  const isDashboardTechPage = location.pathname === "/DashboardDirectory/dashboardtechnology";
+  const isDashboardTechPage =
+    location.pathname === "/DashboardDirectory/dashboardtechnology";
 
   return (
     <div className="bg-[#f9f9f9] flex flex-row justify-center w-full min-h-screen relative">
@@ -45,15 +46,15 @@ const [sort, setSort] = useState<"az" | "za">("az");
 
         <div className="flex flex-col md:flex-row ">
           {/* Sidebar */}
-     <DashboardNavbar
-  isMobileNavOpen={isMobileNavOpen}
-  toggleMobileNav={toggleMobileNav}
-  currentPath={location.pathname}
-  selectedDomain={selectedDomain}
-  setSelectedDomain={setSelectedDomain}
-  sort={sort}
-  setSort={setSort}
-/>
+          <DashboardNavbar
+            isMobileNavOpen={isMobileNavOpen}
+            toggleMobileNav={toggleMobileNav}
+            currentPath={location.pathname}
+            selectedDomain={selectedDomain}
+            setSelectedDomain={setSelectedDomain}
+            sort={sort}
+            setSort={setSort}
+          />
 
           {/* Main content area */}
           <div
@@ -69,16 +70,16 @@ const [sort, setSort] = useState<"az" | "za">("az");
             {/* Main layout with optional FilterSidebar */}
             <main className="flex-1 min-h-screen px-4 md:px-6 py-6 overflow-y-auto">
               <div className="flex">
-              {isDashboardTechPage && (
-  <div className="w-[250px] shrink-0 border-r border-gray-200 mr-4">
-    <DashboardFilterSidebar
-      selectedDomain={selectedDomain}
-      setSelectedDomain={setSelectedDomain}
-      sort={sort}
-      setSort={setSort}
-    />
-  </div>
-)}
+                {isDashboardTechPage && (
+                  <div className="w-[250px] shrink-0 border-r border-gray-200 mr-4">
+                    <DashboardFilterSidebar
+                      selectedDomain={selectedDomain}
+                      setSelectedDomain={setSelectedDomain}
+                      sort={sort}
+                      setSort={setSort}
+                    />
+                  </div>
+                )}
                 <div className="flex-1 overflow-x-hidden">
                   <Outlet />
                 </div>
@@ -96,15 +97,15 @@ const [sort, setSort] = useState<"az" | "za">("az");
             onClick={toggleMobileNav}
           />
           <div className="absolute left-0 top-0 w-64 h-full z-50">
-         <DashboardNavbar
-  isMobileNavOpen={true}
-  toggleMobileNav={toggleMobileNav}
-  currentPath={location.pathname}
-  selectedDomain={selectedDomain}
-  setSelectedDomain={setSelectedDomain}
-  sort={sort}
-  setSort={setSort}
-/>
+            <DashboardNavbar
+              isMobileNavOpen={true}
+              toggleMobileNav={toggleMobileNav}
+              currentPath={location.pathname}
+              selectedDomain={selectedDomain}
+              setSelectedDomain={setSelectedDomain}
+              sort={sort}
+              setSort={setSort}
+            />
           </div>
         </div>
       )}

@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CompanyCard from "../components/ui/CompanyCard";
 import Header from "../layout/Header/Header";
 import Footer from "../layout/Footer/Footer";
 import { iconMap } from "../assets/icons";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
 import {
-  GetDomainDetails,
   GetInspiringCompanies,
   GetPopularCompanyDetails,
+  GetProfessionalDetails,
 } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -46,6 +46,9 @@ export default function DirectoryPage() {
 
   const location = useLocation();
   const isInDashboard = location.pathname.includes("/dashboard");
+  const measureRef = useRef<HTMLSpanElement>(null);
+  const [selectedDomainText, setSelectedDomainText] = useState("All Profession");
+  const [textWidth, setTextWidth] = useState(0);
 
   // Pagination states
   const [popularPagination, setPopularPagination] = useState<PaginationData>({
@@ -70,9 +73,17 @@ export default function DirectoryPage() {
     inspiring: false,
   });
 
+
+
+    useEffect(() => {
+    if (measureRef.current) {
+      setTextWidth(measureRef.current.offsetWidth);
+    }
+  }, [selectedDomainText]);
+
   const fetchDomain = async () => {
     try {
-      const res = await GetDomainDetails();
+      const res = await GetProfessionalDetails();
       setDomain(res?.data?.data);
     } catch (error: any) {
       console.error("Error fetching domains:", error);
@@ -103,7 +114,7 @@ export default function DirectoryPage() {
           banner: company.profile_banner || iconMap["companycard1"],
           description: company.bio || "No description available",
           tags: company.tags || [],
-          rating: company.rating || 4,
+          rating: company.average,
           isCertified: company.is_certified || true,
           is_person: company.is_person,
           is_organization: company.is_organization,
@@ -183,16 +194,16 @@ export default function DirectoryPage() {
       navigate(
         `/directory/technology-ai?search=${encodeURIComponent(
           searchText
-        )}&domain=${domainSlug}`
+        )}&profession=${domainSlug}`
       );
     }
   };
 
-  const handleDomainChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newDomain = e.target.value;
-    console.log("🚀 ~ handleDomainChange ~ newDomain:", newDomain);
-    setSelectedDomain(newDomain);
-  };
+  // const handleDomainChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  //   const newDomain = e.target.value;
+  //   console.log("🚀 ~ handleDomainChange ~ newDomain:", newDomain);
+  //   setSelectedDomain(newDomain);
+  // };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -202,6 +213,11 @@ export default function DirectoryPage() {
 
   const topRow = Domain.slice(0, 7);
   const bottomRow = Domain.slice(7);
+
+  // Add this near the top of your file (with other imports)
+const hasJWT = () => {
+  return !!localStorage.getItem('jwt'); // or whatever your JWT key is
+};
 
   return (
     <>
@@ -226,26 +242,42 @@ export default function DirectoryPage() {
           </h1>
 
           <div className="w-full max-w-3xl mx-auto bg-white border border-gray-200 rounded-full flex flex-nowrap items-center px-3 py-2 shadow-sm gap-2">
-            <div className="relative flex-shrink-0">
-              <select
-                className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold rounded-full px-4 py-2 appearance-none focus:outline-none cursor-pointer w-[130px] text-center"
-                value={selectedDomain}
-                onChange={handleDomainChange}
+            <div className="relative rounded-full">
+              <span
+                className="invisible rounded-full text-[12px] md:rounded-full absolute whitespace-nowrap font-semibold px-3 md:px-4 md:text-base"
+                ref={measureRef}
               >
-                <option value="" className="text-white bg-indigo-500">
-                  All Domains
+                {selectedDomainText || "All Domains"}
+              </span>
+
+              <select
+                className="bg-[#7077FE] py-2 rounded-full text-[12px] md:rounded-full text-white h-full w-full font-semibold px-3 md:px-4 appearance-none focus:outline-none cursor-pointer "
+                style={{
+                  width: `${textWidth}px`,
+                  maxWidth: "100%",
+                }}
+                value={selectedDomain}
+                onChange={(e) => {
+                  setSelectedDomain(e.target.value);
+                  const selectedText =
+                    e.target.options[e.target.selectedIndex].text;
+                  setSelectedDomainText(selectedText);
+                }}
+              >
+                <option value="" className="text-white">
+                  All Profession
                 </option>
                 {Domain.map((domain: any) => (
                   <option
                     key={domain.id}
-                    value={domain.slug}
-                    className="text-black"
+                    value={domain.id}
+                    className="text-white"
                   >
-                    {domain.name}
+                    {domain.title}
                   </option>
                 ))}
               </select>
-              <div className="absolute top-3 right-2 text-white text-xs pointer-events-none">
+              <div className="absolute top-1.5 right-2 text-white text-xs pointer-events-none">
                 ▼
               </div>
             </div>
@@ -268,11 +300,23 @@ export default function DirectoryPage() {
           </div>
 
           <p className="text-gray-700 text-sm mt-6">
-            <span className="font-medium underline cursor-pointer">
-              List your company now
-            </span>{" "}
-            and connect with conscious audience
-          </p>
+  {hasJWT() ? (
+    <span 
+      className="font-medium underline cursor-pointer"
+      onClick={() => navigate('/dashboard/company-profile')} // or your listing route
+    >
+      List your company now
+    </span>
+  ) : (
+    <span 
+      className="font-medium underline cursor-pointer"
+      onClick={() => navigate('/sign-up')}
+    >
+      Register now
+    </span>
+  )}{' '}
+  and connect with conscious audience
+</p>
 
           <div className="flex justify-center gap-3 flex-wrap mt-6">
             {["Get certified", "Listed on the top", "15+ Domains"].map(
@@ -321,7 +365,7 @@ export default function DirectoryPage() {
                     />
                   )}
                   <span className="text-sm font-medium text-gray-800 leading-none">
-                    {domain.name}
+                    {domain.title}
                   </span>
                 </div>
               );
@@ -386,7 +430,7 @@ export default function DirectoryPage() {
       {/* Popular Companies Section */}
       <section className="py-16 border-t border-gray-100">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-xl font-semibold mb-4">Aspiring Professionals</h2>
+          <h2 className="text-xl font-semibold mb-4">Popular People</h2>
 
           {isLoading.popular ? (
             <div className="flex justify-center py-10">
@@ -413,7 +457,7 @@ export default function DirectoryPage() {
               ))}
             </div>
           ) : (
-            <p className="text-gray-500">No popular companies found.</p>
+            <p className="text-gray-500">No Popular People found.</p>
           )}
 
           {popularPagination.totalPages > 1 && (
@@ -476,7 +520,7 @@ export default function DirectoryPage() {
       <section className="py-16 border-t border-gray-100">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-xl font-semibold mb-4">
-            Inspiring Professionals
+            Aspiring People
           </h2>
 
           {isLoading.inspiring ? (
