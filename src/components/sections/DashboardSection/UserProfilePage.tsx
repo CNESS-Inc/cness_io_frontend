@@ -1110,8 +1110,8 @@ const UserProfilePage = () => {
 
                               {/* Interests */}
                               <div>
-                                <label>
-                                  Interests{" "}
+<label className="block mb-2">
+                                    Interests{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
                                 <Select
@@ -1136,7 +1136,7 @@ const UserProfilePage = () => {
                                       )
                                     );
                                   }}
- styles={customStyles}                                  classNamePrefix="react-select"
+ styles={customStyles}             classNamePrefix="react-select"
                                   placeholder="Select interests..."
                                 />
                                 {basicInfoForm.formState.errors.interests && (
@@ -1148,7 +1148,7 @@ const UserProfilePage = () => {
 
                               {/* Profession */}
                               <div>
-                                <label>
+<label className="block mb-2">
                                   Professions{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1185,7 +1185,7 @@ styles={customStyles}                                      classNamePrefix="reac
                               </div>
 
                               <div>
-                                <label className="block text-[14px] font-medium text-gray-800 mb-2">
+                                <label className="block text-[14px] font-medium text-gray-800 mb-4">
                                   Upload Document{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1219,7 +1219,7 @@ styles={customStyles}                                      classNamePrefix="reac
                                     <div className="mt-5">
                                       <label
                                         htmlFor="registrationFile"
-                                        className="px-4 py-2 h-[41px] bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                                        className="px-4 py-2  h-[41px] bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
                                       >
                                         Verify Identity
                                       </label>
@@ -1591,7 +1591,7 @@ styles={customStyles}                                      classNamePrefix="reac
 
                               {/* Address */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-4">
                                   Address{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1701,7 +1701,7 @@ styles={customStyles}                                      classNamePrefix="reac
 
                               {/* City */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-4">
                                   City
                                 </label>
                                 <input
