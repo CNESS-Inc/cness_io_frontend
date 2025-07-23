@@ -5,7 +5,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   GetProfessionalDetails,
   GetUsersearchProfileDetails,
-  GetValidProfessionalDetails,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
@@ -105,7 +104,7 @@ export default function DashboardTechnology() {
 
   const fetchDomain = async () => {
     try {
-      const res = await GetValidProfessionalDetails();
+      const res = await GetProfessionalDetails();
       setDomain(res?.data?.data);
       // const foundDomain = res?.data?.data?.find((d: any) => d.slug === domain);
       // if (foundDomain) {
