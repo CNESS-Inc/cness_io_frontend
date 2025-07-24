@@ -7,7 +7,7 @@ import AnimatedBackground from "../components/ui/AnimatedBackground";
 import {
   GetInspiringCompanies,
   GetPopularCompanyDetails,
-  GetProfessionalDetails,
+  GetValidProfessionalDetails,
 } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -47,7 +47,8 @@ export default function DirectoryPage() {
   const location = useLocation();
   const isInDashboard = location.pathname.includes("/dashboard");
   const measureRef = useRef<HTMLSpanElement>(null);
-  const [selectedDomainText, setSelectedDomainText] = useState("All Profession");
+  const [selectedDomainText, setSelectedDomainText] =
+    useState("All Profession");
   const [textWidth, setTextWidth] = useState(0);
 
   // Pagination states
@@ -73,9 +74,7 @@ export default function DirectoryPage() {
     inspiring: false,
   });
 
-
-
-    useEffect(() => {
+  useEffect(() => {
     if (measureRef.current) {
       setTextWidth(measureRef.current.offsetWidth);
     }
@@ -83,7 +82,7 @@ export default function DirectoryPage() {
 
   const fetchDomain = async () => {
     try {
-      const res = await GetProfessionalDetails();
+      const res = await GetValidProfessionalDetails();
       setDomain(res?.data?.data);
     } catch (error: any) {
       console.error("Error fetching domains:", error);
@@ -215,9 +214,9 @@ export default function DirectoryPage() {
   const bottomRow = Domain.slice(7);
 
   // Add this near the top of your file (with other imports)
-const hasJWT = () => {
-  return !!localStorage.getItem('jwt'); // or whatever your JWT key is
-};
+  const hasJWT = () => {
+    return !!localStorage.getItem("jwt"); // or whatever your JWT key is
+  };
 
   return (
     <>
@@ -300,23 +299,23 @@ const hasJWT = () => {
           </div>
 
           <p className="text-gray-700 text-sm mt-6">
-  {hasJWT() ? (
-    <span 
-      className="font-medium underline cursor-pointer"
-      onClick={() => navigate('/dashboard/company-profile')} // or your listing route
-    >
-      List your company now
-    </span>
-  ) : (
-    <span 
-      className="font-medium underline cursor-pointer"
-      onClick={() => navigate('/sign-up')}
-    >
-      Register now
-    </span>
-  )}{' '}
-  and connect with conscious audience
-</p>
+            {hasJWT() ? (
+              <span
+                className="font-medium underline cursor-pointer"
+                onClick={() => navigate("/dashboard/company-profile")} // or your listing route
+              >
+                List your company now
+              </span>
+            ) : (
+              <span
+                className="font-medium underline cursor-pointer"
+                onClick={() => navigate("/sign-up")}
+              >
+                Register now
+              </span>
+            )}{" "}
+            and connect with conscious audience
+          </p>
 
           <div className="flex justify-center gap-3 flex-wrap mt-6">
             {["Get certified", "Listed on the top", "15+ Domains"].map(
@@ -519,9 +518,7 @@ const hasJWT = () => {
       {/* Inspiring Companies Section */}
       <section className="py-16 border-t border-gray-100">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-xl font-semibold mb-4">
-            Aspiring People
-          </h2>
+          <h2 className="text-xl font-semibold mb-4">Aspiring People</h2>
 
           {isLoading.inspiring ? (
             <div className="flex justify-center py-10">

@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CompanyCard from "../components/ui/CompanyCard";
 
 import { iconMap } from "../assets/icons";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
 import {
-  GetDomainDetails,
   GetInspiringCompanies,
   GetPopularCompanyDetails,
+  GetValidProfessionalDetails,
 } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -37,7 +37,9 @@ type PaginationData = {
 export default function DashboardDirectory() {
   const navigate = useNavigate();
   const [selectedDomain, setSelectedDomain] = useState("");
-  const [searchText, setSearchText] = useState("");
+  const [searchQuery, setSearchQuery] = useState<any>("");
+  const [selectedDomainText, setSelectedDomainText] = useState("All Domains");
+  const [textWidth, setTextWidth] = useState(0);
   const [Domain, setDomain] = useState([]);
   const { showToast } = useToast();
 
@@ -63,10 +65,16 @@ export default function DashboardDirectory() {
     popular: false,
     inspiring: false,
   });
+  const measureRef = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (measureRef.current) {
+      setTextWidth(measureRef.current.offsetWidth);
+    }
+  }, [selectedDomainText]);
 
   const fetchDomain = async () => {
     try {
-      const res = await GetDomainDetails();
+      const res = await GetValidProfessionalDetails();
       setDomain(res?.data?.data);
     } catch (error: any) {
       console.error("Error fetching domains:", error);
@@ -172,20 +180,14 @@ export default function DashboardDirectory() {
   }, []);
 
   const handleSearch = () => {
-    if (selectedDomain || searchText) {
+    if (selectedDomain || searchQuery) {
       const domainSlug = selectedDomain || "";
       navigate(
-        `/dashboard/DashboardDirectory/technology?search=${encodeURIComponent(
-          searchText
-        )}&domain=${domainSlug}`
+        `/dashboard/search-listing?search=${encodeURIComponent(
+          searchQuery
+        )}&profession=${domainSlug}`
       );
     }
-  };
-
-  const handleDomainChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newDomain = e.target.value;
-    console.log("🚀 ~ handleDomainChange ~ newDomain:", newDomain);
-    setSelectedDomain(newDomain);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -194,61 +196,76 @@ export default function DashboardDirectory() {
     }
   };
 
+
   return (
     <>
-      <section className="relative w-full h-[500px] mx-auto rounded-[12px] overflow-hidden">
+      <section className="relative h-auto md:h-[325px] rounded-[12px] overflow-hidden">
         <AnimatedBackground />
-
-        {/* Background Image (city illustration) */}
         <img
-          src={iconMap["heroimg"]}
+          src={iconMap["heroimgs"]}
           alt="City Skyline"
-          className="absolute bottom-[-200px] left-0 w-full object-cover z-0 pointer-events-none"
+          className="absolute bottom-[0px] left-0 w-full object-cover z-0 pointer-events-none"
         />
 
-        {/* Foreground Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 text-center">
-          <h1 className="text-[32px] sm:text-2xl md:text-4xl font-bold text-gray-800 mb-10 -mt-35">
+        <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 py-8 md:py-20 max-w-4xl mx-auto">
+          <h1 className="text-center font-poppins font-semibold mb-6 text-[32px] leading-[100%] tracking-[0px] bg-gradient-to-b from-[#4E4E4E] to-[#232323] bg-clip-text text-transparent">
             Conscious Search Stops here.
           </h1>
 
-          {/* Search Bar */}
-          <div className="w-full max-w-2xl bg-white border border-gray-200 rounded-full flex items-center px-3 py-2 shadow-sm gap-2 mt-2">
-            {/* Dropdown */}
-            <div className="relative">
-              <select
-                className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold rounded-full px-4 py-2 w-[130px] text-center appearance-none cursor-pointer"
-                value={selectedDomain}
-                onChange={handleDomainChange}
+          {/* Updated responsive container */}
+          <div className="w-full mx-auto bg-white border border-gray-200 rounded-full md:rounded-full flex flex-col md:flex-row items-stretch md:items-center px-3 py-2 shadow-sm gap-2">
+            {/* Domain Selector - now full width on mobile */}
+            <div className="relative rounded-full">
+              <span
+                className="invisible rounded-full text-[12px] md:rounded-full absolute whitespace-nowrap font-semibold px-3 md:px-4 md:text-base"
+                ref={measureRef}
               >
-                <option value="">Explore</option>
+                {selectedDomainText || "All Domains"}
+              </span>
+
+              <select
+                className="bg-[#7077FE] py-2 rounded-full text-[12px] md:rounded-full text-white h-full w-full font-semibold px-3 md:px-4 appearance-none focus:outline-none cursor-pointer "
+                style={{
+                  width: `${textWidth}px`,
+                  maxWidth: "100%",
+                }}
+                value={selectedDomain}
+                onChange={(e) => {
+                  setSelectedDomain(e.target.value);
+                  const selectedText =
+                    e.target.options[e.target.selectedIndex].text;
+                  setSelectedDomainText(selectedText);
+                }}
+              >
+                <option value="" className="text-white">
+                  All Profession
+                </option>
                 {Domain.map((domain: any) => (
                   <option
                     key={domain.id}
-                    value={domain.slug}
-                    className="text-black"
+                    value={domain.id}
+                    className="text-white"
                   >
-                    {domain.name}
+                    {domain.title}
                   </option>
                 ))}
               </select>
-              <div className="absolute top-2.5 right-3 text-white text-xs pointer-events-none">
+              <div className="absolute top-1.5 right-2 text-white text-xs pointer-events-none hidden sm:block">
                 ▼
               </div>
             </div>
 
-            {/* Input */}
+            {/* Search Input - full width on mobile */}
             <div className="relative flex-grow">
               <input
                 type="text"
-                placeholder="Find & Choose your perfect organization"
-                className="w-full px-4 py-2 pr-10 text-sm text-gray-700 placeholder:text-gray-400 bg-transparent outline-none"
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
+                placeholder="Technology and AI"
+                className="w-full py-2 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none border-none h-[29px] px-2"
+                value={searchQuery || ""}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleKeyPress}
               />
-              <button
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE]"
+              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE]"
                 onClick={handleSearch}
               >
                 🔍
@@ -256,9 +273,11 @@ export default function DashboardDirectory() {
             </div>
           </div>
 
-          {/* Subtext */}
-          <p className="text-gray-700 text-[12px] mt-5">
-            <span className="font-medium underline cursor-pointer text-[#F07EFF]">
+          <p className="text-gray-700 text-sm mt-4 md:mt-6">
+            <span
+              className="font-medium text-[#F07EFF] underline cursor-pointer"
+              onClick={() => navigate("/dashboard/company-profile")}
+            >
               List your company now
             </span>{" "}
             and connect with conscious audience
@@ -357,7 +376,7 @@ export default function DashboardDirectory() {
 
       {/* Inspiring Companies Section */}
       <section className="py-16 border-t border-gray-100">
-        <div className="relative w-full  mx-auto rounded-[12px] overflow-hidden">
+        <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-xl font-semibold mb-4">Aspiring Companies</h2>
 
           {isLoading.inspiring ? (
@@ -383,7 +402,7 @@ export default function DashboardDirectory() {
               ))}
             </div>
           ) : (
-            <p className="text-gray-500">No inspiring companies found.</p>
+            <p className="text-gray-500">No aspiring companies found.</p>
           )}
 
           {aspiringPagination.totalPages > 1 && (
