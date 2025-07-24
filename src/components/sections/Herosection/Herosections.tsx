@@ -2,10 +2,10 @@
 import Button from "../../ui/Button";
 
 import Lottie from 'lottie-react';
-import Flip01 from '../../../assets/lottie-files/Flip-01/Flip01.json';
-import Flip02 from '../../../assets/lottie-files/Flip-02/Flip02.json';
-import Flip03 from '../../../assets/lottie-files/Flip-03/Flip03.json';
-import Flip04 from '../../../assets/lottie-files/Flip-04/Flip04.json';
+import Flip01 from '../../../assets/lottie-files/New-Flip-01/New-Flip01.json'
+import Flip02 from '../../../assets/lottie-files/New-Flip-02/New-Flip02.json'
+import Flip03 from '../../../assets/lottie-files/New-Flip-03/New-Flip03.json'
+import Flip04 from '../../../assets/lottie-files/New-Flip-04/New-Flip04.json'
 import NewSphereGradient from '../../../assets/lottie-files/New-globe/Sphere-Gradient.json';
 import { useEffect, useState } from "react";
 import MobileHeroSection from "./MobileHeroSection";
@@ -76,11 +76,11 @@ export default function HeroSection() {
       if (width < 640) {
         setLottieSize({ width: 200, height: 200 }); // mobile
       } else if (width < 1024) {
-        setLottieSize({ width: 300, height: 300 }); // tablets
-      } else if (width < 1536) {
-        setLottieSize({ width: 300, height: 300 }); // laptops + MacBooks
+        setLottieSize({ width: 180, height: 180 }); // tablets
+      } else if (width < 1537) {
+        setLottieSize({ width: 280, height: 280 }); // laptops + MacBooks
       } else {
-        setLottieSize({ width: 600, height: 600 }); // large desktops / 4K
+        setLottieSize({ width: 300, height: 300 }); // large desktops / 4K
       }
     };
 
@@ -104,7 +104,7 @@ export default function HeroSection() {
             ">
 
 
-        <div className="absolute inset-0 flex items-start justify-center z-10 lg:pt-30 md:pt-18 pt-8">
+        <div className="absolute inset-0 flex items-start justify-center z-10 lg:pt-22 md:pt-18 pt-8">
           <div className="text-center px-4">
 
             <h1
@@ -154,8 +154,8 @@ export default function HeroSection() {
             min-[320px]:top-100
             min-[320px]:-left-14  
             min-[1024px]:top-30 
-            min-[1024px]:left-5 
-            min-[1536px]:top-0 
+            min-[1024px]:left-15 
+            min-[1536px]:top-30 
             max-[1536px]:left-8
             transition-all duration-1000 
             hidden md:block 
@@ -172,9 +172,10 @@ export default function HeroSection() {
             right-[-15px]
             min-[320px]:top-150
             min-[320px]:right-0 
-            min-[1024px]:top-80 
-            min-[1024px]:right-5 
-            min-[1536px]:top-70 
+            min-[1024px]:top-90 
+            min-[1024px]:right-15 
+            min-[1536px]:top-90 
+            min-[1536px]:right-15 
             max-[1536px]:right-8
             transition-all duration-1000 
             hidden md:block 
@@ -211,9 +212,9 @@ export default function HeroSection() {
             right-[-15px]
             min-[320px]:top-90 
             min-[320px]:-right-14 
-            min-[1024px]:top-10 
+            min-[1024px]:top-15 
             min-[1024px]:right-5 
-            min-[1536px]:top-0 
+            min-[1536px]:top-10 
             max-[1536px]:right-5
             transition-all duration-1000 
             hidden md:block 
@@ -233,7 +234,7 @@ export default function HeroSection() {
   style={{
     position: 'absolute',
     // Circle positioning: centered for steps 1-2, bottom for step 3+
-    top: step === 3 ? 'auto' : '60%',
+    top: step === 3 ? 'auto' : '62%',
     bottom: step === 3 ? 0 : 'auto',
     left: '50%',
     // clipPath: "none",
@@ -247,14 +248,14 @@ export default function HeroSection() {
 width: step === 0 ? 0 : 
        step === 1 ? (window.innerWidth < 640 ? 120 : window.innerWidth < 1024 ? 180 : 200) :
        step === 2 ? (window.innerWidth < 640 ? 240 : window.innerWidth < 1024 ? 320 : 400) :
-       step === 3 ? (window.innerWidth < 640 ? '20vw' : window.innerWidth < 1024 ? '70vw' : '90vw') :
+       step === 3 ? (window.innerWidth < 640 ? '20vw' : window.innerWidth < 1024 ? '75vw' : '95vw') :
        step === 4 ? (window.innerWidth < 640 ? '85vw' : window.innerWidth < 1024 ? '75vw' : '95vw') :'80vw',
 
 height: step === 0 ? 0 :
         step === 1 ? (window.innerWidth < 640 ? 120 : window.innerWidth < 1024 ? 180 : 200) :
         step === 2 ? (window.innerWidth < 640 ? 240 : window.innerWidth < 1024 ? 320 : 400) :
-        step === 3 ? (window.innerWidth < 640 ? '20vh' : window.innerWidth < 1024 ? '70vw' : '90vw') :
-        step === 4 ? (window.innerWidth < 640 ? '32vh' : window.innerWidth < 1024 ? '75vw' : '95vw') : '80vh',
+        step === 3 ? (window.innerWidth < 640 ? '20vh' : window.innerWidth < 1024 ? '75vw' : '95vw') :
+        step === 4 ? (window.innerWidth < 640 ? '32vh' : window.innerWidth < 1024 ? '75vw' : '95vw') : '78vh',
 
 maxWidth: step === 3 ? (window.innerWidth < 640 ? 350 : window.innerWidth < 1024 ? 600 : 350) :
           step === 4 ? (window.innerWidth < 640 ? 300 : window.innerWidth < 1024 ? 500 : 1500) : 'none',
@@ -271,7 +272,7 @@ minHeight: step === 3 ? (window.innerWidth < 640 ? 150 : window.innerWidth < 102
     
     // Half-circle effect: only applied when at bottom (step 3+)
     // inset(0 0 50% 0) = shows top half, hides bottom half (rainbow effect)
-    clipPath: step === 3 ? 'inset(0 0 50% 0)' : 'none',
+    // clipPath: step === 3 ? 'inset(0 0 50% 0)' : 'none',
     
     // Browser compatibility for transforms
     WebkitTransform: step >= 3 ? 'translateX(-50%)' : 'translate(-50%, -50%)',
@@ -302,7 +303,7 @@ minHeight: step === 3 ? (window.innerWidth < 640 ? 150 : window.innerWidth < 102
     <img
       src="/hero-circle.png"
       alt="Static Sphere"
-      className="w-full h-full "
+      className="w-full "
     />
   )}
 </div>

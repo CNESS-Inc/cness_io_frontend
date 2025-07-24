@@ -10,7 +10,7 @@ export default function SocialMedia() {
       <div className="max-w-[1336px] mx-auto">
         <div className="flex lg:flex-row md:flex-row flex-col">
           <div className="lg:w-6/12 md:w-6/12 w-full lg:mb-0 md:mb-0 mb-4">
-            <h2 className="poppins text-[42px] font-[600]"><span className="bg-linear-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">Social Media</span>, Reimagined for Conscious Expression</h2>
+            <h2 className="poppins lg:leading-16 md:leading-14  leading-12 text-[42px] font-[600]"><span className="bg-linear-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">Social Media</span>, Reimagined for Conscious Expression</h2>
           </div>
           <div className="lg:w-6/12 md:w-6/12 w-full">
             <p className="openSans text-[#64748B] text-[18px] font-[400] capitalize">Share reflections, life moments, and conscious thoughts.<br />React, repost, and respond to what moves you. CNESS is where like-<br />hearted creators, thinkers, and changemakers meet — not to<br /> impress, but to express.</p>
