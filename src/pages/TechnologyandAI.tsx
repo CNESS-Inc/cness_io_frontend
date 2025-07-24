@@ -29,7 +29,7 @@ interface Company {
 export default function TechnologyAndAIPage() {
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search");
-  const domain = searchParams.get("domain");
+  const domain = searchParams.get("profession");
   const { showToast } = useToast();
   const [Domain, setDomain] = useState([]);
   const [selectedDomain, setSelectedDomain] = useState<any>(domain);
@@ -423,7 +423,7 @@ export default function TechnologyAndAIPage() {
             </div>
           ) : companies.length === 0 ? (
             <div className="col-span-full text-center py-10 text-gray-500">
-              No companies found
+              No people found
             </div>
           ) : (
             companies.map((company) => (

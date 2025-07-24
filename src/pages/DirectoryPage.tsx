@@ -110,8 +110,8 @@ export default function DirectoryPage() {
           location: company.location || "Unknown",
           domain: company.domain || "General",
           category: "Popular",
-          logo: company.profile_picture ,
-          banner: company.profile_banner ,
+          logo: company.profile_picture,
+          banner: company.profile_banner,
           description: company.bio || "No description available",
           tags: company.tags || [],
           rating: company.average,
@@ -156,8 +156,8 @@ export default function DirectoryPage() {
           location: company.location || "Unknown",
           domain: company.domain || "General",
           category: "Inspiring",
-          logo: company.profile_picture ,
-          banner: company.profile_banner ,
+          logo: company.profile_picture,
+          banner: company.profile_banner,
           description: company.bio || "No description available",
           tags: company.tags || [],
           rating: company.average,
@@ -200,6 +200,9 @@ export default function DirectoryPage() {
       );
     }
   };
+  useEffect(() => {
+    handleSearch();
+  }, [selectedDomain]);
 
   // const handleDomainChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
   //   const newDomain = e.target.value;

@@ -192,6 +192,9 @@ export default function DashboardDirectory() {
       );
     }
   };
+  useEffect(()=>{
+handleSearch()
+  },[selectedDomain])
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -296,7 +299,7 @@ export default function DashboardDirectory() {
 
       {/* Popular Companies Section */}
       <section className="py-16 bg-[#f9f9f9] border-t border-gray-100">
-        <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-screen-2xl mx-auto">
           <h2 className="text-xl font-semibold mb-4">Popular People</h2>
 
           {isLoading.popular ? (
@@ -304,7 +307,7 @@ export default function DashboardDirectory() {
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : popularCompanies.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-4">
               {popularCompanies.map((company) => (
                 <CompanyCard
                   id={company.id}
@@ -387,7 +390,7 @@ export default function DashboardDirectory() {
 
       {/* Inspiring Companies Section */}
       <section className="py-16 border-t border-gray-100">
-        <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-screen-2xl mx-auto">
           <h2 className="text-xl font-semibold mb-4">Aspiring People</h2>
 
           {isLoading.inspiring ? (
@@ -395,7 +398,7 @@ export default function DashboardDirectory() {
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : aspiringCompanies.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-5 gap-y-6 px-4 items-start">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-4">
               {aspiringCompanies.map((company) => (
                 <CompanyCard
                   id={company.id}

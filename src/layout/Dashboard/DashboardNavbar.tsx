@@ -107,11 +107,11 @@ const DashboardNavbar = ({
       icon: <img src={iconMap["directory"]} alt="Directory Icon" className="w-5 h-5" />,
       label: "Directory",
       active: true,
-      path: "/dashboard/DashboardDirectory",
+      // path: "/dashboard/DashboardDirectory",
       isDirectoryDropdown: true,
       childPaths: ["/dashboard/search-listing"],
       children: [
-        { label: "Search Listing", path: "/dashboard/search-listing" },
+        { label: "Search Listing", path: "/dashboard/DashboardDirectory" },
         { label: "Edit Public Listing", path: "/dashboard/editpubliclisting" },
 
       ],
