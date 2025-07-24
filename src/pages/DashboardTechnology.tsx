@@ -34,7 +34,6 @@ export default function DashboardTechnology() {
   const { showToast } = useToast();
   const [Domain, setDomain] = useState([]);
   const [badge, setBadge] = useState<any>([]);
-  console.log("🚀 ~ DashboardTechnology ~ badge:", badge);
   const [selectedDomain, setSelectedDomain] = useState<any>(domain);
   const hasFetched = useRef(false);
   const [searchQuery, setSearchQuery] = useState<any>(search);
@@ -150,11 +149,22 @@ export default function DashboardTechnology() {
   useEffect(() => {
     setCurrentPage(1);
     fetchUsersearchProfileDetails(1);
-  }, [searchQuery, sort, selectedDomain, selectedCert]);
+  }, [ sort, selectedDomain, selectedCert]);
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+    const handleSearch = () => {
+    if (selectedDomain || searchQuery) {
+    fetchUsersearchProfileDetails(1);
+    }
+  };
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
   };
 
   return (
@@ -220,8 +230,11 @@ export default function DashboardTechnology() {
                 className="w-full py-2 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none border-none h-[29px] px-2"
                 value={searchQuery || ""}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyPress}
               />
-              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE]">
+              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE] cursor-pointer"
+                onClick={handleSearch}
+              >
                 🔍
               </button>
             </div>

@@ -160,11 +160,22 @@ export default function TechnologyAndAIPage() {
   useEffect(() => {
     setCurrentPage(1);
     fetchUsersearchProfileDetails(1);
-  }, [searchQuery, sort, selectedDomain, selectedCertificationLevel]);
+  }, [ sort, selectedDomain, selectedCertificationLevel]);
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleSearch = () => {
+    if (selectedDomain || searchQuery) {
+      fetchUsersearchProfileDetails(1);
+    }
+  };
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
   };
 
   return (
@@ -235,8 +246,12 @@ export default function TechnologyAndAIPage() {
                 className="w-full py-2 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none border-none h-[29px] px-2"
                 value={searchQuery || ""}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyPress}
               />
-              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE]">
+              <button
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE] cursor-pointer"
+                onClick={handleSearch}
+              >
                 🔍
               </button>
             </div>

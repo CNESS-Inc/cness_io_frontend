@@ -265,7 +265,7 @@ export default function DashboardDirectory() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleKeyPress}
               />
-              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE]"
+              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE] cursor-pointer"
                 onClick={handleSearch}
               >
                 🔍
