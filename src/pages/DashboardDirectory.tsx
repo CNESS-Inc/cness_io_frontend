@@ -5,7 +5,6 @@ import { iconMap } from "../assets/icons";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
 import {
   GetAspiringCompanies,
-  GetInspiringCompanies,
   GetPopularCompanyDetails,
   GetValidProfessionalDetails,
 } from "../Common/ServerAPI";
@@ -70,8 +69,6 @@ export default function DashboardDirectory() {
   const measureRef = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     if (measureRef.current) {
-      // Force a reflow to ensure accurate measurement
-      const temp = measureRef.current.offsetWidth;
       setTextWidth(measureRef.current.offsetWidth);
     }
   }, [selectedDomainText]);

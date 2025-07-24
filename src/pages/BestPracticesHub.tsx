@@ -4,7 +4,6 @@ import AnimatedBackground from "../components/ui/AnimatedBackground";
 import {
   CreateBestPractice,
   GetAllBestPractices,
-  GetAllFormDetails,
   GetValidProfessionalDetails,
 } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";

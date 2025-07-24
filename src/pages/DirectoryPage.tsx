@@ -6,7 +6,6 @@ import { iconMap } from "../assets/icons";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
 import {
   GetAspiringCompanies,
-  GetInspiringCompanies,
   GetPopularCompanyDetails,
   GetValidProfessionalDetails,
 } from "../Common/ServerAPI";
