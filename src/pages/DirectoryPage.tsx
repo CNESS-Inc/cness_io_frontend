@@ -290,7 +290,7 @@ export default function DirectoryPage() {
                 onKeyDown={handleKeyPress}
               />
               <button
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE]"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE] cursor-pointer"
                 onClick={handleSearch}
               >
                 🔍
