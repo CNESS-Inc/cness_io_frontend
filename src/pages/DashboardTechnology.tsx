@@ -30,11 +30,12 @@ interface Company {
 export default function DashboardTechnology() {
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search");
-  const domain = searchParams.get("domain");
+  const domain = searchParams.get("profession");
   const { showToast } = useToast();
-  const [Domain, setDomain] = useState([]);
+  const [Domain, setDomain] = useState<any>([]);
   const [badge, setBadge] = useState<any>([]);
   const [selectedDomain, setSelectedDomain] = useState<any>(domain);
+
   const hasFetched = useRef(false);
   const [searchQuery, setSearchQuery] = useState<any>(search);
   const [sort, setSort] = useState<"az" | "za">("az");
@@ -43,8 +44,12 @@ export default function DashboardTechnology() {
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedDomainText, setSelectedDomainText] =
-    useState("All Profession");
+  const [selectedDomainText, setSelectedDomainText] = useState(
+    domain
+      ? Domain.find((d: any) => d.id === domain)?.title || "All Profession"
+      : "All Profession"
+  );
+  console.log("🚀 ~ DashboardTechnology ~ selectedDomainText:", selectedDomainText)
   const [textWidth, setTextWidth] = useState(0);
   const [open, setOpen] = useState<"cert" | "sort" | null>(null);
   const [selectedCert, setSelectedCert] = useState<string>("");
@@ -56,6 +61,15 @@ export default function DashboardTechnology() {
       setTextWidth(measureRef.current.offsetWidth);
     }
   }, [selectedDomainText]);
+
+  useEffect(() => {
+    if (domain && Domain.length > 0) {
+      const foundDomain = Domain.find((d: any) => d.id === domain);
+      if (foundDomain) {
+        setSelectedDomainText(foundDomain.title);
+      }
+    }
+  }, [domain, Domain]);
 
   const itemsPerPage = 10;
   const totalPages = Math.ceil(totalCount / itemsPerPage);
@@ -199,7 +213,7 @@ export default function DashboardTechnology() {
               <select
                 className="bg-[#7077FE] rounded-full text-white h-full font-semibold px-3 md:px-4 py-2 appearance-none focus:outline-none cursor-pointer text-[12px]"
                 style={{
-                  width: `${textWidth}px`, // Adjusted padding
+                  width: `${textWidth}px`,
                   maxWidth: "100%",
                   minWidth: "120px",
                 }}
@@ -209,6 +223,12 @@ export default function DashboardTechnology() {
                   const selectedText =
                     e.target.options[e.target.selectedIndex].text;
                   setSelectedDomainText(selectedText);
+                  // Update the URL when domain changes
+                  navigate(
+                    `?domain=${e.target.value}${
+                      searchQuery ? `&search=${searchQuery}` : ""
+                    }`
+                  );
                 }}
               >
                 <option value="" className="text-white text-[12px]">
@@ -259,17 +279,23 @@ export default function DashboardTechnology() {
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto py-6">
         {/* Combined Search Results and Filters Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex-1">
-            <h4 className="poppins font-medium text-lg leading-[150%] tracking-normal">
-              Search results for
-              <span className="poppins ml-1 text-[#7077FE] font-medium text-lg leading-[150%] tracking-normal">
-                "{searchQuery} - {selectedDomainText}"
-              </span>
-            </h4>
-          </div>
+  <h4 className="poppins font-medium text-lg leading-[150%] tracking-normal">
+    Search results for
+    {(selectedDomainText !== "All Profession" || searchQuery) && (
+      <span className="poppins ml-1 text-[#7077FE] font-medium text-lg leading-[150%] tracking-normal">
+        "
+        {selectedDomainText !== "All Profession" && selectedDomainText}
+        {selectedDomainText !== "All Profession" && searchQuery && " "}
+        {searchQuery}
+        "
+      </span>
+    )}
+  </h4>
+</div>
 
           {/* Filters moved here - horizontal layout */}
           <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
@@ -378,7 +404,7 @@ export default function DashboardTechnology() {
 
         {/* Company Cards Grid */}
         <div className="w-full max-w-[2100px] mx-auto py-6">
-          <main className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-8 items-stretch px-4">
+          <main className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-4 items-stretch">
             {isLoading ? (
               <div className="col-span-full flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
@@ -389,7 +415,7 @@ export default function DashboardTechnology() {
               </div>
             ) : companies.length === 0 ? (
               <div className="col-span-full text-center py-10 text-gray-500">
-                No companies found
+                No people found
               </div>
             ) : (
               companies.map((company) => (
