@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
-import { GenerateAffiliateCode, getReferredUsers } from "../Common/ServerAPI";
+import { GenerateAffiliateCode, getReferredUsers, getMyRefferralCode } from "../Common/ServerAPI";
 import {
   FacebookShareButton,
   LinkedinShareButton,
@@ -20,26 +20,54 @@ interface ReferredUser {
   id: string;
   username: string;
   email: string;
+  completed_step?: number;
 }
 
 const AffiliateGenerateCode = () => {
+  const myReferralCode = localStorage.getItem("referral_code");
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [apiMessage, setApiMessage] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const [referredUsers, setReferredUsers] = useState<ReferredUser[]>([]);
   const [activeTab, setActiveTab] = useState<'users' | 'code'>('code');
   const [showMenu, setShowMenu] = useState<boolean>(false);
+  
+  const [currentReferralCode, setCurrentReferralCode] = useState<string | null>(myReferralCode);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const baseUrl = window.location.origin;
-  const myReferralCode = localStorage.getItem("referral_code");
+  
 
   useEffect(() => {
-    if (myReferralCode) {
-      loadReferredUsers(myReferralCode);
+    if (currentReferralCode) {
+      loadReferredUsers(currentReferralCode);
     }
-  }, [myReferralCode]);
+  }, [currentReferralCode]);
 
+  useEffect(() => {
+    let userID = localStorage.getItem("Id");
+    if (userID) {
+      myRefferralCode(userID);
+    }
+  }, []);
+
+  const myRefferralCode = async (userID: any) =>{
+    try {
+      const payload = {
+        user_id: userID,
+      };
+      const res = await getMyRefferralCode(payload);
+      const referralCode = res.data?.data?.referral_code;
+      if (referralCode) {
+        setCurrentReferralCode(referralCode);
+        localStorage.setItem("referral_code", referralCode);
+      }
+      } catch (err) {
+        console.error("Failed to load referred users", err);
+      }
+  };
+ 
   const loadReferredUsers = async (referralcode: string) => {
     try {
       const payload = { referralcode };
@@ -60,7 +88,13 @@ const AffiliateGenerateCode = () => {
       const response = await GenerateAffiliateCode(payload);
 
       if (response?.data?.data?.referral_code) {
+        const referralCode = response.data.data.referral_code;
         const referralLink = `${baseUrl}/sign-up?referral_code=${response.data.data.referral_code}`;
+        // Save the generated code to localStorage
+        localStorage.setItem("referral_code", referralCode);
+
+        setCurrentReferralCode(referralCode);
+
         setApiMessage(referralLink);
         setTimeout(() => setIsModalOpen(true), 1000);
       } else {
@@ -138,7 +172,13 @@ const AffiliateGenerateCode = () => {
                         <tr key={idx}>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.id}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.username}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Paid</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {user.completed_step === 2 ? (
+                              <span>Paid</span>
+                            ) : (
+                              <span>Pending</span>
+                            )}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -160,12 +200,12 @@ const AffiliateGenerateCode = () => {
 
         {activeTab === 'code' && (
           <div className="min-h-screen bg-white p-6 font-sans">
-            {!myReferralCode ? (
+            {!currentReferralCode ? (
               <>
                 <h2 className="text-xl text-[#222224] font-bold mb-4">Generate Your Affiliate Code Here</h2>
                 <button
                   onClick={handleGenertateCode}
-                  className="mt-2 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white px-4 py-2 cursor-pointer text-[16px] font-regular rounded-3xl"
+                  className="mt-2 bg-[#7077fe] text-white px-4 py-2 cursor-pointer text-[16px] font-regular rounded-3xl"
                 >
                   Generate Code
                 </button>
@@ -174,9 +214,9 @@ const AffiliateGenerateCode = () => {
               <>
                 <h3 className="text-lg font-semibold mb-4">Affiliate Details</h3>
                 <div className="flex flex-col gap-2">
-                  <p className="text-sm"><span className="font-bold">Code:</span> <span>{myReferralCode} </span></p>
+                  <p className="text-sm"><span className="font-bold">Code:</span> <span>{currentReferralCode} </span></p>
                   <div className="flex justify-start items-center">
-                    <p className="text-sm"><span className="font-bold">Affiliate Link:</span>  <span>{baseUrl}/sign-up?referral_code=${myReferralCode}</span></p>
+                    <p className="text-sm"><span className="font-bold">Affiliate Link:</span>  <span>{baseUrl}/sign-up?referral_code={currentReferralCode}</span></p>
                     <div className="relative w-fit ms-3 ">
                       <button
                         className="bg-white border cursor-pointer border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 h-full rounded-full shadow-md"
@@ -220,7 +260,7 @@ const AffiliateGenerateCode = () => {
 
                     <button
                       onClick={() => copyReferralCode(`${baseUrl}/sign-up?referral_code=${myReferralCode}`)}
-                      className="mt-0 ms-3 text-sm bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white px-5 py-2 rounded-3xl cursor-pointer"
+                      className="mt-0 ms-3 text-sm bg-[#7077fe] text-white px-5 py-2 rounded-3xl cursor-pointer"
                     >
                       Copy
                     </button>
@@ -251,7 +291,7 @@ const AffiliateGenerateCode = () => {
               <p className="mb-2">{apiMessage}</p>
               <button
                 onClick={() => copyToClipboard(apiMessage)}
-                className="mt-2 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white px-4 py-2 rounded-3xl cursor-pointer"
+                className="mt-2 bg-[#7077fe] text-white px-4 py-2 rounded-3xl cursor-pointer"
               >
                 {isCopied ? "Copied..." : "Copy to Clipboard"}
               </button>
@@ -261,7 +301,7 @@ const AffiliateGenerateCode = () => {
             <Button
               onClick={closeModal}
               variant="gradient-primary"
-              className="rounded-[100px] py-3 px-8"
+              className="bg-white border cursor-pointer border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 h-full rounded-full shadow-md"
             >
               Got it!
             </Button>
