@@ -114,6 +114,7 @@ export const EndPoint = {
   public_user_profile: "/profile/public-user-profile",
   get_popular_company: "/profile/get-popular-company",
   get_inspire_company: "/profile/get-inspire-company",
+  get_aspire_company: "/profile/get-aspire-company",
   org_type: "/organization",
   questions: "/quiz/get/question",
   questions_file: "/quiz/upload-answer-file",
@@ -463,6 +464,20 @@ export const GetInspiringCompanies = (
     ServerAPI.APIMethod.GET,
     null,
     EndPoint.get_inspire_company,
+    params
+  );
+};
+export const GetAspiringCompanies = (
+  page: number,
+  limit: number
+): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["limit"] = limit;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.get_aspire_company,
     params
   );
 };

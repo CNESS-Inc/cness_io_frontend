@@ -69,7 +69,7 @@ export default function CompanyCard({
   level,
   routeKey
 }: CompanyCardProps) {
-  console.log("🚀 ~ rating:", rating);
+  console.log("🚀 ~ rating:", level);
   const navigate = useNavigate();
   const [showFullDescription, setShowFullDescription] = useState(false);
 
