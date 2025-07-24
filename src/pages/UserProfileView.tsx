@@ -30,6 +30,11 @@ import indv_aspiring from "../assets/indv_aspiring.svg";
 import indv_inspried from "../assets/indv_inspired.svg";
 import indv_leader from "../assets/indv_leader.svg";
 
+interface Errors {
+  reviewText: string;
+  breakdowns: Record<string, string>; // Changed from fixed properties to dynamic
+}
+
 export default function UserProfileView() {
   const { id } = useParams();
   const [userDetails, setUserDetails] = useState<any>();
@@ -72,52 +77,32 @@ export default function UserProfileView() {
   const [userReviewData, setUserReviewData] = useState<any>([]);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
-  const [breakdowns, setBreakdowns] = useState({
-    one: 0,
-    two: 0,
-    three: 0,
-    four: 0,
-    five: 0,
-    six: 0,
-  });
+  const [breakdowns, setBreakdowns] = useState<Record<string, number>>({});
+
 
   // State for errors
-  const [errors, setErrors] = useState({
+  const [errors, setErrors] = useState<Errors>({
     reviewText: "",
-    breakdowns: {
-      one: "",
-      two: "",
-      three: "",
-      four: "",
-      five: "",
-      six: "",
-    },
+    breakdowns: {},
   });
+
 
   // Validate form function
   const validateForm = (): boolean => {
     let valid = true;
     const newErrors = {
       reviewText: "",
-      breakdowns: {
-        one: "",
-        two: "",
-        three: "",
-        four: "",
-        five: "",
-        six: "",
-      },
+      breakdowns: {} as Record<string, string>,
     };
 
     // Validate each breakdown rating
-    (Object.keys(breakdowns) as Array<keyof typeof breakdowns>).forEach(
-      (key) => {
-        if (breakdowns[key] === 0) {
-          newErrors.breakdowns[key] = "Please select a rating";
-          valid = false;
-        }
+    breakDown?.forEach((item: any) => {
+      const key = item.breakdown_name;
+      if (!breakdowns[key] || breakdowns[key] === 0) {
+        newErrors.breakdowns[key] = "Please select a rating";
+        valid = false;
       }
-    );
+    });
 
     if (!reviewText.trim()) {
       newErrors.reviewText = "Review cannot be empty";
@@ -135,43 +120,30 @@ export default function UserProfileView() {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (validateForm()) {
       try {
-        const payload = {
+        // Create the base payload
+        const payload: any = {
           review: reviewText,
           user_type: "1",
           profile_id: id,
-          breakdown_one: breakdowns.one.toString(),
-          breakdown_two: breakdowns.two.toString(),
-          breakdown_three: breakdowns.three.toString(),
-          breakdown_four: breakdowns.four.toString(),
-          breakdown_five: breakdowns.five.toString(),
-          breakdown_six: breakdowns.six.toString(),
         };
+
+        // Dynamically add breakdown ratings based on the breakdown items
+        breakDown?.forEach((item: any) => {
+          const key = item.breakdown_name;
+          payload[`breakdown_${key}`] = breakdowns[key]?.toString() || "0";
+        });
+
         await AddUserRating(payload);
         setActiveModal(null);
         // Reset form on success
         setReviewText("");
-        setBreakdowns({
-          one: 0,
-          two: 0,
-          three: 0,
-          four: 0,
-          five: 0,
-          six: 0,
-        });
+        setBreakdowns({});
         await fetchRatingDetails();
       } catch (error: any) {
         setReviewText("");
-        setBreakdowns({
-          one: 0,
-          two: 0,
-          three: 0,
-          four: 0,
-          five: 0,
-          six: 0,
-        });
+        setBreakdowns({});
         setActiveModal(null);
         showToast({
           message: error?.response?.data?.error?.message,
@@ -219,7 +191,6 @@ export default function UserProfileView() {
         three: "",
         four: "",
         five: "",
-        six: "",
       },
     });
   };
@@ -916,155 +887,54 @@ export default function UserProfileView() {
             Leave a Review
           </h2>
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Star Rating Sections */}
+            {/* Star Rating Sections - Now Dynamic */}
             <div className="space-y-5">
-              {/* 1. Mission & Vision */}
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <label className="w-1/2 text-sm font-medium text-purple-800">
-                  <span className="font-semibold">Mission & Vision:</span>
-                </label>
-                <div className="w-1/2 flex justify-start">
-                  <StarRating
-                    initialRating={breakdowns.one}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, one: newRating }));
-                      if (errors.breakdowns.one) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, one: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.one && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.breakdowns.one}
-                  </p>
-                )}
-              </div>
+              {breakDown?.map((item: any, index: number) => {
+                const breakdownKey =
+                  item.breakdown_name as keyof typeof breakdowns;
+                const errorKey =
+                  item.breakdown_name as keyof typeof errors.breakdowns;
 
-              {/* 2. Client / Customer / Consumer */}
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <label className="w-1/2 text-sm font-medium text-purple-800">
-                  <span className="font-semibold">
-                    Client / Customer / Consumer:
-                  </span>
-                </label>
-                <div className="w-1/2 flex justify-start">
-                  <StarRating
-                    initialRating={breakdowns.two}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, two: newRating }));
-                      if (errors.breakdowns.two) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, two: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.two && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.breakdowns.two}
-                  </p>
-                )}
-              </div>
-
-              {/* 3. Communities & Charities */}
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <label className="w-1/2 text-sm font-medium text-purple-800">
-                  <span className="font-semibold">
-                    Communities & Charities:
-                  </span>
-                </label>
-                <div className="w-1/2 flex justify-start">
-                  <StarRating
-                    initialRating={breakdowns.three}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, three: newRating }));
-                      if (errors.breakdowns.three) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, three: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.three && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.breakdowns.three}
-                  </p>
-                )}
-              </div>
-
-              {/* 4. Vision & Legacy */}
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <label className="w-1/2 text-sm font-medium text-purple-800">
-                  <span className="font-semibold">
-                    Vision & Legacy – Long-Term Contribution:
-                  </span>
-                </label>
-                <div className="w-1/2 flex justify-start">
-                  <StarRating
-                    initialRating={breakdowns.four}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, four: newRating }));
-                      if (errors.breakdowns.four) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, four: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.four && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.breakdowns.four}
-                  </p>
-                )}
-              </div>
-
-              {/* 5. Leadership Best Practices */}
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <label className="w-1/2 text-sm font-medium text-purple-800">
-                  <span className="font-semibold">
-                    Leadership Best Practices:
-                  </span>
-                </label>
-                <div className="w-1/2 flex justify-start">
-                  <StarRating
-                    initialRating={breakdowns.five}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, five: newRating }));
-                      if (errors.breakdowns.five) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, five: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.five && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.breakdowns.five}
-                  </p>
-                )}
-              </div>
+                return (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between gap-4 mb-4"
+                  >
+                    <label className="w-1/2 text-sm font-medium text-purple-800">
+                      <span className="font-semibold">
+                        {formatBreakdownName(item.breakdown_name)}:
+                      </span>
+                    </label>
+                    <div className="w-1/2 flex justify-start">
+                      <StarRating
+                        initialRating={breakdowns[breakdownKey]}
+                        allowHalfStars={true}
+                        size="4xl"
+                        onRatingChange={(newRating: number) => {
+                          setBreakdowns((prev) => ({
+                            ...prev,
+                            [breakdownKey]: newRating,
+                          }));
+                          if (errors.breakdowns[errorKey]) {
+                            setErrors((prev) => ({
+                              ...prev,
+                              breakdowns: {
+                                ...prev.breakdowns,
+                                [errorKey]: "",
+                              },
+                            }));
+                          }
+                        }}
+                      />
+                    </div>
+                    {errors.breakdowns[errorKey] && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.breakdowns[errorKey]}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             {/* Review Text */}

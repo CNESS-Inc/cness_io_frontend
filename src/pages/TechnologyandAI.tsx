@@ -160,7 +160,7 @@ export default function TechnologyAndAIPage() {
   useEffect(() => {
     setCurrentPage(1);
     fetchUsersearchProfileDetails(1);
-  }, [ sort, selectedDomain, selectedCertificationLevel]);
+  }, [sort, selectedDomain, selectedCertificationLevel]);
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
@@ -199,18 +199,24 @@ export default function TechnologyAndAIPage() {
           <div className="w-full mx-auto bg-white border border-gray-200 rounded-full md:rounded-full flex flex-col md:flex-row items-stretch md:items-center px-3 py-2 shadow-sm gap-2">
             {/* Domain Selector - now full width on mobile */}
             <div className="relative rounded-full">
+              {/* Measurement span with exact same text styling */}
               <span
-                className="invisible rounded-full text-[12px] md:rounded-full absolute whitespace-nowrap font-semibold px-3 md:px-4 md:text-base"
+                className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4 py-2"
                 ref={measureRef}
+                style={{
+                  fontFamily: "inherit",
+                  fontSize: "12px", // Explicitly set to match select
+                }}
               >
                 {selectedDomainText || "All Domains"}
               </span>
 
               <select
-                className="bg-[#7077FE] py-2 rounded-full text-[12px] md:rounded-full text-white h-full w-full font-semibold px-3 md:px-4 appearance-none focus:outline-none cursor-pointer "
+                className="bg-[#7077FE] rounded-full text-white h-full font-semibold px-3 md:px-4 py-2 appearance-none focus:outline-none cursor-pointer text-[12px]"
                 style={{
-                  width: `${textWidth}px`,
+                  width: `${textWidth}px`, // Adjusted padding
                   maxWidth: "100%",
+                  minWidth: "120px",
                 }}
                 value={selectedDomain}
                 onChange={(e) => {
@@ -220,20 +226,20 @@ export default function TechnologyAndAIPage() {
                   setSelectedDomainText(selectedText);
                 }}
               >
-                <option value="" className="text-white">
+                <option value="" className="text-white text-[12px]">
                   All Profession
                 </option>
                 {Domain.map((domain: any) => (
                   <option
                     key={domain.id}
                     value={domain.id}
-                    className="text-white"
+                    className="text-white text-[12px]"
                   >
                     {domain.title}
                   </option>
                 ))}
               </select>
-              <div className="absolute top-1.5 right-2 text-white text-xs pointer-events-none hidden sm:block">
+              <div className="absolute top-1/2 right-3 transform -translate-y-1/2 text-white text-[10px] pointer-events-none">
                 ▼
               </div>
             </div>
