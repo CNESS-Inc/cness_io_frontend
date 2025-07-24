@@ -53,14 +53,14 @@ export default function Highlight() {
   ];
 
   return (
-    <section className="highlight-section px-4 sm:px-6 lg:px-8 py-15 sm:py-12 lg:py-[80px] bg-[#FAFAFA] relative bg-[url(/highlight-ellipse.png)] bg-no-repeat bg-right overflow-hidden">
+    <section className="highlight-section lg:min-h-[560px] px-4 sm:px-6 lg:px-8 py-15 sm:py-12 lg:py-[80px] bg-[#FAFAFA] relative bg-[url(/highlight-ellipse.png)] bg-no-repeat bg-position-[right_bottom_3rem] overflow-hidden">
       <div className="max-w-[1336px] mx-auto flex lg:flex-row flex-col">
         <div className="md:px-0 lg:px-0 lg:w-5/12 w-full">
           <div className="w-full">
             <span className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-[500] px-4 py-1 rounded-[100px] mb-6 inline-block">
               Highlights
             </span>
-            <h3 className="poppins text-[32px] font-[600] mb-2 lg:text-nowrap">
+            <h3 className="poppins leading-9 text-[32px] font-[600] mb-2 lg:text-nowrap">
               Your conscious identity, activated.
             </h3>
             <p className="openSans text-[#64748B] text-[18px] font-[400] mb-6">
@@ -74,7 +74,7 @@ export default function Highlight() {
           </div>
         </div>
 
-        <div className="lg:p-5 md:p-0 p-0 lg:w-7/12 w-full lg:mt-0 mt-15  overflow-x-auto scrollbar-thin scrollbar-thumb-[#9747FF]/40 scrollbar-track-transparent highlight-right-content-box">
+        <div className="lg:p-5 md:p-0 p-0 lg:w-7/12 w-full lg:mt-0 mt-20  overflow-x-auto scrollbar-thin scrollbar-thumb-[#9747FF]/40 scrollbar-track-transparent highlight-right-content-box">
           <div className="flex flex-row flex-nowrap gap-1 lg:gap-4 min-w-max lg:justify-end">
             {highlightCards.map((card, index) => {
               const isOpen = isMobile ? openIndex === index : false;
@@ -89,7 +89,7 @@ export default function Highlight() {
 
                   <div
                     className={`card relative z-10 bg-white h-[250px] min-h-[250px] lg:h-[350px] lg:min-h-[350px] px-[10px] py-[20px] md:px-[18px] md:py-[26px] border border-[#E9EDF0] rounded-[16px] flex flex-col justify-between items-start transition-all duration-500 ease-in-out origin-right
-                      ${isOpen ? 'w-[240px]' : 'w-[50px] lg:w-[85px] md:w-[85px]'}
+                      ${isOpen ? 'w-[240px]' : 'w-[50px] lg:w-[78px] md:w-[78px]'}
                       group-hover:w-[240px]'`}
                   >
                     <Image

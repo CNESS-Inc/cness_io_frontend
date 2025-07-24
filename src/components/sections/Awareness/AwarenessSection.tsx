@@ -2,7 +2,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-import Image from "../../ui/Image";
 import Button from "../../ui/Button";
 import { Card, CardContent } from "../../ui/Card";
 import { useEffect, useState, useRef } from "react";
@@ -11,6 +10,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import IndividualImage from "../../../assets/aware_1.jpg";
 import OrganizationImage from "../../../assets/aware_2.jpg";
 import MentorImage from "../../../assets/aware_3.jpg";
+import RectangleBlink from '../../../assets/lottie-files/Rectangle-blink/Rectangle-blink.json'
+import LottieOnView from "../../ui/LottieOnView";
 
 // Add shimmer effect CSS
 import './AwarenessSection.css';
@@ -157,39 +158,25 @@ export default function AwarenessSection() {
           <motion.div
             ref={firstLoadRef}
             key="first-load"
-            className="first-load flex flex-col items-center space-y-8 lg:py-24 py-15 px-4 bg-[#F7F7F7]"
+            className="first-load h-[800px] flex flex-col items-center space-y-8 lg:py-24 py-15 px-4 bg-[#F7F7F7]"
             style={{ position: 'relative', zIndex: 2 }}
             initial={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -40 }}
             transition={{ duration: 0.7, ease: 'easeInOut' }}
           >
             <div className="py-24 px-0 flex lg:flex-row flex-col justify-between max-w-[800px] w-full mx-auto">
-              <div>
-                <h3 className="poppins text-[32px] text-black font-regular">Where conscious creations</h3>
+              <div className="lg:w-6/12">
+                <h3 className="poppins leading-9 text-[32px] text-black font-regular">Where conscious creations</h3>
                 <p className="openSans text-[#898989] font-regular text-[14px] mt-4">Explore a wide range of conscious products<br /> crafted by verified creators who prioritize<br /> sustainability and ethical practices.</p>
 
               </div>
-              <div className="flex flex-col lg:items-center items-start justify-start relative ">
+              <div className="flex lg:w-6/12 flex-col lg:items-center items-start justify-start relative ">
                 <AnimatePresence mode="wait">
-                  <motion.div
-                    key={currentImg}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{
-                      duration: 0.8,
-                      ease: [0.4, 0, 0.2, 1], // Custom cubic-bezier for premium smoothness
-                    }}
-                    className="relative"
-                  >
-                    <Image
-                      src={firstLoadImages[currentImg].src}
-                      alt={firstLoadImages[currentImg].alt}
-                      width={335}
-                      height={96}
-                      className="w-14 h-14 lg:mt-0 mt-4"
+                   <LottieOnView
+                      animationData={RectangleBlink}
+                      loop
+                      style={{width:'100%', height:'100%'}}
                     />
-                  </motion.div>
                 </AnimatePresence>
                 <h3 className="poppins text-start bg-gradient-to-r from-[#6340FF] to-[#D748EA] text-transparent bg-clip-text text-[32px] font-semibold mt-2">find their people</h3>
               </div>
@@ -202,7 +189,7 @@ export default function AwarenessSection() {
         {showSecond && (
           <motion.div
             key="second-load"
-            className="second-load flex flex-col items-center space-y-8 lg:py-24 py-15 px-4 bg-[#F7F7F7]"
+            className="second-load h-[800px] flex flex-col items-center space-y-8 lg:py-24 py-15 px-4 bg-[#F7F7F7]"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 40 }}

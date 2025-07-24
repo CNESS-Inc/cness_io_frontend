@@ -8,7 +8,7 @@ const Certification = () => {
       <div className='py-20 w-full bg-[#FAFAFA] px-6 '>
         <div className='max-w-[1336px] w-full mx-auto flex lg:flex-row flex-col justify-between'>
           <div className='lg:w-[60%] w-full flex flex-col justify-center items-start' >
-            <h3 className='poppins text-[32px] font-medium text-black'>Certification Makes It Official.</h3>
+            <h3 className='poppins leading-10 text-[32px] font-medium text-black'>Certification Makes It Official.</h3>
             <p className='openSans text-[18px] font-Regular pt-[10px] mb-2'>Get your conscious identity verified and unlock everything CNESS has to offer.</p>
             <span className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-[500] px-4 py-1 rounded-[100px] mb-6 inline-block mt-2 openSans">Benefits</span>
 
