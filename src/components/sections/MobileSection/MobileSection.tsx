@@ -1,9 +1,17 @@
 import Button from "../../ui/Button";
 import LottieOnView from "../../ui/LottieOnView";
-import MobileCircle from '../../../assets/lottie-files/Purple-Circle-with-phone/Purple-Circle-with-phone.json'
+import { useEffect, useState } from "react";
 
 
 export default function MobileSection() {
+  const [animationData, setAnimationData] = useState<object | null>(null);
+  useEffect(() => {
+      fetch("https://cnessioassets.project-69e.workers.dev/Purple-Circle-with-phone.json")
+        .then((res) => res.json())
+        .then((data) => setAnimationData(data))
+        .catch((err) => console.error("Failed to load Lottie JSON:", err));
+    }, []);
+
   return (
     <section className="px-4 sm:px-6 lg:py-13 md:py-[60px] py-[60px] bg-[#F1EFFF] mobile-section lg:h-[500px] ">
       <div className="max-w-[1336px] mx-auto overflow-x-hidden lg:h-[450px]">
@@ -25,7 +33,7 @@ export default function MobileSection() {
           <div className="lg:w-5/12 w-full lg:h-[100%] h-[350px] overflow-hidden flex lg:justify-end justify-center relative">
           <div className="absolute lg:right-0 lg:-top-10 md:right-45 ">
             <LottieOnView
-              animationData={MobileCircle}
+              animationData={animationData}
               loop
               className="lg:w-[480px] lg:h-[480px] md:w-[380px] md:h-[380px] w-[380px] h-[380px]"
             />

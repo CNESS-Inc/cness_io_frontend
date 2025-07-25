@@ -269,9 +269,6 @@ body {
     top: 75% !important;
   }
 
-  /* .hero-section {
-    height: calc(100vh - 280px);
-  } */
   .certificate-animation {
     height: 350px;
   }
@@ -307,5 +304,8 @@ body {
   .hero-section-btn div {
     justify-content: center;
   }
+  .mobile-hero-section {
+    min-height: 80vh !important;
+}
 
 }

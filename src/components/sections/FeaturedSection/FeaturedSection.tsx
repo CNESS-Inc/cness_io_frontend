@@ -111,7 +111,7 @@ export default function FeaturedSection() {
               "absolute top-0 left-0", 
               "absolute top-0 left-1/2 -translate-x-1/2",
               "absolute top-0 right-0", 
-              "absolute lg:bottom-1/2 md:bottom-1/2 bottom-65 left-0 lg:translate-y-1/2 md:translate-y-1/2", 
+              "absolute lg:bottom-1/2 md:bottom-1/2 bottom-65 lg:left-20 left-0 lg:translate-y-1/2 md:translate-y-1/2", 
               "absolute lg:bottom-0 md:bottom-45 bottom-65 left-1/2 -translate-x-1/2", 
               "absolute lg:bottom-0 md:bottom-45 bottom-65 right-0 ", 
             ][i];
@@ -119,7 +119,7 @@ export default function FeaturedSection() {
               <div
                 key={thumb.src}
                 className={
-                  `${pos} transition-all duration-[1100ms] ease-in-out ` +
+                  `${pos} transition-all duration-[500ms] ease-in-out ` +
                   (step < 4
                     ? "opacity-0 scale-90"
                     : imagesIn > i && !imagesMove
