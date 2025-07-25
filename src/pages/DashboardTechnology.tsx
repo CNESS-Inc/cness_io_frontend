@@ -49,10 +49,6 @@ export default function DashboardTechnology() {
       ? Domain.find((d: any) => d.id === domain)?.title || "All Profession"
       : "All Profession"
   );
-  console.log(
-    "🚀 ~ DashboardTechnology ~ selectedDomainText:",
-    selectedDomainText
-  );
   const [textWidth, setTextWidth] = useState(0);
   const [open, setOpen] = useState<"cert" | "sort" | null>(null);
   const [selectedCert, setSelectedCert] = useState<string>("");
@@ -199,7 +195,7 @@ export default function DashboardTechnology() {
             Conscious Search Stops here.
           </h1>
 
-          <div className="w-full mx-auto bg-white border border-gray-200 rounded-full md:rounded-full flex flex-col md:flex-row items-stretch md:items-center px-3 py-2 shadow-sm gap-2">
+          <div className="w-full mx-auto flex flex-col md:flex-row items-stretch md:items-center h-[34px] gap-2">
             <div className="relative rounded-full">
               {/* Measurement span with exact same text styling */}
               <span
@@ -247,12 +243,12 @@ export default function DashboardTechnology() {
                   </option>
                 ))}
               </select>
-              <div className="absolute top-1/2 right-3 transform -translate-y-1/2 text-white text-[10px] pointer-events-none">
+              <div className="absolute top-1/2 right-2 transform -translate-y-1/2 text-white text-[10px] pointer-events-none">
                 ▼
               </div>
             </div>
 
-            <div className="relative flex-grow">
+            <div className="relative flex-grow  bg-white border border-gray-200 rounded-full md:rounded-full px-3 shadow-sm h-[100%]">
               <input
                 type="text"
                 placeholder="Technology and AI"
@@ -282,7 +278,7 @@ export default function DashboardTechnology() {
         </div>
       </section>
 
-      <div className="container mx-auto py-6">
+      <div className="container mx-auto py-6 px-1">
         {/* Combined Search Results and Filters Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex-1">

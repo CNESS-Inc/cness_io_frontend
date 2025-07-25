@@ -186,7 +186,7 @@ export default function TechnologyAndAIPage() {
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-xl font-bold text-gray-900">Technology and AI</h1>
           <button
-            className="lg:hidden flex items-center gap-2 p-2 rounded-md bg-white shadow-sm border border-gray-200"
+            className="lg:hidden flex items-center gap-2 rounded-full shadow-sm border border-gray-200 bg-[#7077FE] text-white h-full font-semibold px-3 md:px-4 py-2 appearance-none focus:outline-none cursor-pointer text-[12px]"
             onClick={() => setMobileFiltersOpen(true)}
           >
             <Filter size={16} />
@@ -196,7 +196,7 @@ export default function TechnologyAndAIPage() {
 
         <div className="relative z-10 text-center max-w-4xl">
           {/* Updated responsive container */}
-          <div className="w-full mx-auto bg-white border border-gray-200 rounded-full md:rounded-full flex flex-col md:flex-row items-stretch md:items-center px-3 py-2 shadow-sm gap-2">
+          <div className="w-full mx-auto flex flex-col md:flex-row items-stretch md:items-center h-[34px] gap-2">
             {/* Domain Selector - now full width on mobile */}
             <div className="relative rounded-full">
               {/* Measurement span with exact same text styling */}
@@ -245,7 +245,7 @@ export default function TechnologyAndAIPage() {
             </div>
 
             {/* Search Input - full width on mobile */}
-            <div className="relative flex-grow">
+            <div className="relative flex-grow bg-white border border-gray-200 rounded-full md:rounded-full px-3 h-[100%] shadow-sm">
               <input
                 type="text"
                 placeholder="Find & Choose your perfect organization"
@@ -296,7 +296,7 @@ export default function TechnologyAndAIPage() {
                     key={level.value}
                     className={`flex items-center gap-2 cursor-pointer p-2 rounded ${
                       selectedCertificationLevel === level.value
-                        ? "bg-gray-100"
+                        ? "bg-[#7077FE] text-white"
                         : ""
                     }`}
                     onClick={() => {
@@ -366,7 +366,7 @@ export default function TechnologyAndAIPage() {
                     key={level.value}
                     className={`flex items-center gap-2 cursor-pointer p-2 rounded ${
                       selectedCertificationLevel === level.value
-                        ? "bg-gray-100"
+                        ? "bg-[#7077FE] text-white"
                         : ""
                     }`}
                     onClick={() => setSelectedCertificationLevel(level.value)}
