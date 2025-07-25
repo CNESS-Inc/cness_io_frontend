@@ -483,7 +483,7 @@ const Managebestpractices = () => {
               <div className="text-center py-10">
                 <p className="text-gray-500 mb-4">No Best Practices found.</p>
                 <button
-                  onClick={() => navigate("/dashboard/bestpractices/create")}
+                  onClick={() => navigate("/dashboard/bestpractices")}
                   className="px-4 py-2 bg-[#F07EFF] text-white rounded-md hover:bg-[#E06EE5] transition-colors"
                 >
                   Create New Best Practice
