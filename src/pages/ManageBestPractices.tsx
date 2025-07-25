@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { iconMap } from "../assets/icons";
 import {
-  CreateBestPractice,
   DeleteBestPractices,
   GetAllmineBestPractices,
   GetAllSavedBestPractices,
@@ -251,7 +250,7 @@ const Managebestpractices = () => {
           description: currentPractice.description,
         };
 
-        await UpdateBestPractice(currentPractice.id, payload);
+        await UpdateBestPractice(payload);
         showToast({
           message: "Best practice updated successfully!",
           type: "success",

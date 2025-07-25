@@ -537,7 +537,6 @@ export const GetBestPracticesById = (
   );
 };
 export const UpdateBestPractice = (
-  id: string, 
   payload: {
     id: string;
     profession: string;
