@@ -43,6 +43,10 @@ const DashboardLayout = () => {
             <img src={hambur} alt="Menu" className="w-6 h-6" />
           </button>
         )}
+            {/* Desktop Header */}
+         <div className="hidden md:block w-full">
+      <DashboardHeader toggleMobileNav={toggleMobileNav} />
+    </div>
 
         <div className="flex flex-col md:flex-row ">
           {/* Sidebar */}
@@ -56,19 +60,16 @@ const DashboardLayout = () => {
             setSort={setSort}
           />
 
+
           {/* Main content area */}
           <div
             className={`flex-1 flex flex-col transition-all duration-300 ${
               isMobileNavOpen ? "md:ml-[260px]" : "md:ml-0"
             }`}
           >
-            {/* Desktop Header */}
-            <div className="hidden md:block pl-3">
-              <DashboardHeader toggleMobileNav={toggleMobileNav} />
-            </div>
-
+        
             {/* Main layout with optional FilterSidebar */}
-            <main className="flex-1 min-h-screen px-4 md:px-6 py-6 overflow-y-auto">
+            <main className="flex-1 min-h-screen px-4 md:px-4 py-4 overflow-y-auto">
               <div className="flex">
                 {isDashboardTechPage && (
                   <div className="w-[250px] shrink-0 border-r border-gray-200 mr-4">

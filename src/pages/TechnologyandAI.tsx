@@ -29,7 +29,7 @@ interface Company {
 export default function TechnologyAndAIPage() {
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search");
-  const domain = searchParams.get("domain");
+  const domain = searchParams.get("profession");
   const { showToast } = useToast();
   const [Domain, setDomain] = useState([]);
   const [selectedDomain, setSelectedDomain] = useState<any>(domain);
@@ -160,7 +160,7 @@ export default function TechnologyAndAIPage() {
   useEffect(() => {
     setCurrentPage(1);
     fetchUsersearchProfileDetails(1);
-  }, [ sort, selectedDomain, selectedCertificationLevel]);
+  }, [sort, selectedDomain, selectedCertificationLevel]);
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
@@ -186,7 +186,7 @@ export default function TechnologyAndAIPage() {
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-xl font-bold text-gray-900">Technology and AI</h1>
           <button
-            className="lg:hidden flex items-center gap-2 p-2 rounded-md bg-white shadow-sm border border-gray-200"
+            className="lg:hidden flex items-center gap-2 rounded-full shadow-sm border border-gray-200 bg-[#7077FE] text-white h-full font-semibold px-3 md:px-4 py-2 appearance-none focus:outline-none cursor-pointer text-[12px]"
             onClick={() => setMobileFiltersOpen(true)}
           >
             <Filter size={16} />
@@ -196,21 +196,27 @@ export default function TechnologyAndAIPage() {
 
         <div className="relative z-10 text-center max-w-4xl">
           {/* Updated responsive container */}
-          <div className="w-full mx-auto bg-white border border-gray-200 rounded-full md:rounded-full flex flex-col md:flex-row items-stretch md:items-center px-3 py-2 shadow-sm gap-2">
+          <div className="w-full mx-auto flex flex-col md:flex-row items-stretch md:items-center h-[34px] gap-2">
             {/* Domain Selector - now full width on mobile */}
             <div className="relative rounded-full">
+              {/* Measurement span with exact same text styling */}
               <span
-                className="invisible rounded-full text-[12px] md:rounded-full absolute whitespace-nowrap font-semibold px-3 md:px-4 md:text-base"
+                className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4 py-2"
                 ref={measureRef}
+                style={{
+                  fontFamily: "inherit",
+                  fontSize: "12px", // Explicitly set to match select
+                }}
               >
                 {selectedDomainText || "All Domains"}
               </span>
 
               <select
-                className="bg-[#7077FE] py-2 rounded-full text-[12px] md:rounded-full text-white h-full w-full font-semibold px-3 md:px-4 appearance-none focus:outline-none cursor-pointer "
+                className="bg-[#7077FE] rounded-full text-white h-full font-semibold px-3 md:px-4 py-2 appearance-none focus:outline-none cursor-pointer text-[12px]"
                 style={{
-                  width: `${textWidth}px`,
+                  width: `${textWidth}px`, // Adjusted padding
                   maxWidth: "100%",
+                  minWidth: "120px",
                 }}
                 value={selectedDomain}
                 onChange={(e) => {
@@ -220,26 +226,26 @@ export default function TechnologyAndAIPage() {
                   setSelectedDomainText(selectedText);
                 }}
               >
-                <option value="" className="text-white">
+                <option value="" className="text-white text-[12px]">
                   All Profession
                 </option>
                 {Domain.map((domain: any) => (
                   <option
                     key={domain.id}
                     value={domain.id}
-                    className="text-white"
+                    className="text-white text-[12px]"
                   >
                     {domain.title}
                   </option>
                 ))}
               </select>
-              <div className="absolute top-1.5 right-2 text-white text-xs pointer-events-none hidden sm:block">
+              <div className="absolute top-1/2 right-3 transform -translate-y-1/2 text-white text-[10px] pointer-events-none">
                 ▼
               </div>
             </div>
 
             {/* Search Input - full width on mobile */}
-            <div className="relative flex-grow">
+            <div className="relative flex-grow bg-white border border-gray-200 rounded-full md:rounded-full px-3 h-[100%] shadow-sm">
               <input
                 type="text"
                 placeholder="Find & Choose your perfect organization"
@@ -290,7 +296,7 @@ export default function TechnologyAndAIPage() {
                     key={level.value}
                     className={`flex items-center gap-2 cursor-pointer p-2 rounded ${
                       selectedCertificationLevel === level.value
-                        ? "bg-gray-100"
+                        ? "bg-[#7077FE] text-white"
                         : ""
                     }`}
                     onClick={() => {
@@ -345,9 +351,9 @@ export default function TechnologyAndAIPage() {
         </div>
       </div>
 
-      <div className="w-full max-w-[2100px] mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-3">
+      <div className="w-full max-w-[2100px] mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-3">
         {/* Left Sidebar - Desktop */}
-        <aside className="hidden lg:block w-64 px-4 py-8 border-r border-gray-100 bg-white">
+        <aside className="hidden lg:block w-[200px] px-4 py-8 border-r border-gray-100 bg-white">
           <div className="mb-6">
             <h2 className="text-sm font-semibold text-gray-900 mb-5">Filter</h2>
             <div className="mb-6">
@@ -360,7 +366,7 @@ export default function TechnologyAndAIPage() {
                     key={level.value}
                     className={`flex items-center gap-2 cursor-pointer p-2 rounded ${
                       selectedCertificationLevel === level.value
-                        ? "bg-gray-100"
+                        ? "bg-[#7077FE] text-white"
                         : ""
                     }`}
                     onClick={() => setSelectedCertificationLevel(level.value)}
@@ -406,7 +412,7 @@ export default function TechnologyAndAIPage() {
         </aside>
 
         {/* Right Content (Company Grid) */}
-        <main className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-8 items-stretch">
+        <main className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
           {isLoading ? (
             <div className="col-span-full flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
@@ -417,7 +423,7 @@ export default function TechnologyAndAIPage() {
             </div>
           ) : companies.length === 0 ? (
             <div className="col-span-full text-center py-10 text-gray-500">
-              No companies found
+              No people found
             </div>
           ) : (
             companies.map((company) => (

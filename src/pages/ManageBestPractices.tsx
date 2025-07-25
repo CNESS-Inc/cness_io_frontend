@@ -1,38 +1,84 @@
+import { useState } from "react";
 
-const ManageBestPractices = () => {
+const Managebestpractices = () => {
+  const [activeTab, setActiveTab] = useState<'saved' | 'mine'>('saved');
+
   return (
-    <>
-   
-        <div className="max-w-6xl mt-0 shadow overflow-hidden p-8 text-center">
-          <div className="py-12">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">
-              ManageBestPractices is Coming Soon
-            </h2>
-            <p className="text-gray-600 mb-6">
-              We're working hard to bring this feature to you. Please check back
-              later!
-            </p>
-            <div className="flex justify-center">
-              <svg
-                className="w-24 h-24 text-purple-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                />
-              </svg>
-            </div>
+    <div className="w-full min-h-screen mt-8">
+      {/* Tab Navigation */}
+      <div className="flex border-b border-gray-200 mb-6 mt-8">
+        <button
+          className={`px-4 py-2 cursor-pointer font-medium ${activeTab === 'saved' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+          onClick={() => setActiveTab('saved')}
+        >
+          Saved Best Practices
+        </button>
+        <button
+          className={`px-4 py-2 cursor-pointer font-medium ${activeTab === 'mine' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+          onClick={() => setActiveTab('mine')}
+        >
+          My Best Practices 
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'mine' && (
+        <div className="min-h-screen bg-white p-6 font-sans">
+<h3 className="font-[Poppins] font-medium text-[18px] leading-[150%] tracking-normal mb-4">
+  View My Best Practices
+</h3>          <div className="bg-white border border-gray-200 rounded-md overflow-hidden">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Best Practices Title</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Best Practices Description</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Best Practices Image</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Operations</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                <tr>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Practice 1</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Description for practice 1</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Image Placeholder</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Edit | Delete</td>
+                </tr>
+                {/* Add more static rows as needed */}
+              </tbody>
+            </table>
           </div>
         </div>
-     
-    </>
+      )}
+
+      {activeTab === 'saved' && (
+        <div className="min-h-screen bg-white p-6 font-sans">
+          <h3 className="font-[Poppins] font-medium text-[18px] leading-[150%] tracking-normal mb-4">View Saved Best Practices</h3>
+         
+          <div className="bg-white border border-gray-200 rounded-md overflow-hidden">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Best Practices Title</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Best Practices Description</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Best Practices Image</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                <tr>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Practice 1</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Description for practice 1</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Image Placeholder</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Edit | Delete</td>
+                </tr>
+                {/* Add more static rows as needed */}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
-export default ManageBestPractices;
+export default Managebestpractices;

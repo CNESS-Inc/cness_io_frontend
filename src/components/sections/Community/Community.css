@@ -1,7 +1,6 @@
 /* Main Section Styles */
 .community-section {
   width: 100%;
-  /* min-height: 100vh; */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,11 +13,15 @@
   opacity: 0;
   transform: translateY(50px);
   transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Safari-specific fixes */
+  -webkit-transform: translateY(50px);
+  -webkit-transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .community-section.animate-in {
   opacity: 1;
   transform: translateY(0);
+  -webkit-transform: translateY(0);
 }
 
 /* Header Styles */
@@ -45,6 +48,11 @@
   justify-content: center;
   overflow: hidden;
   padding: 0;
+  /* Safari-specific fixes */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 /* Main Image Container - Base State (Step 0) - Screenshot_1.png */
@@ -59,6 +67,11 @@
   overflow: hidden;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   animation: float 4s ease-in-out infinite;
+  /* Safari-specific positioning fixes */
+  -webkit-transform: translate(-50%, -50%);
+  -webkit-transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
 }
 
 .main-community-image {
@@ -67,6 +80,12 @@
   object-fit: cover;
   border-radius: 20px;
   transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Safari image rendering fixes */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Step 1: Full Width Banner - Screenshot_2.png */
@@ -77,8 +96,11 @@
   object-fit: cover;
   transform: translate(-50%, -50%);
   z-index: 20;
-  /* box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25); */
   border-radius: 0;
+  /* Safari banner positioning fixes */
+  -webkit-transform: translate(-50%, -50%);
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
 }
 
 .main-image-container.step-1 .main-community-image {
@@ -86,11 +108,17 @@
   height: 662px !important;
   object-fit: cover;
   border-radius: 0;
+  /* Safari banner image fixes */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .main-image-container.step-1 .main-community-image img {
   height: 100%;
   object-fit: cover;
+  width: 100%;
 }
 
 /* Step 2: Vertical Thumbnail - Screenshot_3.png */
@@ -103,6 +131,10 @@
   z-index: 15;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
   border-radius: 20px;
+  /* Safari thumbnail centering fixes */
+  -webkit-transform: translate(-50%, -50%);
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
 }
 
 .main-image-container.step-2 .main-community-image {
@@ -120,8 +152,11 @@
   object-fit: cover;
   transform: translate(-50%, -50%);
   z-index: 10;
-  /* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15); */
   border-radius: 20px;
+  /* Safari centering fixes */
+  -webkit-transform: translate(-50%, -50%);
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
 }
 
 .main-image-container.step-3 .main-community-image {
@@ -137,9 +172,12 @@
   height: 200px;
   transform: translate(-50%, -50%);
   z-index: 5;
-  /* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15); */
   border-radius: 20px;
   object-fit: cover;
+  /* Safari centering fixes */
+  -webkit-transform: translate(-50%, -50%);
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
 }
 
 .main-image-container.step-4 .main-community-image {
@@ -161,27 +199,31 @@
 
 .background-card {
   position: absolute;
-  /* background: rgba(255, 255, 255, 0.95); */
   border-radius: 16px;
-  /* padding: 20px; */
   max-width: 280px;
   opacity: 0;
   transform: scale(0.6) translateY(50px);
   transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  /* backdrop-filter: blur(10px); */
-  /* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); */
+  /* Safari transform fixes */
+  -webkit-transform: scale(0.6) translateY(50px);
+  -webkit-transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
 }
 
 .background-card.visible {
   opacity: 1;
   transform: scale(1) translateY(0);
   animation: cardFadeIn 0.8s ease-out;
+  -webkit-transform: scale(1) translateY(0);
 }
 
 .background-card.fade-out {
   opacity: 0;
   transform: scale(0.8) translateY(20px);
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transform: scale(0.8) translateY(20px);
+  -webkit-transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .bg-card-content {
@@ -197,20 +239,21 @@
   border-radius: 16px;
   overflow: hidden;
   margin-bottom: 0;
-  /* border: 3px solid #f0f0f0; */
   transition: all 0.3s ease;
 }
 
 
 .bg-card-icon img {
   border-radius: 16px;
-  /* object-fit: cover; */
 }
 
 .bg-card-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* Safari image rendering fix */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .bg-card-text h4 {
@@ -295,54 +338,36 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  /* box-shadow: 0 4px 16px rgba(112, 119, 254, 0.3); */
 }
 
 .control-btn:hover {
   transform: translateY(-2px);
-  /* box-shadow: 0 8px 24px rgba(112, 119, 254, 0.4); */
 }
 
 .control-btn:active {
   transform: translateY(0);
 }
 
-/* .main-image-container h2 {
-  display: none;
-}
-
-.main-image-container.step-1 h2 {
-  display: block;
-} */
-
-  /* .girl-img {
-    display: block;
-  } */
-
-/* .main-image-container.step-1 .girl-img {
-  display: block;
-  position: absolute;
-  width: 500px;
-  height: 300px;
-  top: -70px;
-  left: -11px;
-  z-index: 10;
-} */
-
 .main-image-container {
   position: absolute !important;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  /* Safari positioning fixes */
+  -webkit-transform: translate(-50%, -50%);
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
 }
 
 .main-image-container.step-1 {
-  position: relative !important;
-  top: unset !important;
-  left: unset !important;
+  position: absolute !important;
+  top: 0% !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0;
+  /* margin: auto; */
   transform: unset !important;
   width: 100%;
-  /* height: 100%; */
 }
 
 .main-image-container.step-2 .girl-img {
@@ -367,6 +392,8 @@
 }
 .main-community-image {
   transition: opacity 0.7s ease-in-out;
+  /* Safari transition fix */
+  -webkit-transition: opacity 0.7s ease-in-out;
 }
 
 
@@ -388,10 +415,12 @@
   0%,
   100% {
     transform: translate(-50%, -50%) translateY(0px);
+    -webkit-transform: translate(-50%, -50%) translateY(0px);
   }
 
   50% {
     transform: translate(-50%, -50%) translateY(-10px);
+    -webkit-transform: translate(-50%, -50%) translateY(-10px);
   }
 }
 
@@ -399,27 +428,22 @@
   0% {
     opacity: 0;
     transform: scale(0.6) translateY(50px);
+    -webkit-transform: scale(0.6) translateY(50px);
   }
 
   50% {
     opacity: 0.8;
     transform: scale(1.05) translateY(-5px);
+    -webkit-transform: scale(1.05) translateY(-5px);
   }
 
   100% {
     opacity: 1;
     transform: scale(1) translateY(0);
+    -webkit-transform: scale(1) translateY(0);
   }
 }
 
-/* @keyframes iconRotate {
-  0%, 100% {
-    transform: rotate(0deg);
-  }
-  50% {
-    transform: rotate(5deg);
-  }
-} */
 
 /* Responsive Styles */
 @media (max-width:1536px) {
@@ -476,10 +500,6 @@
   .animation-container {
     height: 700px;
   }
-
-  /* .main-image-container.step-1 {
-    height: 350px;
-  } */
 
   .main-image-container.step-2 {
     width: 250px;
@@ -569,11 +589,6 @@
   .animation-container {
     height: 700px;
   }
-
-  /* .main-image-container.step-1 {
-    height: 300px;
-  } */
-
   .main-image-container.step-2 {
     width: 200px;
     height: 300px;
@@ -650,12 +665,8 @@
   }
 
   .animation-container {
-    height: 750px;
+    height: 500px;
   }
-
-  /* .main-image-container.step-1 {
-    height: 250px;
-  } */
 
   .main-image-container.step-2 {
     width: 200px;
@@ -706,4 +717,42 @@
 /* Smooth scrolling for the entire page */
 html {
   scroll-behavior: smooth;
+}
+
+/* Safari-specific fixes */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .main-community-image,
+  .bg-card-image {
+    image-rendering: -webkit-optimize-contrast;
+  }
+  
+  .main-image-container,
+  .background-card {
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .main-community-image,
+  .bg-card-image {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Animation performance optimizations for Safari */
+@supports (-webkit-appearance: none) {
+  .animation-container,
+  .main-image-container,
+  .background-card {
+    will-change: transform;
+    -webkit-will-change: transform;
+  }
+  
+  .main-community-image {
+    will-change: transform;
+    -webkit-will-change: transform;
+  }
 }

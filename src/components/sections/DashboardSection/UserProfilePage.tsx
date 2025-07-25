@@ -22,8 +22,6 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useSearchParams } from "react-router-dom";
 
-
-
 const tabNames = [
   "Basic Information",
   "Contact Information",
@@ -32,6 +30,53 @@ const tabNames = [
   "Work Experience",
   "Public Profile Fields",
 ];
+
+const genderOptions = [
+  { value: "", label: "Select Your Gender" }, // Use empty string for default
+  { value: "Male", label: "Male" },
+  { value: "Female", label: "Female" },
+  { value: "Non-binary", label: "Non-binary" },
+];
+
+const customSelectStyles = {
+  control: (base: any, state: any) => ({
+    ...base,
+    minHeight: "44px",
+    borderRadius: "12px",
+    borderColor: state.isFocused ? "#7077FE" : "#D1D5DB",
+    boxShadow: state.isFocused ? "0 0 0 2px rgba(112, 119, 254, 0.2)" : "none",
+    paddingLeft: "8px",
+    fontFamily: "Rubik, sans-serif",
+    fontSize: "14px",
+    fontWeight: 400,
+    transition: "all 0.2s ease-in-out",
+    "&:hover": {
+      borderColor: "#7077FE",
+    },
+  }),
+  placeholder: (base: any) => ({
+    ...base,
+    color: "#9CA3AF",
+    fontSize: "14px",
+  }),
+  option: (base: any, state: any) => ({
+    ...base,
+    backgroundColor: state.isSelected
+      ? "#E0E7FF"
+      : state.isFocused
+      ? "#F3F4F6"
+      : "white",
+    color: "#111827",
+    padding: "10px 12px",
+    fontSize: "14px",
+    cursor: "pointer",
+  }),
+  singleValue: (base: any) => ({
+    ...base,
+    color: "#111827",
+    fontSize: "14px",
+  }),
+};
 
 
 
@@ -42,6 +87,7 @@ const customStyles = {
     minHeight: '41px',
     borderRadius: '12px',
     paddingLeft: '8px',
+    color: '#6269FF', 
     fontSize: '14px',
     fontWeight: 400,
     borderWidth: '1px',
@@ -61,11 +107,17 @@ const customStyles = {
   }),
   multiValue: (base: any) => ({
     ...base,
-    backgroundColor: '#E5E7EB',
-    color: '#000',
+    backgroundColor: '#f3f1ff',
+   color: '#6269FF', 
     borderRadius: '8px',
     fontSize: '13px',
     // padding: '2px 6px',
+  }),
+   multiValueLabel: (base: any) => ({
+    ...base,
+    color: '#6269FF', // darker text (Tailwind slate-700)
+    fontWeight: '500',
+    fontSize: '11px',
   }),
   placeholder: (base: any) => ({
     ...base,
@@ -73,8 +125,6 @@ const customStyles = {
     color: '#9CA3AF',
   }),
 };
-
-
 
 const tabMap = {
   basic: 0,
@@ -869,7 +919,6 @@ const UserProfilePage = () => {
     }
   };
 
-
   return (
     <>
       <section className="w-full px-2 sm:px-4 lg:px-2 pt-4 pb-10">
@@ -1047,10 +1096,10 @@ const UserProfilePage = () => {
                               handleBasicInfoSubmit
                             )}
                           >
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative ">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative">
                               {/* First Name */}
                               <div>
-                                <label>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
                                   First Name{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1058,7 +1107,7 @@ const UserProfilePage = () => {
                                   type="text"
                                   {...basicInfoForm.register("firstName")}
                                   placeholder="Enter your First Name"
-                                  className={`w-full px-4 py-2 h-[41px]  mt-2 border bg-white ${
+                                 className={`w-full px-4 py-2 h-[41px]  border bg-white ${
                                     basicInfoForm.formState.errors.firstName
                                       ? "border-red-500"
                                       : "border-gray-300"
@@ -1080,7 +1129,7 @@ const UserProfilePage = () => {
 
                               {/* Last Name */}
                               <div>
-                                <label>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
                                   Last Name{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1088,7 +1137,7 @@ const UserProfilePage = () => {
                                   type="text"
                                   {...basicInfoForm.register("lastName")}
                                   placeholder="Enter your Last Name"
-                                  className={`w-full px-4 py-2 border h-[41px] mt-2 bg-white ${
+                                  className={`w-full px-4 py-2 border h-[41px] bg-white ${
                                     basicInfoForm.formState.errors.lastName
                                       ? "border-red-500"
                                       : "border-gray-300"
@@ -1110,8 +1159,8 @@ const UserProfilePage = () => {
 
                               {/* Interests */}
                               <div>
-<label className="block mb-2">
-                                    Interests{" "}
+                               <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Interests{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
                                 <Select
@@ -1136,7 +1185,7 @@ const UserProfilePage = () => {
                                       )
                                     );
                                   }}
- styles={customStyles}             classNamePrefix="react-select"
+styles={customStyles}                                    classNamePrefix="react-select"
                                   placeholder="Select interests..."
                                 />
                                 {basicInfoForm.formState.errors.interests && (
@@ -1148,8 +1197,8 @@ const UserProfilePage = () => {
 
                               {/* Profession */}
                               <div>
-<label className="block mb-2">
-                                  Professions{" "}
+<label className="block text-sm font-medium text-gray-800 mb-2">                               
+     Professions{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
                                 <Select
@@ -1174,7 +1223,7 @@ const UserProfilePage = () => {
                                       )
                                     );
                                   }}
-styles={customStyles}                                      classNamePrefix="react-select"
+styles={customStyles}                                   classNamePrefix="react-select"
                                   placeholder="Select professions..."
                                 />
                                 {basicInfoForm.formState.errors.professions && (
@@ -1185,14 +1234,12 @@ styles={customStyles}                                      classNamePrefix="reac
                               </div>
 
                               <div>
-                                <label className="block text-[14px] font-medium text-gray-800 mb-4">
+                               <label className="block text-sm font-medium text-gray-800 mb-2">
                                   Upload Document{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
-                                {basicInfoForm.watch("identify_uploaded") ===
-                                  null ||
-                                basicInfoForm.watch("identify_uploaded") ===
-                                  undefined ? (
+                                {basicInfoForm.watch("identify_uploaded") ==
+                                null ? (
                                   <>
                                     <input
                                       type="file"
@@ -1204,27 +1251,15 @@ styles={customStyles}                                      classNamePrefix="reac
                                           e.target.files &&
                                           e.target.files[0]
                                         ) {
-                                          // Set pending state immediately
-                                          basicInfoForm.setValue(
-                                            "identify_uploaded",
-                                            0
-                                          );
-
                                           try {
                                             const file = e.target.files[0];
                                             await fetchVerifyOrganizationNumber(
                                               file
                                             );
-                                            // API response will update the state accordingly
                                           } catch (error) {
                                             console.error(
                                               "File upload failed:",
                                               error
-                                            );
-                                            // Optionally set back to null or show error state
-                                            basicInfoForm.setValue(
-                                              "identify_uploaded",
-                                              null
                                             );
                                           }
                                         }
@@ -1233,13 +1268,12 @@ styles={customStyles}                                      classNamePrefix="reac
                                     <div className="mt-5">
                                       <label
                                         htmlFor="registrationFile"
-                                        className="px-4 py-2  h-[41px] bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
-                                      >
+             className="px-4 py-2  h-[41px] bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"                                      >
                                         Verify Identity
                                       </label>
                                     </div>
                                   </>
-                                ) : basicInfoForm.watch("identify_uploaded") ===
+                                ) : basicInfoForm.watch("identify_uploaded") ==
                                   1 ? (
                                   <span className="px-4 py-2 h-[41px] bg-green-50 border border-green-200 rounded-xl text-sm font-medium text-green-600 flex items-center">
                                     <svg
@@ -1258,7 +1292,7 @@ styles={customStyles}                                      classNamePrefix="reac
                                     </svg>
                                     Verified
                                   </span>
-                                ) : basicInfoForm.watch("identify_uploaded") ===
+                                ) : basicInfoForm.watch("identify_uploaded") ==
                                   2 ? (
                                   <span className="px-4 py-2 h-[41px] bg-red-50 border border-red-200 rounded-xl text-sm font-medium text-red-600 flex items-center">
                                     <svg
@@ -1277,7 +1311,7 @@ styles={customStyles}                                      classNamePrefix="reac
                                     </svg>
                                     Rejected
                                   </span>
-                                ) : basicInfoForm.watch("identify_uploaded") ===
+                                ) : basicInfoForm.watch("identify_uploaded") ==
                                   0 ? (
                                   <span className="px-4 py-2 h-[41px] bg-yellow-50 border border-yellow-200 rounded-xl text-sm font-medium text-yellow-600 flex items-center">
                                     <svg
@@ -1296,43 +1330,64 @@ styles={customStyles}                                      classNamePrefix="reac
                                     </svg>
                                     Pending
                                   </span>
-                                ) : null}
+                                ) : (
+                                  <>
+                                    <input
+                                      type="file"
+                                      id="registrationFile"
+                                      accept=".pdf,.jpg,.jpeg,.png"
+                                      className="hidden"
+                                      onChange={async (e) => {
+                                        if (
+                                          e.target.files &&
+                                          e.target.files[0]
+                                        ) {
+                                          try {
+                                            const file = e.target.files[0];
+                                            await fetchVerifyOrganizationNumber(
+                                              file
+                                            );
+                                          } catch (error) {
+                                            console.error(
+                                              "File upload failed:",
+                                              error
+                                            );
+                                          }
+                                        }
+                                      }}
+                                    />
+                                    <div className="mt-5">
+                                      <label
+                                        htmlFor="registrationFile"
+                                        className="px-4 py-2 h-[41px] bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                                      >
+                                        Verify Identity
+                                      </label>
+                                    </div>
+                                  </>
+                                )}
                               </div>
 
-                              {/* Gender */}
-                              <div className="relative w-full">
+{/* Gender Dropdown - Styled like the Interests Field */}
+<div className="w-full">
   <label className="block text-sm font-medium text-gray-800 mb-2">
     Gender <span className="text-red-500">*</span>
   </label>
-
-  <select
-    {...basicInfoForm.register("gender", { required: true })}
-    className="
-      w-full h-[41px] bg-white
-      border border-gray-300 rounded-[12px]
-      px-[12px] pr-[40px] mt-2
-      font-normal text-[14px] leading-5
-      text-gray-700 appearance-none
-      focus:outline-none focus:ring-2 focus:ring-purple-500
-    "
-    style={{ fontFamily: "Rubik, sans-serif" }}
-  >
-    <option value="">Select your gender</option>
-    <option value="Male">Male</option>
-    <option value="Female">Female</option>
-    <option value="Non-binary">Non-binary</option>
-  </select>
-
-  <img
-    src="/chevron-down.svg"
-    alt="Dropdown"
-    className="w-4 h-4 absolute right-4 top-[73%] transform -translate-y-1/2 pointer-events-none"
+  <Select
+    options={genderOptions}
+    styles={customSelectStyles}
+    //placeholder="Select your gender"
+    value={genderOptions.find(opt => opt.value === basicInfoForm.watch("gender"))}
+    onChange={(selectedOption) =>
+      basicInfoForm.setValue("gender", selectedOption?.value || "")
+    }
+    onBlur={() => basicInfoForm.trigger("gender")}
+    isSearchable={false}
   />
 </div>
-
                               {/* Date of Birth */}
                               <div>
-                                <label>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
                                   Date of Birth{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1344,8 +1399,8 @@ styles={customStyles}                                      classNamePrefix="reac
                                   onClick={(
                                     e: React.MouseEvent<HTMLInputElement>
                                   ) => e.currentTarget.showPicker()}
-                                  className={`w-full px-4 py-2 h-[41px] mt-2 border bg-white ${
-                                    basicInfoForm.formState.errors.dob
+                                      className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                      basicInfoForm.formState.errors.dob
                                       ? "border-red-500"
                                       : "border-gray-300"
                                   } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${
@@ -1364,12 +1419,14 @@ styles={customStyles}                                      classNamePrefix="reac
 
                               {/* Quote on Consciousness */}
                               <div>
-                                <label>Your Quote on Consciousness</label>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">Your Quote on Consciousness
+
+                                </label>
                                 <input
                                   type="text"
                                   {...basicInfoForm.register("quote")}
                                   placeholder="Enter your quote"
-                                  className={`w-full px-4 py-2 h-[41px] mt-2 border bg-white ${
+                                  className={`w-full px-4 py-2 h-[41px] border bg-white ${
                                     basicInfoForm.formState.errors.quote
                                       ? "border-red-500"
                                       : "border-gray-300"
@@ -1391,7 +1448,7 @@ styles={customStyles}                                      classNamePrefix="reac
 
                               {/* Professional Bio */}
                               <div>
-                                <label>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
                                   Professional Bio{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1403,7 +1460,7 @@ styles={customStyles}                                      classNamePrefix="reac
                                     basicInfoForm.formState.errors.bio
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl h-[41px] mt-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                  } rounded-xl h-[41px]    text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
                                     basicInfoForm.formState.errors.bio
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
@@ -1418,8 +1475,8 @@ styles={customStyles}                                      classNamePrefix="reac
 
                               {/* Vision Statement - Full Width */}
                               <div className="md:col-span-2">
-                                <label className="block text-[14px] font-medium text-gray-800 mb-2">
-                                  Personal Vision Statement
+<label className="block text-sm font-medium text-gray-800 mb-2">
+                                    Personal Vision Statement
                                 </label>
                                 <textarea
                                   rows={4}
@@ -1448,32 +1505,22 @@ styles={customStyles}                                      classNamePrefix="reac
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                  className=" font-['Plus Jakarta Sans'] 
-  text-[14px] 
-  px-6 py-2  
-  rounded-full 
-  border border-[#ddd] 
-  text-black 
-  bg-white 
-  hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-  transition-colors duration-300 
-  w-full sm:w-auto 
-  flex justify-center"
-                                  type="button"
+                                 className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
+             hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                                   onClick={() => basicInfoForm.reset()}
                                 >
                                   Reset
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
- className="w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
-
+                                 className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   disabled={isSubmitting.basic}
                                 >
                                   {isSubmitting.basic
                                     ? "Saving..."
-                                    : "Save Basic Info"}
+                                    : "Save"}
                                 </Button>
                               </div>
                             </div>
@@ -1497,6 +1544,7 @@ styles={customStyles}                                      classNamePrefix="reac
                                 <input
                                   type="tel"
                                   placeholder="Enter Your Phone Number"
+                                  
                                   {...contactInfoForm.register("phone", {
                                     required: "Phone number is required",
                                     pattern: {
@@ -1517,7 +1565,7 @@ styles={customStyles}                                      classNamePrefix="reac
                                     contactInfoForm.formState.errors.phone
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl h-[41px] focus:outline-none focus:ring-2 ${
+                                  } rounded-xl h-[41px] focus:outline-none focus:ring-2 placeholder:text-sm placeholder:text-gray-400  ${
                                     contactInfoForm.formState.errors.phone
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
@@ -1552,7 +1600,7 @@ styles={customStyles}                                      classNamePrefix="reac
                                     contactInfoForm.formState.errors.email
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl focus:outline-none h-[41px] focus:ring-2 ${
+                                  } rounded-xl focus:outline-none h-[41px] focus:ring-2 placeholder:text-sm placeholder:text-gray-400 ${
                                     contactInfoForm.formState.errors.email
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
@@ -1570,7 +1618,7 @@ styles={customStyles}                                      classNamePrefix="reac
 
                               {/* Address */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
                                   Address{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1593,94 +1641,92 @@ styles={customStyles}                                      classNamePrefix="reac
                               </div>
 
                               {/* Country */}
-<div className="relative w-full">
-                                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                                  Country{" "}
-                                  <span className="text-red-500">*</span>
+                              <div className="w-full">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Country <span className="text-red-500">*</span>
                                 </label>
-                                <select
-                                  {...contactInfoForm.register("country", {
-                                    required: "Country is required",
-                                  })}
-                                    className="
-   w-full h-[41px] bg-white
-      border border-gray-300 rounded-[12px]
-      px-[12px] pr-[40px] mt-2
-      font-normal text-[14px] leading-5
-      text-gray-700 appearance-none
-      focus:outline-none focus:ring-2 focus:ring-purple-500
-    "
-     style={{ fontFamily: "Rubik, sans-serif" }}
-                                >
-                                  <option value="">Select your country</option>
-                                  Country
-                                  {Country?.map((country: any) => (
-                                    <option key={country.id} value={country.id}>
-                                      {country.name}
-                                    </option>
-                                  ))}
-                                </select>
-                                <img
-    src="/chevron-down.svg"
-    alt="Dropdown"
-    className="w-4 h-4 absolute right-4 top-[75%] transform -translate-y-1/2 pointer-events-none"
-  />
-                                
+                                <Select
+                                  options={
+                                    Country
+                                      ? Country.map((country: any) => ({
+                                          value: country.id,
+                                          label: country.name,
+                                        }))
+                                      : []
+                                  }
+                                  value={
+                                    Country
+                                      ? Country.find((c: any) => c.id === contactInfoForm.watch("country"))
+                                        ? {
+                                            value: contactInfoForm.watch("country"),
+                                            label:
+                                              Country.find((c: any) => c.id === contactInfoForm.watch("country"))?.name ||
+                                              "Select your country",
+                                          }
+                                        : null
+                                      : null
+                                  }
+                                  onChange={(selectedOption) => {
+                                    contactInfoForm.setValue("country", selectedOption?.value || "");
+                                  }}
+                                  onBlur={() => contactInfoForm.trigger("country")}
+                                  styles={customSelectStyles}
+                                  placeholder="Select your country"
+                                  isSearchable
+                                  classNamePrefix="react-select"
+                                />
                                 {contactInfoForm.formState.errors.country && (
                                   <p className="text-sm text-red-500 mt-1">
-                                    {
-                                      contactInfoForm.formState.errors.country
-                                        .message as string
-                                    }
+                                    {contactInfoForm.formState.errors.country.message as string}
                                   </p>
-                                  
                                 )}
                               </div>
 
-                              {/* State */}
-<div className="relative w-full">
+                                {/* State */}
+                                <div className="w-full relative">
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                   State <span className="text-red-500">*</span>
                                 </label>
-                                <select
-                                  {...contactInfoForm.register("state", {
-                                    required: "State is required",
-                                  })}
-                                  className="
-                                    w-full h-[41px] bg-white
-      border border-gray-300 rounded-[12px]
-      px-[12px] pr-[40px] mt-2
-      font-normal text-[14px] leading-5
-      text-gray-700 appearance-none
-      focus:outline-none focus:ring-2 focus:ring-purple-500
-    "
-                                  style={{ fontFamily: "Rubik, sans-serif" }}
-                                >
-                                  <option value="">Select your state</option>
-                                  {states?.map((state: any) => (
-                                    <option key={state.id} value={state.id}>
-                                      {state.name}
-                                    </option>
-                                  ))}
-                                </select>
-                                <img
-    src="/chevron-down.svg"
-    alt="Dropdown"
-    className="w-4 h-4 absolute right-4 top-[75%] transform -translate-y-1/2 pointer-events-none"
-  />
+                                <Select
+                                  options={
+                                  states
+                                    ? states.map((state: any) => ({
+                                      value: state.id,
+                                      label: state.name,
+                                    }))
+                                    : []
+                                  }
+                                  value={
+                                  states
+                                    ? states.find((s: any) => s.id === contactInfoForm.watch("state"))
+                                    ? {
+                                      value: contactInfoForm.watch("state"),
+                                      label:
+                                        states.find((s: any) => s.id === contactInfoForm.watch("state"))?.name ||
+                                        "Select your state",
+                                      }
+                                    : null
+                                    : null
+                                  }
+                                  onChange={(selectedOption) => {
+                                  contactInfoForm.setValue("state", selectedOption?.value || "");
+                                  }}
+                                  onBlur={() => contactInfoForm.trigger("state")}
+                                  styles={customSelectStyles}
+                                  placeholder="Select your state"
+                                  isSearchable
+                                  classNamePrefix="react-select"
+                                />
                                 {contactInfoForm.formState.errors.state && (
                                   <p className="text-sm text-red-500 mt-1">
-                                    {
-                                      contactInfoForm.formState.errors.state
-                                        .message as string
-                                    }
+                                  {contactInfoForm.formState.errors.state.message as string}
                                   </p>
                                 )}
-                              </div>
+                                </div>
 
                               {/* City */}
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
                                   City
                                 </label>
                                 <input
@@ -1765,31 +1811,22 @@ styles={customStyles}                                      classNamePrefix="reac
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                 className=" font-['Plus Jakarta Sans'] 
-  text-[14px] 
-  px-6 py-2  
-  rounded-full 
-  border border-[#ddd] 
-  text-black 
-  bg-white 
-  hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-  transition-colors duration-300 
-  w-full sm:w-auto 
-  flex justify-center"
-                                  type="button"
+className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
+             hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"                              type="button"
                                   onClick={() => contactInfoForm.reset()}
                                 >
                                   Reset
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
- className="w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
+                                className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   disabled={isSubmitting.contact}
                                 >
                                   {isSubmitting.contact
                                     ? "Saving..."
-                                    : "Save Contact Info"}
+                                    : "Save"}
                                 </Button>
                               </div>
                             </div>
@@ -1924,17 +1961,9 @@ styles={customStyles}                                      classNamePrefix="reac
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                  className=" font-['Plus Jakarta Sans'] 
-  text-[14px] 
-  px-6 py-2  
-  rounded-full 
-  border border-[#ddd] 
-  text-black 
-  bg-white 
-  hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-  transition-colors duration-300 
-  w-full sm:w-auto 
-  flex justify-center"
+                                className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
+             hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"   
                                   type="button"
                                   onClick={() => socialLinksForm.reset()}
                                 >
@@ -1942,13 +1971,13 @@ styles={customStyles}                                      classNamePrefix="reac
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
- className="w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
+                              className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   disabled={isSubmitting.social}
                                 >
                                   {isSubmitting.social
                                     ? "Saving..."
-                                    : "Save Social Links"}
+                                    : "Save"}
                                 </Button>
                               </div>
                             </div>
@@ -2181,17 +2210,9 @@ styles={customStyles}                                      classNamePrefix="reac
                             <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                               <Button
                                 variant="white-outline"
-                                className=" font-['Plus Jakarta Sans'] 
-  text-[14px] 
-  px-6 py-2  
-  rounded-full 
-  border border-[#ddd] 
-  text-black 
-  bg-white 
-  hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-  transition-colors duration-300 
-  w-full sm:w-auto 
-  flex justify-center"
+                               className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
+             hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"   
                                 type="button"
                                 onClick={() => educationForm.reset()}
                               >
@@ -2199,13 +2220,12 @@ styles={customStyles}                                      classNamePrefix="reac
                               </Button>
                               <Button
                                 variant="gradient-primary"
- className="w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
-                                type="submit"
+className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"                                type="submit"
                                 disabled={isSubmitting.education}
                               >
                                 {isSubmitting.education
                                   ? "Saving..."
-                                  : "Save Education"}
+                                  : "Save"}
                               </Button>
                             </div>
                           </form>
@@ -2442,31 +2462,21 @@ styles={customStyles}                                      classNamePrefix="reac
                             <div className="md:col-span-2 flex flex-col sm:flex-row sm:justify-end items-center gap-4 mt-6">
                               <Button
                                 variant="white-outline"
-                               className=" font-['Plus Jakarta Sans'] 
-  text-[14px] 
-  px-6 py-2  
-  rounded-full 
-  border border-[#ddd] 
-  text-black 
-  bg-white 
-  hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-  transition-colors duration-300 
-  w-full sm:w-auto 
-  flex justify-center"
-                                type="button"
+className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
+             hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"                                   type="button"
                                 onClick={() => workExperienceForm.reset()}
                               >
                                 Reset
                               </Button>
                               <Button
                                 variant="gradient-primary"
- className="w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
-                                type="submit"
+ className="font-['Plus Jakarta Sans'] text-[14px] not-last:w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"                                type="submit"
                                 disabled={isSubmitting.work}
                               >
                                 {isSubmitting.work
                                   ? "Saving..."
-                                  : "Save Work Experiences"}
+                                  : "Save"}
                               </Button>
                             </div>
                           </form>
@@ -2570,7 +2580,6 @@ styles={customStyles}                                      classNamePrefix="reac
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
                                   Services Offered
                                 </label>
-                                
                                 <div className="flex gap-2 items-center">
                                   <select
                                     value={serviceInput}
@@ -2599,13 +2608,7 @@ styles={customStyles}                                      classNamePrefix="reac
                                         setShowCustomInput(false);
                                       }
                                     }}
-                                       className="
-    w-full h-[41px] bg-white
-    border border-gray-300 rounded-[12px]
-    px-[12px] mt-2
-    font-normal text-[14px] leading-5
-    text-gray-700  focus:outline-none focus:ring-2 focus:ring-purple-500
-  "
+                                    className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                   >
                                     <option value="">Select a service</option>
                                     {serviceData?.map(
@@ -2793,32 +2796,25 @@ styles={customStyles}                                      classNamePrefix="reac
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                 className=" font-['Plus Jakarta Sans'] 
-  text-[14px] 
-  px-6 py-2  
-  rounded-full 
-  border border-[#ddd] 
-  text-black 
-  bg-white 
-  hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-  transition-colors duration-300 
-  w-full sm:w-auto 
-  flex justify-center"
-                                  type="button"
+className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
+             hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"                                   type="button"
                                   onClick={() => publicProfileForm.reset()}
                                 >
                                   Reset
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
- className="w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
+ className="font-['Plus Jakarta Sans'] text-[14px] not-last:w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"                              
+
                                   type="submit"
                                   disabled={isSubmitting.public}
                                 >
                                   {isSubmitting.public
                                     ? "Saving..."
-                                    : "Save Public Profile"}
+                                    : "Save"}
                                 </Button>
+
                               </div>
                             </div>
                           </form>

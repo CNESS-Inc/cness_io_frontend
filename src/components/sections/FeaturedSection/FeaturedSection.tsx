@@ -99,7 +99,7 @@ export default function FeaturedSection() {
 
   return (
     <section className="bg-[#fff] px-4 sm:px-6 pb-8 sm:pb-12 lg:py-[72px] pt-10" ref={sectionRef}>
-      <div className="max-w-[1336px] mx-auto relative lg:h-[800px] h-[600px]">
+      <div className="max-w-[1336px] mx-auto relative h-[600px]">
         <div className="w-full text-center absolute lg:top-[50%]  md:top-[35%] top-[30%] left-[50%] translate-x-[-50%] translate-y-[-50%] z-10">
           {heading}
         </div>

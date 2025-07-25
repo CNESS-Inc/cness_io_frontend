@@ -77,7 +77,7 @@ const Community: React.FC = () => {
 
   const getImageStepClass = (step: number) => {
     if (step === 0) return 'step-1';
-    if (step === 1) return 'step-2';
+    // if (step === 1) return 'step-2';
     if (step === 2) return 'step-4';
     if (step === 3) return 'step-3';
     return 'step-4';
@@ -109,7 +109,7 @@ const Community: React.FC = () => {
       className={`community-section ${isVisible ? 'animate-in' : ''}`}
     >
       <div className="community-header">
-        <h2 className="poppins text-[32px] font-[600] bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
+        <h2 className="poppins lg:leading-16 md:leading-14 leading-9 text-[32px] font-[600] bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
                text-transparent bg-clip-text mb-3 w-fit mx-auto">
           A Community Built Around
           <span className="bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text"> Conscious Living</span>
