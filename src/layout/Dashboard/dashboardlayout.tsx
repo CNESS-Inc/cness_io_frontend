@@ -68,7 +68,7 @@ const DashboardLayout = () => {
             </div>
 
             {/* Main layout with optional FilterSidebar */}
-            <main className="flex-1 min-h-screen px-4 md:px-6 py-6 overflow-y-auto">
+            <main className="flex-1 min-h-screen px-4 md:px-4 py-4 overflow-y-auto">
               <div className="flex">
                 {isDashboardTechPage && (
                   <div className="w-[250px] shrink-0 border-r border-gray-200 mr-4">

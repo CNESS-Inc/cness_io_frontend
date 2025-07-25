@@ -51,6 +51,10 @@ export default function DashboardDirectory() {
     totalItems: 0,
     itemsPerPage: 10,
   });
+  console.log(
+    "🚀 ~ DashboardDirectory ~ popularPagination:",
+    popularPagination
+  );
 
   const [aspiringPagination, setAspiringPagination] = useState<PaginationData>({
     currentPage: 1,
@@ -94,6 +98,7 @@ export default function DashboardDirectory() {
         page,
         popularPagination.itemsPerPage
       );
+      console.log("🚀 ~ fetchPopularCompany ~ res:", res);
 
       if (res?.data?.data) {
         const transformedCompanies = res.data.data.rows.map((company: any) => ({
@@ -192,9 +197,9 @@ export default function DashboardDirectory() {
       );
     }
   };
-  useEffect(()=>{
-handleSearch()
-  },[selectedDomain])
+  useEffect(() => {
+    handleSearch();
+  }, [selectedDomain]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -299,7 +304,7 @@ handleSearch()
 
       {/* Popular Companies Section */}
       <section className="py-16 bg-[#f9f9f9] border-t border-gray-100">
-        <div className="w-full max-w-screen-2xl mx-auto">
+        <div className="w-full mx-auto">
           <h2 className="text-xl font-semibold mb-4">Popular People</h2>
 
           {isLoading.popular ? (
@@ -307,7 +312,7 @@ handleSearch()
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : popularCompanies.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-6 gap-x-4 gap-y-4">
               {popularCompanies.map((company) => (
                 <CompanyCard
                   id={company.id}
@@ -332,7 +337,7 @@ handleSearch()
             <p className="text-gray-500">No popular people found.</p>
           )}
 
-          {popularPagination.totalPages > 1 && (
+          {popularPagination.totalPages > 0 && (
             <div className="mt-8">
               <div className="flex justify-end">
                 <nav
@@ -390,7 +395,7 @@ handleSearch()
 
       {/* Inspiring Companies Section */}
       <section className="py-16 border-t border-gray-100">
-        <div className="w-full max-w-screen-2xl mx-auto">
+        <div className="w-full mx-auto">
           <h2 className="text-xl font-semibold mb-4">Aspiring People</h2>
 
           {isLoading.inspiring ? (
@@ -398,7 +403,7 @@ handleSearch()
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : aspiringCompanies.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-5 gap-x-4 gap-y-4">
               {aspiringCompanies.map((company) => (
                 <CompanyCard
                   id={company.id}
@@ -421,7 +426,7 @@ handleSearch()
             <p className="text-gray-500">No aspiring people found.</p>
           )}
 
-          {aspiringPagination.totalPages > 1 && (
+          {aspiringPagination.totalPages > 0 && (
             <div className="mt-8 overflow-x-auto">
               <div className="flex justify-center sm:justify-end flex-wrap gap-2">
                 <nav

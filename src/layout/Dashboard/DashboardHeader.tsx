@@ -3,13 +3,15 @@ import {
   SearchIcon,
   SettingsIcon,
   LogOutIcon,
+  BellIcon,
 } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import hambur from "../../assets/hambur.png"
+import hambur from "../../assets/hambur.png";
 import { LogOut } from "../../Common/ServerAPI";
+import { useToast } from "../../components/ui/Toast/ToastProvider";
 
 const DashboardHeader = ({ toggleMobileNav }: any) => {
   const navigate = useNavigate();
@@ -18,8 +20,14 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
 
   // Add state for name values
   const [name, setName] = useState(localStorage.getItem("main_name") || "");
-  const [margaretName, setMargaretName] = useState(localStorage.getItem("margaret_name") || "");
-  const [profilePic, setProfilePic] = useState(localStorage.getItem("profile_picture") || "");
+  const [margaretName, setMargaretName] = useState(
+    localStorage.getItem("margaret_name") || ""
+  );
+  const [profilePic, setProfilePic] = useState(
+    localStorage.getItem("profile_picture") || ""
+  );
+
+  const { showToast } = useToast();
 
   // Watch for localStorage changes
   useEffect(() => {
@@ -30,13 +38,13 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
     };
 
     // Listen for storage events (changes from other tabs)
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
 
     // Also check for changes periodically (in case changes happen in the same tab)
     const interval = setInterval(handleStorageChange, 1000);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
       clearInterval(interval);
     };
   }, []);
@@ -58,21 +66,6 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
     };
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      const response = await LogOut();
-
-      if (response) {
-        localStorage.clear();
-        setIsDropdownOpen(false);
-        navigate("/");
-      }
-
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
-
   const handleProfile = () => {
     const personOrganization = localStorage.getItem("person_organization");
 
@@ -83,7 +76,27 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
     }
   };
 
-  const defaultAvatar = "https://c.animaapp.com/magahlmqpONVZN/img/ellipse-3279.svg";
+  const defaultAvatar =
+    "https://c.animaapp.com/magahlmqpONVZN/img/ellipse-3279.svg";
+
+  const handleLogout = async () => {
+    try {
+      const response = await LogOut();
+
+      if (response) {
+        localStorage.clear();
+        toggleMobileNav();
+        navigate("/");
+      }
+    } catch (error: any) {
+      console.error("Logout failed:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
 
   return (
     <header className="flex w-full items-center justify-between px-4 md:px-8 py-[18px] bg-white border-b border-[#0000001a] relative">
@@ -108,26 +121,50 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
 
       {/* Right side - Icons and User Profile */}
       <div className="flex items-center gap-3">
-        {/* <div
-          onClick={() => navigate('/dashboard/notification')}
-          className="flex w-[41px] h-[41px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
-        >
-          <div className="relative">
-            <BellIcon className="w-5 h-5" />
-            <div className="w-4 h-4 absolute -top-1 left-1 bg-[#60c750] rounded-full flex items-center justify-center">
-              <span className="font-['Poppins',Helvetica] font-normal text-white text-[8px]">
-                03
-              </span>
+        <div className="flex items-center gap-2">
+          {/* Logout Button */}
+          <div className="relative group">
+            <div
+              onClick={handleLogout}
+              className="flex w-[41px] h-[41px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
+            >
+              <LogOutIcon className="w-6 h-6" />
             </div>
+            <span className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
+              Logout
+              <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rotate-45"></span>
+            </span>
           </div>
 
-        </div> */}
+          {/* Notification Button */}
+          <div className="relative group">
+            <div
+              onClick={() => navigate("/dashboard/notification")}
+              className="flex w-[41px] h-[41px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
+            >
+              <div className="relative">
+                <BellIcon className="w-5 h-5" />
+              </div>
+            </div>
+            <span className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
+              Notifications
+              <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rotate-45"></span>
+            </span>
+          </div>
 
-        <div
-          onClick={() => navigate('/dashboard/setting')}
-          className="flex w-[41px] h-[41px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
-        >
-          <SettingsIcon className="w-6 h-6" />
+          {/* Settings Button */}
+          <div className="relative group">
+            <div
+              onClick={() => navigate("/dashboard/setting")}
+              className="flex w-[41px] h-[41px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
+            >
+              <SettingsIcon className="w-6 h-6" />
+            </div>
+            <span className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
+              Settings
+              <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rotate-45"></span>
+            </span>
+          </div>
         </div>
 
         <div className="hidden md:flex items-center relative" ref={dropdownRef}>

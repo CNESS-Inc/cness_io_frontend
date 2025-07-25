@@ -351,9 +351,9 @@ export default function TechnologyAndAIPage() {
         </div>
       </div>
 
-      <div className="w-full max-w-[2100px] mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-3">
+      <div className="w-full max-w-[2100px] mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-3">
         {/* Left Sidebar - Desktop */}
-        <aside className="hidden lg:block w-64 px-4 py-8 border-r border-gray-100 bg-white">
+        <aside className="hidden lg:block w-[200px] px-4 py-8 border-r border-gray-100 bg-white">
           <div className="mb-6">
             <h2 className="text-sm font-semibold text-gray-900 mb-5">Filter</h2>
             <div className="mb-6">
@@ -412,7 +412,7 @@ export default function TechnologyAndAIPage() {
         </aside>
 
         {/* Right Content (Company Grid) */}
-        <main className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-8 items-stretch">
+        <main className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
           {isLoading ? (
             <div className="col-span-full flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>

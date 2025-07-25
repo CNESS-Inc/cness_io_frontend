@@ -448,7 +448,7 @@ export default function DirectoryPage() {
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : popularCompanies.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
               {popularCompanies.map((company) => (
                 <CompanyCard
                   id={company.id}
@@ -538,7 +538,7 @@ export default function DirectoryPage() {
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : aspiringCompanies.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
               {aspiringCompanies.map((company) => (
                 <CompanyCard
                   id={company.id}

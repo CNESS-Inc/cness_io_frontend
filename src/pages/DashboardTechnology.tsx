@@ -49,7 +49,10 @@ export default function DashboardTechnology() {
       ? Domain.find((d: any) => d.id === domain)?.title || "All Profession"
       : "All Profession"
   );
-  console.log("🚀 ~ DashboardTechnology ~ selectedDomainText:", selectedDomainText)
+  console.log(
+    "🚀 ~ DashboardTechnology ~ selectedDomainText:",
+    selectedDomainText
+  );
   const [textWidth, setTextWidth] = useState(0);
   const [open, setOpen] = useState<"cert" | "sort" | null>(null);
   const [selectedCert, setSelectedCert] = useState<string>("");
@@ -283,19 +286,21 @@ export default function DashboardTechnology() {
         {/* Combined Search Results and Filters Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex-1">
-  <h4 className="poppins font-medium text-lg leading-[150%] tracking-normal">
-    Search results for
-    {(selectedDomainText !== "All Profession" || searchQuery) && (
-      <span className="poppins ml-1 text-[#7077FE] font-medium text-lg leading-[150%] tracking-normal">
-        "
-        {selectedDomainText !== "All Profession" && selectedDomainText}
-        {selectedDomainText !== "All Profession" && searchQuery && " "}
-        {searchQuery}
-        "
-      </span>
-    )}
-  </h4>
-</div>
+            <h4 className="poppins font-medium text-lg leading-[150%] tracking-normal">
+              Search results for
+              {(selectedDomainText !== "All Profession" || searchQuery) && (
+                <span className="poppins ml-1 text-[#7077FE] font-medium text-lg leading-[150%] tracking-normal">
+                  "
+                  {selectedDomainText !== "All Profession" &&
+                    selectedDomainText}
+                  {selectedDomainText !== "All Profession" &&
+                    searchQuery &&
+                    " "}
+                  {searchQuery}"
+                </span>
+              )}
+            </h4>
+          </div>
 
           {/* Filters moved here - horizontal layout */}
           <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
@@ -404,7 +409,7 @@ export default function DashboardTechnology() {
 
         {/* Company Cards Grid */}
         <div className="w-full max-w-[2100px] mx-auto py-6">
-          <main className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-4 items-stretch">
+          <main className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
             {isLoading ? (
               <div className="col-span-full flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>

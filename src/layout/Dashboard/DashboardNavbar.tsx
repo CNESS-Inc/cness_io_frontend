@@ -1,8 +1,6 @@
 import { useState } from "react";
 import {
-  BellIcon,
   HelpCircleIcon,
-  SettingsIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   LogOutIcon,
@@ -227,19 +225,19 @@ const DashboardNavbar = ({
   ];
 
   const secondaryNavItems = [
-    {
-      icon: <BellIcon className="w-5 h-5" />,
-      label: "Notifications",
-      active: false,
-      hasNotification: true,
-      path: "/dashboard/notification",
-    },
-    {
-      icon: <SettingsIcon className="w-5 h-5" />,
-      label: "Settings",
-      active: false,
-      path: "/dashboard/setting",
-    },
+    // {
+    //   icon: <BellIcon className="w-5 h-5" />,
+    //   label: "Notifications",
+    //   active: false,
+    //   hasNotification: true,
+    //   path: "/dashboard/notification",
+    // },
+    // {
+    //   icon: <SettingsIcon className="w-5 h-5" />,
+    //   label: "Settings",
+    //   active: false,
+    //   path: "/dashboard/setting",
+    // },
     {
       icon: <HelpCircleIcon className="w-5 h-5" />,
       label: "Support",

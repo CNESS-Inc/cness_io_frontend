@@ -93,7 +93,7 @@ export default function CompanyCard({
   };
   return (
     <Card
-      className="relative bg-white max-w-sm cursor-pointer rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
+      className="relative bg-white  cursor-pointer rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
       onClick={handleCardClick}
     >
       {/* Absolute Badge Logo */}
@@ -184,7 +184,7 @@ export default function CompanyCard({
           {tags?.map((tag, index) => (
             <span
               key={index}
-              className="bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs"
+              className="bg-[#7077FE1A] text-[#7077FE] px-[26px] py-[6px] rounded-lg text-xs"
             >
               {tag}
             </span>
