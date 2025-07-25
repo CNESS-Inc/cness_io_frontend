@@ -720,7 +720,8 @@ export default function DashboardSection() {
                         Complete Your Profile
                       </h2>
                       <p className="font-['Open_Sans',Helvetica] text-[#7a7a7a] text-sm sm:text-base">
-                        Fill out your profile with all the necessary details.
+                        Fill out your profile with all the necessary<br></br>
+                          details.
                       </p>
                     </div>
                     <div className="w-full">

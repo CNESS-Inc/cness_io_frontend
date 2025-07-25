@@ -14,7 +14,7 @@ export default function Header() {
       role="banner"
       aria-label="Main navigation"
     >
-      <div className="mx-4 px-4 py-3 flex items-center justify-between">
+      <div className="mx-2 px-4 py-3 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
           <Link to="/" className="flex items-center" aria-label="Home">

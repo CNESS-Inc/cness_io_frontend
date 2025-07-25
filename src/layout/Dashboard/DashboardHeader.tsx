@@ -100,18 +100,21 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
   };
 
   return (
-    <header className="flex w-full items-center justify-between px-4 md:px-8 py-[18px] bg-white border-b border-[#0000001a] relative">
+<header className="w-full bg-white border-b border-[#0000001a] relative px-4 py-[18px] md:pl-[260px] flex items-center justify-between">
       {/* Left side - Hamburger (mobile) and Search */}
       <div className="flex items-center gap-4">
         {/* Mobile hamburger only */}
         <div className="block md:hidden">
-          <button onClick={toggleMobileNav} className="p-2">
-            <img src={hambur} alt="Menu" className="w-8 h-8" />
-          </button>
-        </div>
+  <button
+    onClick={toggleMobileNav}
+    className="flex items-center justify-center w-[41px] h-[41px] bg-white rounded-xl border border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer transition"
+  >
+    <img src={hambur} alt="Menu" className="w-5 h-5" />
+  </button>
+</div>
 
         {/* Search bar */}
-        <div className="flex items-center justify-between p-3 relative bg-white rounded-xl border border-solid border-slate-300 w-full md:w-[440px]">
+        <div className="ml-2 sm:ml-4 md:ml-6 flex items-center justify-between p-3 relative bg-white rounded-xl border border-solid border-slate-300 w-full md:w-[440px]">
           <Input
             className="border-0 shadow-none p-0 h-auto font-['Open_Sans',Helvetica] text-[#afb1b3] text-sm placeholder:text-[#afb1b3] focus-visible:ring-0 focus-visible:ring-offset-0"
             placeholder="Search"

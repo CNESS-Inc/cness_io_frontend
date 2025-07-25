@@ -734,7 +734,7 @@ const AssessmentQuestion: React.FC = () => {
                       <input
                         type="file"
                         accept={upload.acceptedTypes}
-                        className="w-full h-16 px-2 py-3 cursor-pointer rounded-xl border border-gray-300 file:mr-4 file:rounded-full file:border-0 file:bg-[#7077FE] file:px-[24px] file:py-[8px] file:text-white  file:font-['Plus Jakarta Sans'] file:font-medium  file:text-[14px] file:cursor-pointer"
+                        className="w-full h-16 px-2 py-3 cursor-pointer rounded-xl border border-gray-300 file:mr-4 file:rounded-full file:border-0 file:bg-[#7077FE] file:px-[20px] file:py-[8px] file:text-white  file:font-['Plus Jakarta Sans'] file:font-medium  file:text-[14px] file:cursor-pointer"
                         onChange={(e) =>
                           handleFileUpload(i, e.target.files?.[0] || null)
                         }
@@ -784,7 +784,7 @@ const AssessmentQuestion: React.FC = () => {
                 onClick={handleSave}
                 // disabled={isSubmitting}
                 disabled={isSubmitted}
-                className="w-[77px] h-[31px] rounded-[70.94px] px-[24px] py-[8px] flex items-center justify-center gap-[7.09px] text-white font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center disabled:opacity-60 transition-colors duration-200"
+                className="w-[85px] h-[35px] rounded-[70.94px] px-[24px] py-[8px] flex items-center justify-center gap-[7.09px] text-white font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center disabled:opacity-60 transition-colors duration-200"
                 style={{
                   opacity: 1,
                   transform: "rotate(0deg)",
@@ -798,7 +798,15 @@ const AssessmentQuestion: React.FC = () => {
                 <button
                   onClick={handlePrevious}
                   disabled={!currentSection.previous_section_id}
-                  className={`w-[104px] h-[31px] px-6 py-2 rounded-[100px] text-sm font-medium transition-all duration-200 border
+                  className={` w-[117px] h-[35px]
+    px-[24px] py-[8px]
+   rounded-[70.94px]
+    border border-gray-200
+    bg-white text-[#64748B]
+    font-['Plus Jakarta Sans'] text-[12px] font-medium
+    transition-all duration-200
+    hover:bg-[#F4F4F5]
+    disabled:text-gray-400 disabled:border-gray-200 disabled:cursor-not-allowed
                               ${
                                 prevVariant === "white-disabled"
                                   ? "bg-white font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center text-gray-400 border border-gray-200 shadow-md cursor-pointer"
@@ -814,7 +822,16 @@ const AssessmentQuestion: React.FC = () => {
                   onClick={handleNext}
                   disabled={!currentSection.next_section_id}
                   className="
-   w-[117px] h-[31px] rounded-[70.94px] px-[24px] py-[8px] flex items-center justify-center gap-[7.09px] cursor-pointer transition-colors duration-200 text-white
+   w-[117px] h-[35px]
+    rounded-[70.94px]
+    px-[24px] py-[8px]
+    flex items-center justify-center
+    gap-[7.09px]
+    text-white bg-[#897AFF]
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-[100%]
+    text-center whitespace-nowrap
+    transition-colors duration-200
+    disabled:opacity-50
   "
                   style={{
                     opacity: 1,
@@ -856,7 +873,7 @@ const AssessmentQuestion: React.FC = () => {
                     <Button
                       onClick={handleconfirm}
                       className="
-      w-[200px] h-[45px]
+      w-[250px] h-[45px]
       rounded-[100px]
       px-[24px] py-[16px]
       flex items-center justify-center
