@@ -2616,14 +2616,42 @@ const UserProfilePage = () => {
                                   Services Offered
                                 </label>
                                 <div className="flex gap-2 items-center">
-                                  <select
-                                    value={serviceInput}
-                                    onChange={(e) => {
-                                      if (e.target.value === "other") {
+                                  <Select
+                                  className="w-full h-[41px]"
+                                  classNamePrefix="react-select"
+                                    options={[
+                                      ...(serviceData?.map(
+                                        (service: {
+                                          id: string;
+                                          name: string;
+                                        }) => ({
+                                          value: service.id,
+                                          label: service.name,
+                                        })
+                                      ) || []),
+                                      {
+                                        value: "other",
+                                        label: "Other (Add Custom Service)",
+                                      },
+                                    ]}
+                                    styles={customSelectStyles}
+                                    value={
+                                      serviceInput
+                                        ? {
+                                            value: serviceInput,
+                                            label: serviceInput,
+                                          }
+                                        : undefined
+                                    }
+                                    onChange={(selectedOption) => {
+                                      if (!selectedOption) return;
+
+                                      if (selectedOption.value === "other") {
                                         setShowCustomInput(true);
                                         setServiceInput("");
-                                      } else if (e.target.value !== "") {
-                                        const trimmed = e.target.value.trim();
+                                      } else if (selectedOption.value !== "") {
+                                        const trimmed =
+                                          selectedOption.value.trim();
                                         if (
                                           trimmed &&
                                           !services.includes(trimmed) &&
@@ -2638,34 +2666,17 @@ const UserProfilePage = () => {
                                             "services",
                                             newServices
                                           );
-                                          setServiceInput(""); // reset
+                                          setServiceInput("");
                                         }
                                         setShowCustomInput(false);
                                       }
                                     }}
-                                    className={`w-full px-4 py-2 border h-[41px] bg-white border-gray-300
-                                  rounded-xl text-sm placeholder-gray-400 focus:outline-none
-                                      focus:ring-purple-500
-                                  `}
-                                  >
-                                    <option value="">Select a service</option>
-                                    {serviceData?.map(
-                                      (service: {
-                                        id: string;
-                                        name: string;
-                                      }) => (
-                                        <option
-                                          key={service.id}
-                                          value={service.id}
-                                        >
-                                          {service.name}
-                                        </option>
-                                      )
-                                    )}
-                                    <option value="other">
-                                      Other (Add Custom Service)
-                                    </option>
-                                  </select>
+                                    onBlur={() =>
+                                      publicProfileForm.trigger("services")
+                                    }
+                                    isSearchable={false}
+                                    placeholder="Select a service"
+                                  />
 
                                   {showCustomInput && (
                                     <>
@@ -2676,7 +2687,7 @@ const UserProfilePage = () => {
                                           setCustomServiceInput(e.target.value)
                                         }
                                         placeholder="Enter custom service"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className={`w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500`}
                                       />
                                       <button
                                         type="button"
