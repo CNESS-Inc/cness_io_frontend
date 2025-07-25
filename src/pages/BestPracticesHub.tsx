@@ -8,6 +8,7 @@ import {
   LikeBestpractices,
   SaveBestpractices,
   GetSaveBestpractices,
+  GetValidProfessionalDetails,
 } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -75,6 +76,7 @@ export default function BestPracticesHub() {
   const [activeModal, setActiveModal] = useState<"bestpractices" | null>(null);
   const [textWidth, setTextWidth] = useState(0);
   const measureRef = useRef<HTMLSpanElement>(null);
+  const [selectedDomainText, setSelectedDomainText] = useState("All Domains");
   const isMobile = useMediaQuery("(max-width: 640px)");
 const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
 //const [badge, setBadge] = useState<any>([]);
@@ -176,20 +178,19 @@ const toggleSave = async (id: string) => {
   ) => {
     const professionId = e.target.value;
     setSelectedProfession(professionId);
+
+    // Update the selected domain text
+    const selectedText = e.target.options[e.target.selectedIndex].text;
+    setSelectedDomainText(selectedText);
+
+    // Fetch best practices with the new profession filter
     await fetchBestPractices(1, professionId, searchText);
   };
 
   const fetchProfession = async () => {
     try {
-      const res = await GetAllFormDetails();
-      setProfession(
-        res?.data?.data?.profession
-          .filter((item: { is_blocked: boolean }) => !item.is_blocked)
-          .map((item: { id: string; title: string }) => ({
-            id: item.id,
-            title: item.title,
-          }))
-      );
+      const res = await GetValidProfessionalDetails();
+      setProfession(res?.data?.data);
     } catch (error: any) {
       console.error("Error fetching professions:", error);
       showToast({
@@ -408,27 +409,36 @@ const toggleSave = async (id: string) => {
 
           <div className="w-full mx-auto bg-white border border-gray-200 rounded-lg md:rounded-full flex flex-col md:flex-row items-stretch md:items-center px-3 py-2 shadow-sm gap-2">
             {/* Profession Selector */}
-            <div className="relative rounded-lg md:rounded-full">
+
+            <div className="relative rounded-full">
+              {/* Measurement span with exact same text styling */}
               <span
-                className="invisible rounded-lg md:rounded-full text-xs md:text-sm absolute whitespace-nowrap font-semibold px-3 md:px-4"
+                className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4 py-2"
                 ref={measureRef}
+                style={{
+                  fontFamily: "inherit",
+                  fontSize: "12px", // Explicitly set to match select
+                }}
               >
-                {selectedProfession || "All Domains"}
+                {selectedDomainText || "All Profession"}
               </span>
 
 
 <div className="relative h-full flex items-center">
 
               <select
+
                 className="bg-[#7077FE] py-2 rounded-full text-[12px] md:rounded-full text-white h-full w-full font-semibold px-3 md:px-4 appearance-none focus:outline-none cursor-pointer "
+
                 style={{
-                  width: `${textWidth}px`,
+                  width: `${textWidth}px`, // Adjusted padding
                   maxWidth: "100%",
+                  minWidth: "120px",
                 }}
                 value={selectedProfession}
                 onChange={handleProfessionChange}
               >
-                <option value="" className="text-white">
+                <option value="" className="text-white text-[12px]">
                   All Profession
                 </option>
                 {profession.map((prof: any) => (
@@ -437,7 +447,9 @@ const toggleSave = async (id: string) => {
                   </option>
                 ))}
               </select>
+
               <div className="absolute top-1.5 right-2 text-white text-xs pointer-events-none hidden sm:block">
+
                 ▼
               </div>
             </div>

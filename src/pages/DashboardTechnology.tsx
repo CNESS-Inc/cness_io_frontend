@@ -30,11 +30,12 @@ interface Company {
 export default function DashboardTechnology() {
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search");
-  const domain = searchParams.get("domain");
+  const domain = searchParams.get("profession");
   const { showToast } = useToast();
-  const [Domain, setDomain] = useState([]);
+  const [Domain, setDomain] = useState<any>([]);
   const [badge, setBadge] = useState<any>([]);
   const [selectedDomain, setSelectedDomain] = useState<any>(domain);
+
   const hasFetched = useRef(false);
   const [searchQuery, setSearchQuery] = useState<any>(search);
   const [sort, setSort] = useState<"az" | "za">("az");
@@ -43,8 +44,15 @@ export default function DashboardTechnology() {
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedDomainText, setSelectedDomainText] =
-    useState("All Profession");
+  const [selectedDomainText, setSelectedDomainText] = useState(
+    domain
+      ? Domain.find((d: any) => d.id === domain)?.title || "All Profession"
+      : "All Profession"
+  );
+  console.log(
+    "🚀 ~ DashboardTechnology ~ selectedDomainText:",
+    selectedDomainText
+  );
   const [textWidth, setTextWidth] = useState(0);
   const [open, setOpen] = useState<"cert" | "sort" | null>(null);
   const [selectedCert, setSelectedCert] = useState<string>("");
@@ -56,6 +64,15 @@ export default function DashboardTechnology() {
       setTextWidth(measureRef.current.offsetWidth);
     }
   }, [selectedDomainText]);
+
+  useEffect(() => {
+    if (domain && Domain.length > 0) {
+      const foundDomain = Domain.find((d: any) => d.id === domain);
+      if (foundDomain) {
+        setSelectedDomainText(foundDomain.title);
+      }
+    }
+  }, [domain, Domain]);
 
   const itemsPerPage = 10;
   const totalPages = Math.ceil(totalCount / itemsPerPage);
@@ -149,19 +166,19 @@ export default function DashboardTechnology() {
   useEffect(() => {
     setCurrentPage(1);
     fetchUsersearchProfileDetails(1);
-  }, [ sort, selectedDomain, selectedCert]);
+  }, [sort, selectedDomain, selectedCert]);
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-    const handleSearch = () => {
+  const handleSearch = () => {
     if (selectedDomain || searchQuery) {
-    fetchUsersearchProfileDetails(1);
+      fetchUsersearchProfileDetails(1);
     }
   };
-    const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       handleSearch();
     }
@@ -184,18 +201,24 @@ export default function DashboardTechnology() {
 
           <div className="w-full mx-auto bg-white border border-gray-200 rounded-full md:rounded-full flex flex-col md:flex-row items-stretch md:items-center px-3 py-2 shadow-sm gap-2">
             <div className="relative rounded-full">
+              {/* Measurement span with exact same text styling */}
               <span
-                className="invisible rounded-full text-[12px] md:rounded-full absolute whitespace-nowrap font-semibold px-3 md:px-4 md:text-base"
+                className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4 py-2"
                 ref={measureRef}
+                style={{
+                  fontFamily: "inherit",
+                  fontSize: "12px", // Explicitly set to match select
+                }}
               >
                 {selectedDomainText || "All Domains"}
               </span>
 
               <select
-                className="bg-[#7077FE] py-2 rounded-full text-[12px] md:rounded-full text-white h-full w-full font-semibold px-3 md:px-4 appearance-none focus:outline-none cursor-pointer "
+                className="bg-[#7077FE] rounded-full text-white h-full font-semibold px-3 md:px-4 py-2 appearance-none focus:outline-none cursor-pointer text-[12px]"
                 style={{
                   width: `${textWidth}px`,
                   maxWidth: "100%",
+                  minWidth: "120px",
                 }}
                 value={selectedDomain}
                 onChange={(e) => {
@@ -203,22 +226,28 @@ export default function DashboardTechnology() {
                   const selectedText =
                     e.target.options[e.target.selectedIndex].text;
                   setSelectedDomainText(selectedText);
+                  // Update the URL when domain changes
+                  navigate(
+                    `?domain=${e.target.value}${
+                      searchQuery ? `&search=${searchQuery}` : ""
+                    }`
+                  );
                 }}
               >
-                <option value="" className="text-white">
+                <option value="" className="text-white text-[12px]">
                   All Profession
                 </option>
                 {Domain.map((domain: any) => (
                   <option
                     key={domain.id}
                     value={domain.id}
-                    className="text-white"
+                    className="text-white text-[12px]"
                   >
                     {domain.title}
                   </option>
                 ))}
               </select>
-              <div className="absolute top-1.5 right-2 text-white text-xs pointer-events-none hidden sm:block">
+              <div className="absolute top-1/2 right-3 transform -translate-y-1/2 text-white text-[10px] pointer-events-none">
                 ▼
               </div>
             </div>
@@ -232,7 +261,8 @@ export default function DashboardTechnology() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleKeyPress}
               />
-              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE] cursor-pointer"
+              <button
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE] cursor-pointer"
                 onClick={handleSearch}
               >
                 🔍
@@ -252,15 +282,23 @@ export default function DashboardTechnology() {
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto py-6">
         {/* Combined Search Results and Filters Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex-1">
             <h4 className="poppins font-medium text-lg leading-[150%] tracking-normal">
               Search results for
-              <span className="poppins ml-1 text-[#7077FE] font-medium text-lg leading-[150%] tracking-normal">
-                "{searchQuery} - {selectedDomainText}"
-              </span>
+              {(selectedDomainText !== "All Profession" || searchQuery) && (
+                <span className="poppins ml-1 text-[#7077FE] font-medium text-lg leading-[150%] tracking-normal">
+                  "
+                  {selectedDomainText !== "All Profession" &&
+                    selectedDomainText}
+                  {selectedDomainText !== "All Profession" &&
+                    searchQuery &&
+                    " "}
+                  {searchQuery}"
+                </span>
+              )}
             </h4>
           </div>
 
@@ -277,7 +315,7 @@ export default function DashboardTechnology() {
                   <Award className="w-4 h-4 text-purple-500" />
                   <span className="font-medium text-sm">
                     {badge.find((b: any) => b.slug === selectedCert)?.level ||
-                      "Certification"}
+                      "Certification Level "}
                   </span>
                 </div>
                 {open === "cert" ? (
@@ -371,7 +409,7 @@ export default function DashboardTechnology() {
 
         {/* Company Cards Grid */}
         <div className="w-full max-w-[2100px] mx-auto py-6">
-          <main className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-8 items-stretch px-4">
+          <main className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
             {isLoading ? (
               <div className="col-span-full flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
@@ -382,7 +420,7 @@ export default function DashboardTechnology() {
               </div>
             ) : companies.length === 0 ? (
               <div className="col-span-full text-center py-10 text-gray-500">
-                No companies found
+                No people found
               </div>
             ) : (
               companies.map((company) => (

@@ -70,7 +70,7 @@ export default function Team() {
       <div className="max-w-[1336px] mx-auto w-full">
         <div className="flex flex-col items-center gap-8 md:gap-[52px] w-full">
           <div className="text-start w-full">
-            <h2 className="poppins text-3xl md:text-[32px] font-semibold mb-4 leading-tight text-[#4E4E4E]">
+            <h2 className="poppins text-3xl md:text-[32px] font-semibold mb-4 leading-10 text-[#4E4E4E]">
               Proof That Consciousness Moves the World.
             </h2>
             <p className="text-[18px] text-[#64748B] font-regular openSans">Hear how CNESS helps purpose-driven professionals amplify their values and turn <br /> them into real-world change.</p>
@@ -80,17 +80,19 @@ export default function Team() {
             spaceBetween={20}
             slidesPerView={1}
             loop={true}
+            speed={6000} // Adjust for speed; higher = slower scroll
             autoplay={{
-              delay: 3000,
+              delay: 0, // No pause at all
               disableOnInteraction: false,
             }}
-            pagination={{ clickable: true }}
+            allowTouchMove={false} // Prevents manual swiping (optional)
+            pagination={true} // No pagination bullets (optional)
             breakpoints={{
               480: { slidesPerView: 1 },
               767: { slidesPerView: 2 },
               1024: { slidesPerView: 4 },
             }}
-            modules={[Pagination, Autoplay]}
+             modules={[Pagination, Autoplay]}
             className="w-full custom-swiper"
           >
             {cards.map((card, index) => (
@@ -113,7 +115,7 @@ export default function Team() {
                     >
                       <div className="flex justify-between">
                         <div className="w-6/12">
-                          <h2 className="poppins text-[16px] text-[#222224] font-semibold text-black leading-7 md:leading-8">
+                          <h2 className="poppins text-[16px] text-[#222224] font-semibold leading-7 md:leading-8">
                             {card.title}
                           </h2>
                           <span className="openSans text-[#606060] text-[12px] font-regular text-nowrap">{card.SubTitle}</span>

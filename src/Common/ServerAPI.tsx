@@ -30,6 +30,9 @@ type GenerateAffiliateFromData = {
 type getReferredUsersFromData = {
   referralcode: string;
 };
+type getMyRefferralCodeFromData = {
+  user_id: string;
+}
 type AccountFormData = {
   plan_id: string;
   plan_type: string;
@@ -114,6 +117,7 @@ export const EndPoint = {
   public_user_profile: "/profile/public-user-profile",
   get_popular_company: "/profile/get-popular-company",
   get_inspire_company: "/profile/get-inspire-company",
+  get_aspire_company: "/profile/get-aspire-company",
   org_type: "/organization",
   questions: "/quiz/get/question",
   questions_file: "/quiz/upload-answer-file",
@@ -152,6 +156,7 @@ export const EndPoint = {
   logout: "/auth/logout",
   gernerate_affiliate_code: "/profile/user/generate_referral_code",
   get_my_referrals: "/profile/user/getmyreferrals",
+  get_my_referral_code: "/profile/user/getMyReferralCode",
   subscription: "/subscription",
 };
 
@@ -222,6 +227,11 @@ export const GenerateAffiliateCode = (formData: GenerateAffiliateFromData): ApiR
 export const getReferredUsers = (formData: getReferredUsersFromData): ApiResponse => {
  
   return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.get_my_referrals}?referralcode=${formData.referralcode}`);
+};
+
+export const getMyRefferralCode = (formData: getMyRefferralCodeFromData): ApiResponse => {
+ 
+  return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.get_my_referral_code}?user_id=${formData.user_id}`);
 };
 export const getSubscriptionDetails = (): ApiResponse => {
  
@@ -468,6 +478,20 @@ export const GetInspiringCompanies = (
     ServerAPI.APIMethod.GET,
     null,
     EndPoint.get_inspire_company,
+    params
+  );
+};
+export const GetAspiringCompanies = (
+  page: number,
+  limit: number
+): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["limit"] = limit;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.get_aspire_company,
     params
   );
 };

@@ -4,7 +4,7 @@ import CompanyCard from "../components/ui/CompanyCard";
 import { iconMap } from "../assets/icons";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
 import {
-  GetInspiringCompanies,
+  GetAspiringCompanies,
   GetPopularCompanyDetails,
   GetValidProfessionalDetails,
 } from "../Common/ServerAPI";
@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 
 type Company = {
+  level: unknown;
   is_organization: boolean | undefined;
   is_person: boolean | undefined;
   id: any;
@@ -50,6 +51,10 @@ export default function DashboardDirectory() {
     totalItems: 0,
     itemsPerPage: 10,
   });
+  console.log(
+    "🚀 ~ DashboardDirectory ~ popularPagination:",
+    popularPagination
+  );
 
   const [aspiringPagination, setAspiringPagination] = useState<PaginationData>({
     currentPage: 1,
@@ -93,6 +98,7 @@ export default function DashboardDirectory() {
         page,
         popularPagination.itemsPerPage
       );
+      console.log("🚀 ~ fetchPopularCompany ~ res:", res);
 
       if (res?.data?.data) {
         const transformedCompanies = res.data.data.rows.map((company: any) => ({
@@ -105,10 +111,11 @@ export default function DashboardDirectory() {
           banner: company.profile_banner || iconMap["companycard1"],
           description: company.bio || "No description available",
           tags: company.tags || [],
-          rating: company.rating || 4,
+          rating: company.average,
           isCertified: company.is_certified || true,
           is_person: company.is_person,
           is_organization: company.is_organization,
+          level: company?.level?.level,
         }));
 
         setPopularCompanies(transformedCompanies);
@@ -135,7 +142,7 @@ export default function DashboardDirectory() {
   const fetchInspiringCompany = async (page: number = 1) => {
     setIsLoading((prev) => ({ ...prev, inspiring: true }));
     try {
-      const res = await GetInspiringCompanies(
+      const res = await GetAspiringCompanies(
         page,
         aspiringPagination.itemsPerPage
       );
@@ -150,8 +157,9 @@ export default function DashboardDirectory() {
           banner: company.profile_banner || iconMap["aspcompany1"],
           description: company.bio || "No description available",
           tags: company.tags || [],
-          rating: company.rating || 3,
+          rating: company.average,
           isCertified: company.is_certified || false,
+          level: company?.level?.level,
         }));
         setAspiringCompanies(transformedCompanies);
         setAspiringPagination((prev) => ({
@@ -189,13 +197,15 @@ export default function DashboardDirectory() {
       );
     }
   };
+  useEffect(() => {
+    handleSearch();
+  }, [selectedDomain]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       handleSearch();
     }
   };
-
 
   return (
     <>
@@ -216,18 +226,24 @@ export default function DashboardDirectory() {
           <div className="w-full mx-auto bg-white border border-gray-200 rounded-full md:rounded-full flex flex-col md:flex-row items-stretch md:items-center px-3 py-2 shadow-sm gap-2">
             {/* Domain Selector - now full width on mobile */}
             <div className="relative rounded-full">
+              {/* Measurement span with exact same text styling */}
               <span
-                className="invisible rounded-full text-[12px] md:rounded-full absolute whitespace-nowrap font-semibold px-3 md:px-4 md:text-base"
+                className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4 py-2"
                 ref={measureRef}
+                style={{
+                  fontFamily: "inherit",
+                  fontSize: "12px", // Explicitly set to match select
+                }}
               >
                 {selectedDomainText || "All Domains"}
               </span>
 
               <select
-                className="bg-[#7077FE] py-2 rounded-full text-[12px] md:rounded-full text-white h-full w-full font-semibold px-3 md:px-4 appearance-none focus:outline-none cursor-pointer "
+                className="bg-[#7077FE] rounded-full text-white h-full font-semibold px-3 md:px-4 py-2 appearance-none focus:outline-none cursor-pointer text-[12px]"
                 style={{
-                  width: `${textWidth}px`,
+                  width: `${textWidth}px`, // Adjusted padding
                   maxWidth: "100%",
+                  minWidth: "120px",
                 }}
                 value={selectedDomain}
                 onChange={(e) => {
@@ -237,20 +253,20 @@ export default function DashboardDirectory() {
                   setSelectedDomainText(selectedText);
                 }}
               >
-                <option value="" className="text-white">
+                <option value="" className="text-white text-[12px]">
                   All Profession
                 </option>
                 {Domain.map((domain: any) => (
                   <option
                     key={domain.id}
                     value={domain.id}
-                    className="text-white"
+                    className="text-white text-[12px]"
                   >
                     {domain.title}
                   </option>
                 ))}
               </select>
-              <div className="absolute top-1.5 right-2 text-white text-xs pointer-events-none hidden sm:block">
+              <div className="absolute top-1/2 right-3 transform -translate-y-1/2 text-white text-[10px] pointer-events-none">
                 ▼
               </div>
             </div>
@@ -265,7 +281,8 @@ export default function DashboardDirectory() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleKeyPress}
               />
-              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE] cursor-pointer"
+              <button
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE] cursor-pointer"
                 onClick={handleSearch}
               >
                 🔍
@@ -287,15 +304,15 @@ export default function DashboardDirectory() {
 
       {/* Popular Companies Section */}
       <section className="py-16 bg-[#f9f9f9] border-t border-gray-100">
-        <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-xl font-semibold mb-4">Popular Companies</h2>
+        <div className="w-full mx-auto">
+          <h2 className="text-xl font-semibold mb-4">Popular People</h2>
 
           {isLoading.popular ? (
             <div className="flex justify-center py-10">
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : popularCompanies.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-6 gap-x-4 gap-y-4">
               {popularCompanies.map((company) => (
                 <CompanyCard
                   id={company.id}
@@ -311,14 +328,16 @@ export default function DashboardDirectory() {
                   isCertified={company.isCertified}
                   is_organization={company.is_organization}
                   is_person={company.is_person}
+                  routeKey={company.id}
+                  level={company.level}
                 />
               ))}
             </div>
           ) : (
-            <p className="text-gray-500">No popular companies found.</p>
+            <p className="text-gray-500">No popular people found.</p>
           )}
 
-          {popularPagination.totalPages > 1 && (
+          {popularPagination.totalPages > 0 && (
             <div className="mt-8">
               <div className="flex justify-end">
                 <nav
@@ -376,15 +395,15 @@ export default function DashboardDirectory() {
 
       {/* Inspiring Companies Section */}
       <section className="py-16 border-t border-gray-100">
-        <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-xl font-semibold mb-4">Aspiring Companies</h2>
+        <div className="w-full mx-auto">
+          <h2 className="text-xl font-semibold mb-4">Aspiring People</h2>
 
           {isLoading.inspiring ? (
             <div className="flex justify-center py-10">
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : aspiringCompanies.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-6 px-4 items-start">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-5 gap-x-4 gap-y-4">
               {aspiringCompanies.map((company) => (
                 <CompanyCard
                   id={company.id}
@@ -398,14 +417,16 @@ export default function DashboardDirectory() {
                   tags={company.tags}
                   rating={company.rating}
                   isCertified={company.isCertified}
+                  routeKey={company.id}
+                  level={company.level}
                 />
               ))}
             </div>
           ) : (
-            <p className="text-gray-500">No aspiring companies found.</p>
+            <p className="text-gray-500">No aspiring people found.</p>
           )}
 
-          {aspiringPagination.totalPages > 1 && (
+          {aspiringPagination.totalPages > 0 && (
             <div className="mt-8 overflow-x-auto">
               <div className="flex justify-center sm:justify-end flex-wrap gap-2">
                 <nav
