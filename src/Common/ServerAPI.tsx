@@ -146,6 +146,11 @@ export const EndPoint = {
   googleLogin: "/auth/google-login",
   all_bestPractices: "/best-practice/all",
   add_bestpractices: "/best-practice",
+  like_bestpractices:"/best-practice/like",
+  save_bestpractices: "/best-practice/save",
+  get_savebestpractices: "/best-practice/get/save/best-practice",
+  create_bestpracticescomment: "/best-practice/comment",
+  get_bestpracticescomment: "/best-practice/comment",
   singleBp: "/best-practice/get",
   user_notification: "/notification",
   logout: "/auth/logout",
@@ -511,6 +516,29 @@ export const GetAllBestPractices = (
 export const CreateBestPractice = (formData: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.add_bestpractices);
 };
+
+export const LikeBestpractices = (formData: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.like_bestpractices);
+};
+
+export const SaveBestpractices = (formData: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.save_bestpractices);
+};
+
+export const GetSaveBestpractices = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.get_savebestpractices}`);
+};
+
+export const CreateBestpracticesComment = (formData: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.create_bestpracticescomment);
+};
+
+export const GetBestpracticesComment = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.get_bestpracticescomment}`);
+};
+
 export const GetSingleBestPractice = (id: any): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.singleBp}/${id}`);
