@@ -223,9 +223,9 @@ export default function DashboardDirectory() {
           </h1>
 
           {/* Updated responsive container */}
-          <div className="w-full mx-auto bg-white border border-gray-200 rounded-full md:rounded-full flex flex-col md:flex-row items-stretch md:items-center px-3 py-2 shadow-sm gap-2">
+          <div className="w-full mx-auto flex flex-col md:flex-row items-stretch md:items-center gap-2 h-[34px]">
             {/* Domain Selector - now full width on mobile */}
-            <div className="relative rounded-full">
+            <div className="relative rounded-full ">
               {/* Measurement span with exact same text styling */}
               <span
                 className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4 py-2"
@@ -239,7 +239,7 @@ export default function DashboardDirectory() {
               </span>
 
               <select
-                className="bg-[#7077FE] rounded-full text-white h-full font-semibold px-3 md:px-4 py-2 appearance-none focus:outline-none cursor-pointer text-[12px]"
+                className="bg-[#7077FE] rounded-full text-white h-full font-semibold px-3 py-2 appearance-none focus:outline-none cursor-pointer text-[12px] "
                 style={{
                   width: `${textWidth}px`, // Adjusted padding
                   maxWidth: "100%",
@@ -272,7 +272,7 @@ export default function DashboardDirectory() {
             </div>
 
             {/* Search Input - full width on mobile */}
-            <div className="relative flex-grow">
+            <div className="relative flex-grow bg-white border border-gray-200 rounded-full md:rounded-full px-3 h-[100%] shadow-sm ">
               <input
                 type="text"
                 placeholder="Technology and AI"
@@ -303,7 +303,7 @@ export default function DashboardDirectory() {
       </section>
 
       {/* Popular Companies Section */}
-      <section className="py-16 bg-[#f9f9f9] border-t border-gray-100">
+      <section className="py-16 px-1 bg-[#f9f9f9] border-t border-gray-100">
         <div className="w-full mx-auto">
           <h2 className="text-xl font-semibold mb-4">Popular People</h2>
 

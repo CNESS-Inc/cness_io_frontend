@@ -151,6 +151,8 @@ export const EndPoint = {
   get_savebestpractices: "/best-practice/get/save/best-practice",
   create_bestpracticescomment: "/best-practice/comment",
   get_bestpracticescomment: "/best-practice/comment",
+  bp_comment_like: "/best-practice/comment/like",
+  bp_comment_reply: "/best-practice/comment/reply",
   singleBp: "/best-practice/get",
   user_notification: "/notification",
   logout: "/auth/logout",
@@ -520,6 +522,9 @@ export const CreateBestPractice = (formData: any): ApiResponse => {
 export const LikeBestpractices = (formData: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.like_bestpractices);
 };
+export const BPCommentLike = (formData: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.bp_comment_like);
+};
 
 export const SaveBestpractices = (formData: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.save_bestpractices);
@@ -533,10 +538,14 @@ export const GetSaveBestpractices = (): ApiResponse => {
 export const CreateBestpracticesComment = (formData: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.create_bestpracticescomment);
 };
+export const CreateBestpracticesCommentReply = (formData: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.bp_comment_reply);
+};
 
-export const GetBestpracticesComment = (): ApiResponse => {
-  const data = {};
-  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.get_bestpracticescomment}`);
+export const GetBestpracticesComment = (params: { post_id: string }): ApiResponse => {
+  const queryString = new URLSearchParams(params).toString();
+  const url = `${EndPoint.get_bestpracticescomment}?${queryString}`;
+  return executeAPI(ServerAPI.APIMethod.GET, null, url);
 };
 
 export const GetSingleBestPractice = (id: any): ApiResponse => {

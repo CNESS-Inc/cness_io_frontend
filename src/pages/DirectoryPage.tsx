@@ -246,11 +246,11 @@ export default function DirectoryPage() {
             Conscious Search Stops here.
           </h1>
 
-          <div className="w-full max-w-3xl mx-auto bg-white border border-gray-200 rounded-full flex flex-nowrap items-center px-3 py-2 shadow-sm gap-2">
+          <div className="w-full max-w-3xl mx-auto flex flex-nowrap items-center h-[34px] gap-2">
             <div className="relative rounded-full">
               {/* Measurement span with exact same text styling */}
               <span
-                className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4 py-2"
+                className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4"
                 ref={measureRef}
                 style={{
                   fontFamily: "inherit",
@@ -292,7 +292,7 @@ export default function DirectoryPage() {
                 ▼
               </div>
             </div>
-            <div className="relative flex-grow">
+            <div className="relative flex-grow  bg-white border border-gray-200 rounded-full px-3 h-[100%] shadow-sm">
               <input
                 type="text"
                 placeholder="Find & Choose your perfect organization"

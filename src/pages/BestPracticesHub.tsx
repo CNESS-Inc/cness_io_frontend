@@ -21,14 +21,11 @@ import { Bookmark } from "lucide-react"; // Import icons
 //import {  ChevronUp, ChevronDown, SortAsc, SortDesc } from "lucide-react"; // Import icons
 
 //import {
- // GetBadgeListDetails
+// GetBadgeListDetails
 //} from "../Common/ServerAPI";
 
-
-
-
 const truncateText = (text: string, maxLength: number): string => {
-  if (!text) return '';
+  if (!text) return "";
   return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
 };
 type Company = {
@@ -37,7 +34,7 @@ type Company = {
   user: any;
   profession: ReactNode;
   likesCount: ReactNode;
-   isLiked?: boolean; 
+  isLiked?: boolean;
   commentsCount: ReactNode;
   is_organization: boolean | undefined;
   is_person: boolean | undefined;
@@ -78,28 +75,30 @@ export default function BestPracticesHub() {
   const measureRef = useRef<HTMLSpanElement>(null);
   const [selectedDomainText, setSelectedDomainText] = useState("All Domains");
   const isMobile = useMediaQuery("(max-width: 640px)");
-const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
-//const [badge, setBadge] = useState<any>([]);
-//const [selectedCert, setSelectedCert] = useState<string>("");
-//const [sort, setSort] = useState<"az" | "za">("az");
-//const [open, setOpen] = useState<"cert" | "sort" | null>(null);
-// Fetch saved best practices and store in variable
-useEffect(() => {
-  const fetchSavedBestPractices = async () => {
-    try {
-      const res = await GetSaveBestpractices();
-      // Assuming the response contains an array of saved post IDs
-      const savedIds = res?.data?.data?.rows.map((item: any) => item.id) || [];
-      setSavedItems(new Set(savedIds));
-    } catch (error) {
-      // Optionally handle error
-      setSavedItems(new Set());
-    }
-  };
-  fetchSavedBestPractices();
-}, []);
+  const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
+  //const [badge, setBadge] = useState<any>([]);
+  //const [selectedCert, setSelectedCert] = useState<string>("");
+  //const [sort, setSort] = useState<"az" | "za">("az");
+  //const [open, setOpen] = useState<"cert" | "sort" | null>(null);
+  // Fetch saved best practices and store in variable
+  useEffect(() => {
+    const fetchSavedBestPractices = async () => {
+      try {
+        const res = await GetSaveBestpractices();
+        // Assuming the response contains an array of saved post IDs
+        const savedIds =
+          res?.data?.data?.rows.map((item: any) => item.id) || [];
+        setSavedItems(new Set(savedIds));
+      } catch (error) {
+        // Optionally handle error
+        setSavedItems(new Set());
+      }
+    };
+    fetchSavedBestPractices();
+  }, []);
 
-{/*const fetchBadge = async () => {
+  {
+    /*const fetchBadge = async () => {
   try {
     const res = await GetBadgeListDetails();
     setBadge(res?.data?.data);
@@ -115,34 +114,35 @@ useEffect(() => {
 useEffect(() => {
   fetchBadge();
 }, []);
-*/}
-
-const toggleSave = async (id: string) => {
-  try {
-    const data = { post_id: id };
-    await SaveBestpractices(data);
-    setSavedItems((prev) => {
-      const updated = new Set(prev);
-      if (updated.has(id)) {
-        updated.delete(id);
-      } else {
-        updated.add(id);
-      }
-      return updated;
-    });
-    showToast({
-      message: "Saved!",
-      type: "success",
-      duration: 1500,
-    });
-  } catch (error) {
-    showToast({
-      message: "Failed to save. Please try again.",
-      type: "error",
-      duration: 2000,
-    });
+*/
   }
-};
+
+  const toggleSave = async (id: string) => {
+    try {
+      const data = { post_id: id };
+      await SaveBestpractices(data);
+      setSavedItems((prev) => {
+        const updated = new Set(prev);
+        if (updated.has(id)) {
+          updated.delete(id);
+        } else {
+          updated.add(id);
+        }
+        return updated;
+      });
+      showToast({
+        message: "Saved!",
+        type: "success",
+        duration: 1500,
+      });
+    } catch (error) {
+      showToast({
+        message: "Failed to save. Please try again.",
+        type: "error",
+        duration: 2000,
+      });
+    }
+  };
 
   // Modal states
   const [newPractice, setNewPractice] = useState({
@@ -152,7 +152,6 @@ const toggleSave = async (id: string) => {
     file: null as File | null,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-
 
   // Pagination states
   const [pagination, setPagination] = useState<PaginationData>({
@@ -213,7 +212,6 @@ const toggleSave = async (id: string) => {
         pagination.itemsPerPage,
         professionId,
         searchText
-        
       );
       if (res?.data?.data) {
         const transformedCompanies = res.data.data.rows.map(
@@ -232,10 +230,9 @@ const toggleSave = async (id: string) => {
             },
             followersCount: practice.followers_count || 0,
             likesCount: practice.likes_count || 0,
-              isLiked: practice.is_liked || false,
+            isLiked: practice.is_liked || false,
             commentsCount: practice.total_comment_count || 0,
           })
-          
         );
         setBestPractices(transformedCompanies);
         setPagination((prev: PaginationData) => ({
@@ -309,19 +306,19 @@ const toggleSave = async (id: string) => {
   };
 
   // Sample like handler (replace with your actual API call)
-  const handleLike = async (id: string,index:Number) => {
+  const handleLike = async (id: string, index: Number) => {
     try {
       // Example: await LikeBestPractice(id);
-      let data={
-    "post_id" : id
-}
-      await LikeBestpractices(data); 
+      let data = {
+        post_id: id,
+      };
+      await LikeBestpractices(data);
       // Optimistically update likesCount in bestPractices state
-      setBestPractices(prev =>
+      setBestPractices((prev) =>
         prev.map((item, i) =>
           i === index
-        ? { ...item, likesCount: (Number(item.likesCount) || 0) + 1 }
-        : item
+            ? { ...item, likesCount: (Number(item.likesCount) || 0) + 1 }
+            : item
         )
       );
       // Optionally update local state for optimistic UI
@@ -407,13 +404,13 @@ const toggleSave = async (id: string) => {
             Find Your Conscious Best Practices here.
           </h1>
 
-          <div className="w-full mx-auto bg-white border border-gray-200 rounded-lg md:rounded-full flex flex-col md:flex-row items-stretch md:items-center px-3 py-2 shadow-sm gap-2">
+          <div className="w-full mx-automd:rounded-full flex flex-col h-[34px] md:flex-row items-stretch md:items-center gap-2">
             {/* Profession Selector */}
 
             <div className="relative rounded-full">
               {/* Measurement span with exact same text styling */}
               <span
-                className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4 py-2"
+                className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4 py-2 "
                 ref={measureRef}
                 style={{
                   fontFamily: "inherit",
@@ -423,39 +420,38 @@ const toggleSave = async (id: string) => {
                 {selectedDomainText || "All Profession"}
               </span>
 
-
-<div className="relative h-full flex items-center">
-
-              <select
-
-                className="bg-[#7077FE] py-2 rounded-full text-[12px] md:rounded-full text-white h-full w-full font-semibold px-3 md:px-4 appearance-none focus:outline-none cursor-pointer "
-
-                style={{
-                  width: `${textWidth}px`, // Adjusted padding
-                  maxWidth: "100%",
-                  minWidth: "120px",
-                }}
-                value={selectedProfession}
-                onChange={handleProfessionChange}
-              >
-                <option value="" className="text-white text-[12px]">
-                  All Profession
-                </option>
-                {profession.map((prof: any) => (
-                  <option key={prof.id} value={prof.id} className="text-black">
-                    {prof.title}
+              <div className="relative h-full flex items-center">
+                <select
+                  className="bg-[#7077FE] py-2 rounded-full text-[12px] md:rounded-full text-white h-full w-full font-semibold px-3 md:px-4 appearance-none focus:outline-none cursor-pointer "
+                  style={{
+                    width: `${textWidth}px`, // Adjusted padding
+                    maxWidth: "100%",
+                    minWidth: "120px",
+                  }}
+                  value={selectedProfession}
+                  onChange={handleProfessionChange}
+                >
+                  <option value="" className="text-white text-[12px]">
+                    All Profession
                   </option>
-                ))}
-              </select>
+                  {profession.map((prof: any) => (
+                    <option
+                      key={prof.id}
+                      value={prof.id}
+                      className="text-black"
+                    >
+                      {prof.title}
+                    </option>
+                  ))}
+                </select>
 
-              <div className="absolute top-1.5 right-2 text-white text-xs pointer-events-none hidden sm:block">
-
-                ▼
+                <div className="absolute top-1.5 right-2 text-white text-xs pointer-events-none hidden sm:block">
+                  ▼
+                </div>
               </div>
             </div>
-</div>
             {/* Search Input */}
-            <div className="relative flex-grow">
+            <div className="relative flex-grow  bg-white border border-gray-200 rounded-lg  px-3 shadow-sm h-[100%]">
               <input
                 type="text"
                 placeholder="Search best practices..."
@@ -486,39 +482,41 @@ const toggleSave = async (id: string) => {
       </section>
 
       {/* Best Practices Section */}
-      <section className="py-8 sm:py-16 bg-[#f9f9f9] border-t border-gray-100">
-        <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-8 px-1 sm:py-16 bg-[#f9f9f9] border-t border-gray-100">
+        <div className="w-full mx-auto ">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
-{(selectedProfession || searchText) && (
-  <h4 className="poppins font-medium text-base sm:text-lg leading-[150%] tracking-normal">
-    Best Practices For{" "}
-    {selectedProfession && (
-      <span className="text-[#7077FE] ml-1 font-semibold">
-         “{profession.find(p => p.id === selectedProfession)?.title}”
-      </span>
-    )}
-    {searchText?.trim() && (
-      <>
-        {selectedProfession ? " and " : " "}
-        <span className="text-[#7077FE] font-semibold">
-          “{searchText.trim()}”
-        </span>
-      </>
-    )}  
-  </h4>
-)}
+            {(selectedProfession || searchText) && (
+              <h4 className="poppins font-medium text-base sm:text-lg leading-[150%] tracking-normal">
+                Best Practices For{" "}
+                {selectedProfession && (
+                  <span className="text-[#7077FE] ml-1 font-semibold">
+                    “
+                    {profession.find((p) => p.id === selectedProfession)?.title}
+                    ”
+                  </span>
+                )}
+                {searchText?.trim() && (
+                  <>
+                    {selectedProfession ? " and " : " "}
+                    <span className="text-[#7077FE] font-semibold">
+                      “{searchText.trim()}”
+                    </span>
+                  </>
+                )}
+              </h4>
+            )}
 
-           {!selectedProfession && !searchText && (
-  <h4 className="poppins font-medium text-base sm:text-lg leading-[150%] tracking-normal">
-    Best Practices for{" "}
-    <span className="text-[#7077FE] font-semibold">All Professions</span>
-  </h4>
-)}
-         
+            {!selectedProfession && !searchText && (
+              <h4 className="poppins font-medium text-base sm:text-lg leading-[150%] tracking-normal">
+                Best Practices for{" "}
+                <span className="text-[#7077FE] font-semibold">
+                  All Professions
+                </span>
+              </h4>
+            )}
 
-
-          <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-  {/* Certification Filter Dropdown
+            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+              {/* Certification Filter Dropdown
   <div className="relative">
     <div
       className="flex items-center justify-between cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm"
@@ -610,145 +608,158 @@ const toggleSave = async (id: string) => {
       </div>
     )}
   </div>*/}
-</div>
- </div>
+            </div>
+          </div>
 
           {isLoading.popular ? (
             <div className="flex justify-center py-10">
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : bestPractices.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
+              {bestPractices?.map((company, index) => {
+                //const isSaved = savedItems.has(company.id); // ✅ declare inside
 
- <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-8 items-stretch px-4">
-                {bestPractices?.map((company,index) => {
-  //const isSaved = savedItems.has(company.id); // ✅ declare inside
-
-  return (
-    <div
-      key={company.id}
-      className="relative bg-white max-w-sm cursor-pointer rounded-3xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
-      onClick={() =>
-       navigate(
-    `/dashboard/bestpractices/${company.id}/${slugify(company.title)}`,
-    {
-      state: {
-        likesCount: company.likesCount,
-        isLiked: company.isLiked, // ensure this is coming from backend
-      },
-    }
-  )
-
-      }
-    >
-<div className="px-4 pt-4 pb-0 relative z-0">
-  <div className="flex items-start gap-2 pr-12">
-                      <img
-                        src={
-                          company?.user?.profilePicture &&
-                          company?.user?.profilePicture !==
-                            "http://localhost:5026/file/"
-                            ? company?.user?.profilePicture
-                            : "/profile.png"
+                return (
+                  <div
+                    key={company.id}
+                    className="relative bg-white  cursor-pointer rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
+                    onClick={() =>
+                      navigate(
+                        `/dashboard/bestpractices/${company.id}/${slugify(
+                          company.title
+                        )}`,
+                        {
+                          state: {
+                            likesCount: company.likesCount,
+                            isLiked: company.isLiked, // ensure this is coming from backend
+                          },
                         }
-                        alt={company.user.username}
-                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover mr-2 sm:mr-3"
-                        onError={(e) => {
-                          // Fallback if the image fails to load
-                          const target = e.target as HTMLImageElement;
-                          target.src = "/profile.png";
-                        }}
-                      />
-                      <div className="overflow-hidden">
-                        <h3 className="font-semibold text-sm sm:text-base truncate">
-                          {company.user.firstName} {company.user.lastName}
-                        </h3>
-                        <p className="text-xs text-gray-500 truncate">
-                          @{company.user.username}
-                        </p>
-                         <span className="text-xs text-gray-500 truncate max-w-[50%]">
-                        {company.profession}
-                      </span>
+                      )
+                    }
+                  >
+                    <div className="px-4 pt-4 pb-0 relative z-0">
+                      <div className="flex items-start gap-2 pr-12">
+                        <img
+                          src={
+                            company?.user?.profilePicture &&
+                            company?.user?.profilePicture !==
+                              "http://localhost:5026/file/"
+                              ? company?.user?.profilePicture
+                              : "/profile.png"
+                          }
+                          alt={company.user.username}
+                          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover mr-2 sm:mr-3"
+                          onError={(e) => {
+                            // Fallback if the image fails to load
+                            const target = e.target as HTMLImageElement;
+                            target.src = "/profile.png";
+                          }}
+                        />
+                        <div className="overflow-hidden">
+                          <h3 className="font-semibold text-sm sm:text-base truncate">
+                            {company.user.firstName} {company.user.lastName}
+                          </h3>
+                          <p className="text-xs text-gray-500 truncate">
+                            @{company.user.username}
+                          </p>
+                          <span className="text-xs text-gray-500 truncate max-w-[50%]">
+                            {company.profession}
+                          </span>
+                        </div>
+                      </div>
+                      <h3 className="text-base sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">
+                        {company.title}
+                      </h3>
+                      <div className="rounded-xl overflow-hidden mb-3">
+                        {company.file && (
+                          <img
+                            src={
+                              company.file &&
+                              company.file !== "http://localhost:5026/file/"
+                                ? company.file
+                                : iconMap["companycard1"]
+                            }
+                            alt={company.title}
+                            className="w-full h-40 sm:h-48 object-cover"
+                            onError={(e) => {
+                              // Fallback in case the image fails to load
+                              (e.target as HTMLImageElement).src =
+                                iconMap["companycard1"];
+                            }}
+                          />
+                        )}
+                      </div>
+                      <p className="text-sm font-semibold text-gray-900">
+                        Overview
+                      </p>
+
+                      <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-3">
+                        {truncateText(company.description, 50)}
+                        {company.description.length > 50 && (
+                          <span className="text-[#F07EFF] underline ml-1">
+                            Read More
+                          </span>
+                        )}
+                      </p>
+                      <div className="flex justify-between items-center px-4 py-2 mt-2 text-xs sm:text-sm text-gray-600">
+                        {/* Likes & Comments */}
+                        <div className="flex items-center gap-5">
+                          <span
+                            className="flex items-center gap-1 cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // TODO: Call like API here if available
+                              handleLike(company.id, index);
+                              // Optionally update local state for optimistic UI
+                              showToast({
+                                message: "Liked!",
+                                type: "success",
+                                duration: 1500,
+                              });
+                            }}
+                          >
+                            <img
+                              src={like}
+                              alt="Like Icon"
+                              className="w-5 h-5"
+                            />
+                            <span>{company.likesCount || 0}</span>
+                          </span>
+
+                          <span className="flex items-center gap-1">
+                            <img
+                              src={comment}
+                              alt="Comment Icon"
+                              className="w-5 h-5"
+                            />
+                            <span>{company.commentsCount || 0}</span>
+                          </span>
+                        </div>
+
+                        {/* Bookmark */}
+                        <div
+                          className="cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleSave(company.id);
+                          }}
+                        >
+                          <Bookmark
+                            className="w-5 h-5 transition-all duration-200"
+                            fill={
+                              savedItems.has(company.id) ? "#72DBF2" : "none"
+                            } // full yellow when saved
+                            stroke={
+                              savedItems.has(company.id) ? "#72DBF2" : "#4338CA"
+                            } // yellow or indigo
+                          />
+                        </div>
                       </div>
                     </div>
-                  <h3 className="text-base sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">
-  {company.title}
-</h3>
-        <div className="rounded-xl overflow-hidden mb-3">
-
-                  {company.file && (
-                    <img
-                      src={
-                        company.file &&
-                        company.file !== "http://localhost:5026/file/"
-                          ? company.file
-                          : iconMap["companycard1"]
-                      }
-                      alt={company.title}
-                      className="w-full h-40 sm:h-48 object-cover"
-                      onError={(e) => {
-                        // Fallback in case the image fails to load
-                        (e.target as HTMLImageElement).src =
-                          iconMap["companycard1"];
-                      }}
-                    />
-                  )}
                   </div>
-          <p className="text-sm font-semibold text-gray-900">Overview</p>
-
-                    <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-3">
-{truncateText(company.description, 50)}
-   {company.description.length > 50 && (
-    <span className="text-[#F07EFF] underline ml-1">Read More</span>
-  )}
-  
- 
-</p>
-<div className="flex justify-between items-center px-4 py-2 mt-2 text-xs sm:text-sm text-gray-600">
-  {/* Likes & Comments */}
-  <div className="flex items-center gap-5">
-    <span
-      className="flex items-center gap-1 cursor-pointer"
-      onClick={e => {
-      e.stopPropagation();
-      // TODO: Call like API here if available
-      handleLike(company.id,index);
-      // Optionally update local state for optimistic UI
-      showToast({
-        message: "Liked!",
-        type: "success",
-        duration: 1500,
-      });
-      }}
-    >
-      <img src={like} alt="Like Icon" className="w-5 h-5" />
-      <span>{company.likesCount || 0}</span>
-    </span>
-
-    <span className="flex items-center gap-1">
-      <img src={comment} alt="Comment Icon" className="w-5 h-5" />
-      <span>{company.commentsCount || 0}</span>
-    </span>
-  </div>
-
-  {/* Bookmark */}
-  <div
-    className="cursor-pointer"
-    onClick={(e) => {
-      e.stopPropagation();
-      toggleSave(company.id);
-    }}
-  >
-    <Bookmark
-      className="w-5 h-5 transition-all duration-200"
-      fill={savedItems.has(company.id) ? "#72DBF2" : "none"} // full yellow when saved
-      stroke={savedItems.has(company.id) ? "#72DBF2" : "#4338CA"} // yellow or indigo
-    />
-  </div>
-</div>
-                  </div>
-                </div>
-    );
-})}
+                );
+              })}
             </div>
           ) : (
             <p className="text-gray-500 py-10 text-center">
