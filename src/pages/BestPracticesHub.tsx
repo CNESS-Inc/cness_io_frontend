@@ -18,6 +18,11 @@ import { useMediaQuery } from "../hooks/useMediaQuery";
 import like from "../assets/like.svg";
 import comment from "../assets/comment.svg";
 import { Bookmark } from "lucide-react"; // Import icons
+import {
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/DashboardCard";
 //import {  ChevronUp, ChevronDown, SortAsc, SortDesc } from "lucide-react"; // Import icons
 
 //import {
@@ -161,11 +166,20 @@ useEffect(() => {
     itemsPerPage: 10,
   });
   const [bestPractices, setBestPractices] = useState<Company[]>([]);
-  console.log("🚀 ~ BestPracticesHub ~ bestPractices:", bestPractices);
+  const [expandedDescriptions, setExpandedDescriptions] = useState<
+    Record<string, boolean>
+  >({});
   const [isLoading, setIsLoading] = useState({
     popular: false,
   });
 
+  const toggleDescription = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setExpandedDescriptions((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
   useEffect(() => {
     if (measureRef.current) {
       setTextWidth(measureRef.current.offsetWidth);
@@ -444,7 +458,7 @@ useEffect(() => {
                   ))}
                 </select>
 
-                <div className="absolute top-1.5 right-2 text-white text-xs pointer-events-none hidden sm:block">
+                <div className="absolute right-2 text-white text-xs pointer-events-none hidden sm:block">
                   ▼
                 </div>
               </div>
@@ -487,18 +501,20 @@ useEffect(() => {
             {(selectedProfession || searchText) && (
               <h4 className="poppins font-medium text-base sm:text-lg leading-[150%] tracking-normal">
                 Best Practices For{" "}
-                {selectedProfession && (
+                {selectedProfession && selectedProfession !== "" && (
                   <span className="text-[#7077FE] ml-1 font-semibold">
-                    “
+                    "
                     {profession.find((p) => p.id === selectedProfession)?.title}
-                    ”
+                    "
                   </span>
                 )}
                 {searchText?.trim() && (
                   <>
-                    {selectedProfession ? " and " : " "}
+                    {selectedProfession && selectedProfession !== ""
+                      ? " and "
+                      : " "}
                     <span className="text-[#7077FE] font-semibold">
-                      “{searchText.trim()}”
+                      "{searchText.trim()}"
                     </span>
                   </>
                 )}
@@ -507,106 +523,103 @@ useEffect(() => {
 
             {!selectedProfession && !searchText && (
               <h4 className="poppins font-medium text-base sm:text-lg leading-[150%] tracking-normal">
-                Best Practices for{" "}
-                <span className="text-[#7077FE] font-semibold">
-                  All Professions
-                </span>
+                Best Practices For{" "}
               </h4>
             )}
 
             <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
               {/* Certification Filter Dropdown
-  <div className="relative">
-    <div
-      className="flex items-center justify-between cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm"
-      onClick={() => setOpen(open === "cert" ? null : "cert")}
-    >
-      <div className="flex items-center gap-2">
-        <Award className="w-4 h-4 text-purple-500" />
-        <span className="font-medium text-sm">
-          {badge.find((b: any) => b.slug === selectedCert)?.level || "Certification"}
-        </span>
-      </div>
-      {open === "cert" ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-    </div>
+              <div className="relative">
+                <div
+                  className="flex items-center justify-between cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm"
+                  onClick={() => setOpen(open === "cert" ? null : "cert")}
+                >
+                  <div className="flex items-center gap-2">
+                    <Award className="w-4 h-4 text-purple-500" />
+                    <span className="font-medium text-sm">
+                      {badge.find((b: any) => b.slug === selectedCert)?.level || "Certification"}
+                    </span>
+                  </div>
+                  {open === "cert" ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                </div>
 
-    {open === "cert" && (
-      <div className="absolute z-10 mt-1 w-auto bg-white border border-gray-200 rounded-lg shadow-lg p-2">
-        {badge.map((item: any) => (
-          <label
-            key={item.id}
-            className="flex items-center gap-2 cursor-pointer p-2 hover:bg-gray-50 rounded"
-          >
-            <input
-              type="radio"
-              name="cert"
-              value={item.slug}
-              checked={selectedCert === item.slug}
-              onChange={() => {
-                setSelectedCert(item.slug);
-                setOpen(null);
-              }}
-              className="accent-[#897AFF]"
-            />
-            <span
-              className={`text-sm ${
-                selectedCert === item.slug
-                  ? "text-[#9747FF] font-medium"
-                  : "text-gray-600"
-              }`}
-            >
-              {item.level}
-            </span>
-          </label>
-        ))}
-      </div>
-    )}
-  </div>
+                {open === "cert" && (
+                  <div className="absolute z-10 mt-1 w-auto bg-white border border-gray-200 rounded-lg shadow-lg p-2">
+                    {badge.map((item: any) => (
+                      <label
+                        key={item.id}
+                        className="flex items-center gap-2 cursor-pointer p-2 hover:bg-gray-50 rounded"
+                      >
+                        <input
+                          type="radio"
+                          name="cert"
+                          value={item.slug}
+                          checked={selectedCert === item.slug}
+                          onChange={() => {
+                            setSelectedCert(item.slug);
+                            setOpen(null);
+                          }}
+                          className="accent-[#897AFF]"
+                        />
+                        <span
+                          className={`text-sm ${
+                            selectedCert === item.slug
+                              ? "text-[#9747FF] font-medium"
+                              : "text-gray-600"
+                          }`}
+                        >
+                          {item.level}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
 
-  {/* Sort Options Dropdown 
-  <div className="relative">
-    <div
-      className="flex items-center justify-between cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm"
-      onClick={() => setOpen(open === "sort" ? null : "sort")}
-    >
-      <div className="flex items-center gap-2">
-        {sort === "az" && <SortAsc size={16} />}
-        {sort === "za" && <SortDesc size={16} />}
-        <span className="font-medium text-sm">
-          {sort === "az" && "A-Z"}
-          {sort === "za" && "Z-A"}
-        </span>
-      </div>
-      {open === "sort" ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-    </div>
+              {/* Sort Options Dropdown 
+              <div className="relative">
+                <div
+                  className="flex items-center justify-between cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm"
+                  onClick={() => setOpen(open === "sort" ? null : "sort")}
+                >
+                  <div className="flex items-center gap-2">
+                    {sort === "az" && <SortAsc size={16} />}
+                    {sort === "za" && <SortDesc size={16} />}
+                    <span className="font-medium text-sm">
+                      {sort === "az" && "A-Z"}
+                      {sort === "za" && "Z-A"}
+                    </span>
+                  </div>
+                  {open === "sort" ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                </div>
 
-    {open === "sort" && (
-      <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg p-2">
-        <div
-          className={`flex items-center gap-2 cursor-pointer p-2 hover:bg-gray-50 rounded ${
-            sort === "az" ? "text-indigo-500 font-medium" : ""
-          }`}
-          onClick={() => {
-            setSort("az");
-            setOpen(null);
-          }}
-        >
-          <SortAsc size={16} /> A-Z
-        </div>
-        <div
-          className={`flex items-center gap-2 cursor-pointer p-2 hover:bg-gray-50 rounded ${
-            sort === "za" ? "text-indigo-500 font-medium" : ""
-          }`}
-          onClick={() => {
-            setSort("za");
-            setOpen(null);
-          }}
-        >
-          <SortDesc size={16} /> Z-A
-        </div>
-      </div>
-    )}
-  </div>*/}
+                {open === "sort" && (
+                  <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg p-2">
+                    <div
+                      className={`flex items-center gap-2 cursor-pointer p-2 hover:bg-gray-50 rounded ${
+                        sort === "az" ? "text-indigo-500 font-medium" : ""
+                      }`}
+                      onClick={() => {
+                        setSort("az");
+                        setOpen(null);
+                      }}
+                    >
+                      <SortAsc size={16} /> A-Z
+                    </div>
+                    <div
+                      className={`flex items-center gap-2 cursor-pointer p-2 hover:bg-gray-50 rounded ${
+                        sort === "za" ? "text-indigo-500 font-medium" : ""
+                      }`}
+                      onClick={() => {
+                        setSort("za");
+                        setOpen(null);
+                      }}
+                    >
+                      <SortDesc size={16} /> Z-A
+                    </div>
+                  </div>
+                )}
+              </div>*/}
             </div>
           </div>
 
@@ -637,8 +650,8 @@ useEffect(() => {
                       )
                     }
                   >
-                    <div className="px-4 pt-4 pb-0 relative z-0">
-                      <div className="flex items-start gap-2 pr-12">
+                    <CardHeader className="px-4 pt-4 pb-0 relative z-0">
+                      <div className="flex items-start gap-1 pr-12">
                         <img
                           src={
                             company?.user?.profilePicture &&
@@ -655,21 +668,17 @@ useEffect(() => {
                             target.src = "/profile.png";
                           }}
                         />
-                        <div className="overflow-hidden">
-                          <h3 className="font-semibold text-sm sm:text-base truncate">
+                        <div>
+                          <CardTitle className="text-sm font-semibold">
                             {company.user.firstName} {company.user.lastName}
-                          </h3>
-                          <p className="text-xs text-gray-500 truncate">
+                          </CardTitle>
+                          <CardDescription className="text-xs text-gray-500">
                             @{company.user.username}
-                          </p>
-                          <span className="text-xs text-gray-500 truncate max-w-[50%]">
-                            {company.profession}
-                          </span>
+                          </CardDescription>
                         </div>
                       </div>
-                      <h3 className="text-base sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">
-                        {company.title}
-                      </h3>
+                    </CardHeader>
+                    <div className="px-4 pt-4 pb-0 relative z-0">
                       <div className="rounded-xl overflow-hidden mb-3">
                         {company.file && (
                           <img
@@ -689,15 +698,33 @@ useEffect(() => {
                           />
                         )}
                       </div>
+                      <h3 className="text-base sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">
+                        {company.title}
+                      </h3>
                       <p className="text-sm font-semibold text-gray-900">
                         Overview
                       </p>
 
-                      <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-3">
-                        {truncateText(company.description, 50)}
+                      {/* <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-3">
+                        {truncateText(company.description, 100)}
                         {company.description.length > 50 && (
                           <span className="text-[#F07EFF] underline ml-1">
                             Read More
+                          </span>
+                        )}
+                      </p> */}
+                      <p className="text-sm text-gray-600 leading-snug break-words whitespace-pre-line">
+                        {expandedDescriptions[company.id]
+                          ? company.description
+                          : truncateText(company.description, 100)}
+                        {company.description.length > 100 && (
+                          <span
+                            className="text-purple-600 underline cursor-pointer ml-1"
+                            onClick={(e) => toggleDescription(e, company.id)}
+                          >
+                            {expandedDescriptions[company.id]
+                              ? "Read Less"
+                              : "Read More"}
                           </span>
                         )}
                       </p>
