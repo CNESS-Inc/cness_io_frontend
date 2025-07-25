@@ -370,7 +370,6 @@ useEffect(() => {
       });
     } finally {
       setIsSubmitting(false);
-      setActiveModal("bestpractices");
     }
   };
 
