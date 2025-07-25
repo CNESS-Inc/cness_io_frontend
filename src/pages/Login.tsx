@@ -1953,7 +1953,7 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
                   Let's Get to <br></br>
                   Know You Better
                 </h2>
-                <p className="text-gray-700 text-sm">
+                <p className="text-[#f3f1ff] text-sm">
                   This information helps us understand your conscious impact
                   better.
                 </p>
