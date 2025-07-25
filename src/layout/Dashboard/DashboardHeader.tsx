@@ -4,6 +4,7 @@ import {
   SettingsIcon,
   LogOutIcon,
   BellIcon,
+  HelpCircleIcon,
 } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
@@ -122,6 +123,8 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
       {/* Right side - Icons and User Profile */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
+          
+
           {/* Logout Button */}
           <div className="relative group">
             <div
@@ -132,6 +135,20 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
             </div>
             <span className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
               Logout
+              <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rotate-45"></span>
+            </span>
+          </div>
+
+          {/* Logout Button */}
+          <div className="relative group">
+            <div
+              onClick={() => navigate("/dashboard/support")}
+              className="flex w-[41px] h-[41px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
+            >
+              <HelpCircleIcon className="w-6 h-6" />
+            </div>
+            <span className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
+              Support
               <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rotate-45"></span>
             </span>
           </div>
