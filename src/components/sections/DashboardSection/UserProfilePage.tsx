@@ -31,6 +31,56 @@ const tabNames = [
   "Public Profile Fields",
 ];
 
+const genderOptions = [
+  { value: "", label: "Select Your Gender" }, // Use empty string for default
+  { value: "Male", label: "Male" },
+  { value: "Female", label: "Female" },
+  { value: "Non-binary", label: "Non-binary" },
+];
+
+const customSelectStyles = {
+  control: (base: any, state: any) => ({
+    ...base,
+    minHeight: "44px",
+    borderRadius: "12px",
+    borderColor: state.isFocused ? "#7077FE" : "#D1D5DB",
+    boxShadow: state.isFocused ? "0 0 0 2px rgba(112, 119, 254, 0.2)" : "none",
+    paddingLeft: "8px",
+    fontFamily: "Rubik, sans-serif",
+    fontSize: "14px",
+    fontWeight: 400,
+    transition: "all 0.2s ease-in-out",
+    "&:hover": {
+      borderColor: "#7077FE",
+    },
+  }),
+  placeholder: (base: any) => ({
+    ...base,
+    color: "#9CA3AF",
+    fontSize: "14px",
+  }),
+  option: (base: any, state: any) => ({
+    ...base,
+    backgroundColor: state.isSelected
+      ? "#E0E7FF"
+      : state.isFocused
+      ? "#F3F4F6"
+      : "white",
+    color: "#111827",
+    padding: "10px 12px",
+    fontSize: "14px",
+    cursor: "pointer",
+  }),
+  singleValue: (base: any) => ({
+    ...base,
+    color: "#111827",
+    fontSize: "14px",
+  }),
+};
+
+
+
+
 const customStyles = {
   control: (base: any, state: any) => ({
     ...base,
@@ -1318,41 +1368,23 @@ styles={customStyles}                                   classNamePrefix="react-s
                                 )}
                               </div>
 
-                              {/* Gender */}
-                              <div className="relative w-full">
-
+{/* Gender Dropdown - Styled like the Interests Field */}
+<div className="w-full">
   <label className="block text-sm font-medium text-gray-800 mb-2">
-
-                                  Gender <span className="text-red-500">*</span>
-                                </label>
-                                <select
-                                  {...basicInfoForm.register("gender", {
-                                    required: true,
-                                  })}
-                                  className="
-   w-full h-[41px] bg-white
-      border border-gray-300 rounded-[12px]
-      px-[12px] pr-[40px] 
-      font-normal text-[14px] leading-5
-      text-gray-700 appearance-none
-      focus:outline-none focus:ring-2 focus:ring-purple-500
-  "
-                                  style={{ fontFamily: "Rubik, sans-serif" }}
-                                >
-                                  <option value="">Select your gender</option>
-                                  <option value="Male">Male</option>
-                                  <option value="Female">Female</option>
-                                  <option value="Non-binary">Non-binary</option>
-                                </select>
-                                 <img
-
-    src="/chevron-down.svg"
-    alt="Dropdown"
-    className="w-4 h-4 absolute right-4 top-[73%] transform -translate-y-1/2 pointer-events-none"
-
+    Gender <span className="text-red-500">*</span>
+  </label>
+  <Select
+    options={genderOptions}
+    styles={customSelectStyles}
+    //placeholder="Select your gender"
+    value={genderOptions.find(opt => opt.value === basicInfoForm.watch("gender"))}
+    onChange={(selectedOption) =>
+      basicInfoForm.setValue("gender", selectedOption?.value || "")
+    }
+    onBlur={() => basicInfoForm.trigger("gender")}
+    isSearchable={false}
   />
-                              </div>
-
+</div>
                               {/* Date of Birth */}
                               <div>
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1512,6 +1544,7 @@ styles={customStyles}                                   classNamePrefix="react-s
                                 <input
                                   type="tel"
                                   placeholder="Enter Your Phone Number"
+                                  
                                   {...contactInfoForm.register("phone", {
                                     required: "Phone number is required",
                                     pattern: {
@@ -1532,7 +1565,7 @@ styles={customStyles}                                   classNamePrefix="react-s
                                     contactInfoForm.formState.errors.phone
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl h-[41px] focus:outline-none focus:ring-2 ${
+                                  } rounded-xl h-[41px] focus:outline-none focus:ring-2 placeholder:text-sm placeholder:text-gray-400  ${
                                     contactInfoForm.formState.errors.phone
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
@@ -1567,7 +1600,7 @@ styles={customStyles}                                   classNamePrefix="react-s
                                     contactInfoForm.formState.errors.email
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl focus:outline-none h-[41px] focus:ring-2 ${
+                                  } rounded-xl focus:outline-none h-[41px] focus:ring-2 placeholder:text-sm placeholder:text-gray-400 ${
                                     contactInfoForm.formState.errors.email
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
@@ -1608,90 +1641,88 @@ styles={customStyles}                                   classNamePrefix="react-s
                               </div>
 
                               {/* Country */}
-<div className="relative w-full">
-                                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                                  Country{" "}
-                                  <span className="text-red-500">*</span>
+                              <div className="w-full">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Country <span className="text-red-500">*</span>
                                 </label>
-                                <select
-                                  {...contactInfoForm.register("country", {
-                                    required: "Country is required",
-                                  })}
-                                  className="
-                                  w-full h-[41px] bg-white
-
-      border border-gray-300 rounded-[12px]
-      px-[12px] pr-[40px]
-      font-normal text-[14px] leading-5
-      text-gray-700 appearance-none
-      focus:outline-none focus:ring-2 focus:ring-purple-500
-                                "
-                                style={{ fontFamily: "Rubik, sans-serif" }}
-                                >
-                                  <option value="">Select your country</option>
-                                  Country
-                                  {Country?.map((country: any) => (
-                                    <option key={country.id} value={country.id}>
-                                      {country.name}
-                                    </option>
-                                  ))}
-                                </select>
-                                 <img
-    src="/chevron-down.svg"
-    alt="Dropdown"
-    className="w-4 h-4 absolute right-4 top-[75%] transform -translate-y-1/2 pointer-events-none"
-  />
+                                <Select
+                                  options={
+                                    Country
+                                      ? Country.map((country: any) => ({
+                                          value: country.id,
+                                          label: country.name,
+                                        }))
+                                      : []
+                                  }
+                                  value={
+                                    Country
+                                      ? Country.find((c: any) => c.id === contactInfoForm.watch("country"))
+                                        ? {
+                                            value: contactInfoForm.watch("country"),
+                                            label:
+                                              Country.find((c: any) => c.id === contactInfoForm.watch("country"))?.name ||
+                                              "Select your country",
+                                          }
+                                        : null
+                                      : null
+                                  }
+                                  onChange={(selectedOption) => {
+                                    contactInfoForm.setValue("country", selectedOption?.value || "");
+                                  }}
+                                  onBlur={() => contactInfoForm.trigger("country")}
+                                  styles={customSelectStyles}
+                                  placeholder="Select your country"
+                                  isSearchable
+                                  classNamePrefix="react-select"
+                                />
                                 {contactInfoForm.formState.errors.country && (
                                   <p className="text-sm text-red-500 mt-1">
-                                    {
-                                      contactInfoForm.formState.errors.country
-                                        .message as string
-                                    }
+                                    {contactInfoForm.formState.errors.country.message as string}
                                   </p>
                                 )}
                               </div>
 
-                              {/* State */}
-                            <div className="relative w-full">
+                                {/* State */}
+                                <div className="w-full relative">
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                   State <span className="text-red-500">*</span>
                                 </label>
-                                <select
-                                  {...contactInfoForm.register("state", {
-                                    required: "State is required",
-                                  })}
-                                  className="
-                                    w-full h-[41px] bg-white
-      border border-gray-300 rounded-[12px]
-      px-[12px] pr-[40px]
-      font-normal text-[14px] leading-5
-      text-gray-700 appearance-none
-      focus:outline-none focus:ring-2 focus:ring-purple-500
-                                  "
-                                  style={{ fontFamily: "Rubik, sans-serif" }}
-                                >
-                                  <option value="">Select your state</option>
-                                  {states?.map((state: any) => (
-                                    <option key={state.id} value={state.id}>
-                                      {state.name}
-                                    </option>
-                                  ))}
-                                </select>
-                                  <img
-    src="/chevron-down.svg"
-    alt="Dropdown"
-    className="w-4 h-4 absolute right-4 top-[75%] transform -translate-y-1/2 pointer-events-none"
-
-  />
+                                <Select
+                                  options={
+                                  states
+                                    ? states.map((state: any) => ({
+                                      value: state.id,
+                                      label: state.name,
+                                    }))
+                                    : []
+                                  }
+                                  value={
+                                  states
+                                    ? states.find((s: any) => s.id === contactInfoForm.watch("state"))
+                                    ? {
+                                      value: contactInfoForm.watch("state"),
+                                      label:
+                                        states.find((s: any) => s.id === contactInfoForm.watch("state"))?.name ||
+                                        "Select your state",
+                                      }
+                                    : null
+                                    : null
+                                  }
+                                  onChange={(selectedOption) => {
+                                  contactInfoForm.setValue("state", selectedOption?.value || "");
+                                  }}
+                                  onBlur={() => contactInfoForm.trigger("state")}
+                                  styles={customSelectStyles}
+                                  placeholder="Select your state"
+                                  isSearchable
+                                  classNamePrefix="react-select"
+                                />
                                 {contactInfoForm.formState.errors.state && (
                                   <p className="text-sm text-red-500 mt-1">
-                                    {
-                                      contactInfoForm.formState.errors.state
-                                        .message as string
-                                    }
+                                  {contactInfoForm.formState.errors.state.message as string}
                                   </p>
                                 )}
-                              </div>
+                                </div>
 
                               {/* City */}
                               <div>
@@ -2522,7 +2553,6 @@ className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border 
                                     service)
                                   </span>
                                 </label>
-                                
                                 <input
                                   type="file"
                                   accept="image/*"
