@@ -37,13 +37,6 @@ const AffiliateGenerateCode = () => {
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const baseUrl = window.location.origin;
-  
-
-  useEffect(() => {
-    if (currentReferralCode) {
-      loadReferredUsers(currentReferralCode);
-    }
-  }, [currentReferralCode]);
 
   useEffect(() => {
     let userID = localStorage.getItem("Id");
@@ -77,6 +70,7 @@ const AffiliateGenerateCode = () => {
       console.error("Failed to load referred users", err);
     }
   };
+
 
   const handleGenertateCode = async () => {
     setIsCopied(false);
@@ -145,7 +139,13 @@ const AffiliateGenerateCode = () => {
           </button>
           <button
             className={`px-4 py-2 cursor-pointer font-medium ${activeTab === 'users' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
-            onClick={() => setActiveTab('users')}
+            onClick={() => {
+              setActiveTab('users');
+              // Load referred users when this tab is clicked
+              if (currentReferralCode) {
+                loadReferredUsers(currentReferralCode);
+              }
+            }}
           >
             Affiliate Users
           </button>
