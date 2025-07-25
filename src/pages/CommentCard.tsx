@@ -105,17 +105,17 @@ const CommentCard = ({ comment, depth = 0, fetchComments }: any) => {
             )}
           </div>
         ) : (
-          <div className="relative w-full bg-[#F0F0F2] rounded-lg">
+          <div className="flex items-center gap-3 w-full rounded-lg">
             <input
               type="text"
               placeholder="Add a comment..."
               value={replayComment}
               onChange={(e) => setReplayComment(e.target.value)}
-              className="w-full rounded-lg px-4 py-2 pr-16 bg-white focus:outline-none border-0"
+              className="w-full bg-white rounded-full border border-gray-300 px-5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6269FF] shadow-sm"
             />
             <button
               onClick={(_e) => handlebpcommentreplay(comment?.id)}
-              className="absolute right-4 text-[#fff] top-1/2 transform -translate-y-1/2 px-6 py-1 rounded-full bg-[#7077FE] font-medium focus:outline-none focus:ring-2"
+              className="bg-[#7077FE] hover:bg-[#6269FF] text-white text-sm font-medium px-5 py-2 rounded-full shadow"
             >
               Comment
             </button>

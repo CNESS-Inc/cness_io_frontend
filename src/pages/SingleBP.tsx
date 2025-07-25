@@ -228,7 +228,7 @@ useEffect(() => {
   </div>*/}
         </div>
         {/* Interaction Icons */}
-        <div className="flex items-center gap-6 mt-52 max-w-3xl mx-auto px-4">
+        <div className="flex items-center gap-6 mt-90 max-w-3xl mx-auto px-4">
           {/* Like */}
 
           <button onClick={handleLike} className="flex items-center gap-2">
