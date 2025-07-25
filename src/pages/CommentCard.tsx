@@ -1,36 +1,57 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { BPCommentLike, CreateBestpracticesCommentReply } from "../Common/ServerAPI";
+import {
+  BPCommentLike,
+  CreateBestpracticesCommentReply,
+} from "../Common/ServerAPI";
+import { useToast } from "../components/ui/Toast/ToastProvider";
 
 const CommentCard = ({ comment, depth = 0, fetchComments }: any) => {
   const [replayComment, setReplayComment] = useState("");
   const [likeCount, setLikeCount] = useState(comment?.likes_count);
   const [showReplayCommenent, setShowReplayCommenent] = useState(false);
+  const { showToast } = useToast();
 
   const handlebpcommentlike = async (post_id: any, comment_id: any) => {
-    const formattedData = {
-      post_id: post_id,
-      comment_id: comment_id,
-    };
-    const res = await BPCommentLike(formattedData)
-    if (res?.success?.message?.includes("Unliked")) {
-        setLikeCount((prev:any) => Math.max(0, Number(prev) - 1));
+    try {
+      const formattedData = {
+        post_id: post_id,
+        comment_id: comment_id,
+      };
+      const res = await BPCommentLike(formattedData);
+      if (res?.success?.message?.includes("Unliked")) {
+        setLikeCount((prev: any) => Math.max(0, Number(prev) - 1));
       } else if (res?.success) {
-        setLikeCount((prev:any) => Number(prev) + 1);
+        setLikeCount((prev: any) => Number(prev) + 1);
       }
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
   };
 
-  const handlebpcommentreplay = async (id: any) => {
-    if (replayComment != "") {
-      const formattedData = {
-        text: replayComment,
-        post_id: comment?.post_id,
-        comment_id: comment?.id,
-      };
-      const res = await CreateBestpracticesCommentReply(formattedData)
-      setShowReplayCommenent(!showReplayCommenent);
-      fetchComments();
-      setReplayComment("");
+  const handlebpcommentreplay = async (_id: any) => {
+    try {
+      if (replayComment != "") {
+        const formattedData = {
+          text: replayComment,
+          post_id: comment?.post_id,
+          comment_id: comment?.id,
+        };
+        await CreateBestpracticesCommentReply(formattedData);
+        setShowReplayCommenent(!showReplayCommenent);
+        fetchComments();
+        setReplayComment("");
+      }
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
@@ -52,7 +73,7 @@ const CommentCard = ({ comment, depth = 0, fetchComments }: any) => {
           target.src = "/profile.png";
         }}
       />
-      
+
       <div className="flex-1">
         <div className="mb-2">
           <h3 className="text-lg font-semibold">
@@ -72,6 +93,7 @@ const CommentCard = ({ comment, depth = 0, fetchComments }: any) => {
                 Reply
               </button>
             )}
+            {depth === 0 && (
             <button
               onClick={(_e) =>
                 handlebpcommentlike(comment?.post_id, comment?.id)
@@ -80,6 +102,7 @@ const CommentCard = ({ comment, depth = 0, fetchComments }: any) => {
             >
               Like({likeCount})
             </button>
+            )}
           </div>
         ) : (
           <div className="relative w-full bg-[#F0F0F2] rounded-lg">
@@ -88,7 +111,7 @@ const CommentCard = ({ comment, depth = 0, fetchComments }: any) => {
               placeholder="Add a comment..."
               value={replayComment}
               onChange={(e) => setReplayComment(e.target.value)}
-              className="w-full rounded-lg px-4 py-2 pr-16 bg-white focus:outline-none bg-transparent border-0"
+              className="w-full rounded-lg px-4 py-2 pr-16 bg-white focus:outline-none border-0"
             />
             <button
               onClick={(_e) => handlebpcommentreplay(comment?.id)}
@@ -102,11 +125,11 @@ const CommentCard = ({ comment, depth = 0, fetchComments }: any) => {
         {comment.replies && comment.replies.length > 0 && (
           <div className="mt-4">
             {comment.replies.map((reply: any) => (
-              <CommentCard 
-                key={reply.id} 
-                comment={reply} 
-                depth={depth + 1} 
-                fetchComments={fetchComments} 
+              <CommentCard
+                key={reply.id}
+                comment={reply}
+                depth={depth + 1}
+                fetchComments={fetchComments}
               />
             ))}
           </div>
