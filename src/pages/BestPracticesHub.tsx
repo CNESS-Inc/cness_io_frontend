@@ -166,20 +166,20 @@ useEffect(() => {
     itemsPerPage: 10,
   });
   const [bestPractices, setBestPractices] = useState<Company[]>([]);
-  const [expandedDescriptions, setExpandedDescriptions] = useState<
+  const [expandedDescriptions, _setExpandedDescriptions] = useState<
     Record<string, boolean>
   >({});
   const [isLoading, setIsLoading] = useState({
     popular: false,
   });
 
-  const toggleDescription = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
-    setExpandedDescriptions((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
+  // const toggleDescription = (e: React.MouseEvent, id: string) => {
+  //   e.stopPropagation();
+  //   setExpandedDescriptions((prev) => ({
+  //     ...prev,
+  //     [id]: !prev[id],
+  //   }));
+  // };
   useEffect(() => {
     if (measureRef.current) {
       setTextWidth(measureRef.current.offsetWidth);
@@ -720,7 +720,7 @@ useEffect(() => {
                         {company.description.length > 100 && (
                           <span
                             className="text-purple-600 underline cursor-pointer ml-1"
-                            onClick={(e) => toggleDescription(e, company.id)}
+                            // onClick={(e) => toggleDescription(e, company.id)}
                           >
                             {expandedDescriptions[company.id]
                               ? "Read Less"
