@@ -10,7 +10,6 @@ import {
   GetBestpracticesComment,
   //GetBestpracticesComment
 } from "../Common/ServerAPI";
-import aspcom1 from "../assets/aspcom1.png";
 import blush from "../assets/Blush.png";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 import { BiComment, BiLike } from "react-icons/bi";
@@ -32,7 +31,6 @@ const SingleBP = () => {
   const [commentCount, setCommentCount] = useState();
   const [comment, setComment] = useState("");
   const [postComment, setPostComment] = useState<any>("");
-  console.log("🚀 ~ SingleBP ~ postComment:", postComment);
   const [singlepost, setSinglePost] = useState<any>({});
   const [media, setMedia] = useState<string>("");
   const [_saved, setSaved] = useState(false);
@@ -41,10 +39,6 @@ const SingleBP = () => {
   //const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
 
   const handleCommentChange = (event: any) => {
-    console.log(
-      "🚀 ~ handleCommentChange ~ event.target.value:",
-      event.target.value
-    );
     setComment(event.target.value);
   };
 
@@ -336,8 +330,8 @@ useEffect(() => {
               </div>
             </div>
           </div>
-          <div className="bg-white border border-gray-200 rounded-xl shadow-md px-6 py-4 w-[72%] mx-auto">
-            {postComment?.length > 0 && (
+          {postComment?.length > 0 && (
+            <div className="bg-white border border-gray-200 rounded-xl shadow-md px-6 py-4 w-[72%] mx-auto">
               <>
                 {postComment?.map((comment: any, index: any) => (
                   <>
@@ -347,23 +341,23 @@ useEffect(() => {
                       fetchComments={fetchComments}
                     />
 
-                    <div className="bg-white shadow-md rounded-lg p-2 mt-2 mb-2">
-                    <div
-                      key={index}
-                      className="border-b border-gray-200 last:border-none"
-                    >
+                    {/* <div className="bg-white shadow-md rounded-lg p-2 mt-2 mb-2">
                       <div
-                        dangerouslySetInnerHTML={{
-                          __html: comment.content,
-                        }}
-                      />
-                    </div>
-                  </div>
+                        key={index}
+                        className="border-b border-gray-200 last:border-none"
+                      >
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: comment.content,
+                          }}
+                        />
+                      </div>
+                    </div> */}
                   </>
                 ))}
               </>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </>

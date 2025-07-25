@@ -145,6 +145,9 @@ export const EndPoint = {
   vote: "/poll/vote",
   googleLogin: "/auth/google-login",
   all_bestPractices: "/best-practice/all",
+  bp: "/best-practice",
+  save_bestPractices: "/best-practice/get/save/best-practice",
+  mine_bestPractices: "/best-practice/get-by-user-id",
   add_bestpractices: "/best-practice",
   like_bestpractices:"/best-practice/like",
   save_bestpractices: "/best-practice/save",
@@ -512,6 +515,74 @@ export const GetAllBestPractices = (
     ServerAPI.APIMethod.GET,
     null,
     EndPoint.all_bestPractices,
+    params
+  );
+};
+export const DeleteBestPractices = (
+  id: number
+): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    null,
+    `${EndPoint.bp}/${id}`,
+  );
+};
+export const GetBestPracticesById = (
+  id: number
+): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    `${EndPoint.bp}/get/${id}`,
+  );
+};
+export const UpdateBestPractice = (
+  payload: {
+    id: string;
+    profession: string;
+    title: string;
+    description: string;
+  }
+): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST, // or PATCH depending on your API
+    payload,
+    `${EndPoint.bp}/update`,
+  );
+};
+export const GetAllSavedBestPractices = (
+  page: number,
+  limit: number,
+  professionId: string,
+  searchText: string,
+): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["limit"] = limit;
+  params["profession"] = professionId;
+  params["text"] = searchText;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.save_bestPractices,
+    params
+  );
+};
+export const GetAllmineBestPractices = (
+  page: number,
+  limit: number,
+  professionId: string,
+  searchText: string,
+): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["limit"] = limit;
+  params["profession"] = professionId;
+  params["text"] = searchText;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.mine_bestPractices,
     params
   );
 };
