@@ -523,7 +523,7 @@ export const DeleteBestPractices = (
 ): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.DELETE,
-    null,
+    {},
     `${EndPoint.bp}/${id}`,
   );
 };
