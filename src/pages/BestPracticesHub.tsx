@@ -4,7 +4,7 @@ import AnimatedBackground from "../components/ui/AnimatedBackground";
 import {
   CreateBestPractice,
   GetAllBestPractices,
-  GetAllFormDetails,
+  //GetAllFormDetails,
   LikeBestpractices,
   SaveBestpractices,
   GetSaveBestpractices,
