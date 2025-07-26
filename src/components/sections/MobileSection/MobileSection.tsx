@@ -1,10 +1,14 @@
 import Button from "../../ui/Button";
 import LottieOnView from "../../ui/LottieOnView";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+
 
 
 export default function MobileSection() {
   const [animationData, setAnimationData] = useState<object | null>(null);
+  const navigate = useNavigate();
   useEffect(() => {
       fetch("https://cnessioassets.project-69e.workers.dev/Purple-Circle-with-phone.json")
         .then((res) => res.json())
@@ -24,7 +28,7 @@ export default function MobileSection() {
               <Button
                 // variant="gradient-primary"
                 className="jakarta w-fit rounded-[100px] h-[38px] text-[16px]  font-[400] text-[#fff] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#F07EFF]  mt-6"
-              >
+                onClick={() => navigate("/comingSoon")}>
                 Coming Soon
               </Button>
             </div>

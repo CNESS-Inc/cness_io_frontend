@@ -152,7 +152,7 @@ export default function FeaturedSection() {
           <p className="openSans text-[14px] font-regular text-[#64748B]">Host live talks. Stream music. Share reflections. Submit your content to be<br /> featured on CNESS TV — our curated stream of purpose-led creators, artists,<br /> and changemakers.</p>
           <Button
             className="jakarta w-fit rounded-[100px] h-[38px] text-[16px]  font-[400] text-[#fff] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#9747FF]  mt-6"
-          >
+           onClick={() => window.location.href = "/sign-up"}>
             Apply to be featured
           </Button>
         </div>

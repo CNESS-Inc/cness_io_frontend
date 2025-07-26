@@ -11,7 +11,7 @@ import IndividualImage from "../../../assets/aware_1.jpg";
 import OrganizationImage from "../../../assets/aware_2.jpg";
 import MentorImage from "../../../assets/aware_3.jpg";
 import LottieOnView from "../../ui/LottieOnView";
-
+import { useNavigate } from "react-router-dom";
 // Add shimmer effect CSS
 import './AwarenessSection.css';
 
@@ -85,6 +85,7 @@ export default function AwarenessSection() {
   ];
 
   // Use a single isFlashing state for all cards
+  const navigate = useNavigate();
   const [isFlashing, setIsFlashing] = useState(false);
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
@@ -307,10 +308,11 @@ export default function AwarenessSection() {
                     <Button
                       variant="outline"
                       className="bg-white awareness-btn w-fit h-[42px] border-[#2222241a] md:px-4 px-1 sm:px-6 py-1 rounded-[100px] text-[#222224] font-medium md:text-[14px] text-[12px] lg:w-full md:w-full"
-                    >
+                  onClick={() => navigate("/comingSoon")}>
                       Start Selling
                     </Button>
-                    <Button className="rounded-[100px] w-fit h-[42px] awareness-btn text-center py-1 md:px-4 px-1 lg:w-full md:w-full self-stretch md:text-[14px] text-[12px] bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-white">
+                    <Button className="rounded-[100px] w-fit h-[42px] awareness-btn text-center py-1 md:px-4 px-1 lg:w-full md:w-full self-stretch md:text-[14px] text-[12px] bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-white"
+                  onClick={() => navigate("/comingSoon")}>
                       Browse Marketplace
                     </Button>
                   </div>

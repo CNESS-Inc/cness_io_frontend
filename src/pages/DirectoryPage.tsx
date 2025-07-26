@@ -216,8 +216,8 @@ export default function DirectoryPage() {
     }
   };
 
-  const topRow = Domain.slice(0, 7);
-  const bottomRow = Domain.slice(7);
+  //const topRow = Domain.slice(0, 7);
+  //const bottomRow = Domain.slice(7);
 
   // Add this near the top of your file (with other imports)
   const hasJWT = () => {
@@ -349,7 +349,7 @@ export default function DirectoryPage() {
         </div>
       </section>
 
-      {/* Marquee Section */}
+      {/* Marquee Section 
       <div className="bg-white py-10">
         <div className="max-w-screen-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap gap-x-6 gap-y-4 justify-center">
@@ -383,7 +383,7 @@ export default function DirectoryPage() {
             })}
           </div>
         </div>
-      </div>
+      </div>*/}
 
       {/* Why List Section */}
       <section className="bg-[#FAFAFA] py-16">

@@ -68,7 +68,8 @@ export default function Highlight() {
               <br /> purpose — socially, creatively, and professionally. Everything you
               <br /> need to grow is here.
             </p>
-            <Button className="jakarta w-fit rounded-[100px] h-[42px] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#F07EFF] self-stretch transition-colors duration-500 ease-in-out">
+            <Button className="jakarta w-fit rounded-[100px] h-[42px] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#F07EFF] self-stretch transition-colors duration-500 ease-in-out"
+            onClick={() => window.location.href = "/sign-up"}>
               See how it all works →
             </Button>
           </div>
