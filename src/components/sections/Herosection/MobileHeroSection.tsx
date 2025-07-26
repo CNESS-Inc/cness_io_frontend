@@ -1,11 +1,6 @@
 "use client";
 import Button from "../../ui/Button";
 import LottieOnView from "../../ui/LottieOnView";
-// import Flip01 from '../../../assets/lottie-files/Flip-01/Flip01.json';
-// import Flip02 from '../../../assets/lottie-files/Flip-02/Flip02.json';
-// import Flip03 from '../../../assets/lottie-files/Flip-03/Flip03.json';
-// import Flip04 from '../../../assets/lottie-files/Flip-04/Flip04.json';
-import NewSphereGradient from '../../../assets/lottie-files/New-globe/Sphere-Gradient.json';
 import { useEffect, useState } from "react";
 
 export default function MobileHeroSection() {
@@ -46,6 +41,14 @@ export default function MobileHeroSection() {
     
     return () => timers.forEach((t) => clearTimeout(t));
   }, []);
+
+  const [animationData, setAnimationData] = useState<object | null>(null);
+  useEffect(() => {
+      fetch("https://cnessioassets.project-69e.workers.dev/Second-globe.json")
+        .then((res) => res.json())
+        .then((data) => setAnimationData(data))
+        .catch((err) => console.error("Failed to load Lottie JSON:", err));
+    }, []);
 
   return (
     <>
@@ -163,7 +166,7 @@ export default function MobileHeroSection() {
         >
           {step >= 4 ? (
             <LottieOnView
-              animationData={NewSphereGradient}
+              animationData={animationData}
               loop
               style={{ 
                 width: '100%', 
