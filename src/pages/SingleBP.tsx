@@ -237,7 +237,7 @@ useEffect(() => {
 
           <button onClick={handleLike} className="flex items-center gap-2">
             <div
-      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center ${
+      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center cursor-pointer ${
                 isLiked ? "bg-[#6269FF]" : "bg-[#7077EF]"
               }`}
             >
@@ -253,7 +253,7 @@ useEffect(() => {
           </button>
 
           <button className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-[#F07EFF] flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-[#F07EFF] flex items-center justify-center cursor-pointer">
               <BiComment className="text-white text-lg" />
             </div>
             <span className="text-sm text-gray-800">
@@ -262,7 +262,7 @@ useEffect(() => {
           </button>
 
   
-          <button onClick={fetchSavedPost} className="flex items-center">
+          <button onClick={fetchSavedPost} className="flex items-center cursor-pointer">
             {isSaved && isSaved !== undefined ? (
               <FaBookmark className="text-[#72DBF2] text-2xl" />
             ) : (
@@ -319,11 +319,11 @@ useEffect(() => {
                       value={comment}
                       onChange={handleCommentChange}
                       placeholder="Write a comment..."
-                      className="w-full rounded-full border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6269FF] shadow-sm"
+                      className="w-full rounded-full border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6269FF] shadow-sm "
                     />
                     <button
                       onClick={() => handleCommentSubmit(id || 0)}
-                      className="bg-[#7077FE] hover:bg-[#6269FF] text-white text-sm font-medium px-5 py-2 rounded-full shadow"
+                      className="bg-[#7077FE] hover:bg-[#6269FF] text-white text-sm font-medium px-5 py-2 rounded-full shadow cursor-pointer"
                     >
                       Comment
                     </button>
@@ -333,8 +333,8 @@ useEffect(() => {
             </div>
           </div>
           {postComment?.length > 0 && (
-<div className="w-[90%] sm:w-[80%] md:w-[70%] mx-auto mt-4 sm:mt-6">
-            <div className="bg-white border border-gray-200 rounded-xl shadow-md px-4 sm:px-6 py-4 space-y-4">
+<div className="w-[90%] sm:w-[80%] md:w-[70%] mx-auto mt-4 sm:mt-6 ">
+            <div className="bg-white border border-gray-200 rounded-xl shadow-md px-4 sm:px-6 py-4 space-y-4 ">
               <>
                 {postComment?.map((comment: any, index: any) => (
                   <>
