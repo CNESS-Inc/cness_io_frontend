@@ -918,7 +918,7 @@ const UserProfilePage = () => {
 
   return (
     <>
- <section className="w-full px-2 sm:px-4 lg:px-8 pt-4 pb-10">
+<section className="w-full px-2 sm:px-4 lg:px-2 pt-4 pb-10">
           {public_organization === "1" ? (
           is_disqualify === "true" ? (
 <div className="mt-0 shadow overflow-hidden p-6 sm:p-8 text-center">
@@ -1053,8 +1053,8 @@ className="bg-white p-1.5 sm:p-2 rounded-full shadow hover:bg-red-100"
                                 key={index}
                                 className={({ selected }) =>
                                   `flex-shrink-0 
-                                  min-w-[100px]  
-                                    max-w-[180px] 
+                                  min-w-[120px]  
+                                    max-w-[200px] 
                                   text-sm 
                                   font-medium 
                                   poppins
@@ -1086,7 +1086,6 @@ className="bg-white p-1.5 sm:p-2 rounded-full shadow hover:bg-red-100"
                       </div>
                       {/* Tab Content Panel */}
 
-<Tab.Panels className="mt-4">
                           <Tab.Panel>
                           <form
                             onSubmit={basicInfoForm.handleSubmit(
@@ -2888,7 +2887,7 @@ className="bg-white p-1.5 sm:p-2 rounded-full shadow hover:bg-red-100"
                             </div>
                           </form>
                         </Tab.Panel>
-                      </Tab.Panels>
+                    
                   
                   </Tab.Group>
                 </div>
