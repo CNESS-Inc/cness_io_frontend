@@ -46,8 +46,8 @@ const Certification = () => {
 
           <button
             type="button"
-            className='jakarta px-3 py-1 h-[42px] w-[127px] text-white bg-gradient-to-r from-[#7077FE] to-[#F07EFF] rounded-[50px] mt-8'
-          >
+            className='jakarta px-3 py-1 h-[42px] w-[127px] text-white bg-gradient-to-r from-[#7077FE] to-[#F07EFF] rounded-[50px] mt-8 cursor-pointer'
+           onClick={() => window.location.href = "/sign-up"}>
             Get Certified
           </button>
         </div>

@@ -85,17 +85,22 @@ export const router = createBrowserRouter([
       },
 
       {
-        path: "/why",
+        path: "why",
         element: <Why />,
       },
       {
-        path: "/what",
+        path: "what",
         element: <What />,
       },
       {
-        path: "/about",
+        path: "about",
         element: <About />,
+        
       },
+      {
+ path: "comingSoon",
+  element: <ComingSoon />,
+},
 
       {
         path: "dashboard",
@@ -247,8 +252,8 @@ export const router = createBrowserRouter([
             element: <MyConnection />,
           },
           {
-            path: "ComingSoon",
-            element: <ComingSoon />,
+        path: "comingSoon",
+  element: <ComingSoon />,
           },
 
           {
@@ -287,11 +292,9 @@ export const router = createBrowserRouter([
       {
         index: true,
         element:
-          import.meta.env.VITE_ENV_STAGE === "test" ? (
+          (
             <DirectoryPage />
-          ) : (
-            <ComingSoon />
-          ),
+          ), // ✅ now it's wrapped!
       },
 
       {
