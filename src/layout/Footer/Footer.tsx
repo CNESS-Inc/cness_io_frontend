@@ -36,10 +36,10 @@ const Footer = () => {
               <div className="w-fit space-y-3 md:space-y-4">
                 <h4 className="lg:text-base md:text-lg text-[14px] font-semibold text-[#6F74DD] poppins">Company</h4>
                 <ul className="space-y-1 md:space-y-2">
-                  <li><a href="#" className="text-[13px] md:text-base hover:underline openSans">Try CNESS</a></li>
-                  <li><a href="#" className="text-[13px] md:text-base hover:underline openSans">Marketplace</a></li>
-                  <li><a href="#" className="text-[13px] md:text-base hover:underline openSans">Community</a></li>
-                  <li><a href="#" className="text-[13px] md:text-base hover:underline openSans">About</a></li>
+                  <li><a href="/sign-up" className="text-[13px] md:text-base hover:underline openSans">Try CNESS</a></li>
+                  <li><Link to="/comingsoon" className="text-[13px] md:text-base hover:underline openSans">Marketplace</Link></li>
+                  <li><Link to="/comingsoon" className="text-[13px] md:text-base hover:underline openSans">Community</Link></li>
+                  <li><a href="/about" className="text-[13px] md:text-base hover:underline openSans">About</a></li>
                 </ul>
               </div>
 
@@ -47,9 +47,9 @@ const Footer = () => {
               <div className="w-fit space-y-3 md:space-y-4">
                 <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#6F74DD] poppins">Quick Links</h4>
                 <ul className="space-y-1 md:space-y-2">
-                  <li><Link to="/" className="text-[13px] md:text-base hover:underline openSans">Home</Link></li>
-                  <li><a href="#" className="text-[13px] md:text-base hover:underline openSans">Certifications</a></li>
-                  <li><a href="#" className="text-[13px] md:text-base hover:underline openSans">Career</a></li>
+                  <li><Link to="/" className="text-[13px] md:text-base hover:underline openSans"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Home</Link></li>
+                  <li><a href="/sign-up" className="text-[13px] md:text-base hover:underline openSans">Certifications</a></li>
+                  <li><Link to="/comingsoon" className="text-[13px] md:text-base hover:underline openSans">Career</Link></li>
                 </ul>
               </div>
 
@@ -102,7 +102,7 @@ const Footer = () => {
             </Link>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto lg:hidden flex flex-col md:flex-row flex-row justify-between items-center gap-2">
+        <div className="max-w-7xl mx-auto lg:hidden flex flex-col md:flex-row  justify-between items-center gap-2">
           <p className="text-xs md:text-sm jakarta font-semibold">Copyright © {new Date().getFullYear()}</p>
             <Link to="/terms-and-conditions" className="text-xs md:text-sm hover:underline jakarta font-semibold">
               Terms & Conditions

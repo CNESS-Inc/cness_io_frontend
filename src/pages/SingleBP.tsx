@@ -159,43 +159,46 @@ useEffect(() => {
   }
   return (
     <>
-      <div className="w-full min-h-screen bg-[#F3F1FF] pb-10">
+      <div className="w-full min-h-screen bg-[#F3f1ff] pb-10">
         {" "}
         {/* ← Gray background wrapper */}
         <div className="w-full flex flex-col gap-6">
           {/* Top Default Banner */}
-          <div className="relative w-full">
+<div className="relative w-full min-h-[500px] bg-[#F3f1ff">
             {/* Top Banner */}
-            <div className="w-full h-[250px] sm:h-[300px] md:h-[400px]">
+  <div className="w-full h-[250px] sm:h-[300px] md:h-[400px] overflow-hidden">
               <img
                 src={blush}
                 alt="banner"
                 className="w-full h-full object-cover rounded-lg shadow-md"
               />
-              <div className="absolute inset-0 flex items-center justify-center px-4 mt-1">
-                <h1 className="text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold drop-shadow-lg text-center leading-tight">
+              <div className="absolute inset-0 flex items-start justify-center pt-6 sm:pt-10 md:pt-40">
+
+  <h1 className="text-white text-xl sm:text-3xl md:text-4xl font-semibold drop-shadow-lg text-center">
                   {singlepost.title || "Best Practices"}
                 </h1>
               </div>
             </div>
 
             {/* User Banner */}
-            <div className="absolute z-10 top-[180px] sm:top-[240px] md:top-[300px] left-1/2 transform -translate-x-1/2 w-[90%] sm:w-[80%] md:w-[70%]">
               {media &&
                 media !== "http://localhost:5026/file/" &&
                 !media.endsWith("/file/") && (
+    <div className="absolute top-[200px] sm:top-[260px] md:top-[320px] left-1/2 transform -translate-x-1/2 w-[90%] sm:w-[80%] md:w-[70%] z-10">
+
                   <img
                     src={media}
                     alt="Best Practice Banner"
-                    className="w-full max-h-[260px] sm:max-h-[320px] md:max-h-[400px] object-cover rounded-xl shadow-xl"
+        className="w-full max-h-[300px] object-cover rounded-xl shadow-xl"
                     onError={(e) => {
                       // Fallback in case the image fails to load
                       (e.target as HTMLImageElement).src =
                         iconMap["companycard1"];
                     }}
                   />
+                  </div>
                 )}
-            </div>
+          
 
             {/* Profile Image - correctly centered between top and user banner */}
             <div className="absolute z-20 top-[150px] sm:top-[270px] md:top-[250px] left-1/2 transform -translate-x-1/2">
@@ -226,19 +229,20 @@ useEffect(() => {
       </p>
     
   </div>*/}
+
         </div>
         {/* Interaction Icons */}
-        <div className="flex items-center gap-6 mt-90 max-w-3xl mx-auto px-4">
+<div className="flex justify-center items-center gap-6 mt-[60px] sm:mt-[100px] md:mt-[180px] mb-4 px-4">
           {/* Like */}
 
           <button onClick={handleLike} className="flex items-center gap-2">
             <div
-              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center ${
-                isLiked ? "bg-[#7077FE]" : "bg-gray-300"
+      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center ${
+                isLiked ? "bg-[#6269FF]" : "bg-[#7077EF]"
               }`}
             >
               <BiLike
-                className={`text-white text-[18px] ${
+                className={`text-white text-base sm:text-lg ${
                   isLiked ? "scale-110" : ""
                 }`}
               />
@@ -248,27 +252,25 @@ useEffect(() => {
             </span>
           </button>
 
-          <button className="flex items-center">
-            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#F07EFF] flex items-center justify-center">
-              <BiComment className="text-white text-[24px] sm:text-[16px]" />
+          <button className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-full bg-[#F07EFF] flex items-center justify-center">
+              <BiComment className="text-white text-lg" />
             </div>
-            <span className="ml-2 text-sm text-gray-800">
+            <span className="text-sm text-gray-800">
               {commentCount || 0}
             </span>
           </button>
 
-          {/* Share */}
-          {/* Share */}
+  
           <button onClick={fetchSavedPost} className="flex items-center">
             {isSaved && isSaved !== undefined ? (
-              <FaBookmark className="text-[#72DBF2] text-[25px]" />
+              <FaBookmark className="text-[#72DBF2] text-2xl" />
             ) : (
-              <FaRegBookmark className="text-[#72DBF2] text-[20px]" />
+              <FaRegBookmark className="text-[#72DBF2] text-xl" />
             )}
           </button>
         </div>
         {/* Main Content Area */}
-        <div className="max-w-9xl mx-auto px-4 flex flex-col gap-6">
           {/* Image/Video Section
       {media?.file_type === "video/mp4" ? (
         <video className="w-full max-h-[500px] rounded-xl" controls>
@@ -284,9 +286,9 @@ useEffect(() => {
       )}
  */}
           {/* Description */}
-          <div className="max-w-6xl mx-auto mt-6 px-4">
-            <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-              <p className="text-gray-800 leading-7 text-justify">
+<div className="w-[90%] sm:w-[80%] md:w-[70%] mx-auto mt-4 sm:mt-6">
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6">
+              <p className="text-gray-800 leading-relaxed text-justify text-sm sm:text-base">
                 {singlepost.description}
               </p>
             </div>
@@ -294,30 +296,30 @@ useEffect(() => {
 
           {/* Comment Section */}
           {/* Comment Section */}
-          <div className="w-[72%] mx-auto mt-12">
-            <div className="bg-white border border-gray-200 rounded-xl shadow-md px-6 py-4">
-              <div className="flex items-center gap-4">
+<div className="w-[90%] sm:w-[80%] md:w-[70%] mx-auto mt-4 sm:mt-6">
+            <div className="bg-white border border-gray-200 rounded-xl shadow-md px-4 sm:px-6 py-4">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                 <LazyLoadImage
                   src={
                     localStorage.getItem("profile_picture") ||
                     dummyProfilePicture
                   }
                   alt="User"
-                  className="w-12 h-12 rounded-full object-cover"
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
                   onError={(e) => {
                     // Fallback if the image fails to load
                     const target = e.target as HTMLImageElement;
                     target.src = "/profile.png";
                   }}
                 />
-                <div className="flex-1">
-                  <div className="flex items-center gap-3">
+           
+                  <div className="flex-1 flex flex-col sm:flex-row gap-3">
                     <input
                       type="text"
                       value={comment}
                       onChange={handleCommentChange}
                       placeholder="Write a comment..."
-                      className="w-full rounded-full border border-gray-300 px-5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6269FF] shadow-sm"
+                      className="w-full rounded-full border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6269FF] shadow-sm"
                     />
                     <button
                       onClick={() => handleCommentSubmit(id || 0)}
@@ -326,12 +328,13 @@ useEffect(() => {
                       Comment
                     </button>
                   </div>
-                </div>
+               
               </div>
             </div>
           </div>
           {postComment?.length > 0 && (
-            <div className="bg-white border border-gray-200 rounded-xl shadow-md px-6 py-4 w-[72%] mx-auto">
+<div className="w-[90%] sm:w-[80%] md:w-[70%] mx-auto mt-4 sm:mt-6">
+            <div className="bg-white border border-gray-200 rounded-xl shadow-md px-4 sm:px-6 py-4 space-y-4">
               <>
                 {postComment?.map((comment: any, index: any) => (
                   <>
@@ -357,8 +360,9 @@ useEffect(() => {
                 ))}
               </>
             </div>
+            </div>
           )}
-        </div>
+       
       </div>
     </>
   );

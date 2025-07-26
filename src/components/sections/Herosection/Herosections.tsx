@@ -114,12 +114,13 @@ export default function HeroSection() {
               `flex flex-row sm:flex-row justify-center gap-4 transition-all duration-1000 ease-in-out ` +
               (step >= 5 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6')
             }>
-              <Button
+                <Button
                 className="rounded-[100px] hero-section-btn w-fit lg:py-3 py-2 lg:px-8 px-4 lg:text-base text-[14px] self-stretch  bg-linear-to-r from-[#7077FE] to-[#9747FF]"
-              >
+                onClick={() => window.location.href = "/sign-up"}
+                >
                 Get Started
-              </Button>
-              <Button variant="white-outline" className="lg:text-base hero-section-btn text-[14px] lg:py-3 py-2 lg:px-8 px-4" size="md" onClick={() => window.location.href = "https://visionary.cness.io"}>
+                </Button>
+              <Button variant="white-outline" className="lg:text-base hero-section-btn text-[14px] lg:py-3 py-2 lg:px-8 px-4" size="md" onClick={() => window.location.href = "/sign-up"}>
                 Explore the Movement
               </Button>
             </div>

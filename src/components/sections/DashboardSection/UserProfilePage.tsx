@@ -918,12 +918,12 @@ const UserProfilePage = () => {
 
   return (
     <>
-      <section className="w-full px-2 sm:px-4 lg:px-2 pt-4 pb-10">
-        {public_organization === "1" ? (
+<section className="w-full px-2 sm:px-4 lg:px-2 pt-4 pb-10">
+          {public_organization === "1" ? (
           is_disqualify === "true" ? (
-            <div className="mt-0 shadow overflow-hidden p-8 text-center">
-              <div className="py-12">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+<div className="mt-0 shadow overflow-hidden p-6 sm:p-8 text-center">
+                <div className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
                   User Profile Access Restricted
                 </h2>
                 <p className="text-gray-600 mb-6">
@@ -931,7 +931,7 @@ const UserProfilePage = () => {
                 </p>
                 <div className="flex justify-center">
                   <svg
-                    className="w-24 h-24 text-purple-500"
+                     className="w-16 sm:w-24 h-16 sm:h-24 text-purple-500"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -950,8 +950,8 @@ const UserProfilePage = () => {
           ) : (
             <div className="mt-0 bg-white rounded-xl shadow overflow-hidden">
               <div className="bg-white rounded-xl shadow overflow-hidden">
-                <div className="relative h-[300px] bg-gray-100">
-                  <img
+ <div className="relative h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px] bg-gray-100">
+                    <img
                     src={
                       banner && banner !== "http://localhost:5026/file/"
                         ? banner
@@ -965,9 +965,9 @@ const UserProfilePage = () => {
                       target.src = "/banner.jpg";
                     }}
                   />
-                  <div className="absolute top-3 right-3 flex gap-2 z-10">
-                    <label className="cursor-pointer bg-white p-2 rounded-full shadow hover:bg-gray-200">
-                      <input
+<div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex gap-2 z-10">
+<label className="cursor-pointer bg-white p-1.5 sm:p-2 rounded-full shadow hover:bg-gray-200">
+                        <input
                         type="file"
                         accept="image/*"
                         className="hidden"
@@ -975,20 +975,20 @@ const UserProfilePage = () => {
                           handleImageChange(e, setBanner, "banner")
                         }
                       />
-                      <PhotoIcon className="w-5 h-5 text-gray-600" />
-                    </label>
+ <PhotoIcon className="w-4 sm:w-5 h-4 sm:h-5 text-gray-600" />
+                     </label>
                     {banner && banner !== "http://localhost:5026/file/" && (
                       <button
                         onClick={() => setBanner(null)}
-                        className="bg-white p-2 rounded-full shadow hover:bg-red-100"
+className="bg-white p-1.5 sm:p-2 rounded-full shadow hover:bg-red-100"
                       >
-                        <TrashIcon className="w-5 h-5 text-red-600" />
+                        <TrashIcon className="w-4 sm:w-5 h-4 sm:h-5 text-red-600" />
                       </button>
                     )}
                   </div>
 
-                  <div className="absolute -bottom-0 left-6 sm:left-10 z-20 group">
-                    <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100">
+<div className="absolute -bottom-0 left-4 sm:left-6 md:left-8 z-20 group">
+<div className="relative w-24 sm:w-28 md:w-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100">
                       <img
                         src={
                           logoPreview &&
@@ -1007,8 +1007,8 @@ const UserProfilePage = () => {
                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <div className="flex gap-2">
                           <label
-                            className="bg-white p-1.5 rounded-full shadow cursor-pointer hover:bg-gray-100"
-                            title="Upload Photo"
+ className="bg-white p-1.5 rounded-full shadow cursor-pointer"
+                             title="Upload Photo"
                           >
                             <input
                               type="file"
@@ -1018,7 +1018,7 @@ const UserProfilePage = () => {
                                 handleImageChange(e, setLogoPreview, "profile")
                               }
                             />
-                            <PhotoIcon className="w-4 h-4 text-gray-600" />
+<PhotoIcon className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-gray-600" />
                           </label>
                           {logoPreview &&
                             logoPreview !== "http://localhost:5026/file/" && (
@@ -1027,7 +1027,7 @@ const UserProfilePage = () => {
                                 className="bg-white p-1.5 rounded-full shadow hover:bg-red-100"
                                 title="Remove Photo"
                               >
-                                <TrashIcon className="w-4 h-4 text-red-600" />
+<TrashIcon className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-red-600" />
                               </button>
                             )}
                         </div>
@@ -1035,31 +1035,31 @@ const UserProfilePage = () => {
                     </div>
                   </div>
                 </div>
-                <div className="max-w-6xl mx-auto px-6 py-10">
-                  <h2 className="text-[24px] poppins font-bold text-[#9747FF] mb-6">
-                    My Profile
+<div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
+<h2 className="text-[20px] sm:text-[24px] poppins font-bold text-[#9747FF] mb-4 sm:mb-6">              
+        My Profile
                   </h2>
 
                   <Tab.Group
                     selectedIndex={selectedIndex}
                     onChange={setSelectedIndex}
                   >
-                    <div className="">
-                      <div className="w-full overflow-x-auto no-scrollbar ">
-                        <div className="inline-block min-w-[900px] lg:min-w-full">
-                          <Tab.List className="flex gap-2 items-end sm:flex-nowrap overflow-x-auto no-scrollbar">
-                            {tabNames.map((tab, index) => (
+                 
+                      <div className="w-full overflow-x-auto no-scrollbar">
+<div className="inline-block min-w-full">
+                                <Tab.List className="flex flex-wrap justify-start gap-2 items-end overflow-x-auto no-scrollbar">            
+                                                  {tabNames.map((tab, index) => (
                               <Tab
                                 key={index}
                                 className={({ selected }) =>
                                   `flex-shrink-0 
-                                  min-w-[120px] 
-                                  max-w-[200px] 
+                                  min-w-[120px]  
+                                    max-w-[200px] 
                                   text-sm 
                                   font-medium 
                                   poppins
-                                  py-2.5 
-                                  px-4 
+                                   py-2
+                                  px-3 
                                   rounded-lg 
                                   rounded-bl-none
                                   rounded-br-none
@@ -1073,7 +1073,7 @@ const UserProfilePage = () => {
                                   border
                                   ${
                                     selected
-                                      ? "text-purple-600 h-[50px] bg-[#F8F3FF] shadow-md border-[#ECEEF2] border-b-0 transform"
+                                      ? "text-purple-600 h-[45px] bg-[#F8F3FF] shadow-md border-[#ECEEF2] border-b-0 transform"
                                       : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
                                   }`
                                 }
@@ -1086,8 +1086,7 @@ const UserProfilePage = () => {
                       </div>
                       {/* Tab Content Panel */}
 
-                      <Tab.Panels className="">
-                        <Tab.Panel>
+                          <Tab.Panel>
                           <form
                             onSubmit={basicInfoForm.handleSubmit(
                               handleBasicInfoSubmit
@@ -1513,8 +1512,8 @@ const UserProfilePage = () => {
                                 <Button
                                   variant="white-outline"
                                   className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-             hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
+                                   hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+                                    shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                                   onClick={() => basicInfoForm.reset()}
                                 >
                                   Reset
@@ -2579,24 +2578,47 @@ const UserProfilePage = () => {
                                 )}
                               </div>
 
-                              {/* Featured Image Upload */}
-                              <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                {/* Featured Image Upload */}
+                                <div className="md:col-span-2">
+                                  <label className="block text-sm font-medium text-gray-800 mb-2">
                                   Featured Image{" "}
                                   <span className="text-gray-500 text-xs">
-                                    (Upload an image that represents your
-                                    service)
+                                    (Upload an image that represents your service)
                                   </span>
-                                </label>
-                                <input
-                                  type="file"
-                                  accept="image/*"
-                                  {...publicProfileForm.register(
-                                    "featuredImage"
-                                  )}
-                                  className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                />
-                              </div>
+                                  </label>
+                                  <div className="relative w-full">
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    {...publicProfileForm.register("featuredImage")}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                    style={{ cursor: "pointer" }}
+                                  />
+                                  <div className="flex items-center w-full h-[45px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm text-gray-800 focus-within:ring-2 focus-within:ring-purple-500">
+                                    <button
+                                    type="button"
+                                    tabIndex={-1}
+                                    className="mr-3 px-5 py-2 bg-[#7077FE] text-white rounded-full text-sm font-medium hover:bg-[#5a60d6] transition"
+                                    style={{ minWidth: 0 }}
+                                    onClick={() => {
+                                      // trigger file input click
+                                      const input = document.querySelector(
+                                      'input[type="file"][name="featuredImage"]'
+                                      ) as HTMLInputElement | null;
+                                      if (input) input.click();
+                                    }}
+                                    >
+                                    Choose File
+                                    </button>
+                                    <span className="flex-1 truncate text-gray-500">
+                                    {publicProfileForm.watch("featuredImage") &&
+                                    publicProfileForm.watch("featuredImage").length > 0
+                                      ? publicProfileForm.watch("featuredImage")[0]?.name
+                                      : <span className="text-gray-400">No file chosen</span>}
+                                    </span>
+                                  </div>
+                                  </div>
+                                </div>
 
                               {/* Services Offered */}
                               {/* <div className="md:col-span-2">
@@ -2865,8 +2887,8 @@ const UserProfilePage = () => {
                             </div>
                           </form>
                         </Tab.Panel>
-                      </Tab.Panels>
-                    </div>
+                    
+                  
                   </Tab.Group>
                 </div>
               </div>
