@@ -31,6 +31,98 @@ const tabNames = [
   "Public Profile Fields",
 ];
 
+const genderOptions = [
+  { value: "", label: "Select Your Gender" }, // Use empty string for default
+  { value: "Male", label: "Male" },
+  { value: "Female", label: "Female" },
+  { value: "Non-binary", label: "Non-binary" },
+];
+
+const customSelectStyles = {
+  control: (base: any, state: any) => ({
+    ...base,
+    minHeight: "44px",
+    borderRadius: "12px",
+    borderColor: state.isFocused ? "#7077FE" : "#D1D5DB",
+    boxShadow: state.isFocused ? "0 0 0 2px rgba(112, 119, 254, 0.2)" : "none",
+    paddingLeft: "8px",
+    fontFamily: "Rubik, sans-serif",
+    fontSize: "14px",
+    fontWeight: 400,
+    transition: "all 0.2s ease-in-out",
+    "&:hover": {
+      borderColor: "#7077FE",
+    },
+  }),
+  placeholder: (base: any) => ({
+    ...base,
+    color: "#9CA3AF",
+    fontSize: "14px",
+  }),
+  option: (base: any, state: any) => ({
+    ...base,
+    backgroundColor: state.isSelected
+      ? "#E0E7FF"
+      : state.isFocused
+      ? "#F3F4F6"
+      : "white",
+    color: "#111827",
+    padding: "10px 12px",
+    fontSize: "14px",
+    cursor: "pointer",
+  }),
+  singleValue: (base: any) => ({
+    ...base,
+    color: "#111827",
+    fontSize: "14px",
+  }),
+};
+
+const customStyles = {
+  control: (base: any, state: any) => ({
+    ...base,
+    minHeight: "41px",
+    borderRadius: "12px",
+    paddingLeft: "8px",
+    color: "#6269FF",
+    fontSize: "14px",
+    fontWeight: 400,
+    borderWidth: "1px",
+    borderColor: state.isFocused ? "#A259FF" : "#D1D5DB", // Purple on focus
+    boxShadow: state.isFocused ? "0 0 0 2px rgba(162, 89, 255, 0.5)" : "none", // smooth glow
+    transition: "all 0.2s ease-in-out",
+
+    backgroundColor: "white",
+  }),
+  valueContainer: (base: any) => ({
+    ...base,
+    flexWrap: "wrap", // Ensure items wrap inside the value container
+    maxHeight: "auto",
+    gap: "6px",
+    paddingTop: "6px",
+    paddingBottom: "6px",
+  }),
+  multiValue: (base: any) => ({
+    ...base,
+    backgroundColor: "#f3f1ff",
+    color: "#6269FF",
+    borderRadius: "8px",
+    fontSize: "13px",
+    // padding: '2px 6px',
+  }),
+  multiValueLabel: (base: any) => ({
+    ...base,
+    color: "#6269FF", // darker text (Tailwind slate-700)
+    fontWeight: "500",
+    fontSize: "11px",
+  }),
+  placeholder: (base: any) => ({
+    ...base,
+    fontSize: 14,
+    color: "#9CA3AF",
+  }),
+};
+
 const tabMap = {
   basic: 0,
   contact: 1,
@@ -122,7 +214,46 @@ const UserProfilePage = () => {
     ),
   });
   const contactInfoForm = useForm();
-  const socialLinksForm = useForm();
+  // Update the socialLinksForm initialization with validation
+  const socialLinksForm = useForm({
+    resolver: yupResolver(
+      yup.object().shape({
+        facebook: yup
+          .string()
+          .url("Must be a valid URL")
+          .test(
+            "is-facebook",
+            "Must be a valid Facebook URL",
+            (value) => !value || value.includes("facebook.com")
+          ),
+        twitter: yup
+          .string()
+          .url("Must be a valid URL")
+          .test(
+            "is-twitter",
+            "Must be a valid Twitter URL",
+            (value) =>
+              !value || value.includes("twitter.com") || value.includes("x.com")
+          ),
+        linkedin: yup
+          .string()
+          .url("Must be a valid URL")
+          .test(
+            "is-linkedin",
+            "Must be a valid LinkedIn URL",
+            (value) => !value || value.includes("linkedin.com")
+          ),
+        instagram: yup
+          .string()
+          .url("Must be a valid URL")
+          .test(
+            "is-instagram",
+            "Must be a valid Instagram URL",
+            (value) => !value || value.includes("instagram.com")
+          ),
+      })
+    ),
+  });
   const educationForm = useForm({
     defaultValues: {
       educations: [
@@ -846,7 +977,7 @@ const UserProfilePage = () => {
                       />
                       <PhotoIcon className="w-5 h-5 text-gray-600" />
                     </label>
-                    { banner && banner !== "http://localhost:5026/file/" && (
+                    {banner && banner !== "http://localhost:5026/file/" && (
                       <button
                         onClick={() => setBanner(null)}
                         className="bg-white p-2 rounded-full shadow hover:bg-red-100"
@@ -890,15 +1021,15 @@ const UserProfilePage = () => {
                             <PhotoIcon className="w-4 h-4 text-gray-600" />
                           </label>
                           {logoPreview &&
-                          logoPreview !== "http://localhost:5026/file/" && (
-                            <button
-                              onClick={() => setLogoPreview(null)}
-                              className="bg-white p-1.5 rounded-full shadow hover:bg-red-100"
-                              title="Remove Photo"
-                            >
-                              <TrashIcon className="w-4 h-4 text-red-600" />
-                            </button>
-                          )}
+                            logoPreview !== "http://localhost:5026/file/" && (
+                              <button
+                                onClick={() => setLogoPreview(null)}
+                                className="bg-white p-1.5 rounded-full shadow hover:bg-red-100"
+                                title="Remove Photo"
+                              >
+                                <TrashIcon className="w-4 h-4 text-red-600" />
+                              </button>
+                            )}
                         </div>
                       </div>
                     </div>
@@ -965,7 +1096,7 @@ const UserProfilePage = () => {
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative">
                               {/* First Name */}
                               <div>
-                                <label>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
                                   First Name{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -973,7 +1104,7 @@ const UserProfilePage = () => {
                                   type="text"
                                   {...basicInfoForm.register("firstName")}
                                   placeholder="Enter your First Name"
-                                  className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                  className={`w-full px-4 py-2 h-[41px]  border bg-white ${
                                     basicInfoForm.formState.errors.firstName
                                       ? "border-red-500"
                                       : "border-gray-300"
@@ -995,7 +1126,7 @@ const UserProfilePage = () => {
 
                               {/* Last Name */}
                               <div>
-                                <label>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
                                   Last Name{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1025,7 +1156,7 @@ const UserProfilePage = () => {
 
                               {/* Interests */}
                               <div>
-                                <label>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
                                   Interests{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1051,7 +1182,7 @@ const UserProfilePage = () => {
                                       )
                                     );
                                   }}
-                                  className="react-select-container h-[41px] rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2"
+                                  styles={customStyles}
                                   classNamePrefix="react-select"
                                   placeholder="Select interests..."
                                 />
@@ -1064,7 +1195,7 @@ const UserProfilePage = () => {
 
                               {/* Profession */}
                               <div>
-                                <label>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
                                   Professions{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1090,7 +1221,7 @@ const UserProfilePage = () => {
                                       )
                                     );
                                   }}
-                                  className="react-select-container h-[41px] rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2"
+                                  styles={customStyles}
                                   classNamePrefix="react-select"
                                   placeholder="Select professions..."
                                 />
@@ -1136,7 +1267,7 @@ const UserProfilePage = () => {
                                     <div className="mt-5">
                                       <label
                                         htmlFor="registrationFile"
-                                        className="px-4 py-2 h-[41px] bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                                        className="px-4 py-2  h-[41px] bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
                                       >
                                         Verify Identity
                                       </label>
@@ -1237,34 +1368,33 @@ const UserProfilePage = () => {
                                 )}
                               </div>
 
-                              {/* Gender */}
-                              <div>
-                                <label>
+                              {/* Gender Dropdown - Styled like the Interests Field */}
+                              <div className="w-full">
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
                                   Gender <span className="text-red-500">*</span>
                                 </label>
-                                <select
-                                  {...basicInfoForm.register("gender", {
-                                    required: true,
-                                  })}
-                                  className="
-    w-full h-[41px] bg-white
-    border border-gray-300 rounded-[12px]
-    px-[12px] mt-2
-    font-normal text-[14px] leading-5
-    text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500
-  "
-                                  style={{ fontFamily: "Rubik, sans-serif" }}
-                                >
-                                  <option value="">Select your gender</option>
-                                  <option value="Male">Male</option>
-                                  <option value="Female">Female</option>
-                                  <option value="Non-binary">Non-binary</option>
-                                </select>
+                                <Select
+                                  options={genderOptions}
+                                  styles={customSelectStyles}
+                                  //placeholder="Select your gender"
+                                  value={genderOptions.find(
+                                    (opt) =>
+                                      opt.value ===
+                                      basicInfoForm.watch("gender")
+                                  )}
+                                  onChange={(selectedOption) =>
+                                    basicInfoForm.setValue(
+                                      "gender",
+                                      selectedOption?.value || ""
+                                    )
+                                  }
+                                  onBlur={() => basicInfoForm.trigger("gender")}
+                                  isSearchable={false}
+                                />
                               </div>
-
                               {/* Date of Birth */}
                               <div>
-                                <label>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
                                   Date of Birth{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1296,7 +1426,9 @@ const UserProfilePage = () => {
 
                               {/* Quote on Consciousness */}
                               <div>
-                                <label>Your Quote on Consciousness</label>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Your Quote on Consciousness
+                                </label>
                                 <input
                                   type="text"
                                   {...basicInfoForm.register("quote")}
@@ -1323,7 +1455,7 @@ const UserProfilePage = () => {
 
                               {/* Professional Bio */}
                               <div>
-                                <label>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
                                   Professional Bio{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
@@ -1335,7 +1467,7 @@ const UserProfilePage = () => {
                                     basicInfoForm.formState.errors.bio
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl h-[41px] text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                  } rounded-xl h-[41px]    text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
                                     basicInfoForm.formState.errors.bio
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
@@ -1380,21 +1512,20 @@ const UserProfilePage = () => {
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                  className="font-[Plus Jakarta Sans] bg-white flex justify-center w-full sm:w-auto text-[18px] px-6 py-3 rounded-full text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
-                                  type="button"
+                                  className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
+             hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                                   onClick={() => basicInfoForm.reset()}
                                 >
                                   Reset
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="w-full sm:w-auto rounded-full py-3 flex justify-center px-8 transition-colors duration-500 ease-in-out"
+                                  className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   disabled={isSubmitting.basic}
                                 >
-                                  {isSubmitting.basic
-                                    ? "Saving..."
-                                    : "Save Basic Info"}
+                                  {isSubmitting.basic ? "Saving..." : "Save"}
                                 </Button>
                               </div>
                             </div>
@@ -1438,7 +1569,7 @@ const UserProfilePage = () => {
                                     contactInfoForm.formState.errors.phone
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl h-[41px] focus:outline-none focus:ring-2 ${
+                                  } rounded-xl h-[41px] focus:outline-none focus:ring-2 placeholder:text-sm placeholder:text-gray-400  ${
                                     contactInfoForm.formState.errors.phone
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
@@ -1473,7 +1604,7 @@ const UserProfilePage = () => {
                                     contactInfoForm.formState.errors.email
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl focus:outline-none h-[41px] focus:ring-2 ${
+                                  } rounded-xl focus:outline-none h-[41px] focus:ring-2 placeholder:text-sm placeholder:text-gray-400 ${
                                     contactInfoForm.formState.errors.email
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
@@ -1514,32 +1645,56 @@ const UserProfilePage = () => {
                               </div>
 
                               {/* Country */}
-                              <div>
+                              <div className="w-full">
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                   Country{" "}
                                   <span className="text-red-500">*</span>
                                 </label>
-                                <select
-                                  {...contactInfoForm.register("country", {
-                                    required: "Country is required",
-                                  })}
-                                  className="
-                                  w-full h-[41px]
-                                  bg-white
-                                  border border-gray-300 rounded-[12px]
-                                  px-[12px] mt-2
-                                  font-normal text-[14px] leading-5
-                                  text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500
-                                "
-                                >
-                                  <option value="">Select your country</option>
-                                  Country
-                                  {Country?.map((country: any) => (
-                                    <option key={country.id} value={country.id}>
-                                      {country.name}
-                                    </option>
-                                  ))}
-                                </select>
+                                <Select
+                                  options={
+                                    Country
+                                      ? Country.map((country: any) => ({
+                                          value: country.id,
+                                          label: country.name,
+                                        }))
+                                      : []
+                                  }
+                                  value={
+                                    Country
+                                      ? Country.find(
+                                          (c: any) =>
+                                            c.id ===
+                                            contactInfoForm.watch("country")
+                                        )
+                                        ? {
+                                            value:
+                                              contactInfoForm.watch("country"),
+                                            label:
+                                              Country.find(
+                                                (c: any) =>
+                                                  c.id ===
+                                                  contactInfoForm.watch(
+                                                    "country"
+                                                  )
+                                              )?.name || "Select your country",
+                                          }
+                                        : null
+                                      : null
+                                  }
+                                  onChange={(selectedOption) => {
+                                    contactInfoForm.setValue(
+                                      "country",
+                                      selectedOption?.value || ""
+                                    );
+                                  }}
+                                  onBlur={() =>
+                                    contactInfoForm.trigger("country")
+                                  }
+                                  styles={customSelectStyles}
+                                  placeholder="Select your country"
+                                  isSearchable
+                                  classNamePrefix="react-select"
+                                />
                                 {contactInfoForm.formState.errors.country && (
                                   <p className="text-sm text-red-500 mt-1">
                                     {
@@ -1551,31 +1706,53 @@ const UserProfilePage = () => {
                               </div>
 
                               {/* State */}
-                              <div>
+                              <div className="w-full relative">
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                   State <span className="text-red-500">*</span>
                                 </label>
-                                <select
-                                  {...contactInfoForm.register("state", {
-                                    required: "State is required",
-                                  })}
-                                  className="
-                                    w-full h-[41px]
-                                    bg-white
-                                    border border-gray-300 rounded-[12px]
-                                    px-[12px] mt-2
-                                    font-normal text-[14px] leading-5
-                                    text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500
-                                  "
-                                  style={{ fontFamily: "Rubik, sans-serif" }}
-                                >
-                                  <option value="">Select your state</option>
-                                  {states?.map((state: any) => (
-                                    <option key={state.id} value={state.id}>
-                                      {state.name}
-                                    </option>
-                                  ))}
-                                </select>
+                                <Select
+                                  options={
+                                    states
+                                      ? states.map((state: any) => ({
+                                          value: state.id,
+                                          label: state.name,
+                                        }))
+                                      : []
+                                  }
+                                  value={
+                                    states
+                                      ? states.find(
+                                          (s: any) =>
+                                            s.id ===
+                                            contactInfoForm.watch("state")
+                                        )
+                                        ? {
+                                            value:
+                                              contactInfoForm.watch("state"),
+                                            label:
+                                              states.find(
+                                                (s: any) =>
+                                                  s.id ===
+                                                  contactInfoForm.watch("state")
+                                              )?.name || "Select your state",
+                                          }
+                                        : null
+                                      : null
+                                  }
+                                  onChange={(selectedOption) => {
+                                    contactInfoForm.setValue(
+                                      "state",
+                                      selectedOption?.value || ""
+                                    );
+                                  }}
+                                  onBlur={() =>
+                                    contactInfoForm.trigger("state")
+                                  }
+                                  styles={customSelectStyles}
+                                  placeholder="Select your state"
+                                  isSearchable
+                                  classNamePrefix="react-select"
+                                />
                                 {contactInfoForm.formState.errors.state && (
                                   <p className="text-sm text-red-500 mt-1">
                                     {
@@ -1673,7 +1850,9 @@ const UserProfilePage = () => {
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                  className="font-[Plus Jakarta Sans] flex justify-center w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                  className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
+             hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                                   type="button"
                                   onClick={() => contactInfoForm.reset()}
                                 >
@@ -1681,13 +1860,11 @@ const UserProfilePage = () => {
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="w-full sm:w-auto rounded-full flex justify-center py-3 px-8 transition-colors duration-500 ease-in-out"
+                                  className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   disabled={isSubmitting.contact}
                                 >
-                                  {isSubmitting.contact
-                                    ? "Saving..."
-                                    : "Save Contact Info"}
+                                  {isSubmitting.contact ? "Saving..." : "Save"}
                                 </Button>
                               </div>
                             </div>
@@ -1695,13 +1872,14 @@ const UserProfilePage = () => {
                         </Tab.Panel>
 
                         {/* Social Links Tab */}
+                        {/* Social Links Tab */}
                         <Tab.Panel>
                           <form
                             onSubmit={socialLinksForm.handleSubmit(
                               handleSocialLinksSubmit
                             )}
                           >
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4 rounded-lg rounded-tl-none rounded-tr-none relative">
                               {/* Facebook */}
                               <div>
                                 <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1710,9 +1888,25 @@ const UserProfilePage = () => {
                                 <input
                                   type="url"
                                   {...socialLinksForm.register("facebook")}
-                                  placeholder="Enter Facebook profile URL"
-                                  className="w-full px-4 py-2 h-[41px] border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  placeholder="https://facebook.com/yourprofile"
+                                  className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                    socialLinksForm.formState.errors.facebook
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    socialLinksForm.formState.errors.facebook
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
                                 />
+                                {socialLinksForm.formState.errors.facebook && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      socialLinksForm.formState.errors.facebook
+                                        .message
+                                    }
+                                  </p>
+                                )}
                               </div>
 
                               {/* Twitter */}
@@ -1723,9 +1917,25 @@ const UserProfilePage = () => {
                                 <input
                                   type="url"
                                   {...socialLinksForm.register("twitter")}
-                                  placeholder="Enter Twitter profile URL"
-                                  className="w-full px-4 py-2 h-[41px] border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  placeholder="https://twitter.com/yourprofile"
+                                  className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                    socialLinksForm.formState.errors.twitter
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    socialLinksForm.formState.errors.twitter
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
                                 />
+                                {socialLinksForm.formState.errors.twitter && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      socialLinksForm.formState.errors.twitter
+                                        .message
+                                    }
+                                  </p>
+                                )}
                               </div>
 
                               {/* LinkedIn */}
@@ -1736,9 +1946,25 @@ const UserProfilePage = () => {
                                 <input
                                   type="url"
                                   {...socialLinksForm.register("linkedin")}
-                                  placeholder="Enter LinkedIn profile URL"
-                                  className="w-full px-4 py-2 h-[41px] border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  placeholder="https://linkedin.com/in/yourprofile"
+                                  className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                    socialLinksForm.formState.errors.linkedin
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    socialLinksForm.formState.errors.linkedin
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
                                 />
+                                {socialLinksForm.formState.errors.linkedin && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      socialLinksForm.formState.errors.linkedin
+                                        .message
+                                    }
+                                  </p>
+                                )}
                               </div>
 
                               {/* Instagram */}
@@ -1749,15 +1975,33 @@ const UserProfilePage = () => {
                                 <input
                                   type="url"
                                   {...socialLinksForm.register("instagram")}
-                                  placeholder="Enter Instagram profile URL"
-                                  className="w-full px-4 py-2 h-[41px] border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  placeholder="https://instagram.com/yourprofile"
+                                  className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                    socialLinksForm.formState.errors.instagram
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    socialLinksForm.formState.errors.instagram
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
                                 />
+                                {socialLinksForm.formState.errors.instagram && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      socialLinksForm.formState.errors.instagram
+                                        .message
+                                    }
+                                  </p>
+                                )}
                               </div>
 
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                  className="font-[Plus Jakarta Sans] flex justify-center w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                  className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
+             hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                                   type="button"
                                   onClick={() => socialLinksForm.reset()}
                                 >
@@ -1765,13 +2009,11 @@ const UserProfilePage = () => {
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="w-full sm:w-auto flex justify-center rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
+                                  className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   disabled={isSubmitting.social}
                                 >
-                                  {isSubmitting.social
-                                    ? "Saving..."
-                                    : "Save Social Links"}
+                                  {isSubmitting.social ? "Saving..." : "Save"}
                                 </Button>
                               </div>
                             </div>
@@ -2004,7 +2246,9 @@ const UserProfilePage = () => {
                             <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                               <Button
                                 variant="white-outline"
-                                className="font-[Plus Jakarta Sans] flex justify-center w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
+             hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                                 type="button"
                                 onClick={() => educationForm.reset()}
                               >
@@ -2012,13 +2256,11 @@ const UserProfilePage = () => {
                               </Button>
                               <Button
                                 variant="gradient-primary"
-                                className="w-full sm:w-auto flex justify-center rounded-full py-3 px-8 transition-colors duration-500 ease-in-out"
+                                className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                                 type="submit"
                                 disabled={isSubmitting.education}
                               >
-                                {isSubmitting.education
-                                  ? "Saving..."
-                                  : "Save Education"}
+                                {isSubmitting.education ? "Saving..." : "Save"}
                               </Button>
                             </div>
                           </form>
@@ -2255,7 +2497,9 @@ const UserProfilePage = () => {
                             <div className="md:col-span-2 flex flex-col sm:flex-row sm:justify-end items-center gap-4 mt-6">
                               <Button
                                 variant="white-outline"
-                                className="font-[Plus Jakarta Sans] flex justify-center w-full sm:w-auto max-w-[280px] text-[16px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
+             hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                                 type="button"
                                 onClick={() => workExperienceForm.reset()}
                               >
@@ -2263,13 +2507,11 @@ const UserProfilePage = () => {
                               </Button>
                               <Button
                                 variant="gradient-primary"
-                                className="w-full sm:w-auto flex justify-center max-w-[280px] rounded-full py-3 px-6 text-white text-[16px] font-semibold shadow-md transition duration-300 ease-in-out"
+                                className="font-['Plus Jakarta Sans'] text-[14px] not-last:w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                                 type="submit"
                                 disabled={isSubmitting.work}
                               >
-                                {isSubmitting.work
-                                  ? "Saving..."
-                                  : "Save Work Experiences"}
+                                {isSubmitting.work ? "Saving..." : "Save"}
                               </Button>
                             </div>
                           </form>
@@ -2374,14 +2616,42 @@ const UserProfilePage = () => {
                                   Services Offered
                                 </label>
                                 <div className="flex gap-2 items-center">
-                                  <select
-                                    value={serviceInput}
-                                    onChange={(e) => {
-                                      if (e.target.value === "other") {
+                                  <Select
+                                  className="w-full h-[41px]"
+                                  classNamePrefix="react-select"
+                                    options={[
+                                      ...(serviceData?.map(
+                                        (service: {
+                                          id: string;
+                                          name: string;
+                                        }) => ({
+                                          value: service.id,
+                                          label: service.name,
+                                        })
+                                      ) || []),
+                                      {
+                                        value: "other",
+                                        label: "Other (Add Custom Service)",
+                                      },
+                                    ]}
+                                    styles={customSelectStyles}
+                                    value={
+                                      serviceInput
+                                        ? {
+                                            value: serviceInput,
+                                            label: serviceInput,
+                                          }
+                                        : undefined
+                                    }
+                                    onChange={(selectedOption) => {
+                                      if (!selectedOption) return;
+
+                                      if (selectedOption.value === "other") {
                                         setShowCustomInput(true);
                                         setServiceInput("");
-                                      } else if (e.target.value !== "") {
-                                        const trimmed = e.target.value.trim();
+                                      } else if (selectedOption.value !== "") {
+                                        const trimmed =
+                                          selectedOption.value.trim();
                                         if (
                                           trimmed &&
                                           !services.includes(trimmed) &&
@@ -2396,31 +2666,17 @@ const UserProfilePage = () => {
                                             "services",
                                             newServices
                                           );
-                                          setServiceInput(""); // reset
+                                          setServiceInput("");
                                         }
                                         setShowCustomInput(false);
                                       }
                                     }}
-                                    className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                  >
-                                    <option value="">Select a service</option>
-                                    {serviceData?.map(
-                                      (service: {
-                                        id: string;
-                                        name: string;
-                                      }) => (
-                                        <option
-                                          key={service.id}
-                                          value={service.id}
-                                        >
-                                          {service.name}
-                                        </option>
-                                      )
-                                    )}
-                                    <option value="other">
-                                      Other (Add Custom Service)
-                                    </option>
-                                  </select>
+                                    onBlur={() =>
+                                      publicProfileForm.trigger("services")
+                                    }
+                                    isSearchable={false}
+                                    placeholder="Select a service"
+                                  />
 
                                   {showCustomInput && (
                                     <>
@@ -2431,7 +2687,7 @@ const UserProfilePage = () => {
                                           setCustomServiceInput(e.target.value)
                                         }
                                         placeholder="Enter custom service"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className={`w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500`}
                                       />
                                       <button
                                         type="button"
@@ -2589,7 +2845,9 @@ const UserProfilePage = () => {
                               <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                                 <Button
                                   variant="white-outline"
-                                  className="font-[Plus Jakarta Sans] flex justify-center w-full sm:w-auto text-[18px] px-6 py-3 rounded-full bg-white text-black border border-[#ddd] bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white transition-colors duration-300"
+                                  className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
+             hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                                   type="button"
                                   onClick={() => publicProfileForm.reset()}
                                 >
@@ -2597,13 +2855,11 @@ const UserProfilePage = () => {
                                 </Button>
                                 <Button
                                   variant="gradient-primary"
-                                  className="w-full sm:w-auto rounded-full flex justify-center py-3 px-8 transition-colors duration-500 ease-in-out"
+                                  className="font-['Plus Jakarta Sans'] text-[14px] not-last:w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                                   type="submit"
                                   disabled={isSubmitting.public}
                                 >
-                                  {isSubmitting.public
-                                    ? "Saving..."
-                                    : "Save Public Profile"}
+                                  {isSubmitting.public ? "Saving..." : "Save"}
                                 </Button>
                               </div>
                             </div>

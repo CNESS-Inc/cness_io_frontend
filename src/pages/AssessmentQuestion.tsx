@@ -13,6 +13,7 @@ import { EyeIcon } from "lucide-react";
 import Modal from "../components/ui/Modal";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import missionicon from "../assets/missionicon.svg";
+import { Check } from "lucide-react";
 
 interface Section {
   id: string;
@@ -88,6 +89,8 @@ const AssessmentQuestion: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { showToast } = useToast();
   const completed_step = localStorage.getItem("completed_step");
+  const [urlError, setUrlError] = useState("");
+
   // const [errors, setErrors] = useState<FormErrors>({});
 
   // interface FormErrors {
@@ -373,6 +376,15 @@ const AssessmentQuestion: React.FC = () => {
   };
 
   const handleReferenceLinkChange = (value: string) => {
+    const urlPattern =
+      /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/;
+
+    if (value && !urlPattern.test(value)) {
+      setUrlError("Enter a valid URL");
+    } else {
+      setUrlError("");
+    }
+
     setFormData((prev) => {
       if (!prev) return null;
       return {
@@ -606,19 +618,41 @@ const AssessmentQuestion: React.FC = () => {
                 {currentSection.checkboxes.map((option) => (
                   <label
                     key={option.id}
-                    className="text-[14px] flex items-start gap-3 text-[#222224]"
+                    className="text-[14px] flex items-center gap-3 text-[#222224]"
                   >
-                    <input
-                      type="checkbox"
-                      checked={formData.selectedCheckboxIds.includes(option.id)}
-                      onChange={(e) =>
-                        handleCheckboxChange(option.id, e.target.checked)
-                      }
-                      disabled={isSubmitted}
-                      className={
-                        isSubmitted ? "opacity-50 cursor-not-allowed" : ""
-                      }
-                    />
+                    <label className="relative inline-flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={formData.selectedCheckboxIds.includes(
+                          option.id
+                        )}
+                        onChange={(e) =>
+                          handleCheckboxChange(option.id, e.target.checked)
+                        }
+                        disabled={isSubmitted}
+                        className={`
+      appearance-none
+      w-[16px] h-[16px] sm:w-[17px] sm:h-[17px]
+      rounded-[4px]
+      border
+      transition-all duration-300 ease-in-out
+      bg-white 
+   
+      ${
+        formData.selectedCheckboxIds.includes(option.id)
+          ? "border-[#7077ef] shadow-[2px_2px_4px_rgba(59,130,246,0.3)]"
+          : "border-[#D0D5DD] shadow-inner"
+      }
+      ${isSubmitted ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+    `}
+                      />
+                      {formData.selectedCheckboxIds.includes(option.id) && (
+                        <Check
+                          className="absolute left-[3px] top-[2px] text-[#6269FF] w-[12px] h-[12px] pointer-events-none transition-transform duration-200 scale-100"
+                          strokeWidth={5}
+                        />
+                      )}
+                    </label>
                     <span>{option.option}</span>
                   </label>
                 ))}
@@ -700,7 +734,7 @@ const AssessmentQuestion: React.FC = () => {
                       <input
                         type="file"
                         accept={upload.acceptedTypes}
-                        className="w-full h-16 px-2 py-3 cursor-pointer rounded-xl border border-gray-300 file:mr-4 file:rounded-full file:border-0 file:bg-[#7077FE] file:px-[12px] file:py-[8px] file:text-white file:text-[14px] file:cursor-pointer"
+                        className="w-full h-16 px-2 py-3 cursor-pointer rounded-xl border border-gray-300 file:mr-4 file:rounded-full file:border-0 file:bg-[#7077FE] file:px-[20px] file:py-[8px] file:text-white  file:font-['Plus Jakarta Sans'] file:font-medium  file:text-[14px] file:cursor-pointer"
                         onChange={(e) =>
                           handleFileUpload(i, e.target.files?.[0] || null)
                         }
@@ -727,35 +761,30 @@ const AssessmentQuestion: React.FC = () => {
                 </label>
                 <input
                   type="url"
-                  className="w-full p-2 rounded-lg border border-gray-300"
+                  className={`w-full p-2 rounded-lg border ${
+                    urlError ? "border-red-500" : "border-gray-300"
+                  }`}
                   placeholder="https://example.com"
                   value={formData.referenceLink.url || ""}
                   onChange={(e) => handleReferenceLinkChange(e.target.value)}
                   disabled={isSubmitted}
                 />
+                {urlError && (
+                  <p className="text-red-500 text-sm mt-1">{urlError}</p>
+                )}
               </div>
             </div>
 
             {/* Action Buttons */}
             {/* {!isSubmitted && ( */}
-            <div className="flex flex-col sm:flex-row items-center justify-between mt-10 px-4 py-6 bg-white rounded-xl shadow-sm gap-4 cursor-pointer">
+            <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between sm:items-center sm:gap-4 w-full">
               {/* Save Button - Gradient */}
               <Button
                 variant="gradient-primary"
                 onClick={handleSave}
                 // disabled={isSubmitting}
                 disabled={isSubmitted}
-                className="
-    w-[77px] h-[31px]
-    rounded-[70.94px]
-    px-[24px] py-[8px]
-    flex items-center justify-center
-    gap-[7.09px]
-    text-white
-    font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center
-    disabled:opacity-60
-    transition-colors duration-200 cursor-pointer
-  "
+                className="w-[85px] h-[35px] rounded-[70.94px] px-[24px] py-[8px] flex items-center justify-center gap-[7.09px] text-white font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center disabled:opacity-60 transition-colors duration-200"
                 style={{
                   opacity: 1,
                   transform: "rotate(0deg)",
@@ -765,16 +794,19 @@ const AssessmentQuestion: React.FC = () => {
               </Button>
 
               {/* Prev & Next Buttons */}
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+              <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
                 <button
                   onClick={handlePrevious}
                   disabled={!currentSection.previous_section_id}
-                  className={`w-[104px] h-[31px] 
-              px-6 py-2 
-              rounded-[100px] 
-              text-sm font-medium 
-              transition-all duration-200 
-              border  
+                  className={` w-[117px] h-[35px]
+    px-[24px] py-[8px]
+   rounded-[70.94px]
+    border border-gray-200
+    bg-white text-[#64748B]
+    font-['Plus Jakarta Sans'] text-[12px] font-medium
+    transition-all duration-200
+    hover:bg-[#F4F4F5]
+    disabled:text-gray-400 disabled:border-gray-200 disabled:cursor-not-allowed
                               ${
                                 prevVariant === "white-disabled"
                                   ? "bg-white font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center text-gray-400 border border-gray-200 shadow-md cursor-pointer"
@@ -790,30 +822,23 @@ const AssessmentQuestion: React.FC = () => {
                   onClick={handleNext}
                   disabled={!currentSection.next_section_id}
                   className="
-    w-[117px] h-[31px]
+   w-[117px] h-[35px]
     rounded-[70.94px]
     px-[24px] py-[8px]
     flex items-center justify-center
     gap-[7.09px]
-    cursor-pointer
+    text-white bg-[#897AFF]
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-[100%]
+    text-center whitespace-nowrap
     transition-colors duration-200
-    text-white
+    disabled:opacity-50
   "
                   style={{
                     opacity: 1,
                     transform: "rotate(0deg)",
                   }}
                 >
-                  <span
-                    className="
-   font-['Plus Jakarta Sans']
-      font-medium
-      text-[14px]
-      leading-[100%]
-      text-center
-      whitespace-nowrap
-  "
-                  >
+                  <span className="font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center whitespace-nowrap ">
                     Save & Next
                   </span>
                 </Button>
@@ -844,11 +869,11 @@ const AssessmentQuestion: React.FC = () => {
                     within 5–7 business days. You won’t be able to make changes
                     after submission.
                   </p>
-              <div className="flex justify-center">
-  <Button
-    onClick={handleconfirm}
-    className="
-      w-[162px] h-[45px]
+                  <div className="flex justify-center">
+                    <Button
+                      onClick={handleconfirm}
+                      className="
+      w-[250px] h-[45px]
       rounded-[100px]
       px-[24px] py-[16px]
       flex items-center justify-center
@@ -856,10 +881,10 @@ const AssessmentQuestion: React.FC = () => {
       text-white
       whitespace-nowrap
     "
-  >
-    Submit For Assessment
-  </Button>
-</div>
+                    >
+                      Submit For Assessment
+                    </Button>
+                  </div>
                 </div>
               </>
             )}

@@ -9,13 +9,9 @@ import inspiredbadge from "../assets/Inspired _ Badge.png";
 // import bcard4 from "../assets/Bcard4.png";
 import overallrating from "../assets/overallratings.png";
 import aboutus from "../assets/aboutus.png";
-import tag from "../assets/tags.png";
 import work from "../assets/work.png";
-import msc from "../assets/msc.png";
 import education from "../assets/education.png";
-import google from "../assets/google.png";
 import review from "../assets/review.png";
-import bestprac from "../assets/bestprac.png";
 import { useEffect, useState } from "react";
 import {
   AddUserRating,
@@ -28,16 +24,21 @@ import { StarRating } from "../components/ui/Rating";
 import Button from "../components/ui/Button";
 import Modal from "../components/ui/Modal";
 import { FacebookIcon, LinkedinIcon, TwitterIcon } from "react-share";
-import { Instagram, Briefcase } from "lucide-react";
-import userlogo4 from "../assets/userlogo4.webp";
+import { Instagram } from "lucide-react";
 import banner2 from "../assets/banner2.png";
 import indv_aspiring from "../assets/indv_aspiring.svg";
 import indv_inspried from "../assets/indv_inspired.svg";
 import indv_leader from "../assets/indv_leader.svg";
 
+interface Errors {
+  reviewText: string;
+  breakdowns: Record<string, string>; // Changed from fixed properties to dynamic
+}
+
 export default function UserProfileView() {
   const { id } = useParams();
   const [userDetails, setUserDetails] = useState<any>();
+  console.log("🚀 ~ UserProfileView ~ userDetails:", userDetails);
   const [activeModal, setActiveModal] = useState<"rating" | null>(null);
 
   const { showToast } = useToast();
@@ -76,49 +77,32 @@ export default function UserProfileView() {
   const [userReviewData, setUserReviewData] = useState<any>([]);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
-  const [breakdowns, setBreakdowns] = useState({
-    one: 0,
-    two: 0,
-    three: 0,
-    four: 0,
-    five: 0,
-  });
+  const [breakdowns, setBreakdowns] = useState<Record<string, number>>({});
+
 
   // State for errors
-  const [errors, setErrors] = useState({
+  const [errors, setErrors] = useState<Errors>({
     reviewText: "",
-    breakdowns: {
-      one: "",
-      two: "",
-      three: "",
-      four: "",
-      five: "",
-    },
+    breakdowns: {},
   });
+
 
   // Validate form function
   const validateForm = (): boolean => {
     let valid = true;
     const newErrors = {
       reviewText: "",
-      breakdowns: {
-        one: "",
-        two: "",
-        three: "",
-        four: "",
-        five: "",
-      },
+      breakdowns: {} as Record<string, string>,
     };
 
     // Validate each breakdown rating
-    (Object.keys(breakdowns) as Array<keyof typeof breakdowns>).forEach(
-      (key) => {
-        if (breakdowns[key] === 0) {
-          newErrors.breakdowns[key] = "Please select a rating";
-          valid = false;
-        }
+    breakDown?.forEach((item: any) => {
+      const key = item.breakdown_name;
+      if (!breakdowns[key] || breakdowns[key] === 0) {
+        newErrors.breakdowns[key] = "Please select a rating";
+        valid = false;
       }
-    );
+    });
 
     if (!reviewText.trim()) {
       newErrors.reviewText = "Review cannot be empty";
@@ -136,40 +120,30 @@ export default function UserProfileView() {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (validateForm()) {
       try {
-        const payload = {
+        // Create the base payload
+        const payload: any = {
           review: reviewText,
           user_type: "1",
           profile_id: id,
-          breakdown_one: breakdowns.one.toString(),
-          breakdown_two: breakdowns.two.toString(),
-          breakdown_three: breakdowns.three.toString(),
-          breakdown_four: breakdowns.four.toString(),
-          breakdown_five: breakdowns.five.toString(),
         };
+
+        // Dynamically add breakdown ratings based on the breakdown items
+        breakDown?.forEach((item: any) => {
+          const key = item.breakdown_name;
+          payload[`breakdown_${key}`] = breakdowns[key]?.toString() || "0";
+        });
+
         await AddUserRating(payload);
         setActiveModal(null);
         // Reset form on success
         setReviewText("");
-        setBreakdowns({
-          one: 0,
-          two: 0,
-          three: 0,
-          four: 0,
-          five: 0,
-        });
+        setBreakdowns({});
         await fetchRatingDetails();
       } catch (error: any) {
         setReviewText("");
-        setBreakdowns({
-          one: 0,
-          two: 0,
-          three: 0,
-          four: 0,
-          five: 0,
-        });
+        setBreakdowns({});
         setActiveModal(null);
         showToast({
           message: error?.response?.data?.error?.message,
@@ -243,7 +217,7 @@ export default function UserProfileView() {
         >
           <button
             onClick={() => window.history.back()}
-            className="absolute top-4 left-4 bg-white rounded-full p-2 shadow-md"
+            className="absolute cursor-pointer top-4 left-4 bg-white rounded-full p-2 shadow-md"
           >
             <ArrowLeftIcon className="h-5 w-5 text-[#7077FE]" />
           </button>
@@ -256,9 +230,19 @@ export default function UserProfileView() {
           <div className="absolute -top-25 left-1/2 -translate-x-1/2 sm:-translate-x-[45%] z-20">
             <div className="w-40 h-40 md:w-52 md:h-52 rounded-full border-8 border-white shadow-lg bg-white overflow-hidden">
               <img
-                src={userDetails?.profile_picture || userlogo4}
+                src={
+                  userDetails?.profile_picture &&
+                  userDetails?.profile_picture !== "http://localhost:5026/file/"
+                    ? userDetails?.profile_picture
+                    : "/profile.png"
+                }
                 alt="userlogo1"
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  // Fallback if the image fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.src = "/profile.png";
+                }}
               />
             </div>
           </div>
@@ -284,23 +268,27 @@ export default function UserProfileView() {
               {/* Contact Info Block */}
               <div className="grid grid-cols-2 sm:grid-cols-1 gap-x-4 gap-y-6 mt-6 text-sm text-gray-800">
                 <div>
-                  <p className="font-medium">
+                  <p className="font-medium break-all">
                     {userDetails?.first_name} {userDetails?.last_name}
                   </p>
                   <p className="text-xs text-gray-400">User Name</p>
                 </div>
                 <div>
-                  <p className="font-medium">{userDetails?.email}</p>
+                  <p className="font-medium break-all">{userDetails?.email}</p>
                   <p className="text-xs text-gray-400">Official mail</p>
                 </div>
                 <div>
-                  <p className="font-medium">{userDetails?.phone_no}</p>
+                  <p className="font-medium break-all">
+                    {userDetails?.phone_no}
+                  </p>
                   <p className="text-xs text-gray-400">
                     Official Contact Number
                   </p>
                 </div>
                 <div>
-                  <p className="font-medium">{userDetails?.address}</p>
+                  <p className="font-medium break-all">
+                    {userDetails?.address}
+                  </p>
                   <p className="text-xs text-gray-400">Address</p>
                 </div>
               </div>
@@ -356,11 +344,11 @@ export default function UserProfileView() {
                   <p className="text-sm font-medium">CNESS Badge:</p>
                   <img
                     src={
-                      userDetails?.badge?.level === "Aspiring"
+                      userDetails?.level?.level == "Aspiring"
                         ? indv_aspiring
-                        : userDetails?.badge?.level === "Inspiring"
+                        : userDetails?.level?.level == "Inspired"
                         ? indv_inspried
-                        : userDetails?.badge?.level === "Leader"
+                        : userDetails?.level?.level == "Leader"
                         ? indv_leader
                         : inspiredbadge // fallback if no level
                     }
@@ -411,11 +399,11 @@ export default function UserProfileView() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {userDetails?.education?.map((edu: any) => (
                     <div key={edu.id} className="flex items-center gap-4">
-                      <img
+                      {/* <img
                         src={msc}
                         alt="Education Icon"
                         className="w-5 h-5 object-contain"
-                      />
+                      /> */}
                       <div>
                         <p className="text-sm font-medium text-gray-800">
                           {edu.degree}
@@ -456,11 +444,11 @@ export default function UserProfileView() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {userDetails?.work_experience.map((job: any) => (
                     <div key={job.id} className="flex items-center gap-4">
-                      <img
+                      {/* <img
                         src={google}
                         alt={`${job.company} Icon`}
                         className="w-5 h-5 object-contain"
-                      />
+                      /> */}
                       <div>
                         <p className="text-sm font-medium text-gray-800">
                           {job.position}
@@ -477,7 +465,7 @@ export default function UserProfileView() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
+            {/* <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
               <h3 className="text-base font-semibold text-black mb-2 flex items-center gap-2">
                 <span className="bg-purple-50 p-2 rounded-full">
                   <Briefcase className="w-4 h-4 text-purple-500" />
@@ -489,36 +477,34 @@ export default function UserProfileView() {
                 style={{ borderColor: "#0000001A" }}
               />
               <div className="flex flex-wrap gap-5">
-                {/* services go here */}
+
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
-              <h3 className="text-base font-semibold text-black mb-2 flex items-center gap-2">
-                <span className="bg-purple-50 p-2 rounded-full">
-                  <img
-                    src={tag}
-                    alt="tags Icon"
-                    className="w-5 h-5 object-contain"
-                  />
-                </span>
-                Tags
-              </h3>
-              <div
-                className="border-t my-2"
-                style={{ borderColor: "#0000001A" }}
-              />
-              <div className="flex flex-wrap gap-5">
-                {userDetails?.person_tags?.map((tag: any, index: any) => (
-                  <span
-                    key={index}
-                    className="bg-[#EEF3FF] text-[#7077FE] text-xs font-medium px-7 py-2 rounded"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
+   <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
+    <h3 className="text-base font-semibold text-black mb-2 flex items-center gap-2">
+      <span className="bg-purple-50 p-2 rounded-full">
+        <img src={tag} alt="tags Icon" className="w-5 h-5 object-contain" />
+      </span>
+      Tags
+    </h3>
+    <div
+      className="border-t my-2"
+      style={{ borderColor: "#0000001A" }}
+    />
+    <div className="flex flex-wrap gap-5">
+      {userDetails?.person_tags?.map((tag: any, index: any) => (
+        <span
+          key={index}
+          className="bg-[#EEF3FF] text-[#7077FE] text-xs font-medium px-7 py-2 rounded"
+        >
+          {tag}
+        </span>
+      ))}
+    </div>
+  </div>
+
+       
 
             <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
               <h3 className="text-base font-semibold text-black mb-2 flex items-center gap-2">
@@ -536,9 +522,9 @@ export default function UserProfileView() {
                 style={{ borderColor: "#0000001A" }}
               />
               <div className="flex flex-wrap gap-5">
-                {/* services go here */}
+
               </div>
-            </div>
+            </div> */}
 
             {/* <div className="w-full px-6 md:px-5 mt-2">
           <div className="bg-white rounded-xl shadow-sm px-6 py-8">
@@ -703,7 +689,7 @@ export default function UserProfileView() {
                   <div className="flex flex-col items-center xl:items-start">
                     {typeof avgrating === "number" && !isNaN(avgrating) && (
                       <>
-                        <p className="text-4xl font-bold text-purple-500">
+                        <p className="text-4xl font-bold text-purple-500 ">
                           {avgrating}
                         </p>
                         <StarRating
@@ -847,7 +833,7 @@ export default function UserProfileView() {
                     </div>
                     {reviewItem.review && (
                       <>
-                        <p className="font-semibold text-sm text-gray-800 mb-1">
+                        <p className="font-semibold text-sm text-gray-800 mb-1 break-all">
                           {reviewItem.review}
                           {/* Add a fallback if no title */}
                         </p>
@@ -901,155 +887,54 @@ export default function UserProfileView() {
             Leave a Review
           </h2>
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Star Rating Sections */}
+            {/* Star Rating Sections - Now Dynamic */}
             <div className="space-y-5">
-              {/* 1. Mission & Vision */}
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <label className="w-1/2 text-sm font-medium text-purple-800">
-                  <span className="font-semibold">Mission & Vision:</span>
-                </label>
-                <div className="w-1/2 flex justify-start">
-                  <StarRating
-                    initialRating={breakdowns.one}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, one: newRating }));
-                      if (errors.breakdowns.one) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, one: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.one && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.breakdowns.one}
-                  </p>
-                )}
-              </div>
+              {breakDown?.map((item: any, index: number) => {
+                const breakdownKey =
+                  item.breakdown_name as keyof typeof breakdowns;
+                const errorKey =
+                  item.breakdown_name as keyof typeof errors.breakdowns;
 
-              {/* 2. Client / Customer / Consumer */}
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <label className="w-1/2 text-sm font-medium text-purple-800">
-                  <span className="font-semibold">
-                    Client / Customer / Consumer:
-                  </span>
-                </label>
-                <div className="w-1/2 flex justify-start">
-                  <StarRating
-                    initialRating={breakdowns.two}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, two: newRating }));
-                      if (errors.breakdowns.two) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, two: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.two && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.breakdowns.two}
-                  </p>
-                )}
-              </div>
-
-              {/* 3. Communities & Charities */}
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <label className="w-1/2 text-sm font-medium text-purple-800">
-                  <span className="font-semibold">
-                    Communities & Charities:
-                  </span>
-                </label>
-                <div className="w-1/2 flex justify-start">
-                  <StarRating
-                    initialRating={breakdowns.three}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, three: newRating }));
-                      if (errors.breakdowns.three) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, three: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.three && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.breakdowns.three}
-                  </p>
-                )}
-              </div>
-
-              {/* 4. Vision & Legacy */}
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <label className="w-1/2 text-sm font-medium text-purple-800">
-                  <span className="font-semibold">
-                    Vision & Legacy – Long-Term Contribution:
-                  </span>
-                </label>
-                <div className="w-1/2 flex justify-start">
-                  <StarRating
-                    initialRating={breakdowns.four}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, four: newRating }));
-                      if (errors.breakdowns.four) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, four: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.four && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.breakdowns.four}
-                  </p>
-                )}
-              </div>
-
-              {/* 5. Leadership Best Practices */}
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <label className="w-1/2 text-sm font-medium text-purple-800">
-                  <span className="font-semibold">
-                    Leadership Best Practices:
-                  </span>
-                </label>
-                <div className="w-1/2 flex justify-start">
-                  <StarRating
-                    initialRating={breakdowns.five}
-                    allowHalfStars={true}
-                    size="4xl"
-                    onRatingChange={(newRating: number) => {
-                      setBreakdowns((prev) => ({ ...prev, five: newRating }));
-                      if (errors.breakdowns.five) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          breakdowns: { ...prev.breakdowns, five: "" },
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-                {errors.breakdowns.five && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.breakdowns.five}
-                  </p>
-                )}
-              </div>
+                return (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between gap-4 mb-4"
+                  >
+                    <label className="w-1/2 text-sm font-medium text-purple-800">
+                      <span className="font-semibold">
+                        {formatBreakdownName(item.breakdown_name)}:
+                      </span>
+                    </label>
+                    <div className="w-1/2 flex justify-start">
+                      <StarRating
+                        initialRating={breakdowns[breakdownKey]}
+                        allowHalfStars={true}
+                        size="4xl"
+                        onRatingChange={(newRating: number) => {
+                          setBreakdowns((prev) => ({
+                            ...prev,
+                            [breakdownKey]: newRating,
+                          }));
+                          if (errors.breakdowns[errorKey]) {
+                            setErrors((prev) => ({
+                              ...prev,
+                              breakdowns: {
+                                ...prev.breakdowns,
+                                [errorKey]: "",
+                              },
+                            }));
+                          }
+                        }}
+                      />
+                    </div>
+                    {errors.breakdowns[errorKey] && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.breakdowns[errorKey]}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             {/* Review Text */}

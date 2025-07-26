@@ -1,94 +1,316 @@
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
 import Button from "../../ui/Button";
 import { Card, CardContent } from "../../ui/Card";
+import { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
-// Import your images (adjust the paths as needed)
 import IndividualImage from "../../../assets/aware_1.jpg";
 import OrganizationImage from "../../../assets/aware_2.jpg";
 import MentorImage from "../../../assets/aware_3.jpg";
-import { useNavigate } from "react-router-dom";
+import RectangleBlink from '../../../assets/lottie-files/Rectangle-blink/Rectangle-blink.json'
+import LottieOnView from "../../ui/LottieOnView";
+
+// Add shimmer effect CSS
+import './AwarenessSection.css';
 
 export default function AwarenessSection() {
-  const navigate = useNavigate()
   const cards = [
     {
-      title: "Join as an Individual",
-      description: "Get certified. Build your conscious portfolio.",
-      imageHeight: "347px",
+      title: "Sacred Symbols Icon Set",
+      description: "100+ vector symbols with spiritual significance",
       image: IndividualImage,
       altText: "Individual joining certification program",
+      button: "Add to cart",
+      price: "$999",
+      bg_image: "url('/product-bg-1.png')",
+      badge: {
+        label: "Top Rated",
+        gradient: "linear-gradient(90deg, #544b40 0%, #64594b 100%)",
+      },
     },
     {
-      title: "Certify Your Organization",
-      description: "Lead with integrity. Build stakeholder trust.",
-      imageHeight: "347px",
+      title: "Color Palettes Collection",
+      description: "Curated color schemes for various design projects",
       image: OrganizationImage,
       altText: "Organization certification process",
+      button: "Add to cart",
+      price: "$49",
+      bg_image: "url('/product-bg-2.png')",
+      badge: {
+        label: "New Arrival",
+        gradient: "linear-gradient(90deg, #5f5a50 0%, #7f7463 100%)",
+      },
+    },
+    {
+      title: "Nature Photography Pack",
+      description: "High-resolution images capturing the beauty of nature",
+      image: MentorImage,
+      altText: "Mentorship and partnership opportunities",
+      button: "Add to cart",
+      price: "$150",
+      bg_image: "url('/product-bg-3.png')",
+      badge: {
+        label: "Trending",
+        gradient: "linear-gradient(90deg, #39979c 0%, #5b898e 100%)",
+      },
     },
     {
       title: "Mentor or Partner with CNESS",
       description: "Teach, guide, grow the movement.",
-      imageHeight: "347px",
       image: MentorImage,
       altText: "Mentorship and partnership opportunities",
+      button: "Add to cart",
+      price: "$99",
+      bg_image: "url('/product-bg-1.png')",
+      badge: {
+        label: "Trending",
+        gradient: "linear-gradient(90deg, #39979c 0%, #5b898e 100%)",
+      },
+    },
+    {
+      title: "Sacred Symbols Icon Set",
+      description: "100+ vector symbols with spiritual significance",
+      image: IndividualImage,
+      altText: "Individual joining certification program",
+      button: "Add to cart",
+      price: "$999",
+      bg_image: "url('/product-bg-1.png')",
+      badge: {
+        label: "Top Rated",
+        gradient: "linear-gradient(90deg, #544b40 0%, #64594b 100%)",
+      },
     },
   ];
 
+  // Use a single isFlashing state for all cards
+  const [isFlashing, setIsFlashing] = useState(false);
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+    const interval = setInterval(() => {
+      setIsFlashing(true);
+      timeout = setTimeout(() => setIsFlashing(false), 60); // super fast flash
+    }, 300); // flash every 0.3s
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  // Transition logic for first-load/second-load
+  const [showSecond, setShowSecond] = useState(false);
+  const [startTransition, setStartTransition] = useState(false);
+  const firstLoadRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // IntersectionObserver to trigger transition
+    const observer = new window.IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !startTransition) {
+          setStartTransition(true);
+          setTimeout(() => setShowSecond(true), 5000); // 5s delay before transition
+        }
+      },
+      { threshold: 0.5 }
+    );
+    if (firstLoadRef.current) observer.observe(firstLoadRef.current);
+    return () => observer.disconnect();
+  }, [startTransition]);
+
+  // First-load image slider state
+  const [currentImg, setCurrentImg] = useState(0);
+  const [sliderDone, setSliderDone] = useState(false);
+
+  // Play slider images in sequence, crossfade only
+  useEffect(() => {
+    if (!startTransition) return;
+    if (sliderDone) return;
+    if (currentImg < firstLoadImages.length - 1) {
+      const t = setTimeout(() => setCurrentImg(i => i + 1), 2200); // 1.5s visible + 0.7s fade
+      return () => clearTimeout(t);
+    } else {
+      // Last image: after delay, mark slider done and trigger second-load
+      const t = setTimeout(() => setSliderDone(true), 2200);
+      return () => clearTimeout(t);
+    }
+  }, [currentImg, startTransition, sliderDone]);
+
+  // When slider is done, trigger second-load after a short delay
+  useEffect(() => {
+    if (sliderDone) {
+      setTimeout(() => setShowSecond(true), 1500); // 0.4s overlap for smoothness
+    }
+  }, [sliderDone]);
+
+  // First-load slider images
+  const firstLoadImages = [
+    { src: "/creation1.png", alt: "Company Logo 1" },
+    { src: "/creation2.png", alt: "Company Logo 2" },
+    { src: "/creation3.png", alt: "Company Logo 3" },
+  ];
+
   return (
-    <div className="flex flex-col items-center space-y-8 p-4 md:p-8 bg-white">
-      <div className="flex flex-col items-center gap-8 md:gap-[52px] relative self-stretch w-full">
-        <header className="inline-flex flex-col items-center gap-6 md:gap-10 relative">
-          <h1 className="flex w-full md:w-[818px] items-start justify-center gap-2.5 relative px-4">
-            <div className="relative flex-1 mt-[-1.00px] jakarta font-normal text-transparent text-3xl md:text-[52px] text-center tracking-[0] leading-[1.2] md:leading-[65.3px]">
-              <span className="font-semibold text-[#3a3a3a]">
-                A Platform Driven by Awareness, Not Just{" "}
-              </span>
-              <span className="font-bold text-[#7076fe]">Rules</span>
+    <>
+      <AnimatePresence>
+        {!showSecond && (
+          <motion.div
+            ref={firstLoadRef}
+            key="first-load"
+            className="first-load h-[800px] flex flex-col items-center space-y-8 lg:py-24 py-15 px-4 bg-[#F7F7F7]"
+            style={{ position: 'relative', zIndex: 2 }}
+            initial={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -40 }}
+            transition={{ duration: 0.7, ease: 'easeInOut' }}
+          >
+            <div className="py-24 px-0 flex lg:flex-row flex-col justify-between max-w-[800px] w-full mx-auto">
+              <div className="lg:w-6/12">
+                <h3 className="poppins leading-9 text-[32px] text-black font-regular">Where conscious creations</h3>
+                <p className="openSans text-[#898989] font-regular text-[14px] mt-4">Explore a wide range of conscious products<br /> crafted by verified creators who prioritize<br /> sustainability and ethical practices.</p>
+
+              </div>
+              <div className="flex lg:w-6/12 flex-col lg:items-center items-start justify-start relative ">
+                <AnimatePresence mode="wait">
+                   <LottieOnView
+                      animationData={RectangleBlink}
+                      loop
+                      style={{width:'100%', height:'100%'}}
+                    />
+                </AnimatePresence>
+                <h3 className="poppins text-start bg-gradient-to-r from-[#6340FF] to-[#D748EA] text-transparent bg-clip-text text-[32px] font-semibold mt-2">find their people</h3>
+              </div>
             </div>
-          </h1>
-        </header>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        <div className="flex flex-col md:flex-row items-center gap-6 md:gap-3 relative self-stretch w-full">
-          {cards.map((card, index) => (
-            <Card
-              key={index}
-              className="flex flex-col items-start gap-2.5 p-3 relative w-full md:flex-1 grow bg-white rounded-xl overflow-hidden border border-solid border-[#f1efec] backdrop-blur-[50px] backdrop-brightness-[100%] [-webkit-backdrop-filter:blur(50px)_brightness(100%)]"
-            >
-              <CardContent className="flex flex-col items-center gap-4 md:gap-6 relative self-stretch w-full p-0">
-                <div
-                  className="relative self-stretch w-full rounded-xl bg-cover bg-[50%_50%]"
-                  style={{
-                    height: "250px", // Fixed height for mobile
-                    backgroundImage: `url(${card.image})`,
-                  }}
-                  aria-label={card.altText}
-                />
-
-                <div className="flex flex-col items-start justify-center gap-3 p-2 relative self-stretch w-full">
-                  <div className="flex flex-col items-start gap-2 relative self-stretch w-full">
-                    <div className="flex flex-col items-start gap-3 relative self-stretch w-full">
-                      <h2 className="openSans mt-[-1.00px] font-semibold text-black text-xl md:text-2xl leading-7 md:leading-8 relative self-stretch openSans tracking-[0]">
-                        {card.title}
-                      </h2>
-                    </div>
-
-                    <p className="openSans font-normal text-[#6b6b6b] text-sm leading-[22px] md:leading-[26px] relative self-stretch openSans tracking-[0]">
-                      {card.description}
-                    </p>
-                  </div>
-
-                  <Button
-                    variant="gradient-primary"
-                    className="rounded-[100px] cursor-pointer py-3 px-8 transition-colors duration-500 ease-in-out"
-                    onClick={() => navigate("/sign-up")}
-                  >
-                    Get Started
-                  </Button>
+      <AnimatePresence>
+        {showSecond && (
+          <motion.div
+            key="second-load"
+            className="second-load h-[800px] flex flex-col items-center space-y-8 lg:py-24 py-15 px-4 bg-[#F7F7F7]"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            transition={{ duration: 0.7, ease: 'easeInOut' }}
+          >
+            <div className="max-w-[1336px] mx-auto w-full">
+              <div className="flex flex-col items-center gap-8 md:gap-[52px] w-full">
+                <div className="text-center max-w-4xl">
+                  <h1 className="jakarta text-3xl md:text-[32px] font-normal leading-tight">
+                    <span className="font-semibold bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text">
+                      Where conscious creations{" "}
+                    </span>
+                    <span className="font-bold bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">
+                      find their people
+                    </span>
+                  </h1>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    </div>
+
+                <Swiper
+                  className="w-full h-full"  // 👈 ensures swiper container is full height
+                  spaceBetween={20}
+                  slidesPerView={1}
+                  loop={true}
+                  speed={5000}
+                  autoplay={{
+                    delay: 0,
+                    disableOnInteraction: false,
+                  }}
+                  allowTouchMove={false}
+                  breakpoints={{
+                    480: { slidesPerView: 1 },
+                    767: { slidesPerView: 2 },
+                    1024: { slidesPerView: 4 },
+                  }}
+                  modules={[Pagination, Autoplay]}
+                >
+                  {cards.map((card, index) => (
+                    <SwiperSlide key={index} className="h-full"> {/* 👈 make slide full height */}
+                      <div className="relative h-full">
+                        <Card className="flex flex-col md:h-[350px] h-full w-full rounded-[12px] overflow-hidden">
+                          {/* Image section */}
+                          <div
+                            className="relative w-full rounded-t-[12px] overflow-hidden"
+                            style={{ height: "200px" }} // 👈 fixed image height
+                          >
+                            <img
+                              src={card.image}
+                              alt={card.altText}
+                              className="w-full h-full object-cover rounded-t-[12px]"
+                            />
+                            {card.badge && (
+                              <div
+                                className="absolute top-3 left-3 text-[11px] font-medium px-3 py-1 rounded-full text-white shadow-md flex items-center gap-2"
+                                style={{ backgroundImage: card.badge.gradient }}
+                              >
+                                <span className="inline-block w-[6px] h-[6px] bg-[#60C750] rounded-full"></span>
+                                <span className="text-[#fff] text-[11px] font-semibold">{card.badge.label}</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Flash effect + content */}
+                          <div className="card-flash-area relative flex-grow flex flex-col">
+                            {isFlashing && <span className="flash-blink-effect" />}
+                            <CardContent className="flex flex-col w-full p-0 h-full">
+                              <div
+                                className="flex flex-col gap-2 px-5 py-4 w-full rounded-b-[12px] bg-cover bg-center h-full"
+                                style={{ backgroundImage: card.bg_image, marginTop: 0 }}
+                              >
+                                <h2 className="text-[14px] font-semibold text-white leading-7 md:leading-8">
+                                  {card.title}
+                                </h2>
+                                <p className="text-[11px] text-[#ECEEF2] leading-6">
+                                  {card.description}
+                                </p>
+                                <div className="flex justify-between mt-auto items-center">
+                                  <p className="text-white text-[14px] font-semibold">
+                                    {card.price}
+                                  </p>
+                                  <Button
+                                    className="rounded-full w-fit py-2 px-6 bg-[#F07EFF] text-[12px] cursor-default"
+                                    style={{ pointerEvents: "none" }}
+                                  >
+                                    <p className="text-[12px]">{card.button}</p>
+                                  </Button>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </div>
+                        </Card>
+                      </div>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+
+
+                <div className="flex lg:flex-row md:flex-row flex-col max-w-[750px] w-full mx-auto mt-6">
+                  <p className="lg:w-6/12 md:w-5/12 w-full text-[#898989] text-[14px] font-regular">
+                    Explore a wide range of conscious products
+                    <br />
+                    crafted by verified creators who prioritize
+                    <br />
+                    sustainability and ethical practices.
+                  </p>
+                  <div className="flex lg:justify-end justify-start md:gap-6 gap-2 lg:w-8/12 md:w-7/12 w-full lg:-mt-0 md:mt-0 mt-4">
+                    <Button
+                      variant="outline"
+                      className="bg-white awareness-btn w-fit h-[42px] border-[#2222241a] md:px-4 px-1 sm:px-6 py-1 rounded-[100px] text-[#222224] font-medium md:text-[14px] text-[12px] lg:w-full md:w-full"
+                    >
+                      Start Selling
+                    </Button>
+                    <Button className="rounded-[100px] w-fit h-[42px] awareness-btn text-center py-1 md:px-4 px-1 lg:w-full md:w-full self-stretch md:text-[14px] text-[12px] bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-white">
+                      Browse Marketplace
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

@@ -34,10 +34,14 @@ interface FormErrors {
   email?: string;
   password?: string;
   confirmPassword?: string;
+  referralCode?: string;
   recaptcha?: string;
 }
 
 export default function Signingup() {
+  const params = new URLSearchParams(window.location.search);
+  const referralCode = params.get('referral_code');
+
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiMessage, setApiMessage] = useState<string | null>(null);
@@ -48,12 +52,14 @@ export default function Signingup() {
     email: "",
     password: "",
     confirmPassword: "",
+    referralCode: referralCode
   });
 
   const [emailFocused, setEmailFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isUsernameFocused, setIsUsernameFocused] = useState(false);
+  const [referralCodeFocused, setreferralCodeFocused] = useState(false);
   const [recaptchaValue, setRecaptchaValue] = useState<string | null>(null);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
 
@@ -156,6 +162,7 @@ export default function Signingup() {
       email: form.email.value.trim(),
       password: form.password.value.trim(),
       confirmPassword: form.confirmPassword.value.trim(),
+      referralCode: form.referralCode.value.trim()
     };
 
     if (!validateForm(formData)) {
@@ -168,6 +175,7 @@ export default function Signingup() {
         username: formData.username,
         email: formData.email,
         password: formData.password,
+        referral_code: formData.referralCode,
       };
       const response = (await RegisterDetails(payload)) as AuthResponse;
       console.log("🚀 ~ handleSubmit ~ response:", response);
@@ -244,10 +252,10 @@ export default function Signingup() {
 
   return (
     <>
-<div className="flex flex-col min-h-screen relative">
+      <div className="relative min-h-screen flex flex-col bg-white">
         <div className="relative w-full h-[250px]">
           {/* Diagonal Gradient Background */}
-    <div className="absolute top-0 left-0 w-full h-[600px] z-0">
+          <div className="absolute top-0 left-0 w-full h-[300px] sm:h-[400px] lg:h-[600px] z-0">
             <div
               className="absolute top-0 left-0 w-full h-full"
               style={{
@@ -271,9 +279,11 @@ export default function Signingup() {
           </div>
         </div>
         {/* Sign In Form */}
-      <div className="flex-grow flex items-start justify-center -mt-32 z-20 relative px-4 sm:px-6">
-        <div className="w-full max-w-[600px] bg-white rounded-2xl shadow-xl px-4 sm:px-10 py-8 sm:py-12 space-y-10">
-              <h2>Sign up</h2>
+        <div className="min-h-screen flex flex-col">
+          <div className="absolute top-[100px] sm:top-[140px] md:top-[180px] left-0 right-0 flex justify-center z-10 px-4">
+          <div className="w-full max-w-[600px] bg-white rounded-2xl shadow-xl px-4 sm:px-10 py-8 sm:py-12 space-y-10">
+  <h2 className="font-poppins font-semibold text-[28px] leading-[32px] tracking-[-0.02em] text-[gray-900]">
+                Sign up</h2>
 
               {apiMessage && (
                 <div
@@ -333,7 +343,7 @@ export default function Signingup() {
                     onChange={handleInputChange}
                     onFocus={() => setIsUsernameFocused(true)}
                     onBlur={() => setIsUsernameFocused(false)}
-                    className={`w-full px-3 py-2 h-[41px] rounded-[12px] border ${
+                    className={`w-full px-3 py-2 rounded-[12px] border ${
                       errors.username ? "border-red-500" : "border-[#CBD5E1]"
                     } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                   />
@@ -368,7 +378,7 @@ export default function Signingup() {
                     onChange={handleInputChange}
                     onFocus={() => setEmailFocused(true)}
                     onBlur={() => setEmailFocused(false)}
-                    className={`w-full px-3 py-2 h-[41px] rounded-[12px] border ${
+                    className={`w-full px-3 py-2 rounded-[12px] border ${
                       errors.email ? "border-red-500" : "border-[#CBD5E1]"
                     } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                   />
@@ -396,7 +406,7 @@ export default function Signingup() {
                       placeholder="Enter Your Password"
                       value={formValues.password}
                       onChange={handleInputChange}
-                      className={`w-full px-3 pr-10 h-[41px] py-2 rounded-[12px] border ${
+                      className={`w-full px-3 pr-10 py-2 rounded-[12px] border ${
                         errors.password ? "border-red-500" : "border-[#CBD5E1]"
                       } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                     />
@@ -435,7 +445,7 @@ export default function Signingup() {
                       placeholder="Confirm Your Password"
                       value={formValues.confirmPassword}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 h-[41px] rounded-[12px] border ${
+                      className={`w-full px-3 py-2 rounded-[12px] border ${
                         errors.confirmPassword
                           ? "border-red-500"
                           : "border-[#CBD5E1]"
@@ -460,6 +470,30 @@ export default function Signingup() {
                       {errors.confirmPassword}
                     </p>
                   )}
+                </div>
+                {/* Referral code field */}
+                <div className="mb-4">
+                  <label htmlFor="referralCode" className="block">
+                    Referral code (optional)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      id="referralCode"
+                      name="referralCode"
+                      placeholder="Enter referral code"
+                      value={formValues?.referralCode || ''}
+                      onFocus={() => setreferralCodeFocused(true)}
+                      onChange={handleInputChange}
+                      className={`w-full px-3 py-2 rounded-[12px] border border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                    />
+                    {/* Error message after submission */}
+                    {errors.referralCode && !referralCodeFocused && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.referralCode}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 {/* Divider with "Or sign up with" */}
@@ -512,10 +546,8 @@ export default function Signingup() {
               </form>
             </div>
           </div>
-                <Fcopyright />
-
         </div>
-     
+      </div>
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <div className="text-center p-6 max-w-md">
           <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] ">
@@ -555,6 +587,7 @@ export default function Signingup() {
           </div>
         </div>
       </Modal>
+      <Fcopyright />
     </>
   );
 }

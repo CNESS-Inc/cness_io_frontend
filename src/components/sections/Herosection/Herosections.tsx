@@ -1,105 +1,315 @@
 "use client";
-import { useNavigate } from "react-router-dom";
 import Button from "../../ui/Button";
-import HomeHeroBackground from "../../ui/HomeHeroBackground";
+
+import Lottie from 'lottie-react';
+import Flip01 from '../../../assets/lottie-files/New-Flip-01/New-Flip01.json'
+import Flip02 from '../../../assets/lottie-files/New-Flip-02/New-Flip02.json'
+import Flip03 from '../../../assets/lottie-files/New-Flip-03/New-Flip03.json'
+import Flip04 from '../../../assets/lottie-files/New-Flip-04/New-Flip04.json'
+import NewSphereGradient from '../../../assets/lottie-files/New-globe/Sphere-Gradient.json';
+import { useEffect, useState } from "react";
+import MobileHeroSection from "./MobileHeroSection";
 
 export default function HeroSection() {
+ const [isMobile, setIsMobile] = useState(false);
+  const [step, setStep] = useState(0);
 
-const completed_step = localStorage.getItem("completed_step");
-const isLoggedIn = completed_step === "1" || completed_step === "2";
+  // Mobile detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
+  useEffect(() => {
+    const timers: number[] = [];
+    
+    // Step 1: Small circle appears (0.3s)
+    timers.push(window.setTimeout(() => {
+      setStep(1);
+      console.log('🎯 Step 1: Small circle appears');
+    ////  alert('Step 1: Small circle appears');
+    }, 300));
+    
+    // Step 2: Circle scales up (1.2s)
+    timers.push(window.setTimeout(() => {
+      setStep(2);
+      console.log('📈 Step 2: Circle scales up');
+      //alert('Step 2: Circle scales up');
+    }, 1200));
+    
+    // Step 3: Circle slides down and becomes smaller half-circle (2.2s)
+    timers.push(window.setTimeout(() => {
+      setStep(3);
+      console.log('⬇️ Step 3: Circle slides down and becomes half-circle');
+     // alert('Step 3: Circle slides down and becomes half-circle');
+    }, 2200));
+    
+    // Step 4: Lottie appears on top of half-circle (3.2s)
+    timers.push(window.setTimeout(() => {
+      setStep(4);
+      console.log('🎬 Step 4: Lottie appears on top of half-circle');
+      //alert('Step 4: Lottie appears on top of half-circle');
+    }, 3200));
+    
+    // Step 5: Content and corner Lotties appear (4.0s)
+    timers.push(window.setTimeout(() => {
+      setStep(5);
+      console.log('✨ Step 5: Content and corner Lotties appear');
+     // alert('Step 5: Content and corner Lotties appear');
+    }, 4000));
+    
+    return () => timers.forEach((t) => clearTimeout(t));
+  }, []);
 
-  const navigate = useNavigate();
+  const [lottieSize, setLottieSize] = useState({ width: 200, height: 200 });
+
+  useEffect(() => {
+    const updateSize = () => {
+      const width = window.innerWidth;
+
+      if (width < 640) {
+        setLottieSize({ width: 200, height: 200 }); // mobile
+      } else if (width < 1024) {
+        setLottieSize({ width: 180, height: 180 }); // tablets
+      } else if (width < 1537) {
+        setLottieSize({ width: 280, height: 280 }); // laptops + MacBooks
+      } else {
+        setLottieSize({ width: 300, height: 300 }); // large desktops / 4K
+      }
+    };
+
+    updateSize(); // set initial size
+    window.addEventListener('resize', updateSize);
+
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
+
+  // Return mobile version for screens < 768px
+  if (isMobile) {
+    return <MobileHeroSection />;
+  }
+
   return (
-<section className="relative -z-1 min-h-[600px] sm:min-h-[692px] py-12 sm:py-0 rounded-[12px] overflow-hidden mx-4 md:mx-8 lg:mx-[12px]">
-      <div className="absolute inset-0 z-[-2] bg-[#FAFAFA]" />
-      {/* 🌈 Animated Canvas Background */}
-      <HomeHeroBackground />
+    <>
+      <section className="relative  rounded-[12px]  lg:mx-[12px] bg-[#f4f3f9] hero-section overflow-hidden
+            min-[1024px]:h-[100vh] 
+            min-[1536px]:h-[100vh]
+            
+            ">
 
-      {/* Optional overlay image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center z-0"
-        style={{ backgroundImage: "url('/hero_bg.png')" }}
-      ></div>
 
-      {/* Content */}
-      <div className="absolute inset-0 flex items-center justify-center z-10 px-4">
-        <div className="text-center w-full max-w-screen-lg">
-          {/* Heading */}
-          <h1 className="poppins text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text">
-            Build with Consciousness
-          </h1>
+        <div className="absolute inset-0 flex items-start justify-center z-10 lg:pt-22 md:pt-18 pt-8">
+          <div className="text-center px-4">
 
-          {/* Description */}
-          <p className="openSans text-base sm:text-lg md:text-xl text-[#494949] mb-10 max-w-2xl mx-auto">
-            The world's first conscious business platform — where individuals
-            and organizations certify, connect, grow, and lead with integrity.
-          </p>
+            <h1
+              className={
+                `poppins text-[32px] md:text-[42px] lg:leading-14 font-bold mb-6
+                 bg-gradient-to-b from-[#4E4E4E] to-[#232323]
+                 text-transparent bg-clip-text transition-all duration-1000 ease-in-out ` +
+                (step >= 4 ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-6')
+              }
+            >
+              The World’s First<br /> Consciousness Super-App
+            </h1>
 
- {/* ✅ Wrap the buttons in a container */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md mx-auto">
-            {isLoggedIn ? (
-              <>
-                <Button
-                  variant="gradient-primary"
-                  className="text-base sm:text-lg font-semibold font-[Plus Jakarta Sans] rounded-full w-full sm:w-auto px-6 py-3 flex items-center justify-center text-center"
-                  onClick={() => navigate("/dashboard/assesment")}
-                >
-                  Get Certified
-                </Button>
-                <Button
-                  variant="white-outline"
-                  className="bg-white border border-gray-200 text-gray-800 hover:bg-[#F07EFF] hover:text-white focus-visible:ring-pink-300"
-                  onClick={() => navigate("/dashboard")}
-                >
-                  Dashboard
-                </Button>
-              </>
-            ) : (
-              <>
-               <Button
-  variant="gradient-primary"
-  className="
-    w-[150px] h-[45px] 
-    rounded-[100px] 
-    px-6 py-4 
-    font-['Plus Jakarta Sans'] font-medium text-[18px] leading-[100%]
-    tracking-[0px]
-    text-center 
-    flex items-center justify-center gap-[10px]
-    opacity-100
-  "
-  onClick={() => navigate('/sign-up')}
->
-  Get Started
-</Button>
-                <Button
-  variant="white-outline"
-  className="
-    w-[96px] h-[45px]
-    rounded-[100px]
-    border border-gray-200
-    px-6 py-4
-    gap-[10px]
-    bg-white text-gray-800
-    hover:bg-[#F07EFF] hover:text-white
-    focus-visible:ring-pink-300
-    font-['Plus Jakarta Sans'] font-medium text-[18px] leading-[100%] tracking-[0px]
-    text-center
-    opacity-100
-    flex items-center justify-center
-  "
-  onClick={() => navigate('/log-in')}
->
-  Login
-</Button>
-              </>
-            )}
+
+            <p className={
+              `openSans lg:text-lg md:text-[16px] text-[12px] text-[#64748B] lg:mb-10 md:mb-12 mb-4 max-w-2xl mx-auto transition-all duration-1000 ease-in-out ` +
+              (step >= 5 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6')
+            }>
+              Build your conscious identity. Connect with purpose-led peers. Share<br /> your knowledge. Learn, grow, and thrive - all in one place.
+            </p>
+
+
+            <div className={
+              `flex flex-row sm:flex-row justify-center gap-4 transition-all duration-1000 ease-in-out ` +
+              (step >= 5 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6')
+            }>
+              <Button
+                className="rounded-[100px] hero-section-btn w-fit lg:py-3 py-2 lg:px-8 px-4 lg:text-base text-[14px] self-stretch  bg-linear-to-r from-[#7077FE] to-[#9747FF]"
+              >
+                Get Started
+              </Button>
+              <Button variant="white-outline" className="lg:text-base hero-section-btn text-[14px] lg:py-3 py-2 lg:px-8 px-4" size="md" onClick={() => window.location.href = "https://visionary.cness.io"}>
+                Explore the Movement
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="absolute bottom-0 left-0 w-full h-80 z-80 bg-gradient-to-b from-transparent to-white pointer-events-none" />
-    </section>
+        <Lottie
+          animationData={Flip01}
+          loop
+          style={lottieSize}
+          className={`
+            absolute 
+            top-85 
+            left-[-15px]
+            min-[320px]:top-100
+            min-[320px]:-left-14  
+            min-[1024px]:top-30 
+            min-[1024px]:left-15 
+            min-[1536px]:top-30 
+            max-[1536px]:left-8
+            transition-all duration-1000 
+            hidden md:block 
+            z-10 ease-in-out 
+            ${step >= 4 ? 'opacity-100' : 'opacity-0'}
+          `}
+        />
+        <Lottie
+          animationData={Flip02}
+          loop
+          style={lottieSize}
+          className={`  absolute 
+            top-85 
+            right-[-15px]
+            min-[320px]:top-150
+            min-[320px]:right-0 
+            min-[1024px]:top-90 
+            min-[1024px]:right-15 
+            min-[1536px]:top-90 
+            min-[1536px]:right-15 
+            max-[1536px]:right-8
+            transition-all duration-1000 
+            hidden md:block 
+            z-10 ease-in-out 
+            ${step >= 4 ? 'opacity-100' : 'opacity-0'}
+          `}
+
+        />
+        <Lottie
+          animationData={Flip03}
+          loop
+          style={lottieSize}
+          className={`  absolute 
+            bottom-85 
+            left-[-15px]
+            min-[320px]:bottom-10
+            min-[320px]:left-10
+            min-[1024px]:bottom-30 
+            min-[1024px]:left-0 
+            min-[1536px]:bottom-20 
+            max-[1536px]:left-8
+            transition-all duration-1000 
+            hidden md:block 
+            z-10 ease-in-out 
+            ${step >= 4 ? 'opacity-100' : 'opacity-0'}
+          `}
+        />
+        <Lottie
+          animationData={Flip04}
+          loop
+          style={lottieSize}
+          className={`  absolute 
+            top-10 
+            right-[-15px]
+            min-[320px]:top-90 
+            min-[320px]:-right-14 
+            min-[1024px]:top-15 
+            min-[1024px]:right-5 
+            min-[1536px]:top-10 
+            max-[1536px]:right-5
+            transition-all duration-1000 
+            hidden md:block 
+            z-10 ease-in-out 
+            ${step >= 4 ? 'opacity-100' : 'opacity-0'}
+          `}
+        />
+
+      <div
+  className={`absolute z-0 transition-all duration-1000 ease-in-out pointer-events-none hero-round-circle ${
+    step === 0
+      ? 'opacity-0 scale-0'
+      : step >= 1
+      ? 'opacity-100 scale-100'
+      : 'opacity-0 scale-0'
+  }`}
+  style={{
+    position: 'absolute',
+    // Circle positioning: centered for steps 1-2, bottom for step 3+
+    top: step === 3 ? 'auto' : '62%',
+    bottom: step === 3 ? 0 : 'auto',
+    left: '50%',
+    // clipPath: "none",
+    // Transform: centered for steps 1-2, bottom-aligned for step 3+
+    transform: step === 3 ? 'translateX(-50%)' : 'translate(-50%, -50%)',
+    
+    // Circle sizing - responsive for all screen sizes
+    // Step 1: Small circle
+    // Step 2: Medium circle  
+    // Step 3+: Smaller half-circle that slides down
+width: step === 0 ? 0 : 
+       step === 1 ? (window.innerWidth < 640 ? 120 : window.innerWidth < 1024 ? 180 : 200) :
+       step === 2 ? (window.innerWidth < 640 ? 240 : window.innerWidth < 1024 ? 320 : 400) :
+       step === 3 ? (window.innerWidth < 640 ? '20vw' : window.innerWidth < 1024 ? '75vw' : '95vw') :
+       step === 4 ? (window.innerWidth < 640 ? '85vw' : window.innerWidth < 1024 ? '75vw' : '95vw') :'80vw',
+
+height: step === 0 ? 0 :
+        step === 1 ? (window.innerWidth < 640 ? 120 : window.innerWidth < 1024 ? 180 : 200) :
+        step === 2 ? (window.innerWidth < 640 ? 240 : window.innerWidth < 1024 ? 320 : 400) :
+        step === 3 ? (window.innerWidth < 640 ? '20vh' : window.innerWidth < 1024 ? '75vw' : '95vw') :
+        step === 4 ? (window.innerWidth < 640 ? '32vh' : window.innerWidth < 1024 ? '75vw' : '95vw') : '78vh',
+
+maxWidth: step === 3 ? (window.innerWidth < 640 ? 350 : window.innerWidth < 1024 ? 600 : 350) :
+          step === 4 ? (window.innerWidth < 640 ? 300 : window.innerWidth < 1024 ? 500 : 1500) : 'none',
+
+maxHeight: step === 3 ? (window.innerWidth < 640 ? 250 : window.innerWidth < 1024 ? 400 : 350) :
+           step === 4 ? (window.innerWidth < 640 ? 220 : window.innerWidth < 1024 ? 350 : 1500) : 'none',
+
+minWidth: step === 3 ? (window.innerWidth < 640 ? 250 : window.innerWidth < 1024 ? 400 : 500) :
+          step === 4 ? (window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 350 : 450) : 'none',
+
+minHeight: step === 3 ? (window.innerWidth < 640 ? 150 : window.innerWidth < 1024 ? 200 : 250) :
+           step === 4 ? (window.innerWidth < 640 ? 140 : window.innerWidth < 1024 ? 180 : 230) : 'none',
+
+    
+    // Half-circle effect: only applied when at bottom (step 3+)
+    // inset(0 0 50% 0) = shows top half, hides bottom half (rainbow effect)
+    // clipPath: step === 3 ? 'inset(0 0 50% 0)' : 'none',
+    
+    // Browser compatibility for transforms
+    WebkitTransform: step >= 3 ? 'translateX(-50%)' : 'translate(-50%, -50%)',
+    msTransform: step >= 3 ? 'translateX(-50%)' : 'translate(-50%, -50%)',
+    
+    // Circle stays visible throughout the animation
+    opacity: step >= 1 ? 1 : 0,
+  }}
+>
+  {step >= 4 ? (
+    <Lottie
+      animationData={NewSphereGradient}
+      loop
+      // Lottie width matches the half-circle width exactly
+      // Height is 100% to fill the half-circle area
+      style={{ 
+        width: '100%', 
+        height: '100%',
+        // position: 'absolute',
+        top: 0,
+        left: 0,
+        zIndex: 1
+      }}
+      // No padding needed as Lottie should fill the entire half-circle
+      className=""
+    />
+  ) : (
+    <img
+      src="/hero-circle.png"
+      alt="Static Sphere"
+      className="w-full "
+    />
+  )}
+</div>
+
+
+      </section>
+    </>
   );
 }

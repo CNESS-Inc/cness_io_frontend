@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CompanyCard from "../components/ui/CompanyCard";
 import Header from "../layout/Header/Header";
 import Footer from "../layout/Footer/Footer";
 import { iconMap } from "../assets/icons";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
 import {
-  GetDomainDetails,
-  GetInspiringCompanies,
+  GetAspiringCompanies,
   GetPopularCompanyDetails,
+  GetValidProfessionalDetails,
 } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -15,6 +15,7 @@ import Button from "../components/ui/Button";
 import { useLocation } from "react-router-dom";
 
 type Company = {
+  level: unknown;
   is_organization: boolean | undefined;
   is_person: boolean | undefined;
   id: any;
@@ -46,6 +47,10 @@ export default function DirectoryPage() {
 
   const location = useLocation();
   const isInDashboard = location.pathname.includes("/dashboard");
+  const measureRef = useRef<HTMLSpanElement>(null);
+  const [selectedDomainText, setSelectedDomainText] =
+    useState("All Profession");
+  const [textWidth, setTextWidth] = useState(0);
 
   // Pagination states
   const [popularPagination, setPopularPagination] = useState<PaginationData>({
@@ -70,9 +75,15 @@ export default function DirectoryPage() {
     inspiring: false,
   });
 
+  useEffect(() => {
+    if (measureRef.current) {
+      setTextWidth(measureRef.current.offsetWidth);
+    }
+  }, [selectedDomainText]);
+
   const fetchDomain = async () => {
     try {
-      const res = await GetDomainDetails();
+      const res = await GetValidProfessionalDetails();
       setDomain(res?.data?.data);
     } catch (error: any) {
       console.error("Error fetching domains:", error);
@@ -99,14 +110,15 @@ export default function DirectoryPage() {
           location: company.location || "Unknown",
           domain: company.domain || "General",
           category: "Popular",
-          logo: company.profile_picture || iconMap["companylogo1"],
-          banner: company.profile_banner || iconMap["companycard1"],
+          logo: company.profile_picture,
+          banner: company.profile_banner,
           description: company.bio || "No description available",
           tags: company.tags || [],
-          rating: company.rating || 4,
+          rating: company.average,
           isCertified: company.is_certified || true,
           is_person: company.is_person,
           is_organization: company.is_organization,
+          level: company?.level?.level,
         }));
 
         setPopularCompanies(transformedCompanies);
@@ -133,7 +145,7 @@ export default function DirectoryPage() {
   const fetchInspiringCompany = async (page: number = 1) => {
     setIsLoading((prev) => ({ ...prev, inspiring: true }));
     try {
-      const res = await GetInspiringCompanies(
+      const res = await GetAspiringCompanies(
         page,
         aspiringPagination.itemsPerPage
       );
@@ -144,12 +156,13 @@ export default function DirectoryPage() {
           location: company.location || "Unknown",
           domain: company.domain || "General",
           category: "Inspiring",
-          logo: company.profile_picture || iconMap["aspcompany1"],
-          banner: company.profile_banner || iconMap["aspcompany1"],
+          logo: company.profile_picture,
+          banner: company.profile_banner,
           description: company.bio || "No description available",
           tags: company.tags || [],
-          rating: company.rating || 3,
+          rating: company.average,
           isCertified: company.is_certified || false,
+          level: company?.level?.level,
         }));
         setAspiringCompanies(transformedCompanies);
         setAspiringPagination((prev) => ({
@@ -183,16 +196,19 @@ export default function DirectoryPage() {
       navigate(
         `/directory/technology-ai?search=${encodeURIComponent(
           searchText
-        )}&domain=${domainSlug}`
+        )}&profession=${domainSlug}`
       );
     }
   };
+  useEffect(() => {
+    handleSearch();
+  }, [selectedDomain]);
 
-  const handleDomainChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newDomain = e.target.value;
-    console.log("🚀 ~ handleDomainChange ~ newDomain:", newDomain);
-    setSelectedDomain(newDomain);
-  };
+  // const handleDomainChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  //   const newDomain = e.target.value;
+  //   console.log("🚀 ~ handleDomainChange ~ newDomain:", newDomain);
+  //   setSelectedDomain(newDomain);
+  // };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -202,6 +218,11 @@ export default function DirectoryPage() {
 
   const topRow = Domain.slice(0, 7);
   const bottomRow = Domain.slice(7);
+
+  // Add this near the top of your file (with other imports)
+  const hasJWT = () => {
+    return !!localStorage.getItem("jwt"); // or whatever your JWT key is
+  };
 
   return (
     <>
@@ -225,31 +246,53 @@ export default function DirectoryPage() {
             Conscious Search Stops here.
           </h1>
 
-          <div className="w-full max-w-3xl mx-auto bg-white border border-gray-200 rounded-full flex flex-nowrap items-center px-3 py-2 shadow-sm gap-2">
-            <div className="relative flex-shrink-0">
-              <select
-                className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold rounded-full px-4 py-2 appearance-none focus:outline-none cursor-pointer w-[130px] text-center"
-                value={selectedDomain}
-                onChange={handleDomainChange}
+          <div className="w-full max-w-3xl mx-auto flex flex-nowrap items-center h-[34px] gap-2">
+            <div className="relative rounded-full">
+              {/* Measurement span with exact same text styling */}
+              <span
+                className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4"
+                ref={measureRef}
+                style={{
+                  fontFamily: "inherit",
+                  fontSize: "12px", // Explicitly set to match select
+                }}
               >
-                <option value="" className="text-white bg-indigo-500">
-                  All Domains
+                {selectedDomainText || "All Domains"}
+              </span>
+
+              <select
+                className="bg-[#7077FE] rounded-full text-white h-full font-semibold px-3 md:px-4 py-2 appearance-none focus:outline-none cursor-pointer text-[12px]"
+                style={{
+                  width: `${textWidth}px`, // Adjusted padding
+                  maxWidth: "100%",
+                  minWidth: "120px",
+                }}
+                value={selectedDomain}
+                onChange={(e) => {
+                  setSelectedDomain(e.target.value);
+                  const selectedText =
+                    e.target.options[e.target.selectedIndex].text;
+                  setSelectedDomainText(selectedText);
+                }}
+              >
+                <option value="" className="text-white text-[12px]">
+                  All Profession
                 </option>
                 {Domain.map((domain: any) => (
                   <option
                     key={domain.id}
-                    value={domain.slug}
-                    className="text-black"
+                    value={domain.id}
+                    className="text-white text-[12px]"
                   >
-                    {domain.name}
+                    {domain.title}
                   </option>
                 ))}
               </select>
-              <div className="absolute top-3 right-2 text-white text-xs pointer-events-none">
+              <div className="absolute top-1/2 right-3 transform -translate-y-1/2 text-white text-[10px] pointer-events-none">
                 ▼
               </div>
             </div>
-            <div className="relative flex-grow">
+            <div className="relative flex-grow  bg-white border border-gray-200 rounded-full px-3 h-[100%] shadow-sm">
               <input
                 type="text"
                 placeholder="Find & Choose your perfect organization"
@@ -259,7 +302,7 @@ export default function DirectoryPage() {
                 onKeyDown={handleKeyPress}
               />
               <button
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE]"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE] cursor-pointer"
                 onClick={handleSearch}
               >
                 🔍
@@ -268,9 +311,21 @@ export default function DirectoryPage() {
           </div>
 
           <p className="text-gray-700 text-sm mt-6">
-            <span className="font-medium underline cursor-pointer">
-              List your company now
-            </span>{" "}
+            {hasJWT() ? (
+              <span
+                className="font-medium underline cursor-pointer"
+                onClick={() => navigate("/dashboard/company-profile")} // or your listing route
+              >
+                List your company now
+              </span>
+            ) : (
+              <span
+                className="font-medium underline cursor-pointer"
+                onClick={() => navigate("/sign-up")}
+              >
+                Register now
+              </span>
+            )}{" "}
             and connect with conscious audience
           </p>
 
@@ -321,7 +376,7 @@ export default function DirectoryPage() {
                     />
                   )}
                   <span className="text-sm font-medium text-gray-800 leading-none">
-                    {domain.name}
+                    {domain.title}
                   </span>
                 </div>
               );
@@ -386,14 +441,14 @@ export default function DirectoryPage() {
       {/* Popular Companies Section */}
       <section className="py-16 border-t border-gray-100">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-xl font-semibold mb-4">Aspiring Professionals</h2>
+          <h2 className="text-xl font-semibold mb-4">Popular People</h2>
 
           {isLoading.popular ? (
             <div className="flex justify-center py-10">
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : popularCompanies.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
               {popularCompanies.map((company) => (
                 <CompanyCard
                   id={company.id}
@@ -409,11 +464,12 @@ export default function DirectoryPage() {
                   isCertified={company.isCertified}
                   is_organization={company.is_organization}
                   is_person={company.is_person}
+                  level={company.level}
                 />
               ))}
             </div>
           ) : (
-            <p className="text-gray-500">No popular companies found.</p>
+            <p className="text-gray-500">No Popular People found.</p>
           )}
 
           {popularPagination.totalPages > 1 && (
@@ -475,16 +531,14 @@ export default function DirectoryPage() {
       {/* Inspiring Companies Section */}
       <section className="py-16 border-t border-gray-100">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-xl font-semibold mb-4">
-            Inspiring Professionals
-          </h2>
+          <h2 className="text-xl font-semibold mb-4">Aspiring People</h2>
 
           {isLoading.inspiring ? (
             <div className="flex justify-center py-10">
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : aspiringCompanies.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
               {aspiringCompanies.map((company) => (
                 <CompanyCard
                   id={company.id}
@@ -498,11 +552,12 @@ export default function DirectoryPage() {
                   tags={company.tags}
                   rating={company.rating}
                   isCertified={company.isCertified}
+                  level={company.level}
                 />
               ))}
             </div>
           ) : (
-            <p className="text-gray-500">No inspiring companies found.</p>
+            <p className="text-gray-500">No aspiring people found.</p>
           )}
 
           {aspiringPagination.totalPages > 1 && (

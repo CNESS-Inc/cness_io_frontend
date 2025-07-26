@@ -22,7 +22,17 @@ type RegisterFormData = {
   username: string;
   email: string;
   password: string;
+  referral_code?: string;
 };
+type GenerateAffiliateFromData = {
+  user_id: any;
+};
+type getReferredUsersFromData = {
+  referralcode: string;
+};
+type getMyRefferralCodeFromData = {
+  user_id: string;
+}
 type AccountFormData = {
   plan_id: string;
   plan_type: string;
@@ -61,8 +71,8 @@ export const ServerAPI = {
 };
 
 export const API = {
-  //  BaseUrl: "http://192.168.1.29:5025/api", //local
-  //BaseUrl: "http://localhost:5025/api", //local
+  //  BaseUrl: "http://192.168.1.30:5025/api", //local
+  // BaseUrl: "http://localhost:3000/api", //local
   BaseUrl: import.meta.env.VITE_API_BASE_URL || "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api",
 };
 
@@ -93,7 +103,9 @@ export const EndPoint = {
   organization_Listing_profile_create: "/organization-listing",
   interests: "/interests",
   industry: "/industry",
+  badge_list: "/profile/person-badge-list",
   profession: "/profession",
+  valid_profession: "/profession/get-valid-profession",
   country: "/country",
   service: "/service",
   state: "/state",
@@ -105,6 +117,7 @@ export const EndPoint = {
   public_user_profile: "/profile/public-user-profile",
   get_popular_company: "/profile/get-popular-company",
   get_inspire_company: "/profile/get-inspire-company",
+  get_aspire_company: "/profile/get-aspire-company",
   org_type: "/organization",
   questions: "/quiz/get/question",
   questions_file: "/quiz/upload-answer-file",
@@ -132,10 +145,24 @@ export const EndPoint = {
   vote: "/poll/vote",
   googleLogin: "/auth/google-login",
   all_bestPractices: "/best-practice/all",
+  bp: "/best-practice",
+  save_bestPractices: "/best-practice/get/save/best-practice",
+  mine_bestPractices: "/best-practice/get-by-user-id",
   add_bestpractices: "/best-practice",
+  like_bestpractices:"/best-practice/like",
+  save_bestpractices: "/best-practice/save",
+  get_savebestpractices: "/best-practice/get/save/best-practice",
+  create_bestpracticescomment: "/best-practice/comment",
+  get_bestpracticescomment: "/best-practice/comment",
+  bp_comment_like: "/best-practice/comment/like",
+  bp_comment_reply: "/best-practice/comment/reply",
   singleBp: "/best-practice/get",
   user_notification: "/notification",
   logout: "/auth/logout",
+  gernerate_affiliate_code: "/profile/user/generate_referral_code",
+  get_my_referrals: "/profile/user/getmyreferrals",
+  get_my_referral_code: "/profile/user/getMyReferralCode",
+  subscription: "/subscription",
 };
 
 export const GoogleLoginDetails = async (googleToken: string): ApiResponse => {
@@ -190,8 +217,30 @@ export const RegisterDetails = (formData: RegisterFormData): ApiResponse => {
     username: formData?.username,
     email: formData?.email,
     password: formData?.password,
+    referral_code: formData?.referral_code,
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.register);
+};
+
+export const GenerateAffiliateCode = (formData: GenerateAffiliateFromData): ApiResponse => {
+  const data: Partial<GenerateAffiliateFromData> = {
+    user_id: formData?.user_id,
+  };
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.gernerate_affiliate_code);
+};
+
+export const getReferredUsers = (formData: getReferredUsersFromData): ApiResponse => {
+ 
+  return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.get_my_referrals}?referralcode=${formData.referralcode}`);
+};
+
+export const getMyRefferralCode = (formData: getMyRefferralCodeFromData): ApiResponse => {
+ 
+  return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.get_my_referral_code}?user_id=${formData.user_id}`);
+};
+export const getSubscriptionDetails = (): ApiResponse => {
+ 
+  return executeAPI(ServerAPI.APIMethod.GET, null, EndPoint.subscription);
 };
 
 export const AccountDetails = (formData: AccountData): ApiResponse => {
@@ -437,6 +486,20 @@ export const GetInspiringCompanies = (
     params
   );
 };
+export const GetAspiringCompanies = (
+  page: number,
+  limit: number
+): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["limit"] = limit;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.get_aspire_company,
+    params
+  );
+};
 export const GetAllBestPractices = (
   page: number,
   limit: number,
@@ -455,9 +518,107 @@ export const GetAllBestPractices = (
     params
   );
 };
+export const DeleteBestPractices = (
+  id: number
+): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.bp}/${id}`,
+  );
+};
+export const GetBestPracticesById = (
+  id: number
+): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    `${EndPoint.bp}/get/${id}`,
+  );
+};
+export const UpdateBestPractice = (
+  payload: {
+    id: string;
+    profession: string;
+    title: string;
+    description: string;
+  }
+): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST, // or PATCH depending on your API
+    payload,
+    `${EndPoint.bp}/update`,
+  );
+};
+export const GetAllSavedBestPractices = (
+  page: number,
+  limit: number,
+  professionId: string,
+  searchText: string,
+): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["limit"] = limit;
+  params["profession"] = professionId;
+  params["text"] = searchText;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.save_bestPractices,
+    params
+  );
+};
+export const GetAllmineBestPractices = (
+  page: number,
+  limit: number,
+  professionId: string,
+  searchText: string,
+): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["limit"] = limit;
+  params["profession"] = professionId;
+  params["text"] = searchText;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.mine_bestPractices,
+    params
+  );
+};
 export const CreateBestPractice = (formData: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.add_bestpractices);
 };
+
+export const LikeBestpractices = (formData: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.like_bestpractices);
+};
+export const BPCommentLike = (formData: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.bp_comment_like);
+};
+
+export const SaveBestpractices = (formData: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.save_bestpractices);
+};
+
+export const GetSaveBestpractices = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.get_savebestpractices}`);
+};
+
+export const CreateBestpracticesComment = (formData: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.create_bestpracticescomment);
+};
+export const CreateBestpracticesCommentReply = (formData: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.bp_comment_reply);
+};
+
+export const GetBestpracticesComment = (params: { post_id: string }): ApiResponse => {
+  const queryString = new URLSearchParams(params).toString();
+  const url = `${EndPoint.get_bestpracticescomment}?${queryString}`;
+  return executeAPI(ServerAPI.APIMethod.GET, null, url);
+};
+
 export const GetSingleBestPractice = (id: any): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.singleBp}/${id}`);
@@ -493,9 +654,17 @@ export const GetIndustryDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.industry);
 };
+export const GetBadgeListDetails = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.badge_list);
+};
 export const GetProfessionalDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.profession);
+};
+export const GetValidProfessionalDetails = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.valid_profession);
 };
 export const GetCountryDetails = (): ApiResponse => {
   const data = {};
@@ -552,16 +721,13 @@ export const GetUserScoreResult = (): ApiResponse => {
   );
 };
 export const GetUsersearchProfileDetails = (
-  selectedDomain: any,
-  searchQuery: any,
-  page: any,
-  limit: any
-): ApiResponse => {
+selectedDomain: any, searchQuery: any, page: any, limit: any, selectedCert: string, _sort: string): ApiResponse => {
   const data: Partial<any> = {
-    domain: selectedDomain,
+    profession: selectedDomain,
     text: searchQuery,
     page_no: page,
     limit: limit,
+    badge: selectedCert,
   };
   return executeAPI(
     ServerAPI.APIMethod.POST,
