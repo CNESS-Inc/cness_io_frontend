@@ -1,70 +1,61 @@
 "use client";
-import Button from "../../ui/Button";
-
-import Lottie from 'lottie-react';
-import Flip01 from '../../../assets/lottie-files/New-Flip-01/New-Flip01.json'
-import Flip02 from '../../../assets/lottie-files/New-Flip-02/New-Flip02.json'
-import Flip03 from '../../../assets/lottie-files/New-Flip-03/New-Flip03.json'
-import Flip04 from '../../../assets/lottie-files/New-Flip-04/New-Flip04.json'
-import NewSphereGradient from '../../../assets/lottie-files/New-globe/Sphere-Gradient.json';
 import { useEffect, useState } from "react";
+import Button from "../../ui/Button";
+import Lottie from "lottie-react";
 import MobileHeroSection from "./MobileHeroSection";
 
 export default function HeroSection() {
- const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [step, setStep] = useState(0);
+  const [flip1, setFlip1] = useState<any>(null);
+  const [flip2, setFlip2] = useState<any>(null);
+  const [flip3, setFlip3] = useState<any>(null);
+  const [flip4, setFlip4] = useState<any>(null);
+  const [sphere, setSphere] = useState<any>(null);
 
-  // Mobile detection
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+
+  useEffect(() => {
+    const loadLotties = async () => {
+      try {
+        const [f1, f2, f3, f4, sph] = await Promise.all([
+          fetch("https://cnessioassets.project-69e.workers.dev/New-Flip01.json").then(res => res.json()),
+          fetch("https://cnessioassets.project-69e.workers.dev/New-Flip02.json").then(res => res.json()),
+          fetch("https://cnessioassets.project-69e.workers.dev/New-Flip03.json").then(res => res.json()),
+          fetch("https://cnessioassets.project-69e.workers.dev/New-Flip04.json").then(res => res.json()),
+          fetch("https://cnessioassets.project-69e.workers.dev/Second-globe.json").then(res => res.json())
+        ]);
+        setFlip1(f1);
+        setFlip2(f2);
+        setFlip3(f3);
+        setFlip4(f4);
+        setSphere(sph);
+      } catch (err) {
+        console.error("Failed to load Lottie animations", err);
+      }
+    };
+
+    loadLotties();
   }, []);
 
   useEffect(() => {
-    const timers: number[] = [];
-    
-    // Step 1: Small circle appears (0.3s)
-    timers.push(window.setTimeout(() => {
-      setStep(1);
-      console.log('🎯 Step 1: Small circle appears');
-    ////  alert('Step 1: Small circle appears');
-    }, 300));
-    
-    // Step 2: Circle scales up (1.2s)
-    timers.push(window.setTimeout(() => {
-      setStep(2);
-      console.log('📈 Step 2: Circle scales up');
-      //alert('Step 2: Circle scales up');
-    }, 1200));
-    
-    // Step 3: Circle slides down and becomes smaller half-circle (2.2s)
-    timers.push(window.setTimeout(() => {
-      setStep(3);
-      console.log('⬇️ Step 3: Circle slides down and becomes half-circle');
-     // alert('Step 3: Circle slides down and becomes half-circle');
-    }, 2200));
-    
-    // Step 4: Lottie appears on top of half-circle (3.2s)
-    timers.push(window.setTimeout(() => {
-      setStep(4);
-      console.log('🎬 Step 4: Lottie appears on top of half-circle');
-      //alert('Step 4: Lottie appears on top of half-circle');
-    }, 3200));
-    
-    // Step 5: Content and corner Lotties appear (4.0s)
-    timers.push(window.setTimeout(() => {
-      setStep(5);
-      console.log('✨ Step 5: Content and corner Lotties appear');
-     // alert('Step 5: Content and corner Lotties appear');
-    }, 4000));
-    
-    return () => timers.forEach((t) => clearTimeout(t));
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    timers.push(setTimeout(() => setStep(1), 300));
+    timers.push(setTimeout(() => setStep(2), 500));
+    timers.push(setTimeout(() => setStep(3), 800));
+    timers.push(setTimeout(() => setStep(4), 1000));
+    timers.push(setTimeout(() => setStep(5), 1200));
+    return () => timers.forEach(clearTimeout);
   }, []);
 
   const [lottieSize, setLottieSize] = useState({ width: 200, height: 200 });
@@ -72,28 +63,22 @@ export default function HeroSection() {
   useEffect(() => {
     const updateSize = () => {
       const width = window.innerWidth;
-
       if (width < 640) {
-        setLottieSize({ width: 200, height: 200 }); // mobile
+        setLottieSize({ width: 200, height: 200 });
       } else if (width < 1024) {
-        setLottieSize({ width: 180, height: 180 }); // tablets
+        setLottieSize({ width: 240, height: 240 });
       } else if (width < 1537) {
-        setLottieSize({ width: 280, height: 280 }); // laptops + MacBooks
+        setLottieSize({ width: 280, height: 280 });
       } else {
-        setLottieSize({ width: 300, height: 300 }); // large desktops / 4K
+        setLottieSize({ width: 320, height: 320 });
       }
     };
-
-    updateSize(); // set initial size
-    window.addEventListener('resize', updateSize);
-
-    return () => window.removeEventListener('resize', updateSize);
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
   }, []);
 
-  // Return mobile version for screens < 768px
-  if (isMobile) {
-    return <MobileHeroSection />;
-  }
+  if (isMobile) return <MobileHeroSection />;
 
   return (
     <>
@@ -102,8 +87,6 @@ export default function HeroSection() {
             min-[1536px]:h-[100vh]
             
             ">
-
-
         <div className="absolute inset-0 flex items-start justify-center z-10 lg:pt-22 md:pt-18 pt-8">
           <div className="text-center px-4">
 
@@ -144,7 +127,7 @@ export default function HeroSection() {
         </div>
 
         <Lottie
-          animationData={Flip01}
+          animationData={flip1}
           loop
           style={lottieSize}
           className={`
@@ -164,7 +147,7 @@ export default function HeroSection() {
           `}
         />
         <Lottie
-          animationData={Flip02}
+          animationData={flip2}
           loop
           style={lottieSize}
           className={`  absolute 
@@ -185,7 +168,7 @@ export default function HeroSection() {
 
         />
         <Lottie
-          animationData={Flip03}
+          animationData={flip3}
           loop
           style={lottieSize}
           className={`  absolute 
@@ -204,7 +187,7 @@ export default function HeroSection() {
           `}
         />
         <Lottie
-          animationData={Flip04}
+          animationData={flip4}
           loop
           style={lottieSize}
           className={`  absolute 
@@ -223,92 +206,64 @@ export default function HeroSection() {
           `}
         />
 
-      <div
-  className={`absolute z-0 transition-all duration-1000 ease-in-out pointer-events-none hero-round-circle ${
-    step === 0
-      ? 'opacity-0 scale-0'
-      : step >= 1
-      ? 'opacity-100 scale-100'
-      : 'opacity-0 scale-0'
-  }`}
-  style={{
-    position: 'absolute',
-    // Circle positioning: centered for steps 1-2, bottom for step 3+
-    top: step === 3 ? 'auto' : '62%',
-    bottom: step === 3 ? 0 : 'auto',
-    left: '50%',
-    // clipPath: "none",
-    // Transform: centered for steps 1-2, bottom-aligned for step 3+
-    transform: step === 3 ? 'translateX(-50%)' : 'translate(-50%, -50%)',
-    
-    // Circle sizing - responsive for all screen sizes
-    // Step 1: Small circle
-    // Step 2: Medium circle  
-    // Step 3+: Smaller half-circle that slides down
-width: step === 0 ? 0 : 
-       step === 1 ? (window.innerWidth < 640 ? 120 : window.innerWidth < 1024 ? 180 : 200) :
-       step === 2 ? (window.innerWidth < 640 ? 240 : window.innerWidth < 1024 ? 320 : 400) :
-       step === 3 ? (window.innerWidth < 640 ? '20vw' : window.innerWidth < 1024 ? '75vw' : '95vw') :
-       step === 4 ? (window.innerWidth < 640 ? '85vw' : window.innerWidth < 1024 ? '75vw' : '95vw') :'80vw',
+        <div
+          className={`absolute z-0 transition-all duration-1000 ease-in-out pointer-events-none hero-round-circle ${step === 0
+              ? 'opacity-0 scale-0'
+              : step >= 1
+                ? 'opacity-100 scale-100'
+                : 'opacity-0 scale-0'
+            }`}
+          style={{
+            position: 'absolute',
+            top: step === 3 ? 'auto' : '62%',
+            bottom: step === 3 ? 0 : 'auto',
+            left: '50%',
+            transform: step === 3 ? 'translateX(-50%)' : 'translate(-50%, -50%)',
+            width: step === 0 ? 0 :
+              step === 1 ? (window.innerWidth < 640 ? 120 : window.innerWidth < 1024 ? 180 : 200) :
+                step === 2 ? (window.innerWidth < 640 ? 240 : window.innerWidth < 1024 ? 320 : 400) :
+                  step === 3 ? (window.innerWidth < 640 ? '20vw' : window.innerWidth < 1024 ? '75vw' : '95vw') :
+                    step === 4 ? (window.innerWidth < 640 ? '85vw' : window.innerWidth < 1024 ? '75vw' : '100vw') : '100vw',
 
-height: step === 0 ? 0 :
-        step === 1 ? (window.innerWidth < 640 ? 120 : window.innerWidth < 1024 ? 180 : 200) :
-        step === 2 ? (window.innerWidth < 640 ? 240 : window.innerWidth < 1024 ? 320 : 400) :
-        step === 3 ? (window.innerWidth < 640 ? '20vh' : window.innerWidth < 1024 ? '75vw' : '95vw') :
-        step === 4 ? (window.innerWidth < 640 ? '32vh' : window.innerWidth < 1024 ? '75vw' : '95vw') : '78vh',
+            height: step === 0 ? 0 :
+              step === 1 ? (window.innerWidth < 640 ? 120 : window.innerWidth < 1024 ? 180 : 200) :
+                step === 2 ? (window.innerWidth < 640 ? 240 : window.innerWidth < 1024 ? 320 : 400) :
+                  step === 3 ? (window.innerWidth < 640 ? '20vh' : window.innerWidth < 1024 ? '75vw' : '95vw') :
+                    step === 4 ? (window.innerWidth < 640 ? '32vh' : window.innerWidth < 1024 ? '75vw' : '100vh') : '100vh',
 
-maxWidth: step === 3 ? (window.innerWidth < 640 ? 350 : window.innerWidth < 1024 ? 600 : 350) :
-          step === 4 ? (window.innerWidth < 640 ? 300 : window.innerWidth < 1024 ? 500 : 1500) : 'none',
+            maxWidth: step === 3 ? (window.innerWidth < 640 ? 350 : window.innerWidth < 1024 ? 600 : 350) :
+              step === 4 ? (window.innerWidth < 640 ? 300 : window.innerWidth < 1024 ? 500 : 1500) : 'none',
 
-maxHeight: step === 3 ? (window.innerWidth < 640 ? 250 : window.innerWidth < 1024 ? 400 : 350) :
-           step === 4 ? (window.innerWidth < 640 ? 220 : window.innerWidth < 1024 ? 350 : 1500) : 'none',
+            maxHeight: step === 3 ? (window.innerWidth < 640 ? 250 : window.innerWidth < 1024 ? 400 : 350) :
+              step === 4 ? (window.innerWidth < 640 ? 220 : window.innerWidth < 1024 ? 350 : 1500) : 'none',
 
-minWidth: step === 3 ? (window.innerWidth < 640 ? 250 : window.innerWidth < 1024 ? 400 : 500) :
-          step === 4 ? (window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 350 : 450) : 'none',
+            minWidth: step === 3 ? (window.innerWidth < 640 ? 250 : window.innerWidth < 1024 ? 400 : 500) :
+              step === 4 ? (window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 350 : 450) : 'none',
 
-minHeight: step === 3 ? (window.innerWidth < 640 ? 150 : window.innerWidth < 1024 ? 200 : 250) :
-           step === 4 ? (window.innerWidth < 640 ? 140 : window.innerWidth < 1024 ? 180 : 230) : 'none',
+            minHeight: step === 3 ? (window.innerWidth < 640 ? 150 : window.innerWidth < 1024 ? 200 : 250) :
+              step === 4 ? (window.innerWidth < 640 ? 140 : window.innerWidth < 1024 ? 180 : 230) : 'none',
 
-    
-    // Half-circle effect: only applied when at bottom (step 3+)
-    // inset(0 0 50% 0) = shows top half, hides bottom half (rainbow effect)
-    // clipPath: step === 3 ? 'inset(0 0 50% 0)' : 'none',
-    
-    // Browser compatibility for transforms
-    WebkitTransform: step >= 3 ? 'translateX(-50%)' : 'translate(-50%, -50%)',
-    msTransform: step >= 3 ? 'translateX(-50%)' : 'translate(-50%, -50%)',
-    
-    // Circle stays visible throughout the animation
-    opacity: step >= 1 ? 1 : 0,
-  }}
->
-  {step >= 4 ? (
-    <Lottie
-      animationData={NewSphereGradient}
-      loop
-      // Lottie width matches the half-circle width exactly
-      // Height is 100% to fill the half-circle area
-      style={{ 
-        width: '100%', 
-        height: '100%',
-        // position: 'absolute',
-        top: 0,
-        left: 0,
-        zIndex: 1
-      }}
-      // No padding needed as Lottie should fill the entire half-circle
-      className=""
-    />
-  ) : (
-    <img
-      src="/hero-circle.png"
-      alt="Static Sphere"
-      className="w-full "
-    />
-  )}
-</div>
+            WebkitTransform: step >= 3 ? 'translateX(-50%)' : 'translate(-50%, -50%)',
+            msTransform: step >= 3 ? 'translateX(-50%)' : 'translate(-50%, -50%)',
 
-
+            opacity: step >= 1 ? 1 : 0,
+          }}
+        >
+          {step >= 4 && (
+            <Lottie
+              animationData={sphere}
+              loop
+              style={{
+                width: '100%',
+                height: '100%',
+                top: 0,
+                left: 0,
+                zIndex: 1
+              }}
+              className="lg:mt-80 mt-50"
+            />
+          )}
+        </div>
       </section>
     </>
   );

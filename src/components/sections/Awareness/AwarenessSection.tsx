@@ -10,7 +10,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import IndividualImage from "../../../assets/aware_1.jpg";
 import OrganizationImage from "../../../assets/aware_2.jpg";
 import MentorImage from "../../../assets/aware_3.jpg";
-import RectangleBlink from '../../../assets/lottie-files/Rectangle-blink/Rectangle-blink.json'
 import LottieOnView from "../../ui/LottieOnView";
 
 // Add shimmer effect CSS
@@ -151,6 +150,16 @@ export default function AwarenessSection() {
     { src: "/creation3.png", alt: "Company Logo 3" },
   ];
 
+
+  const [animationData, setAnimationData] = useState<object | null>(null);
+
+  useEffect(() => {
+    fetch("https://cnessioassets.project-69e.workers.dev/Rectangle-blink.json")
+      .then((res) => res.json())
+      .then((data) => setAnimationData(data))
+      .catch((err) => console.error("Failed to load Lottie JSON:", err));
+  }, []);
+
   return (
     <>
       <AnimatePresence>
@@ -164,7 +173,7 @@ export default function AwarenessSection() {
             exit={{ opacity: 0, y: -40 }}
             transition={{ duration: 0.7, ease: 'easeInOut' }}
           >
-            <div className="py-24 px-0 flex lg:flex-row flex-col justify-between max-w-[800px] w-full mx-auto">
+            <div className="py-24 px-0 flex lg:flex-row flex-col items-center justify-between h-[800px] max-w-[800px] w-full mx-auto">
               <div className="lg:w-6/12">
                 <h3 className="poppins leading-9 text-[32px] text-black font-regular">Where conscious creations</h3>
                 <p className="openSans text-[#898989] font-regular text-[14px] mt-4">Explore a wide range of conscious products<br /> crafted by verified creators who prioritize<br /> sustainability and ethical practices.</p>
@@ -173,7 +182,7 @@ export default function AwarenessSection() {
               <div className="flex lg:w-6/12 flex-col lg:items-center items-start justify-start relative ">
                 <AnimatePresence mode="wait">
                    <LottieOnView
-                      animationData={RectangleBlink}
+                      animationData={animationData}
                       loop
                       style={{width:'100%', height:'100%'}}
                     />
@@ -199,7 +208,7 @@ export default function AwarenessSection() {
               <div className="flex flex-col items-center gap-8 md:gap-[52px] w-full">
                 <div className="text-center max-w-4xl">
                   <h1 className="jakarta text-3xl md:text-[32px] font-normal leading-tight">
-                    <span className="font-semibold bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text">
+                    <span className="font-regular bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text">
                       Where conscious creations{" "}
                     </span>
                     <span className="font-bold bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">

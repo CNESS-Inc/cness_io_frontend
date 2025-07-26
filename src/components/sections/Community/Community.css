@@ -118,7 +118,6 @@
 .main-image-container.step-1 .main-community-image img {
   height: 100%;
   object-fit: cover;
-  width: 100%;
 }
 
 /* Step 2: Vertical Thumbnail - Screenshot_3.png */
@@ -360,12 +359,9 @@
 }
 
 .main-image-container.step-1 {
-  position: absolute !important;
-  top: 0% !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0;
-  /* margin: auto; */
+  position: relative !important;
+  top: unset !important;
+  left: unset !important;
   transform: unset !important;
   width: 100%;
 }
@@ -396,6 +392,9 @@
   -webkit-transition: opacity 0.7s ease-in-out;
 }
 
+.main-image-container.step-1  .main-community-image img{
+  border-radius: 0 !important;
+}
 
 /* Animation Keyframes */
 @keyframes fadeInUp {
@@ -443,7 +442,6 @@
     -webkit-transform: scale(1) translateY(0);
   }
 }
-
 
 /* Responsive Styles */
 @media (max-width:1536px) {
