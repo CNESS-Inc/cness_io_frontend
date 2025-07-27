@@ -728,9 +728,9 @@ useEffect(() => {
                           </span>
                         )}
                       </p>
-                      <div className="flex justify-between items-center px-4 py-2 mt-2 text-xs sm:text-sm text-gray-600">
+                      <div className="flex items-center justify-between px-4 py-2 mt-2 text-xs sm:text-sm text-gray-600 ">
                         {/* Likes & Comments */}
-                        <div className="flex items-center gap-5">
+                        <div className="flex items-center space-x-6 mb-2">
                           <span
                             className="flex items-center gap-1 cursor-pointer"
                             onClick={(e) => {
@@ -765,7 +765,7 @@ useEffect(() => {
 
                         {/* Bookmark */}
                         <div
-                          className="cursor-pointer"
+                          className="cursor-pointer mb-2"
                           onClick={(e) => {
                             e.stopPropagation();
                             toggleSave(company.id);
