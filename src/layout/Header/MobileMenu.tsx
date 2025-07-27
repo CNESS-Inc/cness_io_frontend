@@ -9,7 +9,7 @@ import LoginForm from "./LoginForm";
 
 const links = [
 { name: "Why", href: "/why" },
-  { name: "What", href: "/what" },
+  // { name: "What", href: "/what" },
   { name: "About", href: "/about" },
   { name: "Directory", href: "/directory" },
 ];

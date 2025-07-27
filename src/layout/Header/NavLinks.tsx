@@ -8,7 +8,7 @@ import LoginForm from "./LoginForm.tsx";
 
 const links = [
   { name: "Why", href: "/why" },
-  { name: "What", href: "/what" },
+  // { name: "What", href: "/what" },
   { name: "About", href: "/about" },
   { name: "Directory", href: "/directory" },
   { name: "Social", href: "/social" },
