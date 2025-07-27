@@ -420,7 +420,7 @@ useEffect(() => {
 <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             {/* Profession Selector */}
 
-            <div className="relative rounded-full">
+            <div className="relative rounded-full ">
               {/* Measurement span with exact same text styling */}
               <span
                 className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4 py-2 "
@@ -433,14 +433,20 @@ useEffect(() => {
                 {selectedDomainText || "All Profession"}
               </span>
 
+
+<div className="w-full flex justify-center md:justify-start items-center my-1 px-4 md:px-0">
+  <div  className="relative w-full max-w-[200px] md:w-fit"
              
-                <select
-                className="bg-[#7077FE] rounded-full text-white h-full font-semibold px-3 py-2 appearance-none focus:outline-none cursor-pointer text-[12px] "
-                  style={{
-                    width: `${textWidth}px`, // Adjusted padding
-                    maxWidth: "100%",
-                    minWidth: "120px",
-                  }}
+               
+                 style={{
+      width: textWidth ? `${textWidth}px` : "100%",
+      minWidth: "120px",
+      maxWidth: "100%",
+    }}
+           
+                  >
+                   <select
+      className="bg-[#7077FE] rounded-full text-white font-semibold px-3 py-2 pr-6 appearance-none focus:outline-none cursor-pointer text-[12px] w-full"
                   value={selectedProfession}
                   onChange={handleProfessionChange}
                 >
@@ -458,10 +464,13 @@ useEffect(() => {
                   ))}
                 </select>
 
-<div className="absolute right-2 top-1/2 -translate-y-1/2 text-white text-xs pointer-events-none flex items-center sm:block">
+
+    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white text-xs pointer-events-none">
   <span className="block">▼</span>
-</div>
-           
+  </div>
+           </div>
+           </div>
+
             </div>
             {/* Search Input */}
 <div className="relative flex-grow">
@@ -482,7 +491,9 @@ className="w-full py-2 pl-3 pr-10 text-xs md:text-sm text-gray-700 placeholder:t
             </div>
           </div>
 
-<p className="text-gray-700 text-xs md:text-sm mt-4 text-center px-2 sm:px-0">
+
+<p className="text-gray-700 text-xs md:text-sm mt-2 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
+
             <span
               className="font-medium underline cursor-pointer text-[#F07EFF]"
               onClick={openModal}

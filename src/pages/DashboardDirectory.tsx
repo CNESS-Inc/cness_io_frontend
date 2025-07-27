@@ -209,7 +209,7 @@ export default function DashboardDirectory() {
 
   return (
     <>
-      <section className="relative h-auto md:h-[325px] rounded-[12px] overflow-hidden">
+      <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] mx-auto rounded-[12px] overflow-hidden">
         <AnimatedBackground />
         <img
           src={iconMap["heroimgs"]}
@@ -238,13 +238,17 @@ export default function DashboardDirectory() {
                 {selectedDomainText || "All Domains"}
               </span>
 
-              <select
-                className="bg-[#7077FE] rounded-full text-white h-full font-semibold px-3 py-2 appearance-none focus:outline-none cursor-pointer text-[12px] "
-                style={{
-                  width: `${textWidth}px`, // Adjusted padding
-                  maxWidth: "100%",
-                  minWidth: "120px",
-                }}
+<div className="w-full flex justify-center md:justify-start items-center my-1 px-4 md:px-0">
+  <div  className="relative w-full max-w-[200px] md:w-fit"
+             
+             style={{
+      width: textWidth ? `${textWidth}px` : "100%",
+      minWidth: "120px",
+      maxWidth: "100%",
+    }}
+                >
+                 <select
+      className="bg-[#7077FE] rounded-full text-white font-semibold px-3 py-2 pr-6 appearance-none focus:outline-none cursor-pointer text-[12px] w-full"
                 value={selectedDomain}
                 onChange={(e) => {
                   setSelectedDomain(e.target.value);
@@ -266,11 +270,12 @@ export default function DashboardDirectory() {
                   </option>
                 ))}
               </select>
-              <div className="absolute top-1/2 right-3 transform -translate-y-1/2 text-white text-[10px] pointer-events-none">
+    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white text-xs pointer-events-none">
                 ▼
               </div>
             </div>
-
+</div>
+</div>
             {/* Search Input - full width on mobile */}
             <div className="relative flex-grow bg-white border border-gray-200 rounded-full md:rounded-full px-3 h-[100%] shadow-sm ">
               <input
@@ -290,7 +295,7 @@ export default function DashboardDirectory() {
             </div>
           </div>
 
-          <p className="text-gray-700 text-sm mt-4 md:mt-6">
+<p className="text-gray-700 text-xs md:text-sm mt-12 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
             <span
               className="font-medium text-[#F07EFF] underline cursor-pointer"
               onClick={() => navigate("/dashboard/company-profile")}
