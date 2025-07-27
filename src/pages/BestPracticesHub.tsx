@@ -417,7 +417,7 @@ useEffect(() => {
             Find Your Conscious Best Practices here.
           </h1>
 
-          <div className="w-full mx-automd:rounded-full flex flex-col h-[34px] md:flex-row items-stretch md:items-center gap-2">
+<div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             {/* Profession Selector */}
 
             <div className="relative rounded-full">
@@ -433,9 +433,9 @@ useEffect(() => {
                 {selectedDomainText || "All Profession"}
               </span>
 
-              <div className="relative h-full flex items-center">
+             
                 <select
-                  className="bg-[#7077FE] py-2 rounded-full text-[12px] md:rounded-full text-white h-full w-full font-semibold px-3 md:px-4 appearance-none focus:outline-none cursor-pointer "
+                className="bg-[#7077FE] rounded-full text-white h-full font-semibold px-3 py-2 appearance-none focus:outline-none cursor-pointer text-[12px] "
                   style={{
                     width: `${textWidth}px`, // Adjusted padding
                     maxWidth: "100%",
@@ -458,17 +458,17 @@ useEffect(() => {
                   ))}
                 </select>
 
-                <div className="absolute right-2 text-white text-xs pointer-events-none hidden sm:block">
-                  ▼
-                </div>
-              </div>
+<div className="absolute right-2 top-1/2 -translate-y-1/2 text-white text-xs pointer-events-none flex items-center sm:block">
+  <span className="block">▼</span>
+</div>
+           
             </div>
             {/* Search Input */}
-            <div className="relative flex-grow  bg-white border border-gray-200 rounded-lg  px-3 shadow-sm h-[100%]">
+<div className="relative flex-grow">
               <input
                 type="text"
                 placeholder="Search best practices..."
-                className="w-full py-2 bg-transparent text-xs md:text-sm text-gray-700 placeholder:text-gray-400 outline-none border-none h-[29px] px-2"
+className="w-full py-2 pl-3 pr-10 text-xs md:text-sm text-gray-700 placeholder:text-gray-400 bg-white border border-gray-200 rounded-full shadow-sm outline-none"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 onKeyDown={handleKeyPress}
@@ -482,7 +482,7 @@ useEffect(() => {
             </div>
           </div>
 
-          <p className="text-gray-700 text-xs md:text-sm mt-3 md:mt-5">
+<p className="text-gray-700 text-xs md:text-sm mt-4 text-center px-2 sm:px-0">
             <span
               className="font-medium underline cursor-pointer text-[#F07EFF]"
               onClick={openModal}
@@ -969,7 +969,7 @@ useEffect(() => {
                 htmlFor="file"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                File (Optional)
+                File *
               </label>
               <input
                 type="file"
@@ -981,19 +981,23 @@ useEffect(() => {
               />
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4">
+<div className="flex flex-row justify-end gap-2 pt-4 flex-wrap">
               <Button
                 type="button"
                 onClick={closeModal}
                 variant="white-outline"
-                className="w-full sm:w-auto"
+                className="w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 variant="gradient-primary"
-                className="w-full sm:w-auto py-2 px-6 sm:py-3 sm:px-8"
+                className="w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Submitting..." : "Submit"}

@@ -130,7 +130,7 @@ const AffiliateGenerateCode = () => {
     <>
       <div className="w-full min-h-screen mt-8">
         {/* Tab Navigation */}
-        <div className="flex border-b border-gray-200 mb-6 mt-8">
+<div className="flex flex-wrap gap-3 border-b border-gray-200 mb-6 mt-8 px-4 sm:px-6">
           <button
             className={`px-4 py-2 cursor-pointer font-medium ${activeTab === 'code' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
             onClick={() => setActiveTab('code')}
@@ -153,10 +153,12 @@ const AffiliateGenerateCode = () => {
 
         {/* Tab Content */}
         {activeTab === 'users' && (
-          <div className="min-h-screen bg-white p-6 font-sans">
+<div className="min-h-screen bg-white px-4 py-6 sm:px-6 font-sans">
             <h3 className="text-lg font-semibold mb-4">Your Referred Users</h3>
 
             <div className="bg-white border border-gray-200 rounded-md overflow-hidden">
+              <div className="overflow-x-auto">
+
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -193,6 +195,7 @@ const AffiliateGenerateCode = () => {
 
                 
               </table>
+              </div>
             </div>
 
           </div>
@@ -215,7 +218,7 @@ const AffiliateGenerateCode = () => {
                 <h3 className="text-lg font-semibold mb-4">Affiliate Details</h3>
                 <div className="flex flex-col gap-2">
                   <p className="text-sm"><span className="font-bold">Code:</span> <span>{currentReferralCode} </span></p>
-                  <div className="flex justify-start items-center">
+<div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                     <p className="text-sm"><span className="font-bold">Affiliate Link:</span>  <span>{baseUrl}/sign-up?referral_code={currentReferralCode}</span></p>
                     <div className="relative w-fit ms-3 ">
                       <button
@@ -227,7 +230,7 @@ const AffiliateGenerateCode = () => {
                       </button>
                       {showMenu && (
                         <div
-                          className="absolute top-10 right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
+                          className="absolute top-10 right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10 min-w-[200px] max-w-[300px]"
                           ref={menuRef}
                         >
                           <ul className="flex items-center gap-4">
@@ -275,7 +278,7 @@ const AffiliateGenerateCode = () => {
 
       {/* Modal */}
       <Modal isOpen={isModalOpen} onClose={closeModal}>
-        <div className="text-center p-6 max-w-md">
+<div className="text-center px-4 py-6 max-w-md w-full">
           <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-r from-[#7077FE] to-[#F07EFF]">
             <svg
               className="h-8 w-8 text-white"
