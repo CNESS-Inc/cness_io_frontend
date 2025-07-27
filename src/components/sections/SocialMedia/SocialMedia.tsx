@@ -38,7 +38,7 @@ export default function SocialMedia() {
               impress, but to express.
             </p>
             <Button className="jakarta w-fit rounded-[100px] h-[38px] text-[16px] font-[400] text-[#fff] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#F07EFF] mt-6"
-             onClick={() => window.location.href = "/sign-up"}>
+             onClick={() => window.location.href = "/comingsoon"}>
               Join the Conscious Conversation
             </Button>
           </div>
