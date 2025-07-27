@@ -433,6 +433,7 @@ useEffect(() => {
                 {selectedDomainText || "All Profession"}
               </span>
 
+
 <div className="w-full flex justify-center md:justify-start items-center my-1 px-4 md:px-0">
   <div  className="relative w-full max-w-[200px] md:w-fit"
              
@@ -463,11 +464,13 @@ useEffect(() => {
                   ))}
                 </select>
 
+
     <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white text-xs pointer-events-none">
   <span className="block">▼</span>
-</div>
+  </div>
            </div>
            </div>
+
             </div>
             {/* Search Input */}
 <div className="relative flex-grow">
@@ -488,7 +491,9 @@ className="w-full py-2 pl-3 pr-10 text-xs md:text-sm text-gray-700 placeholder:t
             </div>
           </div>
 
+
 <p className="text-gray-700 text-xs md:text-sm mt-2 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
+
             <span
               className="font-medium underline cursor-pointer text-[#F07EFF]"
               onClick={openModal}
