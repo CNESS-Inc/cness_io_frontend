@@ -10,7 +10,7 @@ import GenerateBadgeCode from "../pages/GenerateBadgeCode";
 import GenerateAffiliateCode from "../pages/GenerateAffiliateCode";
 import AssessmentQuestion from "../pages/AssessmentQuestion";
 import Setting from "../pages/Setting";
-import What from "../pages/What";
+//import What from "../pages/What";
 import Social from "../pages/Social";
 import SinglePost from "../components/Social/SinglePost";
 import ReelsCard from "../components/Social/Reels/ReelsCard";
@@ -88,10 +88,10 @@ export const router = createBrowserRouter([
         path: "why",
         element: <Why />,
       },
-      {
-        path: "what",
-        element: <What />,
-      },
+      // {
+      //   path: "what",
+      //   element: <What />,
+      // },
       {
         path: "about",
         element: <About />,

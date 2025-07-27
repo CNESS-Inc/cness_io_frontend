@@ -58,25 +58,25 @@ const Footer = () => {
                 <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#6F74DD] poppins">Follow Us</h4>
                 <ul className="space-y-1 md:space-y-2">
                   <li>
-                    <a href="#" className="flex items-center text-sm md:text-base hover:underline openSans">
+                    <a href="https://www.facebook.com/share/1A8V21L6Qj" className="flex items-center text-sm md:text-base hover:underline openSans">
                       <FaFacebookF className="me-2 md:me-3" />
                       Facebook
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="flex items-center text-sm md:text-base hover:underline openSans">
+                    <a href="https://x.com/CnessInc" className="flex items-center text-sm md:text-base hover:underline openSans">
                       <FaTwitter className="me-2 md:me-3" />
                       X
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="flex items-center text-sm md:text-base hover:underline openSans">
+                    <a href="https://www.instagram.com/cness.inc" className="flex items-center text-sm md:text-base hover:underline openSans">
                       <FaInstagram className="me-2 md:me-3" />
                       Instagram
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="flex items-center text-sm md:text-base hover:underline">
+                    <a href="https://www.youtube.com/@CNESSinc" className="flex items-center text-sm md:text-base hover:underline">
                       <FaYoutube className="me-2 md:me-3" />
                       YouTube
                     </a>
