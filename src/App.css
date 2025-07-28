@@ -304,8 +304,5 @@ body {
   .hero-section-btn div {
     justify-content: center;
   }
-  .mobile-hero-section {
-    min-height: 80vh !important;
-}
 
 }
