@@ -26,8 +26,6 @@ export default function FeaturedSection() {
       ([entry]) => {
         if (entry.isIntersecting && !triggered.current) {
           triggered.current = true;
-         // setLooping(true);
-          // console.log("FeaturedSection animation triggered by scroll!");
           startSequence();
         }
       },
