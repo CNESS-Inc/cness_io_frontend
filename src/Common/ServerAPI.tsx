@@ -163,6 +163,7 @@ export const EndPoint = {
   get_my_referrals: "/profile/user/getmyreferrals",
   get_my_referral_code: "/profile/user/getMyReferralCode",
   subscription: "/subscription",
+  get_badge: "/profile/get-user-badge",
 };
 
 export const GoogleLoginDetails = async (googleToken: string): ApiResponse => {
@@ -241,6 +242,10 @@ export const getMyRefferralCode = (formData: getMyRefferralCodeFromData): ApiRes
 export const getSubscriptionDetails = (): ApiResponse => {
  
   return executeAPI(ServerAPI.APIMethod.GET, null, EndPoint.subscription);
+};
+export const getUserBadgeDetails = (): ApiResponse => {
+ 
+  return executeAPI(ServerAPI.APIMethod.GET, null, EndPoint.get_badge);
 };
 
 export const AccountDetails = (formData: AccountData): ApiResponse => {
