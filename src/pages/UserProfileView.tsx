@@ -340,7 +340,7 @@ export default function UserProfileView() {
             {/* Badge Card */}
             <div className="sticky top-30">
               <div className="bg-white rounded-xl shadow-sm px-4 py-4 md:py-6">
-                <div className="flex items-center justify-center gap-4 text-center">
+                <div className="flex lg:flex-row flex-col items-center justify-center gap-4 text-center">
                   <p className="text-sm font-medium">CNESS Badge:</p>
                   <img
                     src={
@@ -683,7 +683,7 @@ export default function UserProfileView() {
                 style={{ borderColor: "#0000001A" }}
               />
               {/* Grid Layout */}
-              <div className="flex flex-col md:flex-row 2xl:gap-0 gap-6 w-full mt-5">
+              <div className="flex flex-col lg:flex-row 2xl:gap-0 gap-6 w-full mt-5">
                 {/* Left: Score + Bars */}
                 <div className="flex flex-col items-center xl:items-start w-full md:w-1/2 gap-4">
                   <div className="flex flex-col items-center xl:items-start">

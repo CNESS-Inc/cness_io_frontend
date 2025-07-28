@@ -460,7 +460,7 @@ export default function PublicCompanyProfile() {
               className="border-t my-4"
               style={{ borderColor: "#0000001A" }}
             />
-            <div className="flex flex-col md:flex-row 2xl:gap-0 gap-6 w-full mt-5">
+            <div className="flex flex-col lg:flex-row 2xl:gap-0 gap-6 w-full mt-5">
               <div className="flex flex-col items-center xl:items-start w-full md:w-1/2 gap-4">
                 <div className="flex flex-col items-center xl:items-start">
                   {typeof avgrating === "number" && !isNaN(avgrating) && (
