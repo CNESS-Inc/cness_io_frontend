@@ -252,7 +252,7 @@ export default function DashboardTechnology() {
               <input
                 type="text"
                 placeholder="Technology and AI"
-                className="w-full py-2 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none border-none h-[29px] px-2"
+                className="w-full py-2 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none border-none h-full px-2"
                 value={searchQuery || ""}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleKeyPress}
