@@ -34,14 +34,15 @@ interface Section {
   bestPracticePrompt: string;
   bestPracticeQuestionId: string;
   bestPracticeAnswer?: string;
+  showBestPracticeInPublic: boolean; // Add this
   suggestedUploads: Array<{
     label: string;
     acceptedTypes: string;
     id: string;
     fileUrl?: string | null;
   }>;
-  referenceLinkQuestionId: string; // Add this
-  referenceLinkAnswer: string; // Add this
+  referenceLinkQuestionId: string;
+  referenceLinkAnswer: string;
   next_section_id: string | null;
   previous_section_id: string | null;
 }
@@ -49,15 +50,19 @@ interface Section {
 interface FormValues {
   selectedCheckboxIds: string[];
   checkboxes_question_id: string;
-  purposePauseAnswers: PurposePauseAnswer[];
+  purposePauseAnswers: Array<{
+    id: string;
+    answer: string;
+  }>;
   bestPractice: {
     answer: string;
     question_id: string;
+    showInPublic: boolean; // Add this
   };
   uploads: Array<{
     file: File | null;
     id: string;
-    fileUrl?: string | null; // Added this field
+    fileUrl?: string | null;
   }>;
   referenceLink: {
     url: string;
@@ -65,14 +70,10 @@ interface FormValues {
   };
 }
 
-interface PurposePauseAnswer {
-  id: string;
-  answer: string;
-}
 
 const AssessmentQuestion: React.FC = () => {
   const [currentSection, setCurrentSection] = useState<Section | null>(null);
-  const [toggles, setToggles] = useState<boolean[]>([]);
+  const [_toggles, setToggles] = useState<boolean[]>([]);
   const [formData, setFormData] = useState<FormValues | null>(null);
   const [loading, setLoading] = useState(false);
   const [_progress, setprogress] = useState(0);
@@ -171,14 +172,12 @@ const AssessmentQuestion: React.FC = () => {
   };
 
   const transformApiData = (apiData: any): Section => {
-    // Initialize variables for each section type
     let checkboxesData: any = null;
     let purposePauseData: any = null;
     let bestPracticeData: any = null;
     let suggestedUploadsData: any = null;
     let referenceLinkData: any = null;
 
-    // Iterate through each question_data item and categorize them by sub_section name
     apiData.question_data.forEach((section: any) => {
       if (section.sub_section.name === "Select all that apply") {
         checkboxesData = section;
@@ -206,10 +205,13 @@ const AssessmentQuestion: React.FC = () => {
           question: q.question,
           id: q.id,
           answer: q.answer || "",
+          showInPublic: q.show_question_in_public || false,
         })) || [],
       bestPracticePrompt: bestPracticeData?.questions[0]?.question || "",
       bestPracticeQuestionId: bestPracticeData?.questions[0]?.id || "",
       bestPracticeAnswer: bestPracticeData?.questions[0]?.answer || "",
+      showBestPracticeInPublic:
+        bestPracticeData?.questions[0]?.show_question_in_public || false,
       suggestedUploads:
         suggestedUploadsData?.questions?.map((q: any) => ({
           label: q.question,
@@ -218,9 +220,10 @@ const AssessmentQuestion: React.FC = () => {
             ? ".jpg,.png,.jpeg"
             : ".pdf,.doc,.docx,.jpg,.png,.jpeg",
           fileUrl: q.answer || null,
+          showInPublic: q.show_question_in_public || false,
         })) || [],
-      referenceLinkQuestionId: referenceLinkData?.questions[0]?.id || "", // Add this
-      referenceLinkAnswer: referenceLinkData?.questions[0]?.answer || "", // Add this
+      referenceLinkQuestionId: referenceLinkData?.questions[0]?.id || "",
+      referenceLinkAnswer: referenceLinkData?.questions[0]?.answer || "",
       next_section_id: apiData.next_section_id,
       previous_section_id: apiData.previous_section_id,
     };
@@ -228,7 +231,7 @@ const AssessmentQuestion: React.FC = () => {
 
   const initializeFormData = (section: Section): FormValues => {
     return {
-      selectedCheckboxIds: section.checkboxAnswers || [], // Initialize with saved checkbox answers
+      selectedCheckboxIds: section.checkboxAnswers || [],
       checkboxes_question_id: section.checkboxes_question_id,
       purposePauseAnswers: section.purposePauseQuestions.map((question) => ({
         id: question.id,
@@ -237,6 +240,7 @@ const AssessmentQuestion: React.FC = () => {
       bestPractice: {
         answer: section.bestPracticeAnswer || "",
         question_id: section.bestPracticeQuestionId,
+        showInPublic: section.showBestPracticeInPublic,
       },
       uploads: section.suggestedUploads.map((upload) => ({
         file: null,
@@ -259,7 +263,7 @@ const AssessmentQuestion: React.FC = () => {
 
       setCurrentSection(transformedSection);
       setFormData(initialFormData);
-      setToggles([true]); // Initialize toggle for this section
+      setToggles([false]); // Initialize toggle for this section
       setprogress(res.data.data.assesment_progress);
       settotalstep(res.data.data.total_sections);
       setIsSubmitted(res.data.data.find_answer_submited);
@@ -286,7 +290,16 @@ const AssessmentQuestion: React.FC = () => {
     }
   }, []);
   const handleToggleChange = (checked: boolean) => {
-    setToggles([checked]);
+    setFormData((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        bestPractice: {
+          ...prev.bestPractice,
+          showInPublic: checked,
+        },
+      };
+    });
   };
 
   const handleCheckboxChange = (optionId: string, isChecked: boolean) => {
@@ -697,13 +710,12 @@ const AssessmentQuestion: React.FC = () => {
                 <input
                   type="checkbox"
                   className="sr-only peer"
-                  checked={toggles[0]}
+                  checked={formData?.bestPractice.showInPublic || false}
                   onChange={(e) => handleToggleChange(e.target.checked)}
                   disabled={isSubmitted}
                 />
                 <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
               </label>
-              {/* Text next to toggle */}
               <span className="text-[14px] flex items-start gap-3 text-[#222224]">
                 Do you have best practices to highlight?
               </span>

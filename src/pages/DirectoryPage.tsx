@@ -296,7 +296,7 @@ export default function DirectoryPage() {
               <input
                 type="text"
                 placeholder="Find & Choose your perfect organization"
-                className="w-full px-4 py-2 pr-10 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none border-none"
+                className="w-full px-4 py-2 pr-10 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none border-none h-full"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 onKeyDown={handleKeyPress}
