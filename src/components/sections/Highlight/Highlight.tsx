@@ -21,39 +21,39 @@ export default function Highlight() {
 
   const highlightCards = [
     {
-      icon: "/highlight-icon-1.png",
+      icon: "https://res.cloudinary.com/diudvzdkb/image/upload/v1753780613/highlight-icon-1_qo6e4e.png",
       title: "Create a Profile",
       desc: "Let the world see who you are — your values, work and inner story.",
     },
     {
-      icon: "/highlight-icon-2.png",
+      icon: "https://res.cloudinary.com/diudvzdkb/image/upload/v1753780614/highlight-icon-2_y63cpz.png",
       title: "Grow Visibility",
       desc: "Make your mission visible to a purpose-driven audience.",
     },
     {
-      icon: "/highlight-icon-3.png",
+      icon: "https://res.cloudinary.com/diudvzdkb/image/upload/v1753780629/highlight-icon-3_biiwo3.png",
       title: "Earn Credibility",
       desc: "Stand out by sharing your expertise and impact.",
     },
     {
-      icon: "/highlight-icon-4.png",
+      icon: "https://res.cloudinary.com/diudvzdkb/image/upload/v1753780630/highlight-icon-4_xfol6a.png",
       title: "Stream Content",
       desc: "Host live talks. Share music, thoughts, and your message.",
     },
     {
-      icon: "/highlight-icon-5.png",
+      icon: "https://res.cloudinary.com/diudvzdkb/image/upload/v1753780632/highlight-icon-5_n8kcg8.png",
       title: "Get Featured",
       desc: "Be seen by the conscious world on our curated platform.",
     },
     {
-      icon: "/highlight-icon-6.png",
+      icon: "https://res.cloudinary.com/diudvzdkb/image/upload/v1753780633/highlight-icon-6_y5d2fk.png",
       title: "Connect & Collaborate",
       desc: "Network and grow with aligned changemakers.",
     },
   ];
 
   return (
-    <section className="highlight-section lg:min-h-[560px] px-4 sm:px-6 lg:px-8 py-15 sm:py-12 lg:py-[80px] bg-[#FAFAFA] relative bg-[url(/highlight-ellipse.png)] bg-no-repeat bg-position-[right_bottom_3rem] overflow-hidden">
+    <section className="highlight-section lg:min-h-[560px] px-4 sm:px-6 lg:px-8 py-15 sm:py-12 lg:py-[80px] bg-[#FAFAFA] relative bg-[url(https://res.cloudinary.com/diudvzdkb/image/upload/v1753780724/highlight-ellipse_hahibm.png)] bg-no-repeat bg-position-[right_bottom_3rem] overflow-hidden">
       <div className="max-w-[1336px] mx-auto flex lg:flex-row flex-col">
         <div className="md:px-0 lg:px-0 lg:w-5/12 w-full">
           <div className="w-full">

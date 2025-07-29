@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Button from "../../ui/Button";
-import Image from "../../ui/Image";
+// import Image from "../../ui/Image";
+import OptimizeImage from "../../ui/OptimizeImage";
 import LottieOnView from "../../ui/LottieOnView";
 
 export default function SocialMedia() {
@@ -45,8 +46,8 @@ export default function SocialMedia() {
         </div>
 
         <div className="socail-media-image relative">
-          <Image
-            src="/social-media.png"
+          <OptimizeImage
+            src="social-media.webp"
             alt="Social Media Visual"
             width={'100%'}
             height={'511px'}
