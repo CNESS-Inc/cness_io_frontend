@@ -12,6 +12,7 @@ import OrganizationImage from "../../../assets/aware_2.jpg";
 import MentorImage from "../../../assets/aware_3.jpg";
 import LottieOnView from "../../ui/LottieOnView";
 import { useNavigate } from "react-router-dom";
+
 // Add shimmer effect CSS
 import './AwarenessSection.css';
 
