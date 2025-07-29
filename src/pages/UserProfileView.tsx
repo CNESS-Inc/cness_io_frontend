@@ -2,7 +2,8 @@ import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import Header from "../layout/Header/Header";
 import Footer from "../layout/Footer/Footer";
 import inspiredbadge from "../assets/Inspired _ Badge.png";
-// import bestprac from "../assets/bestprac.png";
+import bestprac from "../assets/bestprac.png";
+import tag from "../assets/tags.png";
 // import bcard1 from "../assets/Bcard1.png";
 // import bcard2 from "../assets/Bcard2.png";
 // import bcard3 from "../assets/Bcard3.png";
@@ -24,7 +25,7 @@ import { StarRating } from "../components/ui/Rating";
 import Button from "../components/ui/Button";
 import Modal from "../components/ui/Modal";
 import { FacebookIcon, LinkedinIcon, TwitterIcon } from "react-share";
-import { Instagram } from "lucide-react";
+import { Briefcase, Instagram } from "lucide-react";
 import banner2 from "../assets/banner2.png";
 import indv_aspiring from "../assets/indv_aspiring.svg";
 import indv_inspried from "../assets/indv_inspired.svg";
@@ -79,13 +80,11 @@ export default function UserProfileView() {
 
   const [breakdowns, setBreakdowns] = useState<Record<string, number>>({});
 
-
   // State for errors
   const [errors, setErrors] = useState<Errors>({
     reviewText: "",
     breakdowns: {},
   });
-
 
   // Validate form function
   const validateForm = (): boolean => {
@@ -116,7 +115,10 @@ export default function UserProfileView() {
     return valid;
   };
 
-  // Handle form submission
+  const getNumberWord = (num: number): string => {
+    const numberWords = ["one", "two", "three", "four", "five"];
+    return numberWords[num - 1] || num.toString();
+  };
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,10 +131,10 @@ export default function UserProfileView() {
           profile_id: id,
         };
 
-        // Dynamically add breakdown ratings based on the breakdown items
-        breakDown?.forEach((item: any) => {
-          const key = item.breakdown_name;
-          payload[`breakdown_${key}`] = breakdowns[key]?.toString() || "0";
+        breakDown?.forEach((item: any, index: number) => {
+          const formattedKey = `breakdown_${getNumberWord(index + 1)}`;
+          payload[formattedKey] =
+            breakdowns[item.breakdown_name]?.toString() || "0";
         });
 
         await AddUserRating(payload);
@@ -465,7 +467,7 @@ export default function UserProfileView() {
               </div>
             </div>
 
-            {/* <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
+            <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
               <h3 className="text-base font-semibold text-black mb-2 flex items-center gap-2">
                 <span className="bg-purple-50 p-2 rounded-full">
                   <Briefcase className="w-4 h-4 text-purple-500" />
@@ -476,35 +478,44 @@ export default function UserProfileView() {
                 className="border-t my-2"
                 style={{ borderColor: "#0000001A" }}
               />
-              <div className="flex flex-wrap gap-5">
-
+              <div className="grid grid-cols-2 gap-4">
+                {userDetails?.person_services?.map(
+                  (service: any, index: any) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <span className="text-gray-500">•</span>
+                      <span>{service?.name}</span>
+                    </div>
+                  )
+                )}
               </div>
             </div>
 
-   <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
-    <h3 className="text-base font-semibold text-black mb-2 flex items-center gap-2">
-      <span className="bg-purple-50 p-2 rounded-full">
-        <img src={tag} alt="tags Icon" className="w-5 h-5 object-contain" />
-      </span>
-      Tags
-    </h3>
-    <div
-      className="border-t my-2"
-      style={{ borderColor: "#0000001A" }}
-    />
-    <div className="flex flex-wrap gap-5">
-      {userDetails?.person_tags?.map((tag: any, index: any) => (
-        <span
-          key={index}
-          className="bg-[#EEF3FF] text-[#7077FE] text-xs font-medium px-7 py-2 rounded"
-        >
-          {tag}
-        </span>
-      ))}
-    </div>
-  </div>
-
-       
+            <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
+              <h3 className="text-base font-semibold text-black mb-2 flex items-center gap-2">
+                <span className="bg-purple-50 p-2 rounded-full">
+                  <img
+                    src={tag}
+                    alt="tags Icon"
+                    className="w-5 h-5 object-contain"
+                  />
+                </span>
+                Tags
+              </h3>
+              <div
+                className="border-t my-2"
+                style={{ borderColor: "#0000001A" }}
+              />
+              <div className="flex flex-wrap gap-5">
+                {userDetails?.person_tags?.map((tag: any, index: any) => (
+                  <span
+                    key={index}
+                    className="bg-[#EEF3FF] text-[#7077FE] text-xs font-medium px-7 py-2 rounded"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
 
             <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
               <h3 className="text-base font-semibold text-black mb-2 flex items-center gap-2">
@@ -521,10 +532,8 @@ export default function UserProfileView() {
                 className="border-t my-2"
                 style={{ borderColor: "#0000001A" }}
               />
-              <div className="flex flex-wrap gap-5">
-
-              </div>
-            </div> */}
+              <div className="flex flex-wrap gap-5"></div>
+            </div>
 
             {/* <div className="w-full px-6 md:px-5 mt-2">
           <div className="bg-white rounded-xl shadow-sm px-6 py-8">

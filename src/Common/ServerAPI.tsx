@@ -305,9 +305,13 @@ export const submitPersonDetails = (formData: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.person_profile);
 };
 export const submitAnswerDetails = (formData: any): ApiResponse => {
-  console.log("🚀 ~ submitAnswerDetails ~ formData:", formData)
-  // Initialize the data array
-  const data: Array<{ question_id: string; answer: any }> = [];
+  console.log("🚀 ~ submitAnswerDetails ~ formData:", formData);
+  // Initialize the data array with the correct type
+  const data: Array<{
+    question_id: string;
+    answer: any;
+    show_answer_in_public?: boolean;
+  }> = [];
 
   // Handle selectedCheckboxIds and checkboxes_question_id
   if (formData.selectedCheckboxIds && formData.checkboxes_question_id) {
@@ -318,15 +322,12 @@ export const submitAnswerDetails = (formData: any): ApiResponse => {
   }
 
   // Handle purposePauseAnswers
-  if (
-    formData.purposePauseAnswers &&
-    Array.isArray(formData.purposePauseAnswers)
-  ) {
+  if (formData.purposePauseAnswers && Array.isArray(formData.purposePauseAnswers)) {
     formData.purposePauseAnswers.forEach((item: any) => {
       if (item.id) {
         data.push({
           question_id: item.id,
-          answer: item.answer, // Or use item.answer if you want the actual answer text
+          answer: item.answer,
         });
       }
     });
@@ -336,29 +337,26 @@ export const submitAnswerDetails = (formData: any): ApiResponse => {
   if (formData.bestPractice && formData.bestPractice.question_id) {
     data.push({
       question_id: formData.bestPractice.question_id,
-      answer: formData.bestPractice.answer, // Or use formData.bestPractice.answer
+      answer: formData.bestPractice.answer,
+      show_answer_in_public: formData.bestPractice.showInPublic || false,
     });
   }
 
-  // // Handle referenceLink (if needed)
-  // // You'll need to know the question_id for the referenceLink
-  // // For example:
+  // Handle referenceLink
   if (formData.referenceLink) {
     data.push({
       question_id: formData.referenceLink.question_id,
-      answer: formData.referenceLink.url
+      answer: formData.referenceLink.url,
     });
   }
 
-  // Handle uploads (if needed)
-  // You'll need to know how to map uploads to question_ids
-  // For example:
+  // Handle uploads
   if (formData.uploads && Array.isArray(formData.uploads)) {
     formData.uploads.forEach((upload: any) => {
       if (upload) {
         data.push({
           question_id: upload.id,
-          answer: upload.file, // or process the upload as needed
+          answer: upload.fileUrl || upload.file, // Use fileUrl if available, otherwise the file object
         });
       }
     });
