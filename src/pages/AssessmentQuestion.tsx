@@ -70,14 +70,10 @@ interface FormValues {
   };
 }
 
-interface PurposePauseAnswer {
-  id: string;
-  answer: string;
-}
 
 const AssessmentQuestion: React.FC = () => {
   const [currentSection, setCurrentSection] = useState<Section | null>(null);
-  const [toggles, setToggles] = useState<boolean[]>([]);
+  const [_toggles, setToggles] = useState<boolean[]>([]);
   const [formData, setFormData] = useState<FormValues | null>(null);
   const [loading, setLoading] = useState(false);
   const [_progress, setprogress] = useState(0);
