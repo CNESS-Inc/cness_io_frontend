@@ -2,10 +2,10 @@ import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import inspiredbadge from "../assets/Inspired _ Badge.png";
 import bestprac from "../assets/bestprac.png";
 import tag from "../assets/tags.png";
-// import bcard1 from "../assets/Bcard1.png";
-// import bcard2 from "../assets/Bcard2.png";
-// import bcard3 from "../assets/Bcard3.png";
-// import bcard4 from "../assets/Bcard4.png";
+import bcard1 from "../assets/Bcard1.png";
+import bcard2 from "../assets/Bcard2.png";
+import bcard3 from "../assets/Bcard3.png";
+import bcard4 from "../assets/Bcard4.png";
 import overallrating from "../assets/overallratings.png";
 import aboutus from "../assets/aboutus.png";
 import work from "../assets/work.png";
@@ -514,7 +514,7 @@ export default function DashboardUserProfile() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
+            {/* <div className="bg-white rounded-xl shadow-sm px-6 py-6 -mt-4">
               <h3 className="text-base font-semibold text-black mb-2 flex items-center gap-2">
                 <span className="bg-green-50 p-2 rounded-full">
                   <img
@@ -530,123 +530,82 @@ export default function DashboardUserProfile() {
                 style={{ borderColor: "#0000001A" }}
               />
               <div className="flex flex-wrap gap-5"></div>
+            </div> */}
+
+            <div className="bg-white rounded-xl shadow-sm px-6 py-8">
+              <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
+                <span className="bg-green-50 p-2 rounded-full">
+                  <img
+                    src={bestprac}
+                    alt="Best Practices Icon"
+                    className="w-5 h-5 object-contain"
+                  />
+                </span>{" "}
+                Best Practices
+              </h3>
+              <div
+                className="border-t my-4"
+                style={{ borderColor: "#0000001A" }}
+              />
+
+              {userDetails?.best_practices_questions?.length > 0 ? (
+                <div className="grid grid-cols-2 2xl:grid-cols-4 gap-4">
+                  {userDetails?.best_practices_questions?.map(
+                    (practice:any, index:any) => {
+                      const cardImages = [bcard1, bcard2, bcard3, bcard4];
+                      const randomImage = cardImages[index % cardImages.length];
+
+                      return (
+                        <div
+                          key={practice.id}
+                          className="bg-white rounded-xl shadow border border-gray-100 p-3"
+                        >
+                          <div className="rounded-lg overflow-hidden">
+                            <img
+                              src={randomImage}
+                              alt={`Best Practice ${index + 1}`}
+                              className="w-full h-[150px] object-cover"
+                            />
+                          </div>
+                          <p className="text-xs text-pink-500 font-medium mt-2 text-right">
+                            {/* You can add time if available or remove this line */}
+                          </p>
+
+                          <div className="mt-2">
+                            <h4 className="text-sm font-semibold">
+                              {practice.question.length > 50
+                                ? `${practice.question.substring(0, 50)}...`
+                                : practice.question}
+                            </h4>
+                            {practice.answer && (
+                              <>
+                                <p className="text-xs text-gray-500 mb-2">
+                                  {practice.answer.answer.length > 80
+                                    ? `${practice.answer.answer.substring(
+                                        0,
+                                        80
+                                      )}...`
+                                    : practice.answer.answer}
+                                </p>
+                                {practice.answer.show_answer_in_public && (
+                                  <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+                                    Read More
+                                  </button>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    }
+                  )}
+                </div>
+              ) : (
+                <p className="text-gray-500 text-center py-4">
+                  No best practices available
+                </p>
+              )}
             </div>
-
-            {/* <div className="w-full px-6 md:px-5 mt-2">
-          <div className="bg-white rounded-xl shadow-sm px-6 py-8">
-            <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
-              <span className="bg-green-50 p-2 rounded-full">
-                <img
-                  src={bestprac}
-                  alt="Best Practices Icon"
-                  className="w-5 h-5 object-contain"
-                />
-              </span>{" "}
-              Best Practices
-            </h3>
-            <div
-              className="border-t my-4"
-              style={{ borderColor: "#0000001A" }}
-            />
-
-            <div className="grid grid-cols-2 2xl:grid-cols-4 gap-4">
-              <div className="bg-white rounded-xl shadow border border-gray-100 p-3">
-                <div className="rounded-lg overflow-hidden">
-                  <img
-                    src={bcard1}
-                    alt="Module 1"
-                    className="w-full h-[150px] object-cover"
-                  />
-                </div>
-                <p className="text-xs text-pink-500 font-medium mt-2 text-right">
-                  12.00 hrs
-                </p>
-
-                <div className="mt-2">
-                  <h4 className="text-sm font-semibold">
-                    Module 1: Intermediate
-                  </h4>
-                  <p className="text-xs text-gray-500 mb-2">
-                    Exploring Advanced Techniques
-                  </p>
-                  <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                    Read More
-                  </button>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-xl shadow border border-gray-100 p-3">
-                <div className="rounded-lg overflow-hidden">
-                  <img
-                    src={bcard2}
-                    alt="Module 1"
-                    className="w-full h-[150px] object-cover"
-                  />
-                </div>
-                <p className="text-xs text-pink-500 font-medium mt-2 text-right">
-                  12.00 hrs
-                </p>
-
-                <div className="mt-2">
-                  <h4 className="text-sm font-semibold">Module 3: Expert</h4>
-                  <p className="text-xs text-gray-500 mb-2">
-                    Mastering Complex Concepts
-                  </p>
-                  <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                    Read More
-                  </button>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-xl shadow border border-gray-100 p-3">
-                <div className="rounded-lg overflow-hidden">
-                  <img
-                    src={bcard3}
-                    alt="Module 1"
-                    className="w-full h-[150px] object-cover"
-                  />
-                </div>
-                <p className="text-xs text-pink-500 font-medium mt-2 text-right">
-                  12.00 hrs
-                </p>
-                <div className="mt-2">
-                  <h4 className="text-sm font-semibold">
-                    Module 4: Applications
-                  </h4>
-                  <p className="text-xs text-gray-500 mb-2">
-                    Real-World Case Studies
-                  </p>
-                  <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                    Read More
-                  </button>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-xl shadow border border-gray-100 p-3">
-                <div className="rounded-lg overflow-hidden">
-                  <img
-                    src={bcard4}
-                    alt="Module 1"
-                    className="w-full h-[150px] object-cover"
-                  />
-                </div>
-                <p className="text-xs text-pink-500 font-medium mt-2 text-right">
-                  12.00 hrs
-                </p>
-
-                <div className="mt-2">
-                  <h4 className="text-sm font-semibold">Module 1: Basic</h4>
-                  <p className="text-xs text-gray-500 mb-2">
-                    Introduction to Fundamentals
-                  </p>
-                  <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                    Read More
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
 
             {/* Overall Ratings */}
 

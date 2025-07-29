@@ -249,7 +249,7 @@ export default function TechnologyAndAIPage() {
               <input
                 type="text"
                 placeholder="Find & Choose your perfect organization"
-                className="w-full py-2 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none border-none h-[29px] px-2"
+                className="w-full py-2 bg-transparent text-sm text-gray-700 h-full placeholder:text-gray-400 outline-none border-none px-2"
                 value={searchQuery || ""}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleKeyPress}
