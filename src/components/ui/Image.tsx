@@ -25,7 +25,7 @@ const Image: React.FC<LazyImageProps> = ({
           alt=""
           aria-hidden="true"
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
-          src === '/cnesslogo.png' ? '' : 'rounded-[18px]'
+          src === '/cnesslogo.png' ? '' : 'rounded-0'
         }`}
         style={{ width, height }}
         />
@@ -36,7 +36,7 @@ const Image: React.FC<LazyImageProps> = ({
         loading={priority ? 'eager' : 'lazy'}
         onLoad={() => setIsLoaded(true)}
         className={`w-full h-full transition-opacity duration-300 ${
-        src === '/cnesslogo.png' ? '' : 'rounded-[18px]'
+        src === '/cnesslogo.png' ? '' : 'rounded-0'
       } ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
       width={width}
       height={height}

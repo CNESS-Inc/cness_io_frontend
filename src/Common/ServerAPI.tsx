@@ -767,6 +767,7 @@ export const PostsDetails = (page: any) => {
 };
 
 export const AddPost = (formData: any): ApiResponse => {
+  // console.log('POST FORMDATA----->', Object.fromEntries(formData.entries())); 
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.create_post);
 };
 
