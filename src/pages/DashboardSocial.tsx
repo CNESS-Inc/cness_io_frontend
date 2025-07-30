@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import StoryCard from "../components/Social/StoryCard";
 import { ChevronRight, ChevronLeft, Share2 } from "lucide-react";
 import { AddPost, AddStory } from "../Common/ServerAPI";
@@ -160,7 +160,7 @@ function PostCarousel() {
 //const toggleExpand = () => setIsExpanded(!isExpanded);
 
 export default function SocialTopBar() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpand = () => setIsExpanded(!isExpanded);
   const [showPopup, setShowPopup] = useState(false);
@@ -176,7 +176,7 @@ export default function SocialTopBar() {
   const [apiStoryMessage, setApiStoryMessage] = useState<string | null>(null);
   
 
-  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [_selectedImages, setSelectedImages] = useState<File[]>([]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
