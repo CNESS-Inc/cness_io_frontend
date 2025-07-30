@@ -345,7 +345,7 @@ export default function DashboardUserProfile() {
                     src={
                       userDetails?.level?.level == "Aspiring"
                         ? indv_aspiring
-                        : userDetails?.level?.level == "Inspiring"
+                        : userDetails?.level?.level == "Inspired"
                         ? indv_inspried
                         : userDetails?.level?.level == "Leader"
                         ? indv_leader
