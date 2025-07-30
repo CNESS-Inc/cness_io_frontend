@@ -755,11 +755,11 @@ export default function DashboardUserProfile() {
                 </div>
 
                 {/* Right: Breakdown */}
-                <div className="w-full xl:w-1/2 text-sm text-gray-800">
-                  <p className="text-[#E57CFF] font-semibold mb-5 mt-5">
+                <div className="w-full xl:w-1/2 px-2 sm:px-6 mt-10 text-sm text-gray-800">
+                  <p className="text-[#E57CFF] font-semibold mb-4 sm:mb-6 text-base sm:text-lg">
                     Ratings Breakdown
                   </p>
-                  <div className="grid grid-cols-1 gap-y-2 gap-x-10  w-full max-w-[400px]">
+                  <div className="grid grid-cols-1 gap-3 max-w-full sm:max-w-[400px]">
                     {breakDown?.map((item: any, i: any) => (
                       <div
                         key={i}
