@@ -11,7 +11,7 @@ import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import hambur from "../../assets/hambur.png";
-import { GetUserNotificationCount, LogOut } from "../../Common/ServerAPI";
+import { LogOut } from "../../Common/ServerAPI";
 import { useToast } from "../../components/ui/Toast/ToastProvider";
 
 const DashboardHeader = ({ toggleMobileNav }: any) => {
