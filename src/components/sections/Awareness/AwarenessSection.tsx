@@ -7,9 +7,6 @@ import { Card, CardContent } from "../../ui/Card";
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import IndividualImage from "../../../assets/aware_1.jpg";
-import OrganizationImage from "../../../assets/aware_2.jpg";
-import MentorImage from "../../../assets/aware_3.jpg";
 import LottieOnView from "../../ui/LottieOnView";
 import { useNavigate } from "react-router-dom";
 
@@ -21,7 +18,7 @@ export default function AwarenessSection() {
     {
       title: "Sacred Symbols Icon Set",
       description: "100+ vector symbols with spiritual significance",
-      image: IndividualImage,
+      image: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753777576/member-1_mvwqde.png',
       altText: "Individual joining certification program",
       button: "Add to cart",
       price: "$999",
@@ -34,7 +31,7 @@ export default function AwarenessSection() {
     {
       title: "Color Palettes Collection",
       description: "Curated color schemes for various design projects",
-      image: OrganizationImage,
+      image: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753777921/aware_2_x13l3l.jpg',
       altText: "Organization certification process",
       button: "Add to cart",
       price: "$49",
@@ -47,7 +44,7 @@ export default function AwarenessSection() {
     {
       title: "Nature Photography Pack",
       description: "High-resolution images capturing the beauty of nature",
-      image: MentorImage,
+      image: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753777924/aware_3_yk4pl6.jpg',
       altText: "Mentorship and partnership opportunities",
       button: "Add to cart",
       price: "$150",
@@ -60,7 +57,7 @@ export default function AwarenessSection() {
     {
       title: "Mentor or Partner with CNESS",
       description: "Teach, guide, grow the movement.",
-      image: MentorImage,
+      image: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753777576/member-1_mvwqde.png',
       altText: "Mentorship and partnership opportunities",
       button: "Add to cart",
       price: "$99",
@@ -73,7 +70,7 @@ export default function AwarenessSection() {
     {
       title: "Sacred Symbols Icon Set",
       description: "100+ vector symbols with spiritual significance",
-      image: IndividualImage,
+      image: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753777921/aware_2_x13l3l.jpg',
       altText: "Individual joining certification program",
       button: "Add to cart",
       price: "$999",
