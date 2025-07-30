@@ -768,7 +768,7 @@ export default function DashboardUserProfile() {
                         <span>{formatBreakdownName(item.breakdown_name)}</span>
                         <span className="flex items-center gap-2 text-sm text-gray-800 font-medium">
                           <span className="text-yellow-500">⭐</span>
-                          {item?.value}
+                          {item?.value?.toFixed(1)}
                         </span>
                       </div>
                     ))}
