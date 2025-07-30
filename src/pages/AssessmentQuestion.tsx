@@ -160,6 +160,7 @@ const AssessmentQuestion: React.FC = () => {
       });
       setIsFinalSubmitting(false);
       setActiveModal(null);
+      await fetchQuestions()
     } catch (error: any) {
       console.log("🚀 ~ handleFinalSubmit ~ error:", error);
       showToast({
@@ -377,6 +378,11 @@ const AssessmentQuestion: React.FC = () => {
         formData.append("question_id", upload.id);
         const response = await QuestionFileDetails(formData);
         console.log("🚀 ~ handleFileUpload ~ response:", response);
+        showToast({
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
       } catch (error: any) {
         console.error("Error uploading file:", error);
         showToast({

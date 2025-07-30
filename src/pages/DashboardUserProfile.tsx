@@ -37,10 +37,7 @@ interface Errors {
 export default function DashboardUserProfile() {
   const { id } = useParams();
   const [userDetails, setUserDetails] = useState<any>();
-  console.log(
-    "🚀 ~ DashboardUserProfile ~ userDetails:",
-    userDetails?.level?.level
-  );
+  console.log("🚀 ~ DashboardUserProfile ~ userDetails:", userDetails);
   const [activeModal, setActiveModal] = useState<"rating" | null>(null);
 
   const { showToast } = useToast();
@@ -136,12 +133,15 @@ export default function DashboardUserProfile() {
             breakdowns[item.breakdown_name]?.toString() || "0";
         });
 
-        await AddUserRating(payload);
+        const response = await AddUserRating(payload);
+        console.log("🚀 ~ handleSubmit ~ response:", response);
         setActiveModal(null);
         // Reset form on success
         setReviewText("");
         setBreakdowns({});
-        await fetchRatingDetails();
+        const res = await fetchRatingDetails();
+        console.log("🚀 ~ handleSubmit ~ res:", res);
+        alert();
       } catch (error: any) {
         setReviewText("");
         setBreakdowns({});
@@ -551,7 +551,7 @@ export default function DashboardUserProfile() {
               {userDetails?.best_practices_questions?.length > 0 ? (
                 <div className="grid grid-cols-2 2xl:grid-cols-4 gap-4">
                   {userDetails?.best_practices_questions?.map(
-                    (practice:any, index:any) => {
+                    (practice: any, index: any) => {
                       const cardImages = [bcard1, bcard2, bcard3, bcard4];
                       const randomImage = cardImages[index % cardImages.length];
 
@@ -574,7 +574,7 @@ export default function DashboardUserProfile() {
                           <div className="mt-2">
                             <h4 className="text-sm font-semibold">
                               {practice.question.length > 50
-                                ? `${practice.question.substring(0, 50)}...`
+                                ? `${practice.question}`
                                 : practice.question}
                             </h4>
                             {practice.answer && (
@@ -604,6 +604,59 @@ export default function DashboardUserProfile() {
                 <p className="text-gray-500 text-center py-4">
                   No best practices available
                 </p>
+              )}
+              {userDetails?.public_best_practices?.length > 0 ? (
+                <div className="grid grid-cols-2 2xl:grid-cols-4 gap-4 mt-4">
+                  {userDetails?.public_best_practices?.map(
+                    (practice: any, index: any) => {
+                      return (
+                        <div
+                          key={practice.id}
+                          className="bg-white rounded-xl shadow border border-gray-100 p-3"
+                        >
+                          <div className="rounded-lg overflow-hidden">
+                            <img
+                              src={practice?.file}
+                              alt={`Best Practice ${index + 1}`}
+                              className="w-full h-[150px] object-cover"
+                              onError={(e) => {
+                                // Fallback if the image fails to load
+                                const target = e.target as HTMLImageElement;
+                                target.src = bcard1;
+                              }}
+                            />
+                          </div>
+                          <p className="text-xs text-pink-500 font-medium mt-2 text-right"></p>
+
+                          <div className="mt-2">
+                            <h4 className="text-sm font-semibold">
+                              {practice.title
+                                ? `${practice.title}`
+                                : practice.question}
+                            </h4>
+                            {practice.description && (
+                              <>
+                                <p className="text-xs text-gray-500 mb-2">
+                                  {practice.description > 80
+                                    ? `${practice.description.substring(
+                                        0,
+                                        80
+                                      )}...`
+                                    : practice.description}
+                                </p>
+                                <button className="text-xs cursor-pointer px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+                                  Read More
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    }
+                  )}
+                </div>
+              ) : (
+                ""
               )}
             </div>
 
@@ -706,7 +759,7 @@ export default function DashboardUserProfile() {
                   <p className="text-[#E57CFF] font-semibold mb-5 mt-5">
                     Ratings Breakdown
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-10  w-full max-w-[400px]">
+                  <div className="grid grid-cols-1 gap-y-2 gap-x-10  w-full max-w-[400px]">
                     {breakDown?.map((item: any, i: any) => (
                       <div
                         key={i}
@@ -725,7 +778,7 @@ export default function DashboardUserProfile() {
             </div>
 
             {/* Reviews & Ratings */}
-            <div className="bg-[#ECEEF2] rounded-xl shadow-sm px-6 py-6 -mt-3">
+            <div className="bg-[#fff] rounded-xl shadow-sm px-6 py-6 -mt-3 mb-3">
               {/* Title */}
               <h3 className="text-lg font-semibold text-black mb-4 flex items-center gap-2">
                 <span className="bg-[#F5EDFF] p-2 rounded-full">
@@ -743,8 +796,8 @@ export default function DashboardUserProfile() {
               />
 
               {/* Reviews List */}
-              {userReviewData.length > 0 ? (
-                userReviewData.map((reviewItem: any) => (
+              {userReviewData?.length > 0 ? (
+                userReviewData?.map((reviewItem: any) => (
                   <div
                     key={reviewItem.id}
                     className="bg-white border border-gray-100 rounded-lg p-6 mb-1 shadow-sm"
