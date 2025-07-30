@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FiX } from 'react-icons/fi';
-import { GetUserNotification } from '../Common/ServerAPI';
+import { GetUserNotification, GetUserNotificationCount, MarkNotificationAsRead } from '../Common/ServerAPI';
 
 interface NotificationItem {
   id: string;
@@ -33,6 +33,47 @@ const Notification: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const markAsRead = async (notificationId: string) => {
+    try {
+      // Call API to mark as read
+      await MarkNotificationAsRead(notificationId,true);
+      
+      // Update local state
+      setNotifications(prev => prev.map(notif => 
+        notif.id === notificationId ? { ...notif, is_read: true } : notif
+      ));
+      
+      // Update selected notification if it's the one being viewed
+      if (selectedNotification?.id === notificationId) {
+        setSelectedNotification(prev => prev ? { ...prev, is_read: true } : null);
+      }
+
+        await fetchNotificationCount();
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+    }
+  };
+
+  const handleNotificationClick = (notification: NotificationItem) => {
+    setSelectedNotification(notification);
+    if (!notification.is_read) {
+      markAsRead(notification.id);
+    }
+  };
+
+  const fetchNotificationCount = async () => {
+    try {
+      const res = await GetUserNotificationCount();
+      if (res && res.data && res.data.data) {
+        localStorage.setItem("notification_count",res.data.data.count)
+      }
+    } catch (error) {
+      console.error("Error fetching notification count:", error);
+    }
+  };
+
+
 
   useEffect(() => {
     getNotification();
@@ -76,11 +117,11 @@ const Notification: React.FC = () => {
       {/* Notification Panel */}
       <aside className="w-[440px] bg-white border-r border-gray-200 p-4 overflow-y-auto">
         <div className="space-y-4">
-          {notifications.length > 0 ? (
-            notifications.map((notification) => (
+          {notifications?.length > 0 ? (
+            notifications?.map((notification) => (
               <div
                 key={notification.id}
-                onClick={() => setSelectedNotification(notification)}
+                onClick={() => handleNotificationClick(notification)}
                 className={`cursor-pointer p-4 rounded-lg shadow-sm border transform transition hover:-translate-y-1 hover:shadow-md ${
                   !notification.is_read
                     ? 'bg-purple-100 border-purple-500'

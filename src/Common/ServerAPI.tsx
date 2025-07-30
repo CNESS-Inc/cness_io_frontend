@@ -158,6 +158,8 @@ export const EndPoint = {
   bp_comment_reply: "/best-practice/comment/reply",
   singleBp: "/best-practice/get",
   user_notification: "/notification",
+  notification_count: "/notification/count",
+  update_notification: "/notification/update-status",
   logout: "/auth/logout",
   gernerate_affiliate_code: "/profile/user/generate_referral_code",
   get_my_referrals: "/profile/user/getmyreferrals",
@@ -629,6 +631,17 @@ export const GetSingleBestPractice = (id: any): ApiResponse => {
 export const GetUserNotification = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.user_notification}`);
+};
+export const GetUserNotificationCount = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.notification_count}`);
+};
+export const MarkNotificationAsRead = (notificationId: string,status:any): ApiResponse => {
+const data: Partial<any> = {
+    id: notificationId,
+    status:status
+  };
+  return executeAPI(ServerAPI.APIMethod.POST, data, `${EndPoint.update_notification}`);
 };
 export const GetProfileDetails = (): ApiResponse => {
   const data = {};

@@ -11,7 +11,7 @@ import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import hambur from "../../assets/hambur.png";
-import { LogOut } from "../../Common/ServerAPI";
+import { GetUserNotificationCount, LogOut } from "../../Common/ServerAPI";
 import { useToast } from "../../components/ui/Toast/ToastProvider";
 
 const DashboardHeader = ({ toggleMobileNav }: any) => {
@@ -21,14 +21,20 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
 
   // Add state for name values
   const [name, setName] = useState(localStorage.getItem("main_name") || "");
+
+const [notificationCount, setNotificationCount] = useState(
+  localStorage.getItem("notification_count") || "0"
+);
   const [margaretName, setMargaretName] = useState(
     localStorage.getItem("margaret_name") || ""
   );
   const [profilePic, setProfilePic] = useState(
     localStorage.getItem("profile_picture") || ""
   );
-
+  
   const { showToast } = useToast();
+  
+
 
   // Watch for localStorage changes
   useEffect(() => {
@@ -36,6 +42,7 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
       setName(localStorage.getItem("main_name") || "");
       setMargaretName(localStorage.getItem("margaret_name") || "");
       setProfilePic(localStorage.getItem("profile_picture") || "");
+      setNotificationCount(localStorage.getItem("notification_count") || "0");
     };
 
     // Listen for storage events (changes from other tabs)
@@ -100,18 +107,18 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
   };
 
   return (
-<header className="w-full bg-white border-b border-[#0000001a] relative px-4 py-[18px] md:pl-[260px] flex items-center justify-between">
+    <header className="w-full bg-white border-b border-[#0000001a] relative px-4 py-[18px] md:pl-[260px] flex items-center justify-between">
       {/* Left side - Hamburger (mobile) and Search */}
       <div className="flex items-center gap-4">
         {/* Mobile hamburger only */}
         <div className="block md:hidden">
-  <button
-    onClick={toggleMobileNav}
-    className="flex items-center justify-center w-[41px] h-[41px] bg-white rounded-xl border border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer transition"
-  >
-    <img src={hambur} alt="Menu" className="w-5 h-5" />
-  </button>
-</div>
+          <button
+            onClick={toggleMobileNav}
+            className="flex items-center justify-center w-[41px] h-[41px] bg-white rounded-xl border border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer transition"
+          >
+            <img src={hambur} alt="Menu" className="w-5 h-5" />
+          </button>
+        </div>
 
         {/* Search bar */}
         <div className="ml-2 sm:ml-4 md:ml-6 flex items-center justify-between p-3 relative bg-white rounded-xl border border-solid border-slate-300 w-full md:w-[440px]">
@@ -126,15 +133,13 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
       {/* Right side - Icons and User Profile */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
-          
-
           {/* Logout Button */}
           <div className="relative group">
             <div
               onClick={handleLogout}
-              className="flex w-[41px] h-[41px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
+              className="flex w-[32px] h-[32px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
             >
-              <LogOutIcon className="w-6 h-6" />
+              <LogOutIcon className="w-[15px] h-[15px] text-[#897AFF]" />
             </div>
             <span className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
               Logout
@@ -146,9 +151,9 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
           <div className="relative group">
             <div
               onClick={() => navigate("/dashboard/support")}
-              className="flex w-[41px] h-[41px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
+              className="flex w-[32px] h-[32px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
             >
-              <HelpCircleIcon className="w-6 h-6" />
+              <HelpCircleIcon className="w-[15px] h-[15px] text-[#897AFF]" />
             </div>
             <span className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
               Support
@@ -160,10 +165,17 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
           <div className="relative group">
             <div
               onClick={() => navigate("/dashboard/notification")}
-              className="flex w-[41px] h-[41px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
+              className="flex w-[32px] h-[32px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
             >
               <div className="relative">
-                <BellIcon className="w-5 h-5" />
+                <BellIcon className="w-[15px] h-[15px] text-[#897AFF]" />
+                {notificationCount != "0" && (
+                  <div className="w-[12px] h-[12px] absolute -top-1 left-1 bg-[#60c750] rounded-full flex items-center justify-center">
+                    <span className="font-['Poppins',Helvetica] font-normal text-white text-[7px]">
+                      {notificationCount}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
             <span className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
@@ -176,9 +188,9 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
           <div className="relative group">
             <div
               onClick={() => navigate("/dashboard/setting")}
-              className="flex w-[41px] h-[41px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
+              className="flex w-[32px] h-[32px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
             >
-              <SettingsIcon className="w-6 h-6" />
+              <SettingsIcon className="w-[15px] h-[15px] text-[#897AFF]" />
             </div>
             <span className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
               Settings
