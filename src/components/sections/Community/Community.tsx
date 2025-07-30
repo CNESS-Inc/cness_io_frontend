@@ -4,33 +4,33 @@ import Image from "../../ui/Image";
 
 // Background cards
 const backgroundCards = [
-  { id: 1, type: 'image', src: '/community-1.png', alt: 'Community Feature 1' },
-  { id: 2, type: 'image', src: '/community-2.png', alt: 'Community Feature 2' },
-  { id: 3, type: 'image', src: '/community-3.png', alt: 'Community Feature 3' },
-  { id: 4, type: 'image', src: '/community-4.png', alt: 'Community Feature 4' },
-  { id: 5, type: 'image', src: '/community-5.png', alt: 'Community Feature 5' },
-  { id: 6, type: 'image', src: '/community-6.png', alt: 'Community Feature 6' },
-  { id: 7, type: 'image', src: '/community-7.png', alt: 'Community Feature 7' }
+  { id: 1, type: 'image', src: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753779752/community-1_lfhqfv.png', alt: 'Community Feature 1' },
+  { id: 2, type: 'image', src: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753779752/community-2_eshhqq.png', alt: 'Community Feature 2' },
+  { id: 3, type: 'image', src: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753779752/community-3_zyj6ua.png', alt: 'Community Feature 3' },
+  { id: 4, type: 'image', src: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753779752/community-4_fg6svu.png', alt: 'Community Feature 4' },
+  { id: 5, type: 'image', src: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753779753/community-5_xbtjdi.png', alt: 'Community Feature 5' },
+  { id: 6, type: 'image', src: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753779753/community-6_eezcrn.png', alt: 'Community Feature 6' },
+  { id: 7, type: 'image', src: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753779753/community-7_ezfjjb.png', alt: 'Community Feature 7' }
 ];
 
 // Images for steps
 const desktopStepImages = [
-  '/step-1.png',
-  '/step-2.jpg',
-  '/step-3.jpg',
-  '/step-4.jpg'
+  'https://res.cloudinary.com/diudvzdkb/image/upload/v1753779904/step-1_bmddjm.png',
+  'https://res.cloudinary.com/diudvzdkb/image/upload/v1753779905/step-2_hxjibf.jpg',
+  'https://res.cloudinary.com/diudvzdkb/image/upload/v1753779905/step-3_upsak1.jpg',
+  'https://res.cloudinary.com/diudvzdkb/image/upload/v1753779908/step-4_tccuig.jpg'
 ];
 const tabletStepImages = [
-  '/step-1-tablet.png',
-  '/step-2.jpg',
-  '/step-3.jpg',
-  '/step-4.jpg'
+  'https://res.cloudinary.com/diudvzdkb/image/upload/v1753779990/step-1-tablet_ngqanu.png',
+  'https://res.cloudinary.com/diudvzdkb/image/upload/v1753779905/step-2_hxjibf.jpg',
+  'https://res.cloudinary.com/diudvzdkb/image/upload/v1753779905/step-3_upsak1.jpg',
+  'https://res.cloudinary.com/diudvzdkb/image/upload/v1753779908/step-4_tccuig.jpg'
 ];
 const mobileStepImages = [
-  '/step-1-mobile.png',
-  '/step-2.jpg',
-  '/step-3.jpg',
-  '/step-4.jpg'
+  'https://res.cloudinary.com/diudvzdkb/image/upload/v1753779991/step-1-mobile_tdhdix.png',
+  'https://res.cloudinary.com/diudvzdkb/image/upload/v1753779905/step-2_hxjibf.jpg',
+  'https://res.cloudinary.com/diudvzdkb/image/upload/v1753779905/step-3_upsak1.jpg',
+  'https://res.cloudinary.com/diudvzdkb/image/upload/v1753779908/step-4_tccuig.jpg'
 ];
 
 const Community: React.FC = () => {
@@ -56,7 +56,7 @@ const Community: React.FC = () => {
   }, []);
 
   const animateSteps = () => {
-    const stepDuration = 2000; // 🔥 Faster speed here (was 2000)
+    const stepDuration = 1500; // 🔥 Faster speed here (was 2000)
     const totalSteps = 4;
     const runStep = (step: number) => {
       setCurrentStep(step);
@@ -163,7 +163,7 @@ const Community: React.FC = () => {
       </div>
 
       {/* Bottom Section */}
-      <div className="community-bottom m-0 bg-[url(/community-bg.png)] w-full lg:px-8 md:px-8 px-4 py-12 flex justify-center items-center flex-col bg-cover bg-center">
+      <div className="community-bottom m-0 bg-[url(https://res.cloudinary.com/diudvzdkb/image/upload/v1753780353/community-bg_cqdnuq.png)] w-full lg:px-8 md:px-8 px-4 py-12 flex justify-center items-center flex-col bg-cover bg-center">
         <h3 className="poppins lg:text-[32px] md:text-[32px] text-[23px] font-[600] bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
                text-transparent bg-clip-text mb-3 text-center community-heading">
           Connect with the trustworthy. Work with the <br />reliable. Grow with the Dependable.

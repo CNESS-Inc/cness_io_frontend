@@ -3,20 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-
 import { Card, CardContent } from "../../ui/Card";
-
-import LiamImage from "../../../assets/member-1.png";
-import JenniferImage from "../../../assets/member-2.png";
-import AvaImage from "../../../assets/member-3.png";
-import MartinImage from "../../../assets/member-4.png";
-
-import Badge1 from "../../../assets/badge-1.png";
-import Badge2 from "../../../assets/badge-2.png";
-import Badge3 from "../../../assets/badge-3.png";
-import Badge4 from "../../../assets/badge-4.png";
-import Badge5 from "../../../assets/badge-1.png";
-
 
 
 export default function Team() {
@@ -25,41 +12,41 @@ export default function Team() {
       title: "Liam",
       SubTitle: "DEI Coach",
       description: "“CNESS helped me move from ideas to income. Now I’m guiding teams globally on inclusion and purpose.”",
-      image: LiamImage,
+      image: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753777576/member-1_mvwqde.png',
       altText: "DEI Coach",
-      badgeImage: Badge1,
+      badgeImage: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753778342/badge-1_rszhxd.png',
     },
     {
       title: "Jennifer",
       SubTitle: "Eco Fashion Entrepreneur",
       description: "I’ve always worked consciously. But now I’m seen for it. Investors and buyers now ask about my CNESS badge.",
-      image: JenniferImage,
+      image: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753777577/member-2_gltfnn.png',
       altText: "Eco Fashion Entrepreneur",
-      badgeImage: Badge2,
+      badgeImage: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753778343/badge-4_mcswbi.png',
     },
     {
       title: "Ava",
       SubTitle: "Podcast Host",
       description: "“Sharing reflections used to feel lonely. Now I’m part of a global stream of changemakers. I’m not alone anymore.”",
-      image: AvaImage,
+      image: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753777577/member-3_bo9qef.png',
       altText: "Podcast Host",
-      badgeImage: Badge3,
+      badgeImage: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753778342/badge-2_ertswm.png',
     },
     {
       title: "Martin",
       SubTitle: "DEI Coach",
       description: "“CNESS helped me move from ideas to income. Now I’m guiding teams globally on inclusion and purpose.”",
-      image: MartinImage,
+      image: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753777576/member-4_vhwcew.png',
       altText: "DEI Coach",
-      badgeImage: Badge4,
+      badgeImage: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753778342/badge-3_buwsay.png',
     },
     {
       title: "Liam",
       SubTitle: "DEI Coach",
       description: "“CNESS helped me move from ideas to income. Now I’m guiding teams globally on inclusion and purpose.”",
-      image: LiamImage,
+      image: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753777576/member-1_mvwqde.png',
       altText: "DEI Coach",
-      badgeImage: Badge5,
+      badgeImage: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753778342/badge-1_rszhxd.png',
     },
 
   ];
