@@ -231,7 +231,7 @@ export default function DashboardUserProfile() {
               <img
                 src={
                   userDetails?.profile_picture &&
-                  userDetails?.profile_picture !== "http://localhost:5026/file/"
+                    userDetails?.profile_picture !== "http://localhost:5026/file/"
                     ? userDetails?.profile_picture
                     : "/profile.png"
                 }
@@ -255,6 +255,7 @@ export default function DashboardUserProfile() {
               <div className="text-center -mt-13">
                 <h2 className="text-lg font-semibold text-gray-800">
                   {userDetails?.first_name} {userDetails?.last_name}
+                  <p className="text-gray-500 text-[14px]">{userDetails?.public_title}</p>
                 </h2>
                 {/* <p className="text-sm text-gray-500">Stella Innovation</p> */}
               </div>
@@ -346,10 +347,10 @@ export default function DashboardUserProfile() {
                       userDetails?.level?.level == "Aspiring"
                         ? indv_aspiring
                         : userDetails?.level?.level == "Inspired"
-                        ? indv_inspried
-                        : userDetails?.level?.level == "Leader"
-                        ? indv_leader
-                        : inspiredbadge // fallback if no level
+                          ? indv_inspried
+                          : userDetails?.level?.level == "Leader"
+                            ? indv_leader
+                            : inspiredbadge // fallback if no level
                     }
                     alt={`${userDetails?.level?.level || "CNESS"} Badge`}
                     className="w-[159px] md:w-[180px] h-auto object-contain mt-[-10px]"
@@ -531,134 +532,155 @@ export default function DashboardUserProfile() {
               />
               <div className="flex flex-wrap gap-5"></div>
             </div> */}
+            {userDetails?.best_practices_questions?.length > 0 &&
+              <div className="bg-white rounded-xl shadow-sm px-6 py-8">
+                <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
+                  <span className="bg-green-50 p-2 rounded-full">
+                    <img
+                      src={bestprac}
+                      alt="Best Practices Icon"
+                      className="w-5 h-5 object-contain"
+                    />
+                  </span>{" "}
+                  Best Practices Aligned CNESS
+                </h3>
+                <div
+                  className="border-t my-4"
+                  style={{ borderColor: "#0000001A" }}
+                />
 
-            <div className="bg-white rounded-xl shadow-sm px-6 py-8">
-              <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
-                <span className="bg-green-50 p-2 rounded-full">
-                  <img
-                    src={bestprac}
-                    alt="Best Practices Icon"
-                    className="w-5 h-5 object-contain"
-                  />
-                </span>{" "}
-                Best Practices
-              </h3>
-              <div
-                className="border-t my-4"
-                style={{ borderColor: "#0000001A" }}
-              />
+                {userDetails?.best_practices_questions?.length > 0 ? (
+                  <div className="grid grid-cols-2 2xl:grid-cols-4 gap-4">
+                    {userDetails?.best_practices_questions?.map(
+                      (practice: any, index: any) => {
+                        const cardImages = [bcard1, bcard2, bcard3, bcard4];
+                        const randomImage = cardImages[index % cardImages.length];
 
-              {userDetails?.best_practices_questions?.length > 0 ? (
-                <div className="grid grid-cols-2 2xl:grid-cols-4 gap-4">
-                  {userDetails?.best_practices_questions?.map(
-                    (practice: any, index: any) => {
-                      const cardImages = [bcard1, bcard2, bcard3, bcard4];
-                      const randomImage = cardImages[index % cardImages.length];
+                        return (
+                          <div
+                            key={practice.id}
+                            className="bg-white rounded-xl shadow border border-gray-100 p-3"
+                          >
+                            <div className="rounded-lg overflow-hidden">
+                              <img
+                                src={randomImage}
+                                alt={`Best Practice ${index + 1}`}
+                                className="w-full h-[150px] object-cover"
+                              />
+                            </div>
+                            <p className="text-xs text-pink-500 font-medium mt-2 text-right">
+                              {/* You can add time if available or remove this line */}
+                            </p>
 
-                      return (
-                        <div
-                          key={practice.id}
-                          className="bg-white rounded-xl shadow border border-gray-100 p-3"
-                        >
-                          <div className="rounded-lg overflow-hidden">
-                            <img
-                              src={randomImage}
-                              alt={`Best Practice ${index + 1}`}
-                              className="w-full h-[150px] object-cover"
-                            />
-                          </div>
-                          <p className="text-xs text-pink-500 font-medium mt-2 text-right">
-                            {/* You can add time if available or remove this line */}
-                          </p>
-
-                          <div className="mt-2">
-                            <h4 className="text-sm font-semibold">
-                              {practice.question.length > 50
-                                ? `${practice.question}`
-                                : practice.question}
-                            </h4>
-                            {practice.answer && (
-                              <>
-                                <p className="text-xs text-gray-500 mb-2">
-                                  {practice.answer.answer.length > 80
-                                    ? `${practice.answer.answer.substring(
+                            <div className="mt-2">
+                              <h4 className="text-sm font-semibold">
+                                {practice.question.length > 50
+                                  ? `${practice.question}`
+                                  : practice.question}
+                              </h4>
+                              {practice.answer && (
+                                <>
+                                  <p className="text-xs text-gray-500 mb-2">
+                                    {practice.answer.answer.length > 80
+                                      ? `${practice.answer.answer.substring(
                                         0,
                                         80
                                       )}...`
-                                    : practice.answer.answer}
-                                </p>
-                                {practice.answer.show_answer_in_public && (
-                                  <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+                                      : practice.answer.answer}
+                                  </p>
+                                  {practice.answer.show_answer_in_public && (
+                                    <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+                                      Read More
+                                    </button>
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      }
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-center py-4">
+                    No best practices available
+                  </p>
+                )}
+              </div>
+            }
+
+            {userDetails?.public_best_practices?.length > 0 &&
+              <div className="bg-white rounded-xl shadow-sm px-6 py-8">
+                <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
+                  <span className="bg-green-50 p-2 rounded-full">
+                    <img
+                      src={bestprac}
+                      alt="Best Practices Icon"
+                      className="w-5 h-5 object-contain"
+                    />
+                  </span>{" "}
+                  Best Practices Aligned Professions
+                </h3>
+                <div
+                  className="border-t my-4"
+                  style={{ borderColor: "#0000001A" }}
+                />
+
+                {userDetails?.public_best_practices?.length > 0 ? (
+                  <div className="grid grid-cols-2 2xl:grid-cols-4 gap-4 mt-4">
+                    {userDetails?.public_best_practices?.map(
+                      (practice: any, index: any) => {
+                        return (
+                          <div
+                            key={practice.id}
+                            className="bg-white rounded-xl shadow border border-gray-100 p-3"
+                          >
+                            <div className="rounded-lg overflow-hidden">
+                              <img
+                                src={practice?.file}
+                                alt={`Best Practice ${index + 1}`}
+                                className="w-full h-[150px] object-cover"
+                                onError={(e) => {
+                                  // Fallback if the image fails to load
+                                  const target = e.target as HTMLImageElement;
+                                  target.src = bcard1;
+                                }}
+                              />
+                            </div>
+                            <p className="text-xs text-pink-500 font-medium mt-2 text-right"></p>
+
+                            <div className="mt-2">
+                              <h4 className="text-sm font-semibold">
+                                {practice.title
+                                  ? `${practice.title}`
+                                  : practice.question}
+                              </h4>
+                              {practice.description && (
+                                <>
+                                  <p className="text-xs text-gray-500 mb-2">
+                                    {practice.description > 80
+                                      ? `${practice.description.substring(
+                                        0,
+                                        80
+                                      )}...`
+                                      : practice.description}
+                                  </p>
+                                  <button className="text-xs cursor-pointer px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
                                     Read More
                                   </button>
-                                )}
-                              </>
-                            )}
+                                </>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    }
-                  )}
-                </div>
-              ) : (
-                <p className="text-gray-500 text-center py-4">
-                  No best practices available
-                </p>
-              )}
-              {userDetails?.public_best_practices?.length > 0 ? (
-                <div className="grid grid-cols-2 2xl:grid-cols-4 gap-4 mt-4">
-                  {userDetails?.public_best_practices?.map(
-                    (practice: any, index: any) => {
-                      return (
-                        <div
-                          key={practice.id}
-                          className="bg-white rounded-xl shadow border border-gray-100 p-3"
-                        >
-                          <div className="rounded-lg overflow-hidden">
-                            <img
-                              src={practice?.file}
-                              alt={`Best Practice ${index + 1}`}
-                              className="w-full h-[150px] object-cover"
-                              onError={(e) => {
-                                // Fallback if the image fails to load
-                                const target = e.target as HTMLImageElement;
-                                target.src = bcard1;
-                              }}
-                            />
-                          </div>
-                          <p className="text-xs text-pink-500 font-medium mt-2 text-right"></p>
-
-                          <div className="mt-2">
-                            <h4 className="text-sm font-semibold">
-                              {practice.title
-                                ? `${practice.title}`
-                                : practice.question}
-                            </h4>
-                            {practice.description && (
-                              <>
-                                <p className="text-xs text-gray-500 mb-2">
-                                  {practice.description > 80
-                                    ? `${practice.description.substring(
-                                        0,
-                                        80
-                                      )}...`
-                                    : practice.description}
-                                </p>
-                                <button className="text-xs cursor-pointer px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                                  Read More
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    }
-                  )}
-                </div>
-              ) : (
-                ""
-              )}
-            </div>
+                        );
+                      }
+                    )}
+                  </div>
+                ) : (
+                  ""
+                )}
+              </div>
+            }
 
             {/* Overall Ratings */}
 
@@ -733,19 +755,18 @@ export default function DashboardUserProfile() {
                           <div
                             className="h-full bg-purple-500"
                             style={{
-                              width: `${
-                                ratingPercentage?.[
-                                  star === 5
-                                    ? "five"
-                                    : star === 4
+                              width: `${ratingPercentage?.[
+                                star === 5
+                                  ? "five"
+                                  : star === 4
                                     ? "four"
                                     : star === 3
-                                    ? "three"
-                                    : star === 2
-                                    ? "two"
-                                    : "one"
-                                ] || 0
-                              }%`,
+                                      ? "three"
+                                      : star === 2
+                                        ? "two"
+                                        : "one"
+                              ] || 0
+                                }%`,
                             }}
                           />
                         </div>
@@ -807,7 +828,7 @@ export default function DashboardUserProfile() {
                         <img
                           src={
                             reviewItem.profile.profile_picture &&
-                            reviewItem.profile.profile_picture !==
+                              reviewItem.profile.profile_picture !==
                               "http://localhost:5026/file/"
                               ? reviewItem.profile.profile_picture
                               : "/profile.png"
@@ -965,9 +986,8 @@ export default function DashboardUserProfile() {
               </label>
               <textarea
                 id="review"
-                className={`w-full px-4 py-3 rounded-lg border ${
-                  errors.reviewText ? "border-red-500" : "border-gray-300"
-                } focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm resize-none`}
+                className={`w-full px-4 py-3 rounded-lg border ${errors.reviewText ? "border-red-500" : "border-gray-300"
+                  } focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm resize-none`}
                 rows={4}
                 placeholder="Share your experience..."
                 value={reviewText}
