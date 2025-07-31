@@ -204,6 +204,18 @@ export default function DashboardUserProfile() {
       .join(" ");
   };
 
+  const slugify = (str: string) => {
+    return str
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w\-]+/g, "")
+      .replace(/\-\-+/g, "-")
+      .replace(/^-+/, "")
+      .replace(/-+$/, "");
+  };
+
   return (
     <>
       <div className="min-h-screen bg-[#ECEEF2]">
@@ -231,7 +243,7 @@ export default function DashboardUserProfile() {
               <img
                 src={
                   userDetails?.profile_picture &&
-                    userDetails?.profile_picture !== "http://localhost:5026/file/"
+                  userDetails?.profile_picture !== "http://localhost:5026/file/"
                     ? userDetails?.profile_picture
                     : "/profile.png"
                 }
@@ -255,7 +267,9 @@ export default function DashboardUserProfile() {
               <div className="text-center -mt-13">
                 <h2 className="text-lg font-semibold text-gray-800">
                   {userDetails?.first_name} {userDetails?.last_name}
-                  <p className="text-gray-500 text-[14px]">{userDetails?.public_title}</p>
+                  <p className="text-gray-500 text-[14px]">
+                    {userDetails?.public_title}
+                  </p>
                 </h2>
                 {/* <p className="text-sm text-gray-500">Stella Innovation</p> */}
               </div>
@@ -347,10 +361,10 @@ export default function DashboardUserProfile() {
                       userDetails?.level?.level == "Aspiring"
                         ? indv_aspiring
                         : userDetails?.level?.level == "Inspired"
-                          ? indv_inspried
-                          : userDetails?.level?.level == "Leader"
-                            ? indv_leader
-                            : inspiredbadge // fallback if no level
+                        ? indv_inspried
+                        : userDetails?.level?.level == "Leader"
+                        ? indv_leader
+                        : inspiredbadge // fallback if no level
                     }
                     alt={`${userDetails?.level?.level || "CNESS"} Badge`}
                     className="w-[159px] md:w-[180px] h-auto object-contain mt-[-10px]"
@@ -532,7 +546,7 @@ export default function DashboardUserProfile() {
               />
               <div className="flex flex-wrap gap-5"></div>
             </div> */}
-            {userDetails?.best_practices_questions?.length > 0 &&
+            {userDetails?.best_practices_questions?.length > 0 && (
               <div className="bg-white rounded-xl shadow-sm px-6 py-8">
                 <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
                   <span className="bg-green-50 p-2 rounded-full">
@@ -554,7 +568,8 @@ export default function DashboardUserProfile() {
                     {userDetails?.best_practices_questions?.map(
                       (practice: any, index: any) => {
                         const cardImages = [bcard1, bcard2, bcard3, bcard4];
-                        const randomImage = cardImages[index % cardImages.length];
+                        const randomImage =
+                          cardImages[index % cardImages.length];
 
                         return (
                           <div
@@ -583,9 +598,9 @@ export default function DashboardUserProfile() {
                                   <p className="text-xs text-gray-500 mb-2">
                                     {practice.answer.answer.length > 80
                                       ? `${practice.answer.answer.substring(
-                                        0,
-                                        80
-                                      )}...`
+                                          0,
+                                          80
+                                        )}...`
                                       : practice.answer.answer}
                                   </p>
                                   {practice.answer.show_answer_in_public && (
@@ -607,9 +622,9 @@ export default function DashboardUserProfile() {
                   </p>
                 )}
               </div>
-            }
+            )}
 
-            {userDetails?.public_best_practices?.length > 0 &&
+            {userDetails?.public_best_practices?.length > 0 && (
               <div className="bg-white rounded-xl shadow-sm px-6 py-8">
                 <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
                   <span className="bg-green-50 p-2 rounded-full">
@@ -633,7 +648,20 @@ export default function DashboardUserProfile() {
                         return (
                           <div
                             key={practice.id}
-                            className="bg-white rounded-xl shadow border border-gray-100 p-3"
+                            className="bg-white rounded-xl shadow border border-gray-100 p-3 cursor-pointer"
+                            onClick={() =>
+                              navigate(
+                                `/dashboard/bestpractices/${
+                                  practice.id
+                                }/${slugify(practice.title)}`,
+                                {
+                                  state: {
+                                    likesCount: practice.likesCount,
+                                    isLiked: practice.isLiked, // ensure this is coming from backend
+                                  },
+                                }
+                              )
+                            }
                           >
                             <div className="rounded-lg overflow-hidden">
                               <img
@@ -660,9 +688,9 @@ export default function DashboardUserProfile() {
                                   <p className="text-xs text-gray-500 mb-2">
                                     {practice.description > 80
                                       ? `${practice.description.substring(
-                                        0,
-                                        80
-                                      )}...`
+                                          0,
+                                          80
+                                        )}...`
                                       : practice.description}
                                   </p>
                                   <button className="text-xs cursor-pointer px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
@@ -680,7 +708,7 @@ export default function DashboardUserProfile() {
                   ""
                 )}
               </div>
-            }
+            )}
 
             {/* Overall Ratings */}
 
@@ -755,18 +783,19 @@ export default function DashboardUserProfile() {
                           <div
                             className="h-full bg-purple-500"
                             style={{
-                              width: `${ratingPercentage?.[
-                                star === 5
-                                  ? "five"
-                                  : star === 4
+                              width: `${
+                                ratingPercentage?.[
+                                  star === 5
+                                    ? "five"
+                                    : star === 4
                                     ? "four"
                                     : star === 3
-                                      ? "three"
-                                      : star === 2
-                                        ? "two"
-                                        : "one"
-                              ] || 0
-                                }%`,
+                                    ? "three"
+                                    : star === 2
+                                    ? "two"
+                                    : "one"
+                                ] || 0
+                              }%`,
                             }}
                           />
                         </div>
@@ -828,7 +857,7 @@ export default function DashboardUserProfile() {
                         <img
                           src={
                             reviewItem.profile.profile_picture &&
-                              reviewItem.profile.profile_picture !==
+                            reviewItem.profile.profile_picture !==
                               "http://localhost:5026/file/"
                               ? reviewItem.profile.profile_picture
                               : "/profile.png"
@@ -986,8 +1015,9 @@ export default function DashboardUserProfile() {
               </label>
               <textarea
                 id="review"
-                className={`w-full px-4 py-3 rounded-lg border ${errors.reviewText ? "border-red-500" : "border-gray-300"
-                  } focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm resize-none`}
+                className={`w-full px-4 py-3 rounded-lg border ${
+                  errors.reviewText ? "border-red-500" : "border-gray-300"
+                } focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm resize-none`}
                 rows={4}
                 placeholder="Share your experience..."
                 value={reviewText}
