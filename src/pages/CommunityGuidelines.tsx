@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import cnesslogo from "../assets/cnesslogo.png";
 import SignupAnimation from "../components/ui/SignupAnimation";
 import { Link } from "react-router-dom";
-const TermsAndConditions = () => {
+const CommunityGuidelines = () => {
   const [content, setContent] = useState('');
 
   useEffect(() => {
-    fetch("/terms and conditions new.html")
+    fetch("/community_guideline.html")
       .then((res) => res.text())
       .then((data) => setContent(data));
   }, []);
@@ -49,4 +49,4 @@ const TermsAndConditions = () => {
   );
 };
 
-export default TermsAndConditions;
+export default CommunityGuidelines;

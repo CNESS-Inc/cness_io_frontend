@@ -77,6 +77,7 @@ export default function UserProfileView() {
   const [ratingPercentage, setratingPercentage] = useState<any>();
   const [userReviewData, setUserReviewData] = useState<any>([]);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  console.log("🚀 ~ UserProfileView ~ showLoginPrompt:", showLoginPrompt);
 
   const [breakdowns, setBreakdowns] = useState<Record<string, number>>({});
 
@@ -203,6 +204,17 @@ export default function UserProfileView() {
       .split("_")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
+  };
+  const slugify = (str: string) => {
+    return str
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w\-]+/g, "")
+      .replace(/\-\-+/g, "-")
+      .replace(/^-+/, "")
+      .replace(/-+$/, "");
   };
 
   return (
@@ -535,133 +547,174 @@ export default function UserProfileView() {
               <div className="flex flex-wrap gap-5"></div>
             </div> */}
 
-            <div className="bg-white rounded-xl shadow-sm px-6 py-8">
-              <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
-                <span className="bg-green-50 p-2 rounded-full">
-                  <img
-                    src={bestprac}
-                    alt="Best Practices Icon"
-                    className="w-5 h-5 object-contain"
-                  />
-                </span>{" "}
-                Best Practices
-              </h3>
-              <div
-                className="border-t my-4"
-                style={{ borderColor: "#0000001A" }}
-              />
+            {userDetails?.best_practices_questions?.length > 0 && (
+              <div className="bg-white rounded-xl shadow-sm px-6 py-8">
+                <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
+                  <span className="bg-green-50 p-2 rounded-full">
+                    <img
+                      src={bestprac}
+                      alt="Best Practices Icon"
+                      className="w-5 h-5 object-contain"
+                    />
+                  </span>{" "}
+                  Best Practices Aligned CNESS
+                </h3>
+                <div
+                  className="border-t my-4"
+                  style={{ borderColor: "#0000001A" }}
+                />
 
-              {userDetails?.best_practices_questions?.length > 0 ? (
-                <div className="grid grid-cols-2 2xl:grid-cols-4 gap-4">
-                  {userDetails?.best_practices_questions?.map(
-                    (practice: any, index: any) => {
-                      const cardImages = [bcard1, bcard2, bcard3, bcard4];
-                      const randomImage = cardImages[index % cardImages.length];
+                {userDetails?.best_practices_questions?.length > 0 ? (
+                  <div className="grid grid-cols-2 2xl:grid-cols-4 gap-4">
+                    {userDetails?.best_practices_questions?.map(
+                      (practice: any, index: any) => {
+                        const cardImages = [bcard1, bcard2, bcard3, bcard4];
+                        const randomImage =
+                          cardImages[index % cardImages.length];
 
-                      return (
-                        <div
-                          key={practice.id}
-                          className="bg-white rounded-xl shadow border border-gray-100 p-3"
-                        >
-                          <div className="rounded-lg overflow-hidden">
-                            <img
-                              src={randomImage}
-                              alt={`Best Practice ${index + 1}`}
-                              className="w-full h-[150px] object-cover"
-                            />
+                        return (
+                          <div
+                            key={practice.id}
+                            className="bg-white rounded-xl shadow border border-gray-100 p-3"
+                          >
+                            <div className="rounded-lg overflow-hidden">
+                              <img
+                                src={randomImage}
+                                alt={`Best Practice ${index + 1}`}
+                                className="w-full h-[150px] object-cover"
+                              />
+                            </div>
+                            <p className="text-xs text-pink-500 font-medium mt-2 text-right">
+                              {/* You can add time if available or remove this line */}
+                            </p>
+
+                            <div className="mt-2">
+                              <h4 className="text-sm font-semibold">
+                                {practice.question.length > 50
+                                  ? `${practice.question}`
+                                  : practice.question}
+                              </h4>
+                              {practice.answer && (
+                                <>
+                                  <p className="text-xs text-gray-500 mb-2">
+                                    {practice.answer.answer.length > 80
+                                      ? `${practice.answer.answer.substring(
+                                          0,
+                                          80
+                                        )}...`
+                                      : practice.answer.answer}
+                                  </p>
+                                  {practice.answer.show_answer_in_public && (
+                                    <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+                                      Read More
+                                    </button>
+                                  )}
+                                </>
+                              )}
+                            </div>
                           </div>
-                          <p className="text-xs text-pink-500 font-medium mt-2 text-right">
-                            {/* You can add time if available or remove this line */}
-                          </p>
+                        );
+                      }
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-center py-4">
+                    No best practices available
+                  </p>
+                )}
+              </div>
+            )}
 
-                          <div className="mt-2">
-                            <h4 className="text-sm font-semibold">
-                              {practice.question.length > 50
-                                ? `${practice.question}`
-                                : practice.question}
-                            </h4>
-                            {practice.answer && (
-                              <>
-                                <p className="text-xs text-gray-500 mb-2">
-                                  {practice.answer.answer.length > 80
-                                    ? `${practice.answer.answer.substring(
-                                        0,
-                                        80
-                                      )}...`
-                                    : practice.answer.answer}
-                                </p>
-                                {practice.answer.show_answer_in_public && (
-                                  <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+            {userDetails?.public_best_practices?.length > 0 && (
+              <div className="bg-white rounded-xl shadow-sm px-6 py-8">
+                <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
+                  <span className="bg-green-50 p-2 rounded-full">
+                    <img
+                      src={bestprac}
+                      alt="Best Practices Icon"
+                      className="w-5 h-5 object-contain"
+                    />
+                  </span>{" "}
+                  Best Practices Aligned Professions
+                </h3>
+                <div
+                  className="border-t my-4"
+                  style={{ borderColor: "#0000001A" }}
+                />
+
+                {userDetails?.public_best_practices?.length > 0 ? (
+                  <div className="grid grid-cols-2 2xl:grid-cols-4 gap-4 mt-4">
+                    {userDetails?.public_best_practices?.map(
+                      (practice: any, index: any) => {
+                        return (
+                          <div
+                            key={practice.id}
+                            className="bg-white rounded-xl shadow border border-gray-100 p-3 cursor-pointer"
+                            onClick={() => {
+                              const token = localStorage.getItem("jwt");
+                              if (token !== "undefined") {
+                                navigate(
+                                  `/dashboard/bestpractices/${
+                                    practice.id
+                                  }/${slugify(practice.title)}`,
+                                  {
+                                    state: {
+                                      likesCount: practice.likesCount,
+                                      isLiked: practice.isLiked,
+                                    },
+                                  }
+                                );
+                              } else {
+                                setShowLoginPrompt(true); // Show the login prompt modal
+                              }
+                            }}
+                          >
+                            <div className="rounded-lg overflow-hidden">
+                              <img
+                                src={practice?.file}
+                                alt={`Best Practice ${index + 1}`}
+                                className="w-full h-[150px] object-cover"
+                                onError={(e) => {
+                                  // Fallback if the image fails to load
+                                  const target = e.target as HTMLImageElement;
+                                  target.src = bcard1;
+                                }}
+                              />
+                            </div>
+                            <p className="text-xs text-pink-500 font-medium mt-2 text-right"></p>
+
+                            <div className="mt-2">
+                              <h4 className="text-sm font-semibold">
+                                {practice.title
+                                  ? `${practice.title}`
+                                  : practice.question}
+                              </h4>
+                              {practice.description && (
+                                <>
+                                  <p className="text-xs text-gray-500 mb-2">
+                                    {practice.description > 80
+                                      ? `${practice.description.substring(
+                                          0,
+                                          80
+                                        )}...`
+                                      : practice.description}
+                                  </p>
+                                  <button className="text-xs cursor-pointer px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
                                     Read More
                                   </button>
-                                )}
-                              </>
-                            )}
+                                </>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    }
-                  )}
-                </div>
-              ) : (
-                <p className="text-gray-500 text-center py-4">
-                  No best practices available
-                </p>
-              )}
-              {userDetails?.public_best_practices?.length > 0 ? (
-                <div className="grid grid-cols-2 2xl:grid-cols-4 gap-4 mt-4">
-                  {userDetails?.public_best_practices?.map(
-                    (practice: any, index: any) => {
-                      return (
-                        <div
-                          key={practice.id}
-                          className="bg-white rounded-xl shadow border border-gray-100 p-3"
-                        >
-                          <div className="rounded-lg overflow-hidden">
-                            <img
-                              src={practice?.file}
-                              alt={`Best Practice ${index + 1}`}
-                              className="w-full h-[150px] object-cover"
-                              onError={(e) => {
-                                // Fallback if the image fails to load
-                                const target = e.target as HTMLImageElement;
-                                target.src = bcard1;
-                              }}
-                            />
-                          </div>
-                          <p className="text-xs text-pink-500 font-medium mt-2 text-right"></p>
-
-                          <div className="mt-2">
-                            <h4 className="text-sm font-semibold">
-                              {practice.title
-                                ? `${practice.title}`
-                                : practice.question}
-                            </h4>
-                            {practice.description && (
-                              <>
-                                <p className="text-xs text-gray-500 mb-2">
-                                  {practice.description > 80
-                                    ? `${practice.description.substring(
-                                        0,
-                                        80
-                                      )}...`
-                                    : practice.description}
-                                </p>
-                                <button className="text-xs cursor-pointer px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                                  Read More
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    }
-                  )}
-                </div>
-              ) : (
-                ""
-              )}
-            </div>
+                        );
+                      }
+                    )}
+                  </div>
+                ) : (
+                  ""
+                )}
+              </div>
+            )}
 
             {/* Overall Ratings */}
 
@@ -686,7 +739,7 @@ export default function UserProfileView() {
                       type="button"
                       onClick={() => {
                         const token = localStorage.getItem("jwt");
-                        if (token) {
+                        if (token !== "undefined") {
                           setActiveModal("rating");
                         } else {
                           setShowLoginPrompt(true);
@@ -878,27 +931,37 @@ export default function UserProfileView() {
       <Footer />
 
       <Modal isOpen={showLoginPrompt} onClose={() => setShowLoginPrompt(false)}>
-        <div className="text-center space-y-4">
-          <h2 className="text-xl font-semibold text-gray-800">
+        <div className="text-center space-y-6 p-8 w-full max-w-2xl">
+          {" "}
+          {/* Increased max-width and padding */}
+          <h2 className="text-2xl font-semibold text-gray-800">
+            {" "}
+            {/* Larger text */}
             Login Required
           </h2>
-          <p className="text-sm text-gray-600">
-            To write a review, please log in to your account.
+          <p className="text-base text-gray-600">
+            {" "}
+            {/* Larger text */}
+            Please log in to your account to access this feature.
           </p>
-          <button
-            className="bg-[#7077FE] text-white px-4 py-2 rounded-full"
-            onClick={() => {
-              navigate("/log-in");
-            }}
-          >
-            Go to Login
-          </button>
-          <button
-            className="block mx-auto mt-2 text-xs text-gray-400 underline"
-            onClick={() => setShowLoginPrompt(false)}
-          >
-            Cancel
-          </button>
+          <div className="flex justify-center gap-4 pt-4">
+            {" "}
+            {/* Better button spacing */}
+            <button
+              className="bg-[#7077FE] hover:bg-[#5a62d4] text-white px-6 py-3 rounded-full text-base font-medium transition-colors" /* Larger button */
+              onClick={() => {
+                navigate("/log-in");
+              }}
+            >
+              Go to Login
+            </button>
+            <button
+              className="px-6 py-3 rounded-full text-base font-medium text-gray-600 hover:bg-gray-100 transition-colors" /* Secondary button style */
+              onClick={() => setShowLoginPrompt(false)}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </Modal>
 

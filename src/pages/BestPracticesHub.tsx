@@ -417,7 +417,7 @@ useEffect(() => {
             Find Your Conscious Best Practices here.
           </h1>
 
-<div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             {/* Profession Selector */}
 
             <div className="relative rounded-full ">
@@ -434,50 +434,50 @@ useEffect(() => {
               </span>
 
 
-<div className="w-full flex justify-center md:justify-start items-center my-1 px-4 md:px-0">
-  <div  className="relative w-full max-w-[200px] md:w-fit"
-             
-               
-                 style={{
-      width: textWidth ? `${textWidth}px` : "100%",
-      minWidth: "120px",
-      maxWidth: "100%",
-    }}
-           
-                  >
-                   <select
-      className="bg-[#7077FE] rounded-full text-white font-semibold px-3 py-2 pr-6 appearance-none focus:outline-none cursor-pointer text-[12px] w-full"
-                  value={selectedProfession}
-                  onChange={handleProfessionChange}
+              <div className="w-full flex justify-center md:justify-start items-center my-1 px-4 md:px-0">
+                <div className="relative w-full max-w-[200px] md:w-fit"
+
+
+                  style={{
+                    width: textWidth ? `${textWidth}px` : "100%",
+                    minWidth: "120px",
+                    maxWidth: "100%",
+                  }}
+
                 >
-                  <option value="" className="text-white text-[12px]">
-                    All Profession
-                  </option>
-                  {profession.map((prof: any) => (
-                    <option
-                      key={prof.id}
-                      value={prof.id}
-                      className="text-black"
-                    >
-                      {prof.title}
+                  <select
+                    className="bg-[#7077FE] rounded-full text-white font-semibold px-3 py-2 pr-6 appearance-none focus:outline-none cursor-pointer text-[12px] w-full"
+                    value={selectedProfession}
+                    onChange={handleProfessionChange}
+                  >
+                    <option value="" className="text-white text-[12px]">
+                      All Profession
                     </option>
-                  ))}
-                </select>
+                    {profession.map((prof: any) => (
+                      <option
+                        key={prof.id}
+                        value={prof.id}
+                        className="text-black"
+                      >
+                        {prof.title}
+                      </option>
+                    ))}
+                  </select>
 
 
-    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white text-xs pointer-events-none">
-  <span className="block">▼</span>
-  </div>
-           </div>
-           </div>
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white text-xs pointer-events-none">
+                    <span className="block">▼</span>
+                  </div>
+                </div>
+              </div>
 
             </div>
             {/* Search Input */}
-<div className="relative flex-grow">
+            <div className="relative flex-grow">
               <input
                 type="text"
                 placeholder="Search best practices..."
-className="w-full py-2 pl-3 pr-10 text-xs md:text-sm text-gray-700 placeholder:text-gray-400 bg-white border border-gray-200 rounded-full shadow-sm outline-none"
+                className="w-full py-2 pl-3 pr-10 text-xs md:text-sm text-gray-700 placeholder:text-gray-400 bg-white border border-gray-200 rounded-full shadow-sm outline-none"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 onKeyDown={handleKeyPress}
@@ -492,7 +492,7 @@ className="w-full py-2 pl-3 pr-10 text-xs md:text-sm text-gray-700 placeholder:t
           </div>
 
 
-<p className="text-gray-700 text-xs md:text-sm mt-2 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
+          <p className="text-gray-700 text-xs md:text-sm mt-2 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
 
             <span
               className="font-medium underline cursor-pointer text-[#F07EFF]"
@@ -666,7 +666,7 @@ className="w-full py-2 pl-3 pr-10 text-xs md:text-sm text-gray-700 placeholder:t
                         <img
                           src={
                             company?.user?.profilePicture &&
-                            company?.user?.profilePicture !==
+                              company?.user?.profilePicture !==
                               "http://localhost:5026/file/"
                               ? company?.user?.profilePicture
                               : "/profile.png"
@@ -695,7 +695,7 @@ className="w-full py-2 pl-3 pr-10 text-xs md:text-sm text-gray-700 placeholder:t
                           <img
                             src={
                               company.file &&
-                              company.file !== "http://localhost:5026/file/"
+                                company.file !== "http://localhost:5026/file/"
                                 ? company.file
                                 : iconMap["companycard1"]
                             }
@@ -731,7 +731,7 @@ className="w-full py-2 pl-3 pr-10 text-xs md:text-sm text-gray-700 placeholder:t
                         {company.description.length > 100 && (
                           <span
                             className="text-purple-600 underline cursor-pointer ml-1"
-                            // onClick={(e) => toggleDescription(e, company.id)}
+                          // onClick={(e) => toggleDescription(e, company.id)}
                           >
                             {expandedDescriptions[company.id]
                               ? "Read Less"
@@ -824,11 +824,10 @@ className="w-full py-2 pl-3 pr-10 text-xs md:text-sm text-gray-700 placeholder:t
                       <button
                         onClick={() => fetchBestPractices(1)}
                         disabled={isLoading.popular}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                          1 === pagination.currentPage
-                            ? "bg-indigo-500 text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-100"
-                        }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${1 === pagination.currentPage
+                          ? "bg-indigo-500 text-white"
+                          : "bg-white text-gray-700 hover:bg-gray-100"
+                          }`}
                       >
                         1
                       </button>
@@ -854,11 +853,10 @@ className="w-full py-2 pl-3 pr-10 text-xs md:text-sm text-gray-700 placeholder:t
                         key={page}
                         onClick={() => fetchBestPractices(page)}
                         disabled={isLoading.popular}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                          page === pagination.currentPage
-                            ? "bg-indigo-500 text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-100"
-                        }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${page === pagination.currentPage
+                          ? "bg-indigo-500 text-white"
+                          : "bg-white text-gray-700 hover:bg-gray-100"
+                          }`}
                       >
                         {page}
                       </button>
@@ -880,11 +878,10 @@ className="w-full py-2 pl-3 pr-10 text-xs md:text-sm text-gray-700 placeholder:t
                             fetchBestPractices(pagination.totalPages)
                           }
                           disabled={isLoading.popular}
-                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                            pagination.totalPages === pagination.currentPage
-                              ? "bg-indigo-500 text-white"
-                              : "bg-white text-gray-700 hover:bg-gray-100"
-                          }`}
+                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${pagination.totalPages === pagination.currentPage
+                            ? "bg-indigo-500 text-white"
+                            : "bg-white text-gray-700 hover:bg-gray-100"
+                            }`}
                         >
                           {pagination.totalPages}
                         </button>
@@ -913,7 +910,7 @@ className="w-full py-2 pl-3 pr-10 text-xs md:text-sm text-gray-700 placeholder:t
 
       <Modal isOpen={activeModal === "bestpractices"} onClose={closeModal}>
         <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
-          <h2 className="text-xl font-bold mb-4">Add Best Practice</h2>
+          <h2 className="text-xl font-bold mb-4 font-['Poppins'] font-semibold leading-normal">Add Best Practice</h2>
           <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             <div>
               <label
@@ -982,17 +979,55 @@ className="w-full py-2 pl-3 pr-10 text-xs md:text-sm text-gray-700 placeholder:t
               >
                 File *
               </label>
-              <input
+              {/* <input
                 type="file"
                 id="file"
                 name="file"
                 onChange={handleFileChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
                 accept="image/*, .pdf, .doc, .docx"
-              />
+              /> */}
+
+              <div className="relative w-full">
+                <input
+                  type="file"
+                  id="file"
+                  name="file"
+                  accept="image/*, .pdf, .doc, .docx"
+                  onChange={handleFileChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  style={{ cursor: "pointer" }}
+                />
+                <div className="flex items-center w-full h-[45px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm text-gray-800 focus-within:ring-2 focus-within:ring-purple-500">
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    className="mr-3 px-5 py-2 bg-[#7077FE] text-white rounded-full text-sm font-medium hover:bg-[#5a60d6] transition"
+                    style={{ minWidth: 0 }}
+                    onClick={() => {
+                      // trigger file input click
+                      const input = document.querySelector(
+                        'input[type="file"][name="featuredImage"]'
+                      ) as HTMLInputElement | null;
+                      if (input) input.click();
+                    }}
+                  >
+                    Choose File
+                  </button>
+                  <span className="flex-1 truncate text-gray-500">
+                    {newPractice?.file ? (
+                      newPractice?.file?.name
+                    ) : (
+                      <span className="text-gray-400">
+                        No file chosen
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </div>
             </div>
 
-<div className="flex flex-row justify-end gap-2 pt-4 flex-wrap">
+            <div className="flex flex-row justify-end gap-2 pt-4 flex-wrap">
               <Button
                 type="button"
                 onClick={closeModal}

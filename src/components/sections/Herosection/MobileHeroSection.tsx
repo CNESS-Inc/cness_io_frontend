@@ -52,7 +52,9 @@ export default function MobileHeroSection() {
               className={`flex flex-col gap-3 transition-all duration-1000 ease-in-out ${step === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
                 }`}
             >
-              <Button className="rounded-[100px] hero-section-btn py-3 px-6 text-[14px] bg-linear-to-r from-[#7077FE] to-[#9747FF]">
+              <Button className="rounded-[100px] hero-section-btn py-3 px-6 text-[14px] bg-linear-to-r from-[#7077FE] to-[#9747FF]"
+                onClick={() => window.location.href = "/sign-up"}
+              >
                 Get Started
               </Button>
               <Button

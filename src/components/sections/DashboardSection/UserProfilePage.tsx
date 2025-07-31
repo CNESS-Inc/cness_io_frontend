@@ -1189,6 +1189,7 @@ const UserProfilePage = () => {
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
                               }`}
+                              maxLength={40}
                             />
                             {basicInfoForm.formState.errors.firstName && (
                               <p className="text-sm text-red-500 mt-1">
@@ -1218,6 +1219,7 @@ const UserProfilePage = () => {
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
                               }`}
+                              maxLength={40}
                             />
                             {basicInfoForm.formState.errors.lastName && (
                               <p className="text-sm text-red-500 mt-1">
@@ -1609,10 +1611,12 @@ const UserProfilePage = () => {
                               {...contactInfoForm.register("phone", {
                                 required: "Phone number is required",
                                 pattern: {
-                                  value: /^[0-9]{10}$/,
-                                  message: "Phone must be 10 digits",
+                                  value: /^[0-9]{8,13}$/,
+                                  message: "Phone must be between 8-13 digits",
                                 },
                               })}
+                              minLength={8}
+                              max={13}
                               onKeyDown={(e) => {
                                 if (
                                   !/[0-9]/.test(e.key) &&
@@ -2373,6 +2377,7 @@ const UserProfilePage = () => {
                                   {...workExperienceForm.register(
                                     `workExperiences.${index}.company`
                                   )}
+                                  maxLength={40}
                                   placeholder="Enter Company Name"
                                   className={`w-full h-[41px] px-4 py-2 border bg-white ${
                                     workExperienceForm.formState.errors
@@ -2409,6 +2414,7 @@ const UserProfilePage = () => {
                                   {...workExperienceForm.register(
                                     `workExperiences.${index}.position`
                                   )}
+                                  maxLength={40}
                                   placeholder="Enter your Designation"
                                   className={`w-full h-[41px] px-4 py-2 border bg-white ${
                                     workExperienceForm.formState.errors

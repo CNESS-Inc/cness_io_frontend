@@ -48,6 +48,8 @@ import SingleBP from "../pages/SingleBP";
 import TermsAndConditions from "../pages/TermsAndConditions";
 import PrivacyPolicy from "../pages/Privacypolicy";
 import DashboardUserProfile from "../pages/DashboardUserProfile";
+import CommunityGuidelines  from "../pages/CommunityGuidelines";
+
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -377,6 +379,11 @@ export const router = createBrowserRouter([
     path: "/privacy-policy",
     element: <PrivacyPolicy />,
   },
+{
+  path: '/community-guidelines',
+  element: <CommunityGuidelines />,
+},
+
   {
     path: "/sign-up",
     element: <Signingup />,
