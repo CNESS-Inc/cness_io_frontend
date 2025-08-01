@@ -31,18 +31,16 @@ const PrivacyPolicy = () => {
       </div>
 
       {/* Terms content overlay */}
-      <div
-        className="absolute inset-0 flex items-center justify-center z-30 p-4"
-        style={{
-          fontFamily: "'Open Sans', 'Poppins', sans-serif",
-          fontSize: "18px",
-          textAlign: "justify",
-          lineHeight: "1.6",
-          color: "#333",
-        }}
-      >
+          <div className="flex items-center justify-center min-h-screen px-4 pt-30 pb-9 z-10 relative">
         <div
-          className="bg-white bg-opacity-80 backdrop-blur p-6 rounded-lg w-full max-w-7xl max-h-[90vh] overflow-y-auto shadow-lg"
+          className="bg-white bg-opacity-90 backdrop-blur-lg p-6 rounded-lg w-full max-w-7xl max-h-[90vh] overflow-y-auto shadow-xl"
+          style={{
+            fontFamily: "'Open Sans', 'Poppins', sans-serif",
+            fontSize: "14px",
+            textAlign: "justify",
+            lineHeight: "1.6",
+            color: "#333",
+          }}
           dangerouslySetInnerHTML={{ __html: content }}
         />
       </div>
