@@ -590,7 +590,7 @@ export default function UserProfileView() {
 
                             <div className="mt-2">
                               <h4 className="text-sm font-semibold">
-                                {practice.question.length > 50
+                                {practice?.question?.length > 50
                                   ? `${practice.question}`
                                   : practice.question}
                               </h4>
@@ -648,11 +648,11 @@ export default function UserProfileView() {
                       (practice: any, index: any) => {
                         return (
                           <div
-                            key={practice.id}
+                            key={practice?.id}
                             className="bg-white rounded-xl shadow border border-gray-100 p-3 cursor-pointer"
                             onClick={() => {
-                              const token = localStorage.getItem("jwt");
-                              if (token !== "undefined") {
+                              const Id = localStorage.getItem("Id");
+                              if (Id !== "undefined") {
                                 navigate(
                                   `/dashboard/bestpractices/${
                                     practice.id
@@ -738,8 +738,8 @@ export default function UserProfileView() {
                       className="rounded-[100px] cursor-pointer py-2 px-4 transition-colors duration-500 ease-in-out"
                       type="button"
                       onClick={() => {
-                        const token = localStorage.getItem("jwt");
-                        if (token !== "undefined") {
+                        const Id = localStorage.getItem("Id");
+                        if (Id !== "undefined") {
                           setActiveModal("rating");
                         } else {
                           setShowLoginPrompt(true);

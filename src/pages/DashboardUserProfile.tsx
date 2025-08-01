@@ -589,7 +589,7 @@ export default function DashboardUserProfile() {
 
                             <div className="mt-2">
                               <h4 className="text-sm font-semibold">
-                                {practice.question.length > 50
+                                {practice?.question?.length > 50
                                   ? `${practice.question}`
                                   : practice.question}
                               </h4>
@@ -732,8 +732,8 @@ export default function DashboardUserProfile() {
                       className="rounded-[100px] cursor-pointer py-2 px-4 transition-colors duration-500 ease-in-out"
                       type="button"
                       onClick={() => {
-                        const token = localStorage.getItem("jwt");
-                        if (token) {
+                        const Id = localStorage.getItem("Id");
+                        if (Id) {
                           setActiveModal("rating");
                         } else {
                           setShowLoginPrompt(true);
