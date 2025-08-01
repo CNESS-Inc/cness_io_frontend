@@ -52,8 +52,8 @@ export default function Highlight() {
     },
   ];
 
-  return (
-    <section className="highlight-section lg:min-h-[560px] px-4 sm:px-6 lg:px-8 py-15 sm:py-12 lg:py-[80px] bg-[#FAFAFA] relative bg-[url(https://res.cloudinary.com/diudvzdkb/image/upload/v1753780724/highlight-ellipse_hahibm.png)] bg-no-repeat bg-position-[right_bottom_3rem] overflow-hidden">
+ return (
+<section className="highlight-section lg:min-h-[560px] px-4 sm:px-6 lg:px-8 py-15 sm:py-12 lg:py-[80px] bg-[#FAFAFA] relative lg:bg-[url(https://res.cloudinary.com/diudvzdkb/image/upload/v1753780724/highlight-ellipse_hahibm.png)] bg-no-repeat lg:bg-[position:right_bottom_3rem] overflow-hidden">
       <div className="max-w-[1336px] mx-auto flex lg:flex-row flex-col">
         <div className="md:px-0 lg:px-0 lg:w-5/12 w-full">
           <div className="w-full">
@@ -76,56 +76,98 @@ export default function Highlight() {
         </div>
 
         <div className="lg:p-5 md:p-0 p-0 lg:w-7/12 w-full lg:mt-0 mt-20  overflow-x-auto scrollbar-thin scrollbar-thumb-[#9747FF]/40 scrollbar-track-transparent highlight-right-content-box">
-          <div className="flex flex-row flex-nowrap gap-1 lg:gap-4 min-w-max lg:justify-end">
+          {/* Mobile View - Vertical Cards */}
+          <div className="lg:hidden flex flex-col gap-4 w-full">
             {highlightCards.map((card, index) => {
-              const isOpen = isMobile ? openIndex === index : false;
+              const isOpen = openIndex === index;
 
               return (
                 <div
                   key={index}
-                  className={`group relative cursor-pointer ${!isMobile ? "hover:[&>.card]:w-[240px]" : ""}`}
+                  className="group relative cursor-pointer w-full"
                   onClick={() => handleClick(index)}
                 >
-                  <div className="absolute inset-0 rounded-[16px] border border-transparent group-hover:border-[#9747FF] p-[1px] transition-all duration-500 ease-in-out"></div>
+                  <div className={`absolute inset-0 rounded-[16px] border ${isOpen ? 'border-[#9747FF]' : 'border-transparent'} p-[1px] transition-all duration-500 ease-in-out`}></div>
 
                   <div
-                    className={`card relative z-10 bg-white h-[250px] min-h-[250px] lg:h-[350px] lg:min-h-[350px] px-[10px] py-[20px] md:px-[18px] md:py-[26px] border border-[#E9EDF0] rounded-[16px] flex flex-col justify-between items-start transition-all duration-500 ease-in-out origin-right
-                      ${isOpen ? 'w-[240px]' : 'w-[50px] lg:w-[78px] md:w-[78px]'}
-                      group-hover:w-[240px]'`}
+                    className={`card relative z-10 bg-white ${isOpen ? 'h-auto min-h-[150px]' : 'h-[80px] min-h-[80px]'} w-full px-4 py-4 border border-[#E9EDF0] rounded-[16px] flex ${isOpen ? 'flex-col' : 'flex-row items-center'} transition-all duration-500 ease-in-out`}
                   >
                     <Image
                       src={card.icon}
                       alt="Company Logo"
                       width={45}
                       height={45}
-                      className="w-10 h-10 md:w-14 md:h-14 lg:w-14 lg:h-14 hight-box-img"
+                      className={`${isOpen ? 'w-10 h-10 mb-4' : 'w-8 h-8 mr-4'}`}
                     />
 
-                    <div>
-                      <span className="text-[#4B4B4B] text-[12px] md:text-[14px] lg:text-[18px] font-[600]">
-                        /0{index + 1}
-                      </span>
+                    <div className={`${isOpen ? '' : 'flex-1'}`}>
+                    {isOpen ? (
+  // Top-left when expanded
+  <span className="text-[#4B4B4B] text-[14px] font-[600] mb-2">
+    /0{index + 1}
+  </span>
+) : (
+  // Bottom-right when collapsed
+  <span className="absolute bottom-3 right-4 text-[#4B4B4B] text-[14px] font-[600]">
+    /0{index + 1}
+  </span>
+)}
 
-                      <h2
-                        className={`transition-all duration-500 font-semibold text-start bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text
-                          ${isOpen ? 'text-[16px] mt-2' : 'text-[0px]'}
-                          group-hover:text-[16px] group-hover:mt-2`}
-                      >
-                        {card.title}
-                      </h2>
-
-                      <p
-                        className={`text-[#64748B] font-regular transition-all duration-500 text-start
-                          ${isOpen ? 'text-[12px] mt-2' : 'text-[0px]'}
-                          group-hover:text-[12px] group-hover:mt-2`}
-                      >
-                        {card.desc}
-                      </p>
+                      {isOpen && (
+                        <>
+                          <h2 className="font-semibold text-start bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text text-[16px] mt-2">
+                            {card.title}
+                          </h2>
+                          <p className="text-[#64748B] font-regular text-start text-[12px] mt-2">
+                            {card.desc}
+                          </p>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
               );
             })}
+          </div>
+
+          {/* Desktop View - Original Horizontal Cards */}
+          <div className="hidden lg:block overflow-x-auto scrollbar-thin scrollbar-thumb-[#9747FF]/40 scrollbar-track-transparent highlight-right-content-box">
+            <div className="flex flex-row flex-nowrap gap-1 lg:gap-4 min-w-max lg:justify-end">
+              {highlightCards.map((card, index) => (
+                <div
+                  key={index}
+                  className="group relative cursor-pointer hover:[&>.card]:w-[240px]"
+                >
+                  <div className="absolute inset-0 rounded-[16px] border border-transparent group-hover:border-[#9747FF] p-[1px] transition-all duration-500 ease-in-out"></div>
+
+                  <div
+                    className="card relative z-10 bg-white h-[350px] min-h-[350px] px-[18px] py-[26px] border border-[#E9EDF0] rounded-[16px] flex flex-col justify-between items-start transition-all duration-500 ease-in-out origin-right w-[78px] group-hover:w-[240px]"
+                  >
+                    <Image
+                      src={card.icon}
+                      alt="Company Logo"
+                      width={45}
+                      height={45}
+                      className="w-14 h-14 hight-box-img"
+                    />
+
+                    <div>
+                      <span className="text-[#4B4B4B] text-[18px] font-[600]">
+                        /0{index + 1}
+                      </span>
+
+                      <h2 className="transition-all duration-500 font-semibold text-start bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text text-[0px] group-hover:text-[16px] group-hover:mt-2">
+                        {card.title}
+                      </h2>
+
+                      <p className="text-[#64748B] font-regular transition-all duration-500 text-start text-[0px] group-hover:text-[12px] group-hover:mt-2">
+                        {card.desc}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
