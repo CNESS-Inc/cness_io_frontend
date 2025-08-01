@@ -13,6 +13,7 @@ import { useState } from "react";
 import indv_aspiring from "../../assets/indv_aspiring.svg";
 import indv_inspried from "../../assets/indv_inspired.svg";
 import indv_leader from "../../assets/indv_leader.svg";
+import Modal from "./Modal";
 
 interface CompanyCardProps {
   id: string;
@@ -28,7 +29,7 @@ interface CompanyCardProps {
   is_person?: boolean;
   is_organization?: boolean;
   level?: any;
-  routeKey?:string
+  routeKey?: string;
 }
 
 // const StarRating = ({ rating }: { rating: number }) => {
@@ -67,17 +68,27 @@ export default function CompanyCard({
   tags,
   rating,
   level,
-  routeKey
+  routeKey,
 }: CompanyCardProps) {
   console.log("🚀 ~ rating:", level);
   const navigate = useNavigate();
   const [showFullDescription, setShowFullDescription] = useState(false);
-
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [targetPath, setTargetPath] = useState<string | null>(null);
   const handleCardClick = () => {
+    const Id = localStorage.getItem("Id");
     if (routeKey) {
+      // Special case (dashboard route)
       navigate(`/dashboard/userprofile/${id}`);
     } else {
-      navigate(`/directory/user-profile/${id}`);
+      if (Id && Id !== "undefined") {
+        // User is logged in → proceed
+        navigate(`/directory/user-profile/${id}`);
+      } else {
+        // User is not logged in → store the intended path and show modal
+        setTargetPath(`/directory/user-profile/${id}`);
+        setShowLoginPrompt(true);
+      }
     }
   };
 
@@ -91,110 +102,154 @@ export default function CompanyCard({
     e.stopPropagation();
     setShowFullDescription(!showFullDescription);
   };
+
+  const handleModalClose = () => {
+    setShowLoginPrompt(false);
+    if (targetPath) {
+      navigate(targetPath); 
+      setTargetPath(null);
+    }
+  };
   return (
-    <Card
-      className="relative bg-white  cursor-pointer rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
-      onClick={handleCardClick}
-    >
-      {/* Absolute Badge Logo */}
-      {/* <img
+    <>
+      <Card
+        className="relative bg-white  cursor-pointer rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
+        onClick={handleCardClick}
+      >
+        {/* Absolute Badge Logo */}
+        {/* <img
         src={iconMap["inslogo"]}
         alt="CNESS Logo"
         className="absolute top-3 right-3 w-8 sm:w-10 h-auto object-contain z-10"
       /> */}
-      {level && (
-        <img
-          src={
-            level == "Aspiring"
-              ? indv_aspiring
-              : level == "Inspiring"
-              ? indv_inspried
-              : level == "Leader"
-              ? indv_leader
-              : indv_inspried // fallback if no level
-          }
-          alt={`${level || "CNESS"} Badge`}
-          className="absolute top-3 right-3 w-8 sm:w-[58px] h-[32px] object-contain z-1"
-        />
-      )}
-
-      <CardHeader className="px-4 pt-4 pb-0 relative z-0">
-        <div className="flex items-start gap-1 pr-12">
+        {level && (
           <img
             src={
-              logoUrl && logoUrl !== "http://localhost:5026/file/"
-                ? logoUrl
-                : "/profile.png"
+              level == "Aspiring"
+                ? indv_aspiring
+                : level == "Inspiring"
+                ? indv_inspried
+                : level == "Leader"
+                ? indv_leader
+                : indv_inspried // fallback if no level
             }
-            alt={`${name} logo`}
-            className="h-8 w-8 rounded-full"
-            onError={(e) => {
-              // Fallback if the image fails to load
-              const target = e.target as HTMLImageElement;
-              target.src = "/profile.png";
-            }}
+            alt={`${level || "CNESS"} Badge`}
+            className="absolute top-3 right-3 w-8 sm:w-[58px] h-[32px] object-contain z-1"
           />
-          <div>
-            <CardTitle className="text-sm font-semibold">{name}</CardTitle>
-            <CardDescription className="text-xs text-gray-500">
-              {location}
-            </CardDescription>
+        )}
+
+        <CardHeader className="px-4 pt-4 pb-0 relative z-0">
+          <div className="flex items-start gap-1 pr-12">
+            <img
+              src={
+                logoUrl && logoUrl !== "http://localhost:5026/file/"
+                  ? logoUrl
+                  : "/profile.png"
+              }
+              alt={`${name} logo`}
+              className="h-8 w-8 rounded-full"
+              onError={(e) => {
+                // Fallback if the image fails to load
+                const target = e.target as HTMLImageElement;
+                target.src = "/profile.png";
+              }}
+            />
+            <div>
+              <CardTitle className="text-sm font-semibold">{name}</CardTitle>
+              <CardDescription className="text-xs text-gray-500">
+                {location}
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="px-4 pt-2 pb-0">
+          <div className="rounded-xl overflow-hidden mb-3">
+            <img
+              src={
+                bannerUrl && bannerUrl !== "http://localhost:5026/file/"
+                  ? bannerUrl
+                  : iconMap["companycard1"]
+              }
+              alt={`${name} banner`}
+              className="w-full h-36 object-cover"
+              onError={(e) => {
+                // Fallback in case the image fails to load
+                (e.target as HTMLImageElement).src = iconMap["companycard1"];
+              }}
+            />
+          </div>
+
+          <div className="flex justify-between items-center mb-1">
+            <p className="text-sm font-semibold text-gray-800">Overview</p>
+            <div className="flex items-center text-yellow-500 text-sm">
+              {"★".repeat(rating || 0)}
+              {"☆".repeat(5 - (rating || 0))}
+            </div>
+          </div>
+
+          <p className="text-sm text-gray-600 leading-snug">
+            {showFullDescription ? description : truncatedDescription}
+            {description.length > maxDescriptionLength && (
+              <span
+                className="text-purple-600 underline cursor-pointer ml-1"
+                onClick={toggleDescription}
+              >
+                {showFullDescription ? "Read Less" : "Read More"}
+              </span>
+            )}
+          </p>
+
+          <div className="flex flex-wrap gap-2 mt-3">
+            {tags?.map((tag, index) => (
+              <span
+                key={index}
+                className="bg-[#7077FE1A] text-[#7077FE] px-[26px] py-[6px] rounded-lg text-xs"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </CardContent>
+
+        <CardFooter className="flex justify-between items-center px-4 py-3">
+          {/* Optional footer content */}
+        </CardFooter>
+      </Card>
+      <Modal isOpen={showLoginPrompt} onClose={handleModalClose}>
+        <div className="text-center space-y-6 p-8 w-full max-w-2xl">
+          {" "}
+          {/* Increased max-width and padding */}
+          <h2 className="text-2xl font-semibold text-gray-800">
+            {" "}
+            {/* Larger text */}
+            Login Required
+          </h2>
+          <p className="text-base text-gray-600">
+            {" "}
+            {/* Larger text */}
+            Please log in to your account to access this feature.
+          </p>
+          <div className="flex justify-center gap-4 pt-4">
+            {" "}
+            {/* Better button spacing */}
+            <button
+              className="bg-[#7077FE] hover:bg-[#5a62d4] text-white px-6 py-3 rounded-full text-base font-medium transition-colors" /* Larger button */
+              onClick={() => {
+                navigate("/log-in");
+              }}
+            >
+              Go to Login
+            </button>
+            <button
+              className="px-6 py-3 rounded-full text-base font-medium text-gray-600 hover:bg-gray-100 transition-colors" /* Secondary button style */
+              onClick={() => setShowLoginPrompt(false)}
+            >
+              Cancel
+            </button>
           </div>
         </div>
-      </CardHeader>
-
-      <CardContent className="px-4 pt-2 pb-0">
-        <div className="rounded-xl overflow-hidden mb-3">
-          <img
-            src={
-              bannerUrl && bannerUrl !== "http://localhost:5026/file/"
-                ? bannerUrl
-                : iconMap["companycard1"]
-            }
-            alt={`${name} banner`}
-            className="w-full h-36 object-cover"
-            onError={(e) => {
-              // Fallback in case the image fails to load
-              (e.target as HTMLImageElement).src = iconMap["companycard1"];
-            }}
-          />
-        </div>
-
-        <div className="flex justify-between items-center mb-1">
-          <p className="text-sm font-semibold text-gray-800">Overview</p>
-          <div className="flex items-center text-yellow-500 text-sm">
-            {"★".repeat(rating || 0)}
-            {"☆".repeat(5 - (rating || 0))}
-          </div>
-        </div>
-
-        <p className="text-sm text-gray-600 leading-snug">
-          {showFullDescription ? description : truncatedDescription}
-          {description.length > maxDescriptionLength && (
-            <span
-              className="text-purple-600 underline cursor-pointer ml-1"
-              onClick={toggleDescription}
-            >
-              {showFullDescription ? "Read Less" : "Read More"}
-            </span>
-          )}
-        </p>
-
-        <div className="flex flex-wrap gap-2 mt-3">
-          {tags?.map((tag, index) => (
-            <span
-              key={index}
-              className="bg-[#7077FE1A] text-[#7077FE] px-[26px] py-[6px] rounded-lg text-xs"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      </CardContent>
-
-      <CardFooter className="flex justify-between items-center px-4 py-3">
-        {/* Optional footer content */}
-      </CardFooter>
-    </Card>
+      </Modal>
+    </>
   );
 }
