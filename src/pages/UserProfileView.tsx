@@ -41,7 +41,9 @@ export default function UserProfileView() {
   const [userDetails, setUserDetails] = useState<any>();
   console.log("🚀 ~ UserProfileView ~ userDetails:", userDetails);
   const [activeModal, setActiveModal] = useState<"rating" | null>(null);
-
+  const [expandedDescriptions, setExpandedDescriptions] = useState<
+    Record<string, boolean>
+  >({});
   const { showToast } = useToast();
   const navigate = useNavigate();
 
@@ -564,63 +566,76 @@ export default function UserProfileView() {
                   style={{ borderColor: "#0000001A" }}
                 />
 
-                {userDetails?.best_practices_questions?.length > 0 ? (
-                  <div className="grid grid-cols-2 2xl:grid-cols-4 gap-4">
-                    {userDetails?.best_practices_questions?.map(
-                      (practice: any, index: any) => {
-                        const cardImages = [bcard1, bcard2, bcard3, bcard4];
-                        const randomImage =
-                          cardImages[index % cardImages.length];
+                {userDetails?.best_practices_questions?.map(
+                  (section: any, _sectionIndex: number) => {
+                    // Merge all questions from all sub_sections
+                    const allQuestions = section.sub_sections?.flatMap(
+                      (sub: any) => sub.questions
+                    );
 
-                        return (
-                          <div
-                            key={practice.id}
-                            className="bg-white rounded-xl shadow border border-gray-100 p-3"
-                          >
-                            <div className="rounded-lg overflow-hidden">
-                              <img
-                                src={randomImage}
-                                alt={`Best Practice ${index + 1}`}
-                                className="w-full h-[150px] object-cover"
-                              />
-                            </div>
-                            <p className="text-xs text-pink-500 font-medium mt-2 text-right">
-                              {/* You can add time if available or remove this line */}
-                            </p>
+                    return (
+                      <div key={section.section.id} className="mb-6">
+                        <h2 className="text-lg font-bold text-gray-700 mb-4">
+                          {section.section.name}
+                        </h2>
 
-                            <div className="mt-2">
-                              <h4 className="text-sm font-semibold">
-                                {practice.question.length > 50
-                                  ? `${practice.question}`
-                                  : practice.question}
-                              </h4>
-                              {practice.answer && (
-                                <>
-                                  <p className="text-xs text-gray-500 mb-2">
-                                    {practice.answer.answer.length > 80
-                                      ? `${practice.answer.answer.substring(
-                                          0,
-                                          80
-                                        )}...`
-                                      : practice.answer.answer}
-                                  </p>
-                                  {practice.answer.show_answer_in_public && (
-                                    <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                                      Read More
-                                    </button>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                          {allQuestions?.map((practice: any, index: number) => {
+                            const cardImages = [bcard1, bcard2, bcard3, bcard4];
+                            const randomImage =
+                              cardImages[index % cardImages.length];
+
+                            return (
+                              <div
+                                key={practice.id}
+                                className="bg-white rounded-xl shadow border border-gray-100 p-3"
+                              >
+                                <div className="rounded-lg overflow-hidden">
+                                  <img
+                                    src={randomImage}
+                                    alt={`Best Practice ${index + 1}`}
+                                    className="w-full h-[150px] object-cover"
+                                  />
+                                </div>
+
+                                <p className="text-xs text-pink-500 font-medium mt-2 text-right">
+                                  {/* Optional date/time */}
+                                </p>
+
+                                <div className="mt-2">
+                                  <h4 className="text-sm font-semibold">
+                                    {practice.question?.length > 50
+                                      ? `${practice.question}`
+                                      : practice.question}
+                                  </h4>
+
+                                  {practice.answer && (
+                                    <>
+                                      <p className="text-xs text-gray-500 mb-2">
+                                        {practice.answer.answer.length > 80
+                                          ? `${practice.answer.answer.substring(
+                                              0,
+                                              80
+                                            )}...`
+                                          : practice.answer.answer}
+                                      </p>
+
+                                      {practice.answer
+                                        .show_question_in_public && (
+                                        <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+                                          Read More
+                                        </button>
+                                      )}
+                                    </>
                                   )}
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      }
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-gray-500 text-center py-4">
-                    No best practices available
-                  </p>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  }
                 )}
               </div>
             )}
@@ -648,24 +663,31 @@ export default function UserProfileView() {
                       (practice: any, index: any) => {
                         return (
                           <div
-                            key={practice.id}
+                            key={practice?.id}
                             className="bg-white rounded-xl shadow border border-gray-100 p-3 cursor-pointer"
-                            onClick={() => {
-                              const token = localStorage.getItem("jwt");
-                              if (token !== "undefined") {
-                                navigate(
-                                  `/dashboard/bestpractices/${
-                                    practice.id
-                                  }/${slugify(practice.title)}`,
-                                  {
-                                    state: {
-                                      likesCount: practice.likesCount,
-                                      isLiked: practice.isLiked,
-                                    },
-                                  }
-                                );
-                              } else {
-                                setShowLoginPrompt(true); // Show the login prompt modal
+                            onClick={(e) => {
+                              // Only navigate if the click wasn't on the Read More button
+                              if (
+                                !(e.target as HTMLElement).closest(
+                                  ".read-more-btn"
+                                )
+                              ) {
+                                const Id = localStorage.getItem("Id");
+                                if (Id && Id !== "undefined") {
+                                  navigate(
+                                    `/dashboard/bestpractices/${
+                                      practice.id
+                                    }/${slugify(practice.title)}`,
+                                    {
+                                      state: {
+                                        likesCount: practice.likesCount,
+                                        isLiked: practice.isLiked,
+                                      },
+                                    }
+                                  );
+                                } else {
+                                  setShowLoginPrompt(true);
+                                }
                               }
                             }}
                           >
@@ -675,7 +697,6 @@ export default function UserProfileView() {
                                 alt={`Best Practice ${index + 1}`}
                                 className="w-full h-[150px] object-cover"
                                 onError={(e) => {
-                                  // Fallback if the image fails to load
                                   const target = e.target as HTMLImageElement;
                                   target.src = bcard1;
                                 }}
@@ -692,16 +713,33 @@ export default function UserProfileView() {
                               {practice.description && (
                                 <>
                                   <p className="text-xs text-gray-500 mb-2">
-                                    {practice.description > 80
-                                      ? `${practice.description.substring(
+                                    {expandedDescriptions[practice.id]
+                                      ? practice.description
+                                      : `${practice.description.substring(
                                           0,
-                                          80
-                                        )}...`
-                                      : practice.description}
+                                          40
+                                        )}${
+                                          practice.description.length > 40
+                                            ? "..."
+                                            : ""
+                                        }`}
                                   </p>
-                                  <button className="text-xs cursor-pointer px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                                    Read More
-                                  </button>
+                                  {practice.description.length > 40 && (
+                                    <button
+                                      className="read-more-btn text-xs cursor-pointer px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white"
+                                      onClick={(e) => {
+                                        e.stopPropagation(); // This prevents the event from bubbling up to the parent
+                                        setExpandedDescriptions((prev) => ({
+                                          ...prev,
+                                          [practice.id]: !prev[practice.id],
+                                        }));
+                                      }}
+                                    >
+                                      {expandedDescriptions[practice.id]
+                                        ? "Show Less"
+                                        : "Read More"}
+                                    </button>
+                                  )}
                                 </>
                               )}
                             </div>
@@ -738,8 +776,8 @@ export default function UserProfileView() {
                       className="rounded-[100px] cursor-pointer py-2 px-4 transition-colors duration-500 ease-in-out"
                       type="button"
                       onClick={() => {
-                        const token = localStorage.getItem("jwt");
-                        if (token !== "undefined") {
+                        const Id = localStorage.getItem("Id");
+                        if (Id !== "undefined") {
                           setActiveModal("rating");
                         } else {
                           setShowLoginPrompt(true);
