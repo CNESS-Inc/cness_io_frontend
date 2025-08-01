@@ -604,14 +604,14 @@ export default function DashboardUserProfile() {
                                 <div className="mt-2">
                                   <h4 className="text-sm font-semibold">
                                     {practice.question?.length > 50
-                                      ? `${practice.question}`
-                                      : practice.question}
+                                      ? `${practice?.question}`
+                                      : practice?.question}
                                   </h4>
 
                                   {practice.answer && (
                                     <>
                                       <p className="text-xs text-gray-500 mb-2">
-                                        {practice.answer.answer.length > 80
+                                        {practice?.answer?.answer?.length > 80
                                           ? `${practice.answer.answer.substring(
                                               0,
                                               80
@@ -700,9 +700,9 @@ export default function DashboardUserProfile() {
 
                             <div className="mt-2">
                               <h4 className="text-sm font-semibold">
-                                {practice.title
-                                  ? `${practice.title}`
-                                  : practice.question}
+                                {practice?.title
+                                  ? `${practice?.title}`
+                                  : practice?.question}
                               </h4>
                               {practice.description && (
                                 <>
@@ -718,7 +718,7 @@ export default function DashboardUserProfile() {
                                             : ""
                                         }`}
                                   </p>
-                                  {practice.description.length > 40 && (
+                                  {practice.description?.length > 40 && (
                                     <button
                                       className="read-more-btn text-xs cursor-pointer px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white"
                                       onClick={(e) => {
