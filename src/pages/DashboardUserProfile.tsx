@@ -76,7 +76,9 @@ export default function DashboardUserProfile() {
   const [userReviewData, setUserReviewData] = useState<any>([]);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [breakdowns, setBreakdowns] = useState<Record<string, number>>({});
-
+  const [expandedDescriptions, setExpandedDescriptions] = useState<
+    Record<string, boolean>
+  >({});
   // State for errors
   const [errors, setErrors] = useState<Errors>({
     reviewText: "",
@@ -243,7 +245,7 @@ export default function DashboardUserProfile() {
               <img
                 src={
                   userDetails?.profile_picture &&
-                    userDetails?.profile_picture !== "http://localhost:5026/file/"
+                  userDetails?.profile_picture !== "http://localhost:5026/file/"
                     ? userDetails?.profile_picture
                     : "/profile.png"
                 }
@@ -361,10 +363,10 @@ export default function DashboardUserProfile() {
                       userDetails?.level?.level == "Aspiring"
                         ? indv_aspiring
                         : userDetails?.level?.level == "Inspired"
-                          ? indv_inspried
-                          : userDetails?.level?.level == "Leader"
-                            ? indv_leader
-                            : inspiredbadge // fallback if no level
+                        ? indv_inspried
+                        : userDetails?.level?.level == "Leader"
+                        ? indv_leader
+                        : inspiredbadge // fallback if no level
                     }
                     alt={`${userDetails?.level?.level || "CNESS"} Badge`}
                     className="w-[159px] md:w-[180px] h-auto object-contain mt-[-10px]"
@@ -563,69 +565,77 @@ export default function DashboardUserProfile() {
                   style={{ borderColor: "#0000001A" }}
                 />
 
-                {userDetails?.best_practices_questions?.map((section: any, sectionIndex: number) => {
-                  // Merge all questions from all sub_sections
-                  const allQuestions = section.sub_sections.flatMap((sub: any) => sub.questions);
+                {userDetails?.best_practices_questions?.map(
+                  (section: any, _sectionIndex: number) => {
+                    // Merge all questions from all sub_sections
+                    const allQuestions = section.sub_sections.flatMap(
+                      (sub: any) => sub.questions
+                    );
 
-                  return (
-                    <div key={section.section.id} className="mb-6">
-                      <h2 className="text-lg font-bold text-gray-700 mb-4">
-                        {section.section.name}
-                      </h2>
+                    return (
+                      <div key={section.section.id} className="mb-6">
+                        <h2 className="text-lg font-bold text-gray-700 mb-4">
+                          {section.section.name}
+                        </h2>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        {allQuestions.map((practice: any, index: number) => {
-                          const cardImages = [bcard1, bcard2, bcard3, bcard4];
-                          const randomImage = cardImages[index % cardImages.length];
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                          {allQuestions.map((practice: any, index: number) => {
+                            const cardImages = [bcard1, bcard2, bcard3, bcard4];
+                            const randomImage =
+                              cardImages[index % cardImages.length];
 
-                          return (
-                            <div
-                              key={practice.id}
-                              className="bg-white rounded-xl shadow border border-gray-100 p-3"
-                            >
-                              <div className="rounded-lg overflow-hidden">
-                                <img
-                                  src={randomImage}
-                                  alt={`Best Practice ${index + 1}`}
-                                  className="w-full h-[150px] object-cover"
-                                />
+                            return (
+                              <div
+                                key={practice.id}
+                                className="bg-white rounded-xl shadow border border-gray-100 p-3"
+                              >
+                                <div className="rounded-lg overflow-hidden">
+                                  <img
+                                    src={randomImage}
+                                    alt={`Best Practice ${index + 1}`}
+                                    className="w-full h-[150px] object-cover"
+                                  />
+                                </div>
+
+                                <p className="text-xs text-pink-500 font-medium mt-2 text-right">
+                                  {/* Optional date/time */}
+                                </p>
+
+                                <div className="mt-2">
+                                  <h4 className="text-sm font-semibold">
+                                    {practice.question?.length > 50
+                                      ? `${practice.question}`
+                                      : practice.question}
+                                  </h4>
+
+                                  {practice.answer && (
+                                    <>
+                                      <p className="text-xs text-gray-500 mb-2">
+                                        {practice.answer.answer.length > 80
+                                          ? `${practice.answer.answer.substring(
+                                              0,
+                                              80
+                                            )}...`
+                                          : practice.answer.answer}
+                                      </p>
+
+                                      {practice.answer
+                                        .show_question_in_public && (
+                                        <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+                                          Read More
+                                        </button>
+                                      )}
+                                    </>
+                                  )}
+                                </div>
                               </div>
-
-                              <p className="text-xs text-pink-500 font-medium mt-2 text-right">
-                                {/* Optional date/time */}
-                              </p>
-
-                              <div className="mt-2">
-                                <h4 className="text-sm font-semibold">
-                                  {practice.question?.length > 50
-                                    ? `${practice.question}`
-                                    : practice.question}
-                                </h4>
-
-                                {practice.answer && (
-                                  <>
-                                    <p className="text-xs text-gray-500 mb-2">
-                                      {practice.answer.answer.length > 80
-                                        ? `${practice.answer.answer.substring(0, 80)}...`
-                                        : practice.answer.answer}
-                                    </p>
-
-                                    {practice.answer.show_question_in_public && (
-                                      <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                                        Read More
-                                      </button>
-                                    )}
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                          );
-                        })}
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
-
+                    );
+                  }
+                )}
               </div>
             )}
 
@@ -652,20 +662,28 @@ export default function DashboardUserProfile() {
                       (practice: any, index: any) => {
                         return (
                           <div
-                            key={practice.id}
+                            key={practice?.id}
                             className="bg-white rounded-xl shadow border border-gray-100 p-3 cursor-pointer"
-                            onClick={() =>
-                              navigate(
-                                `/dashboard/bestpractices/${practice.id
-                                }/${slugify(practice.title)}`,
-                                {
-                                  state: {
-                                    likesCount: practice.likesCount,
-                                    isLiked: practice.isLiked, // ensure this is coming from backend
-                                  },
-                                }
-                              )
-                            }
+                            onClick={(e) => {
+                              // Only navigate if the click wasn't on the Read More button
+                              if (
+                                !(e.target as HTMLElement).closest(
+                                  ".read-more-btn"
+                                )
+                              ) {
+                                navigate(
+                                  `/dashboard/bestpractices/${
+                                    practice.id
+                                  }/${slugify(practice.title)}`,
+                                  {
+                                    state: {
+                                      likesCount: practice.likesCount,
+                                      isLiked: practice.isLiked,
+                                    },
+                                  }
+                                );
+                              }
+                            }}
                           >
                             <div className="rounded-lg overflow-hidden">
                               <img
@@ -673,7 +691,6 @@ export default function DashboardUserProfile() {
                                 alt={`Best Practice ${index + 1}`}
                                 className="w-full h-[150px] object-cover"
                                 onError={(e) => {
-                                  // Fallback if the image fails to load
                                   const target = e.target as HTMLImageElement;
                                   target.src = bcard1;
                                 }}
@@ -690,16 +707,33 @@ export default function DashboardUserProfile() {
                               {practice.description && (
                                 <>
                                   <p className="text-xs text-gray-500 mb-2">
-                                    {practice.description > 80
-                                      ? `${practice.description.substring(
-                                        0,
-                                        80
-                                      )}...`
-                                      : practice.description}
+                                    {expandedDescriptions[practice.id]
+                                      ? practice.description
+                                      : `${practice.description.substring(
+                                          0,
+                                          40
+                                        )}${
+                                          practice.description.length > 40
+                                            ? "..."
+                                            : ""
+                                        }`}
                                   </p>
-                                  <button className="text-xs cursor-pointer px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                                    Read More
-                                  </button>
+                                  {practice.description.length > 40 && (
+                                    <button
+                                      className="read-more-btn text-xs cursor-pointer px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white"
+                                      onClick={(e) => {
+                                        e.stopPropagation(); // This prevents the event from bubbling up to the parent
+                                        setExpandedDescriptions((prev) => ({
+                                          ...prev,
+                                          [practice.id]: !prev[practice.id],
+                                        }));
+                                      }}
+                                    >
+                                      {expandedDescriptions[practice.id]
+                                        ? "Show Less"
+                                        : "Read More"}
+                                    </button>
+                                  )}
                                 </>
                               )}
                             </div>
@@ -787,18 +821,19 @@ export default function DashboardUserProfile() {
                           <div
                             className="h-full bg-purple-500"
                             style={{
-                              width: `${ratingPercentage?.[
-                                star === 5
-                                  ? "five"
-                                  : star === 4
+                              width: `${
+                                ratingPercentage?.[
+                                  star === 5
+                                    ? "five"
+                                    : star === 4
                                     ? "four"
                                     : star === 3
-                                      ? "three"
-                                      : star === 2
-                                        ? "two"
-                                        : "one"
+                                    ? "three"
+                                    : star === 2
+                                    ? "two"
+                                    : "one"
                                 ] || 0
-                                }%`,
+                              }%`,
                             }}
                           />
                         </div>
@@ -860,7 +895,7 @@ export default function DashboardUserProfile() {
                         <img
                           src={
                             reviewItem.profile.profile_picture &&
-                              reviewItem.profile.profile_picture !==
+                            reviewItem.profile.profile_picture !==
                               "http://localhost:5026/file/"
                               ? reviewItem.profile.profile_picture
                               : "/profile.png"
@@ -1018,8 +1053,9 @@ export default function DashboardUserProfile() {
               </label>
               <textarea
                 id="review"
-                className={`w-full px-4 py-3 rounded-lg border ${errors.reviewText ? "border-red-500" : "border-gray-300"
-                  } focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm resize-none`}
+                className={`w-full px-4 py-3 rounded-lg border ${
+                  errors.reviewText ? "border-red-500" : "border-gray-300"
+                } focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm resize-none`}
                 rows={4}
                 placeholder="Share your experience..."
                 value={reviewText}
