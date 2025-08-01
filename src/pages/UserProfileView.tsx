@@ -605,14 +605,14 @@ export default function UserProfileView() {
                                 <div className="mt-2">
                                   <h4 className="text-sm font-semibold">
                                     {practice.question?.length > 50
-                                      ? `${practice.question}`
-                                      : practice.question}
+                                      ? `${practice?.question}`
+                                      : practice?.question}
                                   </h4>
 
                                   {practice.answer && (
                                     <>
                                       <p className="text-xs text-gray-500 mb-2">
-                                        {practice.answer.answer.length > 80
+                                        {practice?.answer?.answer?.length > 80
                                           ? `${practice.answer.answer.substring(
                                               0,
                                               80
@@ -707,8 +707,8 @@ export default function UserProfileView() {
                             <div className="mt-2">
                               <h4 className="text-sm font-semibold">
                                 {practice.title
-                                  ? `${practice.title}`
-                                  : practice.question}
+                                  ? `${practice?.title}`
+                                  : practice?.question}
                               </h4>
                               {practice.description && (
                                 <>
