@@ -565,28 +565,29 @@ export default function DashboardUserProfile() {
                   style={{ borderColor: "#0000001A" }}
                 />
 
-                {userDetails?.best_practices_questions?.map(
-                  (section: any, _sectionIndex: number) => {
-                    // Merge all questions from all sub_sections
-                    const allQuestions = section.sub_sections.flatMap(
-                      (sub: any) => sub.questions
-                    );
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {userDetails?.best_practices_questions?.map(
+                    (section: any) => {
+                      // Get all questions from all sub_sections
+                      const allQuestions = section.sub_sections?.flatMap(
+                        (sub: any) => sub.questions
+                      );
 
-                    return (
-                      <div key={section.section.id} className="mb-6">
-                        <h2 className="text-lg font-bold text-gray-700 mb-4">
-                          {section.section.name}
-                        </h2>
+                      // Only render if there are questions
+                      if (!allQuestions?.length) return null;
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                          {allQuestions.map((practice: any, index: number) => {
+                      return (
+                        <div key={section.section.id} className="mb-6">
+                          {allQuestions.map((question: any, index: number) => {
                             const cardImages = [bcard1, bcard2, bcard3, bcard4];
                             const randomImage =
                               cardImages[index % cardImages.length];
+                            const isExpanded =
+                              expandedDescriptions[question.id] || false;
 
                             return (
                               <div
-                                key={practice.id}
+                                key={question.id}
                                 className="bg-white rounded-xl shadow border border-gray-100 p-3"
                               >
                                 <div className="rounded-lg overflow-hidden">
@@ -603,28 +604,43 @@ export default function DashboardUserProfile() {
 
                                 <div className="mt-2">
                                   <h4 className="text-sm font-semibold">
-                                    {practice.question?.length > 50
-                                      ? `${practice?.question}`
-                                      : practice?.question}
+                                    {section.section.name}{" "}
+                                    {/* Always show section name */}
                                   </h4>
 
-                                  {practice.answer && (
+                                  {/* Only show answer if it exists */}
+                                  {question.answer?.answer && (
                                     <>
                                       <p className="text-xs text-gray-500 mb-2">
-                                        {practice?.answer?.answer?.length > 80
-                                          ? `${practice.answer.answer.substring(
+                                        {isExpanded ||
+                                        question.answer.answer.length <= 40
+                                          ? question.answer.answer
+                                          : `${question.answer.answer.substring(
                                               0,
-                                              80
-                                            )}...`
-                                          : practice.answer.answer}
+                                              40
+                                            )}...`}
                                       </p>
 
-                                      {practice.answer
-                                        .show_question_in_public && (
-                                        <button className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                                          Read More
-                                        </button>
-                                      )}
+                                      {question.answer
+                                        .show_question_in_public &&
+                                        question.answer.answer.length > 40 && (
+                                          <button
+                                            className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white"
+                                            onClick={() => {
+                                              setExpandedDescriptions(
+                                                (prev) => ({
+                                                  ...prev,
+                                                  [question.id]:
+                                                    !prev[question.id],
+                                                })
+                                              );
+                                            }}
+                                          >
+                                            {isExpanded
+                                              ? "Show Less"
+                                              : "Read More"}
+                                          </button>
+                                        )}
                                     </>
                                   )}
                                 </div>
@@ -632,10 +648,10 @@ export default function DashboardUserProfile() {
                             );
                           })}
                         </div>
-                      </div>
-                    );
-                  }
-                )}
+                      );
+                    }
+                  )}
+                </div>
               </div>
             )}
 
@@ -657,7 +673,7 @@ export default function DashboardUserProfile() {
                 />
 
                 {userDetails?.public_best_practices?.length > 0 ? (
-                  <div className="grid grid-cols-2 2xl:grid-cols-4 gap-4 mt-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
                     {userDetails?.public_best_practices?.map(
                       (practice: any, index: any) => {
                         return (
