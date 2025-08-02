@@ -43,13 +43,12 @@ const DashboardLayout = () => {
             <img src={hambur} alt="Menu" className="w-6 h-6" />
           </button>
         )}
-            {/* Desktop Header */}
-         <div className="hidden md:block w-full">
-      <DashboardHeader toggleMobileNav={toggleMobileNav} />
-    </div>
+        {/* Desktop Header */}
+        <div className="hidden md:block w-full">
+          <DashboardHeader toggleMobileNav={toggleMobileNav} />
+        </div>
 
-        <div className="flex flex-col md:flex-row ">
-          {/* Sidebar */}
+        {/* Sidebar */}
           <DashboardNavbar
             isMobileNavOpen={isMobileNavOpen}
             toggleMobileNav={toggleMobileNav}
@@ -60,14 +59,12 @@ const DashboardLayout = () => {
             setSort={setSort}
           />
 
-
           {/* Main content area */}
           <div
             className={`flex-1 flex flex-col transition-all duration-300 ${
               isMobileNavOpen ? "md:ml-[260px]" : "md:ml-0"
             }`}
           >
-        
             {/* Main layout with optional FilterSidebar */}
             <main className="flex-1 min-h-screen px-4 md:px-4 py-4 overflow-y-auto">
               <div className="flex">
@@ -87,7 +84,6 @@ const DashboardLayout = () => {
               </div>
             </main>
           </div>
-        </div>
       </div>
 
       {/* Mobile Sidebar Backdrop and Slide-in */}
