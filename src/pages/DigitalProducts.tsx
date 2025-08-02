@@ -1,4 +1,5 @@
 const DigitalProducts = () => {
+
   return (
     <>
       <div className="max-w-6xl mt-0 shadow overflow-hidden p-8 text-center">
