@@ -196,7 +196,6 @@ export default function SocialTopBar() {
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [postMessage, setPostMessage] = useState("");
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
   const [apiMessage, setApiMessage] = useState<string | null>(null);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
@@ -390,7 +389,7 @@ export default function SocialTopBar() {
         setTimeout(async () => {
           setShowStoryPopup(false);
           // Refresh stories after successful upload
-          const res = await GetStory();
+          await GetStory();
           // setStoryData(res?.data?.data || []);
         }, 1000);
 
