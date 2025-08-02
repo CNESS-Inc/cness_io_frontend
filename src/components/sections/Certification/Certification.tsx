@@ -26,7 +26,7 @@ const Certification = () => {
             Benefits
           </span>
 
-          <div className='leading-9 pt-[20px] flex flex-col gap-4'>
+          <div className='leading-9 pt-[20px] flex flex-col gap-4 w-full'>
             {[
               "Unlock your True Profile with verified status",
               "Sell your services or digital tools in the Conscious Marketplace",

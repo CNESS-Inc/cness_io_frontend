@@ -16,6 +16,7 @@ export default function FeaturedSection() {
   const [step, setStep] = useState(0); 
   const [imagesIn, setImagesIn] = useState(0); 
   const [imagesMove, setImagesMove] = useState(false); 
+  const [animationDone, setAnimationDone] = useState(false); 
   const timeouts = useRef<number[]>([]);
   const triggered = useRef(false);
 
@@ -40,6 +41,7 @@ export default function FeaturedSection() {
     setStep(0);
     setImagesIn(0);
     setImagesMove(false);
+    setAnimationDone(false);
 
     timeouts.current.push(window.setTimeout(() => setStep(1), 500));
     timeouts.current.push(window.setTimeout(() => setStep(2), 1000));
@@ -48,29 +50,26 @@ export default function FeaturedSection() {
     timeouts.current.push(window.setTimeout(() => {
       setStep(4);
       setImagesIn(0);
-      setImagesMove(false);
 
       thumbnails.forEach((_, i) => {
         timeouts.current.push(
-          window.setTimeout(() => setImagesIn((prev) => Math.max(prev, i + 1)), 600 + i * 320)
+          window.setTimeout(() => setImagesIn((prev) => Math.max(prev, i + 1)), 300 + i * 180)
         );
       });
 
       timeouts.current.push(
         window.setTimeout(() => {
           setImagesMove(true);
-        }, 600 + thumbnails.length * 320 + 1200)
+        }, 300 + thumbnails.length * 180 + 1200)
       );
 
       timeouts.current.push(
         window.setTimeout(() => {
-          setStep(0);
-          setImagesIn(0);
           setImagesMove(false);
-          startSequence();
-        }, 600 + thumbnails.length * 320 + 2200)
+          setAnimationDone(true); 
+        }, 300 + thumbnails.length * 180 + 1800)
       );
-    }, 4600));
+    }, 1800));
   };
 
   const heading = (
@@ -92,7 +91,7 @@ export default function FeaturedSection() {
   return (
     <section className="bg-[#fff] px-4 sm:px-6 pb-8 sm:pb-12 lg:py-[72px] pt-10" ref={sectionRef}>
       <div className="max-w-[1336px] mx-auto relative h-[600px]">
-        <div className="w-full text-center absolute lg:top-[50%]  md:top-[35%] top-[30%] left-[50%] translate-x-[-50%] translate-y-[-50%] z-10">
+        <div className="w-full text-center absolute lg:top-[50%] md:top-[35%] top-[30%] left-[50%] translate-x-[-50%] translate-y-[-50%] z-10">
           {heading}
         </div>
 
@@ -106,6 +105,12 @@ export default function FeaturedSection() {
               "absolute lg:bottom-0 md:bottom-45 bottom-65 left-1/2 -translate-x-1/2",
               "absolute lg:bottom-0 md:bottom-45 bottom-65 right-0",
             ][i];
+            const rotationClass = imagesMove
+              ? "-rotate-45"
+              : animationDone
+              ? "rotate-0"
+              : "";
+
             return (
               <div
                 key={thumb.src}
@@ -113,10 +118,8 @@ export default function FeaturedSection() {
                   `${pos} transition-all duration-[500ms] ease-in-out ` +
                   (step < 4
                     ? "opacity-0 scale-90"
-                    : imagesIn > i && !imagesMove
-                    ? "opacity-100 scale-105 "
-                    : imagesMove
-                    ? `opacity-100 -rotate-45 `
+                    : imagesIn > i
+                    ? `opacity-100 scale-105 ${rotationClass}`
                     : "opacity-0 scale-90")
                 }
                 style={{ zIndex: 2, transitionDelay: `${i * 0.1}s` }}
@@ -139,7 +142,9 @@ export default function FeaturedSection() {
             (step >= 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8")
           }
         >
-          <h5 className="poppins text-[18px] font-semibold mb-2">Go live. Share your voice. Be seen by the conscious world.</h5>
+          <h5 className="poppins text-[18px] font-semibold mb-2">
+            Go live. Share your voice. Be seen by the conscious world.
+          </h5>
           <p className="openSans text-[14px] font-regular text-[#64748B]">
             Host live talks. Stream music. Share reflections. Submit your content to be<br />
             featured on CNESS TV — our curated stream of purpose-led creators, artists,<br />

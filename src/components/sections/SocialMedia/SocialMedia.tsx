@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import Button from "../../ui/Button";
-// import Image from "../../ui/Image";
-import OptimizeImage from "../../ui/OptimizeImage";
+import Image from "../../ui/Image";
 import LottieOnView from "../../ui/LottieOnView";
 
 export default function SocialMedia() {
@@ -40,18 +39,19 @@ export default function SocialMedia() {
             </p>
             <Button className="jakarta w-fit rounded-[100px] h-[38px] text-[16px] font-[400] text-[#fff] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#F07EFF] mt-6"
              onClick={() => window.location.href = "/sign-up"}>
-              Join the Conscious Conversation
+              Coming soon
             </Button>
           </div>
         </div>
 
         <div className="socail-media-image relative">
-          <OptimizeImage
-            src="social-media.webp"
+          <Image
+            src={"https://res.cloudinary.com/diudvzdkb/image/upload/v1754114244/1af3e749f98b99e039b5ebf207a5212e937ddb5e_ndsl4l.jpg"}
             alt="Social Media Visual"
             width={'100%'}
             height={'511px'}
-            className="w-14 h-14 mt-[52px] media-img object-cover"
+            style={{objectFit:'cover',borderRadius:24}}
+            className="w-14 h-14 mt-[52px] media-img object-contain"
           />
 
           {notificationLottie && (

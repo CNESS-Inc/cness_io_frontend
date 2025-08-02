@@ -6,12 +6,8 @@ import Button from "../../ui/Button";
 import { Card, CardContent } from "../../ui/Card";
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
 import LottieOnView from "../../ui/LottieOnView";
 import { useNavigate } from "react-router-dom";
-
-// Add shimmer effect CSS
-import './AwarenessSection.css';
 
 export default function AwarenessSection() {
   const cards = [
@@ -82,33 +78,35 @@ export default function AwarenessSection() {
     },
   ];
 
-  // Use a single isFlashing state for all cards
   const navigate = useNavigate();
-  const [isFlashing, setIsFlashing] = useState(false);
-  useEffect(() => {
-    let timeout: ReturnType<typeof setTimeout>;
-    const interval = setInterval(() => {
-      setIsFlashing(true);
-      timeout = setTimeout(() => setIsFlashing(false), 60); // super fast flash
-    }, 300); // flash every 0.3s
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timeout);
-    };
-  }, []);
+  const swiperRef = useRef<any>(null);
 
-  // Transition logic for first-load/second-load
+  const handleMouseEnter = () => {
+    swiperRef.current?.swiper?.autoplay?.stop();
+  };
+
+  const handleMouseLeave = () => {
+    swiperRef.current?.swiper?.autoplay?.start();
+  };
+
+  const handleTouchStart = () => {
+    swiperRef.current?.swiper?.autoplay?.stop();
+  };
+
+  const handleTouchEnd = () => {
+    swiperRef.current?.swiper?.autoplay?.start();
+  };
+
   const [showSecond, setShowSecond] = useState(false);
   const [startTransition, setStartTransition] = useState(false);
   const firstLoadRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // IntersectionObserver to trigger transition
     const observer = new window.IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !startTransition) {
           setStartTransition(true);
-          setTimeout(() => setShowSecond(true), 5000); // 5s delay before transition
+          setTimeout(() => setShowSecond(true), 5000);
         }
       },
       { threshold: 0.5 }
@@ -117,38 +115,31 @@ export default function AwarenessSection() {
     return () => observer.disconnect();
   }, [startTransition]);
 
-  // First-load image slider state
   const [currentImg, setCurrentImg] = useState(0);
   const [sliderDone, setSliderDone] = useState(false);
 
-  // Play slider images in sequence, crossfade only
   useEffect(() => {
-    if (!startTransition) return;
-    if (sliderDone) return;
+    if (!startTransition || sliderDone) return;
     if (currentImg < firstLoadImages.length - 1) {
-      const t = setTimeout(() => setCurrentImg(i => i + 1), 2200); // 1.5s visible + 0.7s fade
+      const t = setTimeout(() => setCurrentImg((i) => i + 1), 2200);
       return () => clearTimeout(t);
     } else {
-      // Last image: after delay, mark slider done and trigger second-load
       const t = setTimeout(() => setSliderDone(true), 2200);
       return () => clearTimeout(t);
     }
   }, [currentImg, startTransition, sliderDone]);
 
-  // When slider is done, trigger second-load after a short delay
   useEffect(() => {
     if (sliderDone) {
-      setTimeout(() => setShowSecond(true), 1500); // 0.4s overlap for smoothness
+      setTimeout(() => setShowSecond(true), 1500);
     }
   }, [sliderDone]);
 
-  // First-load slider images
   const firstLoadImages = [
     { src: "/creation1.png", alt: "Company Logo 1" },
     { src: "/creation2.png", alt: "Company Logo 2" },
     { src: "/creation3.png", alt: "Company Logo 3" },
   ];
-
 
   const [animationData, setAnimationData] = useState<object | null>(null);
 
@@ -175,18 +166,23 @@ export default function AwarenessSection() {
             <div className="py-24 px-0 flex lg:flex-row flex-col items-center justify-between h-[800px] max-w-[800px] w-full mx-auto">
               <div className="lg:w-6/12">
                 <h3 className="poppins leading-9 text-[32px] text-black font-regular">Where conscious creations</h3>
-                <p className="openSans text-[#898989] font-regular text-[14px] mt-4">Explore a wide range of conscious products<br /> crafted by verified creators who prioritize<br /> sustainability and ethical practices.</p>
-
+                <p className="openSans text-[#898989] font-regular text-[14px] mt-4">
+                  Explore a wide range of conscious products<br />
+                  crafted by verified creators who prioritize<br />
+                  sustainability and ethical practices.
+                </p>
               </div>
-              <div className="flex lg:w-6/12 flex-col lg:items-center items-start justify-start relative ">
+              <div className="flex lg:w-6/12 flex-col lg:items-center items-start justify-start relative">
                 <AnimatePresence mode="wait">
-                   <LottieOnView
-                      animationData={animationData}
-                      loop
-                      style={{width:'100%', height:'100%'}}
-                    />
+                  <LottieOnView
+                    animationData={animationData}
+                    loop
+                    style={{ width: '100%', height: '100%' }}
+                  />
                 </AnimatePresence>
-                <h3 className="poppins text-start bg-gradient-to-r from-[#6340FF] to-[#D748EA] text-transparent bg-clip-text text-[32px] font-semibold mt-2">find their people</h3>
+                <h3 className="poppins text-start bg-gradient-to-r from-[#6340FF] to-[#D748EA] text-transparent bg-clip-text text-[32px] font-semibold mt-2">
+                  find their people
+                </h3>
               </div>
             </div>
           </motion.div>
@@ -217,7 +213,8 @@ export default function AwarenessSection() {
                 </div>
 
                 <Swiper
-                  className="w-full h-full"  // 👈 ensures swiper container is full height
+                  ref={swiperRef}
+                  className="w-full h-full"
                   spaceBetween={20}
                   slidesPerView={1}
                   loop={true}
@@ -226,7 +223,7 @@ export default function AwarenessSection() {
                     delay: 0,
                     disableOnInteraction: false,
                   }}
-                  allowTouchMove={false}
+                  allowTouchMove={true}
                   breakpoints={{
                     480: { slidesPerView: 1 },
                     767: { slidesPerView: 2 },
@@ -235,64 +232,68 @@ export default function AwarenessSection() {
                   modules={[Pagination, Autoplay]}
                 >
                   {cards.map((card, index) => (
-                    <SwiperSlide key={index} className="h-full"> {/* 👈 make slide full height */}
+                    <SwiperSlide key={index} className="h-full">
                       <div className="relative h-full">
-                        <Card className="flex flex-col md:h-[350px] h-full w-full rounded-[12px] overflow-hidden">
-                          {/* Image section */}
-                          <div
-                            className="relative w-full rounded-t-[12px] overflow-hidden"
-                            style={{ height: "200px" }} // 👈 fixed image height
-                          >
-                            <img
-                              src={card.image}
-                              alt={card.altText}
-                              className="w-full h-full object-cover rounded-t-[12px]"
-                            />
-                            {card.badge && (
-                              <div
-                                className="absolute top-3 left-3 text-[11px] font-medium px-3 py-1 rounded-full text-white shadow-md flex items-center gap-2"
-                                style={{ backgroundImage: card.badge.gradient }}
-                              >
-                                <span className="inline-block w-[6px] h-[6px] bg-[#60C750] rounded-full"></span>
-                                <span className="text-[#fff] text-[11px] font-semibold">{card.badge.label}</span>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Flash effect + content */}
-                          <div className="card-flash-area relative flex-grow flex flex-col">
-                            {isFlashing && <span className="flash-blink-effect" />}
-                            <CardContent className="flex flex-col w-full p-0 h-full">
-                              <div
-                                className="flex flex-col gap-2 px-5 py-4 w-full rounded-b-[12px] bg-cover bg-center h-full"
-                                style={{ backgroundImage: card.bg_image, marginTop: 0 }}
-                              >
-                                <h2 className="text-[14px] font-semibold text-white leading-7 md:leading-8">
-                                  {card.title}
-                                </h2>
-                                <p className="text-[11px] text-[#ECEEF2] leading-6">
-                                  {card.description}
-                                </p>
-                                <div className="flex justify-between mt-auto items-center">
-                                  <p className="text-white text-[14px] font-semibold">
-                                    {card.price}
-                                  </p>
-                                  <Button
-                                    className="rounded-full w-fit py-2 px-6 bg-[#F07EFF] text-[12px] cursor-default"
-                                    style={{ pointerEvents: "none" }}
-                                  >
-                                    <p className="text-[12px]">{card.button}</p>
-                                  </Button>
+                        <div
+                          onMouseEnter={handleMouseEnter}
+                          onMouseLeave={handleMouseLeave}
+                          onTouchStart={handleTouchStart}
+                          onTouchEnd={handleTouchEnd}
+                          className="h-full w-full"
+                        >
+                          <Card className="flex flex-col md:h-[350px] h-full w-full rounded-[12px] overflow-hidden">
+                            <div
+                              className="relative w-full rounded-t-[12px] overflow-hidden"
+                              style={{ height: "200px" }}
+                            >
+                              <img
+                                src={card.image}
+                                alt={card.altText}
+                                className="w-full h-full object-cover rounded-t-[12px]"
+                              />
+                              {card.badge && (
+                                <div
+                                  className="absolute top-3 left-3 text-[11px] font-medium px-3 py-1 rounded-full text-white shadow-md flex items-center gap-2"
+                                  style={{ backgroundImage: card.badge.gradient }}
+                                >
+                                  <span className="inline-block w-[6px] h-[6px] bg-[#60C750] rounded-full"></span>
+                                  <span className="text-[#fff] text-[11px] font-semibold">{card.badge.label}</span>
                                 </div>
-                              </div>
-                            </CardContent>
-                          </div>
-                        </Card>
+                              )}
+                            </div>
+
+                            <div className="relative flex-grow flex flex-col">
+                              <CardContent className="flex flex-col w-full p-0 h-full">
+                                <div
+                                  className="flex flex-col gap-2 px-5 py-4 w-full rounded-b-[12px] bg-cover bg-center h-full"
+                                  style={{ backgroundImage: card.bg_image, marginTop: 0 }}
+                                >
+                                  <h2 className="text-[14px] font-semibold text-white leading-7 md:leading-8">
+                                    {card.title}
+                                  </h2>
+                                  <p className="text-[11px] text-[#ECEEF2] leading-6">
+                                    {card.description}
+                                  </p>
+                                  <div className="flex justify-between mt-auto items-center">
+                                    <p className="text-white text-[14px] font-semibold">
+                                      {card.price}
+                                    </p>
+                                    <Button
+                                      className="rounded-full w-fit py-2 px-6 bg-[#F07EFF] text-[12px] cursor-default"
+                                      style={{ pointerEvents: "none" }}
+                                    >
+                                      <p className="text-[12px]">{card.button}</p>
+                                    </Button>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </div>
+                          </Card>
+                        </div>
                       </div>
                     </SwiperSlide>
                   ))}
                 </Swiper>
-
 
                 <div className="flex lg:flex-row md:flex-row flex-col max-w-[750px] w-full mx-auto mt-6">
                   <p className="lg:w-6/12 md:w-5/12 w-full text-[#898989] text-[14px] font-regular">
@@ -306,11 +307,11 @@ export default function AwarenessSection() {
                     <Button
                       variant="outline"
                       className="bg-white awareness-btn w-fit h-[42px] border-[#2222241a] md:px-4 px-1 sm:px-6 py-1 rounded-[100px] text-[#222224] font-medium md:text-[14px] text-[12px] lg:w-full md:w-full"
-                  onClick={() => navigate("/comingSoon")}>
+                      onClick={() => navigate("/comingSoon")}>
                       Start Selling
                     </Button>
                     <Button className="rounded-[100px] w-fit h-[42px] awareness-btn text-center py-1 md:px-4 px-1 lg:w-full md:w-full self-stretch md:text-[14px] text-[12px] bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-white"
-                  onClick={() => navigate("/comingSoon")}>
+                      onClick={() => navigate("/comingSoon")}>
                       Browse Marketplace
                     </Button>
                   </div>

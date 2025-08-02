@@ -4,9 +4,37 @@ import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import { Card, CardContent } from "../../ui/Card";
+import { useRef } from "react";
 
 
 export default function Team() {
+  const swiperRef = useRef<any>(null);
+
+  // Mouse and touch handlers for Swiper autoplay
+  const handleMouseEnter = () => {
+    if (swiperRef.current && swiperRef.current.swiper) {
+      swiperRef.current.swiper.autoplay.stop();
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (swiperRef.current && swiperRef.current.swiper) {
+      swiperRef.current.swiper.autoplay.start();
+    }
+  };
+
+  const handleTouchStart = () => {
+    if (swiperRef.current && swiperRef.current.swiper) {
+      swiperRef.current.swiper.autoplay.stop();
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (swiperRef.current && swiperRef.current.swiper) {
+      swiperRef.current.swiper.autoplay.start();
+    }
+  };
+
   const cards = [
     {
       title: "Liam",
@@ -64,6 +92,7 @@ export default function Team() {
           </div>
 
           <Swiper
+            ref={swiperRef}
             spaceBetween={20}
             slidesPerView={1}
             loop={true}
@@ -72,7 +101,7 @@ export default function Team() {
               delay: 0, // No pause at all
               disableOnInteraction: false,
             }}
-            allowTouchMove={false} // Prevents manual swiping (optional)
+            allowTouchMove={true} // Enable touch interactions for mobile
             pagination={true} // No pagination bullets (optional)
             breakpoints={{
               480: { slidesPerView: 1 },
@@ -84,7 +113,14 @@ export default function Team() {
           >
             {cards.map((card, index) => (
               <SwiperSlide key={index}>
-                <Card className="flex flex-col gap- mb-10 w-full rounded-[12px] overflow-hidden">
+                <div
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                  onTouchStart={handleTouchStart}
+                  onTouchEnd={handleTouchEnd}
+                  className="h-full w-full"
+                >
+                  <Card className="flex flex-col gap- mb-10 w-full rounded-[12px] overflow-hidden">
                   <CardContent className="flex flex-col w-full p-0">
                     {/* Top Image */}
                     <div
@@ -122,6 +158,7 @@ export default function Team() {
                     </div>
                   </CardContent>
                 </Card>
+                  </div>
               </SwiperSlide>
             ))}
           </Swiper>

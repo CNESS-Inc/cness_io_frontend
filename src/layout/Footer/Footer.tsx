@@ -8,7 +8,7 @@ import BackToTopButton from "./BackToTop";
 const Footer = () => {
   return (
     <>
-    <BackToTopButton/>
+      <BackToTopButton />
       <footer className="bg-[#F7F7F7] text-black py-8 md:py-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto lg:flex md:grid flex justify-between lg:grid-cols-2 grid-cols-2 md:grid-cols-5 lg:gap-6 md:gap-8 gap-2">
           {/* Main description - full width on mobile, then 2/5 on md+ */}
@@ -27,12 +27,12 @@ const Footer = () => {
                 className="h-auto w-[120px] md:w-[144.16px] lg:hidden md:hidden block"
               />
             </Link>
-<p className="text-[16px] font-[400] font-openSans leading-[160%] text-[#1E1E1E] lg:block md:block hidden">
-            CNESS is a consciousness-based certification and <br />growth platform designed to empower purpose-
-            <br /> driven individuals and organizations.
+            <p className="text-base font-[300] text-[#1E1E1E] lg:block md:block hidden">
+              CNESS is a consciousness-based certification and <br />growth platform designed to empower purpose-
+              <br /> driven individuals and organizations.
             </p>
           </div>
-          <div className="col-span-2 lg:w-[25%]  sm:col-span-3 md:col-span-3 space-y-4">
+          <div className="col-span-2 lg:w-[50%] w-[80%] sm:col-span-3 md:col-span-3 space-y-4">
             <div className="flex justify-between gap-6 md:gap-8">
               {/* About section 
               <div className="w-fit space-y-3 md:space-y-4">
@@ -49,11 +49,11 @@ const Footer = () => {
               <div className="w-fit space-y-3 md:space-y-4 ">
                 <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#6F74DD] poppins">Quick Links</h4>
                 <ul className="space-y-1 md:space-y-2">
-                  <li><Link to="/" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Home</Link></li>
-                  <li><a href="/about" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">About Us</a></li>
-                   <li><a href="/directory" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">Directory</a></li>
-                  <li><a href="/sign-up" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">Certifications</a></li>
-                  <li><Link to="/comingsoon" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">Career</Link></li>
+                  <li><Link to="/" className="lg:text-[16px] text-[13px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Home</Link></li>
+                  <li><a href="/about" className="lg:text-[16px] text-[13px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">About Us</a></li>
+                  <li><a href="/directory" className="lg:text-[16px] text-[13px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">Directory</a></li>
+                  <li><a href="/sign-up" className="lg:text-[16px] text-[13px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">Certifications</a></li>
+                  <li><Link to="/comingsoon" className="lg:text-[16px] text-[13px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">Career</Link></li>
                 </ul>
               </div>
 
@@ -62,25 +62,25 @@ const Footer = () => {
                 <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#6F74DD] poppins">Follow Us</h4>
                 <ul className="space-y-1 md:space-y-2">
                   <li>
-                    <a href="https://www.facebook.com/share/1A8V21L6Qj" className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">
+                    <a href="https://www.facebook.com/share/1A8V21L6Qj" className="flex items-center lg:text-[16px] text-[13px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">
                       <FaFacebookF className="me-2 md:me-3" />
                       Facebook
                     </a>
                   </li>
                   <li>
-                    <a href="https://x.com/CnessInc" className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">
+                    <a href="https://x.com/CnessInc" className="flex items-center lg:text-[16px] text-[13px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">
                       <FaTwitter className="me-2 md:me-3" />
                       X
                     </a>
                   </li>
                   <li>
-                    <a href="https://www.instagram.com/cness.inc" className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">
+                    <a href="https://www.instagram.com/cness.inc" className="flex items-center lg:text-[16px] text-[13px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">
                       <FaInstagram className="me-2 md:me-3" />
                       Instagram
                     </a>
                   </li>
                   <li>
-                    <a href="https://www.youtube.com/@CNESSinc" className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">
+                    <a href="https://www.youtube.com/@CNESSinc" className="flex items-center lg:text-[16px] text-[13px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">
                       <FaYoutube className="me-2 md:me-3" />
                       YouTube
                     </a>
@@ -96,33 +96,33 @@ const Footer = () => {
       {/* Bottom section */}
       <div className="py-4 bg-[#C6C4FF] px-4 sm:px-6">
         <div className="max-w-7xl mx-auto lg:flex flex-col md:flex-row justify-between items-center gap-2 hidden">
-<div
-  className="text-[15px] leading-[100%] font-[500] font-[Plus Jakarta Sans] text-white"
-  style={{
-    letterSpacing: "-0.2px",
-    fontStyle: "normal",
-  }}
->
-  Copyright © {new Date().getFullYear()}
-</div>          
-<div className="flex flex-wrap justify-between gap-4 md:gap-16 lg:gap-24">
+          <div
+            className="text-[14px] leading-[100%] font-[500] font-[Plus Jakarta Sans] text-black"
+            style={{
+              letterSpacing: "-0.2px",
+              fontStyle: "normal",
+            }}
+          >
+            Copyright © {new Date().getFullYear()}
+          </div>
+          <div className="flex flex-wrap justify-between gap-4 md:gap-16 lg:gap-24">
 
-            <Link to="/terms-and-conditions" className="text-[15px] leading-[100%] font-[500] font-[Plus Jakarta Sans] text-white">
+            <Link to="/terms-and-conditions" className="text-[14px] leading-[100%] font-[500] font-[Plus Jakarta Sans] text-black">
               Terms & Conditions
             </Link>
-            <Link to="/privacy-policy" className="text-[15px] leading-[100%] font-[500] font-[Plus Jakarta Sans] text-white">
+            <Link to="/privacy-policy" className="text-[14px] leading-[100%] font-[500] font-[Plus Jakarta Sans] text-black">
               Privacy Policy
             </Link>
           </div>
         </div>
         <div className="max-w-7xl mx-auto lg:hidden flex flex-row  justify-between items-center gap-2">
           <p className="text-xs md:text-sm jakarta font-semibold">Copyright © {new Date().getFullYear()}</p>
-            <Link to="/terms-and-conditions" className="text-xs md:text-sm hover:underline jakarta font-semibold">
-              Terms & Conditions
-            </Link>
-            <Link to="/privacy-policy" className="text-xs md:text-sm hover:underline jakarta font-semibold">
-              Privacy Policy
-            </Link>
+          <Link to="/terms-and-conditions" className="text-xs md:text-sm hover:underline jakarta font-semibold">
+            Terms & Conditions
+          </Link>
+          <Link to="/privacy-policy" className="text-xs md:text-sm hover:underline jakarta font-semibold">
+            Privacy Policy
+          </Link>
         </div>
       </div>
     </>
