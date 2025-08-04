@@ -305,11 +305,11 @@ export default function SocialTopBar() {
 
     const formData = new FormData();
     formData.append("content", postMessage);
-
+    
     // Handle multiple images or single video
     if (selectedImages.length > 0) {
       selectedImages.forEach((image) => {
-        formData.append("files", image);
+        formData.append("file", image);
       });
     } else if (selectedVideo) {
       formData.append("file", selectedVideo);
