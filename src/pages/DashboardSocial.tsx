@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 // import { useNavigate } from "react-router-dom";
 import StoryCard from "../components/Social/StoryCard";
 import { Share2 } from "lucide-react";
@@ -24,10 +24,22 @@ import like from "../assets/like.png";
 import Like1 from "../assets/Like1.png";
 import comment from "../assets/comment.png";
 import comment1 from "../assets/comment1.png";
-import repost from "../assets/repost.png";
-import repost1 from "../assets/repost1.png";
 import Image from "../components/ui/Image";
 import CommentBox from "./CommentBox";
+import { useToast } from "../components/ui/Toast/ToastProvider";
+import {
+  FacebookShareButton,
+  LinkedinShareButton,
+  TwitterShareButton,
+  WhatsappShareButton,
+} from "react-share";
+import {
+  FaFacebook,
+  FaInstagram,
+  FaLinkedin,
+  FaTwitter,
+  FaWhatsapp,
+} from "react-icons/fa";
 
 interface Post {
   id: string;
@@ -197,14 +209,14 @@ export default function SocialTopBar() {
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [postMessage, setPostMessage] = useState("");
   const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
-  const [apiMessage, setApiMessage] = useState<string | null>(null);
+  const [_apiMessage, setApiMessage] = useState<string | null>(null);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
   const [storyMessage, setStoryMessage] = useState("");
   const [selectedStoryVideo, setSelectedStoryVideo] = useState<File | null>(
     null
   );
   const [isUploading, setIsUploading] = useState(false);
-  const [apiStoryMessage, setApiStoryMessage] = useState<string | null>(null);
+  const [_apiStoryMessage, setApiStoryMessage] = useState<string | null>(null);
 
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
@@ -218,7 +230,10 @@ export default function SocialTopBar() {
   const [postVideoPreviewUrl, setPostVideoPreviewUrl] = useState<string | null>(
     null
   );
-  console.log("🚀 ~ SocialTopBar ~ postVideoPreviewUrl:", postVideoPreviewUrl);
+  const [openMenuPostId, setOpenMenuPostId] = useState<string | null>(null);
+  const { showToast } = useToast();
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const loggedInUserID = localStorage.getItem("Id");
   const CONTENT_LIMIT = 150;
   const toggleExpand = (postId: string) => {
@@ -305,7 +320,7 @@ export default function SocialTopBar() {
 
     const formData = new FormData();
     formData.append("content", postMessage);
-    
+
     // Handle multiple images or single video
     if (selectedImages.length > 0) {
       selectedImages.forEach((image) => {
@@ -322,6 +337,7 @@ export default function SocialTopBar() {
         setApiMessage(
           response?.success?.message || "Post created successfully"
         );
+        await getUserPosts();
         setTimeout(() => {
           setShowPopup(false);
           // Clear all states
@@ -336,9 +352,13 @@ export default function SocialTopBar() {
       } else {
         setApiMessage("Failed to create post.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setApiMessage("Something went wrong.");
+      showToast({
+        message: err?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
@@ -398,9 +418,13 @@ export default function SocialTopBar() {
       } else {
         setApiStoryMessage("Failed to create story.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setApiStoryMessage("Something went wrong.");
+      showToast({
+        message: err?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     } finally {
       setIsUploading(false); // Hide loader
     }
@@ -470,10 +494,61 @@ export default function SocialTopBar() {
   //   }
   // };
 
+  const isImageFile = (url: string) => {
+    return url.match(/\.(jpeg|jpg|gif|png|webp)$/i) !== null;
+  };
+
+  const isVideoFile = (url: string) => {
+    return url.match(/\.(mp4|webm|ogg|mov)$/i) !== null;
+  };
+
+  const myid = localStorage.getItem("Id");
+  const urldata = `https://dev.cness.io/directory/user-profile/${myid}`;
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      setOpenMenuPostId(null);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const toggleMenu = (postId: string) => {
+    setOpenMenuPostId((prev) => (prev === postId ? null : postId));
+  };
+
+  const handleScroll = () => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = container;
+    if (scrollTop + clientHeight >= scrollHeight - 10) {
+      getUserPosts(); // Call API when the user scrolls near the bottom
+    }
+  };
+  //@ts-ignore
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+    }
+    // Cleanup on unmount
+    return () =>
+      container && container.removeEventListener("scroll", handleScroll);
+  }, [page, isLoading]);
+
   return (
     <div className="flex flex-col lg:flex-row justify-between gap-4 lg:gap-6 px-2 md:px-4 lg:px-6 w-full">
       {/* Left Side: Post & Stories - Full width on mobile */}
-      <div className="w-full lg:max-w-[70%]">
+      <div
+        className="w-full lg:max-w-[70%] overflow-y-auto h-[calc(100vh-100px)]"
+        ref={containerRef}
+      >
         {/* Start a Post */}
         <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-4 md:p-6 rounded-xl mb-4 md:mb-5">
           <div className="flex flex-col gap-2 md:gap-3">
@@ -651,30 +726,66 @@ export default function SocialTopBar() {
               {/* Dynamic Media Block */}
               {post.file && (
                 <div className="rounded-lg overflow-hidden">
-                  {post.file_type === "image" && (
-                    <img
-                      src={post.file}
-                      alt="Post content"
-                      className="w-full max-h-[200px] md:max-h-[300px] object-cover rounded-lg"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = carosuel1;
-                      }}
-                    />
-                  )}
+                  {(() => {
+                    const urls = post.file.split(",").map((url) => url.trim());
+                    const isMultiple = urls.length > 1;
 
-                  {post.file_type === "video/mp4" && (
-                    <video
-                      className="w-full max-h-[200px] md:max-h-[300px] object-cover rounded-lg"
-                      controls
-                      muted
-                      autoPlay
-                      loop
-                    >
-                      <source src={post.file} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
-                  )}
+                    return urls.map((url, index) => {
+                      const isImage =
+                        post.file_type === "image" || isImageFile(url);
+                      const isVideo =
+                        post.file_type === "video/mp4" || isVideoFile(url);
+
+                      if (isVideo) {
+                        return (
+                          <video
+                            key={index}
+                            className={`w-full ${
+                              isMultiple
+                                ? "h-32 md:h-48"
+                                : "max-h-[200px] md:max-h-[300px]"
+                            } object-cover rounded-lg`}
+                            controls
+                            muted
+                            autoPlay
+                            loop
+                          >
+                            <source src={url} type="video/mp4" />
+                            Your browser does not support the video tag.
+                          </video>
+                        );
+                      } else if (isImage) {
+                        return (
+                          <img
+                            key={index}
+                            src={url}
+                            alt={`Post content ${index + 1}`}
+                            className={`${
+                              isMultiple
+                                ? "w-full h-32 md:h-48"
+                                : "w-full max-h-[200px] md:max-h-[300px]"
+                            } object-cover rounded-lg mb-2`}
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = carosuel1;
+                            }}
+                          />
+                        );
+                      } else {
+                        return (
+                          <a
+                            key={index}
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-500 underline"
+                          >
+                            View File {isMultiple ? index + 1 : ""}
+                          </a>
+                        );
+                      }
+                    });
+                  })()}
                 </div>
               )}
             </div>
@@ -690,29 +801,38 @@ export default function SocialTopBar() {
                       className="w-6 h-6 md:w-8 md:h-8"
                     />
                   </div>
-                  <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                  {/* <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
                     <img
                       src={comment}
                       alt="Comment"
                       className="w-6 h-6 md:w-8 md:h-8"
                     />
-                  </div>
-                  <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                  </div> */}
+                  {/* <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
                     <img
                       src={repost}
                       alt="Repost"
                       className="w-6 h-6 md:w-8 md:h-8"
                     />
-                  </div>
+                  </div> */}
                   <span className="text-xs md:text-sm text-gray-500 pl-3 md:pl-5">
                     {post.likes_count}
                   </span>
                 </div>
               </div>
-              <span>{post.comments_count} Comments</span>
+              <div className="flex items-center gap-2">
+                <span>{post.comments_count}</span>
+                <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                  <img
+                    src={comment}
+                    alt="Comment"
+                    className="w-6 h-6 md:w-8 md:h-8"
+                  />
+                </div>
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4 mt-3 md:mt-5">
+            <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
               <button
                 onClick={() => handleLike(post.id)}
                 className={`flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base ${
@@ -735,12 +855,49 @@ export default function SocialTopBar() {
                 <img src={comment1} className="w-5 h-5 md:w-6 md:h-6" />{" "}
                 Comments
               </button>
-              <button className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm">
+              {/* <button className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm">
                 <img src={repost1} className="w-5 h-5 md:w-6 md:h-6" /> Repost
-              </button>
-              <button className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-purple-500 hover:bg-blue-50 shadow-sm">
-                <Share2 size={18} className="md:w-5 md:h-5" />
-              </button>
+              </button> */}
+              <div className="relative">
+                <button
+                  onClick={() => toggleMenu(post.id)}
+                  className="flex items-center w-full justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-purple-500 hover:bg-blue-50 shadow-sm"
+                >
+                  <Share2 size={18} className="md:w-5 md:h-5" />
+                </button>
+                {openMenuPostId === post.id && (
+                  <div
+                    className="absolute top-10 left-0 bg-white shadow-lg rounded-lg p-3 z-10"
+                    ref={menuRef}
+                  >
+                    <ul className="flex items-center gap-4">
+                      <li>
+                        <FacebookShareButton url={urldata}>
+                          <FaFacebook size={32} color="#4267B2" />
+                        </FacebookShareButton>
+                      </li>
+                      <li>
+                        <LinkedinShareButton url={urldata}>
+                          <FaLinkedin size={32} color="#0077B5" />
+                        </LinkedinShareButton>
+                      </li>
+                      <li>
+                        <FaInstagram size={32} color="#C13584" />
+                      </li>
+                      <li>
+                        <TwitterShareButton url={urldata}>
+                          <FaTwitter size={32} color="#1DA1F2" />
+                        </TwitterShareButton>
+                      </li>
+                      <li>
+                        <WhatsappShareButton url={urldata}>
+                          <FaWhatsapp size={32} color="#1DA1F2" />
+                        </WhatsappShareButton>
+                      </li>
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         ))}
@@ -803,7 +960,7 @@ export default function SocialTopBar() {
               </button>
             </div>
 
-            {apiMessage && (
+            {/* {apiMessage && (
               <div
                 className={`poppins text-center mb-4 ${
                   apiMessage.includes("verification")
@@ -813,7 +970,7 @@ export default function SocialTopBar() {
               >
                 {apiMessage}
               </div>
-            )}
+            )} */}
             <div className="px-3 mt-5 pb-5">
               <textarea
                 rows={4}
@@ -974,7 +1131,7 @@ export default function SocialTopBar() {
               </button>
             </div>
 
-            {apiStoryMessage && (
+            {/* {apiStoryMessage && (
               <div
                 className={`poppins text-center mb-4 ${
                   apiStoryMessage.includes("verification")
@@ -984,7 +1141,7 @@ export default function SocialTopBar() {
               >
                 {apiStoryMessage}
               </div>
-            )}
+            )} */}
             <div className="px-3 mt-5 pb-5">
               <textarea
                 rows={4}

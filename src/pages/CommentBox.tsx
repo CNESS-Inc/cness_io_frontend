@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { GetComment, PostComments, PostChildComments, PostCommentLike } from "../Common/ServerAPI";
+import { useToast } from "../components/ui/Toast/ToastProvider";
 
 interface Comment {
   id: string;
@@ -45,6 +46,7 @@ const CommentBox = ({
   const [replyText, setReplyText] = useState("");
   const commentBoxRef = useRef<HTMLDivElement>(null);
   const profilePicture = localStorage.getItem("profile_picture") || "/profile.png";
+  const { showToast } = useToast();
 
   const fetchComments = async () => {
     setIsLoading(true);
@@ -96,6 +98,11 @@ const CommentBox = ({
       setCommentText("");
     } catch (error: any) {
       console.error("Error posting comment:", error.message || error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
@@ -150,6 +157,11 @@ const CommentBox = ({
       setShowReply(null);
     } catch (error: any) {
       console.error("Error posting reply:", error.message || error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
