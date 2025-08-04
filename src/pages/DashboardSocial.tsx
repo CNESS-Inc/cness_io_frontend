@@ -5,6 +5,7 @@ import { Share2 } from "lucide-react";
 import {
   AddPost,
   AddStory,
+  GetStory,
   PostsDetails,
   PostsLike,
   SendFollowRequest,
@@ -26,6 +27,7 @@ import comment1 from "../assets/comment1.png";
 import repost from "../assets/repost.png";
 import repost1 from "../assets/repost1.png";
 import Image from "../components/ui/Image";
+import CommentBox from "./CommentBox";
 
 interface Post {
   id: string;
@@ -191,19 +193,20 @@ export default function SocialTopBar() {
   // const toggleExpand = () => setIsExpanded(!isExpanded);
   const [showPopup, setShowPopup] = useState(false);
   const [showStoryPopup, setShowStoryPopup] = useState(false);
-
+  const [showCommentBox, setShowCommentBox] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [postMessage, setPostMessage] = useState("");
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
   const [apiMessage, setApiMessage] = useState<string | null>(null);
-
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
   const [storyMessage, setStoryMessage] = useState("");
   const [selectedStoryVideo, setSelectedStoryVideo] = useState<File | null>(
     null
   );
+  const [isUploading, setIsUploading] = useState(false);
   const [apiStoryMessage, setApiStoryMessage] = useState<string | null>(null);
 
-  const [_selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
   const [userPosts, setUserPosts] = useState<Post[]>([]);
   const [page, setPage] = useState(1);
@@ -212,6 +215,10 @@ export default function SocialTopBar() {
   const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>(
     {}
   );
+  const [postVideoPreviewUrl, setPostVideoPreviewUrl] = useState<string | null>(
+    null
+  );
+  console.log("🚀 ~ SocialTopBar ~ postVideoPreviewUrl:", postVideoPreviewUrl);
   const loggedInUserID = localStorage.getItem("Id");
   const CONTENT_LIMIT = 150;
   const toggleExpand = (postId: string) => {
@@ -259,19 +266,54 @@ export default function SocialTopBar() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     setSelectedImages(files);
+    // Clear video selection if images are selected
+    setSelectedVideo(null);
+    setPostVideoPreviewUrl(null);
+  };
+
+  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedVideo(file);
+      // Clear image selection if video is selected
+      setSelectedImages([]);
+
+      // Create preview URL
+      const videoUrl = URL.createObjectURL(file);
+      setPostVideoPreviewUrl(videoUrl);
+    }
+  };
+
+  const handleRemoveMedia = () => {
+    setSelectedImages([]);
+    setSelectedVideo(null);
+    if (postVideoPreviewUrl) {
+      URL.revokeObjectURL(postVideoPreviewUrl);
+      setPostVideoPreviewUrl(null);
+    }
+  };
+  const handleRemoveImage = (index: number) => {
+    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmitPost = async () => {
     setApiMessage(null);
-    if (!postMessage && !selectedImage && !selectedVideo) {
+    if (!postMessage && !selectedImages.length && !selectedVideo) {
       setApiMessage("Please add a message or select media.");
       return;
     }
 
     const formData = new FormData();
     formData.append("content", postMessage);
-    if (selectedImage) formData.append("file", selectedImage);
-    if (selectedVideo) formData.append("file", selectedVideo);
+
+    // Handle multiple images or single video
+    if (selectedImages.length > 0) {
+      selectedImages.forEach((image) => {
+        formData.append("files", image);
+      });
+    } else if (selectedVideo) {
+      formData.append("file", selectedVideo);
+    }
 
     try {
       const response = await AddPost(formData);
@@ -282,11 +324,15 @@ export default function SocialTopBar() {
         );
         setTimeout(() => {
           setShowPopup(false);
+          // Clear all states
+          setPostMessage("");
+          setSelectedImages([]);
+          setSelectedVideo(null);
+          if (postVideoPreviewUrl) {
+            URL.revokeObjectURL(postVideoPreviewUrl);
+            setPostVideoPreviewUrl(null);
+          }
         }, 1000);
-
-        setPostMessage("");
-        setSelectedImage(null);
-        setSelectedVideo(null);
       } else {
         setApiMessage("Failed to create post.");
       }
@@ -296,26 +342,55 @@ export default function SocialTopBar() {
     }
   };
 
+  const handleStoryVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedStoryVideo(file);
+
+      // Create preview URL
+      const videoUrl = URL.createObjectURL(file);
+      setVideoPreviewUrl(videoUrl);
+
+      // Clean up the URL when component unmounts or when video changes
+      return () => {
+        URL.revokeObjectURL(videoUrl);
+      };
+    }
+  };
+
+  // Update the remove video handler
+  const handleRemoveStoryVideo = () => {
+    setSelectedStoryVideo(null);
+    if (videoPreviewUrl) {
+      URL.revokeObjectURL(videoPreviewUrl);
+      setVideoPreviewUrl(null);
+    }
+  };
+
   const handleSubmitStory = async () => {
     setApiStoryMessage(null);
-    if (!storyMessage || !selectedStoryVideo) {
-      setApiStoryMessage("Please add a description or select video.");
+    if (!selectedStoryVideo) {
+      setApiStoryMessage("Please select a video.");
       return;
     }
 
     const formData = new FormData();
     formData.append("description", storyMessage);
-    if (selectedStoryVideo) formData.append("file", selectedStoryVideo);
+    formData.append("file", selectedStoryVideo);
 
     try {
+      setIsUploading(true); // Show loader
       const response = await AddStory(formData);
 
       if (response) {
         setApiStoryMessage(
-          response?.success?.message || "Add story successful"
+          response?.success?.message || "Story added successfully"
         );
-        setTimeout(() => {
+        setTimeout(async () => {
           setShowStoryPopup(false);
+          // Refresh stories after successful upload
+          await GetStory();
+          // setStoryData(res?.data?.data || []);
         }, 1000);
 
         setStoryMessage("");
@@ -326,6 +401,8 @@ export default function SocialTopBar() {
     } catch (err) {
       console.error(err);
       setApiStoryMessage("Something went wrong.");
+    } finally {
+      setIsUploading(false); // Hide loader
     }
   };
 
@@ -394,73 +471,76 @@ export default function SocialTopBar() {
   // };
 
   return (
-    <div className="flex flex-col md:flex-row justify-between gap-6 px-4 md:px-6 w-full">
-      {/* Left Side: Post & Stories */}
-      <div className="max-w-[70%]">
+    <div className="flex flex-col lg:flex-row justify-between gap-4 lg:gap-6 px-2 md:px-4 lg:px-6 w-full">
+      {/* Left Side: Post & Stories - Full width on mobile */}
+      <div className="w-full lg:max-w-[70%]">
         {/* Start a Post */}
-        <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-6 rounded-xl mb-5">
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-4">
+        <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-4 md:p-6 rounded-xl mb-4 md:mb-5">
+          <div className="flex flex-col gap-2 md:gap-3">
+            <div className="flex items-center gap-3">
               <img
                 src={createstory}
                 alt="User"
-                className="w-10 h-10 rounded-full object-cover"
+                className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
               />
               <input
                 type="text"
                 placeholder="Start a Post"
-                className="flex-1 cursor-pointer px-4 py-2 rounded-full border border-gray-300 text-[16px] focus:outline-none bg-white"
+                className="flex-1 cursor-pointer px-3 py-1 md:px-4 md:py-2 rounded-full border border-gray-300 text-sm md:text-[16px] focus:outline-none bg-white"
                 onClick={() => openPostPopup()}
                 readOnly
               />
             </div>
-            <div className="flex justify-center gap-10 text-[15px] text-gray-700 mt-3">
-              <button className="flex items-center gap-2">
+            <div className="flex justify-between md:justify-center md:gap-10 text-xs md:text-[15px] text-gray-700 mt-2 md:mt-3">
+              <button className="flex items-center gap-1 md:gap-2">
                 <Image
                   src="/youtube.png"
                   alt="youtube"
-                  width={24}
-                  height={16}
-                  className="object-contain rounded-0"
+                  width={20}
+                  height={14}
+                  className="object-contain rounded-0 w-5 md:w-6"
                 />
-                <span className="text-black text-sm">Video</span>
+                <span className="text-black text-xs md:text-sm">Video</span>
               </button>
-              <button className="flex items-center gap-2">
+              <button className="flex items-center gap-1 md:gap-2">
                 <Image
                   src="/picture.png"
                   alt="picture"
-                  width={24}
-                  height={20}
-                  className="object-contain rounded-0"
+                  width={20}
+                  height={16}
+                  className="object-contain rounded-0 w-5 md:w-6"
                 />
-                <span className="text-black text-sm">Photo</span>
+                <span className="text-black text-xs md:text-sm">Photo</span>
               </button>
-              <button className="flex items-center gap-2">
+              <button className="flex items-center gap-1 md:gap-2">
                 <Image
                   src="/list.png"
                   alt="list"
-                  width={24}
-                  height={20}
-                  className="object-contain rounded-0"
+                  width={20}
+                  height={16}
+                  className="object-contain rounded-0 w-5 md:w-6"
                 />
-                <span className="text-black text-sm">List</span>
+                <span className="text-black text-xs md:text-sm">List</span>
               </button>
             </div>
           </div>
         </div>
 
         {/* Story Strip Wrapper */}
-        <div className="flex gap-1 overflow-x-auto scrollbar-hide snap-x snap-mandatory mt-4">
+        <div className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory mt-3 md:mt-4">
           {/* Create Story Card */}
           <div
-            // onClick={() => navigate("/social/story/create")}
             onClick={() => openStoryPopup()}
-            className="w-[164px] h-[214px] rounded-[12px] overflow-hidden relative cursor-pointer shrink-0 snap-start"
+            className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-[12px] overflow-hidden relative cursor-pointer shrink-0 snap-start"
           >
             <img
               src={createstory}
               alt="Create Story Background"
               className="w-full h-full object-cover"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = "/profile.png";
+              }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
             <svg
@@ -473,10 +553,10 @@ export default function SocialTopBar() {
                 fill="#7C81FF"
               />
             </svg>
-            <div className="absolute bottom-[46px] left-1/2 -translate-x-1/2 z-20 w-10 h-10 bg-white text-[#7C81FF] rounded-full flex items-center justify-center text-xl shadow-md leading-0">
+            <div className="absolute bottom-[46px] left-1/2 -translate-x-1/2 z-20 w-8 h-8 md:w-10 md:h-10 bg-white text-[#7C81FF] rounded-full flex items-center justify-center text-xl shadow-md leading-0">
               +
             </div>
-            <div className="absolute bottom-[14px] w-full text-center text-white text-[15px] font-medium z-20">
+            <div className="absolute bottom-[14px] w-full text-center text-white text-xs md:text-[15px] font-medium z-20">
               Create Story
             </div>
             <div className="w-full border-t-[5px] border-[#7C81FF] mt-4"></div>
@@ -485,38 +565,40 @@ export default function SocialTopBar() {
           {storyList.map((story) => (
             <div
               key={story.id}
-              className="w-[162px] h-[214px] snap-start shrink-0 rounded-[12px] overflow-hidden relative"
+              className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-[12px] overflow-hidden relative"
             >
-              {/* Background video or image */}
               <StoryCard {...story} />
-
-              {/* Avatar + Name Overlay */}
               <div className="absolute bottom-2 left-2 flex items-center gap-2 z-20 text-white">
                 <img
                   src={story.userIcon}
                   alt={story.userName}
-                  className="w-6 h-6 rounded-full object-cover border border-white"
+                  className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover border border-white"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "/profile.png";
+                  }}
                 />
-                <span className="text-[13px] font-medium drop-shadow-sm">
+                <span className="text-xs md:text-[13px] font-medium drop-shadow-sm">
                   {story.userName}
                 </span>
               </div>
             </div>
           ))}
         </div>
-        <div className="w-full border-t-[1px] border-[#C8C8C8] mt-8"></div>
-        {/* secion1 */}
+        <div className="w-full border-t-[1px] border-[#C8C8C8] mt-4 md:mt-6"></div>
+
+        {/* Posts Section */}
         {userPosts.map((post) => (
           <div
             key={post.id}
-            className="bg-white rounded-xl shadow-md p-4 w-full max-w-full mx-auto mt-6"
+            className="bg-white rounded-xl shadow-md p-3 md:p-4 w-full mx-auto mt-4 md:mt-6"
           >
-            {/* Header (unchanged) */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+            {/* Header */}
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 md:gap-3">
                 <img
                   src={post.profile.profile_picture}
-                  className="w-10 h-10 rounded-full"
+                  className="w-8 h-8 md:w-10 md:h-10 rounded-full"
                   alt="User"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
@@ -524,44 +606,42 @@ export default function SocialTopBar() {
                   }}
                 />
                 <div>
-                  <p className="font-semibold text-gray-800">
+                  <p className="font-semibold text-sm md:text-base text-gray-800">
                     {post.profile.first_name} {post.profile.last_name}
-                    <span className="text-gray-500 text-sm">
+                    <span className="text-gray-500 text-xs md:text-sm">
                       {" "}
                       @{post.user.username}
                     </span>
                   </p>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-xs md:text-sm text-gray-400">
                     {new Date(post.createdAt).toLocaleString()}
                   </p>
                 </div>
               </div>
               {post.user_id !== loggedInUserID && (
-              <>
                 <button
-                onClick={() => handleFollow(post.user_id)}
-                className={`text-sm px-3 py-1 rounded-full ${
-                  post.if_following
-                    ? "bg-gray-200 text-gray-800"
-                    : "bg-[#7C81FF] text-white"
-                } hover:bg-indigo-600 hover:text-white`}
-              >
-                {post.if_following ? "Following" : "+ Follow"}
-              </button>
-              </>
-            )}
+                  onClick={() => handleFollow(post.user_id)}
+                  className={`text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full ${
+                    post.if_following
+                      ? "bg-gray-200 text-gray-800"
+                      : "bg-[#7C81FF] text-white"
+                  } hover:bg-indigo-600 hover:text-white`}
+                >
+                  {post.if_following ? "Following" : "+ Follow"}
+                </button>
+              )}
             </div>
 
             {/* Post Content */}
-            <div className="mt-4">
-              <p className="text-gray-800 mb-3">
+            <div className="mt-3 md:mt-4">
+              <p className="text-gray-800 text-sm md:text-base mb-2 md:mb-3">
                 {expandedPosts[post.id] || post.content.length <= CONTENT_LIMIT
                   ? post.content
                   : `${post.content.substring(0, CONTENT_LIMIT)}...`}
                 {post.content.length > CONTENT_LIMIT && (
                   <button
                     onClick={() => toggleExpand(post.id)}
-                    className="text-blue-500 ml-1 text-sm font-medium hover:underline focus:outline-none"
+                    className="text-blue-500 ml-1 text-xs md:text-sm font-medium hover:underline focus:outline-none"
                   >
                     {expandedPosts[post.id] ? "Show less" : "Read more"}
                   </button>
@@ -575,7 +655,7 @@ export default function SocialTopBar() {
                     <img
                       src={post.file}
                       alt="Post content"
-                      className="w-full max-h-[300px] object-cover rounded-lg"
+                      className="w-full max-h-[200px] md:max-h-[300px] object-cover rounded-lg"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = carosuel1;
@@ -585,7 +665,7 @@ export default function SocialTopBar() {
 
                   {post.file_type === "video/mp4" && (
                     <video
-                      className="w-full max-h-[300px] object-cover rounded-lg"
+                      className="w-full max-h-[200px] md:max-h-[300px] object-cover rounded-lg"
                       controls
                       muted
                       autoPlay
@@ -599,20 +679,32 @@ export default function SocialTopBar() {
               )}
             </div>
 
-            {/* Reactions and Action Buttons (unchanged) */}
-            <div className="flex justify-between items-center mt-4 px-1 text-sm text-gray-600">
-              <div className="flex items-center gap-2">
-                <div className="flex items-center -space-x-3">
-                  <div className="w-8 h-8 flex items-center justify-center">
-                    <img src={like} alt="Like" className="w-8 h-8" />
+            {/* Reactions and Action Buttons */}
+            <div className="flex justify-between items-center mt-3 px-1 text-xs md:text-sm text-gray-600">
+              <div className="flex items-center gap-1 md:gap-2">
+                <div className="flex items-center -space-x-2 md:-space-x-3">
+                  <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                    <img
+                      src={like}
+                      alt="Like"
+                      className="w-6 h-6 md:w-8 md:h-8"
+                    />
                   </div>
-                  <div className="w-8 h-8 flex items-center justify-center">
-                    <img src={comment} alt="Comment" className="w-8 h-8" />
+                  <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                    <img
+                      src={comment}
+                      alt="Comment"
+                      className="w-6 h-6 md:w-8 md:h-8"
+                    />
                   </div>
-                  <div className="w-8 h-8 flex items-center justify-center">
-                    <img src={repost} alt="Repost" className="w-8 h-8" />
+                  <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                    <img
+                      src={repost}
+                      alt="Repost"
+                      className="w-6 h-6 md:w-8 md:h-8"
+                    />
                   </div>
-                  <span className="text-sm text-gray-500 pl-5">
+                  <span className="text-xs md:text-sm text-gray-500 pl-3 md:pl-5">
                     {post.likes_count}
                   </span>
                 </div>
@@ -620,58 +712,76 @@ export default function SocialTopBar() {
               <span>{post.comments_count} Comments</span>
             </div>
 
-            <div className="grid grid-cols-4 gap-4 mt-5">
+            <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4 mt-3 md:mt-5">
               <button
                 onClick={() => handleLike(post.id)}
-                className={`flex items-center justify-center gap-2 px-4 py-2 border border-[#E5E7EB] rounded-xl text-base ${
+                className={`flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base ${
                   post.is_liked ? "text-blue-600" : "text-blue-500"
                 } hover:bg-blue-50 shadow-sm`}
               >
-                <img src={post.is_liked ? like : Like1} className="w-6 h-6" />
+                <img
+                  src={post.is_liked ? like : Like1}
+                  className="w-5 h-5 md:w-6 md:h-6"
+                />
                 Like
               </button>
-              <button className="flex items-center justify-center gap-2 px-4 py-2 border border-[#E5E7EB] rounded-xl text-base text-blue-500 hover:bg-blue-50 shadow-sm">
-                <img src={comment1} className="w-6 h-6 " /> Comments
+              <button
+                onClick={() => {
+                  setSelectedPostId(post.id);
+                  setShowCommentBox(true);
+                }}
+                className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm"
+              >
+                <img src={comment1} className="w-5 h-5 md:w-6 md:h-6" />{" "}
+                Comments
               </button>
-              <button className="flex items-center justify-center gap-2 px-4 py-2 border border-[#E5E7EB] rounded-xl text-base text-blue-500 hover:bg-blue-50 shadow-sm">
-                <img src={repost1} className="w-6 h-6 " /> Repost
+              <button className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm">
+                <img src={repost1} className="w-5 h-5 md:w-6 md:h-6" /> Repost
               </button>
-              <button className="flex items-center justify-center gap-2 px-4 py-2 border border-[#E5E7EB] rounded-xl text-base text-purple-500 hover:bg-blue-50 shadow-sm">
-                <Share2 size={20} />
+              <button className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-purple-500 hover:bg-blue-50 shadow-sm">
+                <Share2 size={18} className="md:w-5 md:h-5" />
               </button>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Right Side: Quick Actions */}
-      <div className="w-[100%] max-w-[30%] h-[438px] bg-white rounded-[12px] pt-6 pb-6 px-3 shadow-sm">
-        <h3 className="text-gray-700 font-semibold mb-4">Quick Actions</h3>
-        <ul className="space-y-8 text-[15px] text-gray-700">
+      {/* Right Side: Quick Actions - Full width on mobile, appears below */}
+      <div className="w-full lg:w-[100%] lg:max-w-[30%] h-auto lg:h-[438px] bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm order-first lg:order-last mb-4 lg:mb-0">
+        <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4">
+          Quick Actions
+        </h3>
+        <ul className="space-y-4 md:space-y-6 text-sm md:text-[15px] text-gray-700">
           <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
-            <img src={Trending} className="w5 h-5" /> Trending
+            <img src={Trending} className="w-4 h-4 md:w-5 md:h-5" /> Trending
           </li>
           <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
-            <img src={Mention} className="w5 h-5" /> Mention & tags
+            <img src={Mention} className="w-4 h-4 md:w-5 md:h-5" /> Mention &
+            tags
           </li>
           <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
-            <img src={Collection} className="w5 h-5" /> My Collection
+            <img src={Collection} className="w-4 h-4 md:w-5 md:h-5" /> My
+            Collection
           </li>
           <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
-            <img src={people} className="w5 h-5" /> People you follow
+            <img src={people} className="w-4 h-4 md:w-5 md:h-5" /> People you
+            follow
           </li>
           <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
-            <img src={Leaderboard} className="w5 h-5" /> Leaderboard
+            <img src={Leaderboard} className="w-4 h-4 md:w-5 md:h-5" />{" "}
+            Leaderboard
           </li>
           <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
-            <img src={Announcement} className="w5 h-5" /> Announcements
+            <img src={Announcement} className="w-4 h-4 md:w-5 md:h-5" />{" "}
+            Announcements
           </li>
         </ul>
       </div>
 
+      {/* Popup Modals (unchanged) */}
       {showPopup && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-[18px] w-full max-w-md shadow-lg relative">
+          <div className="bg-white rounded-[18px] w-full max-w-md mx-4 shadow-lg relative">
             <div className="flex px-5 py-3 bg-[#897AFF1A] justify-between items-center">
               <div className="w-fit h-fit">
                 <Image
@@ -735,9 +845,7 @@ export default function SocialTopBar() {
                       accept="video/*"
                       id="video-upload"
                       className="w-full hidden"
-                      onChange={(e) =>
-                        setSelectedVideo(e.target.files?.[0] || null)
-                      }
+                      onChange={handleVideoChange}
                     />
                   </div>
 
@@ -780,6 +888,55 @@ export default function SocialTopBar() {
                   </div>
                 </div>
               </div>
+              {selectedImages.length > 0 && (
+                <div className="mb-4">
+                  <div className="grid grid-cols-2 gap-2">
+                    {selectedImages.map((file, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={`Preview ${index}`}
+                          className="w-full h-32 object-cover rounded-lg"
+                        />
+                        <button
+                          onClick={() => handleRemoveImage(index)}
+                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Optional: Keep the "Remove All" button if you still want that functionality */}
+                  {/* <button
+                    onClick={() => {
+                      setSelectedImages([]);
+                    }}
+                    className="mt-2 text-sm text-red-500 hover:text-red-700"
+                  >
+                    Remove All Images
+                  </button> */}
+                </div>
+              )}
+
+              {postVideoPreviewUrl && (
+                <div className="mb-4 relative">
+                  <video
+                    controls
+                    className="w-full max-h-[300px] rounded-lg object-cover"
+                    src={postVideoPreviewUrl}
+                  />
+                  <button
+                    onClick={handleRemoveMedia}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center"
+                  >
+                    ×
+                  </button>
+                  <div className="text-xs text-gray-500 mt-1">
+                    Video preview - {selectedVideo?.name}
+                  </div>
+                </div>
+              )}
               <div className="flex justify-between">
                 <button
                   onClick={handleSubmitPost}
@@ -795,7 +952,7 @@ export default function SocialTopBar() {
 
       {showStoryPopup && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-[18px] w-full max-w-md shadow-lg relative">
+          <div className="bg-white rounded-[18px] w-full max-w-md mx-4 shadow-lg relative">
             <div className="flex px-5 py-3 bg-[#897AFF1A] justify-between items-center">
               <div className="w-fit h-fit">
                 <Image
@@ -832,18 +989,16 @@ export default function SocialTopBar() {
               <textarea
                 rows={4}
                 className="w-full p-3 border border-[#ECEEF2] text-black placeholder:text-[#64748B] text-sm rounded-md resize-none mb-3 outline-none focus:border-[#897AFF1A]"
-                placeholder="Write anyting about yourself"
+                placeholder="Write anything about your story"
                 value={storyMessage}
                 onChange={(e) => setStoryMessage(e.target.value)}
               />
 
-              <div className="space-y-3 mb-4 flex rounded-[8px] border border-[#F07EFF1A]  justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
-                <div className="flex justify-end gap-4 w-6/12">
+              {/* Video Upload Section */}
+              <div className="space-y-3 mb-4 flex rounded-[8px] border border-[#F07EFF1A] justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
+                <div className="flex justify-center gap-4 w-full">
                   <div>
-                    <label
-                      className="flex gap-2 items-center text-sm font-medium text-gray-700 mb-1"
-                      htmlFor="video-upload-story"
-                    >
+                    <label className="flex flex-col items-center justify-center gap-2 cursor-pointer">
                       <Image
                         src="/youtube.png"
                         alt="youtube"
@@ -851,31 +1006,68 @@ export default function SocialTopBar() {
                         height={16}
                         className="object-contain rounded-0"
                       />
-                      <span className="text-black text-sm">Video</span>
+                      <span className="text-black text-sm">Select Video</span>
+                      <input
+                        type="file"
+                        accept="video/*"
+                        id="video-upload-story"
+                        className="hidden"
+                        onChange={handleStoryVideoChange}
+                      />
                     </label>
-                    <input
-                      type="file"
-                      accept="video/*"
-                      id="video-upload-story"
-                      className="w-full hidden"
-                      onChange={(e) =>
-                        setSelectedStoryVideo(e.target.files?.[0] || null)
-                      }
-                    />
                   </div>
                 </div>
               </div>
+
+              {/* Video Preview */}
+              {videoPreviewUrl && (
+                <div className="mb-4 relative">
+                  <video
+                    controls
+                    className="w-full max-h-[300px] rounded-lg object-cover"
+                    src={videoPreviewUrl}
+                  />
+                  <button
+                    onClick={handleRemoveStoryVideo}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center"
+                  >
+                    ×
+                  </button>
+                  <div className="text-xs text-gray-500 mt-1">
+                    Video preview - {selectedStoryVideo?.name}
+                  </div>
+                </div>
+              )}
+
               <div className="flex justify-between">
                 <button
                   onClick={handleSubmitStory}
-                  className="w-[93px] h-[36px] me-0 py-1 text-sm ms-auto rounded-[100px] bg-[#7077FE] text-white"
+                  className="w-full py-2 text-sm rounded-[100px] bg-[#7077FE] text-white disabled:bg-gray-400"
+                  disabled={!selectedStoryVideo || isUploading}
                 >
-                  Submit
+                  {isUploading ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Uploading...
+                    </div>
+                  ) : (
+                    "Post Story"
+                  )}
                 </button>
               </div>
             </div>
           </div>
         </div>
+      )}
+
+      {showCommentBox && selectedPostId && (
+        <CommentBox
+          postId={selectedPostId}
+          onClose={() => {
+            setShowCommentBox(false);
+            setSelectedPostId(null);
+          }}
+        />
       )}
     </div>
   );
