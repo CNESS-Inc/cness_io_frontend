@@ -389,9 +389,9 @@ export default function UserProfileView() {
                 </span>{" "}
                 About
               </h3>
-<p className="text-sm text-gray-700 leading-relaxed break-words">
-  {userDetails?.about_us}
-</p>
+              <p className="text-sm text-gray-700 leading-relaxed break-words">
+                {userDetails?.about_us}
+              </p>
             </div>
 
             <div className="flex flex-col mt-[-15px]">

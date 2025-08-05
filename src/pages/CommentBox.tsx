@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { GetComment, PostComments, PostChildComments, PostCommentLike } from "../Common/ServerAPI";
+import { useToast } from "../components/ui/Toast/ToastProvider";
 
 interface Comment {
   id: string;
@@ -30,13 +31,17 @@ interface Reply {
   is_liked?: boolean;
 }
 
+interface CommentBoxProps {
+  postId: string;
+  onClose: () => void;
+  onCommentAdded?: () => void; // Make it optional if not always required
+}
+
 const CommentBox = ({
   postId,
   onClose,
-}: {
-  postId: string;
-  onClose: () => void;
-}) => {
+  onCommentAdded,
+}: CommentBoxProps) => {
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -45,6 +50,7 @@ const CommentBox = ({
   const [replyText, setReplyText] = useState("");
   const commentBoxRef = useRef<HTMLDivElement>(null);
   const profilePicture = localStorage.getItem("profile_picture") || "/profile.png";
+  const { showToast } = useToast();
 
   const fetchComments = async () => {
     setIsLoading(true);
@@ -65,93 +71,113 @@ const CommentBox = ({
   }, [postId]);
 
   const handleSubmitComment = async () => {
-    if (!commentText.trim()) return;
+  if (!commentText.trim()) return;
 
-    try {
-      const formattedData = {
+  try {
+    const formattedData = {
+      text: commentText,
+      post_id: postId,
+    };
+
+    const response = await PostComments(formattedData);
+    
+    if (response?.data?.data) {
+      setComments((prev) => [response.data.data, ...prev]);
+    } else {
+      const newComment: Comment = {
+        id: Date.now().toString(),
+        user_id: "current_user_id",
         text: commentText,
-        post_id: postId,
+        createdAt: new Date().toISOString(),
+        likes_count: 0,
+        replies: [],
+        profile: {
+          first_name: "Your",
+          last_name: "Name",
+          profile_picture: profilePicture,
+        },
       };
-
-      const response = await PostComments(formattedData);
-      
-      if (response?.data?.data) {
-        setComments((prev) => [response.data.data, ...prev]);
-      } else {
-        const newComment: Comment = {
-          id: Date.now().toString(),
-          user_id: "current_user_id",
-          text: commentText,
-          createdAt: new Date().toISOString(),
-          likes_count: 0,
-          replies: [],
-          profile: {
-            first_name: "Your",
-            last_name: "Name",
-            profile_picture: profilePicture,
-          },
-        };
-        setComments((prev) => [newComment, ...prev]);
-      }
-      setCommentText("");
-    } catch (error: any) {
-      console.error("Error posting comment:", error.message || error);
+      setComments((prev) => [newComment, ...prev]);
     }
-  };
+    setCommentText("");
+    
+    // Call the onCommentAdded callback if it exists
+    if (onCommentAdded) {
+      onCommentAdded();
+    }
+  } catch (error: any) {
+    console.error("Error posting comment:", error.message || error);
+    showToast({
+      message: error?.response?.data?.error?.message,
+      type: "error",
+      duration: 5000,
+    });
+  }
+};
 
   const handleReplySubmit = async (commentId: string) => {
-    if (!replyText.trim()) return;
+  if (!replyText.trim()) return;
 
-    try {
-      const formattedData = {
+  try {
+    const formattedData = {
+      text: replyText,
+      comment_id: commentId,
+      post_id: postId,
+    };
+
+    const response = await PostChildComments(formattedData);
+    
+    if (response?.data?.data) {
+      setComments(prev => prev.map(comment => {
+        if (comment.id === commentId) {
+          return {
+            ...comment,
+            replies: [response.data.data, ...comment.replies]
+          };
+        }
+        return comment;
+      }));
+    } else {
+      const newReply: Reply = {
+        id: Date.now().toString(),
+        user_id: "current_user_id",
         text: replyText,
-        comment_id: commentId,
-        post_id: postId,
+        createdAt: new Date().toISOString(),
+        likes_count: 0,
+        profile: {
+          first_name: "Your",
+          last_name: "Name",
+          profile_picture: profilePicture,
+        },
       };
-
-      const response = await PostChildComments(formattedData);
       
-      if (response?.data?.data) {
-        setComments(prev => prev.map(comment => {
-          if (comment.id === commentId) {
-            return {
-              ...comment,
-              replies: [response.data.data, ...comment.replies]
-            };
-          }
-          return comment;
-        }));
-      } else {
-        const newReply: Reply = {
-          id: Date.now().toString(),
-          user_id: "current_user_id",
-          text: replyText,
-          createdAt: new Date().toISOString(),
-          likes_count: 0,
-          profile: {
-            first_name: "Your",
-            last_name: "Name",
-            profile_picture: profilePicture,
-          },
-        };
-        
-        setComments(prev => prev.map(comment => {
-          if (comment.id === commentId) {
-            return {
-              ...comment,
-              replies: [newReply, ...comment.replies]
-            };
-          }
-          return comment;
-        }));
-      }
-      
-      setReplyText("");
-      setShowReply(null);
-    } catch (error: any) {
-      console.error("Error posting reply:", error.message || error);
+      setComments(prev => prev.map(comment => {
+        if (comment.id === commentId) {
+          return {
+            ...comment,
+            replies: [newReply, ...comment.replies]
+          };
+        }
+        return comment;
+      }));
     }
-  };
+    
+    setReplyText("");
+    setShowReply(null);
+    
+    // Call the onCommentAdded callback if it exists
+    if (onCommentAdded) {
+      onCommentAdded();
+    }
+  } catch (error: any) {
+    console.error("Error posting reply:", error.message || error);
+    showToast({
+      message: error?.response?.data?.error?.message,
+      type: "error",
+      duration: 5000,
+    });
+  }
+};
 
   const handleLikeComment = async (commentId: string, isReply: boolean = false) => {
     try {
