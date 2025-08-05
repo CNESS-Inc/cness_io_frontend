@@ -1,23 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
 // import { useNavigate } from "react-router-dom";
 import StoryCard from "../components/Social/StoryCard";
-import { Share2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Share2 } from "lucide-react";
 import {
   AddPost,
   AddStory,
+  GetFollowingUser,
   GetStory,
+  GetUserPost,
   PostsDetails,
   PostsLike,
   SendFollowRequest,
 } from "../Common/ServerAPI";
 
 // images
-import Announcement from "../assets/Announcement.png";
+// import Announcement from "../assets/Announcement.png";
 import Collection from "../assets/Collection.png";
-import Leaderboard from "../assets/Leaderboard.png";
-import Mention from "../assets/Mention.png";
+// import Leaderboard from "../assets/Leaderboard.png";
+// import Mention from "../assets/Mention.png";
 import people from "../assets/people.png";
-import Trending from "../assets/Trending.png";
+// import Trending from "../assets/Trending.png";
 import createstory from "../assets/createstory.jpg";
 import carosuel1 from "../assets/carosuel1.png";
 import like from "../assets/like.png";
@@ -40,6 +42,8 @@ import {
   FaTwitter,
   FaWhatsapp,
 } from "react-icons/fa";
+import FollowedUsersList from "./FollowedUsersList";
+import CollectionList from "./CollectionList";
 
 interface Post {
   id: string;
@@ -66,6 +70,43 @@ interface Post {
     first_name: string;
     last_name: string;
     profile_picture: string;
+  };
+}
+
+interface FollowedUser {
+  id: string;
+  username: string;
+  first_name: string;
+  last_name: string;
+  profile_picture: string;
+  is_following: boolean;
+}
+
+// Best to put this in a separate types file or at the top of your component file
+interface CollectionItem {
+  id: string;
+  title: string;
+  description: string;
+  image_url: string;
+  created_at: string;
+  originalData: {
+    id: string;
+    content: string;
+    file: string;
+    file_type: string | null;
+    createdAt: string;
+    likes_count: number;
+    comments_count: number;
+    is_liked: boolean;
+    profile: {
+      first_name: string;
+      last_name: string;
+      profile_picture: string;
+    };
+    user: {
+      username: string;
+      id: string;
+    };
   };
 }
 
@@ -101,100 +142,181 @@ interface Post {
 //   },
 // ];
 
-const storyList = [
-  {
-    id: "101",
-    userIcon: "/avatars/liam.jpg",
-    userName: "Liam Anderson",
-    title: "Chasing Dreams",
-    videoSrc: "/consciousness_social_media.mp4",
-  },
-  {
-    id: "102",
-    userIcon: "/avatars/noah.jpg",
-    userName: "Noah Thompson",
-    title: "Into the Clouds",
-    videoSrc: "/test1.mp4",
-  },
-  {
-    id: "103",
-    userIcon: "/avatars/oliver.jpg",
-    userName: "Oliver Bennett",
-    title: "Zen & Peace",
-    videoSrc: "/consciousness_social_media.mp4",
-  },
-  {
-    id: "104",
-    userIcon: "/avatars/lucas.jpg",
-    userName: "Lucas Mitchell",
-    title: "Walking Free",
-    videoSrc: "/test1.mp4",
-  },
+// const storyList = [
+//   {
+//     id: "101",
+//     userIcon: "/avatars/liam.jpg",
+//     userName: "Liam Anderson",
+//     title: "Chasing Dreams",
+//     videoSrc: "/consciousness_social_media.mp4",
+//   },
+//   {
+//     id: "102",
+//     userIcon: "/avatars/noah.jpg",
+//     userName: "Noah Thompson",
+//     title: "Into the Clouds",
+//     videoSrc: "/test1.mp4",
+//   },
+//   {
+//     id: "103",
+//     userIcon: "/avatars/oliver.jpg",
+//     userName: "Oliver Bennett",
+//     title: "Zen & Peace",
+//     videoSrc: "/consciousness_social_media.mp4",
+//   },
+//   {
+//     id: "104",
+//     userIcon: "/avatars/lucas.jpg",
+//     userName: "Lucas Mitchell",
+//     title: "Walking Free",
+//     videoSrc: "/test1.mp4",
+//   },
 
-  {
-    id: "105",
-    userIcon: "/avatars/lucas.jpg",
-    userName: "Lucas Mitchell",
-    title: "Walking Free",
-    videoSrc: "/test1.mp4",
-  },
-];
-// function PostCarousel() {
-//   const images = [carosuel1, carosuel2, carosuel3, carosuel4];
-//   const [current, setCurrent] = useState(0);
+//   {
+//     id: "105",
+//     userIcon: "/avatars/lucas.jpg",
+//     userName: "Lucas Mitchell",
+//     title: "Walking Free",
+//     videoSrc: "/test1.mp4",
+//   },
+// ];
 
-//   // Auto slide every 3 seconds
-//   React.useEffect(() => {
-//     const interval = setInterval(() => {
-//       setCurrent((prev) => (prev + 1) % images.length);
-//     }, 3000);
-//     return () => clearInterval(interval);
-//   }, [images.length]);
+interface PostCarouselProps {
+  mediaItems: Array<{
+    type: "image" | "video";
+    url: string;
+  }>;
+}
 
-//   const handlePrev = () => {
-//     setCurrent((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-//   };
+interface Story {
+  id: string;
+  user_id: string;
+  description: string;
+  file: string;
+  createdAt: string;
+  video_file: string;
+  likes_count: number;
+  comments_count: number;
+  is_liked: boolean;
+  storyuser: {
+    id: string;
+    username: string;
+    profile: {
+      user_id: string;
+      first_name: string;
+      last_name: string;
+      profile_picture: string;
+    };
+  };
+}
 
-//   const handleNext = () => {
-//     setCurrent((prev) => (prev + 1) % images.length);
-//   };
+function PostCarousel({ mediaItems }: PostCarouselProps) {
+  const [current, setCurrent] = useState(0);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
-//   return (
-//     <div className="relative w-full rounded-lg overflow-hidden">
-//       <img
-//         src={images[current]}
-//         alt={`Slide ${current}`}
-//         className="w-full object-cover max-h-[300px] transition duration-500 rounded-lg"
-//       />
+  // Auto slide every 3 seconds (only for images)
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      // Only auto-advance if current item is not a video
+      if (mediaItems[current].type !== "video") {
+        setCurrent((prev) => (prev + 1) % mediaItems.length);
+      }
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [mediaItems.length, current]);
 
-//       {/* Arrows */}
-//       <button
-//         onClick={handlePrev}
-//         className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white shadow-md w-8 h-8 rounded-full flex items-center justify-center"
-//       >
-//         <ChevronLeft size={20} />
-//       </button>
-//       <button
-//         onClick={handleNext}
-//         className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white shadow-md w-8 h-8 rounded-full flex items-center justify-center"
-//       >
-//         <ChevronRight size={20} />
-//       </button>
+  // Pause videos when they're not visible
+  useEffect(() => {
+    videoRefs.current.forEach((video, index) => {
+      if (video) {
+        if (index === current && mediaItems[index].type === "video") {
+          video.play().catch((e) => console.error("Video play failed:", e));
+        } else {
+          video.pause();
+        }
+      }
+    });
+  }, [current, mediaItems]);
 
-//       {/* Dots */}
-//       <div className="flex justify-center gap-1 mt-2">
-//         {images.map((_, idx) => (
-//           <span
-//             key={idx}
-//             className={`w-2 h-2 rounded-full ${
-//               idx === current ? "bg-indigo-500" : "bg-gray-300"
-//             }`}
-//           ></span>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
+  const handlePrev = () => {
+    setCurrent((prev) => (prev === 0 ? mediaItems.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrent((prev) => (prev + 1) % mediaItems.length);
+  };
+
+  return (
+    <div className="relative w-full rounded-lg overflow-hidden">
+      {/* Media Container */}
+      <div className="w-full aspect-video bg-black">
+        {mediaItems.map((item, index) => (
+          <div
+            key={index}
+            className={`w-full h-full transition-opacity duration-500 ${
+              index === current ? "block" : "hidden"
+            }`}
+          >
+            {item.type === "image" ? (
+              <img
+                src={item.url}
+                alt={`Slide ${index}`}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <video
+                ref={(el) => {
+                  videoRefs.current[index] = el;
+                }}
+                className="w-full h-full object-cover"
+                controls
+                muted
+                loop
+                playsInline
+              >
+                <source src={item.url} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Show arrows only if there are multiple items */}
+      {mediaItems.length > 1 && (
+        <>
+          <button
+            onClick={handlePrev}
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 shadow-md w-8 h-8 rounded-full flex items-center justify-center z-10"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <button
+            onClick={handleNext}
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 shadow-md w-8 h-8 rounded-full flex items-center justify-center z-10"
+          >
+            <ChevronRight size={20} />
+          </button>
+        </>
+      )}
+
+      {/* Show dots only if there are multiple items */}
+      {mediaItems.length > 1 && (
+        <div className="flex justify-center gap-1 mt-2">
+          {mediaItems.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrent(idx)}
+              className={`w-2 h-2 rounded-full transition-colors ${
+                idx === current ? "bg-indigo-500" : "bg-gray-300"
+              }`}
+            ></button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 //const [isExpanded, setIsExpanded] = useState(false);
 //const toggleExpand = () => setIsExpanded(!isExpanded);
@@ -231,6 +353,90 @@ export default function SocialTopBar() {
     null
   );
   const [openMenuPostId, setOpenMenuPostId] = useState<string | null>(null);
+  const [activeView, setActiveView] = useState<
+    "posts" | "following" | "collection"
+  >("posts");
+  const [followedUsers, setFollowedUsers] = useState<FollowedUser[]>([]);
+  const [collectionItems, setCollectionItems] = useState<CollectionItem[]>([]);
+  console.log("🚀 ~ SocialTopBar ~ collectionItems:", collectionItems)
+  const [_isPostsLoading, setIsPostsLoading] = useState(false);
+  const [isFollowingLoading, setIsFollowingLoading] = useState(false);
+  console.log("🚀 ~ SocialTopBar ~ isFollowingLoading:", isFollowingLoading);
+  const [isCollectionLoading, setIsCollectionLoading] = useState(false);
+  const [storiesData, setStoriesData] = useState<Story[]>([]);
+
+  // Add this function to fetch followed users
+  const fetchFollowedUsers = async () => {
+    setIsFollowingLoading(true);
+    setActiveView("following");
+    try {
+      const res = await GetFollowingUser();
+      // Transform the API response to match FollowedUser interface
+      const transformedUsers = res.data.data.rows.map((item: any) => ({
+        id: item.following_id,
+        username: item.following_user.username,
+        first_name: item.following_user.profile.first_name,
+        last_name: item.following_user.profile.last_name,
+        profile_picture: item.following_user.profile.profile_picture,
+        is_following: true, // Since these are users you're following
+      }));
+
+      setFollowedUsers(transformedUsers);
+    } catch (error) {
+      console.error("Error fetching followed users:", error);
+      // Optional: Show error to user
+      showToast({
+        message: "Failed to load followed users",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsFollowingLoading(false);
+    }
+  };
+
+  const fetchCollectionItems = async () => {
+    setIsCollectionLoading(true);
+    setActiveView("collection");
+    try {
+      const res = await GetUserPost();
+
+      // Transform the API response to match CollectionItem interface
+      const transformedItems = res.data.data.rows.map((item: any) => {
+        // Get the first image URL if available, or use profile picture as fallback
+        const firstImageUrl =
+          item.file &&
+          item.file.split(",")[0].trim() !== "https://dev.cness.io/file/"
+            ? item.file.split(",")[0].trim()
+            : item.profile.profile_picture;
+
+        return {
+          id: item.id,
+          title:
+            item.content.length > 30
+              ? `${item.content.substring(0, 30)}...`
+              : item.content || "Untitled Post",
+          description: `Posted by ${item.profile.first_name} ${item.profile.last_name}`,
+          image_url: firstImageUrl,
+          created_at: item.createdAt,
+          // Add any additional fields you want to display
+          originalData: item, // Keep original data if needed for navigation
+        };
+      });
+
+      setCollectionItems(transformedItems);
+    } catch (error) {
+      console.error("Error fetching collection items:", error);
+      // Optional: Show error to user
+      showToast({
+        message: "Failed to load collection items",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsCollectionLoading(false);
+    }
+  };
   const { showToast } = useToast();
   const menuRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -247,6 +453,7 @@ export default function SocialTopBar() {
     if (isLoading || !hasMore) return;
 
     setIsLoading(true);
+    setIsPostsLoading(true);
     try {
       // Call the API to get the posts for the current page
       const res = await PostsDetails(page);
@@ -271,91 +478,88 @@ export default function SocialTopBar() {
       console.error("Error fetching posts:", error);
     } finally {
       setIsLoading(false);
+      setIsPostsLoading(false);
     }
   };
 
   useEffect(() => {
     getUserPosts();
+    fetchStory();
   }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    setSelectedImages(files);
-    // Clear video selection if images are selected
-    setSelectedVideo(null);
-    setPostVideoPreviewUrl(null);
+    setSelectedImages((prev) => [...prev, ...files]); // Append new images to existing ones
   };
 
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setSelectedVideo(file);
-      // Clear image selection if video is selected
-      setSelectedImages([]);
-
       // Create preview URL
       const videoUrl = URL.createObjectURL(file);
       setPostVideoPreviewUrl(videoUrl);
     }
   };
 
-  const handleRemoveMedia = () => {
-    setSelectedImages([]);
-    setSelectedVideo(null);
-    if (postVideoPreviewUrl) {
-      URL.revokeObjectURL(postVideoPreviewUrl);
-      setPostVideoPreviewUrl(null);
-    }
-  };
+  // const handleRemoveMedia = () => {
+  //   setSelectedImages([]);
+  //   setSelectedVideo(null);
+  //   if (postVideoPreviewUrl) {
+  //     URL.revokeObjectURL(postVideoPreviewUrl);
+  //     setPostVideoPreviewUrl(null);
+  //   }
+  // };
   const handleRemoveImage = (index: number) => {
     setSelectedImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmitPost = async () => {
-    setApiMessage(null);
     if (!postMessage && !selectedImages.length && !selectedVideo) {
-      setApiMessage("Please add a message or select media.");
+      showToast({
+        message: "Please add a message or select media.",
+        type: "error",
+        duration: 3000,
+      });
       return;
     }
 
     const formData = new FormData();
     formData.append("content", postMessage);
 
-    // Handle multiple images or single video
-    if (selectedImages.length > 0) {
-      selectedImages.forEach((image) => {
-        formData.append("file", image);
-      });
-    } else if (selectedVideo) {
+    // Append all selected images
+    selectedImages.forEach((image) => {
+      formData.append("file", image);
+    });
+
+    // Append video if selected
+    if (selectedVideo) {
       formData.append("file", selectedVideo);
     }
 
     try {
       const response = await AddPost(formData);
-
       if (response) {
-        setApiMessage(
-          response?.success?.message || "Post created successfully"
-        );
+        showToast({
+          message: "Post created successfully",
+          type: "success",
+          duration: 3000,
+        });
         await getUserPosts();
-        setTimeout(() => {
-          setShowPopup(false);
-          // Clear all states
-          setPostMessage("");
-          setSelectedImages([]);
-          setSelectedVideo(null);
-          if (postVideoPreviewUrl) {
-            URL.revokeObjectURL(postVideoPreviewUrl);
-            setPostVideoPreviewUrl(null);
-          }
-        }, 1000);
-      } else {
-        setApiMessage("Failed to create post.");
+        setShowPopup(false);
+        // Reset form
+        setPostMessage("");
+        setSelectedImages([]);
+        setSelectedVideo(null);
+        if (postVideoPreviewUrl) {
+          URL.revokeObjectURL(postVideoPreviewUrl);
+          setPostVideoPreviewUrl(null);
+        }
       }
     } catch (err: any) {
       console.error(err);
       showToast({
-        message: err?.response?.data?.error?.message,
+        message: err?.response?.data?.error?.message || "Failed to create post",
         type: "error",
         duration: 5000,
       });
@@ -409,7 +613,7 @@ export default function SocialTopBar() {
         setTimeout(async () => {
           setShowStoryPopup(false);
           // Refresh stories after successful upload
-          await GetStory();
+          await fetchStory();
           // setStoryData(res?.data?.data || []);
         }, 1000);
 
@@ -427,6 +631,15 @@ export default function SocialTopBar() {
       });
     } finally {
       setIsUploading(false); // Hide loader
+    }
+  };
+
+  const fetchStory = async () => {
+    try {
+      const res = await GetStory();
+      setStoriesData(res?.data?.data || []);
+    } catch (error) {
+      console.error("Error fetching stories:", error);
     }
   };
 
@@ -494,9 +707,9 @@ export default function SocialTopBar() {
   //   }
   // };
 
-  const isImageFile = (url: string) => {
-    return url.match(/\.(jpeg|jpg|gif|png|webp)$/i) !== null;
-  };
+  // const isImageFile = (url: string) => {
+  //   return url.match(/\.(jpeg|jpg|gif|png|webp)$/i) !== null;
+  // };
 
   const isVideoFile = (url: string) => {
     return url.match(/\.(mp4|webm|ogg|mov)$/i) !== null;
@@ -542,6 +755,16 @@ export default function SocialTopBar() {
       container && container.removeEventListener("scroll", handleScroll);
   }, [page, isLoading]);
 
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      setIsPostsLoading(true);
+      await getUserPosts();
+      setIsPostsLoading(false);
+    };
+
+    fetchInitialData();
+  }, []);
+
   return (
     <div className="flex flex-col lg:flex-row justify-between gap-4 lg:gap-6 px-2 md:px-4 lg:px-6 w-full">
       {/* Left Side: Post & Stories - Full width on mobile */}
@@ -549,389 +772,454 @@ export default function SocialTopBar() {
         className="w-full lg:max-w-[70%] overflow-y-auto h-[calc(100vh-100px)]"
         ref={containerRef}
       >
-        {/* Start a Post */}
-        <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-4 md:p-6 rounded-xl mb-4 md:mb-5">
-          <div className="flex flex-col gap-2 md:gap-3">
-            <div className="flex items-center gap-3">
-              <img
-                src={createstory}
-                alt="User"
-                className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
-              />
-              <input
-                type="text"
-                placeholder="Start a Post"
-                className="flex-1 cursor-pointer px-3 py-1 md:px-4 md:py-2 rounded-full border border-gray-300 text-sm md:text-[16px] focus:outline-none bg-white"
-                onClick={() => openPostPopup()}
-                readOnly
-              />
-            </div>
-            <div className="flex justify-between md:justify-center md:gap-10 text-xs md:text-[15px] text-gray-700 mt-2 md:mt-3">
-              <button className="flex items-center gap-1 md:gap-2">
-                <Image
-                  src="/youtube.png"
-                  alt="youtube"
-                  width={20}
-                  height={14}
-                  className="object-contain rounded-0 w-5 md:w-6"
-                />
-                <span className="text-black text-xs md:text-sm">Video</span>
-              </button>
-              <button className="flex items-center gap-1 md:gap-2">
-                <Image
-                  src="/picture.png"
-                  alt="picture"
-                  width={20}
-                  height={16}
-                  className="object-contain rounded-0 w-5 md:w-6"
-                />
-                <span className="text-black text-xs md:text-sm">Photo</span>
-              </button>
-              <button className="flex items-center gap-1 md:gap-2">
-                <Image
-                  src="/list.png"
-                  alt="list"
-                  width={20}
-                  height={16}
-                  className="object-contain rounded-0 w-5 md:w-6"
-                />
-                <span className="text-black text-xs md:text-sm">List</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Story Strip Wrapper */}
-        <div className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory mt-3 md:mt-4">
-          {/* Create Story Card */}
-          <div
-            onClick={() => openStoryPopup()}
-            className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-[12px] overflow-hidden relative cursor-pointer shrink-0 snap-start"
-          >
-            <img
-              src={createstory}
-              alt="Create Story Background"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = "/profile.png";
-              }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-            <svg
-              viewBox="0 0 162 70"
-              preserveAspectRatio="none"
-              className="absolute bottom-0 left-0 w-full h-[70px] z-10"
-            >
-              <path
-                d="M0,0 H61 C65,0 81,22 81,22 C81,22 97,0 101,0 H162 V70 H0 Z"
-                fill="#7C81FF"
-              />
-            </svg>
-            <div className="absolute bottom-[46px] left-1/2 -translate-x-1/2 z-20 w-8 h-8 md:w-10 md:h-10 bg-white text-[#7C81FF] rounded-full flex items-center justify-center text-xl shadow-md leading-0">
-              +
-            </div>
-            <div className="absolute bottom-[14px] w-full text-center text-white text-xs md:text-[15px] font-medium z-20">
-              Create Story
-            </div>
-            <div className="w-full border-t-[5px] border-[#7C81FF] mt-4"></div>
-          </div>
-
-          {storyList.map((story) => (
-            <div
-              key={story.id}
-              className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-[12px] overflow-hidden relative"
-            >
-              <StoryCard {...story} />
-              <div className="absolute bottom-2 left-2 flex items-center gap-2 z-20 text-white">
-                <img
-                  src={story.userIcon}
-                  alt={story.userName}
-                  className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover border border-white"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = "/profile.png";
-                  }}
-                />
-                <span className="text-xs md:text-[13px] font-medium drop-shadow-sm">
-                  {story.userName}
-                </span>
+        {activeView === "posts" ? (
+          <>
+            {/* {isPostsLoading ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
               </div>
-            </div>
-          ))}
-        </div>
-        <div className="w-full border-t-[1px] border-[#C8C8C8] mt-4 md:mt-6"></div>
-
-        {/* Posts Section */}
-        {userPosts.map((post) => (
-          <div
-            key={post.id}
-            className="bg-white rounded-xl shadow-md p-3 md:p-4 w-full mx-auto mt-4 md:mt-6"
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 md:gap-3">
-                <img
-                  src={post.profile.profile_picture}
-                  className="w-8 h-8 md:w-10 md:h-10 rounded-full"
-                  alt="User"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = "/profile.png";
-                  }}
-                />
-                <div>
-                  <p className="font-semibold text-sm md:text-base text-gray-800">
-                    {post.profile.first_name} {post.profile.last_name}
-                    <span className="text-gray-500 text-xs md:text-sm">
-                      {" "}
-                      @{post.user.username}
-                    </span>
-                  </p>
-                  <p className="text-xs md:text-sm text-gray-400">
-                    {new Date(post.createdAt).toLocaleString()}
-                  </p>
-                </div>
-              </div>
-              {post.user_id !== loggedInUserID && (
-                <button
-                  onClick={() => handleFollow(post.user_id)}
-                  className={`text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full ${
-                    post.if_following
-                      ? "bg-gray-200 text-gray-800"
-                      : "bg-[#7C81FF] text-white"
-                  } hover:bg-indigo-600 hover:text-white`}
-                >
-                  {post.if_following ? "Following" : "+ Follow"}
-                </button>
-              )}
-            </div>
-
-            {/* Post Content */}
-            <div className="mt-3 md:mt-4">
-              <p className="text-gray-800 text-sm md:text-base mb-2 md:mb-3">
-                {expandedPosts[post.id] || post.content.length <= CONTENT_LIMIT
-                  ? post.content
-                  : `${post.content.substring(0, CONTENT_LIMIT)}...`}
-                {post.content.length > CONTENT_LIMIT && (
-                  <button
-                    onClick={() => toggleExpand(post.id)}
-                    className="text-blue-500 ml-1 text-xs md:text-sm font-medium hover:underline focus:outline-none"
-                  >
-                    {expandedPosts[post.id] ? "Show less" : "Read more"}
-                  </button>
-                )}
-              </p>
-
-              {/* Dynamic Media Block */}
-              {post.file && (
-                <div className="rounded-lg overflow-hidden">
-                  {(() => {
-                    const urls = post.file.split(",").map((url) => url.trim());
-                    const isMultiple = urls.length > 1;
-
-                    return urls.map((url, index) => {
-                      const isImage =
-                        post.file_type === "image" || isImageFile(url);
-                      const isVideo =
-                        post.file_type === "video/mp4" || isVideoFile(url);
-
-                      if (isVideo) {
-                        return (
-                          <video
-                            key={index}
-                            className={`w-full ${
-                              isMultiple
-                                ? "h-32 md:h-48"
-                                : "max-h-[200px] md:max-h-[300px]"
-                            } object-cover rounded-lg`}
-                            controls
-                            muted
-                            autoPlay
-                            loop
-                          >
-                            <source src={url} type="video/mp4" />
-                            Your browser does not support the video tag.
-                          </video>
-                        );
-                      } else if (isImage) {
-                        return (
-                          <img
-                            key={index}
-                            src={url}
-                            alt={`Post content ${index + 1}`}
-                            className={`${
-                              isMultiple
-                                ? "w-full h-32 md:h-48"
-                                : "w-full max-h-[200px] md:max-h-[300px]"
-                            } object-cover rounded-lg mb-2`}
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.src = carosuel1;
-                            }}
-                          />
-                        );
-                      } else {
-                        return (
-                          <a
-                            key={index}
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-500 underline"
-                          >
-                            View File {isMultiple ? index + 1 : ""}
-                          </a>
-                        );
-                      }
-                    });
-                  })()}
-                </div>
-              )}
-            </div>
-
-            {/* Reactions and Action Buttons */}
-            <div className="flex justify-between items-center mt-3 px-1 text-xs md:text-sm text-gray-600">
-              <div className="flex items-center gap-1 md:gap-2">
-                <div className="flex items-center -space-x-2 md:-space-x-3">
-                  <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+            ) : ( */}
+            <>
+              {/* Start a Post */}
+              <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-4 md:p-6 rounded-xl mb-4 md:mb-5">
+                <div className="flex flex-col gap-2 md:gap-3">
+                  <div className="flex items-center gap-3">
                     <img
-                      src={like}
-                      alt="Like"
-                      className="w-6 h-6 md:w-8 md:h-8"
+                      src={createstory}
+                      alt="User"
+                      className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Start a Post"
+                      className="flex-1 cursor-pointer px-3 py-1 md:px-4 md:py-2 rounded-full border border-gray-300 text-sm md:text-[16px] focus:outline-none bg-white"
+                      onClick={() => openPostPopup()}
+                      readOnly
                     />
                   </div>
-                  {/* <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                  <div className="flex justify-between md:justify-center md:gap-10 text-xs md:text-[15px] text-gray-700 mt-2 md:mt-3">
+                    <button className="flex items-center gap-1 md:gap-2">
+                      <Image
+                        src="/youtube.png"
+                        alt="youtube"
+                        width={20}
+                        height={14}
+                        className="object-contain rounded-0 w-5 md:w-6"
+                      />
+                      <span className="text-black text-xs md:text-sm">
+                        Video
+                      </span>
+                    </button>
+                    <button className="flex items-center gap-1 md:gap-2">
+                      <Image
+                        src="/picture.png"
+                        alt="picture"
+                        width={20}
+                        height={16}
+                        className="object-contain rounded-0 w-5 md:w-6"
+                      />
+                      <span className="text-black text-xs md:text-sm">
+                        Photo
+                      </span>
+                    </button>
+                    <button className="flex items-center gap-1 md:gap-2">
+                      <Image
+                        src="/list.png"
+                        alt="list"
+                        width={20}
+                        height={16}
+                        className="object-contain rounded-0 w-5 md:w-6"
+                      />
+                      <span className="text-black text-xs md:text-sm">
+                        List
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Story Strip Wrapper */}
+              <div className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory mt-3 md:mt-4">
+                {/* Create Story Card */}
+                <div
+                  onClick={() => openStoryPopup()}
+                  className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-[12px] overflow-hidden relative cursor-pointer shrink-0 snap-start"
+                >
+                  <img
+                    src={createstory}
+                    alt="Create Story Background"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "/profile.png";
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                  <svg
+                    viewBox="0 0 162 70"
+                    preserveAspectRatio="none"
+                    className="absolute bottom-0 left-0 w-full h-[70px] z-10"
+                  >
+                    <path
+                      d="M0,0 H61 C65,0 81,22 81,22 C81,22 97,0 101,0 H162 V70 H0 Z"
+                      fill="#7C81FF"
+                    />
+                  </svg>
+                  <div className="absolute bottom-[46px] left-1/2 -translate-x-1/2 z-20 w-8 h-8 md:w-10 md:h-10 bg-white text-[#7C81FF] rounded-full flex items-center justify-center text-xl shadow-md leading-0">
+                    +
+                  </div>
+                  <div className="absolute bottom-[14px] w-full text-center text-white text-xs md:text-[15px] font-medium z-20">
+                    Create Story
+                  </div>
+                  <div className="w-full border-t-[5px] border-[#7C81FF] mt-4"></div>
+                </div>
+
+                {storiesData.map((story) => (
+                  <div
+                    key={story.id}
+                    className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-[12px] overflow-hidden relative"
+                  >
+                    <StoryCard
+                      id={story.id}
+                      userIcon={story.storyuser.profile.profile_picture}
+                      userName={`${story.storyuser.profile.first_name} ${story.storyuser.profile.last_name}`}
+                      title={story.description || "Untitled Story"}
+                      videoSrc={story.video_file}
+                    />
+                    <div className="absolute bottom-2 left-2 flex items-center gap-2 z-20 text-white">
+                      <img
+                        src={story.storyuser.profile.profile_picture}
+                        alt={`${story.storyuser.profile.first_name} ${story.storyuser.profile.last_name}`}
+                        className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover border border-white"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/profile.png";
+                        }}
+                      />
+                      <span className="text-xs md:text-[13px] font-medium drop-shadow-sm">
+                        {story.storyuser.username}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="w-full border-t-[1px] border-[#C8C8C8] mt-4 md:mt-6"></div>
+
+              {/* Posts Section */}
+              {userPosts.map((post) => (
+                <div
+                  key={post.id}
+                  className="bg-white rounded-xl shadow-md p-3 md:p-4 w-full mx-auto mt-4 md:mt-6"
+                >
+                  {/* Header */}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 md:gap-3">
+                      <img
+                        src={post.profile.profile_picture}
+                        className="w-8 h-8 md:w-10 md:h-10 rounded-full"
+                        alt="User"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/profile.png";
+                        }}
+                      />
+                      <div>
+                        <p className="font-semibold text-sm md:text-base text-gray-800">
+                          {post.profile.first_name} {post.profile.last_name}
+                          <span className="text-gray-500 text-xs md:text-sm">
+                            {" "}
+                            @{post.user.username}
+                          </span>
+                        </p>
+                        <p className="text-xs md:text-sm text-gray-400">
+                          {new Date(post.createdAt).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                    {post.user_id !== loggedInUserID && (
+                      <button
+                        onClick={() => handleFollow(post.user_id)}
+                        className={`text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full ${
+                          post.if_following
+                            ? "bg-gray-200 text-gray-800"
+                            : "bg-[#7C81FF] text-white"
+                        } hover:bg-indigo-600 hover:text-white`}
+                      >
+                        {post.if_following ? "Following" : "+ Follow"}
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Post Content */}
+                  <div className="mt-3 md:mt-4">
+                    <p className="text-gray-800 text-sm md:text-base mb-2 md:mb-3">
+                      {expandedPosts[post.id] ||
+                      post.content.length <= CONTENT_LIMIT
+                        ? post.content
+                        : `${post.content.substring(0, CONTENT_LIMIT)}...`}
+                      {post.content.length > CONTENT_LIMIT && (
+                        <button
+                          onClick={() => toggleExpand(post.id)}
+                          className="text-blue-500 ml-1 text-xs md:text-sm font-medium hover:underline focus:outline-none"
+                        >
+                          {expandedPosts[post.id] ? "Show less" : "Read more"}
+                        </button>
+                      )}
+                    </p>
+
+                    {/* Dynamic Media Block */}
+                    {post.file && (
+                      <div className="rounded-lg overflow-hidden">
+                        {(() => {
+                          const urls = post.file
+                            .split(",")
+                            .map((url) => url.trim());
+                          const mediaItems = urls.map((url) => ({
+                            url,
+                            type: (isVideoFile(url) ? "video" : "image") as
+                              | "video"
+                              | "image",
+                          }));
+
+                          // Use PostCarousel if there are multiple items (images or videos)
+                          if (mediaItems.length > 1) {
+                            return <PostCarousel mediaItems={mediaItems} />;
+                          }
+
+                          // Single item rendering
+                          const item = mediaItems[0];
+                          return item.type === "video" ? (
+                            <video
+                              className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-lg"
+                              controls
+                              muted
+                              autoPlay
+                              loop
+                            >
+                              <source src={item.url} type="video/mp4" />
+                              Your browser does not support the video tag.
+                            </video>
+                          ) : (
+                            <img
+                              src={item.url}
+                              alt="Post content"
+                              className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-lg mb-2"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = carosuel1;
+                              }}
+                            />
+                          );
+                        })()}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Reactions and Action Buttons */}
+                  <div className="flex justify-between items-center mt-3 px-1 text-xs md:text-sm text-gray-600">
+                    <div className="flex items-center gap-1 md:gap-2">
+                      <div className="flex items-center -space-x-2 md:-space-x-3">
+                        <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                          <img
+                            src={like}
+                            alt="Like"
+                            className="w-6 h-6 md:w-8 md:h-8"
+                          />
+                        </div>
+                        {/* <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
                     <img
                       src={comment}
                       alt="Comment"
                       className="w-6 h-6 md:w-8 md:h-8"
                     />
                   </div> */}
-                  {/* <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                        {/* <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
                     <img
                       src={repost}
                       alt="Repost"
                       className="w-6 h-6 md:w-8 md:h-8"
                     />
                   </div> */}
-                  <span className="text-xs md:text-sm text-gray-500 pl-3 md:pl-5">
-                    {post.likes_count}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <span>{post.comments_count}</span>
-                <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
-                  <img
-                    src={comment}
-                    alt="Comment"
-                    className="w-6 h-6 md:w-8 md:h-8"
-                  />
-                </div>
-              </div>
-            </div>
+                        <span className="text-xs md:text-sm text-gray-500 pl-3 md:pl-5">
+                          {post.likes_count}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span>{post.comments_count}</span>
+                      <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                        <img
+                          src={comment}
+                          alt="Comment"
+                          className="w-6 h-6 md:w-8 md:h-8"
+                        />
+                      </div>
+                    </div>
+                  </div>
 
-            <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
-              <button
-                onClick={() => handleLike(post.id)}
-                className={`flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base ${
-                  post.is_liked ? "text-blue-600" : "text-blue-500"
-                } hover:bg-blue-50 shadow-sm`}
-              >
-                <img
-                  src={post.is_liked ? like : Like1}
-                  className="w-5 h-5 md:w-6 md:h-6"
-                />
-                Like
-              </button>
-              <button
-                onClick={() => {
-                  setSelectedPostId(post.id);
-                  setShowCommentBox(true);
-                }}
-                className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm"
-              >
-                <img src={comment1} className="w-5 h-5 md:w-6 md:h-6" />{" "}
-                Comments
-              </button>
-              {/* <button className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm">
+                  <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
+                    <button
+                      onClick={() => handleLike(post.id)}
+                      className={`flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base ${
+                        post.is_liked ? "text-blue-600" : "text-blue-500"
+                      } hover:bg-blue-50 shadow-sm`}
+                    >
+                      <img
+                        src={post.is_liked ? like : Like1}
+                        className="w-5 h-5 md:w-6 md:h-6"
+                      />
+                      Like
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedPostId(post.id);
+                        setShowCommentBox(true);
+                      }}
+                      className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm"
+                    >
+                      <img src={comment1} className="w-5 h-5 md:w-6 md:h-6" />{" "}
+                      Comments
+                    </button>
+                    {/* <button className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm">
                 <img src={repost1} className="w-5 h-5 md:w-6 md:h-6" /> Repost
               </button> */}
-              <div className="relative">
-                <button
-                  onClick={() => toggleMenu(post.id)}
-                  className="flex items-center w-full justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-purple-500 hover:bg-blue-50 shadow-sm"
-                >
-                  <Share2 size={18} className="md:w-5 md:h-5" />
-                </button>
-                {openMenuPostId === post.id && (
-                  <div
-                    className="absolute top-10 left-0 bg-white shadow-lg rounded-lg p-3 z-10"
-                    ref={menuRef}
-                  >
-                    <ul className="flex items-center gap-4">
-                      <li>
-                        <FacebookShareButton url={urldata}>
-                          <FaFacebook size={32} color="#4267B2" />
-                        </FacebookShareButton>
-                      </li>
-                      <li>
-                        <LinkedinShareButton url={urldata}>
-                          <FaLinkedin size={32} color="#0077B5" />
-                        </LinkedinShareButton>
-                      </li>
-                      <li>
-                        <FaInstagram size={32} color="#C13584" />
-                      </li>
-                      <li>
-                        <TwitterShareButton url={urldata}>
-                          <FaTwitter size={32} color="#1DA1F2" />
-                        </TwitterShareButton>
-                      </li>
-                      <li>
-                        <WhatsappShareButton url={urldata}>
-                          <FaWhatsapp size={32} color="#1DA1F2" />
-                        </WhatsappShareButton>
-                      </li>
-                    </ul>
+                    <div className="relative">
+                      <button
+                        onClick={() => toggleMenu(post.id)}
+                        className="flex items-center w-full justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-purple-500 hover:bg-blue-50 shadow-sm"
+                      >
+                        <Share2 size={18} className="md:w-5 md:h-5" />
+                      </button>
+                      {openMenuPostId === post.id && (
+                        <div
+                          className="absolute top-10 left-0 bg-white shadow-lg rounded-lg p-3 z-10"
+                          ref={menuRef}
+                        >
+                          <ul className="flex items-center gap-4">
+                            <li>
+                              <FacebookShareButton url={urldata}>
+                                <FaFacebook size={32} color="#4267B2" />
+                              </FacebookShareButton>
+                            </li>
+                            <li>
+                              <LinkedinShareButton url={urldata}>
+                                <FaLinkedin size={32} color="#0077B5" />
+                              </LinkedinShareButton>
+                            </li>
+                            <li>
+                              <FaInstagram size={32} color="#C13584" />
+                            </li>
+                            <li>
+                              <TwitterShareButton url={urldata}>
+                                <FaTwitter size={32} color="#1DA1F2" />
+                              </TwitterShareButton>
+                            </li>
+                            <li>
+                              <WhatsappShareButton url={urldata}>
+                                <FaWhatsapp size={32} color="#1DA1F2" />
+                              </WhatsappShareButton>
+                            </li>
+                          </ul>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                )}
-              </div>
+                </div>
+              ))}
+            </>
+            {/* )} */}
+          </>
+        ) : activeView === "following" ? (
+          <div className="bg-white rounded-xl shadow-md p-4 mt-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-800">
+                People You Follow
+              </h3>
+              <button
+                onClick={() => setActiveView("posts")}
+                className="text-sm text-[#7C81FF] hover:underline"
+              >
+                Back to Posts
+              </button>
             </div>
+            {isFollowingLoading ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+              </div>
+            ) : (
+              <FollowedUsersList
+                users={followedUsers}
+                onFollowToggle={(userId) => {
+                  setFollowedUsers((prev) =>
+                    prev.map((user) =>
+                      user.id === userId
+                        ? { ...user, is_following: !user.is_following }
+                        : user
+                    )
+                  );
+                }}
+              />
+            )}
           </div>
-        ))}
+        ) : (
+          <div className="bg-white rounded-xl shadow-md p-4 mt-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-800">
+                My Collection
+              </h3>
+              <button
+                onClick={() => setActiveView("posts")}
+                className="text-sm text-[#7C81FF] hover:underline"
+              >
+                Back to Posts
+              </button>
+            </div>
+            {isCollectionLoading ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+              </div>
+            ) : (
+              <CollectionList items={collectionItems} />
+            )}
+          </div>
+        )}
       </div>
 
       {/* Right Side: Quick Actions - Full width on mobile, appears below */}
-      <div className="w-full lg:w-[100%] lg:max-w-[30%] h-auto lg:h-[438px] bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm order-first lg:order-last mb-4 lg:mb-0">
+      <div className="w-full lg:w-[100%] lg:max-w-[30%] h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm order-first lg:order-last mb-4 lg:mb-0">
         <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4">
           Quick Actions
         </h3>
         <ul className="space-y-4 md:space-y-6 text-sm md:text-[15px] text-gray-700">
-          <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
+          {/* <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
             <img src={Trending} className="w-4 h-4 md:w-5 md:h-5" /> Trending
           </li>
           <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
             <img src={Mention} className="w-4 h-4 md:w-5 md:h-5" /> Mention &
             tags
-          </li>
-          <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
+          </li> */}
+          <li
+            className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+            onClick={fetchCollectionItems}
+          >
             <img src={Collection} className="w-4 h-4 md:w-5 md:h-5" /> My
             Collection
           </li>
-          <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
+          <li
+            className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+            onClick={fetchFollowedUsers}
+          >
             <img src={people} className="w-4 h-4 md:w-5 md:h-5" /> People you
             follow
           </li>
-          <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
+          {/* <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
             <img src={Leaderboard} className="w-4 h-4 md:w-5 md:h-5" />{" "}
             Leaderboard
           </li>
           <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
             <img src={Announcement} className="w-4 h-4 md:w-5 md:h-5" />{" "}
             Announcements
-          </li>
+          </li> */}
         </ul>
       </div>
 
@@ -1045,6 +1333,7 @@ export default function SocialTopBar() {
                   </div>
                 </div>
               </div>
+              {/* Image Previews */}
               {selectedImages.length > 0 && (
                 <div className="mb-4">
                   <div className="grid grid-cols-2 gap-2">
@@ -1064,18 +1353,10 @@ export default function SocialTopBar() {
                       </div>
                     ))}
                   </div>
-                  {/* Optional: Keep the "Remove All" button if you still want that functionality */}
-                  {/* <button
-                    onClick={() => {
-                      setSelectedImages([]);
-                    }}
-                    className="mt-2 text-sm text-red-500 hover:text-red-700"
-                  >
-                    Remove All Images
-                  </button> */}
                 </div>
               )}
 
+              {/* Video Preview */}
               {postVideoPreviewUrl && (
                 <div className="mb-4 relative">
                   <video
@@ -1084,14 +1365,15 @@ export default function SocialTopBar() {
                     src={postVideoPreviewUrl}
                   />
                   <button
-                    onClick={handleRemoveMedia}
+                    onClick={() => {
+                      setSelectedVideo(null);
+                      URL.revokeObjectURL(postVideoPreviewUrl);
+                      setPostVideoPreviewUrl(null);
+                    }}
                     className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center"
                   >
                     ×
                   </button>
-                  <div className="text-xs text-gray-500 mt-1">
-                    Video preview - {selectedVideo?.name}
-                  </div>
                 </div>
               )}
               <div className="flex justify-between">

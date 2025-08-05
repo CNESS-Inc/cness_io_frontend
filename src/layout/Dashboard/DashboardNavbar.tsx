@@ -156,11 +156,11 @@ const DashboardNavbar = ({
       icon: <img src={iconMap["social"]} alt="Home Icon" className="w-5 h-5" />,
       label: "Social",
       active: true,
-      path: "/dashboard/DashboardSocial",
+      // path: "/dashboard/DashboardSocial",
       isSocialDropdown: true,
       childPaths: ["/dashboard/Feed"],
       children: [
-        { label: "Feed", path: "/dashboard/Feed" },
+        { label: "Feed", path: "/dashboard/DashboardSocial" },
         { label: "Profile", path: "/dashboard/Profile" },
         { label: "My Connections", path: "/dashboard/MyConnection" },
         { label: "Messagings", path: "/dashboard/ComingSoon" },

@@ -129,9 +129,11 @@ export const EndPoint = {
   postComments: "/user/post/comments",
   postChildComment: "/user/post/comments/child",
   postCommentLike: "/user/post/comments/like",
+  postchildCommentLike: "/reply/like",
   like: "/user/posts/like",
   Post_AllComments: "/user/post/comments",
   single_post: "/user/posts/get",
+  user_post: "/user/posts",
   story: "/story",
   story_like: "/story/like",
   story_comment: "/story/comment",
@@ -792,6 +794,13 @@ export const PostCommentLike = (formattedData: any) => {
     EndPoint.postCommentLike
   );
 };
+export const PostChildCommentLike = (formattedData: any) => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formattedData,
+    EndPoint.postchildCommentLike
+  );
+};
 
 export const PostsLike = (formattedData: any) => {
   return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.like);
@@ -819,6 +828,10 @@ export const GetSinglePost = (id: any) => {
 export const GetStory = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.story);
+};
+export const GetUserPost = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.user_post);
 };
 export const LikeStory = (story_id: any) => {
   const data: Partial<any> = {
