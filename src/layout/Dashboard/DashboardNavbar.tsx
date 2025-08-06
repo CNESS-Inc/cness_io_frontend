@@ -160,7 +160,7 @@ const DashboardNavbar = ({
       isSocialDropdown: true,
       childPaths: ["/dashboard/Feed"],
       children: [
-        { label: "Feed", path: "/dashboard/DashboardSocial" },
+        { label: "Feed", path: "/dashboard/feed" },
         { label: "Profile", path: "/dashboard/Profile" },
         { label: "My Connections", path: "/dashboard/MyConnection" },
         { label: "Messagings", path: "/dashboard/ComingSoon" },

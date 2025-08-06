@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   GetAllPlanDetails,
   getSubscriptionDetails,
+  MeDetails,
   PaymentDetails,
   UpdatePasswordDetails,
 } from "../Common/ServerAPI";
@@ -43,13 +44,28 @@ type PersPricingPlan = {
   popular: boolean;
 };
 
+type BasicInfoData = {
+  id: string;
+  email: string;
+  name: string;
+  main_name: string;
+  margaret_name: string;
+  username: string;
+  email_verified : boolean;
+  profile_picture: string;
+  is_disqualify: boolean;
+  completed_step: number;
+  person_organization_complete: number;
+  createdAt : string;
+};
+
 const Setting = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
-  const [activeTab, setActiveTab] = useState<"billing" | "password">(
-    "password"
+  const [activeTab, setActiveTab] = useState<"billing" | "password" | "basic">(
+    "basic"
   );
   const [subscription, setSubscription] = useState<SubscriptionData | null>(
     null
@@ -59,6 +75,7 @@ const Setting = () => {
   const [personPricing, setPersonPricing] = useState<PersPricingPlan[]>([]);
   const [isAnnual, setIsAnnual] = useState(true);
   const { showToast } = useToast();
+  const [basicData, setBasicData] = useState<BasicInfoData | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,8 +123,23 @@ const Setting = () => {
     }
   };
 
+  const MeDetail = async () => {
+    try {
+      setLoading(true);
+      const response = await MeDetails();
+      console.log(response?.data?.data?.user, 'response?.data?.data?.user')
+      setBasicData(response?.data?.data?.user)
+    } catch (error) {
+      console.error("Error fetching me details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   useEffect(() => {
     fetchSubscriptionDetails();
+    MeDetail()
   }, []);
 
   const formatDate = (dateString: string) => {
@@ -201,21 +233,28 @@ const Setting = () => {
         {/* Tab Navigation */}
         <div className="flex border-b border-gray-200 mb-6 mt-8">
           <button
-            className={`px-4 py-2 cursor-pointer font-medium ${
-              activeTab === "password"
-                ? "text-blue-600 border-b-2 border-blue-600"
-                : "text-gray-500"
-            }`}
+            className={`px-4 py-2 cursor-pointer font-medium ${activeTab === "basic"
+              ? "text-blue-600 border-b-2 border-blue-600"
+              : "text-gray-500"
+              }`}
+            onClick={() => setActiveTab("basic")}
+          >
+            Basic
+          </button>
+          <button
+            className={`px-4 py-2 cursor-pointer font-medium ${activeTab === "password"
+              ? "text-blue-600 border-b-2 border-blue-600"
+              : "text-gray-500"
+              }`}
             onClick={() => setActiveTab("password")}
           >
             Password
           </button>
           <button
-            className={`px-4 py-2 cursor-pointer font-medium ${
-              activeTab === "billing"
-                ? "text-blue-600 border-b-2 border-blue-600"
-                : "text-gray-500"
-            }`}
+            className={`px-4 py-2 cursor-pointer font-medium ${activeTab === "billing"
+              ? "text-blue-600 border-b-2 border-blue-600"
+              : "text-gray-500"
+              }`}
             onClick={() => setActiveTab("billing")}
           >
             Billing
@@ -237,11 +276,10 @@ const Setting = () => {
                       Plan Status:
                     </span>
                     <span
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        subscription.plan_active
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${subscription.plan_active
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                        }`}
                     >
                       {subscription.plan_active ? "Active" : "Inactive"}
                     </span>
@@ -367,6 +405,62 @@ const Setting = () => {
                     </button>
                   </div>
                 </form>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "basic" && (
+          <div className="min-h-screen bg-white p-6 font-sans">
+            <h3 className="text-lg font-semibold mb-4">Your Basic Information</h3>
+
+            <div className="bg-white border border-gray-200 rounded-md overflow-hidden p-6">
+              <div className="space-y-4">
+
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-gray-700">
+                 Email Verified Status:
+                  </span>
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${basicData?.email_verified
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
+                      }`}
+                  > {basicData?.email_verified ? 'Verified' : 'Unverified'}</span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-gray-700">
+                    Email Id
+                  </span>
+                  <span className="text-gray-600">
+                    {basicData?.email}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-gray-700">
+                    Username:
+                  </span>
+                  <span className="text-gray-600">
+                    {basicData?.username}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-gray-700">
+                    Join Date:
+                  </span>
+                  <span className="text-gray-600">
+                    {formatDate(basicData?.createdAt || '')}
+                  </span>
+                </div>
+
+                {/* <div className="pt-4 mt-4 border-t border-gray-200">
+                  <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                    Manage Subscription
+                  </button>
+                </div> */}
               </div>
             </div>
           </div>
