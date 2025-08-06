@@ -25,7 +25,7 @@ import Support from "../pages/Support";
 import MarketPlace from "../pages/MarketPlace";
 import SearchListing from "../pages/SearchListing";
 import DigitalProducts from "../pages/DigitalProducts";
-import Feed from "../pages/Feed";
+// import Feed from "../pages/Feed";
 import SearchExplore from "../pages/SearchExplore";
 import BecomeMentor from "../pages/BecomeMentor";
 //import DashboardDirectoryPage from "../pages/DashboardDirectoryPage";
