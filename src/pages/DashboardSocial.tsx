@@ -363,7 +363,7 @@ export default function SocialTopBar() {
   console.log("🚀 ~ SocialTopBar ~ isFollowingLoading:", isFollowingLoading);
   const [isCollectionLoading, setIsCollectionLoading] = useState(false);
   const [storiesData, setStoriesData] = useState<Story[]>([]);
-  const [addNewPost, setAddNewPost] = useState(false)
+  // const [addNewPost, setAddNewPost] = useState(false)
   const [isAdult, setIsAdult] = useState<Boolean>(false)
 
   // Add this function to fetch followed users

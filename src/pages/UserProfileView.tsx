@@ -203,14 +203,14 @@ export default function UserProfileView() {
         const formattedData = {
           friend_id: userId,
         };
-        const response = await SendConnectionRequest(formattedData);
+        await SendConnectionRequest(formattedData);
         setUserDetails({ ...userDetails, if_friend: false, friend_request_status: "PENDING" })
       } else {
         if (userDetails.friend_request_status == "ACCEPT" && userDetails.if_friend) {
           const formattedData = {
             friend_id: userId,
           };
-          const response = await UnFriend(formattedData);
+          await UnFriend(formattedData);
           setUserDetails({ ...userDetails, if_friend: false, friend_request_status: null })
         }
       }
