@@ -30,6 +30,9 @@ type GenerateAffiliateFromData = {
 type getReferredUsersFromData = {
   referralcode: string;
 };
+type getReferralAmountFromData = {
+  referral_amount: any;
+};
 type getMyRefferralCodeFromData = {
   user_id: string;
 }
@@ -72,7 +75,7 @@ export const ServerAPI = {
 
 export const API = {
   //  BaseUrl: "http://192.168.1.30:5025/api", //local
-  // BaseUrl: "http://localhost:3000/api", //local
+  // BaseUrl: "http://localhost:3200/api", //local
   BaseUrl: import.meta.env.VITE_API_BASE_URL || "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api",
 };
 
@@ -166,6 +169,7 @@ export const EndPoint = {
   gernerate_affiliate_code: "/profile/user/generate_referral_code",
   get_my_referrals: "/profile/user/getmyreferrals",
   get_my_referral_code: "/profile/user/getMyReferralCode",
+  get_referral_amount: "/profile/user/getReferralAmount",
   subscription: "/subscription",
   get_badge: "/profile/get-user-badge",
 };
@@ -243,6 +247,12 @@ export const getMyRefferralCode = (formData: getMyRefferralCodeFromData): ApiRes
  
   return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.get_my_referral_code}?user_id=${formData.user_id}`);
 };
+
+export const getReferralEarning = (formData: getReferralAmountFromData): ApiResponse => {
+
+  return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.get_referral_amount}?user_id=${formData.user_id}`);
+};
+
 export const getSubscriptionDetails = (): ApiResponse => {
  
   return executeAPI(ServerAPI.APIMethod.GET, null, EndPoint.subscription);
