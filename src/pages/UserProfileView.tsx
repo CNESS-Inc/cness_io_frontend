@@ -18,6 +18,9 @@ import {
   AddUserRating,
   GetUserProfileDetails,
   GetUserRating,
+  SendConnectionRequest,
+  SendFollowRequest,
+  UnFriend,
 } from "../Common/ServerAPI";
 import { useNavigate, useParams } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -46,6 +49,7 @@ export default function UserProfileView() {
   >({});
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const loggedInUserID = localStorage.getItem("Id");
 
   const fetchUserDetails = async () => {
     try {
@@ -181,6 +185,41 @@ export default function UserProfileView() {
     }
   };
 
+  const handleFollow = async (userId: string) => {
+    try {
+      const formattedData = {
+        following_id: userId,
+      };
+      await SendFollowRequest(formattedData);
+      setUserDetails({ ...userDetails, if_following: !userDetails?.if_following })
+    } catch (error) {
+      console.error("Error fetching selection details:", error);
+    }
+  };
+
+  const handleFriend = async (userId: string) => {
+    try {
+      if (userDetails.friend_request_status !== "ACCEPT" && userDetails.friend_request_status !== "PENDING" && !userDetails.if_friend) {
+        const formattedData = {
+          friend_id: userId,
+        };
+        const response = await SendConnectionRequest(formattedData);
+        setUserDetails({ ...userDetails, if_friend: false, friend_request_status: "PENDING" })
+      } else {
+        if (userDetails.friend_request_status == "ACCEPT" && userDetails.if_friend) {
+          const formattedData = {
+            friend_id: userId,
+          };
+          const response = await UnFriend(formattedData);
+          setUserDetails({ ...userDetails, if_friend: false, friend_request_status: null })
+        }
+      }
+
+    } catch (error) {
+      console.error("Error fetching selection details:", error);
+    }
+  };
+
   useEffect(() => {
     fetchRatingDetails();
   }, []);
@@ -274,6 +313,29 @@ export default function UserProfileView() {
                   {userDetails?.first_name} {userDetails?.last_name}
                 </h2>
                 {/* <p className="text-sm text-gray-500">Stella Innovation</p> */}
+              </div>
+
+              <div className="flex justify-between px-4 mt-2">
+                {userDetails?.user_id !== loggedInUserID && (
+                  <button
+                    onClick={() => handleFollow(userDetails?.user_id)}
+                    className={`text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full ${userDetails?.if_following
+                      ? "bg-gray-200 text-gray-800"
+                      : "bg-[#7C81FF] text-white"
+                      } hover:bg-indigo-600 hover:text-white`}
+                  >
+                    {userDetails?.if_following ? "Following" : "+ Follow"}
+                  </button>
+                )}
+
+                {userDetails?.user_id !== loggedInUserID && (
+                  <button
+                    onClick={() => handleFriend(userDetails?.user_id)}
+                    className={`text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full ${userDetails?.if_friend && userDetails?.friend_request_status === "ACCEPT" ? "bg-gray-200 text-gray-800" : !userDetails?.if_friend && userDetails?.friend_request_status === "PENDING" ? "bg-[#7C81FF] text-white" : "bg-[#7C81FF] text-white"} hover:bg-indigo-600 hover:text-white`}
+                  >
+                    {userDetails?.if_friend && userDetails?.friend_request_status === "ACCEPT" ? "Connected" : !userDetails?.if_friend && userDetails?.friend_request_status === "PENDING" ? "Requested..." : "+ Connect"}
+                  </button>
+                )}
               </div>
 
               <div
@@ -568,7 +630,7 @@ export default function UserProfileView() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   {userDetails?.best_practices_questions?.map(
-                    (section: any) => {
+                    (section: any, index: number) => {
                       // Get all questions from all sub_sections
                       const allQuestions = section.sub_sections?.flatMap(
                         (sub: any) => sub.questions
@@ -579,7 +641,7 @@ export default function UserProfileView() {
 
                       return (
                         <div key={section.section.id} className="mb-6">
-                          {allQuestions.map((question: any, index: number) => {
+                          {allQuestions.map((question: any) => {
                             const cardImages = [bcard1, bcard2, bcard3, bcard4];
                             const randomImage =
                               cardImages[index % cardImages.length];

@@ -16,6 +16,9 @@ import {
   AddUserRating,
   GetUserProfileDetails,
   GetUserRating,
+  SendConnectionRequest,
+  SendFollowRequest,
+  UnFriend,
 } from "../Common/ServerAPI";
 import { useNavigate, useParams } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -39,6 +42,7 @@ export default function DashboardUserProfile() {
   const [userDetails, setUserDetails] = useState<any>();
   console.log("🚀 ~ DashboardUserProfile ~ userDetails:", userDetails);
   const [activeModal, setActiveModal] = useState<"rating" | null>(null);
+  const loggedInUserID = localStorage.getItem("Id");
 
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -46,6 +50,7 @@ export default function DashboardUserProfile() {
   const fetchUserDetails = async () => {
     try {
       const res = await GetUserProfileDetails(id);
+      console.log(res?.data?.data, 'res?.data?.data------------')
       setUserDetails(res?.data?.data);
     } catch (error: any) {
       showToast({
@@ -53,6 +58,41 @@ export default function DashboardUserProfile() {
         type: "error",
         duration: 5000,
       });
+    }
+  };
+
+  const handleFollow = async (userId: string) => {
+    try {
+      const formattedData = {
+        following_id: userId,
+      };
+      await SendFollowRequest(formattedData);
+      setUserDetails({ ...userDetails, if_following: !userDetails?.if_following })
+    } catch (error) {
+      console.error("Error fetching selection details:", error);
+    }
+  };
+
+  const handleFriend = async (userId: string) => {
+    try {
+      if (userDetails.friend_request_status !== "ACCEPT" && userDetails.friend_request_status !== "PENDING" && !userDetails.if_friend) {
+        const formattedData = {
+          friend_id: userId,
+        };
+        const response = await SendConnectionRequest(formattedData);
+        setUserDetails({ ...userDetails, if_friend: false, friend_request_status: "PENDING" })
+      } else {
+        if (userDetails.friend_request_status == "ACCEPT" && userDetails.if_friend) {
+          const formattedData = {
+            friend_id: userId,
+          };
+          const response = await UnFriend(formattedData);
+          setUserDetails({ ...userDetails, if_friend: false, friend_request_status: null })
+        }
+      }
+
+    } catch (error) {
+      console.error("Error fetching selection details:", error);
     }
   };
 
@@ -245,7 +285,7 @@ export default function DashboardUserProfile() {
               <img
                 src={
                   userDetails?.profile_picture &&
-                  userDetails?.profile_picture !== "http://localhost:5026/file/"
+                    userDetails?.profile_picture !== "http://localhost:5026/file/"
                     ? userDetails?.profile_picture
                     : "/profile.png"
                 }
@@ -274,6 +314,29 @@ export default function DashboardUserProfile() {
                   </p>
                 </h2>
                 {/* <p className="text-sm text-gray-500">Stella Innovation</p> */}
+              </div>
+
+              <div className="flex justify-between px-4 mt-2">
+                {userDetails?.user_id !== loggedInUserID && (
+                  <button
+                    onClick={() => handleFollow(userDetails?.user_id)}
+                    className={`text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full ${userDetails?.if_following
+                      ? "bg-gray-200 text-gray-800"
+                      : "bg-[#7C81FF] text-white"
+                      } hover:bg-indigo-600 hover:text-white`}
+                  >
+                    {userDetails?.if_following ? "Following" : "+ Follow"}
+                  </button>
+                )}
+
+                {userDetails?.user_id !== loggedInUserID && (
+                  <button
+                    onClick={() => handleFriend(userDetails?.user_id)}
+                    className={`text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full ${userDetails?.if_friend && userDetails?.friend_request_status === "ACCEPT" ? "bg-gray-200 text-gray-800" : !userDetails?.if_friend && userDetails?.friend_request_status === "PENDING" ? "bg-[#7C81FF] text-white" : "bg-[#7C81FF] text-white"} hover:bg-indigo-600 hover:text-white`}
+                  >
+                    {userDetails?.if_friend && userDetails?.friend_request_status === "ACCEPT" ? "Connected" : !userDetails?.if_friend && userDetails?.friend_request_status === "PENDING" ? "Requested..." : "+ Connect"}
+                  </button>
+                )}
               </div>
 
               <div
@@ -363,10 +426,10 @@ export default function DashboardUserProfile() {
                       userDetails?.level?.level == "Aspiring"
                         ? indv_aspiring
                         : userDetails?.level?.level == "Inspired"
-                        ? indv_inspried
-                        : userDetails?.level?.level == "Leader"
-                        ? indv_leader
-                        : inspiredbadge // fallback if no level
+                          ? indv_inspried
+                          : userDetails?.level?.level == "Leader"
+                            ? indv_leader
+                            : inspiredbadge // fallback if no level
                     }
                     alt={`${userDetails?.level?.level || "CNESS"} Badge`}
                     className="w-[159px] md:w-[180px] h-auto object-contain mt-[-10px]"
@@ -567,7 +630,7 @@ export default function DashboardUserProfile() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   {userDetails?.best_practices_questions?.map(
-                    (section: any) => {
+                    (section: any, index: number) => {
                       // Get all questions from all sub_sections
                       const allQuestions = section.sub_sections?.flatMap(
                         (sub: any) => sub.questions
@@ -578,12 +641,12 @@ export default function DashboardUserProfile() {
 
                       return (
                         <div key={section.section.id} className="mb-6">
-                          {allQuestions.map((question: any, index: number) => {
+                          {allQuestions.map((question: any) => {
                             const cardImages = [bcard1, bcard2, bcard3, bcard4];
-                            const randomImage =
-                              cardImages[index % cardImages.length];
-                            const isExpanded =
-                              expandedDescriptions[question.id] || false;
+                            const imageForCard = cardImages[index % cardImages.length];
+                            console.log('bp index', imageForCard)
+                            console.log('question', question)
+                            const isExpanded = expandedDescriptions[question.id] || false;
 
                             return (
                               <div
@@ -592,7 +655,7 @@ export default function DashboardUserProfile() {
                               >
                                 <div className="rounded-lg overflow-hidden">
                                   <img
-                                    src={randomImage}
+                                    src={imageForCard}
                                     alt={`Best Practice ${index + 1}`}
                                     className="w-full h-[150px] object-cover"
                                   />
@@ -613,12 +676,12 @@ export default function DashboardUserProfile() {
                                     <>
                                       <p className="text-xs text-gray-500 mb-2">
                                         {isExpanded ||
-                                        question.answer.answer.length <= 40
+                                          question.answer.answer.length <= 40
                                           ? question.answer.answer
                                           : `${question.answer.answer.substring(
-                                              0,
-                                              40
-                                            )}...`}
+                                            0,
+                                            40
+                                          )}...`}
                                       </p>
 
                                       {question.answer
@@ -688,8 +751,7 @@ export default function DashboardUserProfile() {
                                 )
                               ) {
                                 navigate(
-                                  `/dashboard/bestpractices/${
-                                    practice.id
+                                  `/dashboard/bestpractices/${practice.id
                                   }/${slugify(practice.title)}`,
                                   {
                                     state: {
@@ -726,13 +788,12 @@ export default function DashboardUserProfile() {
                                     {expandedDescriptions[practice.id]
                                       ? practice.description
                                       : `${practice.description.substring(
-                                          0,
-                                          40
-                                        )}${
-                                          practice.description.length > 40
-                                            ? "..."
-                                            : ""
-                                        }`}
+                                        0,
+                                        40
+                                      )}${practice.description.length > 40
+                                        ? "..."
+                                        : ""
+                                      }`}
                                   </p>
                                   {practice.description?.length > 40 && (
                                     <button
@@ -837,19 +898,18 @@ export default function DashboardUserProfile() {
                           <div
                             className="h-full bg-purple-500"
                             style={{
-                              width: `${
-                                ratingPercentage?.[
-                                  star === 5
-                                    ? "five"
-                                    : star === 4
+                              width: `${ratingPercentage?.[
+                                star === 5
+                                  ? "five"
+                                  : star === 4
                                     ? "four"
                                     : star === 3
-                                    ? "three"
-                                    : star === 2
-                                    ? "two"
-                                    : "one"
-                                ] || 0
-                              }%`,
+                                      ? "three"
+                                      : star === 2
+                                        ? "two"
+                                        : "one"
+                              ] || 0
+                                }%`,
                             }}
                           />
                         </div>
@@ -911,7 +971,7 @@ export default function DashboardUserProfile() {
                         <img
                           src={
                             reviewItem.profile.profile_picture &&
-                            reviewItem.profile.profile_picture !==
+                              reviewItem.profile.profile_picture !==
                               "http://localhost:5026/file/"
                               ? reviewItem.profile.profile_picture
                               : "/profile.png"
@@ -1069,9 +1129,8 @@ export default function DashboardUserProfile() {
               </label>
               <textarea
                 id="review"
-                className={`w-full px-4 py-3 rounded-lg border ${
-                  errors.reviewText ? "border-red-500" : "border-gray-300"
-                } focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm resize-none`}
+                className={`w-full px-4 py-3 rounded-lg border ${errors.reviewText ? "border-red-500" : "border-gray-300"
+                  } focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm resize-none`}
                 rows={4}
                 placeholder="Share your experience..."
                 value={reviewText}
