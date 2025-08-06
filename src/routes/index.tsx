@@ -135,11 +135,11 @@ export const router = createBrowserRouter([
           {
             path: "setting",
             element:
-              import.meta.env.VITE_ENV_STAGE === "test" ? (
+              // import.meta.env.VITE_ENV_STAGE === "test" ? (
                 <Setting />
-              ) : (
-                <ComingSoon />
-              ),
+              // ) : (
+              //   <ComingSoon />
+              // ),
           },
           {
             path: "upload-proof",
@@ -172,11 +172,11 @@ export const router = createBrowserRouter([
           {
             path: "search-listing",
             element:
-              import.meta.env.VITE_ENV_STAGE === "test" ? (
+              // import.meta.env.VITE_ENV_STAGE === "test" ? (
                 <SearchListing />
-              ) : (
-                <ComingSoon />
-              ),
+              // ) : (
+              //   <ComingSoon />
+              // ),
           },
           {
             path: "userprofile/:id",
@@ -189,7 +189,7 @@ export const router = createBrowserRouter([
 
           {
             path: "Feed",
-            element: <Feed />,
+            element: <DashboardSocial />,
           },
 
           {
@@ -259,7 +259,7 @@ export const router = createBrowserRouter([
           },
 
           {
-            path: "DashboardSocial",
+            path: "feed",
             element: <DashboardSocial />,
           },
           {
@@ -330,11 +330,11 @@ export const router = createBrowserRouter([
       {
         index: true,
         element:
-          import.meta.env.VITE_ENV_STAGE === "test" ? (
+          // import.meta.env.VITE_ENV_STAGE === "test" ? (
             <Social />
-          ) : (
-            <ComingSoon />
-          ),
+          // ) : (
+          //   <ComingSoon />
+          // ),
       },
 
       {

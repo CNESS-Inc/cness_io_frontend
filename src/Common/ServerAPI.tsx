@@ -72,7 +72,7 @@ export const ServerAPI = {
 
 export const API = {
   //  BaseUrl: "http://192.168.1.30:5025/api", //local
-  // BaseUrl: "http://localhost:3000/api", //local
+  // BaseUrl: "http://localhost:5025/api", //local
   BaseUrl: import.meta.env.VITE_API_BASE_URL || "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api",
 };
 
@@ -129,7 +129,7 @@ export const EndPoint = {
   postComments: "/user/post/comments",
   postChildComment: "/user/post/comments/child",
   postCommentLike: "/user/post/comments/like",
-  postchildCommentLike: "/reply/like",
+  postchildCommentLike: "/user/post/comments/reply/like",
   like: "/user/posts/like",
   Post_AllComments: "/user/post/comments",
   single_post: "/user/posts/get",
@@ -143,6 +143,7 @@ export const EndPoint = {
   following: "/user/following",
   connection: "/friend",
   connection_request: "/friend/request",
+  delete_friend: "/friend/delete/friend",
   follow: "/user/follow",
   vote: "/poll/vote",
   googleLogin: "/auth/google-login",
@@ -759,7 +760,7 @@ selectedDomain: any, searchQuery: any, page: any, limit: any, selectedCert: stri
 export const PostsDetails = (page: any) => {
   let data = {};
   let params: { [key: string]: any } = {};
-  params["pagination[page]"] = page;
+  params["page_no"] = page;
   return executeAPI(
     ServerAPI.APIMethod.GET,
     data,
@@ -882,6 +883,13 @@ export const SendConnectionRequest = (formattedData: any) => {
     ServerAPI.APIMethod.POST,
     formattedData,
     EndPoint.connection_request
+  );
+};
+export const UnFriend = (formattedData: any) => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formattedData,
+    EndPoint.delete_friend
   );
 };
 export const SendFollowRequest = (formattedData: any) => {
