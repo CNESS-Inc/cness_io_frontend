@@ -169,14 +169,19 @@ export const router = createBrowserRouter([
             path: "market_place",
             element: <MarketPlace />,
           },
+          // {
+          //   path: "search-listing",
+          //   element:
+          //     import.meta.env.VITE_ENV_STAGE === "test" ? (
+          //       <SearchListing />
+          //     ) : (
+          //       <ComingSoon />
+          //     ),
+          // },
           {
             path: "search-listing",
-            element:
-              // import.meta.env.VITE_ENV_STAGE === "test" ? (
-                <SearchListing />
-              // ) : (
-              //   <ComingSoon />
-              // ),
+            element: <SearchListing />,
+
           },
           {
             path: "userprofile/:id",
