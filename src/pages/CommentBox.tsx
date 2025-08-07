@@ -33,10 +33,10 @@ interface Reply {
 
 interface CommentBoxProps {
   postId: string;
-  setUserPosts: any;
-  userPosts: any;
+  setUserPosts?: any;
+  userPosts?: any;
   onClose: () => void;
-  onCommentAdded?: () => void; // Make it optional if not always required
+  onCommentAdded?: () => void;
 }
 
 const CommentBox = ({
@@ -44,7 +44,6 @@ const CommentBox = ({
   onClose,
   onCommentAdded,
   setUserPosts,
-  userPosts
 }: CommentBoxProps) => {
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
