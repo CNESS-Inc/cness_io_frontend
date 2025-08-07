@@ -33,14 +33,17 @@ interface Reply {
 
 interface CommentBoxProps {
   postId: string;
+  setUserPosts?: any;
+  userPosts?: any;
   onClose: () => void;
-  onCommentAdded?: () => void; // Make it optional if not always required
+  onCommentAdded?: () => void;
 }
 
 const CommentBox = ({
   postId,
   onClose,
   onCommentAdded,
+  setUserPosts,
 }: CommentBoxProps) => {
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
@@ -84,6 +87,16 @@ const CommentBox = ({
       if (response?.data?.data) {
         console.log('response.data.data', response.data.data)
         setComments((prev) => [{ ...response.data.data, is_liked: false, likes_count: 0, replies: [] }, ...prev]);
+        setUserPosts((prevPosts: any) =>
+          prevPosts.map((post: any) =>
+            post.id === postId
+              ? {
+                ...post,
+                comments_count: post.comments_count + 1
+              }
+              : post
+          )
+        );
       } else {
         const newComment: Comment = {
           id: Date.now().toString(),

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
-import { GenerateAffiliateCode, getReferredUsers, getMyRefferralCode } from "../Common/ServerAPI";
+import { GenerateAffiliateCode, getReferredUsers, getMyRefferralCode, getReferralEarning } from "../Common/ServerAPI";
 import {
   FacebookShareButton,
   LinkedinShareButton,
@@ -30,6 +30,7 @@ const AffiliateGenerateCode = () => {
   const [apiMessage, setApiMessage] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const [referredUsers, setReferredUsers] = useState<ReferredUser[]>([]);
+  const [referreEarning, setReferreEarning] = useState(null);
   const [activeTab, setActiveTab] = useState<'users' | 'code'>('code');
   const [showMenu, setShowMenu] = useState<boolean>(false);
   
@@ -63,6 +64,13 @@ const AffiliateGenerateCode = () => {
  
   const loadReferredUsers = async (referralcode: string) => {
     try {
+      const userpayload = {
+        user_id: localStorage.getItem("Id"),
+      };
+      const userData = await getReferralEarning(userpayload);
+      
+      setReferreEarning(userData.data?.data?.referralEarning?.referral_amount || '0');
+
       const payload = { referralcode };
       const res = await getReferredUsers(payload);
       setReferredUsers(res.data?.data?.referralUsers || []);
@@ -130,7 +138,7 @@ const AffiliateGenerateCode = () => {
     <>
       <div className="w-full min-h-screen mt-8">
         {/* Tab Navigation */}
-<div className="flex flex-wrap gap-3 border-b border-gray-200 mb-6 mt-8 px-4 sm:px-6">
+        <div className="flex flex-wrap gap-3 border-b border-gray-200 mb-6 mt-8 px-4 sm:px-6">
           <button
             className={`px-4 py-2 cursor-pointer font-medium ${activeTab === 'code' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
             onClick={() => setActiveTab('code')}
@@ -153,7 +161,11 @@ const AffiliateGenerateCode = () => {
 
         {/* Tab Content */}
         {activeTab === 'users' && (
-<div className="min-h-screen bg-white px-4 py-6 sm:px-6 font-sans">
+          <div className="min-h-screen bg-white px-4 py-6 sm:px-6 font-sans">
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Your Referral Earning: {referreEarning}</h3>
+              <span></span>
+            </div>
             <h3 className="text-lg font-semibold mb-4">Your Referred Users</h3>
 
             <div className="bg-white border border-gray-200 rounded-md overflow-hidden">

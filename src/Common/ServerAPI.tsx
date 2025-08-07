@@ -30,6 +30,9 @@ type GenerateAffiliateFromData = {
 type getReferredUsersFromData = {
   referralcode: string;
 };
+type getReferralAmountFromData = {
+  user_id: any; 
+};
 type getMyRefferralCodeFromData = {
   user_id: string;
 }
@@ -167,6 +170,7 @@ export const EndPoint = {
   gernerate_affiliate_code: "/profile/user/generate_referral_code",
   get_my_referrals: "/profile/user/getmyreferrals",
   get_my_referral_code: "/profile/user/getMyReferralCode",
+  get_referral_amount: "/profile/user/getReferralAmount",
   subscription: "/subscription",
   get_badge: "/profile/get-user-badge",
 };
@@ -244,6 +248,12 @@ export const getMyRefferralCode = (formData: getMyRefferralCodeFromData): ApiRes
  
   return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.get_my_referral_code}?user_id=${formData.user_id}`);
 };
+
+export const getReferralEarning = (formData: getReferralAmountFromData): ApiResponse => {
+
+  return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.get_referral_amount}?user_id=${formData.user_id}`);
+};
+
 export const getSubscriptionDetails = (): ApiResponse => {
  
   return executeAPI(ServerAPI.APIMethod.GET, null, EndPoint.subscription);
@@ -348,7 +358,7 @@ export const submitAnswerDetails = (formData: any): ApiResponse => {
   }
 
   // Handle referenceLink
-  if (formData.referenceLink) {
+  if (formData.referenceLink && formData.referenceLink?.question_id) {
     data.push({
       question_id: formData.referenceLink.question_id,
       answer: formData.referenceLink.url,
