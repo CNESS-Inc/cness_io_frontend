@@ -379,10 +379,10 @@ const AssessmentQuestion: React.FC = () => {
         const response = await QuestionFileDetails(formData);
         console.log("🚀 ~ handleFileUpload ~ response:", response);
         showToast({
-        message: response?.success?.message,
-        type: "success",
-        duration: 5000,
-      });
+          message: response?.success?.message,
+          type: "success",
+          duration: 5000,
+        });
       } catch (error: any) {
         console.error("Error uploading file:", error);
         showToast({
@@ -437,6 +437,7 @@ const AssessmentQuestion: React.FC = () => {
 
     setIsSubmitting(true);
     try {
+      console.log(formData, 'ud - form data')
       const res = await submitAnswerDetails(formData);
       showToast({
         message: res?.success?.message,
@@ -596,7 +597,8 @@ const AssessmentQuestion: React.FC = () => {
     );
   }
 
-  const handleconfirm = () => {
+  const handleconfirm =async () => {
+    await handleSave()
     setActiveModal("assesment");
   };
   const currentStepIndex = currentSection?.order_number - 1;
@@ -657,11 +659,10 @@ const AssessmentQuestion: React.FC = () => {
       transition-all duration-300 ease-in-out
       bg-white 
    
-      ${
-        formData.selectedCheckboxIds.includes(option.id)
-          ? "border-[#7077ef] shadow-[2px_2px_4px_rgba(59,130,246,0.3)]"
-          : "border-[#D0D5DD] shadow-inner"
-      }
+      ${formData.selectedCheckboxIds.includes(option.id)
+                            ? "border-[#7077ef] shadow-[2px_2px_4px_rgba(59,130,246,0.3)]"
+                            : "border-[#D0D5DD] shadow-inner"
+                          }
       ${isSubmitted ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
     `}
                       />
@@ -779,9 +780,8 @@ const AssessmentQuestion: React.FC = () => {
                 </label>
                 <input
                   type="url"
-                  className={`w-full p-2 rounded-lg border ${
-                    urlError ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`w-full p-2 rounded-lg border ${urlError ? "border-red-500" : "border-gray-300"
+                    }`}
                   placeholder="https://example.com"
                   value={formData.referenceLink.url || ""}
                   onChange={(e) => handleReferenceLinkChange(e.target.value)}
@@ -825,41 +825,33 @@ const AssessmentQuestion: React.FC = () => {
     transition-all duration-200
     hover:bg-[#F4F4F5]
     disabled:text-gray-400 disabled:border-gray-200 disabled:cursor-not-allowed
-                              ${
-                                prevVariant === "white-disabled"
-                                  ? "bg-white font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center text-gray-400 border border-gray-200 shadow-md cursor-pointer"
-                                  : prevVariant === "blue"
-                                  ? "bg-[#EEF0FF] text-[#7077FE] cursor-pointer"
-                                  : "bg-[#EEF0FF] text-[#7077FE] hover:bg-[#DDE1FF] shadow-md cursor-pointer"
-                              }`}
+                              ${prevVariant === "white-disabled"
+                      ? "bg-white font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center text-gray-400 border border-gray-200 shadow-md cursor-pointer"
+                      : prevVariant === "blue"
+                        ? "bg-[#EEF0FF] text-[#7077FE] cursor-pointer"
+                        : "bg-[#EEF0FF] text-[#7077FE] hover:bg-[#DDE1FF] shadow-md cursor-pointer"
+                    }`}
                 >
                   Previous
                 </button>
 
-                <Button
-                  onClick={handleNext}
-                  disabled={!currentSection.next_section_id}
-                  className="
-   w-[117px] h-[35px]
-    rounded-[70.94px]
-    px-[24px] py-[8px]
-    flex items-center justify-center
-    gap-[7.09px]
-    text-white bg-[#897AFF]
-    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-[100%]
-    text-center whitespace-nowrap
-    transition-colors duration-200
-    disabled:opacity-50
-  "
-                  style={{
-                    opacity: 1,
-                    transform: "rotate(0deg)",
-                  }}
-                >
-                  <span className="font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center whitespace-nowrap ">
-                    Save & Next
-                  </span>
-                </Button>
+                {
+                  currentSection.next_section_id &&
+                  <Button
+                    onClick={handleNext}
+                    disabled={!currentSection.next_section_id}
+                    className="w-[117px] h-[35px] rounded-[70.94px] px-[24px] py-[8px] flex items-center justify-center gap-[7.09px] text-white bg-[#897AFF] font-['Plus Jakarta Sans'] font-medium text-[12px] leading-[100%] text-center whitespace-nowrap transition-colors duration-200 disabled:opacity-50"
+                    style={{
+                      opacity: 1,
+                      transform: "rotate(0deg)",
+                    }}
+                  >
+                    <span className="font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center whitespace-nowrap ">
+                      Save & Next
+                    </span>
+                  </Button>
+                }
+
               </div>
             </div>
             {/* )} */}
@@ -870,9 +862,8 @@ const AssessmentQuestion: React.FC = () => {
                 {[...Array(totalstep)].map((_, i) => (
                   <div
                     key={i}
-                    className={`w-2.5 h-2.5 rounded-full ${
-                      i === currentStepIndex ? "bg-purple-500" : "bg-purple-300"
-                    } transition`}
+                    className={`w-2.5 h-2.5 rounded-full ${i === currentStepIndex ? "bg-purple-500" : "bg-purple-300"
+                      } transition`}
                   />
                 ))}
               </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 // import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import StoryCard from "../components/Social/StoryCard";
 import { ChevronLeft, ChevronRight, Share2 } from "lucide-react";
 import {
@@ -45,6 +46,7 @@ import {
 } from "react-icons/fa";
 import FollowedUsersList from "./FollowedUsersList";
 import CollectionList from "./CollectionList";
+import Button from "../components/ui/Button";
 
 interface Post {
   id: string;
@@ -67,6 +69,7 @@ interface Post {
     username: string;
   };
   profile: {
+    id: string;
     user_id: string;
     first_name: string;
     last_name: string;
@@ -873,7 +876,7 @@ export default function SocialTopBar() {
                     <div className="flex flex-col gap-2 md:gap-3">
                       <div className="flex items-center gap-3">
                         <img
-                          src={createstory}
+                          src={localStorage.getItem("profile_picture") || createstory}
                           alt="User"
                           className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
                         />
@@ -910,7 +913,7 @@ export default function SocialTopBar() {
                             Photo
                           </span>
                         </button>
-                        <button className="flex items-center gap-1 md:gap-2">
+                        <button className="hidden flex items-center gap-1 md:gap-2">
                           <Image
                             src="/list.png"
                             alt="list"
@@ -1002,21 +1005,23 @@ export default function SocialTopBar() {
                       {/* Header */}
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 md:gap-3">
-                          <img
-                            src={post.profile.profile_picture}
-                            className="w-8 h-8 md:w-10 md:h-10 rounded-full"
-                            alt="User"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.src = "/profile.png";
-                            }}
-                          />
+                          <Link to={`/dashboard/userprofile/${post?.profile?.id}`}>
+                            <img
+                              src={post.profile.profile_picture}
+                              className="w-8 h-8 md:w-10 md:h-10 rounded-full"
+                              alt="User"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = "/profile.png";
+                              }}
+                            />
+                          </Link>
                           <div>
                             <p className="font-semibold text-sm md:text-base text-gray-800">
-                              {post.profile.first_name} {post.profile.last_name}
+                              <Link to={`/dashboard/userprofile/${post?.profile?.id}`}> {post.profile.first_name} {post.profile.last_name}</Link>
                               <span className="text-gray-500 text-xs md:text-sm">
                                 {" "}
-                                @{post.user.username}
+                                <Link to={`/dashboard/userprofile/${post?.profile?.id}`}> @{post.user.username}</Link>
                               </span>
                             </p>
                             <p className="text-xs md:text-sm text-gray-400">
@@ -1587,6 +1592,8 @@ export default function SocialTopBar() {
 
           {showCommentBox && selectedPostId && (
             <CommentBox
+              setUserPosts={setUserPosts}
+              userPosts={userPosts}
               postId={selectedPostId}
               onClose={() => {
                 setShowCommentBox(false);
@@ -1620,6 +1627,15 @@ export default function SocialTopBar() {
                 <p className="text-gray-600 text-sm sm:text-base">
                   Only users 18 years or older can access the social media feature.
                 </p>
+                <div className="w-full flex justify-center mt-4">
+                  <Button
+                    variant="gradient-primary"
+                    className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
+                    type="submit"
+                  >
+                   <Link to='/dashboard/user-profile'> Update Profile</Link>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

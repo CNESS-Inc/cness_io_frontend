@@ -449,7 +449,7 @@ const ScoreResult = () => {
                     </button>
                     {showMenu && (
                       <div
-                        className="absolute top-10 right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
+                        className="absolute top-10 sm:left-auto sm:right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
                         ref={menuRef}
                       >
                         <ul className="flex items-center gap-4">

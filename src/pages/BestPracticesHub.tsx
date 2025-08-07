@@ -365,9 +365,9 @@ useEffect(() => {
       await CreateBestPractice(formData);
 
       showToast({
-        message: "Best practice created successfully!",
+        message: "Best practices has been created and please wait until admin reviews it!",
         type: "success",
-        duration: 3000,
+        duration: 5000,
       });
 
       closeModal();

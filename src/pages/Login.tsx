@@ -244,15 +244,13 @@ export default function Login() {
     }
 
     if (rules.minLength && value.length < rules.minLength) {
-      return `${name.replace("_", " ")} must be at least ${
-        rules.minLength
-      } characters`;
+      return `${name.replace("_", " ")} must be at least ${rules.minLength
+        } characters`;
     }
 
     if (rules.maxLength && value.length > rules.maxLength) {
-      return `${name.replace("_", " ")} must be less than ${
-        rules.maxLength
-      } characters`;
+      return `${name.replace("_", " ")} must be less than ${rules.maxLength
+        } characters`;
     }
 
     if (rules.pattern && !rules.pattern.test(value)) {
@@ -485,8 +483,7 @@ export default function Login() {
           response?.data?.data?.user.margaret_name
         );
         const myReferralCode = response?.data?.data?.user.my_referral_code;
-        if(myReferralCode)
-        {
+        if (myReferralCode) {
           localStorage.setItem("referral_code", response?.data?.data?.user.my_referral_code);
         }
         const completionStatus =
@@ -864,9 +861,9 @@ export default function Login() {
         // Include custom_profession in the payload if "other" is selected
         professions: personForm.professions.includes("other")
           ? [
-              ...personForm.professions.filter((p) => p !== "other"),
-              personForm.custom_profession,
-            ]
+            ...personForm.professions.filter((p) => p !== "other"),
+            personForm.custom_profession,
+          ]
           : personForm.professions,
       };
 
@@ -1221,171 +1218,168 @@ export default function Login() {
             <SignupAnimation />
           </div>
 
-   <div className="relative w-full h-[250px]">
-  <div className="absolute top-1 left-5 z-30 p-0">
-   <Link to="/">
-                 <img
-                   src={cnesslogo}
-                   alt="logo"
-                   className="w-48 h-48 object-contain"
-                 />
-               </Link>
-  </div>
-</div>
+          <div className="relative w-full h-[250px]">
+            <div className="absolute top-1 left-5 z-30 p-0">
+              <Link to="/">
+                <img
+                  src={cnesslogo}
+                  alt="logo"
+                  className="w-48 h-48 object-contain"
+                />
+              </Link>
+            </div>
+          </div>
 
         </div>
 
         {/* Sign In Form */}
-<div className="absolute top-[80px] sm:top-[120px] md:top-[160px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
- <div className="w-[576px] h-[650px] bg-white rounded-[24px] shadow-xl border border-gray-200 px-[42px] py-[52px] flex flex-col gap-8">
+        <div className="min-h-[700px] ">
+          <div className="absolute top-[80px] sm:top-[120px] md:top-[160px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
+            <div className="w-[576px] h-[750px] sm:h-[650px] bg-white rounded-[24px] shadow-xl border border-gray-200 px-[42px] py-[52px] flex flex-col gap-8">
 
-  <h2 className="font-poppins font-semibold text-[28px] leading-[32px] tracking-[-0.02em] text-gray-900">
-              Sign in to your account<br />
-             <span className="font-publicSans font-normal text-[15px] leading-[20px] tracking-[-0.005em] text-[#281D1B]">
-  Please enter your login details to access your account
-</span>
-            </h2>
-            
-            {apiMessage && (
-              <div
-                className={`text-center mb-4 ${
-                  apiMessage.includes("Successfully")
+              <h2 className="font-poppins font-semibold text-[28px] leading-[32px] tracking-[-0.02em] text-gray-900">
+                Sign in to your account<br />
+                <span className="font-publicSans font-normal text-[15px] leading-[20px] tracking-[-0.005em] text-[#281D1B]">
+                  Please enter your login details to access your account
+                </span>
+              </h2>
+
+              {apiMessage && (
+                <div
+                  className={`text-center mb-4 ${apiMessage.includes("Successfully")
                     ? "text-green-500"
                     : "text-red-500"
-                }`}
-              >
-                {apiMessage}
-              </div>
-            )}
-            <form className="space-y-4" onSubmit={handleSubmit}>
-              <div className="mb-4 relative">
-                {/* Google Sign-In Button */}
-                <div className="flex justify-center gap-4 mt-2">
-                  <button
-                    type="button"
-                    onClick={() => login()}
-          className="flex items-center gap-2 border border-gray-300 rounded-3xl px-12 py-3 bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 hover:cursor-pointer"
-                  >
-                    <img
-                      src="/google-icon-logo.svg"
-                      alt="Google"
-                      className="w-6 h-6"
-                    />
-                    <span className="text-sm font-medium text-gray-700">
-                      Sign in with Google
-                    </span>
-                  </button>
-                </div>
-
-                {/* Divider with "Or sign in with" */}
-                <div className="relative my-8">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="bg-white px-3 font-publicSans font-normal text-[15px] leading-[20px] text-[#281D1B]">Or sign in with</span>
-                  </div>
-                </div>
-
-                <label
-                  htmlFor="email"
-                  className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
-                >
-                  Email
-                </label>
-                <div className="relative">
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    placeholder="Enter your email"
-                    onFocus={() => setEmailFocused(true)}
-                    onBlur={() => setEmailFocused(false)}
-                    className={`w-full px-3 py-2 rounded-[12px] border ${
-                      loginErrors.email ? "border-red-500" : "border-[#CBD5E1]"
-                    } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
-                  />
-
-                  <FiMail
-                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-opacity duration-300 ${
-                      emailFocused ? "opacity-100" : "opacity-0"
                     }`}
-                    size={18}
-                  />
-                </div>
-                {loginErrors.email && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {loginErrors.email}
-                  </p>
-                )}
-              </div>
-
-              <div className="mb-4 relative">
-                <label
-                  htmlFor="password"
-                  className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
                 >
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={showLoginPassword ? "text" : "password"}
-                    id="password"
-                    name="password"
-                    required
-                    placeholder="Enter your Password"
-                    className={`w-full px-3 py-2 rounded-[12px] border ${
-                      loginErrors.password
+                  {apiMessage}
+                </div>
+              )}
+              <form className="space-y-4" onSubmit={handleSubmit}>
+                <div className="mb-4 relative">
+                  {/* Google Sign-In Button */}
+                  <div className="flex justify-center gap-4 mt-2">
+                    <button
+                      type="button"
+                      onClick={() => login()}
+                      className="flex items-center gap-2 border border-gray-300 rounded-3xl px-12 py-3 bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 hover:cursor-pointer"
+                    >
+                      <img
+                        src="/google-icon-logo.svg"
+                        alt="Google"
+                        className="w-6 h-6"
+                      />
+                      <span className="text-sm font-medium text-gray-700">
+                        Sign in with Google
+                      </span>
+                    </button>
+                  </div>
+
+                  {/* Divider with "Or sign in with" */}
+                  <div className="relative my-8">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="bg-white px-3 font-publicSans font-normal text-[15px] leading-[20px] text-[#281D1B]">Or sign in with</span>
+                    </div>
+                  </div>
+
+                  <label
+                    htmlFor="email"
+                    className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
+                  >
+                    Email
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      required
+                      placeholder="Enter your email"
+                      onFocus={() => setEmailFocused(true)}
+                      onBlur={() => setEmailFocused(false)}
+                      className={`w-full px-3 py-2 rounded-[12px] border ${loginErrors.email ? "border-red-500" : "border-[#CBD5E1]"
+                        } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                    />
+
+                    <FiMail
+                      className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-opacity duration-300 ${emailFocused ? "opacity-100" : "opacity-0"
+                        }`}
+                      size={18}
+                    />
+                  </div>
+                  {loginErrors.email && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {loginErrors.email}
+                    </p>
+                  )}
+                </div>
+
+                <div className="mb-4 relative">
+                  <label
+                    htmlFor="password"
+                    className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
+                  >
+                    Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showLoginPassword ? "text" : "password"}
+                      id="password"
+                      name="password"
+                      required
+                      placeholder="Enter your Password"
+                      className={`w-full px-3 py-2 rounded-[12px] border ${loginErrors.password
                         ? "border-red-500"
                         : "border-[#CBD5E1]"
-                    } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
-                  />
+                        } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                    />
 
-                  <div
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-                    onClick={() => setShowLoginPassword(!showLoginPassword)}
-                  >
-                    {showLoginPassword ? (
-                      <FiEyeOff size={18} />
-                    ) : (
-                      <FiEye size={18} />
-                    )}
+                    <div
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                      onClick={() => setShowLoginPassword(!showLoginPassword)}
+                    >
+                      {showLoginPassword ? (
+                        <FiEyeOff size={18} />
+                      ) : (
+                        <FiEye size={18} />
+                      )}
+                    </div>
                   </div>
+                  {loginErrors.password && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {loginErrors.password}
+                    </p>
+                  )}
                 </div>
-                {loginErrors.password && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {loginErrors.password}
-                  </p>
-                )}
-              </div>
 
-              <div className="flex items-center justify-between text-sm">
-                <label className="flex items-center gap-2">
-                  <input type="checkbox" className="rounded border-gray-300" />
-                  <span className="text-gray-600">
-                    Remember me on this device
-                  </span>
-                </label>
-                <a
-                  href="#"
-                  className="text-[#7F57FC] hover:underline"
-                  onClick={onForgotPassword}
+                <div className="flex items-center justify-between text-sm">
+                  <label className="flex items-center gap-2">
+                    <input type="checkbox" className="rounded border-gray-300" />
+                    <span className="text-gray-600">
+                      Remember me on this device
+                    </span>
+                  </label>
+                  <a
+                    href="#"
+                    className="text-[#7F57FC] hover:underline"
+                    onClick={onForgotPassword}
+                  >
+                    Trouble logging in? Reset password
+                  </a>
+                </div>
+
+                <Button
+                  type="submit"
+                  variant="gradient-primary"
+                  className="w-full rounded-[100px] flex justify-center py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                  disabled={isSubmitting}
                 >
-                  Trouble logging in? Reset password
-                </a>
-              </div>
+                  {isSubmitting ? "Loging..." : "Login"}
+                </Button>
 
-              <Button
-                type="submit"
-                variant="gradient-primary"
-                className="w-full rounded-[100px] flex justify-center py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Loging..." : "Login"}
-              </Button>
-
-              {/* Google & Facebook Icons 
+                {/* Google & Facebook Icons 
               <div className="flex justify-center gap-4 mt-2">
                 <button
                   type="button"
@@ -1413,16 +1407,17 @@ export default function Login() {
                 </button>
               </div>
 */}
-              <p className="flex flex-col sm:flex-row justify-center items-center text-sm gap-2 sm:gap-2 mt-4">
-                New to Cness?{" "}
-                <Link
-                  to={"/sign-up"}
-                  className="text-[#7F57FC] font-medium hover:underline"
-                >
-                  Create account
-                </Link>
-              </p>
-            </form>
+                <p className="flex flex-col sm:flex-row justify-center items-center text-sm gap-2 sm:gap-2 mt-4">
+                  New to Cness?{" "}
+                  <Link
+                    to={"/sign-up"}
+                    className="text-[#7F57FC] font-medium hover:underline"
+                  >
+                    Create account
+                  </Link>
+                </p>
+              </form>
+            </div>
           </div>
         </div>
       </div>
@@ -1576,11 +1571,10 @@ export default function Login() {
                         name="organization_name"
                         value={organizationForm.organization_name}
                         onChange={handleOrganizationFormChange}
-                        className={`w-full px-3 py-2 border ${
-                          organizationErrors.organization_name
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        } rounded-md`}
+                        className={`w-full px-3 py-2 border ${organizationErrors.organization_name
+                          ? "border-red-500"
+                          : "border-gray-300"
+                          } rounded-md`}
                         placeholder="Enter organization name"
                       />
                       {organizationErrors.organization_name && (
@@ -1599,11 +1593,10 @@ export default function Login() {
                         name="domain"
                         value={organizationForm.domain}
                         onChange={handleOrganizationFormChange}
-                        className={`w-full px-3 py-2 border ${
-                          organizationErrors.domain
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        } rounded-md`}
+                        className={`w-full px-3 py-2 border ${organizationErrors.domain
+                          ? "border-red-500"
+                          : "border-gray-300"
+                          } rounded-md`}
                       >
                         <option value="">Select domain</option>
                         {domains?.map((domain: any) => (
@@ -1631,11 +1624,10 @@ export default function Login() {
                           name="custom_domain"
                           value={organizationForm.custom_domain || ""}
                           onChange={handleOrganizationFormChange}
-                          className={`w-full px-3 py-2 border ${
-                            organizationErrors.custom_domain
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          } rounded-md`}
+                          className={`w-full px-3 py-2 border ${organizationErrors.custom_domain
+                            ? "border-red-500"
+                            : "border-gray-300"
+                            } rounded-md`}
                           placeholder="Enter your domain name"
                         />
                         {organizationErrors.custom_domain && (
@@ -1774,11 +1766,10 @@ export default function Login() {
                                 name={`question_${question.id}`}
                                 value={existingAnswer}
                                 onChange={handleOrganizationFormChange}
-                                className={`w-full px-3 py-2 border ${
-                                  organizationErrors[`question_${question.id}`]
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                } rounded-md`}
+                                className={`w-full px-3 py-2 border ${organizationErrors[`question_${question.id}`]
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                                  } rounded-md`}
                                 placeholder={`Enter your answer`}
                                 rows={3}
                               />
@@ -1789,7 +1780,7 @@ export default function Login() {
                                 <p className="mt-1 text-sm text-red-600">
                                   {
                                     organizationErrors[
-                                      `question_${question.id}`
+                                    `question_${question.id}`
                                     ]
                                   }
                                 </p>
@@ -1834,10 +1825,10 @@ export default function Login() {
                       <Button
                         type="submit"
                         variant="gradient-primary"
-className="w-[104px] h-[39px] rounded-[100px] p-0
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
     flex items-center justify-center"
-                            disabled={isSubmitting}
+                        disabled={isSubmitting}
                       >
                         {isSubmitting ? "Submitting..." : "Submit"}
                       </Button>
@@ -1977,21 +1968,20 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
                       <input
                         type="text"
                         name="first_name"
-                         placeholder="Enter your first name"
+                        placeholder="Enter your first name"
                         value={personForm.first_name}
                         onChange={handlePersonFormChange}
                         className={`w-[440px] h-[41px]
     rounded-[12px]
     border-[0.82px]
-    p-[12px] mt-2 ${
-                          personErrors.first_name
+    p-[12px] mt-2 ${personErrors.first_name
                             ? "border-red-500"
                             : "border-gray-300"
-                        } rounded-md`
-                        
-                      }
-                       
-                        
+                          } rounded-md`
+
+                        }
+
+
                       />
                       {personErrors.first_name && (
                         <p className="mt-1 text-sm text-red-600">
@@ -2013,11 +2003,10 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
                         className={`w-[440px] h-[41px]
     rounded-[12px]
     border-[0.82px]
-    p-[12px] mt-2 ${
-                          personErrors.last_name
+    p-[12px] mt-2 ${personErrors.last_name
                             ? "border-red-500"
                             : "border-gray-300"
-                        } rounded-md`}
+                          } rounded-md`}
                         placeholder="Enter your last name"
                       />
                       {personErrors.last_name && (
@@ -2033,38 +2022,38 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
                         <span className="text-red-500">*</span>
                       </label>
                       <div className="mt-4">
-                      <Select
-                        isMulti
-                        options={interest?.map((interestItem: Interest) => ({
-                          value: interestItem.id,
-                          label: interestItem.name,
-                        }))}
-                        value={
-                          personForm.interests?.map((interestId: any) => ({
-                            value: interestId,
-                            label: interest?.find(
-                              (i: any) => i.id === interestId
-                            )?.name,
-                          })) || []
-                        }
-                        onChange={(selectedOptions) => {
-                          // Update your form state with the selected values
-                          const selectedValues = selectedOptions?.map(
-                            (option) => option.value
-                          );
-                          setPersonForm({
-                            ...personForm,
-                            interests: selectedValues,
-                          });
-                        }}
-                        className="react-select-container"
-                        classNamePrefix="react-select"
-                        placeholder="Select interests..."
-                        menuPortalTarget={document.body}
-                        styles={{
-                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                        }}
-                      />
+                        <Select
+                          isMulti
+                          options={interest?.map((interestItem: Interest) => ({
+                            value: interestItem.id,
+                            label: interestItem.name,
+                          }))}
+                          value={
+                            personForm.interests?.map((interestId: any) => ({
+                              value: interestId,
+                              label: interest?.find(
+                                (i: any) => i.id === interestId
+                              )?.name,
+                            })) || []
+                          }
+                          onChange={(selectedOptions) => {
+                            // Update your form state with the selected values
+                            const selectedValues = selectedOptions?.map(
+                              (option) => option.value
+                            );
+                            setPersonForm({
+                              ...personForm,
+                              interests: selectedValues,
+                            });
+                          }}
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          placeholder="Select interests..."
+                          menuPortalTarget={document.body}
+                          styles={{
+                            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                          }}
+                        />
                       </div>
                       {personErrors.interests && (
                         <p className="mt-1 text-sm text-red-600">
@@ -2079,51 +2068,51 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
                         <span className="text-red-500">*</span>
 
                       </label>
-                            <div className="mt-4">
-                      <Select
-                        isMulti
-                        options={[
-                          ...profession?.map((professionItem: Profession) => ({
-                            value: professionItem.id,
-                            label: professionItem.title,
-                          })),
-                          { value: "other", label: "Other (please specify)" },
-                        ]}
-                        value={
-                          personForm.professions?.map((professionId: any) => ({
-                            value: professionId,
-                            label:
-                              profession?.find(
-                                (p: any) => p.id === professionId
-                              )?.title ||
-                              (professionId === "other" ? "Other" : ""),
-                          })) || []
-                        }
-                        onChange={(selectedOptions) => {
-                          const selectedValues = selectedOptions?.map(
-                            (option) => option.value
-                          );
-                          setPersonForm({
-                            ...personForm,
-                            professions: selectedValues,
-                          });
-                        }}
-                        className="react-select-container"
-                        classNamePrefix="react-select"
-                        placeholder="Select professions..."
-                        menuPortalTarget={document.body}
-                        styles={{
-                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                        }}
-                      />
-                   </div>
+                      <div className="mt-4">
+                        <Select
+                          isMulti
+                          options={[
+                            ...profession?.map((professionItem: Profession) => ({
+                              value: professionItem.id,
+                              label: professionItem.title,
+                            })),
+                            { value: "other", label: "Other (please specify)" },
+                          ]}
+                          value={
+                            personForm.professions?.map((professionId: any) => ({
+                              value: professionId,
+                              label:
+                                profession?.find(
+                                  (p: any) => p.id === professionId
+                                )?.title ||
+                                (professionId === "other" ? "Other" : ""),
+                            })) || []
+                          }
+                          onChange={(selectedOptions) => {
+                            const selectedValues = selectedOptions?.map(
+                              (option) => option.value
+                            );
+                            setPersonForm({
+                              ...personForm,
+                              professions: selectedValues,
+                            });
+                          }}
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          placeholder="Select professions..."
+                          menuPortalTarget={document.body}
+                          styles={{
+                            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                          }}
+                        />
+                      </div>
                       {personErrors.professions && (
                         <p className="mt-1 text-sm text-red-600">
                           {personErrors.professions}
                         </p>
                       )}
-                 
-</div>
+
+                    </div>
                     {/* Add this after the Select component */}
                     {personForm.professions?.includes("other") && (
                       <div className="mb-4 mt-2">
@@ -2160,11 +2149,11 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
 
                         return (
                           <div key={question.id} className="mb-4">
-                            
-                            <label 
-                            style={{ lineHeight: '1.8' }}
-  className="block openSans text-base font-medium text-gray-800 mb-3 mt-4"
-                           >
+
+                            <label
+                              style={{ lineHeight: '1.8' }}
+                              className="block openSans text-base font-medium text-gray-800 mb-3 mt-4"
+                            >
                               {question.question}
                             </label>
 
@@ -2198,11 +2187,10 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
                                 name={`question_${question.id}`}
                                 value={existingAnswer}
                                 onChange={handlePersonFormChange}
-                                className={`w-full px-3 py-2 border ${
-                                  personErrors[`question_${question.id}`]
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                } rounded-md`}
+                                className={`w-full px-3 py-2 border ${personErrors[`question_${question.id}`]
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                                  } rounded-md`}
                                 placeholder={`Enter your answer`}
                                 rows={3}
                               />
@@ -2252,10 +2240,10 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
                       <Button
                         type="submit"
                         variant="gradient-primary"
-className="w-[104px] h-[39px] rounded-[100px] p-0
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
     flex items-center justify-center"
-                            disabled={isSubmitting}
+                        disabled={isSubmitting}
                       >
                         {isSubmitting ? "Submitting..." : "Submit"}
                       </Button>
@@ -2279,7 +2267,7 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
                         type="button"
                         onClick={handleNextPersonClick}
                         variant="gradient-primary"
-className="w-[104px] h-[39px] rounded-[100px] p-0
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
     flex items-center justify-center"                      >
                         Next
@@ -2591,11 +2579,10 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
           </h2>
           {apiMessage && (
             <div
-              className={`text-center mb-4 ${
-                apiMessage.includes("A Forgot Password Email Has Been Sent")
-                  ? "text-green-500"
-                  : "text-red-500"
-              }`}
+              className={`text-center mb-4 ${apiMessage.includes("A Forgot Password Email Has Been Sent")
+                ? "text-green-500"
+                : "text-red-500"
+                }`}
             >
               {apiMessage}
             </div>
@@ -2614,11 +2601,10 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
                 name="email"
                 required
                 placeholder="Enter your email"
-                className={`w-full px-3 py-2 rounded-[12px] border ${
-                  resetPasswordErrors.email
-                    ? "border-red-500"
-                    : "border-[#CBD5E1]"
-                } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                className={`w-full px-3 py-2 rounded-[12px] border ${resetPasswordErrors.email
+                  ? "border-red-500"
+                  : "border-[#CBD5E1]"
+                  } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
               />
               {resetPasswordErrors.email && (
                 <p className="mt-1 text-sm text-red-600">
@@ -2666,11 +2652,10 @@ className="w-[104px] h-[39px] rounded-[100px] p-0
           </div>
           {apiMessage && (
             <div
-              className={`openSans text-center p-4 ${
-                apiMessage.includes("A Forgot Password Email Has Been Sent")
-                  ? "text-green-500"
-                  : "text-red-500"
-              }`}
+              className={`openSans text-center p-4 ${apiMessage.includes("A Forgot Password Email Has Been Sent")
+                ? "text-green-500"
+                : "text-red-500"
+                }`}
             >
               {apiMessage}
             </div>

@@ -348,7 +348,7 @@ export const submitAnswerDetails = (formData: any): ApiResponse => {
   }
 
   // Handle referenceLink
-  if (formData.referenceLink) {
+  if (formData.referenceLink && formData.referenceLink?.question_id) {
     data.push({
       question_id: formData.referenceLink.question_id,
       answer: formData.referenceLink.url,
