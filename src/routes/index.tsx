@@ -220,11 +220,11 @@ export const router = createBrowserRouter([
           {
             path: "EditPublicListing",
             element:
-              import.meta.env.VITE_ENV_STAGE === "test" ? (
+              // import.meta.env.VITE_ENV_STAGE === "test" ? (
                 <EditPublicListing />
-              ) : (
-                <ComingSoon />
-              ),
+              // ) : (
+              //   <ComingSoon />
+              // ),
           },
 
           {
