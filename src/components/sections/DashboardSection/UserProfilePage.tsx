@@ -198,7 +198,24 @@ const UserProfilePage = () => {
             "Bio contains invalid characters"
           ),
         gender: yup.string().required("Gender is required"),
-        dob: yup.string().required("Date of birth is required"),
+        dob: yup
+          .string()
+          .required("Date of birth is required")
+          .test(
+            "is-18-plus",
+            "You are not allowed to use the social media platform unless you are over 18 years old.",
+            function (value) {
+              if (!value) return false;
+              const dob = new Date(value);
+              const today = new Date();
+              const age = today.getFullYear() - dob.getFullYear();
+              const m = today.getMonth() - dob.getMonth();
+              if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                return age - 1 >= 18;
+              }
+              return age >= 18;
+            }
+          ),
         quote: yup
           .string()
           .matches(
@@ -1040,7 +1057,7 @@ const UserProfilePage = () => {
                   </div>
 
                   <div className="absolute -bottom-0 left-4 sm:left-6 md:left-8 z-20 group">
-                    <div className="relative w-24 sm:w-28 md:w-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100">
+                    <div className="relative w-24 h-24 sm:w-28 sm:h-24 md:w-32 md:h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100">
                       {uploadProgress.type === "profile" && (
                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-full">
                           <div className="text-white text-center">

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { GetComment, PostComments, PostChildComments, PostCommentLike } from "../Common/ServerAPI";
+import { GetComment, PostComments, PostChildComments, PostCommentLike, PostChildCommentLike } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 
 interface Comment {
@@ -71,128 +71,141 @@ const CommentBox = ({
   }, [postId]);
 
   const handleSubmitComment = async () => {
-  if (!commentText.trim()) return;
+    if (!commentText.trim()) return;
 
-  try {
-    const formattedData = {
-      text: commentText,
-      post_id: postId,
-    };
-
-    const response = await PostComments(formattedData);
-    
-    if (response?.data?.data) {
-      setComments((prev) => [response.data.data, ...prev]);
-    } else {
-      const newComment: Comment = {
-        id: Date.now().toString(),
-        user_id: "current_user_id",
+    try {
+      const formattedData = {
         text: commentText,
-        createdAt: new Date().toISOString(),
-        likes_count: 0,
-        replies: [],
-        profile: {
-          first_name: "Your",
-          last_name: "Name",
-          profile_picture: profilePicture,
-        },
+        post_id: postId,
       };
-      setComments((prev) => [newComment, ...prev]);
+
+      const response = await PostComments(formattedData);
+
+      if (response?.data?.data) {
+        console.log('response.data.data', response.data.data)
+        setComments((prev) => [{ ...response.data.data, is_liked: false, likes_count: 0, replies: [] }, ...prev]);
+      } else {
+        const newComment: Comment = {
+          id: Date.now().toString(),
+          user_id: "current_user_id",
+          text: commentText,
+          createdAt: new Date().toISOString(),
+          likes_count: 0,
+          replies: [],
+          is_liked: false,
+          profile: {
+            first_name: "Your",
+            last_name: "Name",
+            profile_picture: profilePicture,
+          },
+        };
+        setComments((prev) => [newComment, ...prev]);
+      }
+      setCommentText("");
+
+      // Call the onCommentAdded callback if it exists
+      if (onCommentAdded) {
+        onCommentAdded();
+      }
+    } catch (error: any) {
+      console.error("Error posting comment:", error.message || error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
-    setCommentText("");
-    
-    // Call the onCommentAdded callback if it exists
-    if (onCommentAdded) {
-      onCommentAdded();
-    }
-  } catch (error: any) {
-    console.error("Error posting comment:", error.message || error);
-    showToast({
-      message: error?.response?.data?.error?.message,
-      type: "error",
-      duration: 5000,
-    });
-  }
-};
+  };
 
   const handleReplySubmit = async (commentId: string) => {
-  if (!replyText.trim()) return;
+    if (!replyText.trim()) return;
 
-  try {
-    const formattedData = {
-      text: replyText,
-      comment_id: commentId,
-      post_id: postId,
-    };
-
-    const response = await PostChildComments(formattedData);
-    
-    if (response?.data?.data) {
-      setComments(prev => prev.map(comment => {
-        if (comment.id === commentId) {
-          return {
-            ...comment,
-            replies: [response.data.data, ...comment.replies]
-          };
-        }
-        return comment;
-      }));
-    } else {
-      const newReply: Reply = {
-        id: Date.now().toString(),
-        user_id: "current_user_id",
-        text: replyText,
-        createdAt: new Date().toISOString(),
-        likes_count: 0,
-        profile: {
-          first_name: "Your",
-          last_name: "Name",
-          profile_picture: profilePicture,
-        },
-      };
-      
-      setComments(prev => prev.map(comment => {
-        if (comment.id === commentId) {
-          return {
-            ...comment,
-            replies: [newReply, ...comment.replies]
-          };
-        }
-        return comment;
-      }));
-    }
-    
-    setReplyText("");
-    setShowReply(null);
-    
-    // Call the onCommentAdded callback if it exists
-    if (onCommentAdded) {
-      onCommentAdded();
-    }
-  } catch (error: any) {
-    console.error("Error posting reply:", error.message || error);
-    showToast({
-      message: error?.response?.data?.error?.message,
-      type: "error",
-      duration: 5000,
-    });
-  }
-};
-
-  const handleLikeComment = async (commentId: string, isReply: boolean = false) => {
     try {
+      const formattedData = {
+        text: replyText,
+        comment_id: commentId,
+        post_id: postId,
+      };
+
+      const response = await PostChildComments(formattedData);
+
+      if (response?.data?.data) {
+        setComments(prev => prev.map(comment => {
+          if (comment.id === commentId) {
+            return {
+              ...comment,
+              replies: [{ ...response.data.data, is_liked: false, likes_count: 0, }, ...comment?.replies]
+            };
+          }
+          return comment;
+        }));
+      } else {
+        const newReply: Reply = {
+          id: Date.now().toString(),
+          user_id: "current_user_id",
+          text: replyText,
+          createdAt: new Date().toISOString(),
+          likes_count: 0,
+          profile: {
+            first_name: "Your",
+            last_name: "Name",
+            profile_picture: profilePicture,
+          },
+        };
+
+        setComments(prev => prev?.map(comment => {
+          if (comment.id === commentId) {
+            return {
+              ...comment,
+              replies: [newReply, ...comment.replies]
+            };
+          }
+          return comment;
+        }));
+      }
+
+      setReplyText("");
+      setShowReply(null);
+
+      // Call the onCommentAdded callback if it exists
+      if (onCommentAdded) {
+        onCommentAdded();
+      }
+    } catch (error: any) {
+      console.error("Error posting reply:", error.message || error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
+  const handleLikeComment = async (commentId: string, isReply: boolean = false, replyId: string | null = null) => {
+    try {
+      console.log('click to like')
       const formattedData = {
         post_id: postId,
         comment_id: commentId,
       };
 
-      await PostCommentLike(formattedData);
-      
+      const chaildFormData = {
+        post_id: postId,
+        parent_comment_id: commentId,
+        child_comment_id: replyId,
+      }
+
+      if (isReply) {
+        await PostChildCommentLike(chaildFormData);
+      } else {
+        await PostCommentLike(formattedData);
+      }
+
       setComments(prev => prev.map(comment => {
         if (isReply) {
           // Handle reply like
           const updatedReplies = comment.replies.map(reply => {
-            if (reply.id === commentId) {
+            if (reply.id === replyId) {
               return {
                 ...reply,
                 likes_count: reply.is_liked ? reply.likes_count - 1 : reply.likes_count + 1,
@@ -203,6 +216,7 @@ const CommentBox = ({
           });
           return { ...comment, replies: updatedReplies };
         } else {
+          console.log(comment.id, commentId, 'commentId commentId')
           // Handle main comment like
           if (comment.id === commentId) {
             return {
@@ -228,17 +242,15 @@ const CommentBox = ({
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-end justify-center bg-black/50 transition-opacity duration-300 ${
-        isClosing ? "opacity-0" : "opacity-100"
-      }`}
+      className={`fixed inset-0 z-50 flex items-end justify-center bg-black/50 transition-opacity duration-300 ${isClosing ? "opacity-0" : "opacity-100"
+        }`}
     >
       <div className="absolute inset-0 bg-transparent" onClick={handleClose} />
 
       <div
         ref={commentBoxRef}
-        className={`relative w-full max-w-xl bg-white rounded-t-2xl shadow-xl transition-all duration-300 transform ${
-          isClosing ? "translate-y-full" : "translate-y-0"
-        }`}
+        className={`relative w-full max-w-xl bg-white rounded-t-2xl shadow-xl transition-all duration-300 transform ${isClosing ? "translate-y-full" : "translate-y-0"
+          }`}
         style={{
           maxHeight: "90vh",
           animation: !isClosing ? "slideUp 0.3s ease-out forwards" : "none",
@@ -315,13 +327,13 @@ const CommentBox = ({
                       </div>
                       <div className="flex items-center text-xs text-gray-500 mt-1 gap-2">
                         <span>{new Date(comment.createdAt).toLocaleString()}</span>
-                        <button 
+                        <button
                           onClick={() => handleLikeComment(comment.id)}
                           className={`hover:underline ${comment.is_liked ? 'text-blue-500' : ''}`}
                         >
                           Like ({comment.likes_count})
                         </button>
-                        <button 
+                        <button
                           onClick={() => setShowReply(showReply === comment.id ? null : comment.id)}
                           className="hover:underline"
                         >
@@ -339,9 +351,9 @@ const CommentBox = ({
                         alt="Your profile"
                         className="w-8 h-8 rounded-full object-cover flex-shrink-0"
                         onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.src = "/profile.png";
-                            }}
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/profile.png";
+                        }}
                       />
                       <div className="flex-1 flex gap-2">
                         <input
@@ -353,11 +365,10 @@ const CommentBox = ({
                           onKeyPress={(e) => e.key === 'Enter' && handleReplySubmit(comment.id)}
                         />
                         <button
-                          className={`px-3 py-1 rounded-full text-sm ${
-                            replyText
-                              ? "text-purple-600 hover:text-purple-700"
-                              : "text-purple-300 cursor-not-allowed"
-                          }`}
+                          className={`px-3 py-1 rounded-full text-sm ${replyText
+                            ? "text-purple-600 hover:text-purple-700"
+                            : "text-purple-300 cursor-not-allowed"
+                            }`}
                           disabled={!replyText}
                           onClick={() => handleReplySubmit(comment.id)}
                         >
@@ -393,8 +404,8 @@ const CommentBox = ({
                             </div>
                             <div className="flex items-center text-xs text-gray-500 mt-1 gap-2">
                               <span>{new Date(reply.createdAt).toLocaleString()}</span>
-                              <button 
-                                onClick={() => handleLikeComment(reply.id, true)}
+                              <button
+                                onClick={() => handleLikeComment(comment.id, true, reply.id)}
                                 className={`hover:underline ${reply.is_liked ? 'text-blue-500' : ''}`}
                               >
                                 Like ({reply.likes_count})
@@ -418,9 +429,9 @@ const CommentBox = ({
               alt="Your profile"
               className="w-10 h-10 rounded-full object-cover flex-shrink-0"
               onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.src = "/profile.png";
-                            }}
+                const target = e.target as HTMLImageElement;
+                target.src = "/profile.png";
+              }}
             />
             <input
               type="text"
@@ -431,11 +442,10 @@ const CommentBox = ({
               onKeyPress={(e) => e.key === "Enter" && handleSubmitComment()}
             />
             <button
-              className={`px-4 py-2 rounded-full font-medium ${
-                commentText
-                  ? "text-purple-600 hover:text-purple-700"
-                  : "text-purple-300 cursor-not-allowed"
-              }`}
+              className={`px-4 py-2 rounded-full font-medium ${commentText
+                ? "text-purple-600 hover:text-purple-700"
+                : "text-purple-300 cursor-not-allowed"
+                }`}
               disabled={!commentText}
               onClick={handleSubmitComment}
             >

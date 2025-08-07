@@ -25,7 +25,7 @@ import Support from "../pages/Support";
 import MarketPlace from "../pages/MarketPlace";
 import SearchListing from "../pages/SearchListing";
 import DigitalProducts from "../pages/DigitalProducts";
-import Feed from "../pages/Feed";
+// import Feed from "../pages/Feed";
 import SearchExplore from "../pages/SearchExplore";
 import BecomeMentor from "../pages/BecomeMentor";
 //import DashboardDirectoryPage from "../pages/DashboardDirectoryPage";
@@ -135,11 +135,11 @@ export const router = createBrowserRouter([
           {
             path: "setting",
             element:
-              import.meta.env.VITE_ENV_STAGE === "test" ? (
+              // import.meta.env.VITE_ENV_STAGE === "test" ? (
                 <Setting />
-              ) : (
-                <ComingSoon />
-              ),
+              // ) : (
+              //   <ComingSoon />
+              // ),
           },
           {
             path: "upload-proof",
@@ -169,14 +169,19 @@ export const router = createBrowserRouter([
             path: "market_place",
             element: <MarketPlace />,
           },
+          // {
+          //   path: "search-listing",
+          //   element:
+          //     import.meta.env.VITE_ENV_STAGE === "test" ? (
+          //       <SearchListing />
+          //     ) : (
+          //       <ComingSoon />
+          //     ),
+          // },
           {
             path: "search-listing",
-            element:
-              import.meta.env.VITE_ENV_STAGE === "test" ? (
-                <SearchListing />
-              ) : (
-                <ComingSoon />
-              ),
+            element: <SearchListing />,
+
           },
           {
             path: "userprofile/:id",
@@ -189,7 +194,7 @@ export const router = createBrowserRouter([
 
           {
             path: "Feed",
-            element: <Feed />,
+            element: <DashboardSocial />,
           },
 
           {
@@ -259,7 +264,7 @@ export const router = createBrowserRouter([
           },
 
           {
-            path: "DashboardSocial",
+            path: "feed",
             element: <DashboardSocial />,
           },
           {
@@ -330,11 +335,11 @@ export const router = createBrowserRouter([
       {
         index: true,
         element:
-          import.meta.env.VITE_ENV_STAGE === "test" ? (
+          // import.meta.env.VITE_ENV_STAGE === "test" ? (
             <Social />
-          ) : (
-            <ComingSoon />
-          ),
+          // ) : (
+          //   <ComingSoon />
+          // ),
       },
 
       {
