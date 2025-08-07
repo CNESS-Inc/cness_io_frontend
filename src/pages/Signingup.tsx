@@ -279,19 +279,18 @@ export default function Signingup() {
           </div>
         </div>
         {/* Sign In Form */}
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-[850px] md:min-h-screen flex flex-col">
           <div className="absolute top-[100px] sm:top-[140px] md:top-[180px] left-0 right-0 flex justify-center z-10 px-4">
-          <div className="w-full max-w-[600px] bg-white rounded-2xl shadow-xl px-4 sm:px-10 py-8 sm:py-12 space-y-10">
-  <h2 className="font-poppins font-semibold text-[28px] leading-[32px] tracking-[-0.02em] text-[gray-900]">
+            <div className="w-full max-w-[600px] bg-white rounded-2xl shadow-xl px-4 sm:px-10 py-8 sm:py-12 space-y-10">
+              <h2 className="font-poppins font-semibold text-[28px] leading-[32px] tracking-[-0.02em] text-[gray-900]">
                 Sign up</h2>
 
               {apiMessage && (
                 <div
-                  className={`poppins text-center mb-4 ${
-                    apiMessage.includes("verification")
-                      ? "text-green-500"
-                      : "text-red-500"
-                  }`}
+                  className={`poppins text-center mb-4 ${apiMessage.includes("verification")
+                    ? "text-green-500"
+                    : "text-red-500"
+                    }`}
                 >
                   {apiMessage}
                 </div>
@@ -343,9 +342,8 @@ export default function Signingup() {
                     onChange={handleInputChange}
                     onFocus={() => setIsUsernameFocused(true)}
                     onBlur={() => setIsUsernameFocused(false)}
-                    className={`w-full px-3 py-2 rounded-[12px] border ${
-                      errors.username ? "border-red-500" : "border-[#CBD5E1]"
-                    } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                    className={`w-full px-3 py-2 rounded-[12px] border ${errors.username ? "border-red-500" : "border-[#CBD5E1]"
+                      } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                   />
 
                   {/* Tooltip on focus/hover */}
@@ -378,15 +376,13 @@ export default function Signingup() {
                     onChange={handleInputChange}
                     onFocus={() => setEmailFocused(true)}
                     onBlur={() => setEmailFocused(false)}
-                    className={`w-full px-3 py-2 rounded-[12px] border ${
-                      errors.email ? "border-red-500" : "border-[#CBD5E1]"
-                    } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                    className={`w-full px-3 py-2 rounded-[12px] border ${errors.email ? "border-red-500" : "border-[#CBD5E1]"
+                      } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                   />
 
                   <FiMail
-                    className={`absolute right-3 top-9 text-gray-400 transition-opacity duration-300 ${
-                      emailFocused ? "opacity-100" : "opacity-0"
-                    }`}
+                    className={`absolute right-3 top-9 text-gray-400 transition-opacity duration-300 ${emailFocused ? "opacity-100" : "opacity-0"
+                      }`}
                     size={18}
                   />
                   {errors.email && (
@@ -406,9 +402,8 @@ export default function Signingup() {
                       placeholder="Enter Your Password"
                       value={formValues.password}
                       onChange={handleInputChange}
-                      className={`w-full px-3 pr-10 py-2 rounded-[12px] border ${
-                        errors.password ? "border-red-500" : "border-[#CBD5E1]"
-                      } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                      className={`w-full px-3 pr-10 py-2 rounded-[12px] border ${errors.password ? "border-red-500" : "border-[#CBD5E1]"
+                        } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                     />
                     <div
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
@@ -445,11 +440,10 @@ export default function Signingup() {
                       placeholder="Confirm Your Password"
                       value={formValues.confirmPassword}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 rounded-[12px] border ${
-                        errors.confirmPassword
-                          ? "border-red-500"
-                          : "border-[#CBD5E1]"
-                      } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                      className={`w-full px-3 py-2 rounded-[12px] border ${errors.confirmPassword
+                        ? "border-red-500"
+                        : "border-[#CBD5E1]"
+                        } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                     />
                     <div
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
@@ -567,11 +561,10 @@ export default function Signingup() {
           </div>
           {apiMessage && (
             <div
-              className={`openSans text-center p-4 ${
-                apiMessage.includes("verification")
-                  ? "text-green-500"
-                  : "text-red-500"
-              }`}
+              className={`openSans text-center p-4 ${apiMessage.includes("verification")
+                ? "text-green-500"
+                : "text-red-500"
+                }`}
             >
               {apiMessage}
             </div>
