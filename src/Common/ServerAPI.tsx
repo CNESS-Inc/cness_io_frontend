@@ -31,7 +31,7 @@ type getReferredUsersFromData = {
   referralcode: string;
 };
 type getReferralAmountFromData = {
-  referral_amount: any;
+  user_id: any; 
 };
 type getMyRefferralCodeFromData = {
   user_id: string;
