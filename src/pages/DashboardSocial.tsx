@@ -41,7 +41,6 @@ import {
 } from "react-share";
 import {
   FaFacebook,
-  FaInstagram,
   FaLinkedin,
   FaTwitter,
   FaWhatsapp,

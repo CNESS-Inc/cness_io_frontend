@@ -4,16 +4,6 @@ import '@sayings/react-reels/dist/index.css'
 import { useNavigate } from "react-router-dom";
 import ReelComment from "./ReelComment";
 import { GetStory, LikeStory } from "../../../Common/ServerAPI";
-import { FacebookShareButton, LinkedinShareButton, TwitterShareButton, WhatsappShareButton } from "react-share";
-import {
-  FaFacebook,
-  FaInstagram,
-  FaLinkedin,
-  FaTwitter,
-  FaWhatsapp,
-} from "react-icons/fa";
-import { MdContentCopy } from "react-icons/md";
-import { Share2 } from "lucide-react";
 import ReelShare from "./ReelShare";
 
 declare global {
@@ -26,7 +16,6 @@ const ReelsCard = () => {
   const [storyData, setstoryData] = useState<any>([]);
   const [selectedReelId, setSelectedReelId] = useState<string | null>(null);
   const reelsContainerRef = useRef<HTMLDivElement>(null);
-  const [copy, setCopy] = useState<Boolean>(false)
 
   const navigate = useNavigate();
 
@@ -185,21 +174,13 @@ const ReelsCard = () => {
   }, [storyData, navigate]);
 
   const urldata = window.location.href;
-
-  const menuRef = useRef<HTMLDivElement | null>(null);
   const [openMenuReelId, setOpenMenuReelId] = useState<string | null>(null);
-  const [position, setPosition] = useState<null>(null)
 
   const toggleMenu = (reelId: string) => {
     setSelectedReelId(null)
     setOpenMenuReelId((prev) => (prev === reelId ? null : reelId));
   };
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-      setOpenMenuReelId(null);
-    }
-  };
 
 
   return (

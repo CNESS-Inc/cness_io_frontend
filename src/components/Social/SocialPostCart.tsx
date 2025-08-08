@@ -3,7 +3,6 @@ import { MdContentCopy } from "react-icons/md";
 import {
   FaFacebook,
   FaLinkedin,
-  FaInstagram,
   FaTwitter,
   FaWhatsapp,
 } from "react-icons/fa";
