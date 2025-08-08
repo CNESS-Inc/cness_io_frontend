@@ -36,6 +36,9 @@ type getReferralAmountFromData = {
 type getMyRefferralCodeFromData = {
   user_id: string;
 }
+type getGenerateSSOTokenFromData = {
+  token: any;
+};
 type AccountFormData = {
   plan_id: string;
   plan_type: string;
@@ -77,6 +80,7 @@ export const API = {
   //  BaseUrl: "http://192.168.1.30:5025/api", //local
   // BaseUrl: "http://localhost:5025/api", //local
   BaseUrl: import.meta.env.VITE_API_BASE_URL || "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api",
+  MarketplaceBaseUrl: "http://localhost:3000/"
 };
 
 export const EndPoint = {
@@ -173,6 +177,7 @@ export const EndPoint = {
   get_referral_amount: "/profile/user/getReferralAmount",
   subscription: "/subscription",
   get_badge: "/profile/get-user-badge",
+  generate_sso_token: "/auth/generate-sso-token",
 };
 
 export const GoogleLoginDetails = async (googleToken: string): ApiResponse => {
@@ -252,6 +257,13 @@ export const getMyRefferralCode = (formData: getMyRefferralCodeFromData): ApiRes
 export const getReferralEarning = (formData: getReferralAmountFromData): ApiResponse => {
 
   return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.get_referral_amount}?user_id=${formData.user_id}`);
+};
+
+export const generateSSOToken = (formData: getGenerateSSOTokenFromData): ApiResponse => {
+ const data: Partial<getGenerateSSOTokenFromData> = {
+    token: formData.token,
+  };
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.generate_sso_token);
 };
 
 export const getSubscriptionDetails = (): ApiResponse => {
