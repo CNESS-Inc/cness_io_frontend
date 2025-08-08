@@ -4,7 +4,6 @@ import { ChevronLeft, ChevronRight, Share2 } from "lucide-react";
 import { MdContentCopy } from "react-icons/md";
 import {
   FaFacebook,
-  FaInstagram,
   FaLinkedin,
   FaTwitter,
   FaWhatsapp,

@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react'
 import { BsXLg } from 'react-icons/bs';
 import { FaFacebook, FaLinkedin, FaTwitter, FaWhatsapp } from 'react-icons/fa';
 import { MdContentCopy } from 'react-icons/md';
-import { Link } from 'react-router-dom';
 import { FacebookShareButton, TwitterShareButton, LinkedinShareButton, WhatsappShareButton } from 'react-share';
 
 interface ReelShareProps {
