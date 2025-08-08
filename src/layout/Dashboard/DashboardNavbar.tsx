@@ -11,6 +11,7 @@ import {
 import { NavLink, useNavigate, useLocation, Link } from "react-router-dom";
 import { iconMap } from "../../assets/icons";
 import hambur from "../../assets/hambur.png";
+import { generateSSOToken, API } from "../../Common/ServerAPI";
 // import { LogOut } from "../../Common/ServerAPI";
 // import { useToast } from "../../components/ui/Toast/ToastProvider";
 
@@ -58,6 +59,23 @@ const DashboardNavbar = ({
   //     });
   //   }
   // };
+
+  const generateSsoToken = async () => {
+    try {
+      const jwtToken = localStorage.getItem("jwt");
+      const payload = {
+        token: jwtToken,
+      };
+      const res = await generateSSOToken(payload);
+      
+      const ssoToken = res.data?.data?.sso_token;
+      if (ssoToken) {
+        window.open(`${API.MarketplaceBaseUrl}auth/login?sso_token=${ssoToken}`, '_blank');
+      }
+    } catch (err) {
+      console.error("Failed to load referred users", err);
+    }
+  };
 
   const mainNavItems = [
     {
@@ -145,6 +163,7 @@ const DashboardNavbar = ({
       isMarketplaceDropdown: true,
       childPaths: ["/dashboard/DigitalProducts"],
       children: [
+        {label: "Login To Market Place", path: "", customAction: generateSsoToken },
         { label: "Buy Digital Products", path: "/dashboard/digital_products" },
         { label: "Sell your Products", path: "/dashboard/SellProducts" },
         { label: "Track Purchase & Sales", path: "/dashboard/Tracking" },
@@ -420,17 +439,28 @@ const DashboardNavbar = ({
           {isDropdownOpen && (
             <div className="flex flex-col gap-1 mt-3 pl-8">
               {item.children.map((child: any, idx: number) => (
-                <NavLink
-                  key={idx}
-                  to={child.path}
-                  className={({ isActive }) =>
-                    `px-4 py-3 w-full rounded-md transition whitespace-nowrap ${
-                      isActive ? activeSubClasses : inactiveSubClasses
-                    }`
-                  }
-                >
-                  {child.label}
-                </NavLink>
+                child.path ? (
+                  <NavLink
+                    key={idx}
+                    to={child.path}
+                    className={({ isActive }) =>
+                      `px-4 py-3 w-full rounded-md transition whitespace-nowrap ${
+                        isActive ? activeSubClasses : inactiveSubClasses
+                      }`
+                    }
+                  >
+                    {child.label}
+                  </NavLink>
+                ) : (
+                  <NavLink
+                    key={idx}
+                    to="#"
+                    onClick={child.customAction}
+                    className={`px-4 py-3 w-full rounded-md transition whitespace-nowrap ${inactiveSubClasses}`}
+                  >
+                    {child.label}
+                  </NavLink>
+                )
               ))}
             </div>
           )}
