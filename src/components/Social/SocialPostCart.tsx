@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { MdContentCopy } from "react-icons/md";
 import {
   FaFacebook,
   FaLinkedin,
@@ -91,6 +92,7 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
   //   const [loading, setLoading] = useState<boolean>(false);
   const [showMenu, setShowMenu] = useState<boolean>(false);
   // const [pollAns1, setPollAns1] = useState([]);
+  const [copy, setCopy] = useState<Boolean>(false)
 
   const navigate = useNavigate();
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -380,7 +382,7 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
                   }
                 }}
                 vote={is_voted}
-                // noStorage
+              // noStorage
               />
             </div>
           </div>
@@ -425,9 +427,9 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
                       <FaLinkedin size={32} color="#0077B5" />
                     </LinkedinShareButton>
                   </li>
-                  <li>
+                  {/* <li>
                     <FaInstagram size={32} color="#C13584" />
-                  </li>
+                  </li> */}
                   <li>
                     <TwitterShareButton url={urldata}>
                       <FaTwitter size={32} color="#1DA1F2" />
@@ -437,6 +439,22 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
                     <WhatsappShareButton url={urldata}>
                       <FaWhatsapp size={32} color="#1DA1F2" />
                     </WhatsappShareButton>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(urldata);
+                        setCopy(true);
+                        setTimeout(() => setCopy(false), 1500);
+                      }}
+                      className="flex items-center relative"
+                      title="Copy link"
+                    >
+                      <MdContentCopy size={30} className="text-gray-600" />
+                      {copy && <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
+                        Link Copied!
+                      </div>}
+                    </button>
                   </li>
                 </ul>
               </div>

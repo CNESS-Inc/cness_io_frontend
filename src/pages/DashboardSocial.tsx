@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import StoryCard from "../components/Social/StoryCard";
 import { ChevronLeft, ChevronRight, Share2 } from "lucide-react";
+import { MdContentCopy } from "react-icons/md";
+
 import {
   AddPost,
   AddStory,
@@ -341,6 +343,7 @@ export default function SocialTopBar() {
   );
   const [isUploading, setIsUploading] = useState(false);
   const [_apiStoryMessage, setApiStoryMessage] = useState<string | null>(null);
+  const [copy, setCopy] = useState<Boolean>(false)
 
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
@@ -1198,9 +1201,6 @@ export default function SocialTopBar() {
                                   </LinkedinShareButton>
                                 </li>
                                 <li>
-                                  <FaInstagram size={32} color="#C13584" />
-                                </li>
-                                <li>
                                   <TwitterShareButton url={urldata}>
                                     <FaTwitter size={32} color="#1DA1F2" />
                                   </TwitterShareButton>
@@ -1209,6 +1209,22 @@ export default function SocialTopBar() {
                                   <WhatsappShareButton url={urldata}>
                                     <FaWhatsapp size={32} color="#1DA1F2" />
                                   </WhatsappShareButton>
+                                </li>
+                                <li>
+                                  <button
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(urldata);
+                                      setCopy(true);
+                                      setTimeout(() => setCopy(false), 1500);
+                                    }}
+                                    className="flex items-center relative"
+                                    title="Copy link"
+                                  >
+                                    <MdContentCopy size={30} className="text-gray-600" />
+                                    {copy && <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
+                                      Link Copied!
+                                    </div>}
+                                  </button>
                                 </li>
                               </ul>
                             </div>
@@ -1633,7 +1649,7 @@ export default function SocialTopBar() {
                     className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                     type="submit"
                   >
-                   <Link to='/dashboard/user-profile'> Update Profile</Link>
+                    <Link to='/dashboard/user-profile'> Update Profile</Link>
                   </Button>
                 </div>
               </div>
