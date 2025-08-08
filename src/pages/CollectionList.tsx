@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { iconMap } from "../assets/icons";
 import { ChevronLeft, ChevronRight, Share2 } from "lucide-react";
+import { MdContentCopy } from "react-icons/md";
 import {
   FaFacebook,
   FaInstagram,
@@ -92,9 +93,8 @@ const PostCarousel = ({ mediaItems }: { mediaItems: MediaItem[] }) => {
         {mediaItems.map((item, index) => (
           <div
             key={index}
-            className={`w-full h-full transition-opacity duration-500 ${
-              index === current ? "block" : "hidden"
-            }`}
+            className={`w-full h-full transition-opacity duration-500 ${index === current ? "block" : "hidden"
+              }`}
           >
             {item.type === "image" ? (
               <img
@@ -148,9 +148,8 @@ const PostCarousel = ({ mediaItems }: { mediaItems: MediaItem[] }) => {
             <button
               key={idx}
               onClick={() => setCurrent(idx)}
-              className={`w-2 h-2 rounded-full transition-colors ${
-                idx === current ? "bg-indigo-500" : "bg-gray-300"
-              }`}
+              className={`w-2 h-2 rounded-full transition-colors ${idx === current ? "bg-indigo-500" : "bg-gray-300"
+                }`}
             ></button>
           ))}
         </div>
@@ -168,6 +167,7 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
   const [collectionItems, setCollectionItems] = useState<CollectionItem[]>(items);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const loggedInUserID = localStorage.getItem("Id");
+  const [copy, setCopy] = useState<Boolean>(false)
 
   const toggleExpand = (postId: string) => {
     setExpandedPosts(prev => ({
@@ -184,20 +184,20 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
     try {
       const formattedData = { post_id: postId };
       await PostsLike(formattedData);
-      
+
       setCollectionItems(prevItems =>
         prevItems.map(item =>
           item.originalData.id === postId
             ? {
-                ...item,
-                originalData: {
-                  ...item.originalData,
-                  is_liked: !item.originalData.is_liked,
-                  likes_count: item.originalData.is_liked
-                    ? item.originalData.likes_count - 1
-                    : item.originalData.likes_count + 1,
-                },
-              }
+              ...item,
+              originalData: {
+                ...item.originalData,
+                is_liked: !item.originalData.is_liked,
+                likes_count: item.originalData.is_liked
+                  ? item.originalData.likes_count - 1
+                  : item.originalData.likes_count + 1,
+              },
+            }
             : item
         )
       );
@@ -355,9 +355,8 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
           <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
             <button
               onClick={() => handleLike(item.originalData.id)}
-              className={`flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base ${
-                item.originalData.is_liked ? "text-blue-600" : "text-blue-500"
-              } hover:bg-blue-50 shadow-sm`}
+              className={`flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base ${item.originalData.is_liked ? "text-blue-600" : "text-blue-500"
+                } hover:bg-blue-50 shadow-sm`}
             >
               <img
                 src={item.originalData.is_liked ? like : Like1}
@@ -384,7 +383,7 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
               </button>
               {openMenuPostId === item.originalData.id && (
                 <div
-                  className="absolute top-10 left-0 bg-white shadow-lg rounded-lg p-3 z-10"
+                  className="absolute top-10 sm:left-0 md:left-[auto] md:right-0 bg-white shadow-lg rounded-lg p-3 z-10"
                   ref={menuRef}
                 >
                   <ul className="flex items-center gap-4">
@@ -398,9 +397,9 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
                         <FaLinkedin size={32} color="#0077B5" />
                       </LinkedinShareButton>
                     </li>
-                    <li>
+                    {/* <li>
                       <FaInstagram size={32} color="#C13584" />
-                    </li>
+                    </li> */}
                     <li>
                       <TwitterShareButton url={urldata}>
                         <FaTwitter size={32} color="#1DA1F2" />
@@ -410,6 +409,22 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
                       <WhatsappShareButton url={urldata}>
                         <FaWhatsapp size={32} color="#1DA1F2" />
                       </WhatsappShareButton>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(urldata);
+                          setCopy(true);
+                          setTimeout(() => setCopy(false), 1500);
+                        }}
+                        className="flex items-center relative"
+                        title="Copy link"
+                      >
+                        <MdContentCopy size={30} className="text-gray-600" />
+                        {copy && <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
+                          Link Copied!
+                        </div>}
+                      </button>
                     </li>
                   </ul>
                 </div>
@@ -427,17 +442,17 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
             setSelectedPostId(null);
           }}
           onCommentAdded={() => // Update the comments count when a new comment is added
-          setCollectionItems(prevItems => prevItems.map(item => item.originalData.id === selectedPostId
+            setCollectionItems(prevItems => prevItems.map(item => item.originalData.id === selectedPostId
               ? {
-                  ...item,
-                  originalData: {
-                      ...item.originalData,
-                      comments_count: item.originalData.comments_count + 1,
-                  },
+                ...item,
+                originalData: {
+                  ...item.originalData,
+                  comments_count: item.originalData.comments_count + 1,
+                },
               }
               : item
-          )
-          )}
+            )
+            )}
         />
       )}
     </div>

@@ -176,14 +176,15 @@ export default function DashboardUserProfile() {
         });
 
         const response = await AddUserRating(payload);
-        console.log("🚀 ~ handleSubmit ~ response:", response);
+        console.log("🚀 ~ handleSubmit ~ response:", response?.data?.data?.average);
         setActiveModal(null);
         // Reset form on success
         setReviewText("");
         setBreakdowns({});
         const res = await fetchRatingDetails();
         console.log("🚀 ~ handleSubmit ~ res:", res);
-        alert();
+        setAvgRating(parseFloat(response?.data?.data?.average));
+        setUserDetails({...userDetails, is_rated : true})
       } catch (error: any) {
         setReviewText("");
         setBreakdowns({});
