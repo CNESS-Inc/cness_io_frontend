@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
-button, a{
+button,
+a {
     cursor: pointer !important;
+}
+
+.border-story-color{
+    border-color: linear-gradient(90deg, #6340FF, #D748EA) !important;
 }
