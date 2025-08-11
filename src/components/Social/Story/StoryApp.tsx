@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { StorySidebar } from "./StorySidebar";
 import { StoryViewer } from "./StoryViewer";
-import { GetStory, LikeStory } from "../../../Common/ServerAPI";
+import { GetStory } from "../../../Common/ServerAPI";
 
 interface StoryContent {
   id: string;
@@ -95,25 +95,25 @@ export function StoriesApp() {
     GetStoryData();
   }, []);
 
-  const handleLikeClick = async (story: any) => {
-    try {
-      await LikeStory(story.id);
-      // Update the story's like status in local state
-      setStories(prevStories =>
-        prevStories.map(s =>
-          s.id === story.id
-            ? {
-                ...s,
-                isViewed: true,
-                hasNewStory: false,
-              }
-            : s
-        )
-      );
-    } catch (error) {
-      console.error("Error submitting like:", error);
-    }
-  };
+  // const handleLikeClick = async (story: any) => {
+  //   try {
+  //     await LikeStory(story.id);
+  //     // Update the story's like status in local state
+  //     setStories(prevStories =>
+  //       prevStories.map(s =>
+  //         s.id === story.id
+  //           ? {
+  //               ...s,
+  //               isViewed: true,
+  //               hasNewStory: false,
+  //             }
+  //           : s
+  //       )
+  //     );
+  //   } catch (error) {
+  //     console.error("Error submitting like:", error);
+  //   }
+  // };
 
   if (isLoading) {
     return <div className="h-screen bg-background flex justify-center items-center">Loading...</div>;
@@ -140,8 +140,11 @@ export function StoriesApp() {
           onNext={handleNext}
           hasPrevious={currentStoryIndex > 0}
           timeAgo="1 hour ago" // You might want to calculate this from createdAt
-          hasNext={currentStoryIndex < stories.length - 1}
-        //   onLike={() => handleLikeClick(currentStory)}
+          hasNext={currentStoryIndex < stories.length - 1} 
+          onLike={function (): void {
+            throw new Error("Function not implemented.");
+          } }        
+          //   onLike={() => handleLikeClick(currentStory)}
         />
       )}
     </div>
