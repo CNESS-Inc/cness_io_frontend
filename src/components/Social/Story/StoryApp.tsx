@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { StorySidebar } from "./StorySidebar";
 import { StoryViewer } from "./StoryViewer";
-import { GetStory } from "../../../Common/ServerAPI";
+import { GetStory, LikeStory } from "../../../Common/ServerAPI";
 
 interface StoryContent {
   id: string;
