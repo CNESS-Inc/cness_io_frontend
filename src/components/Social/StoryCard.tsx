@@ -23,7 +23,8 @@ const StoryCard: React.FC<StoryCardProps> = ({
   const navigate = useNavigate();
 
   const handleReel = (id: any) => {
-    navigate(`/social/reel/${id}`);
+    navigate(`/story-design`);
+    // navigate(`/social/reel/${id}`);
   };
   return (
     <div onClick={() => handleReel(id)}>
