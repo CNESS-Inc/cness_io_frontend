@@ -445,11 +445,19 @@ const OrganaizationProfilepage = () => {
         setBanner(response?.data?.data?.banner_url);
       }
     } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
+      if(error?.response?.data?.error?.message) {
+
+        if(error?.response?.data?.error?.message)
+        {
+          showToast({
+            message: error?.response?.data?.error?.message,
+            type: "error",
+            duration: 5000,
+          });
+        }
+        
+      }
+      
     }
   };
   const GetOrganizationListingProfile = async () => {
@@ -478,11 +486,15 @@ const OrganaizationProfilepage = () => {
         setTags(profileData.tags);
       }
     } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
+      if(error?.response?.data?.error?.message)
+      {
+        showToast({
+          message: error?.response?.data?.error?.message,
+          type: "error",
+          duration: 5000,
+        });
+      }
+      
     }
   };
 
@@ -491,11 +503,15 @@ const OrganaizationProfilepage = () => {
       const response = await GetIndustryDetails();
       setIndustryData(response.data.data);
     } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
+      if(error?.response?.data?.error?.message)
+      {
+        showToast({
+          message: error?.response?.data?.error?.message,
+          type: "error",
+          duration: 5000,
+        });
+      }
+      
     }
   };
 
@@ -504,11 +520,15 @@ const OrganaizationProfilepage = () => {
       const response = await GetServiceDetails();
       setServiceData(response.data.data);
     } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
+      if(error?.response?.data?.error?.message)
+      {
+        showToast({
+          message: error?.response?.data?.error?.message,
+          type: "error",
+          duration: 5000,
+        });
+      }
+      
     }
   };
 
@@ -517,11 +537,15 @@ const OrganaizationProfilepage = () => {
       const res = await OrgTypeDetails();
       setOrgSize(res?.data?.data);
     } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
+      if(error?.response?.data?.error?.message)
+      {
+        showToast({
+          message: error?.response?.data?.error?.message,
+          type: "error",
+          duration: 5000,
+        });
+      }
+      
     }
   };
   const hasFetched = useRef(false);

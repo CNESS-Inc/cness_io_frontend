@@ -48,11 +48,10 @@ import SingleBP from "../pages/SingleBP";
 import TermsAndConditions from "../pages/TermsAndConditions";
 import PrivacyPolicy from "../pages/Privacypolicy";
 import DashboardUserProfile from "../pages/DashboardUserProfile";
-import CommunityGuidelines  from "../pages/CommunityGuidelines";
+import CommunityGuidelines from "../pages/CommunityGuidelines";
+import { StoriesApp } from "../components/Social/Story/StoryApp";
 import Trendingpost from "../pages/TrendingPost";
 import Mycollectionview from "../pages/Mycollectionview";
-
-
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -100,12 +99,12 @@ export const router = createBrowserRouter([
       {
         path: "about",
         element: <About />,
-        
+
       },
       {
- path: "comingSoon",
-  element: <ComingSoon />,
-},
+        path: "comingSoon",
+        element: <ComingSoon />,
+      },
 
       {
         path: "dashboard",
@@ -139,10 +138,10 @@ export const router = createBrowserRouter([
             path: "setting",
             element:
               // import.meta.env.VITE_ENV_STAGE === "test" ? (
-                <Setting />
-              // ) : (
-              //   <ComingSoon />
-              // ),
+              <Setting />
+            // ) : (
+            //   <ComingSoon />
+            // ),
           },
           {
             path: "upload-proof",
@@ -228,10 +227,10 @@ export const router = createBrowserRouter([
             path: "EditPublicListing",
             element:
               // import.meta.env.VITE_ENV_STAGE === "test" ? (
-                <EditPublicListing />
-              // ) : (
-              //   <ComingSoon />
-              // ),
+              <EditPublicListing />
+            // ) : (
+            //   <ComingSoon />
+            // ),
           },
 
           {
@@ -270,8 +269,8 @@ export const router = createBrowserRouter([
             element: <MyConnection />,
           },
           {
-        path: "comingSoon",
-  element: <ComingSoon />,
+            path: "comingSoon",
+            element: <ComingSoon />,
           },
 
           {
@@ -340,6 +339,18 @@ export const router = createBrowserRouter([
     ],
   },
   {
+    path : 'story-design',
+    children : [
+      {
+        index: true,
+        element:
+          (
+            <StoriesApp />
+          ), // ✅ now it's wrapped!
+      }
+    ]
+  },
+  {
     path: "social",
     element: <SocialLayout />,
     children: [
@@ -347,10 +358,10 @@ export const router = createBrowserRouter([
         index: true,
         element:
           // import.meta.env.VITE_ENV_STAGE === "test" ? (
-            <Social />
-          // ) : (
-          //   <ComingSoon />
-          // ),
+          <Social />
+        // ) : (
+        //   <ComingSoon />
+        // ),
       },
 
       {
@@ -391,10 +402,10 @@ export const router = createBrowserRouter([
     path: "/privacy-policy",
     element: <PrivacyPolicy />,
   },
-{
-  path: '/community-guidelines',
-  element: <CommunityGuidelines />,
-},
+  {
+    path: '/community-guidelines',
+    element: <CommunityGuidelines />,
+  },
 
   {
     path: "/sign-up",
