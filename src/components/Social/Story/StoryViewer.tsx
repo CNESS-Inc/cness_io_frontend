@@ -215,23 +215,50 @@ export function StoryViewer({
     <div className="relative w-full h-full bg-[#000]">
       {/* Backdrop with previous and next story previews */}
       <div className="absolute inset-0 flex justify-center items-center">
+
         {/* Previous story preview (left side) */}
         {hasPrevious && prevStory && (
-          <div className="absolute left-0 w-[100px] h-[150px] rounded-lg overflow-hidden z-0 ml-4">
-            {prevStory.type === "image" ? (
-              <img
-                src={prevStory.url}
-                className="w-full h-full object-cover"
-                alt="Previous story"
-              />
-            ) : (
-              <video
-                src={prevStory.url}
-                className="w-full h-full object-cover"
-                muted
-                loop
-              />
-            )}
+          <div className="absolute hidden xl:block left-0 w-2/9 h-4/8 lg:w-2/9 lg:h-5/8 rounded-lg overflow-hidden z-0 ml-4">
+            <div className="w-full h-full">
+              <div className="absolute w-full h-full bg-[rgba(0,0,0,0.6)]"></div>
+              {prevStory.type === "image" ? (
+                <img
+                  src={prevStory.url}
+                  className="w-full h-full object-cover"
+                  alt="Previous story"
+                />
+              ) : (
+                <video
+                  src={prevStory.url}
+                  className="w-full h-full object-cover"
+                  muted
+                  loop
+                />
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Next story preview (right side) */}
+        {hasNext && nextStory && (
+          <div className="absolute hidden xl:block right-0 w-2/9 h-4/8 lg:w-2/9 lg:h-5/8 rounded-lg overflow-hidden z-0 mr-4">
+            <div className="w-full h-full relative">
+              <div className="absolute w-full h-full bg-[rgba(0,0,0,0.6)]"></div>
+              {nextStory.type === "image" ? (
+                <img
+                  src={nextStory.url}
+                  className="w-full h-full object-cover"
+                  alt="Next story"
+                />
+              ) : (
+                <video
+                  src={nextStory.url}
+                  className="w-full h-full object-cover"
+                  muted
+                  loop
+                />
+              )}
+            </div>
           </div>
         )}
 
@@ -247,13 +274,12 @@ export function StoryViewer({
                 <div
                   className="h-full bg-white transition-all duration-100 ease-linear"
                   style={{
-                    width: `${
-                      index < currentIndex
-                        ? 100
-                        : index === currentIndex
+                    width: `${index < currentIndex
+                      ? 100
+                      : index === currentIndex
                         ? progress
                         : 0
-                    }%`,
+                      }%`,
                   }}
                 />
               </div>
@@ -316,27 +342,31 @@ export function StoryViewer({
               <Pause className="w-12 h-12 text-white/80" />
             )}
           </button>
+
+          {hasPrevious && (
+            <button
+              onClick={onPrevious}
+              className="absolute left-[-35px] 2xl:left-[-65px] -translate-x-1/2 top-1/2 -translate-y-1/2 w-[30px] h-[30px] rounded-full bg-white backdrop-blur-lg border border-white/20 text-black hover:bg-white z-20"
+            >
+              <div className="w-full h-full flex justify-center items-center">
+                <ChevronLeft className="w-6 h-6 text-black" />
+              </div>
+            </button>
+          )}
+
+          {hasNext && (
+            <button
+              onClick={onNext}
+              className="absolute right-[-35px] 2xl:right-[-65px] top-1/2 translate-x-1/2 -translate-y-1/2 w-[30px] h-[30px] rounded-full bg-white backdrop-blur-lg border border-white/20 text-white hover:bg-white z-20"
+            >
+              <div className="w-full h-full flex justify-center items-center">
+                <ChevronRight className="w-6 h-6 text-black" />
+              </div>
+            </button>
+          )}
         </div>
 
-        {/* Next story preview (right side) */}
-        {hasNext && nextStory && (
-          <div className="absolute right-0 w-[100px] h-[150px] rounded-lg overflow-hidden z-0 mr-4">
-            {nextStory.type === "image" ? (
-              <img
-                src={nextStory.url}
-                className="w-full h-full object-cover"
-                alt="Next story"
-              />
-            ) : (
-              <video
-                src={nextStory.url}
-                className="w-full h-full object-cover"
-                muted
-                loop
-              />
-            )}
-          </div>
-        )}
+        
       </div>
 
       {/* Navigation areas */}
@@ -352,7 +382,7 @@ export function StoryViewer({
       />
 
       {/* Side navigation arrows */}
-      {hasPrevious && (
+      {/* {hasPrevious && (
         <Button
           onClick={onPrevious}
           className="absolute left-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white backdrop-blur-lg border border-white/20 text-black hover:bg-white z-20"
@@ -368,7 +398,7 @@ export function StoryViewer({
         >
           <ChevronRight className="w-6 h-6 text-black" />
         </Button>
-      )}
+      )} */}
 
       {/* Message input */}
       <div className="absolute bottom-4 w-3/8 mx-auto left-4 right-4 z-30">
@@ -382,16 +412,14 @@ export function StoryViewer({
           />
           <Button
             size="sm"
-            className={`rounded-full ${
-              is_liked ? "bg-[#79FE00] text-black" : "bg-[#7077FE]"
-            } text-black border-1 border-white hover:bg-[#79FE00] w-8 h-8 p-0 transition-all duration-300`}
+            className={`rounded-full ${is_liked ? "bg-[#79FE00] text-black" : "bg-[#7077FE]"
+              } text-black border-1 border-white hover:bg-[#79FE00] w-8 h-8 p-0 transition-all duration-300`}
             onClick={(e) => handleLikeClick(e)}
           >
             <img
               src={Like}
-              className={`w-4 h-4 transition-transform duration-300 ${
-                liked ? "transform scale-125" : ""
-              }`}
+              className={`w-4 h-4 transition-transform duration-300 ${liked ? "transform scale-125" : ""
+                }`}
               alt="Like"
             />
           </Button>
