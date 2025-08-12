@@ -27,7 +27,7 @@ export function StorySidebar({
   onStorySelect,
 }: StorySidebarProps) {
   return (
-    <div className="w-80 bg-card border-r border-border h-screen overflow-y-auto">
+    <div className="w-[465px] bg-card border-r border-border h-screen overflow-y-auto">
       <div className="">
         <div className="text-xl font-semibold text-foreground mb-6 p-6">
           <div className="w-full flex justify-between items-center">
