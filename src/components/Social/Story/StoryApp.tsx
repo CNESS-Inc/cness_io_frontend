@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { StorySidebar } from "./StorySidebar";
 import { StoryViewer } from "./StoryViewer";
-import { GetStory, LikeStory } from "../../../Common/ServerAPI";
+import { GetStory } from "../../../Common/ServerAPI";
 
 interface StoryContent {
   id: string;
@@ -117,6 +117,7 @@ export function StoriesApp() {
       console.error("Error submitting like:", error);
     }
   };
+
 
   if (isLoading) {
     return (
