@@ -49,6 +49,9 @@ import TermsAndConditions from "../pages/TermsAndConditions";
 import PrivacyPolicy from "../pages/Privacypolicy";
 import DashboardUserProfile from "../pages/DashboardUserProfile";
 import CommunityGuidelines  from "../pages/CommunityGuidelines";
+import Trendingpost from "../pages/TrendingPost";
+import Mycollectionview from "../pages/Mycollectionview";
+
 
 
 // Lazy-loaded pages
@@ -197,6 +200,10 @@ export const router = createBrowserRouter([
             element: <DashboardSocial />,
           },
 
+           {
+            path: "trendingpost",
+            element: <Trendingpost />,
+          },
           {
             path: "SearchExplore",
             element: <SearchExplore />,
@@ -253,6 +260,10 @@ export const router = createBrowserRouter([
           {
             path: "Profile",
             element: <Profile />,
+          },
+          {
+            path: "MyCollection/:id",
+            element: <Mycollectionview />,
           },
           {
             path: "MyConnection",

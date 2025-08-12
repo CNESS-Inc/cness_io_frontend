@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import StoryCard from "../components/Social/StoryCard";
-import { ChevronLeft, ChevronRight, Share2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Share2,TrendingUp } from "lucide-react";
 import { MdContentCopy } from "react-icons/md";
 
 import {
@@ -23,7 +23,7 @@ import Collection from "../assets/Collection.png";
 // import Leaderboard from "../assets/Leaderboard.png";
 // import Mention from "../assets/Mention.png";
 import people from "../assets/people.png";
-// import Trending from "../assets/Trending.png";
+import Trending from "../assets/Trending.png";
 import createstory from "../assets/createstory.jpg";
 import carosuel1 from "../assets/carosuel1.png";
 import like from "../assets/like.png";
@@ -215,9 +215,12 @@ interface Story {
   };
 }
 
+
 function PostCarousel({ mediaItems }: PostCarouselProps) {
+
   const [current, setCurrent] = useState(0);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+
 
   // Auto slide every 3 seconds (only for images)
   React.useEffect(() => {
@@ -250,7 +253,7 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
   const handleNext = () => {
     setCurrent((prev) => (prev + 1) % mediaItems.length);
   };
-
+  
   return (
     <div className="relative w-full rounded-lg overflow-hidden">
       {/* Media Container */}
@@ -370,7 +373,7 @@ export default function SocialTopBar() {
   const [storiesData, setStoriesData] = useState<Story[]>([]);
   // const [addNewPost, setAddNewPost] = useState(false)
   const [isAdult, setIsAdult] = useState<Boolean>(false)
-
+const navigate = useNavigate(); 
   // Add this function to fetch followed users
   const fetchFollowedUsers = async () => {
     setIsFollowingLoading(true);
@@ -1034,12 +1037,19 @@ export default function SocialTopBar() {
                         {post.user_id !== loggedInUserID && (
                           <button
                             onClick={() => handleFollow(post.user_id)}
-                            className={`text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full ${post.if_following
-                              ? "bg-gray-200 text-gray-800"
-                              : "bg-[#7C81FF] text-white"
-                              } hover:bg-indigo-600 hover:text-white`}
-                          >
-                            {post.if_following ? "Following" : "+ Follow"}
+  className={`flex items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
+    ${post.if_following
+      ? "bg-transparent text-blue-500 hover:text-blue-600"
+      : "bg-[#7C81FF] text-white hover:bg-indigo-600"}`
+  }
+>
+  {post.if_following ? (
+    <>
+      <TrendingUp className="w-5 h-5" /> Following
+    </>
+  ) : (
+    "+ Follow"
+  )}
                           </button>
                         )}
                       </div>
@@ -1154,24 +1164,24 @@ export default function SocialTopBar() {
                       <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
                         <button
                           onClick={() => handleLike(post.id)}
-                          className={`flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base ${post.is_liked ? "text-blue-600" : "text-blue-500"
+                          className={`flex items-center justify-center gap-2 md:gap-4 px-6 py-4 md:px-6 md:py-4 border border-[#E5E7EB] rounded-xl text-xs md:text-lg ${post.is_liked ? "text-blue-600" : "text-blue-500"
                             } hover:bg-blue-50 shadow-sm`}
                         >
                           <img
                             src={post.is_liked ? like : Like1}
                             className="w-5 h-5 md:w-6 md:h-6"
                           />
-                          Like
+                          Affirmation Modal
                         </button>
                         <button
                           onClick={() => {
                             setSelectedPostId(post.id);
                             setShowCommentBox(true);
                           }}
-                          className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm"
+                          className="flex items-center justify-center gap-2 md:gap-4 px-6 py-4 md:px-6 md:py-4 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm"
                         >
                           <img src={comment1} className="w-5 h-5 md:w-6 md:h-6" />{" "}
-                          Comments
+                          Reflections Thread
                         </button>
                         {/* <button className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm">
                   <img src={repost1} className="w-5 h-5 md:w-6 md:h-6" /> Repost
@@ -1179,9 +1189,10 @@ export default function SocialTopBar() {
                         <div className="relative">
                           <button
                             onClick={() => toggleMenu(post.id)}
-                            className="flex items-center w-full justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-purple-500 hover:bg-blue-50 shadow-sm"
+                            className="flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-4 md:px-6 md:py-4  border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm"
                           >
-                            <Share2 size={18} className="md:w-5 md:h-5" />
+                            <Share2  className="w-5 h-5 md:w-6 md:h-7" />
+                            Share
                           </button>
                           {openMenuPostId === post.id && (
                             <div
@@ -1297,10 +1308,16 @@ export default function SocialTopBar() {
               Quick Actions
             </h3>
             <ul className="space-y-4 md:space-y-6 text-sm md:text-[15px] text-gray-700">
-              {/* <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
-              <img src={Trending} className="w-4 h-4 md:w-5 md:h-5" /> Trending
+               <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
+              <button
+    onClick={() => navigate("/dashboard/trendingpost")}
+    className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+  >
+    <img src={Trending} className="w-4 h-4 md:w-5 md:h-5" alt="" />
+    Trending
+  </button>
             </li>
-            <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
+            {/*<li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
               <img src={Mention} className="w-4 h-4 md:w-5 md:h-5" /> Mention &
               tags
             </li> */}
