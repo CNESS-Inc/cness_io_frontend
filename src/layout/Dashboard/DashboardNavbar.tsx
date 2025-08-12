@@ -507,9 +507,9 @@ const DashboardNavbar = ({
           <div className="flex items-center justify-between w-full py-[18px] px-4 md:px-6">
             <Link to="/dashboard">
               <img
-                className="w-[108.12px] h-[46.51px]"
+                className="h-auto w-[144.16px]"
                 alt="Company Logo"
-                src="https://c.animaapp.com/magahlmqpONVZN/img/component-1.svg"
+                src="/cnesslogo.png"
               />
             </Link>
             <div className="hidden md:block ml-auto">

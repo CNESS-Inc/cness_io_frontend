@@ -1,5 +1,4 @@
 import axios, { type AxiosResponse } from "axios";
-
 // Define types for your API
 type ApiMethod = "GET" | "POST" | "PUT" | "DELETE";
 type LoginFormData = {
@@ -78,8 +77,8 @@ export const ServerAPI = {
 
 export const API = {
   //  BaseUrl: "http://192.168.1.30:5025/api", //local
-  BaseUrl: "http://localhost:5025/api", //local
-  // BaseUrl: import.meta.env.VITE_API_BASE_URL || "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api",
+  // BaseUrl: "http://localhost:5025/api", //local
+  BaseUrl: import.meta.env.VITE_API_BASE_URL || "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api",
   MarketplaceBaseUrl: "http://localhost:3000/"
 };
 
@@ -935,7 +934,7 @@ export const executeAPI = async <T = any,>(
   try {
     const token = localStorage.getItem("jwt");
     const isFormData = data instanceof FormData;
-
+    
     const response: AxiosResponse<T> = await axios({
       method: method,
       url: API.BaseUrl + endpoint,
@@ -949,9 +948,9 @@ export const executeAPI = async <T = any,>(
         },
         ...(API.BaseUrl.trim().toLowerCase().startsWith("https://") && { withCredentials: true })
       });
-
+      
     const access_token = response.headers['access_token'];
-
+    console.log('access token response check', access_token);
     if (access_token != 'not-provide') {
       console.log('access token response check sets', true)
       localStorage.setItem('jwt', access_token)
@@ -961,7 +960,7 @@ export const executeAPI = async <T = any,>(
   } catch (error: any) {
     // console.log("🚀 ~ error:", error)
 
-    if (error.response.data.error.statusCode == 401) {
+    if (error.response?.data?.error?.statusCode == 401) {
       localStorage.clear();
       window.location.href = '/';
     }
