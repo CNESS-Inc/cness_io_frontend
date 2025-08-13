@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react"; // at top
+
 
 import {
   Copy,        // Posts & Collections
@@ -8,7 +10,7 @@ import {
   AtSign,      // About
   CirclePlay,  // empty state icon
  Pen,
- Plus 
+ 
 } from "lucide-react";
 import MyPost from "../components/Profile/Mypost";
 import MyCollection from "../components/Profile/MymultiviewCollection";
@@ -147,10 +149,15 @@ function TabButton({
 export default function Profile() {
   const [activeTab, setActiveTab] = useState<string>("Posts");
 const [boards, setBoards] = useState<CollectionBoard[]>([]);
-  const handleAddCollection = () => setBoards(demoBoards);
+  //const handleAddCollection = () => setBoards(demoBoards);
   const navigate = useNavigate();
   const [selectedPost, setSelectedPost] = useState<MyPostProps | null>(null);
-
+useEffect(() => {
+    if (activeTab === "Collections" && boards.length === 0) {
+      setBoards(demoBoards);
+    }
+  }, [activeTab, boards.length]);
+  
   return (
     <div className="flex flex-col min-h-screen bg-[#f9f9fb]">
       {/* Profile Header */}
@@ -233,45 +240,29 @@ const [boards, setBoards] = useState<CollectionBoard[]>([]);
       
 {activeTab === "Collections" && (
   boards.length === 0 ? (
-    // Empty state: centered pill
+    // Empty state without any button
     <div className="border border-dashed border-[#C4B5FD] rounded-xl bg-[#F8F6FF] py-12 flex items-center justify-center">
-      <button
-        onClick={handleAddCollection}
-        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#575FFF] hover:bg-[#4b52ff] text-white text-sm font-medium shadow-sm"
-      >
-        <Plus className="w-4 h-4" />
-        Add Collection
-      </button>
+      <p className="text-sm text-gray-500">No collections yet</p>
     </div>
   ) : (
-    // Collections exist: header left text + right-aligned button
+    // Collections exist: header + list
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-500">Only You Can See What You’ve Saved</p>
-
-        <button
-          onClick={handleAddCollection}
-          className="ml-auto inline-flex items-center gap-2 px-4 py-2 rounded-full
-                     bg-white border border-gray-200 text-gray-700 text-sm
-                     hover:bg-gray-50 shadow-sm"
-        >
-          <Plus className="w-4 h-4" />
-          Add Collection
-        </button>
       </div>
 
       <MyCollection
-        mode="boards" 
+        mode="boards"
         boards={boards}
-       onOpen={(id) => {
-          // send the board along with navigation so the view page has data
+        onOpen={(id) => {
           const board = boards.find((b) => b.id === id);
           navigate(`/dashboard/MyCollection/${id}`, { state: { board } });
         }}
       />
     </div>
   )
-      )}
+)}
+        
 
         {activeTab === "Reels" && (
           <div className="text-gray-400 text-center py-16">No Reels yet.</div>

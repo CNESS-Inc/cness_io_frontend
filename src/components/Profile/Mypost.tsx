@@ -58,6 +58,7 @@ onLike,
   return (
     
 <article
+onClick={onClick}
       className="bg-white rounded-[12px] border border-gray-200 shadow-sm flex flex-col cursor-pointer group"
       style={{
         width: 367.33,
