@@ -50,7 +50,8 @@ import PrivacyPolicy from "../pages/Privacypolicy";
 import DashboardUserProfile from "../pages/DashboardUserProfile";
 import CommunityGuidelines from "../pages/CommunityGuidelines";
 import { StoriesApp } from "../components/Social/Story/StoryApp";
-
+import Trendingpost from "../pages/TrendingPost";
+import Mycollectionview from "../pages/Mycollectionview";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -198,6 +199,10 @@ export const router = createBrowserRouter([
             element: <DashboardSocial />,
           },
 
+           {
+            path: "trendingpost",
+            element: <Trendingpost />,
+          },
           {
             path: "SearchExplore",
             element: <SearchExplore />,
@@ -254,6 +259,10 @@ export const router = createBrowserRouter([
           {
             path: "Profile",
             element: <Profile />,
+          },
+          {
+            path: "MyCollection/:id",
+            element: <Mycollectionview />,
           },
           {
             path: "MyConnection",
