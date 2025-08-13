@@ -1,10 +1,10 @@
 // components/Social/PostCard.tsx
 import {
-  MessageSquareText,
+  MessageSquare,
   Share2,
   ThumbsUp,
   TrendingUp,
-} from "lucide-react";
+} from "lucide-react";  
 
 type Media =
   | { type: "image"; src: string; alt?: string }
@@ -62,7 +62,7 @@ export default function PostCard({
         </div>
 
         {following && (
-          <span className="inline-flex items-center gap-2 text-sm text-indigo-600">
+          <span className="inline-flex items-center gap-2 font-semibold text-[14px] leading-[150%] text-[#7077FE]">
             <TrendingUp className="w-4 h-4" />
             Following
           </span>
@@ -103,7 +103,7 @@ export default function PostCard({
               <ThumbsUp className="w-4 h-4 text-white" />
             </button>
             <div className="relative z-20 inline-flex w-8 h-8 items-center justify-center rounded-full bg-[#F07EFF]/90 shadow">
-              <MessageSquareText className="w-4 h-4 text-white" />
+              <MessageSquare className="w-4 h-4 text-white" />
             </div>
             <div className="relative z-10 inline-flex w-8 h-8 items-center justify-center rounded-full bg-[#35C79A]/90 shadow">
               <Share2 className="w-4 h-4 text-white" />
@@ -125,23 +125,23 @@ export default function PostCard({
       <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
         <button
           onClick={onAffirmation}
-          className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white py-3 text-sm text-gray-700 hover:bg-gray-50"
+className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white py-3 font-opensans font-semibold text-[14px] leading-[150%] text-[#7077FE] hover:bg-gray-50"
         >
-          <ThumbsUp className="w-4 h-4 text-indigo-600" />
+          <ThumbsUp className="w-4 h-4 text-[#7077FE]" />
           <span>Affirmation Modal</span>
         </button>
         <button
           onClick={onReflections}
-          className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white py-3 text-sm text-gray-700 hover:bg-gray-50"
+className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white py-3 font-opensans font-semibold text-[14px] leading-[150%] text-[#7077FE] hover:bg-gray-50"
         >
-          <MessageSquareText className="w-4 h-4 text-indigo-600" />
+          <MessageSquare className="w-4 h-4 text-[#7077FE]" />
           <span>Reflections Thread</span>
         </button>
         <button
           onClick={onShare}
-          className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white py-3 text-sm text-gray-700 hover:bg-gray-50"
+className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white py-3 font-opensans font-semibold text-[14px] leading-[150%] text-[#7077FE] hover:bg-gray-50"
         >
-          <Share2 className="w-4 h-4 text-indigo-600" />
+          <Share2 className="w-4 h-4 text-[#7077FE]" />
           <span>Share</span>
         </button>
       </div>
