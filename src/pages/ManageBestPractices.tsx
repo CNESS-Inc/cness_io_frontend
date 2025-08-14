@@ -20,11 +20,15 @@ import Button from "../components/ui/Button";
 
 const Managebestpractices = () => {
   const [activeTab, setActiveTab] = useState<"saved" | "mine">("saved");
+
+  const [activeStatusTab, setActiveStatusTab] = useState<0 | 1 | 2>(0); // 0: Pending, 1: Approved, 2: Rejected
+  
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState({
     save: false,
     my_added: false,
   });
+
   const [pagination, setPagination] = useState<any>({
     currentPage: 1,
     totalPages: 1,
@@ -72,6 +76,7 @@ const Managebestpractices = () => {
       .replace(/^-+/, "")
       .replace(/-+$/, "");
   };
+
 
   const fetchBestPractices = async (
     page: number = 1,
@@ -158,6 +163,7 @@ const Managebestpractices = () => {
             likesCount: practice.likes_count || 0,
             isLiked: practice.is_liked || false,
             commentsCount: practice.total_comment_count || 0,
+            status: practice.status,
           })
         );
         setmineBestPractices(transformedCompanies);
@@ -199,6 +205,12 @@ const Managebestpractices = () => {
     fetchBestPractices();
     fetchMineBestPractices();
   }, []);
+
+  // Filtered best practices by status
+  const filteredMineBestPractices = mineBestPractices.filter(
+    (practice) => practice.status === activeStatusTab
+  );
+
 
   const handleDeleteBestPractice = async (id: any) => {
     try {
@@ -248,11 +260,12 @@ const Managebestpractices = () => {
           profession: currentPractice.profession,
           title: currentPractice.title,
           description: currentPractice.description,
+          status: 0
         };
 
         await UpdateBestPractice(payload);
         showToast({
-          message: "Best practice updated successfully!",
+          message: "Best practice updated successfully and please wait until admin reviews it!",
           type: "success",
           duration: 3000,
         });
@@ -312,19 +325,104 @@ const Managebestpractices = () => {
             <h3 className="font-[Poppins] font-medium text-[18px] leading-[150%] tracking-normal mb-4">
               View My Best Practices
             </h3>
+            
+            {/* Status Tabs */}
+            <div className="flex border-b border-gray-100">
+              <button
+                className={`flex-shrink-0 
+                      min-w-[120px]  
+                        max-w-[200px] 
+                      text-sm 
+                      font-medium 
+                      poppins
+                        py-2
+                      px-3 
+                      rounded-lg 
+                      rounded-bl-none
+                      rounded-br-none
+                      whitespace-nowrap 
+                      overflow-hidden 
+                      text-ellipsis 
+                      text-center
+                      focus:outline-none
+                      border ${
+                  activeStatusTab === 0
+                    ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
+                    : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
+                }`}
+                onClick={() => setActiveStatusTab(0)}
+              >
+                Pending
+              </button>
+              <button
+                className={`flex-shrink-0 
+                      min-w-[120px]  
+                        max-w-[200px] 
+                      text-sm 
+                      font-medium 
+                      poppins
+                        py-2
+                      px-3 
+                      rounded-lg 
+                      rounded-bl-none
+                      rounded-br-none
+                      whitespace-nowrap 
+                      overflow-hidden 
+                      text-ellipsis 
+                      text-center
+                      focus:outline-none
+                      border ms-2 ${
+                  activeStatusTab === 1
+                    ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
+                    : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
+                }`}
+                onClick={() => setActiveStatusTab(1)}
+              >
+                Approved
+              </button>
+              <button
+                className={`flex-shrink-0 
+                      min-w-[120px]  
+                        max-w-[200px] 
+                      text-sm 
+                      font-medium 
+                      poppins
+                        py-2
+                      px-3 
+                      rounded-lg 
+                      rounded-bl-none
+                      rounded-br-none
+                      whitespace-nowrap 
+                      overflow-hidden 
+                      text-ellipsis 
+                      text-center
+                      focus:outline-none
+                      border
+                      ms-2 ${
+                  activeStatusTab === 2
+                    ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
+                    : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
+                }`}
+                onClick={() => setActiveStatusTab(2)}
+              >
+                Rejected
+              </button>
+            </div>
+
             {isLoading.my_added ? (
               <div className="flex justify-center py-10">
                 <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
               </div>
-            ) : mineBestPractices.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
-                {mineBestPractices?.map((company) => {
+            ) : filteredMineBestPractices.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4 bg-[#F8F3FF] pt-6 px-4 pb-6 rounded-lg rounded-tl-none rounded-tr-none">
+                {filteredMineBestPractices?.map((company) => {
                   return (
                     <div
                       key={company.id}
                       className="relative bg-white cursor-pointer rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
                     >
                       {/* Edit and Delete buttons (absolute positioned in top-right) */}
+                      { company.status !== 2 && ( 
                       <div className="absolute top-2 right-2 z-10 flex gap-2">
                         <button
                           onClick={(e) => {
@@ -376,7 +474,7 @@ const Managebestpractices = () => {
                           </svg>
                         </button>
                       </div>
-
+                      )}
                       {/* Card content */}
                       <div
                         onClick={() =>
@@ -480,8 +578,15 @@ const Managebestpractices = () => {
                 })}
               </div>
             ) : (
-              <div className="text-center py-10">
-                <p className="text-gray-500 mb-4">No Best Practices found.</p>
+              <div className="text-center py-10 bg-[#F8F3FF] pt-6 px-4 pb-6 rounded-lg rounded-tl-none rounded-tr-none">
+                <p className="text-gray-500 mb-4">
+                  {activeStatusTab === 0 &&
+                    "There is no best practice data in Pending list."}
+                  {activeStatusTab === 1 &&
+                    "There is no best practice data in Approved list."}
+                  {activeStatusTab === 2 &&
+                    "There is no best practice data in Rejected list."}
+                </p>
                 <button
                   onClick={() => navigate("/dashboard/bestpractices")}
                   className="px-4 py-2 bg-[#F07EFF] text-white rounded-md hover:bg-[#E06EE5] transition-colors"

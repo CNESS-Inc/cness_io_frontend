@@ -1,5 +1,7 @@
 // components/FollowersModal.tsx
 import { X, Search, Users } from "lucide-react";
+import { useState } from "react";
+import { SendFollowRequest } from "../../Common/ServerAPI";
 
 type Follower = {
   id: string;
@@ -19,6 +21,18 @@ export default function FollowersModal({
   followers: Follower[];
 }) {
   if (!open) return null;
+
+  const handleFollow = async (userId: string) => {
+    try {
+      const formattedData = {
+        following_id: userId,
+      };
+      await SendFollowRequest(formattedData);
+      
+    } catch (error) {
+      console.error("Error fetching selection details:", error);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50">
@@ -122,7 +136,7 @@ export default function FollowersModal({
                   {/* Action buttons */}
                   <div className="flex gap-2">
                     {!f.isFollowing ? (
-                      <button className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB]">
+                      <button className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB]" onClick={() => handleFollow(f.id)}>
                         + Follow
                       </button>
                     ) : (

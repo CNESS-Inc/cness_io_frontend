@@ -4,8 +4,6 @@ import { useEffect } from "react"; // at top
 import FollowingModal from "../components/Profile/Following";
 import FollowersModal from "../components/Profile/Followers";
 import Connections from "../components/Profile/Connections";
-
-
 import {
   Copy,        // Posts & Collections
   PlayCircle,  // Reels
@@ -27,6 +25,29 @@ import aware3 from "../assets/aware_3.jpg";
 import carusol2 from "../assets/carosuel2.png";
 //import carusol3 from "../assets/carosuel3.png";
 import  aware4 from "../assets/carosuel4.png"
+
+import {
+  GetFollowingUser, 
+  GetFollowerUser, 
+} from "../Common/ServerAPI";
+import { useToast } from "../components/ui/Toast/ToastProvider";
+
+interface FollowedUser {
+  id: string;
+  username: string;
+  first_name: string;
+  last_name: string;
+  profile_picture: string;
+  is_following: boolean;
+}
+interface FollowerUser {
+  id: string;
+  username: string;
+  first_name: string;
+  last_name: string;
+  profile_picture: string;
+  is_following?: boolean; // Optional, since this is for followers
+}
 
 //import MyCollection from "../components/Profile/MyCollection";
 
@@ -175,15 +196,75 @@ function TabButton({
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState<string>("Posts");
-const [boards, setBoards] = useState<CollectionBoard[]>([]);
+  const [boards, setBoards] = useState<CollectionBoard[]>([]);
   //const handleAddCollection = () => setBoards(demoBoards);
   const navigate = useNavigate();
   const [selectedPost, setSelectedPost] = useState<MyPostProps | null>(null);
   const [openFollowing, setOpenFollowing] = useState(false);
-    const [openFollowers ,setopenfollowers] = useState(false);
+  const [openFollowers ,setopenfollowers] = useState(false);
 
+  const [followingUsers, setFollowingUsers] = useState<FollowedUser[]>([]);
+  const [followerUsers, setFollowerUsers] = useState<FollowerUser[]>([]);
+  
+  const userProfilePicture = localStorage.getItem('profile_picture') || "/profile.png";
 
-useEffect(() => {
+  const userName = localStorage.getItem('name') +' '+ localStorage.getItem('margaret_name')  || "User";
+
+  const { showToast } = useToast();
+
+  const fetchFollowingUsers = async () => {
+      
+      try {
+        const res = await GetFollowingUser();
+        // Transform the API response to match FollowedUser interface
+        const transformedUsers = res.data.data.rows.map((item: any) => ({
+          id: item.following_id,
+          username: item.following_user.username,
+          first_name: item.following_user.profile.first_name,
+          last_name: item.following_user.profile.last_name,
+          profile_picture: item.following_user.profile.profile_picture,
+          is_following: true, // Since these are users you're following
+        }));
+  
+        setFollowingUsers(transformedUsers);
+      } catch (error) {
+        console.error("Error fetching followed users:", error);
+        // Optional: Show error to user
+        showToast({
+          message: "Failed to load followed users",
+          type: "error",
+          duration: 3000,
+        });
+      } 
+  };
+  
+  const fetchFollowerUsers = async () => {
+      
+      try {
+        const res = await GetFollowerUser();
+        // Transform the API response to match FollowedUser interface
+        const transformedUsers = res.data.data.rows.map((item: any) => ({
+          id: item.follower_id,
+          username: item.follower_user.username,
+          first_name: item.follower_user.profile.first_name,
+          last_name: item.follower_user.profile.last_name,
+          profile_picture: item.follower_user.profile.profile_picture,
+          is_following: true, // Since these are users you're following
+        }));
+  
+        setFollowerUsers(transformedUsers);
+      } catch (error) {
+        console.error("Error fetching follower users:", error);
+        // Optional: Show error to user
+        showToast({
+          message: "Failed to load follower users",
+          type: "error",
+          duration: 3000,
+        });
+      } 
+  };
+
+  useEffect(() => {
     if (activeTab === "Collections" && boards.length === 0) {
       setBoards(demoBoards);
     }
@@ -196,26 +277,27 @@ useEffect(() => {
         <div className="flex justify-between items-center p-6">
           <div className="flex items-center gap-4">
             <img
-              src="https://via.placeholder.com/80"
+              src={ userProfilePicture }
               alt="Profile"
               className="w-20 h-20 rounded-full object-cover border-2 border-white shadow"
             />
             <div>
               <h1 className="text-lg font-semibold text-gray-800">
-                Lara <span className="text-gray-500">(@laracorol.com)</span>
+
+                { userName } <span className="text-gray-500">(@devuser)</span>
               </h1>
               <div className="flex gap-4 text-sm">
- <button
-    type="button"
-    onClick={(e) => { e.stopPropagation(); setOpenFollowing(true); }}
-    className="text-purple-500 hover:underline cursor-pointer"
-  >
-    100 Following
-  </button>              
+            <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setOpenFollowing(true); fetchFollowingUsers(); }}
+                className="text-purple-500 hover:underline cursor-pointer"
+              >
+                100 Following
+            </button>              
 
 <button
     type="button"
-    onClick={(e) => { e.stopPropagation(); setopenfollowers(true); }}
+    onClick={(e) => { e.stopPropagation(); setopenfollowers(true); fetchFollowerUsers(); }}
     className="text-purple-500 hover:underline cursor-pointer"
   >
     1k Followers
@@ -224,8 +306,8 @@ useEffect(() => {
             </div>
           </div>
          <button className="flex items-center gap-2 px-5 py-2 bg-[#7077FE] hover:bg-[#7077FE] text-white rounded-full text-sm transition">
-  <Pen className="w-4 h-4" />
-  Edit Profile
+          <Pen className="w-4 h-4" />
+          Edit Profile
           </button>
         </div>
 
@@ -338,13 +420,24 @@ useEffect(() => {
       <FollowingModal
       open={openFollowing}
       onClose={() => setOpenFollowing(false)}
-      friends={followersdata}
+      friends={followingUsers.map(user => ({
+        id: user.id,
+        name: `${user.first_name} ${user.last_name}`.trim(),
+        handle: user.username,
+        avatar: user.profile_picture ? user.profile_picture : "/profile.png",
+      }))}
     />
 
     <FollowersModal
       open={openFollowers}
       onClose={() => setopenfollowers(false)}
-      followers={followersdata}
+      followers={followerUsers.map(user => ({
+        id: user.id,
+        name: `${user.first_name} ${user.last_name}`.trim(),
+        handle: user.username,
+        avatar: user.profile_picture ? user.profile_picture : "/profile.png",
+        isFollowing: user.is_following,
+      }))}
     />
     </div>
 

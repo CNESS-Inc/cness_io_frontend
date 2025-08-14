@@ -147,6 +147,7 @@ export const EndPoint = {
   trending_post: "/user/posts/trending",
   trending_movie: "/movie/trending",
   following: "/user/following",
+  followers: "/user/follower",
   connection: "/friend",
   connection_request: "/friend/request",
   delete_friend: "/friend/delete/friend",
@@ -894,6 +895,10 @@ export const GetTrendingMovie = () => {
 export const GetFollowingUser = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.following);
+};
+export const GetFollowerUser = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.followers);
 };
 export const GetConnectionUser = () => {
   let data = {};
