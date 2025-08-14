@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react"; // at top
+import FollowingModal from "../components/Profile/Following";
+import FollowersModal from "../components/Profile/Followers";
+import Connections from "../components/Profile/Connections";
 
 
 import {
@@ -63,6 +66,30 @@ const demoBoards: CollectionBoard[] = [
   },
 ];
 
+const followersdata = [
+  { id: "1", name: "Chloe",  handle: "chloejane",    avatar: "/assets/person1.jpg" },
+  { id: "2", name: "Noah",   handle: "noahsky",      avatar: "/assets/person2.jpg" },
+  { id: "3", name: "Liam",   handle: "iamstone",     avatar: "/assets/person3.jpg" },
+  { id: "4", name: "Lara",   handle: "laracorol.com",avatar: "/assets/person4.jpg" },
+  { id: "5", name: "Mia",    handle: "miachen",      avatar: "/assets/person5.jpg" },
+  { id: "6", name: "Ethan",  handle: "ethan.green",  avatar: "/assets/person6.jpg" },
+  { id: "7", name: "David",  handle: "david",  avatar: "/assets/person6.jpg" },
+  { id: "8", name: "Rocky",  handle: "rocky.green",  avatar: "/assets/person6.jpg" },
+  { id: "9", name: "John",  handle: "john",  avatar: "/assets/person6.jpg" },
+  { id: "10", name: "Sam",  handle: "sam.green",  avatar: "/assets/person6.jpg" },
+  { id: "11", name: "Nicki",  handle: "nic.green",  avatar: "/assets/person6.jpg" },
+  { id: "12", name: "Lily",  handle: "lil.green",  avatar: "/assets/person6.jpg" },
+  { id: "13", name: "Jasmin",  handle: "Jas.red",  avatar: "/assets/person6.jpg" },
+];
+
+const friendsdata = [
+  { id: "1", name: "Chloe",  handle: "chloejane",    avatar: aware1},
+  { id: "2", name: "Noah",   handle: "noahsky",      avatar: "/assets/person2.jpg" },
+  { id: "3", name: "Liam",   handle: "iamstone",     avatar: "/assets/person3.jpg" },
+  { id: "4", name: "Lara",   handle: "laracorol.com",avatar: "/assets/person4.jpg" },
+  { id: "5", name: "Mia",    handle: "miachen",      avatar: "/assets/person5.jpg" },
+  { id: "6", name: "Ethan",  handle: "ethan.green",  avatar: "/assets/person6.jpg" },
+]
 //sample for posts
 
 const demoPosts: MyPostProps[] = [
@@ -137,7 +164,7 @@ function TabButton({
       <span className="relative z-10 flex items-center gap-2">
         <Icon
           className={`h-5 w-5 ${
-            active ? "text-[#9747FF]" : "text-black-500 group-hover:text-[#9747FF]"
+            active ? "text-[#9747FF]" : "text-black group-hover:text-[#9747FF]"
           }`}
         />
         <span>{name}</span>
@@ -152,6 +179,10 @@ const [boards, setBoards] = useState<CollectionBoard[]>([]);
   //const handleAddCollection = () => setBoards(demoBoards);
   const navigate = useNavigate();
   const [selectedPost, setSelectedPost] = useState<MyPostProps | null>(null);
+  const [openFollowing, setOpenFollowing] = useState(false);
+    const [openFollowers ,setopenfollowers] = useState(false);
+
+
 useEffect(() => {
     if (activeTab === "Collections" && boards.length === 0) {
       setBoards(demoBoards);
@@ -174,8 +205,21 @@ useEffect(() => {
                 Lara <span className="text-gray-500">(@laracorol.com)</span>
               </h1>
               <div className="flex gap-4 text-sm">
-                <span className="text-purple-500">100 Following</span>
-                <span className="text-purple-500">1k Followers</span>
+ <button
+    type="button"
+    onClick={(e) => { e.stopPropagation(); setOpenFollowing(true); }}
+    className="text-purple-500 hover:underline cursor-pointer"
+  >
+    100 Following
+  </button>              
+
+<button
+    type="button"
+    onClick={(e) => { e.stopPropagation(); setopenfollowers(true); }}
+    className="text-purple-500 hover:underline cursor-pointer"
+  >
+    1k Followers
+  </button>  
               </div>
             </div>
           </div>
@@ -267,13 +311,43 @@ useEffect(() => {
         {activeTab === "Reels" && (
           <div className="text-gray-400 text-center py-16">No Reels yet.</div>
         )}
-        {activeTab === "Connections" && (
-          <div className="text-gray-400 text-center py-16">No Connections yet.</div>
-        )}
+
+
+{activeTab === "Connections" && (
+  followersdata.length > 0 ? (
+    <Connections
+  connections={friendsdata.map(f => ({
+    id: f.id,
+    name: f.name,
+    username: f.handle,
+    profileImage: f.avatar
+  }))}
+  onMessage={(id) => console.log("Connect with", id)}
+  onUnfriend={(id) => console.log("Remove connection", id)}
+/>
+  ) : (
+    <div className="text-gray-400 text-center py-16">
+      No Connections yet.
+    </div>
+  )
+)}
         {activeTab === "About" && (
           <div className="text-gray-400 text-center py-16">About goes here.</div>
         )}
       </div>
+      <FollowingModal
+      open={openFollowing}
+      onClose={() => setOpenFollowing(false)}
+      friends={followersdata}
+    />
+
+    <FollowersModal
+      open={openFollowers}
+      onClose={() => setopenfollowers(false)}
+      followers={followersdata}
+    />
     </div>
+
+    
   );
 }
