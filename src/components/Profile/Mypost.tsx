@@ -20,7 +20,7 @@ export type MyPostProps = {
   onLike?: () => void;
   onOpenReflections?: () => void;
 onClick?: () => void;
-  
+  showOverlay?: boolean;
 
   // Optional author info for Collection View
   authorName?: string;
@@ -31,6 +31,7 @@ onClick?: () => void;
   insightsCount?: number;
   reflections?: number;
  onFollowToggle?: () => void;
+
   
 };
 function formatCount(count: number) {
@@ -54,6 +55,7 @@ onLike,
   showFollowButton,
   insightsCount,
    onFollowToggle,
+   showOverlay,
 }: MyPostProps) {
   return (
     
@@ -136,6 +138,7 @@ onClick={onClick}
   )}
 
   {/* Hover Overlay */}
+   {showOverlay && (
   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3">
     <button
       onClick={(e) => {
@@ -158,6 +161,7 @@ onClick={onClick}
       Delete
     </button>
   </div>
+   )}
 </div>
 
       {/* ACTIONS */}

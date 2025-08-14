@@ -128,14 +128,14 @@ export default function PostCard({
 className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white py-3 font-opensans font-semibold text-[14px] leading-[150%] text-[#7077FE] hover:bg-gray-50"
         >
           <ThumbsUp className="w-4 h-4 text-[#7077FE]" />
-          <span>Affirmation Modal</span>
+          <span>Like</span>
         </button>
         <button
           onClick={onReflections}
 className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white py-3 font-opensans font-semibold text-[14px] leading-[150%] text-[#7077FE] hover:bg-gray-50"
         >
           <MessageSquare className="w-4 h-4 text-[#7077FE]" />
-          <span>Reflections Thread</span>
+          <span>Comment</span>
         </button>
         <button
           onClick={onShare}
