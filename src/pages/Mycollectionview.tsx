@@ -76,8 +76,8 @@ const [selectedPost, setSelectedPost] = useState<Post | null>(null);
       </div>
 
       {/* Render posts */}
-<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 justify-items-start">
-        {cards.map((c) => (
+<div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+          {cards.map((c) => (
        <Mycollection
   key={c.id}
   media={c.media}

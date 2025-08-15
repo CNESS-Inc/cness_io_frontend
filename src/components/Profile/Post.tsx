@@ -8,7 +8,8 @@ import {
 
 type Media =
   | { type: "image"; src: string; alt?: string }
-  | { type: "video"; src: string; poster?: string };
+  | { type: "video"; src: string; poster?: string }
+  | { type: "text"; src: string };
 
 type Props = {
   avatar: string;
@@ -70,26 +71,30 @@ export default function PostCard({
       </div>
 
       {/* media */}
-      <div className="mt-4">
-        <div className="overflow-hidden rounded-xl">
-          {media.type === "image" ? (
-            <img
-              src={media.src}
-              alt={media.alt || ""}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <video
-              className="w-full h-full object-cover"
-              src={media.src}
-              poster={media.poster}
-              controls
-              playsInline
-              preload="metadata"
-            />
-          )}
-        </div>
-      </div>
+<div className="mt-4">
+  <div className="overflow-hidden rounded-xl">
+    {media.type === "image" ? (
+      <img
+        src={media.src}
+        alt={media.alt || ""}
+        className="w-full h-full object-cover"
+      />
+    ) : media.type === "video" ? (
+      <video
+        className="w-full h-full object-cover"
+        src={media.src}
+        poster={media.poster}
+        controls
+        playsInline
+        preload="metadata"
+      />
+    ) : (
+      <p className="p-4 text-gray-800 whitespace-pre-wrap">
+        {media.src}
+      </p>
+    )}
+  </div>
+</div>
 
       {/* chip row: overlapped icons + likes + reflections right */}
       <div className="mt-3 flex items-center justify-between">

@@ -56,8 +56,20 @@ interface Connection {
       image: "/images/skylar.jpg",
       
     },
-
-
+ {
+      id: 6,
+      name: "SkylarWave",
+      username: "@skylarwrites",
+      image: "/images/skylar.jpg",
+      
+    },
+ {
+      id: 7,
+      name: "SkylarWave",
+      username: "@skylarwrites",
+      image: "/images/skylar.jpg",
+      
+    },
     
     // ...more
   ];
@@ -132,7 +144,7 @@ const filteredConnections = activeConnections.filter(conn =>
          onTabChange={setActiveTab}
       />
 
-<div className="flex flex-wrap items-center justify-between gap-4">
+<div className="flex flex-wrap items-center justify-between gap-3">
   {/* Left Title */}
 <h2
   className="text-[14px] font-medium capitalize leading-[100%]"
@@ -144,7 +156,7 @@ const filteredConnections = activeConnections.filter(conn =>
   All Connections
 </h2>
   {/* Search & Button */}
-  <div className="flex items-center gap-2 w-full sm:w-auto">
+  <div className="flex w-full sm:w-auto items-center gap-2">
     <div className="relative flex-1 sm:w-64">
       <input
         type="text"
@@ -171,8 +183,10 @@ const filteredConnections = activeConnections.filter(conn =>
   </div>
 </div>
 
-<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-  {filteredConnections.map((conn) => (
+
+<div className=" sm:grid gap-4 md:gap-5 lg:gap-6 justify-items-center
+                grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                    {filteredConnections.map((conn) => (
     <FriendCard
       key={conn.id}
       name={conn.name}
@@ -200,8 +214,8 @@ const filteredConnections = activeConnections.filter(conn =>
       />
     )}
 
-
-    </div>
+</div>
+   
   );
 };
 

@@ -9,7 +9,7 @@ type ConnectionsCardProps = {
   label?: string;
   hashtags?: string[];
   onSearch?: (value: string) => void;
-  onTabChange?:(tab: string) => void;
+  onTabChange?: (tab: string) => void;
 };
 
 const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
@@ -32,54 +32,37 @@ const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
-    if (onTabChange) {
-      onTabChange(tab); // ✅ Now it's "read" and used
-    }
+    onTabChange?.(tab);
   };
 
   return (
-    <div
-      className="rounded-[12px] border border-gray-200 bg-white flex flex-col"
-      style={{
-        width: "100%",
-        gap: "18px",
-        paddingTop: "18px",
-        paddingBottom: "18px"
-      }}
-    >
+    <div className="rounded-[12px] border border-gray-200 bg-white flex flex-col gap-4 p-4 sm:p-6 w-full">
       {/* Top Section */}
-      <div
-        className="flex items-center justify-between px-6"
-        style={{ height: "57px" }}
-      >
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-3">
-          
-
           <div>
             <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
             <p className="text-sm text-gray-500">{subtitle}</p>
           </div>
-          
         </div>
         {label && (
-          <span className="text-xs px-2 py-1 bg-[#9747FF] text-[#9747FF] rounded-full">
+          <span className="text-xs px-2 py-1 bg-purple-100 text-purple-600 rounded-full self-start sm:self-center">
             {label}
           </span>
-          
         )}
         <button
-            onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-2 rounded-full border bg-white border-gray-200 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </button>
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-2 rounded-full border bg-white border-gray-200 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 self-start sm:self-center"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </button>
       </div>
 
       {/* Search + Hashtags */}
-<div className="flex items-center px-6 gap-4">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
         {/* Search Input */}
-        <div className="flex items-center border border-gray-300 rounded-full px-3 py-2 w-[300px] bg-white">
+        <div className="flex items-center border border-gray-300 rounded-full px-3 py-2 w-full sm:w-80 bg-white">
           <span className="text-gray-500 text-sm mr-2">#</span>
           <input
             type="text"
@@ -105,45 +88,23 @@ const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
       </div>
 
       {/* Tabs */}
-      <div
-  className="flex border-t border-gray-200 -mx-6 px-6"
-        style={{
-          height: "50px",
-          gap: "12px",
-          paddingTop: "8px",
-        }}
-      >
-      {tabs.map((tab) => (
-  <button
-    key={tab}
-    onClick={() => handleTabClick(tab)}
-    className="relative transition-colors"
-    style={{
-      width: "161.66px",
-      height: "60px",
-      paddingTop: "6px",
-      paddingRight: "12px",
-      paddingBottom: "12px",
-      paddingLeft: "12px",
-      fontFamily: "'Plus Jakarta Sans', sans-serif",
-      fontWeight: 500,
-      fontSize: "14px",
-      fontStyle: "normal", // 'Medium' weight is handled by fontWeight
-      lineHeight: "100%",
-      letterSpacing: "0",
-      color: activeTab === tab ? "#9747FF" : "#374151",
-    }}
-  >
+      <div className="flex flex-wrap border-t border-gray-200 pt-3 gap-3">
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => handleTabClick(tab)}
+            className={`relative transition-colors px-4 py-2 rounded-t-lg text-sm font-medium
+              ${activeTab === tab ? "text-purple-600" : "text-gray-700"}`}
+          >
             {activeTab === tab && (
               <span
                 aria-hidden
-                className="absolute top-0 left-0 right-0 bottom-0 rounded-t-[12px]
-                     bg-gradient-to-b from-[#FFFFFF] via-[#F5F2FF] to-[rgba(151,71,255,0.14)] z-0"
+                className="absolute inset-0 rounded-t-[12px] bg-gradient-to-b from-white via-purple-50 to-purple-50 z-0"
               />
             )}
             <span className="relative z-10">{tab}</span>
             {activeTab === tab && (
-              <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#9747FF] rounded-full" />
+              <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-purple-600 rounded-full" />
             )}
           </button>
         ))}

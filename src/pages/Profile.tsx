@@ -152,6 +152,18 @@ const demoPosts: MyPostProps[] = [
     likes: 421000,
     reflections: 45,
   },
+   {
+    media: { type: "video", src: "/test1.mp4", poster: "/images/yoga.jpg" },
+    likes: 421000,
+    reflections: 45,
+  },
+   {
+    media: null,
+    body:
+    "Sustainability has become a transformative force across industries, reshaping strategy and consumer expectations alike. What began as niche initiatives is now core to brand identity: companies are redesigning products with responsibly sourced ingredients, prioritizing cruelty-free testing, and cutting unnecessary additives. Supply chains are being audited end-to-end for ethical labor practices, traceability, and lower carbon footprints. This shift is not only about regulatory compliance but also about fostering trust, loyalty, and long-term value. Businesses that embrace sustainability are finding that it drives innovation, opens new markets, and strengthens resilience in an increasingly conscious global economy. ",
+   likes: 421000,
+    reflections: 45,
+  },
 ];
 
 
@@ -266,13 +278,15 @@ const [boards, setBoards] = useState<CollectionBoard[]>([]);
 {/* Content */}
       <div className="flex-1 p-6">
         {activeTab === "Posts" && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+<div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
             {demoPosts.length ? (
               demoPosts.map((post, i) => (
                 <MyPost
                   key={i}
                   {...post}
-                   onClick={() => setSelectedPost(post)}
+                  showOverlay
+                   //onClick={() => setSelectedPost(post)}
+                    onViewPost={() => setSelectedPost(post)}
                   onLike={() => console.log("Liked post", i)}
                   onOpenReflections={() => console.log("Open reflections for post", i)}
                 />
@@ -291,7 +305,10 @@ const [boards, setBoards] = useState<CollectionBoard[]>([]);
   <PostPopup
     post={{
       id: String(demoPosts.indexOf(selectedPost)),
-      media: selectedPost.media!,
+     media:
+        selectedPost.media ??
+        ({ type: "text", src: selectedPost.body || "" } as const),
+       // optional
     }}
     onClose={() => setSelectedPost(null)}
   />
