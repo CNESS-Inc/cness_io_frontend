@@ -5,7 +5,7 @@ import FollowingModal from "../components/Profile/Following";
 import FollowersModal from "../components/Profile/Followers";
 import Connections from "../components/Profile/Connections";
 import ProfileCard from "../components/Profile/Profilecard";
-
+import person1 from "../assets/person1.jpg";
 
 
 import {
@@ -29,13 +29,13 @@ import aware3 from "../assets/aware_3.jpg";
 import carusol2 from "../assets/carosuel2.png";
 import  aware4 from "../assets/carosuel4.png"
 
-import {
+{/*import {
   GetFollowingUser, 
   GetFollowerUser, 
 } from "../Common/ServerAPI";
-import { useToast } from "../components/ui/Toast/ToastProvider";
+import { useToast } from "../components/ui/Toast/ToastProvider";*/}
 
-interface FollowedUser {
+{/*interface FollowedUser {
   id: string;
   username: string;
   first_name: string;
@@ -50,7 +50,7 @@ interface FollowerUser {
   last_name: string;
   profile_picture: string;
   is_following?: boolean; // Optional, since this is for followers
-}
+}*/}
 
 //import MyCollection from "../components/Profile/MyCollection";
 
@@ -180,16 +180,16 @@ const [boards, setBoards] = useState<CollectionBoard[]>([]);
   
 
 
-  const [followingUsers, setFollowingUsers] = useState<FollowedUser[]>([]);
-  const [followerUsers, setFollowerUsers] = useState<FollowerUser[]>([]);
+  //const [followingUsers, setFollowingUsers] = useState<FollowedUser[]>([]);
+ // const [followerUsers, setFollowerUsers] = useState<FollowerUser[]>([]);
   
-  const userProfilePicture = localStorage.getItem('profile_picture') || "/profile.png";
+  //const userProfilePicture = localStorage.getItem('profile_picture') || "/profile.png";
 
-  const userName = localStorage.getItem('name') +' '+ localStorage.getItem('margaret_name')  || "User";
+  //const userName = localStorage.getItem('name') +' '+ localStorage.getItem('margaret_name')  || "User";
 
-  const { showToast } = useToast();
+  //const { showToast } = useToast();
 
-  const fetchFollowingUsers = async () => {
+  {/*const fetchFollowingUsers = async () => {
       
       try {
         const res = await GetFollowingUser();
@@ -213,9 +213,9 @@ const [boards, setBoards] = useState<CollectionBoard[]>([]);
           duration: 3000,
         });
       } 
-  };
+  };*/}
   
-  const fetchFollowerUsers = async () => {
+{/*  const fetchFollowerUsers = async () => {
       
       try {
         const res = await GetFollowerUser();
@@ -239,7 +239,7 @@ const [boards, setBoards] = useState<CollectionBoard[]>([]);
           duration: 3000,
         });
       } 
-  };
+  };*/}
 
   useEffect(() => {
     if (activeTab === "Collections" && boards.length === 0) {
@@ -353,24 +353,13 @@ const [boards, setBoards] = useState<CollectionBoard[]>([]);
       <FollowingModal
       open={openFollowing}
       onClose={() => setOpenFollowing(false)}
-      friends={followingUsers.map(user => ({
-        id: user.id,
-        name: `${user.first_name} ${user.last_name}`.trim(),
-        handle: user.username,
-        avatar: user.profile_picture ? user.profile_picture : "/profile.png",
-      }))}
+      friends={followersdata}
     />
 
-    <FollowersModal
+   <FollowersModal
       open={openFollowers}
       onClose={() => setopenfollowers(false)}
-      followers={followerUsers.map(user => ({
-        id: user.id,
-        name: `${user.first_name} ${user.last_name}`.trim(),
-        handle: user.username,
-        avatar: user.profile_picture ? user.profile_picture : "/profile.png",
-        isFollowing: user.is_following,
-      }))}
+      followers={followersdata}
     />
     </div>
 
