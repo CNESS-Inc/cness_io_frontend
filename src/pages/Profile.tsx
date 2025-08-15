@@ -45,7 +45,7 @@ import { useToast } from "../components/ui/Toast/ToastProvider";*/}
 }
 interface FollowerUser {
   id: string;
-  username: string;
+  username: string;git
   first_name: string;
   last_name: string;
   profile_picture: string;
