@@ -38,6 +38,13 @@ const genderOptions = [
   { value: "Non-binary", label: "Non-binary" },
 ];
 
+const countryCode = ["+376", "+971", "+93", "+1268", "+355", "+1264", "+374", "+244", "+672", "+54", "+1684", "+43", "+61", "+297", "+358", "+994", "+387", "+1246", "+880", "+32", "+226", "+359", "+973", "+257", "+229", "+590", "+1441", "+673", "+591", "+55", "+1242", "+975", "+267", "+375", "+501", "+1", "+61", "+243", "+236", "+242", "+41", "+225", "+682", "+56", "+237", "+86", "+57", "+506", "+53", "+238", "+61", "+357", "+420", "+49", "+253", "+45", "+1767", "+1849", "+213", "+593", "+372", "+20", "+291", "+34", "+251", "+358", "+679", "+500", "+691", "+298", "+33", "+241", "+44", "+1473", "+995", "+594", "+44", "+233", "+350", "+299", "+220", "+224", "+590", "+240", "+30", "+500", "+502", "+1671", "+245", "+595", "+852", "+504", "+385", "+509", "+36", "+62", "+353", "+972", "+44", "+91", "+246", "+964", "+98", "+354", "+39", "+44", "+1876", "+962", "+81"];
+
+const countryCodeOptions = countryCode.map((code) => ({
+  value: code,
+  label: code,
+}));
+
 const customSelectStyles = {
   control: (base: any, state: any) => ({
     ...base,
@@ -236,6 +243,12 @@ const UserProfilePage = () => {
       })
     ),
   });
+  /*const contactInfoForm = useForm({
+    defaultValues: {
+      country_code: countryCode[0],
+      phone: "",
+    },
+  });*/
   const contactInfoForm = useForm();
   // Update the socialLinksForm initialization with validation
   const socialLinksForm = useForm({
@@ -322,7 +335,20 @@ const UserProfilePage = () => {
                     return !isNaN(date.getTime()) && date <= today;
                   }
                 ),
-              end_date: yup.string().optional(),
+              end_date: yup
+              .string()
+              .optional()
+              .test(
+                "is-after-start",
+                "End date must be after start date",
+                function (value) {
+                  const { start_date } = this.parent;
+                  if (!value) return true; // end_date is optional
+                  if (!start_date) return true; // if no start date, skip
+                  return new Date(value) > new Date(start_date);
+                }
+              ),
+             
             })
           )
           .min(1, "At least one education entry is required"),
@@ -555,6 +581,7 @@ const UserProfilePage = () => {
     setIsSubmitting((prev) => ({ ...prev, contact: true }));
 
     const payload = {
+      country_code: data.country_code || null,
       phone_no: data.phone || null,
       email: data.email || null,
       address: data.address || null,
@@ -741,6 +768,7 @@ const UserProfilePage = () => {
 
         // Contact Info
         contactInfoForm.reset({
+          country_code: response.data.data?.country_code || "",
           phone: response.data.data?.phone_no || "",
           email: response.data.data?.email || "",
           address:
@@ -1655,6 +1683,24 @@ const UserProfilePage = () => {
                               Phone Number{" "}
                               <span className="text-red-500">*</span>
                             </label>
+                            <div className="flex gap-2">
+                              <div className="w-32">
+                                <Select
+                                  options={countryCodeOptions}
+                                  styles={customSelectStyles}
+                                  value={
+                                    countryCodeOptions.find(
+                                      (opt) => opt.value === contactInfoForm.watch("country_code")
+                                    ) || countryCodeOptions[0]
+                                  }
+                                  onChange={(selectedOption) =>
+                                    contactInfoForm.setValue("country_code", selectedOption?.value || countryCode[0])
+                                  }
+                                  onBlur={() => contactInfoForm.trigger("country_code")}
+                                  isSearchable={false}
+                                  placeholder="Code"
+                                />
+                              </div>
                             <input
                               type="tel"
                               placeholder="Enter Your Phone Number"
@@ -1666,7 +1712,7 @@ const UserProfilePage = () => {
                                 },
                               })}
                               minLength={8}
-                              max={13}
+                              maxLength={13}
                               onKeyDown={(e) => {
                                 if (
                                   !/[0-9]/.test(e.key) &&
@@ -1684,6 +1730,7 @@ const UserProfilePage = () => {
                                   : "focus:ring-purple-500"
                                 }`}
                             />
+                          </div>
                             {contactInfoForm.formState.errors.phone && (
                               <p className="text-sm text-red-500 mt-1">
                                 {

@@ -1,5 +1,7 @@
 // components/FollowingModal.tsx
+import { useState, useEffect } from "react";
 import { X, Search,Users } from "lucide-react";
+import { SendFollowRequest } from "../../Common/ServerAPI";
 
 type Friend = { id: string; name: string; handle: string; avatar: string; following?: boolean };
 
@@ -12,6 +14,26 @@ export default function FollowingModal({
   onClose: () => void;
   friends: Friend[];
 }) {
+
+  const [localFriends, setLocalFriends] = useState<Friend[]>([]);
+
+  useEffect(() => {
+    setLocalFriends(friends);
+  }, [friends, open]);
+
+  const handleFollow = async (userId: string) => {
+    try {
+      const formattedData = {
+        following_id: userId,
+      };
+      await SendFollowRequest(formattedData);
+      // Remove the unfollowed user from the local state
+      setLocalFriends((prev) => prev.filter((f) => f.id !== userId));
+    } catch (error) {
+      console.error("Error fetching selection details:", error);
+    }
+  };
+
   if (!open) return null;
 
   return (
@@ -79,7 +101,7 @@ export default function FollowingModal({
           {/* Scrollable list */}
           <div className="flex-1 overflow-y-auto px-6 py-1">
             <ul className="space-y-4">
-              {friends.map((f) => (
+              {localFriends.map((f) => (
                 <li key={f.id} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <img
@@ -115,7 +137,7 @@ export default function FollowingModal({
 
                   <button
                     className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF]"
-                   
+                    onClick={() => handleFollow(f.id)}
                   >
                     Unfollow
                   </button>

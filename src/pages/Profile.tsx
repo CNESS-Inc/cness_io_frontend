@@ -5,7 +5,7 @@ import FollowingModal from "../components/Profile/Following";
 import FollowersModal from "../components/Profile/Followers";
 import Connections from "../components/Profile/Connections";
 import ProfileCard from "../components/Profile/Profilecard";
-
+import person1 from "../assets/person1.jpg";
 
 
 import {
@@ -28,7 +28,32 @@ import aware2 from "../assets/aware_2.jpg";
 import aware3 from "../assets/aware_3.jpg";
 import carusol2 from "../assets/carosuel2.png";
 import  aware4 from "../assets/carosuel4.png"
-import person1 from "../assets/person1.jpg";
+
+{/*import {
+  GetFollowingUser, 
+  GetFollowerUser, 
+} from "../Common/ServerAPI";
+import { useToast } from "../components/ui/Toast/ToastProvider";*/}
+
+{/*interface FollowedUser {
+  id: string;
+  username: string;
+  first_name: string;
+  last_name: string;
+  profile_picture: string;
+  is_following: boolean;
+}
+interface FollowerUser {
+  id: string;
+  username: string;
+  first_name: string;
+  last_name: string;
+  profile_picture: string;
+  is_following?: boolean; // Optional, since this is for followers
+}*/}
+
+//import MyCollection from "../components/Profile/MyCollection";
+
 type MyPostProps = React.ComponentProps<typeof MyPost>;
 
 export interface Media {
@@ -155,8 +180,68 @@ const [boards, setBoards] = useState<CollectionBoard[]>([]);
   
 
 
+  //const [followingUsers, setFollowingUsers] = useState<FollowedUser[]>([]);
+ // const [followerUsers, setFollowerUsers] = useState<FollowerUser[]>([]);
   
-useEffect(() => {
+  //const userProfilePicture = localStorage.getItem('profile_picture') || "/profile.png";
+
+  //const userName = localStorage.getItem('name') +' '+ localStorage.getItem('margaret_name')  || "User";
+
+  //const { showToast } = useToast();
+
+  {/*const fetchFollowingUsers = async () => {
+      
+      try {
+        const res = await GetFollowingUser();
+        // Transform the API response to match FollowedUser interface
+        const transformedUsers = res.data.data.rows.map((item: any) => ({
+          id: item.following_id,
+          username: item.following_user.username,
+          first_name: item.following_user.profile.first_name,
+          last_name: item.following_user.profile.last_name,
+          profile_picture: item.following_user.profile.profile_picture,
+          is_following: true, // Since these are users you're following
+        }));
+  
+        setFollowingUsers(transformedUsers);
+      } catch (error) {
+        console.error("Error fetching followed users:", error);
+        // Optional: Show error to user
+        showToast({
+          message: "Failed to load followed users",
+          type: "error",
+          duration: 3000,
+        });
+      } 
+  };*/}
+  
+{/*  const fetchFollowerUsers = async () => {
+      
+      try {
+        const res = await GetFollowerUser();
+        // Transform the API response to match FollowedUser interface
+        const transformedUsers = res.data.data.rows.map((item: any) => ({
+          id: item.follower_id,
+          username: item.follower_user.username,
+          first_name: item.follower_user.profile.first_name,
+          last_name: item.follower_user.profile.last_name,
+          profile_picture: item.follower_user.profile.profile_picture,
+          is_following: true, // Since these are users you're following
+        }));
+  
+        setFollowerUsers(transformedUsers);
+      } catch (error) {
+        console.error("Error fetching follower users:", error);
+        // Optional: Show error to user
+        showToast({
+          message: "Failed to load follower users",
+          type: "error",
+          duration: 3000,
+        });
+      } 
+  };*/}
+
+  useEffect(() => {
     if (activeTab === "Collections" && boards.length === 0) {
       setBoards(demoBoards);
     }
@@ -271,7 +356,7 @@ useEffect(() => {
       friends={followersdata}
     />
 
-    <FollowersModal
+   <FollowersModal
       open={openFollowers}
       onClose={() => setopenfollowers(false)}
       followers={followersdata}

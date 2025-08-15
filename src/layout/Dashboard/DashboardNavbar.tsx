@@ -507,7 +507,7 @@ const DashboardNavbar = ({
           <div className="flex items-center justify-between w-full py-[18px] px-4 md:px-6">
             <Link to="/dashboard">
               <img
-                className="h-auto w-[144.16px]"
+                className="h-auto w-[100px]"
                 alt="Company Logo"
                 src="/cnesslogo.png"
               />
