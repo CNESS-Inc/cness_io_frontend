@@ -1,6 +1,6 @@
 // components/FollowersModal.tsx
 import { X, Search, Users } from "lucide-react";
-import { useState } from "react";
+//import { useState } from "react";
 import { SendFollowRequest } from "../../Common/ServerAPI";
 
 type Follower = {
