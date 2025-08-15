@@ -1,7 +1,7 @@
 import React from "react";
 
 interface Media {
-  type: "image" | "video";
+  type: "image" | "video"| "text";
   src: string;
   alt?: string;
   poster?: string;
@@ -72,19 +72,25 @@ const PostPopup: React.FC<PopupProps> = ({ post, onClose }) => {
           }}
         >
           {post.media.type === "image" ? (
-            <img
-              src={post.media.src}
-              alt={post.media.alt || ""}
-              className="w-full h-full object-cover rounded-lg"
-            />
-          ) : (
-            <video
-              src={post.media.src}
-              poster={post.media.poster}
-              controls
-              className="w-full h-full object-cover rounded-lg"
-            />
-          )}
+  <img
+    src={post.media.src}
+    alt={post.media.alt || ""}
+    className="w-full h-full object-cover rounded-lg"
+  />
+) : post.media.type === "video" ? (
+  <video
+    src={post.media.src}
+    poster={post.media.poster}
+    controls
+    className="w-full h-full object-cover rounded-lg"
+  />
+) : (
+  <div className="w-full h-full flex items-center justify-center p-6">
+    <p className="text-gray-800 text-base leading-relaxed">
+      {post.media.src}
+    </p>
+  </div>
+)}
         </div>
 
         {/* Right side - comments */}

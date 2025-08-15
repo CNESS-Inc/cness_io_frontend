@@ -918,7 +918,7 @@ const navigate = useNavigate();
                             Photo
                           </span>
                         </button>
-                        <button className="hidden flex items-center gap-1 md:gap-2">
+                        <button className="hidden md:flex items-center gap-1 md:gap-2">
                           <Image
                             src="/list.png"
                             alt="list"
@@ -1171,7 +1171,7 @@ const navigate = useNavigate();
                             src={post.is_liked ? like : Like1}
                             className="w-5 h-5 md:w-6 md:h-6"
                           />
-                          Affirmation Modal
+                          Like
                         </button>
                         <button
                           onClick={() => {
@@ -1181,7 +1181,7 @@ const navigate = useNavigate();
                           className="flex items-center justify-center gap-2 md:gap-4 px-6 py-4 md:px-6 md:py-4 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm"
                         >
                           <img src={comment1} className="w-5 h-5 md:w-6 md:h-6" />{" "}
-                          Reflections Thread
+                          Comment
                         </button>
                         {/* <button className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm">
                   <img src={repost1} className="w-5 h-5 md:w-6 md:h-6" /> Repost

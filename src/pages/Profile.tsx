@@ -1,16 +1,20 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import { useEffect } from "react"; // at top
 import FollowingModal from "../components/Profile/Following";
 import FollowersModal from "../components/Profile/Followers";
 import Connections from "../components/Profile/Connections";
+import ProfileCard from "../components/Profile/Profilecard";
+
+
+
 import {
   Copy,        // Posts & Collections
   PlayCircle,  // Reels
   Users,       // Connections
   AtSign,      // About
   CirclePlay,  // empty state icon
- Pen,
+ 
  
 } from "lucide-react";
 import MyPost from "../components/Profile/Mypost";
@@ -23,7 +27,6 @@ import aware1 from "../assets/aware_1.jpg";
 import aware2 from "../assets/aware_2.jpg";
 import aware3 from "../assets/aware_3.jpg";
 import carusol2 from "../assets/carosuel2.png";
-//import carusol3 from "../assets/carosuel3.png";
 import  aware4 from "../assets/carosuel4.png"
 
 import {
@@ -52,7 +55,6 @@ interface FollowerUser {
 //import MyCollection from "../components/Profile/MyCollection";
 
 type MyPostProps = React.ComponentProps<typeof MyPost>;
-//type MyCollectionProps = React.ComponentProps<typeof MyCollection>;
 
 export interface Media {
   type: "image" | "video";
@@ -61,6 +63,24 @@ export interface Media {
   poster?: string;
 }
 //sample for collections
+
+const profiles = [
+  {
+    profileImage: person1,
+    name: "Lara",
+    username: "laracorol.com",
+    following: "100",
+    followers: "1k",
+    tabs: [
+      { label: "Posts", icon: <Copy size={16} /> },
+      { label: "Reels", icon: <PlayCircle size={16} /> },
+      { label: "Connections", icon: <Users size={16} /> },
+      { label: "Collections", icon: <Copy size={16} /> },
+      { label: "About", icon: <AtSign size={16} /> },
+    ],
+  },
+];
+
 
 const demoBoards: CollectionBoard[] = [
   {
@@ -135,73 +155,30 @@ const demoPosts: MyPostProps[] = [
 ];
 
 
-type TabDef = { name: string; Icon: React.ComponentType<any> };
+//type TabDef = { name: string; Icon: React.ComponentType<any> };
 
-const tabs: TabDef[] = [
+{/*const tabs: TabDef[] = [
   { name: "Posts",        Icon: Copy },
   { name: "Reels",        Icon: PlayCircle },
   { name: "Connections",  Icon: Users },
   { name: "Collections",  Icon: Copy },
   { name: "About",        Icon: AtSign },
-];
+];*/}
 
-function TabButton({
-  name,
-  Icon,
-  active,
-  onClick,
-}: {
-  name: string;
-  Icon: React.ComponentType<any>;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      aria-current={active ? "page" : undefined}
-      className={[
-        "relative inline-flex items-center justify-center gap-2",
-        "w-[154.6px] h-[42px]",
-        "px-3",
-        "rounded-t-[12px]",
-        "text-sm transition-colors",
-        "font-[500] leading-[100%] tracking-[0%] font-['Plus_Jakarta_Sans']",
-        active
-          ? "border-b-[1px] border-b-[#9747FF] text-[#9747FF] bg-transparent"
-          : "border-b-[1px] border-b-transparent text-gray-700 hover:text-[#9747FF] bg-white",
-      ].join(" ")}
-    >
-      {/* Gradient background for active state */}
-      {active && (
-        <span
-          aria-hidden
-          className="absolute top-0 left-0 right-0 bottom-0 rounded-t-[12px]
-                     bg-gradient-to-b from-[#FFFFFF] via-[#F5F2FF] to-[rgba(151,71,255,0.14)] z-0"
-        />
-      )}
-
-      {/* Icon + Label */}
-      <span className="relative z-10 flex items-center gap-2">
-        <Icon
-          className={`h-5 w-5 ${
-            active ? "text-[#9747FF]" : "text-black group-hover:text-[#9747FF]"
-          }`}
-        />
-        <span>{name}</span>
-      </span>
-    </button>
-  );
-}
 
 export default function Profile() {
-  const [activeTab, setActiveTab] = useState<string>("Posts");
-  const [boards, setBoards] = useState<CollectionBoard[]>([]);
+  const location = useLocation();
+const [activeTab, setActiveTab] = useState(
+  location.state?.activeTab || profiles[0].tabs[0].label
+);
+const [boards, setBoards] = useState<CollectionBoard[]>([]);
   //const handleAddCollection = () => setBoards(demoBoards);
   const navigate = useNavigate();
   const [selectedPost, setSelectedPost] = useState<MyPostProps | null>(null);
   const [openFollowing, setOpenFollowing] = useState(false);
-  const [openFollowers ,setopenfollowers] = useState(false);
+    const [openFollowers ,setopenfollowers] = useState(false);
+  
+
 
   const [followingUsers, setFollowingUsers] = useState<FollowedUser[]>([]);
   const [followerUsers, setFollowerUsers] = useState<FollowerUser[]>([]);
@@ -272,60 +249,18 @@ export default function Profile() {
   
   return (
     <div className="flex flex-col min-h-screen bg-[#f9f9fb]">
-      {/* Profile Header */}
-      <div className="bg-white border-gray-100 rounded-lg">
-        <div className="flex justify-between items-center p-6">
-          <div className="flex items-center gap-4">
-            <img
-              src={ userProfilePicture }
-              alt="Profile"
-              className="w-20 h-20 rounded-full object-cover border-2 border-white shadow"
-            />
-            <div>
-              <h1 className="text-lg font-semibold text-gray-800">
-
-                { userName } <span className="text-gray-500">(@devuser)</span>
-              </h1>
-              <div className="flex gap-4 text-sm">
-            <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); setOpenFollowing(true); fetchFollowingUsers(); }}
-                className="text-purple-500 hover:underline cursor-pointer"
-              >
-                100 Following
-            </button>              
-
-<button
-    type="button"
-    onClick={(e) => { e.stopPropagation(); setopenfollowers(true); fetchFollowerUsers(); }}
-    className="text-purple-500 hover:underline cursor-pointer"
-  >
-    1k Followers
-  </button>  
-              </div>
-            </div>
-          </div>
-         <button className="flex items-center gap-2 px-5 py-2 bg-[#7077FE] hover:bg-[#7077FE] text-white rounded-full text-sm transition">
-          <Pen className="w-4 h-4" />
-          Edit Profile
-          </button>
-        </div>
-
-        {/* Tabs bar */}
-        <div className="border-t border-gray-200">
-  <nav className="flex justify-start items-stretch gap-5 md:gap-10 bg-white mt-4">
-            {tabs.map(({ name, Icon }) => (
-              <TabButton
-                key={name}
-                name={name}
-                Icon={Icon}
-                active={activeTab === name}
-                onClick={() => setActiveTab(name)}
-              />
-            ))}
-          </nav>
-        </div>
-      </div>
+       
+   {profiles.map((profile, index) => (
+        <ProfileCard
+          key={index}
+          {...profile}
+         // onTabChange={(tab) => setActiveTab(tab)}
+           onOpenFollowing={() => setOpenFollowing(true)}
+  onOpenFollowers={() => setopenfollowers(true)}
+  activeTab={activeTab}
+  onTabChange={setActiveTab}
+        />
+      ))}
 
 
 {/* Content */}
@@ -352,17 +287,15 @@ export default function Profile() {
             )}
           </div>   
         )}
- {selectedPost && (
-          <PostPopup
-            post={{
-              id: String(demoPosts.indexOf(selectedPost)),
-              media: selectedPost.media!,
-             
-            }}
-            onClose={() => setSelectedPost(null)}
-          />
-        )}
-
+{selectedPost && (
+  <PostPopup
+    post={{
+      id: String(demoPosts.indexOf(selectedPost)),
+      media: selectedPost.media!,
+    }}
+    onClose={() => setSelectedPost(null)}
+  />
+)}
       
 {activeTab === "Collections" && (
   boards.length === 0 ? (
