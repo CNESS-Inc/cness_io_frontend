@@ -206,16 +206,14 @@ export const router = createBrowserRouter([
     {
       index: true, 
       element:
-        import.meta.env.VITE_ENV_STAGE === "dev" ? (
-      <Trendingpost />
-        ):( <ComingSoon />),
+      <Trendingpost />,
+      
     },
     {
       path: "trendingai", 
       element:
-      import.meta.env.VITE_ENV_STAGE === "dev" ? (
-       <TrendingAI />
-         ):( <ComingSoon />),
+       <TrendingAI />,
+        
     }
   ]
 },
@@ -277,9 +275,8 @@ export const router = createBrowserRouter([
           {
             path: "Profile",
             element: 
-            import.meta.env.VITE_ENV_STAGE === "dev" ? (
             <Profile />
-            ):(<ComingSoon />),
+          
           },
           {
             path: "MyCollection/:id",
@@ -287,9 +284,9 @@ export const router = createBrowserRouter([
           },
           {
             path: "MyConnection",
-            element:  import.meta.env.VITE_ENV_STAGE === "dev" ? (
-            <MyConnection />
-            ):(<ComingSoon />),
+            element:  
+            <MyConnection />,
+          
           },
           {
             path: "comingSoon",

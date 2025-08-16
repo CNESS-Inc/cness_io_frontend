@@ -52,14 +52,9 @@ export default function MyPost({
 }: MyPostProps) {
   return (
     <article
-      onClick={onClick} // <-- add this so click triggers popup
-      className="bg-white rounded-[12px] border border-gray-200 shadow-sm flex flex-col cursor-pointer"
-      style={{
-        width: 371,
-        height: 433,
-        padding: "12px 12px 18px 12px",
-        gap: "12px",
-      }}
+      onClick={onClick}
+      className="bg-white rounded-[12px] border border-gray-200 shadow-sm flex flex-col cursor-pointer
+                 w-full max-w-sm sm:max-w-md md:max-w-lg p-3 sm:p-4 gap-3"
     >
       {/* Optional Author Header */}
       {(authorName || authorAvatar) && (
@@ -80,10 +75,10 @@ export default function MyPost({
           {showFollowButton && (
             <button
               onClick={(e) => {
-                e.stopPropagation(); // stop card click
+                e.stopPropagation();
                 onFollowToggle?.();
               }}
-              className={`px-3 py-1 rounded-full text-sm font-medium transition ${
+              className={`px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition ${
                 isFollowing
                   ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   : "bg-blue-500 text-white hover:bg-blue-600"
@@ -97,10 +92,7 @@ export default function MyPost({
 
       {/* MEDIA / BODY */}
       {media ? (
-        <div
-          className="relative overflow-hidden rounded-[12px]"
-          style={{ width: 343.33, height: 297 }}
-        >
+        <div className="relative overflow-hidden rounded-[12px] w-full aspect-[4/3]">
           {media.type === "image" ? (
             <img
               src={media.src}
@@ -119,37 +111,22 @@ export default function MyPost({
           )}
         </div>
       ) : (
-        <div className="p-5 md:p-6 text-gray-700 leading-6 min-h-[220px]">
+        <div className="p-4 text-gray-700 leading-6 min-h-[150px] sm:min-h-[200px]">
           {body}
         </div>
       )}
 
       {/* ACTIONS */}
-      <div className="flex items-center gap-3 mt-auto">
+      <div className="flex items-center gap-3 mt-auto flex-wrap">
         <div className="flex items-center -space-x-2 shrink-0">
-          <button
-            onClick={(e) => {
-              e.stopPropagation(); // prevent popup from opening
-              // like handler here
-            }}
-          >
-            <img src={like} className="w-8 h-8" />
+          <button onClick={(e) => e.stopPropagation()}>
+            <img src={like} className="w-7 h-7 sm:w-8 sm:h-8" />
           </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              // comment handler here
-            }}
-          >
-            <img src={comment} className="w-8 h-8" />
+          <button onClick={(e) => e.stopPropagation()}>
+            <img src={comment} className="w-7 h-7 sm:w-8 sm:h-8" />
           </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              // repost handler here
-            }}
-          >
-            <img src={repost} className="w-8 h-8" />
+          <button onClick={(e) => e.stopPropagation()}>
+            <img src={repost} className="w-7 h-7 sm:w-8 sm:h-8" />
           </button>
         </div>
 
@@ -157,7 +134,7 @@ export default function MyPost({
           {formatCount(likes)}
         </span>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2 flex-wrap">
           {insightsCount !== undefined && (
             <span className="text-sm text-gray-500">
               {insightsCount} Insights Discussion
@@ -172,7 +149,7 @@ export default function MyPost({
               e.stopPropagation();
               onOpenReflections?.();
             }}
-            className="whitespace-nowrap font-medium text-[grey] hover:text-[grey] text-sm"
+            className="whitespace-nowrap font-medium text-gray-500 hover:text-gray-700 text-sm"
           >
             {reflections !== undefined && (
               <span className="text-sm text-gray-500">
