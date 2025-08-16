@@ -16,6 +16,7 @@ export type MyPostProps = {
   media: Media;
   body?: string;
   likes: number;
+  is_liked: boolean;
   onLike?: () => void;
   onOpenReflections?: () => void;
 onClick?: () => void;
@@ -40,13 +41,14 @@ function formatCount(count: number) {
   return count.toString();
 }
 export default function MyPost({
+  id,
   media,
   body,
   likes,
   reflections,
   onOpenReflections,
-onClick,
-onLike,
+  onClick,
+  onLike,
   // author props
   authorName,
   authorAvatar,
@@ -59,6 +61,8 @@ onLike,
    onViewPost,
    onDeletePost,
 }: MyPostProps) {
+
+
   return (
     
 <article
@@ -150,8 +154,7 @@ onLike,
         <button
           onClick={(e) => {
             e.stopPropagation();
-            onDeletePost?.();     
-            console.log("Delete clicked");
+            onDeletePost?.();
           }}
           className="px-5 py-2 rounded-full bg-red-500 text-white font-medium text-sm shadow hover:bg-red-600"
         >

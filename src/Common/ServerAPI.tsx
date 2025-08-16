@@ -132,6 +132,7 @@ export const EndPoint = {
   report: "/quiz/report",
   get_all_post: "/user/posts/get/all",
   create_post: "/user/posts",
+  delete_post: "/user/posts",
   postComments: "/user/post/comments",
   postChildComment: "/user/post/comments/child",
   postCommentLike: "/user/post/comments/like",
@@ -148,6 +149,7 @@ export const EndPoint = {
   trending_movie: "/movie/trending",
   following: "/user/following",
   followers: "/user/follower",
+  following_followers: "/user/following-followers",
   connection: "/friend",
   connection_request: "/friend/request",
   delete_friend: "/friend/delete/friend",
@@ -796,6 +798,16 @@ export const AddPost = (formData: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.create_post);
 };
 
+export const DeleteUserPost = (
+  id: string
+): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.delete_post}/${id}`,
+  );
+};
+
 export const PostComments = (formattedData: any) => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
@@ -900,6 +912,10 @@ export const GetFollowerUser = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.followers);
 };
+export const GetFollowingFollowerUsers = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.following_followers);
+}
 export const GetConnectionUser = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection);
