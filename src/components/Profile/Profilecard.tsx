@@ -1,6 +1,7 @@
 import React from "react";
 import type { ReactElement } from "react";
 import { Pen } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 type TabType = { label: string; icon: ReactElement };
 
@@ -32,7 +33,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
 }) => {
   //const [activeTab, setActiveTab] = useState(tabs[0]?.label || "");
 
-
+  const navigate = useNavigate();
   const handleTabClick = (tab: string) => {
   
     if (onTabChange) onTabChange(tab); // Notify parent
@@ -40,14 +41,14 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
 
   return (
     <div
-  className="rounded-[12px] border border-gray-200 bg-white flex flex-col"
-  style={{
-    width: "100%",
-    gap: "18px",
-    paddingTop: "18px",
-    paddingBottom: "18px",
-  }}
->
+      className="rounded-[12px] border border-gray-200 bg-white flex flex-col"
+      style={{
+        width: "100%",
+        gap: "18px",
+        paddingTop: "18px",
+        paddingBottom: "18px",
+      }}
+    >
   {/* Profile Info */}
   <div className="flex items-center justify-between px-6" style={{ height: "57px" }}>
     <div className="flex items-center gap-4">
@@ -62,29 +63,29 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
         {name && <h3 className="text-lg font-semibold text-gray-800">{name}</h3>}
         {username && <p className="text-sm text-gray-500">@{username}</p>}
         <div
-  className="flex gap-4 mt-1"
-  style={{
-    fontFamily: "'Plus Jakarta Sans', sans-serif",
-    fontWeight: 400,
-    fontStyle: "normal", // Regular
-    fontSize: "14px",
-    lineHeight: "100%",
-    letterSpacing: "0",
-  }}
->
-  <span className="text-[#9747FF] font-medium cursor-pointer"
-  onClick={() => onOpenFollowing()}>
-    {following} Following
-  </span>
-  <span className="text-[#D748EA] font-medium cursor-pointer"
-  onClick={() => onOpenFollowers()}>
-    {followers} Followers
-  </span>
-</div>
+          className="flex gap-4 mt-1"
+          style={{
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            fontWeight: 400,
+            fontStyle: "normal", // Regular
+            fontSize: "14px",
+            lineHeight: "100%",
+            letterSpacing: "0",
+          }}
+        >
+          <span className="text-[#9747FF] font-medium cursor-pointer"
+          onClick={() => onOpenFollowing()}>
+            {following} Following
+          </span>
+          <span className="text-[#D748EA] font-medium cursor-pointer"
+          onClick={() => onOpenFollowers()}>
+            {followers} Followers
+          </span>
+        </div>
       </div>
     </div>
 
-    <button className="px-4 py-2 bg-[#7C4DFF] hover:bg-[#6a3de6] text-white rounded-full text-sm flex items-center gap-2">
+    <button className="px-4 py-2 bg-[#7C4DFF] hover:bg-[#6a3de6] text-white rounded-full text-sm flex items-center gap-2" onClick={() => navigate("/dashboard/user-profile")}>
       <Pen className="h-4 w-4" />
       Edit Profile
     </button>
@@ -128,20 +129,20 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
           />
         )}
         <span
-  className="relative z-10 flex items-center gap-3"
-  style={{
-    color: "#222224",
-    fontFamily: "'Plus Jakarta Sans', sans-serif",
-    fontWeight: 500,
-    fontStyle: "normal", // 'Medium' handled by fontWeight
-    fontSize: "14px",
-    lineHeight: "100%",
-    letterSpacing: "0",
-  }}
->
-  {tab.icon}
-  {tab.label}
-</span>
+          className="relative z-10 flex items-center gap-3"
+          style={{
+            color: "#222224",
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            fontWeight: 500,
+            fontStyle: "normal", // 'Medium' handled by fontWeight
+            fontSize: "14px",
+            lineHeight: "100%",
+            letterSpacing: "0",
+          }}
+        >
+          {tab.icon}
+          {tab.label}
+        </span>
         {activeTab === tab.label && (
           <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#9747FF] rounded-full" />
         )}
