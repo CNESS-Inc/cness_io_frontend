@@ -17,7 +17,7 @@ const Home = () => {
       <WhySection />
       <Platformsections />
       <Plateformrootedsection />
-      <Testimonialsection />
+      {/* <Testimonialsection /> */}
       <Stepper />
       <AwarenessSection />
       <JoiningSection />
