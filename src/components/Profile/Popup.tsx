@@ -128,7 +128,7 @@ const PostPopup: React.FC<PopupProps> = ({ post, onClose }) => {
         className="flex justify-between bg-black"
         style={{
           width: 1301,
-          height: 816,
+          height: '80vh',
           paddingLeft: 32,
         }}
       >
@@ -137,7 +137,7 @@ const PostPopup: React.FC<PopupProps> = ({ post, onClose }) => {
           className="flex items-center justify-center bg-white"
           style={{
             width: 610,
-            height: 816,
+            height: '80vh',
             padding: 24,
             borderWidth: 1,
             borderColor: "#E5E7EB",
@@ -203,7 +203,7 @@ const PostPopup: React.FC<PopupProps> = ({ post, onClose }) => {
           className="flex flex-col bg-white overflow-y-auto"
           style={{
             width: 610,
-            height: 816,
+            height: '80vh',
             paddingRight: 24,
             paddingBottom: 24,
             paddingLeft: 24,

@@ -306,6 +306,7 @@ export default function Profile() {
           likes: item.likes_count,
           reflections: item.comments_count,
           id: item.id,
+          is_liked: item.is_liked,
           // Add more fields if needed
         };
       });
@@ -363,17 +364,19 @@ export default function Profile() {
       const formattedData = { post_id: postId };
       await PostsLike(formattedData);
       setUserPosts((prev) =>
-        prev.map((post) => 
-          post.id === postId
-            ? { ...post, 
+        prev.map((post) => {
+          if (post.id === postId) {
+            return {
+              ...post,
               is_liked: !post.is_liked,
-              likes: post.is_liked
-                ? post.likes - 1
-                : post.likes + 1,
-              } 
-            : post
-        )
+              likes: post.is_liked ? post.likes - 1 : post.likes + 1,
+            };
+          } else {
+            return post;
+          }
+        })
       );
+
 
     } catch (error) {
       showToast({
