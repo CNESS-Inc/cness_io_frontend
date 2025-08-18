@@ -52,16 +52,16 @@ export function StoriesApp() {
   const transformApiDataToStories = (apiData: any[]): Story[] => {
     return apiData.map((story) => {
       // Get initials from first name and last name
-      const firstNameInitial = story.storyuser.profile.first_name?.[0] || "";
-      const lastNameInitial = story.storyuser.profile.last_name?.[0] || "";
+      const firstNameInitial = story.profile.first_name?.[0] || "";
+      const lastNameInitial = story.profile.last_name?.[0] || "";
       const initials = `${firstNameInitial}${lastNameInitial}`.toUpperCase();
 
       return {
         id: story.id,
         is_liked:story.is_liked,
         user: {
-          name: `${story.storyuser.profile.first_name} ${story.storyuser.profile.last_name}`,
-          avatar: story.storyuser.profile.profile_picture,
+          name: `${story.profile.first_name} ${story.profile.last_name}`,
+          avatar: story.profile.profile_picture,
           initials,
         },
         hasNewStory: !story.is_liked, // Assuming if not liked, it's a new story

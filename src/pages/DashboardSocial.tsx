@@ -195,24 +195,26 @@ interface PostCarouselProps {
 
 interface Story {
   id: string;
-  user_id: string;
-  description: string;
-  file: string;
-  createdAt: string;
-  video_file: string;
-  likes_count: number;
-  comments_count: number;
-  is_liked: boolean;
-  storyuser: {
-    id: string;
-    username: string;
-    profile: {
-      user_id: string;
-      first_name: string;
-      last_name: string;
-      profile_picture: string;
-    };
+  role: string | null;
+  username: string;
+  profile: {
+    user_id: string;
+    first_name: string;
+    last_name: string;
+    profile_picture: string;
   };
+  stories: {
+    id: string;
+    user_id: string;
+    description: string;
+    file: string;
+    createdAt: string;
+    updatedAt: string;
+    video_file: string;
+    likes_count: number;
+    comments_count: number;
+    is_liked: boolean;
+  }[];
 }
 
 
@@ -977,15 +979,16 @@ const navigate = useNavigate();
                       >
                         <StoryCard
                           id={story.id}
-                          userIcon={story.storyuser.profile.profile_picture}
-                          userName={`${story.storyuser.profile.first_name} ${story.storyuser.profile.last_name}`}
-                          title={story.description || "Untitled Story"}
-                          videoSrc={story.video_file}
+                          userIcon={story.profile.profile_picture}
+                          userName={`${story.profile.first_name} ${story.profile.last_name}`}
+                          title={story.stories[0].description || "Untitled Story"}
+                          videoSrc={story.stories[0].video_file}
                         />
+                        
                         <div className="absolute bottom-2 left-2 flex items-center gap-2 z-20 text-white">
                           <img
-                            src={story.storyuser.profile.profile_picture}
-                            alt={`${story.storyuser.profile.first_name} ${story.storyuser.profile.last_name}`}
+                            src={story.profile.profile_picture}
+                            alt={`${story.profile.first_name} ${story.profile.last_name}`}
                             className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover border border-white"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
@@ -993,7 +996,7 @@ const navigate = useNavigate();
                             }}
                           />
                           <span className="text-xs md:text-[13px] font-medium drop-shadow-sm">
-                            {story.storyuser.username}
+                            {story.username}
                           </span>
                         </div>
                       </div>

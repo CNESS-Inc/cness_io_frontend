@@ -971,7 +971,7 @@ export const executeAPI = async <T = any,>(
       });
       
     const access_token = response.headers['access_token'];
-    console.log('access token response check', access_token);
+
     if (access_token != 'not-provide') {
       console.log('access token response check sets', true)
       localStorage.setItem('jwt', access_token)
