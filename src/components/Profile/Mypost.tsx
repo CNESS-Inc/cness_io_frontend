@@ -16,12 +16,12 @@ export type MyPostProps = {
   media: Media;
   body?: string;
   likes: number;
-  is_liked: boolean;
+  is_liked?: boolean;
   onLike?: () => void;
   onOpenReflections?: () => void;
-onClick?: () => void;
+  onClick?: () => void;
   showOverlay?: boolean;
-onViewPost?: () => void;    
+  onViewPost?: () => void;    
   onDeletePost?: () => void;
   // Optional author info for Collection View
   authorName?: string;
@@ -41,7 +41,7 @@ function formatCount(count: number) {
   return count.toString();
 }
 export default function MyPost({
-  id,
+  // id,
   media,
   body,
   likes,
