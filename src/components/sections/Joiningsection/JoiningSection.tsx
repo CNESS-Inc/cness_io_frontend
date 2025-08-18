@@ -2,9 +2,9 @@ import Button from "../../ui/Button";
 import joinImage from "../../../assets/join-team.png";
 
 export default function JoiningSection()
-
-
   { 
+    const loggedIn = localStorage.getItem("jwt") !== null;
+    const redirectPath = loggedIn ? "/dashboard" : "/sign-up";
   return (
     <section className="flex flex-col items-center relative w-full ">
       <div className="relative w-full  lg:h-[350px] md:h-[350px] h-[420px] overflow-hidden rounded-xl">
@@ -39,20 +39,20 @@ export default function JoiningSection()
             <Button
               // variant="gradient-primary"
               className="jakarta w-fit rounded-[100px] h-[42px] py-1 px-8 self-stretch text-[14px]  bg-linear-to-r from-[#7077FE] to-[#9747FF]"
-              onClick={() => window.location.href = "/sign-up"}>
+              onClick={() => window.location.href = redirectPath}>
               Create Your Profile
             </Button>
 
             <Button
               variant="outline"
               className="jakarta bg-white h-[42px] border-[#2222241a] px-4 sm:px-6 py-1 sm:py-1 rounded-[100px] text-[#222224] font-medium text-[14px] w-full sm:w-auto"
-              onClick={() => window.location.href = "/sign-up"}>
+              onClick={() => window.location.href = redirectPath}>
               Join the Comunity
             </Button>
              <Button
               variant="outline"
               className="jakarta bg-white lg:w-[152px] md:w-[152px] w-full h-[42px] border-[#2222241a] px-4 sm:px-6 py-1 sm:py-1 rounded-[100px] text-[#222224] font-medium text-[14px] "
-             onClick={() => window.location.href = "/sign-up"} >
+             onClick={() => window.location.href = redirectPath} >
               Get Certified
             </Button>
           </div>

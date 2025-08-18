@@ -9,7 +9,7 @@ import Highlight from "../components/sections/Highlight";
 import Header from "../layout/Header";
 import HeroSection from "../components/sections/Herosection";
 import Certification from "../components/sections/Certification";
-import Team from "../components/sections/Team";
+// import Team from "../components/sections/Team";
 import FeaturedSection from "../components/sections/FeaturedSection";
 import LazySection from "../components/ui/LazySection";
 
@@ -42,9 +42,9 @@ const Home = () => {
       <LazySection effect="fade-up" delay={0.2}>
         <Certification />
       </LazySection>
-      <LazySection effect="fade-up" delay={0.1}>
+      {/* <LazySection effect="fade-up" delay={0.1}>
         <Team />
-      </LazySection>
+      </LazySection> */}
       <LazySection effect="fade-up" delay={0.2}>
         <JoiningSection />
       </LazySection>
