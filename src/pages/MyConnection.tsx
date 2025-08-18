@@ -2,9 +2,9 @@ import  { useState, useEffect } from "react";
 import ConnectionsCard from "../components/Profile/Tabs"
 import FriendCard from "../components/Profile/Friendcard";
 import profile from "../assets/createstory.jpg";
-import person from "../assets/person1.jpg";
-import person1 from "../assets/person2.jpg";
-import person2 from "../assets/person3.jpg";
+// import person from "../assets/person1.jpg";
+// import person1 from "../assets/person2.jpg";
+// import person2 from "../assets/person3.jpg";
 import FriendProfileModal  from "../components/Profile/FriendProfilepopup";
 import { GetConnectionUser, GetFriendRequest, AcceptFriendRequest, RejectFriendRequest } from "../Common/ServerAPI";
 

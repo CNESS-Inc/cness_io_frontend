@@ -61,8 +61,6 @@ export default function MyPost({
    onViewPost,
    onDeletePost,
 }: MyPostProps) {
-console.log('likes----->',likes);
-console.log('reflections----->',reflections);
 
   return (
     

@@ -1,8 +1,8 @@
 import { X } from "lucide-react";
 import MyPost from "../Profile/Mypost";
 import companycard from "../../assets/companycard1.png"
-import whychess from "../../assets/whycness.jpg";
-import webinar from "../../assets/webinarimg.jpg";
+// import whychess from "../../assets/whycness.jpg";
+// import webinar from "../../assets/webinarimg.jpg";
 import { TrendingUp } from "lucide-react";
 import { useState, useEffect } from "react";
 import { GetProfileByUserId, GetUserPostsByUserId, GetFollowingFollowersByUserId } from "../../Common/ServerAPI";
