@@ -201,22 +201,22 @@ export const router = createBrowserRouter([
           },
 
           {
-  path: "trendingpost",
-  children: [
-    {
-      index: true, 
-      element:
-      <Trendingpost />,
-      
-    },
-    {
-      path: "trendingai", 
-      element:
-       <TrendingAI />,
-        
-    }
-  ]
-},
+            path: "trendingpost",
+            children: [
+              {
+                index: true,
+                element:
+                  <Trendingpost />,
+
+              },
+              {
+                path: "trendingai",
+                element:
+                  <TrendingAI />,
+
+              }
+            ]
+          },
 
 
           {
@@ -274,9 +274,9 @@ export const router = createBrowserRouter([
           },
           {
             path: "Profile",
-            element: 
-            <Profile />
-          
+            element:
+              <Profile />
+
           },
           {
             path: "MyCollection/:id",
@@ -284,9 +284,9 @@ export const router = createBrowserRouter([
           },
           {
             path: "MyConnection",
-            element:  
-            <MyConnection />,
-          
+            element:
+              <MyConnection />,
+
           },
           {
             path: "comingSoon",
@@ -359,8 +359,8 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path : 'story-design',
-    children : [
+    path: 'story-design',
+    children: [
       {
         index: true,
         element:
