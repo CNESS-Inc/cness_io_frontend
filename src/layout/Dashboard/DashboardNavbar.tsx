@@ -182,7 +182,7 @@ const DashboardNavbar = ({
         { label: "Feed", path: "/dashboard/feed" },
         { label: "Profile", path: "/dashboard/Profile" },
         { label: "My Connections", path: "/dashboard/MyConnection" },
-        { label: "Messagings", path: "/dashboard/ComingSoon" },
+        // { label: "Messagings", path: "/dashboard/ComingSoon" },
       ],
     },
     {
@@ -204,7 +204,7 @@ const DashboardNavbar = ({
           label: "Manage Circles (Coming Soon)",
           path: "/dashboard/ComingSoon",
         },
-        { label: "Messagings", path: "/dashboard/ComingSoon" },
+        // { label: "Messagings", path: "/dashboard/ComingSoon" },
       ],
     },
     {

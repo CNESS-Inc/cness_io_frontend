@@ -1,6 +1,6 @@
 import React from "react";
-import {X,MessageCircle} from "lucide-react";
-
+// import {X,MessageCircle} from "lucide-react";
+import {X} from "lucide-react";
 type Connection = {
   id: number | string;
   name: string;
@@ -18,7 +18,7 @@ type ConnectionsListProps = {
 const Connections: React.FC<ConnectionsListProps> = ({
   title = "Connections",
   connections,
-  onMessage,
+  // onMessage,
   onUnfriend,
 }) => {
   // Split into two equal columns
@@ -49,13 +49,15 @@ const Connections: React.FC<ConnectionsListProps> = ({
         </div>
       </div>
       <div className="flex items-center gap-2">
+        {/*
         <button
-  onClick={() => onMessage?.(conn.id)}
-  className="w-[93px] h-[30px] rounded-[75px] px-[12px] py-[6px] gap-[6px] flex items-center justify-center bg-[#7B61FF] text-white hover:bg-[#684de0] transition font-openSans font-semibold text-[12px] leading-[150%] tracking-[0]"
->
-  <MessageCircle className="inline-block w-4 h-4" />
-  Message
-</button>
+          onClick={() => onMessage?.(conn.id)}
+          className="w-[93px] h-[30px] rounded-[75px] px-[12px] py-[6px] gap-[6px] flex items-center justify-center bg-[#7B61FF] text-white hover:bg-[#684de0] transition font-openSans font-semibold text-[12px] leading-[150%] tracking-[0]"
+        >
+          <MessageCircle className="inline-block w-4 h-4" />
+          Message
+        </button>
+        */}
 
 <button
   onClick={() => onUnfriend?.(conn.id)}
