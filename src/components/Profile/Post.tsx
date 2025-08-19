@@ -4,7 +4,7 @@ import {
   Share2,
   ThumbsUp,
   TrendingUp,
-} from "lucide-react";  
+} from "lucide-react";
 
 type Media =
   | { type: "image"; src: string; alt?: string }
@@ -27,7 +27,7 @@ type Props = {
 
 const k = (n: number) =>
   n >= 1e6 ? `${(n / 1e6).toFixed(1).replace(/\.0$/, "")}M` :
-  n >= 1e3 ? `${Math.round(n / 1e3)}K` : `${n}`;
+    n >= 1e3 ? `${Math.round(n / 1e3)}K` : `${n}`;
 
 export default function PostCard({
   avatar,
@@ -71,30 +71,30 @@ export default function PostCard({
       </div>
 
       {/* media */}
-<div className="mt-4">
-  <div className="overflow-hidden rounded-xl">
-    {media.type === "image" ? (
-      <img
-        src={media.src}
-        alt={media.alt || ""}
-        className="w-full h-full object-cover"
-      />
-    ) : media.type === "video" ? (
-      <video
-        className="w-full h-full object-cover"
-        src={media.src}
-        poster={media.poster}
-        controls
-        playsInline
-        preload="metadata"
-      />
-    ) : (
-      <p className="p-4 text-gray-800 whitespace-pre-wrap">
-        {media.src}
-      </p>
-    )}
-  </div>
-</div>
+      <div className="mt-4">
+        <div className="overflow-hidden rounded-xl">
+          {media.type === "image" ? (
+            <img
+              src={media.src}
+              alt={media.alt || ""}
+              className="w-full h-full object-cover"
+            />
+          ) : media.type === "video" ? (
+            <video
+              className="w-full h-full object-cover"
+              src={media.src}
+              poster={media.poster}
+              controls
+              playsInline
+              preload="metadata"
+            />
+          ) : (
+            <p className="p-4 text-gray-800 whitespace-pre-wrap">
+              {media.src}
+            </p>
+          )}
+        </div>
+      </div>
 
       {/* chip row: overlapped icons + likes + reflections right */}
       <div className="mt-3 flex items-center justify-between">
@@ -130,21 +130,21 @@ export default function PostCard({
       <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
         <button
           onClick={onAffirmation}
-className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white py-3 font-opensans font-semibold text-[14px] leading-[150%] text-[#7077FE] hover:bg-gray-50"
+          className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white py-3 font-opensans font-semibold text-[14px] leading-[150%] text-[#7077FE] hover:bg-gray-50"
         >
           <ThumbsUp className="w-4 h-4 text-[#7077FE]" />
           <span>Like</span>
         </button>
         <button
           onClick={onReflections}
-className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white py-3 font-opensans font-semibold text-[14px] leading-[150%] text-[#7077FE] hover:bg-gray-50"
+          className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white py-3 font-opensans font-semibold text-[14px] leading-[150%] text-[#7077FE] hover:bg-gray-50"
         >
           <MessageSquare className="w-4 h-4 text-[#7077FE]" />
           <span>Comment</span>
         </button>
         <button
           onClick={onShare}
-className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white py-3 font-opensans font-semibold text-[14px] leading-[150%] text-[#7077FE] hover:bg-gray-50"
+          className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white py-3 font-opensans font-semibold text-[14px] leading-[150%] text-[#7077FE] hover:bg-gray-50"
         >
           <Share2 className="w-4 h-4 text-[#7077FE]" />
           <span>Share</span>
