@@ -30,7 +30,7 @@ type getReferredUsersFromData = {
   referralcode: string;
 };
 type getReferralAmountFromData = {
-  user_id: any;
+  user_id: any; 
 };
 type getMyRefferralCodeFromData = {
   user_id: string;
@@ -77,8 +77,8 @@ export const ServerAPI = {
 
 export const API = {
   //  BaseUrl: "http://192.168.1.30:5025/api", //local
-  BaseUrl: "http://localhost:5025/api", //local
-  // BaseUrl: import.meta.env.VITE_API_BASE_URL || "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api",
+  // BaseUrl: "http://localhost:5025/api", //local
+  BaseUrl: import.meta.env.VITE_API_BASE_URL || "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api",
   MarketplaceBaseUrl: "http://localhost:3000/"
 };
 
@@ -161,7 +161,7 @@ export const EndPoint = {
   save_bestPractices: "/best-practice/get/save/best-practice",
   mine_bestPractices: "/best-practice/get-by-user-id",
   add_bestpractices: "/best-practice",
-  like_bestpractices: "/best-practice/like",
+  like_bestpractices:"/best-practice/like",
   save_bestpractices: "/best-practice/save",
   get_savebestpractices: "/best-practice/get/save/best-practice",
   create_bestpracticescomment: "/best-practice/comment",
@@ -247,12 +247,12 @@ export const GenerateAffiliateCode = (formData: GenerateAffiliateFromData): ApiR
 };
 
 export const getReferredUsers = (formData: getReferredUsersFromData): ApiResponse => {
-
+ 
   return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.get_my_referrals}?referralcode=${formData.referralcode}`);
 };
 
 export const getMyRefferralCode = (formData: getMyRefferralCodeFromData): ApiResponse => {
-
+ 
   return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.get_my_referral_code}?user_id=${formData.user_id}`);
 };
 
@@ -262,18 +262,18 @@ export const getReferralEarning = (formData: getReferralAmountFromData): ApiResp
 };
 
 export const generateSSOToken = (formData: getGenerateSSOTokenFromData): ApiResponse => {
-  const data: Partial<getGenerateSSOTokenFromData> = {
+ const data: Partial<getGenerateSSOTokenFromData> = {
     token: formData.token,
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.generate_sso_token);
 };
 
 export const getSubscriptionDetails = (): ApiResponse => {
-
+ 
   return executeAPI(ServerAPI.APIMethod.GET, null, EndPoint.subscription);
 };
 export const getUserBadgeDetails = (): ApiResponse => {
-
+ 
   return executeAPI(ServerAPI.APIMethod.GET, null, EndPoint.get_badge);
 };
 
@@ -663,10 +663,10 @@ export const GetUserNotificationCount = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.notification_count}`);
 };
-export const MarkNotificationAsRead = (notificationId: string, status: any): ApiResponse => {
-  const data: Partial<any> = {
+export const MarkNotificationAsRead = (notificationId: string,status:any): ApiResponse => {
+const data: Partial<any> = {
     id: notificationId,
-    status: status
+    status:status
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, `${EndPoint.update_notification}`);
 };
@@ -764,7 +764,7 @@ export const GetUserScoreResult = (): ApiResponse => {
   );
 };
 export const GetUsersearchProfileDetails = (
-  selectedDomain: any, searchQuery: any, page: any, limit: any, selectedCert: string, _sort: string): ApiResponse => {
+selectedDomain: any, searchQuery: any, page: any, limit: any, selectedCert: string, _sort: string): ApiResponse => {
   const data: Partial<any> = {
     profession: selectedDomain,
     text: searchQuery,
@@ -958,7 +958,7 @@ export const executeAPI = async <T = any,>(
   try {
     const token = localStorage.getItem("jwt");
     const isFormData = data instanceof FormData;
-
+    
     const response: AxiosResponse<T> = await axios({
       method: method,
       url: API.BaseUrl + endpoint,
@@ -968,17 +968,17 @@ export const executeAPI = async <T = any,>(
         ...(isFormData
           ? {} // Don't set Content-Type manually for FormData
           : { "Content-Type": "application/json" }),
-        Authorization: `Bearer ${token || ""}`,
-      },
-      ...(API.BaseUrl.trim().toLowerCase().startsWith("https://") && { withCredentials: true })
-    });
+          Authorization: `Bearer ${token || ""}`,
+        },
+        ...(API.BaseUrl.trim().toLowerCase().startsWith("https://") && { withCredentials: true })
+      });
+      
+    const access_token = response.headers['access_token'];
 
-    // const access_token = response.headers['access_token'];
-
-    // if (access_token != 'not-provide') {
-    //   console.log('access token response check sets', true)
-    //   localStorage.setItem('jwt', access_token)
-    // }
+    if (access_token != 'not-provide') {
+      console.log('access token response check sets', true)
+      localStorage.setItem('jwt', access_token)
+    }
 
     return response.data;
   } catch (error: any) {
