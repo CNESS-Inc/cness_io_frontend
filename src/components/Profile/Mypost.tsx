@@ -62,7 +62,6 @@ export default function MyPost({
    onDeletePost,
 }: MyPostProps) {
 
-
   return (
     
 <article

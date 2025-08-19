@@ -11,7 +11,7 @@ import {
 import { NavLink, useNavigate, useLocation, Link } from "react-router-dom";
 import { iconMap } from "../../assets/icons";
 import hambur from "../../assets/hambur.png";
-import { generateSSOToken, API } from "../../Common/ServerAPI";
+// import { generateSSOToken, API } from "../../Common/ServerAPI";
 // import { LogOut } from "../../Common/ServerAPI";
 // import { useToast } from "../../components/ui/Toast/ToastProvider";
 
@@ -60,7 +60,7 @@ const DashboardNavbar = ({
   //   }
   // };
 
-  const generateSsoToken = async () => {
+  /*const generateSsoToken = async () => {
     try {
       const jwtToken = localStorage.getItem("jwt");
       const payload = {
@@ -75,7 +75,7 @@ const DashboardNavbar = ({
     } catch (err) {
       console.error("Failed to load referred users", err);
     }
-  };
+  };*/
 
   const mainNavItems = [
     {
@@ -159,8 +159,8 @@ const DashboardNavbar = ({
       icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
       label: "Market Place",
       active: true,
-      //path: "/dashboard/market-place",
-      isMarketplaceDropdown: true,
+      path: "/dashboard/market-place",
+      /*isMarketplaceDropdown: true,
       childPaths: ["/dashboard/DigitalProducts"],
       children: [
         {label: "Login To Market Place", path: "", customAction: generateSsoToken },
@@ -168,13 +168,13 @@ const DashboardNavbar = ({
         { label: "Sell your Products", path: "/dashboard/SellProducts" },
         { label: "Track Purchase & Sales", path: "/dashboard/Tracking" },
         { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
-      ],
+      ],*/
     },
     {
       id: "Social",
       icon: <img src={iconMap["social"]} alt="Home Icon" className="w-5 h-5" />,
       label: "Social",
-      active: true,
+      active: false,
       // path: "/dashboard/DashboardSocial",
       isSocialDropdown: true,
       childPaths: ["/dashboard/Feed"],
@@ -216,10 +216,11 @@ const DashboardNavbar = ({
       childPaths: ["/dashboard/BecomeMentor"],
       children: [
         { label: "Became an Mentor", path: "/dashboard/Become_mentor" },
-        { label: "Mentor Dashboard", path: "/dashboard/ComingSoon" },
-        { label: "Track Progress", path: "/dashboard/ComingSoon" },
-        { label: "Partner License & Toolkit", path: "/dashboard/ComingSoon" },
-        { label: "Partner Dashboard", path: "/dashboard/ComingSoon" },
+        { label: "Became a Partner", path: "/dashboard/Become_partner" },
+        // { label: "Mentor Dashboard", path: "/dashboard/ComingSoon" },
+        // { label: "Track Progress", path: "/dashboard/ComingSoon" },
+        // { label: "Partner License & Toolkit", path: "/dashboard/ComingSoon" },
+        // { label: "Partner Dashboard", path: "/dashboard/ComingSoon" },
       ],
     },
     {

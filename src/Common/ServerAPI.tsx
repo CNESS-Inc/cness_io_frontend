@@ -153,6 +153,8 @@ export const EndPoint = {
   connection: "/friend",
   connection_request: "/friend/request",
   delete_friend: "/friend/delete/friend",
+  friend_request_accept: "/friend/request/accept",
+  friend_request_reject: "/friend/request/reject",
   follow: "/user/follow",
   vote: "/poll/vote",
   googleLogin: "/auth/google-login",
@@ -180,6 +182,8 @@ export const EndPoint = {
   subscription: "/subscription",
   get_badge: "/profile/get-user-badge",
   generate_sso_token: "/auth/generate-sso-token",
+  profile_get_by_user_id: "/profile/get-user",
+  user_posts_by_user_id: "/user/posts/get-user-post",
 };
 
 export const GoogleLoginDetails = async (googleToken: string): ApiResponse => {
@@ -932,6 +936,57 @@ export const UnFriend = (formattedData: any) => {
     ServerAPI.APIMethod.POST,
     formattedData,
     EndPoint.delete_friend
+  );
+};
+export const GetFriendRequest = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection_request);
+};
+export const AcceptFriendRequest = (formattedData: any) => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formattedData,
+    EndPoint.friend_request_accept
+  );
+};
+
+export const RejectFriendRequest = (formattedData: any) => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formattedData,
+    EndPoint.friend_request_reject
+  );
+};
+export const GetProfileByUserId = (userId: string) => {
+  let data = {};
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.profile_get_by_user_id}/${userId}`
+  );
+};
+
+export const GetUserPostsByUserId = (userId: string, page: number = 1) => {
+  let data = {};
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.user_posts_by_user_id}/${userId}`,
+    params
+  );
+};
+
+export const GetFollowingFollowersByUserId = (userId: string) => {
+  let data = {};
+  let params: { [key: string]: any } = {};
+  params["user_id"] = userId;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    EndPoint.following_followers,
+    params
   );
 };
 export const SendFollowRequest = (formattedData: any) => {
