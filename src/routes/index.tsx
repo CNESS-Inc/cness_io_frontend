@@ -53,6 +53,7 @@ import { StoriesApp } from "../components/Social/Story/StoryApp";
 import Trendingpost from "../pages/TrendingPost";
 import Mycollectionview from "../pages/Mycollectionview";
 import TrendingAI from "../pages/TrendingAI";
+import BecomePartner from "../pages/BecomePartner";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -169,7 +170,7 @@ export const router = createBrowserRouter([
             element: <Support />,
           },
           {
-            path: "market_place",
+            path: "market-place",
             element: <MarketPlace />,
           },
           // {
@@ -226,6 +227,10 @@ export const router = createBrowserRouter([
           {
             path: "Become_mentor",
             element: <BecomeMentor />,
+          },
+          {
+            path: "Become_partner",
+            element: <BecomePartner />,
           },
           {
             path: "GenerateBadgeCode",
