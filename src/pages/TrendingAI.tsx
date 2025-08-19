@@ -2,35 +2,35 @@
 import { useEffect, useState } from "react";
 import PostCard from "../components/Profile/Post";
 import ConnectionsCard from "../components/Profile/Tabs"
-import person1 from "../assets/person1.jpg";
-import person2 from "../assets/person2.jpg";
-import carousel3 from "../assets/carosuel3.png";
+// import person1 from "../assets/person1.jpg";
+// import person2 from "../assets/person2.jpg";
+// import carousel3 from "../assets/carosuel3.png";
 import { TrendingUp } from "lucide-react";
 
 import { GetTrendingPost } from "../Common/ServerAPI";
 
 type Post = React.ComponentProps<typeof PostCard>;
 
-const postss: Post[] = [
-  {
-    avatar: person2,
-    name: "Anu",
-    time: "2 hours ago",
-    following: true,
-    media: { type: "image", src: carousel3, alt: "Sea" },
-    likes: 421000,
-    reflections: 45,
-  },
-  {
-    avatar: person1,
-    name: "Olivia Gracia",
-    time: "2 hours ago",
-    following: true,
-    media: { type: "video", src: "/test1.mp4", poster: "/images/cover-landscape.jpg" },
-    likes: 19800,
-    reflections: 12,
-  },
-];
+// const postss: Post[] = [
+//   {
+//     avatar: person2,
+//     name: "Anu",
+//     time: "2 hours ago",
+//     following: true,
+//     media: { type: "image", src: carousel3, alt: "Sea" },
+//     likes: 421000,
+//     reflections: 45,
+//   },
+//   {
+//     avatar: person1,
+//     name: "Olivia Gracia",
+//     time: "2 hours ago",
+//     following: true,
+//     media: { type: "video", src: "/test1.mp4", poster: "/images/cover-landscape.jpg" },
+//     likes: 19800,
+//     reflections: 12,
+//   },
+// ];
 
 
 
