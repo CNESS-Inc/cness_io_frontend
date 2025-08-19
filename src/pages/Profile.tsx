@@ -12,7 +12,7 @@ import {
   Copy,        // Posts & Collections
   PlayCircle,  // Reels
   Users,       // Connections
-  AtSign,      // About
+  // AtSign,      // About
   CirclePlay,  // empty state icon
  
  
@@ -84,8 +84,8 @@ const profiles = [
       { label: "Posts", icon: <Copy size={16} /> },
       { label: "Reels", icon: <PlayCircle size={16} /> },
       { label: "Connections", icon: <Users size={16} /> },
-      { label: "Collections", icon: <Copy size={16} /> },
-      { label: "About", icon: <AtSign size={16} /> },
+      // { label: "Collections", icon: <Copy size={16} /> },
+      // { label: "About", icon: <AtSign size={16} /> },
     ],
   },
 ];
@@ -394,7 +394,9 @@ export default function Profile() {
     if (activeTab === "Connections") {
       fetchFollowingUsers();
     }
-    fetchUserPosts();
+    if(activeTab === "Posts"){
+      fetchUserPosts();
+    }
     fetchFollowingFollowerUsers();
   }, [activeTab, boards.length]);
   
@@ -483,7 +485,7 @@ export default function Profile() {
             onClose={() => setSelectedPost(null)}
           />
         )}
-      
+        
         {activeTab === "Collections" && (
           boards.length === 0 ? (
             // Empty state without any button

@@ -5,7 +5,7 @@ import companycard from "../../assets/companycard1.png"
 // import webinar from "../../assets/webinarimg.jpg";
 import { TrendingUp } from "lucide-react";
 import { useState, useEffect } from "react";
-import { GetProfileByUserId, GetUserPostsByUserId, GetFollowingFollowersByUserId } from "../../Common/ServerAPI";
+import { GetProfileByUserId, GetUserPostsByUserId, GetFollowingFollowersByUserId, SendFollowRequest, GetFollowStatus } from "../../Common/ServerAPI";
 
 type Props = {
   friend: {
@@ -22,13 +22,36 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
   const [followingFollowers, setFollowingFollowers] = useState<any>(null);
   const [userPosts, setUserPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
 
   // Add useEffect to fetch data when modal opens
   useEffect(() => {
     if (friend.id) {
       fetchFriendData();
+      checkFollowStatus();
     }
   }, [friend.id]);
+
+  const checkFollowStatus = async () => {
+    try {
+      const response = await GetFollowStatus(friend.id.toString());
+      
+      // Get the logged-in user's ID from localStorage or wherever you store it
+      const loggedInUserId = localStorage.getItem('Id');
+      
+      // Check if the logged-in user is in the followers list
+      const followers = response.data?.data?.rows || [];
+      const isUserFollowing = followers.some((follower: any) => 
+        follower.follower_id === loggedInUserId
+      );
+      console.log('isUserFollowing-------->', isUserFollowing);
+      setIsFollowing(isUserFollowing);
+    } catch (error) {
+      console.error("Error checking follow status:", error);
+      setIsFollowing(false); // Default to false on error
+    }
+  };
 
   const fetchFriendData = async () => {
     setLoading(true);
@@ -42,6 +65,8 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
 
       setProfileData(profileResponse.data.data.rows);
       setFollowingFollowers(followingResponse.data.data);
+
+      // setIsFollowing(followingResponse.data.data?.isFollowing || false);
 
       const transformedPosts = postsResponse.data.data.rows.map((item: any) => {
         // Handle multiple images (comma-separated), single image/video, or text-only
@@ -93,6 +118,34 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
       setLoading(false);
     }
   };
+
+  const handleFollowToggle = async () => {
+    setFollowLoading(true);
+    try {
+      const formattedData = { following_id: friend.id };
+      await SendFollowRequest(formattedData);
+      
+      // Toggle the following state correctly
+      const newFollowStatus = !isFollowing;
+      setIsFollowing(newFollowStatus);
+      
+      // Update the followers count correctly
+      setFollowingFollowers((prev: typeof followingFollowers) => ({
+        ...prev,
+        followerCount: newFollowStatus 
+          ? (prev?.followerCount || 0) + 1  // If now following, increase count
+          : Math.max(0, (prev?.followerCount || 0) - 1)  // If now unfollowing, decrease count
+      }));
+  
+      console.log(newFollowStatus ? "Followed successfully" : "Unfollowed successfully");
+    } catch (error) {
+      console.error("Error toggling follow status:", error);
+      // Don't revert the state on error - let the user see the error and try again
+    } finally {
+      setFollowLoading(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       {/* Modal */}
@@ -170,13 +223,25 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
 
   {/* Right: Buttons */}
   <div className="flex gap-2 mt-8">
-    <button className="px-8 py-2 rounded-full border border-gray-300 text-[#7077FE] text-sm shadow hover:">
-         <TrendingUp className="w-4 h-4 inline-block mr-2" />
-      Following
+    <button 
+      onClick={handleFollowToggle}
+      disabled={followLoading}
+      data-testid={isFollowing}
+      className={`px-8 py-2 rounded-full border text-sm shadow hover:transition-all ${
+        isFollowing 
+          ? 'border-gray-300 text-[#7077FE] hover:bg-gray-50' 
+          : 'border-[#7077FE] bg-[#7077FE] text-white hover:bg-[#5a61d4]'
+      } ${followLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+    >
+      <TrendingUp className="w-4 h-4 inline-block mr-2" />
+      {followLoading 
+        ? 'Loading...' 
+        : (isFollowing ? 'Following' : 'Follow')
+      }
     </button>
-    <button className="px-8 py-2 rounded-full bg-indigo-500 text-white text-sm">
+    {/* <button className="px-8 py-2 rounded-full bg-indigo-500 text-white text-sm">
       Message
-    </button>
+    </button> */}
   </div>
 </div>
         </div>
