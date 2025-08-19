@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
 import {
   GetAllPlanDetails,
   getSubscriptionDetails,
@@ -77,8 +79,12 @@ const Setting = () => {
   const { showToast } = useToast();
   const [basicData, setBasicData] = useState<BasicInfoData | null>(null)
 
+  const planType = (subscription?.plan_type ?? "").trim();
+const isMonthly = /month/i.test(planType); // true if plan type contains "month"
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+
 
     if (newPassword !== confirmPassword) {
       setMessage("New passwords do not match.");
@@ -289,11 +295,23 @@ const Setting = () => {
                     <span className="font-medium text-gray-700">
                       Plan Type:
                     </span>
+                    <div className="flex items-center gap-2 whitespace-nowrap">
                     <span className="text-gray-600">
                       {subscription.plan_type}
                     </span>
-                  </div>
 
+{isMonthly && (
+      <Link
+        to="/pricing"
+        className="inline-flex items-center rounded-md px-2 py-1 text-sm
+                   bg-yellow-50 text-orange-700 hover:bg-indigo-100"
+      >
+        Upgrade
+      </Link>
+    )}
+
+                  </div>
+</div>
                   <div className="flex items-center justify-between">
                     <span className="font-medium text-gray-700">
                       Membership Level:
