@@ -29,7 +29,7 @@ const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
   getUserPosts
 }) => {
   const navigate = useNavigate();
-  const [searchValue, setSearchValue] = useState("");
+  const [_searchValue, _setSearchValue] = useState("");
 
   // const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
   //   setSearchValue(e.target.value);

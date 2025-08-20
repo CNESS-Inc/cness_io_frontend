@@ -47,7 +47,6 @@ const MyConnection = () => {
         name: `${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
         username: `@${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
         image: item.friend_user.profile.profile_picture,
-        image: item.friend_user.profile.profile_picture, 
         isFollowing: item.isFollowing || false,
       }));
       setAllConnections(formattedRequests);
@@ -237,7 +236,7 @@ const MyConnection = () => {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         getUserPosts={GetUserPost}
-        onTabChange={setActiveTab}
+        // onTabChange={setActiveTab}
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
