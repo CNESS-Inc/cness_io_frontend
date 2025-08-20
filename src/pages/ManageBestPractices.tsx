@@ -8,6 +8,7 @@ import {
   GetBestPracticesById,
   GetValidProfessionalDetails,
   UpdateBestPractice,
+  CreateBestPractice,
 } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
 import {
@@ -77,6 +78,15 @@ const Managebestpractices = () => {
       .replace(/-+$/, "");
   };
 
+  // Add these new state variables for create modal
+  const [createModalActive, setCreateModalActive] = useState(false);
+  const [newPractice, setNewPractice] = useState({
+    title: "",
+    description: "",
+    profession: "",
+    file: null as File | null,
+  });
+  const [isCreateSubmitting, setIsCreateSubmitting] = useState(false);
 
   const fetchBestPractices = async (
     page: number = 1,
@@ -290,6 +300,91 @@ const Managebestpractices = () => {
 
   const closeModal = () => {
     setActiveModal(null);
+  };
+
+
+  // Function to open create modal
+  const openCreateModal = () => {
+    setCreateModalActive(true);
+    setNewPractice({
+      title: "",
+      description: "",
+      profession: "",
+      file: null,
+    });
+  };
+
+  // Function to close create modal
+  const closeCreateModal = () => {
+    setCreateModalActive(false);
+    setNewPractice({
+      title: "",
+      description: "",
+      profession: "",
+      file: null,
+    });
+  };
+
+  // Function to handle input changes for create form
+  const handleCreateInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setNewPractice((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Function to handle file change for create form
+  const handleCreateFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setNewPractice((prev) => ({
+        ...prev,
+        file: e.target.files![0],
+      }));
+    }
+  };
+
+  // Function to handle create form submission
+  const handleCreateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsCreateSubmitting(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("title", newPractice.title);
+      formData.append("description", newPractice.description);
+      formData.append("profession", newPractice.profession);
+      if (newPractice.file) {
+        formData.append("file", newPractice.file);
+      }
+
+      await CreateBestPractice(formData);
+
+      showToast({
+        message: "Best practices has been created and please wait until admin reviews it!",
+        type: "success",
+        duration: 5000,
+      });
+
+      closeCreateModal();
+      // Refresh the mine best practices list
+      await fetchMineBestPractices();
+    } catch (error: any) {
+      console.error("Error creating best practice:", error);
+      showToast({
+        message:
+          error?.response?.data?.error?.message ||
+          "Failed to create best practice",
+        type: "error",
+        duration: 5000,
+      });
+    } finally {
+      setIsCreateSubmitting(false);
+    }
   };
 
   return (
@@ -588,7 +683,8 @@ const Managebestpractices = () => {
                     "There is no best practice data in Rejected list."}
                 </p>
                 <button
-                  onClick={() => navigate("/dashboard/bestpractices")}
+                  // onClick={() => navigate("/dashboard/bestpractices")}
+                  onClick={openCreateModal}
                   className="px-4 py-2 bg-[#F07EFF] text-white rounded-md hover:bg-[#E06EE5] transition-colors"
                 >
                   Create New Best Practice
@@ -722,6 +818,117 @@ const Managebestpractices = () => {
           </div>
         )}
       </div>
+
+      {/* Create Best Practice Modal */}
+      <Modal isOpen={createModalActive} onClose={closeCreateModal}>
+        <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
+          <h2 className="text-xl font-bold mb-4">Create New Best Practice</h2>
+          <form onSubmit={handleCreateSubmit} className="space-y-3 sm:space-y-4">
+            <div>
+              <label
+                htmlFor="create-title"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Title*
+              </label>
+              <input
+                type="text"
+                id="create-title"
+                name="title"
+                value={newPractice.title}
+                onChange={handleCreateInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
+                required
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="create-description"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Description*
+              </label>
+              <textarea
+                id="create-description"
+                name="description"
+                value={newPractice.description}
+                onChange={handleCreateInputChange}
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
+                required
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="create-profession"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Profession*
+              </label>
+              <select
+                id="create-profession"
+                name="profession"
+                value={newPractice.profession}
+                onChange={handleCreateInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
+                required
+              >
+                <option value="">Select a profession</option>
+                {profession.map((prof) => (
+                  <option key={prof.id} value={prof.id}>
+                    {prof.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label
+                htmlFor="create-file"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                File (Optional)
+              </label>
+              <input
+                type="file"
+                id="create-file"
+                name="file"
+                onChange={handleCreateFileChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
+                accept="image/*, .pdf, .doc, .docx"
+              />
+              {newPractice?.file && (
+                <div className="mt-2">
+                  <p className="text-sm text-gray-600">
+                    Selected file: {newPractice.file.name}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4">
+              <Button
+                type="button"
+                onClick={closeCreateModal}
+                variant="white-outline"
+                className="w-full sm:w-auto"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="gradient-primary"
+                className="w-full sm:w-auto py-2 px-6 sm:py-3 sm:px-8"
+                disabled={isCreateSubmitting}
+              >
+                {isCreateSubmitting ? "Creating..." : "Create"}
+              </Button>
+            </div>
+          </form>
+        </div>
+      </Modal>
 
       <Modal isOpen={activeModal === "bestpractices"} onClose={closeModal}>
         <div className="p-4 sm:p-6 w-full max-w-md mx-auto">

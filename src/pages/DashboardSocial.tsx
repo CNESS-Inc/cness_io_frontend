@@ -21,11 +21,14 @@ import {
   PostsDetails,
   PostsLike,
   SendFollowRequest,
+  UnFriend,
+  SendFriendRequest,
+  GetFriendStatus,
 } from "../Common/ServerAPI";
 
 // images
 // import Announcement from "../assets/Announcement.png";
-import Collection from "../assets/Collection.png";
+ import Collection from "../assets/Collection.png";
 // import Leaderboard from "../assets/Leaderboard.png";
 // import Mention from "../assets/Mention.png";
 import people from "../assets/people.png";
@@ -373,8 +376,134 @@ export default function SocialTopBar() {
   const [isCollectionLoading, setIsCollectionLoading] = useState(false);
   const [storiesData, setStoriesData] = useState<Story[]>([]);
   // const [addNewPost, setAddNewPost] = useState(false)
-  const [isAdult, setIsAdult] = useState<Boolean>(false);
-  const navigate = useNavigate();
+
+  const [isAdult, setIsAdult] = useState<Boolean>(false)
+  const navigate = useNavigate(); 
+  const { showToast } = useToast();
+
+  const [friendRequests, setFriendRequests] = useState<{[key: string]: string}>({});
+  
+  const [connectingUsers, setConnectingUsers] = useState<{[key: string]: boolean}>({});
+
+  const handleConnect = async (userId: string) => {
+    try {
+      setConnectingUsers(prev => ({ ...prev, [userId]: true }));
+      
+      // Check if already connected
+      if (friendRequests[userId] === 'connected') {
+        // If connected, delete friend
+        const formattedData = {
+          friend_id: userId,
+        };
+        
+        const response = await UnFriend(formattedData);
+        
+        if (response.success) {
+          setFriendRequests(prev => ({
+            ...prev,
+            [userId]: 'connect'
+          }));
+          showToast({
+            message: "Friend removed successfully",
+            type: "success",
+            duration: 3000,
+          });
+        }
+      } else {
+        // If not connected, send friend request
+        const formattedData = {
+          friend_id: userId,
+        };
+        
+        const response = await SendFriendRequest(formattedData);
+        
+        if (response.success) {
+          // Immediately update the button state to "requested"
+          setFriendRequests(prev => ({
+            ...prev,
+            [userId]: 'requested'
+          }));
+          showToast({
+            message: response.success.message || "Friend request sent successfully",
+            type: "success",
+            duration: 3000,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error handling connect:", error);
+      showToast({
+        message: "Something went wrong. Please try again.",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setConnectingUsers(prev => ({ ...prev, [userId]: false }));
+    }
+  };
+  
+  // Function to get friend status
+  const getFriendStatus = (userId: string) => {
+    return friendRequests[userId] || 'connect';
+  };
+
+  // Function to check if user is friend (you'll need to implement this based on your API)
+  const checkFriendStatus = async (userId: string) => {
+    try {
+      const response = await GetFriendStatus(userId);
+      if (response.success) {
+         // The API returns data.data.rows array with all friends
+        const friendsList = response.data.data.rows || [];
+        
+        // Find if this specific user is in the friends list
+        const friendRecord = friendsList.find((friend: any) => 
+          friend.friend_id === userId || friend.user_id === userId
+        );
+        console.log("🚀 ~ checkFriendStatus ~ friendRecord:", friendRecord)
+        if (friendRecord) {
+          // Check the request_status from the database
+          const status = friendRecord.request_status;
+          
+          if (status === 'ACCEPT') {
+            setFriendRequests(prev => ({
+              ...prev,
+              [userId]: 'connected'
+            }));
+          } else if (status === 'PENDING') {
+            setFriendRequests(prev => ({
+              ...prev,
+              [userId]: 'requested'
+            }));
+          } else if (status === 'REJECT') {
+            setFriendRequests(prev => ({
+              ...prev,
+              [userId]: 'connect'
+            }));
+          } else {
+            setFriendRequests(prev => ({
+              ...prev,
+              [userId]: 'connect'
+            }));
+          }
+        } else {
+          // No friend record found, set to connect
+          console.log("🚀 ~ checkFriendStatus ~ No friend record found, set to connect")
+          setFriendRequests(prev => ({
+            ...prev,
+            [userId]: 'connect'
+          }));
+        }
+      }
+    } catch (error) {
+      console.error("Error checking friend status:", error);
+      // Set default status if API fails
+      setFriendRequests(prev => ({
+        ...prev,
+        [userId]: 'connect'
+      }));
+    }
+  };
+
   // Add this function to fetch followed users
   const fetchFollowedUsers = async () => {
     setIsFollowingLoading(true);
@@ -447,7 +576,7 @@ export default function SocialTopBar() {
       setIsCollectionLoading(false);
     }
   };
-  const { showToast } = useToast();
+  
   const menuRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const loggedInUserID = localStorage.getItem("Id");
@@ -533,6 +662,30 @@ export default function SocialTopBar() {
     getUserPosts();
     fetchStory();
   }, []);
+
+
+  useEffect(() => {
+    if (userPosts.length > 0) {
+      userPosts.forEach(post => {
+        if (post.user_id !== loggedInUserID) {
+          checkFriendStatus(post.user_id);
+        }
+      });
+    }
+  }, [userPosts, loggedInUserID]);
+
+  // Add another useEffect to check friend status on component mount
+  useEffect(() => {
+    // Check friend status for all posts when component mounts
+    if (userPosts.length > 0 && loggedInUserID) {
+      userPosts.forEach(post => {
+        if (post.user_id !== loggedInUserID) {
+          checkFriendStatus(post.user_id);
+        }
+      });
+    }
+  }, []); // Empty dependency array to run only on mount
+
 
   // The issue is likely due to how setPage and getUserPosts interact.
   // When setPage(1) is called, if page is already 1, React will not trigger the useEffect([page]) again.
@@ -896,7 +1049,7 @@ export default function SocialTopBar() {
                         />
                       </div>
                       <div className="flex justify-between md:justify-center md:gap-10 text-xs md:text-[15px] text-gray-700 mt-2 md:mt-3">
-                        <button className="flex items-center gap-1 md:gap-2">
+                        <button className="flex items-center gap-1 md:gap-2" onClick={() => openPostPopup()}>
                           <Image
                             src="/youtube.png"
                             alt="youtube"
@@ -908,7 +1061,7 @@ export default function SocialTopBar() {
                             Video
                           </span>
                         </button>
-                        <button className="flex items-center gap-1 md:gap-2">
+                        <button className="flex items-center gap-1 md:gap-2" onClick={() => openPostPopup()}>
                           <Image
                             src="/picture.png"
                             alt="picture"
@@ -920,7 +1073,7 @@ export default function SocialTopBar() {
                             Photo
                           </span>
                         </button>
-                        <button className="hidden md:flex items-center gap-1 md:gap-2">
+                        {/* <button className="hidden md:flex items-center gap-1 md:gap-2">
                           <Image
                             src="/list.png"
                             alt="list"
@@ -931,7 +1084,7 @@ export default function SocialTopBar() {
                           <span className="text-black text-xs md:text-sm">
                             List
                           </span>
-                        </button>
+                        </button> */}
                       </div>
                     </div>
                   </div>
@@ -1053,23 +1206,50 @@ export default function SocialTopBar() {
                           </div>
                         </div>
                         {post.user_id !== loggedInUserID && (
-                          <button
-                            onClick={() => handleFollow(post.user_id)}
-                            className={`flex items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
-                            ${
-                              post.if_following
-                                ? "bg-transparent text-blue-500 hover:text-blue-600"
-                                : "bg-[#7C81FF] text-white hover:bg-indigo-600"
-                            }`}
-                          >
-                            {post.if_following ? (
-                              <>
-                                <TrendingUp className="w-5 h-5" /> Following
-                              </>
-                            ) : (
-                              "+ Follow"
-                            )}
-                          </button>
+
+                          <div className="flex gap-2">
+                            {/* Connect Button */}
+                            <button
+                              onClick={() => handleConnect(post.user_id)}
+                              disabled={connectingUsers[post.user_id] || false}
+                              className={`flex items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
+                                ${getFriendStatus(post.user_id) === 'connected'
+                                  ? "bg-red-500 text-white hover:bg-red-600"
+                                  : getFriendStatus(post.user_id) === 'requested'
+                                  ? "bg-gray-400 text-white cursor-not-allowed"
+                                  : "bg-white text-black shadow-md"
+                                }`
+                              }
+                            >
+                              {connectingUsers[post.user_id] ? (
+                                "Loading..."
+                              ) : getFriendStatus(post.user_id) === 'connected' ? (
+                                "Connected"
+                              ) : getFriendStatus(post.user_id) === 'requested' ? (
+                                "Requested"
+                              ) : (
+                                "Connect"
+                              )}
+                            </button>
+                            {/* Follow Button */}
+                            <button
+                              onClick={() => handleFollow(post.user_id)}
+                              className={`flex items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
+                                ${post.if_following
+                                  ? "bg-transparent text-blue-500 hover:text-blue-600"
+                                  : "bg-[#7C81FF] text-white hover:bg-indigo-600"}`
+                              }
+                            >
+                              {post.if_following ? (
+                                <>
+                                  <TrendingUp className="w-5 h-5" /> Following
+                                </>
+                              ) : (
+                                "+ Follow"
+                              )}
+                            </button>
+                          </div>
+
                         )}
                       </div>
 
@@ -1144,7 +1324,7 @@ export default function SocialTopBar() {
                       </div>
 
                       {/* Reactions and Action Buttons */}
-                      <div className="flex justify-between items-center mt-3 px-1 text-xs md:text-sm text-gray-600">
+                      <div className="flex justify-start items-center mt-3 px-1 text-xs md:text-sm text-gray-600 gap-2">
                         <div className="flex items-center gap-1 md:gap-2">
                           <div className="flex items-center -space-x-2 md:-space-x-3">
                             <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
@@ -1174,14 +1354,15 @@ export default function SocialTopBar() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span>{post.comments_count}</span>
-                          <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                        <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
                             <img
                               src={comment}
                               alt="Comment"
                               className="w-6 h-6 md:w-8 md:h-8"
                             />
                           </div>
+                          <span>{post.comments_count}</span>
+                          
                         </div>
                       </div>
 

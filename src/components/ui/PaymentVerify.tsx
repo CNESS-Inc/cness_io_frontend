@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate  } from "react-router-dom";
 import { GetPaymentVerify } from "../../Common/ServerAPI";
 import Button from "./Button";
 import { useToast } from "./Toast/ToastProvider";
@@ -95,10 +95,23 @@ const PaymentVerify = () => {
             <div className="w-full max-w-[600px] bg-white rounded-2xl shadow-xl px-4 sm:px-10 py-8 sm:py-12 space-y-10">
               <div className="flex items-center justify-center h-[200px">
                 <div className="text-center flex flex-col">
-                  {error ? (
-                    <h1 className="text-lg font-semibold text-red-500">
-                      {error}
-                    </h1>
+                    {error ? (
+              <>
+                <h1 className="text-xl font-semibold text-red-600">
+                  We couldn’t confirm your payment.
+                </h1>
+                <p className="text-sm text-gray-600">{error}</p>
+
+                <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
+                  <Link
+                    to="/pricing"
+                    className="inline-flex justify-center rounded-full px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 to-purple-500 hover:opacity-90"
+                  >
+                    Retry Payment
+                  </Link>
+                  
+                </div>
+              </>
                   ) : (
                     <>
                       <h1 className="text-lg font-semibold">
