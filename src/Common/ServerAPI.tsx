@@ -148,9 +148,11 @@ export const EndPoint = {
   trending_post: "/user/posts/trending",
   trending_movie: "/movie/trending",
   following: "/user/following",
+  follow_status: "/user/follow/status",
   followers: "/user/follower",
   following_followers: "/user/following-followers",
   connection: "/friend",
+  user_connection: "/friend/get-friend-status",
   connection_request: "/friend/request",
   delete_friend: "/friend/delete/friend",
   friend_request_accept: "/friend/request/accept",
@@ -980,6 +982,15 @@ export const GetProfileByUserId = (userId: string) => {
   );
 };
 
+export const GetFollowStatus = (userId: string) => {
+  let data = {};
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.follow_status}/${userId}`
+  );
+};
+
 export const GetUserPostsByUserId = (userId: string, page: number = 1) => {
   let data = {};
   let params: { [key: string]: any } = {};
@@ -1003,6 +1014,16 @@ export const GetFollowingFollowersByUserId = (userId: string) => {
     params
   );
 };
+
+export const SendFriendRequest = (formattedData: any) => {
+  return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.connection_request);
+};
+
+export const GetFriendStatus = (userId: string) => {
+  const data = {};
+ return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.user_connection}/${userId}`);
+};
+
 export const SendFollowRequest = (formattedData: any) => {
   return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.follow);
 };

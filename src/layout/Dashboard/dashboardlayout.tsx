@@ -4,6 +4,7 @@ import DashboardHeader from "./DashboardHeader";
 import DashboardNavbar from "./DashboardNavbar";
 import DashboardFilterSidebar from "./DashboardFilterSidebar"; // ✅ Adjust path as needed
 import hambur from "../../assets/hambur.png";
+import Footer from "../Footer/Footer";
 
 const DashboardLayout = () => {
   const location = useLocation();
@@ -82,8 +83,13 @@ const DashboardLayout = () => {
                   <Outlet />
                 </div>
               </div>
+              <div className="hidden md:block w-full">
+                <Footer />
+              </div>
             </main>
           </div>
+          
+          
       </div>
 
       {/* Mobile Sidebar Backdrop and Slide-in */}

@@ -20,12 +20,14 @@ const MyConnection = () => {
   const [selectedFriend, setSelectedFriend] = useState<Connection | null>(null);
   const [allConnections, setAllConnections] = useState<Connection[]>([]);
   const [friendRequests, setFriendRequests] = useState<Connection[]>([]);
+  const [followStatus, setFollowStatus] = useState<{[key: number]: boolean}>({});
 
   interface Connection {
     id: number;
     name: string;
     username: string;
     image: string;
+    isFollowing?: boolean;
   }
 
   useEffect(() => {
@@ -45,8 +47,16 @@ const MyConnection = () => {
         name: `${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
         username: `@${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
         image: item.friend_user.profile.profile_picture,
+        image: item.friend_user.profile.profile_picture, 
+        isFollowing: item.isFollowing || false,
       }));
       setAllConnections(formattedRequests);
+      // Update follow status state
+      const statusMap: {[key: number]: boolean} = {};
+      formattedRequests.forEach((conn: any) => {
+        statusMap[conn.id] = conn.isFollowing;
+      });
+      setFollowStatus(statusMap);
     } catch (error) {
       console.error("Error fetching friend requests:", error);
     }
@@ -227,6 +237,7 @@ const MyConnection = () => {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         getUserPosts={GetUserPost}
+        onTabChange={setActiveTab}
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -275,7 +286,7 @@ const MyConnection = () => {
         </div>
       </div>
 
-      <div className=" sm:grid gap-4 md:gap-5 lg:gap-6 justify-items-center grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+      <div className=" sm:grid gap-4 md:gap-5 lg:gap-6 justify-items-center grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-4 3xl:grid-cols-6">
         {filteredConnections.map((conn) => (
           <FriendCard
             key={conn.id}
@@ -292,7 +303,13 @@ const MyConnection = () => {
             onChat={() => console.log("Chat with", conn.name)}
             onAccept={() => handleAcceptRequest(conn.id)}
             onReject={() => handleRejectRequest(conn.id)}
-            onMaximize={() => setSelectedFriend({ ...conn, id: conn.id })}
+            onMaximize={() =>
+              setSelectedFriend({
+                ...conn,
+                id: conn.id,
+                isFollowing: followStatus[conn.id] || false,
+              })
+            }
           />
         ))}
       </div>

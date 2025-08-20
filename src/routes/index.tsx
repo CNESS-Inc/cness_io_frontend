@@ -54,6 +54,7 @@ import Trendingpost from "../pages/TrendingPost";
 import Mycollectionview from "../pages/Mycollectionview";
 import TrendingAI from "../pages/TrendingAI";
 import BecomePartner from "../pages/BecomePartner";
+import Pricing from "../pages/Pricing";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -436,4 +437,9 @@ export const router = createBrowserRouter([
     path: "/sign-up",
     element: <Signingup />,
   },
+{
+  path: "/pricing",
+  element:<Pricing />,
+}
+
 ]);

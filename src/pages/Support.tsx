@@ -110,7 +110,7 @@ const Support = () => {
           >
             FAQ
           </button>
-          <button  disabled
+          {/*<button  disabled
             className={`px-4 py-2 font-medium ${
               activeTab === "tickets"
                 ? "text-blue-600 border-b-2 border-blue-600"
@@ -119,7 +119,7 @@ const Support = () => {
             onClick={() => setActiveTab("tickets")}
           >
             My Tickets
-          </button>
+          </button>*/}
         </div>
 
         {/* Content Area */}
