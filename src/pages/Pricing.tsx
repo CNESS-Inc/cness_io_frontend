@@ -173,7 +173,7 @@ const isSinglePlan = plans.length === 1;
                         )}
 
                         <h3 className="mb-2 text-lg font-semibold">
-                          {plan.title} Plan
+                          {plan.title} 
                         </h3>
                         <p className="mb-4 text-sm text-gray-600">
                           Customized pricing based on your selection
