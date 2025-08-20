@@ -3,14 +3,23 @@ import PostCard from "../components/Profile/Post";
 import ConnectionsCard from "../components/Profile/Tabs";
 import { TrendingUp } from "lucide-react";
 import { GetTrendingPost } from "../Common/ServerAPI";
+import ProfileCards from "./ProfileCards";
 
 type Post = React.ComponentProps<typeof PostCard>;
+type Profile = {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  profilePicture: string | null;
+};
 
 export default function TrendingAI() {
   const tabs = ["Top", "Latest", "People"];
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState<number>(1);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [profiles, setProfiles] = useState<Profile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState("Ai");
   const [activeTab, setActiveTab] = useState(tabs[0]);
@@ -25,12 +34,12 @@ export default function TrendingAI() {
     activeTabRef.current = activeTab;
   }, [selectedTopic, activeTab]);
 
-  // Create a ref for the last post element
+  // Create a ref for the last element
   const observer = useRef<IntersectionObserver | null>(null);
-  const lastPostElementRef = useRef<HTMLDivElement>(null);
+  const lastElementRef = useRef<HTMLDivElement>(null);
 
   // Memoize the getUserPosts function with minimal dependencies
-  const getUserPosts = useCallback(async (isNewSearch = false) => {
+  const getData = useCallback(async (isNewSearch = false) => {
     if ((isLoading && !isNewSearch) || (!isNewSearch && !hasMore)) return;
 
     setIsLoading(true);
@@ -44,52 +53,89 @@ export default function TrendingAI() {
         currentPage // Use currentPage instead of page
       );
       
-      console.log("🚀 ~ getUserPosts ~ res:", res);
+      console.log("🚀 ~ getData ~ res:", res);
 
-      if (res?.data?.data?.rows) {
-        const newPosts: Post[] = res.data.data.rows.map((el: any) => {
-          return {
-            avatar: el?.profile?.profile_picture || null,
-            name: `${el?.profile?.first_name || ''} ${el?.profile?.last_name || ''}`.trim() || 'Unknown User',
-            time: el?.createdAt,
-            following: el?.if_following || false,
-            media: el?.file,
-            likes: el?.likes_count || 0,
-            reflections: el?.total_comment_count || 0,
-            id: el?.id || null,
-            isLiked: el?.is_liked || false,
-            content: el?.content || '',
-          };
-        });
+      if (activeTabRef.current === "People") {
+        // Handle People tab response
+        if (res?.data?.data?.rows) {
+          const newProfiles: Profile[] = res.data.data.rows.map((el: any) => {
+            return {
+              id: el?.user?.id || '',
+              username: el?.user?.username || '',
+              firstName: el?.profile?.first_name || '',
+              lastName: el?.profile?.last_name || '',
+              profilePicture: el?.profile?.profile_picture || null,
+            };
+          });
 
-        const totalCount = res?.data?.data?.count || 0;
-        const itemsPerPage = 10;
-        const totalPages = Math.ceil(totalCount / itemsPerPage);
+          const totalCount = res?.data?.data?.count || 0;
+          const itemsPerPage = 10;
+          const totalPages = Math.ceil(totalCount / itemsPerPage);
 
-        if (newPosts.length === 0) {
-          setHasMore(false);
-        } else {
-          setPosts(prevPosts => isNewSearch ? newPosts : [...prevPosts, ...newPosts]);
-          
-          if (currentPage >= totalPages) {
+          if (newProfiles.length === 0) {
             setHasMore(false);
-          } else if (isNewSearch) {
-            setPage(2);
-            setHasMore(true);
           } else {
-            setPage(prevPage => prevPage + 1);
+            setProfiles(prevProfiles => isNewSearch ? newProfiles : [...prevProfiles, ...newProfiles]);
+            
+            if (currentPage >= totalPages) {
+              setHasMore(false);
+            } else if (isNewSearch) {
+              setPage(2);
+              setHasMore(true);
+            } else {
+              setPage(prevPage => prevPage + 1);
+            }
           }
+        } else {
+          setHasMore(false);
         }
       } else {
-        setHasMore(false);
+        // Handle Posts tabs (Top, Latest)
+        if (res?.data?.data?.rows) {
+          const newPosts: Post[] = res.data.data.rows.map((el: any) => {
+            return {
+              avatar: el?.profile?.profile_picture || null,
+              name: `${el?.profile?.first_name || ''} ${el?.profile?.last_name || ''}`.trim() || 'Unknown User',
+              time: el?.createdAt,
+              following: el?.if_following || false,
+              media: el?.file,
+              likes: el?.likes_count || 0,
+              reflections: el?.total_comment_count || 0,
+              id: el?.id || null,
+              isLiked: el?.is_liked || false,
+              content: el?.content || '',
+            };
+          });
+
+          const totalCount = res?.data?.data?.count || 0;
+          const itemsPerPage = 10;
+          const totalPages = Math.ceil(totalCount / itemsPerPage);
+
+          if (newPosts.length === 0) {
+            setHasMore(false);
+          } else {
+            setPosts(prevPosts => isNewSearch ? newPosts : [...prevPosts, ...newPosts]);
+            
+            if (currentPage >= totalPages) {
+              setHasMore(false);
+            } else if (isNewSearch) {
+              setPage(2);
+              setHasMore(true);
+            } else {
+              setPage(prevPage => prevPage + 1);
+            }
+          }
+        } else {
+          setHasMore(false);
+        }
       }
     } catch (error) {
-      console.error("Error fetching posts:", error);
+      console.error("Error fetching data:", error);
       setHasMore(false);
     } finally {
       setIsLoading(false);
     }
-  }, [page, isLoading, hasMore]); // Removed selectedTopic and activeTab from dependencies
+  }, [page, isLoading, hasMore]);
 
   // Set up intersection observer for infinite scroll
   useEffect(() => {
@@ -99,7 +145,7 @@ export default function TrendingAI() {
 
     const callback = (entries: IntersectionObserverEntry[]) => {
       if (entries[0].isIntersecting && hasMore) {
-        getUserPosts(false);
+        getData(false);
       }
     };
 
@@ -109,25 +155,26 @@ export default function TrendingAI() {
       threshold: 0.1,
     });
 
-    if (lastPostElementRef.current) {
-      observer.current.observe(lastPostElementRef.current);
+    if (lastElementRef.current) {
+      observer.current.observe(lastElementRef.current);
     }
 
     return () => {
       if (observer.current) observer.current.disconnect();
     };
-  }, [isLoading, hasMore, getUserPosts]);
+  }, [isLoading, hasMore, getData]);
 
-  // Reset and fetch new posts when tab or topic changes
+  // Reset and fetch new data when tab or topic changes
   useEffect(() => {
     // Reset state
     setPosts([]);
+    setProfiles([]);
     setPage(1);
     setHasMore(true);
     
     // Call API with new parameters
-    getUserPosts(true);
-  }, [selectedTopic, activeTab]); // Removed getUserPosts from dependencies
+    getData(true);
+  }, [selectedTopic, activeTab]);
 
   const trendingTopics = [
     { label: "#AI" },
@@ -142,7 +189,7 @@ export default function TrendingAI() {
   };
 
   return (
-    <div className="w-full px-0.5 py-0.5">
+    <div className="w-full px-4 py-4">
       <ConnectionsCard
         title="Trending Hash tags"
         tabs={tabs}
@@ -150,70 +197,125 @@ export default function TrendingAI() {
         onSearch={(value) => setSelectedTopic(value)}
         setActiveTab={setActiveTab}
         activeTab={activeTab}
-        getUserPosts={() => getUserPosts(true)}
         selectedTopic={selectedTopic}
-        onTopicChange={setSelectedTopic}
+        onTopicChange={setSelectedTopic} 
+        getUserPosts={undefined} 
       />
 
       {/* Content Area */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-4">
-        {/* Left Column: Posts */}
-        <div className="lg:col-span-3 space-y-4">
-          {isLoading && posts.length === 0 ? (
-            <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-            </div>
-          ) : posts.length > 0 ? (
-            posts.map((post, i) => {
-              // Add ref to the last post element
-              if (posts.length === i + 1) {
-                return (
-                  <div ref={lastPostElementRef} key={i}>
-                    <PostCard
-                      {...post}
-                      onLike={() => console.log("like", i)}
-                      onAffirmation={() => console.log("affirmation", i)}
-                      onReflections={() => console.log("reflections", i)}
-                      onShare={() => console.log("share", i)}
-                    />
-                  </div>
-                );
-              } else {
-                return (
-                  <PostCard
-                    key={i}
-                    {...post}
-                    onLike={() => console.log("like", i)}
-                    onAffirmation={() => console.log("affirmation", i)}
-                    onReflections={() => console.log("reflections", i)}
-                    onShare={() => console.log("share", i)}
-                  />
-                );
-              }
-            })
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
+        {/* Left Column: Content */}
+        <div className="lg:col-span-3 space-y-6">
+          {activeTab === "People" ? (
+            // Render profiles for People tab
+            <>
+              {isLoading && profiles.length === 0 ? (
+                <div className="flex justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                </div>
+              ) : profiles.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {profiles.map((profile, i) => {
+                    // Add ref to the last profile element
+                    if (profiles.length === i + 1) {
+                      return (
+                        <div ref={lastElementRef} key={i} className="h-full">
+                          <ProfileCards
+                            id={profile.id}
+                            username={profile.username}
+                            firstName={profile.firstName}
+                            lastName={profile.lastName}
+                            profilePicture={profile.profilePicture}
+                            onFollow={() => console.log("follow", i)}
+                            onMessage={() => console.log("message", i)}
+                          />
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div key={i} className="h-full">
+                          <ProfileCards
+                            id={profile.id}
+                            username={profile.username}
+                            firstName={profile.firstName}
+                            lastName={profile.lastName}
+                            profilePicture={profile.profilePicture}
+                            onFollow={() => console.log("follow", i)}
+                            onMessage={() => console.log("message", i)}
+                          />
+                        </div>
+                      );
+                    }
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-10 text-gray-500">
+                  No profiles found for this topic
+                </div>
+              )}
+            </>
           ) : (
-            <div className="text-center py-10 text-gray-500">
-              No posts found for this topic
-            </div>
+            // Render posts for other tabs
+            <>
+              {isLoading && posts.length === 0 ? (
+                <div className="flex justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                </div>
+              ) : posts.length > 0 ? (
+                <div className="space-y-4">
+                  {posts.map((post, i) => {
+                    // Add ref to the last post element
+                    if (posts.length === i + 1) {
+                      return (
+                        <div ref={lastElementRef} key={i}>
+                          <PostCard
+                            {...post}
+                            onLike={() => console.log("like", i)}
+                            onAffirmation={() => console.log("affirmation", i)}
+                            onReflections={() => console.log("reflections", i)}
+                            onShare={() => console.log("share", i)}
+                          />
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <PostCard
+                          key={i}
+                          {...post}
+                          onLike={() => console.log("like", i)}
+                          onAffirmation={() => console.log("affirmation", i)}
+                          onReflections={() => console.log("reflections", i)}
+                          onShare={() => console.log("share", i)}
+                        />
+                      );
+                    }
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-10 text-gray-500">
+                  No posts found for this topic
+                </div>
+              )}
+            </>
           )}
           
-          {/* Loading indicator for additional posts */}
-          {isLoading && posts.length > 0 && (
+          {/* Loading indicator for additional content */}
+          {isLoading && ((activeTab === "People" && profiles.length > 0) || (activeTab !== "People" && posts.length > 0)) && (
             <div className="flex justify-center py-4">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
             </div>
           )}
           
-          {/* No more posts message */}
-          {!hasMore && posts.length > 0 && (
+          {/* No more content message */}
+          {!hasMore && ((activeTab === "People" && profiles.length > 0) || (activeTab !== "People" && posts.length > 0)) && (
             <div className="text-center py-4 text-gray-500">
-              No more posts to load
+              No more {activeTab === "People" ? "profiles" : "posts"} to load
             </div>
           )}
         </div>
         
         {/* Right Column: Trending Topics */}
-        <aside className="xl:sticky xl:top-4 self-start">
+        <aside className="lg:col-span-1 xl:sticky xl:top-4 self-start">
           <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm min-h-[560px]">
             <div className="mb-4 flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-indigo-600" />
