@@ -2,7 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import StoryCard from "../components/Social/StoryCard";
-import { ChevronLeft, ChevronRight, Share2,TrendingUp } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Share2,
+  ThumbsUp,
+  TrendingUp,
+} from "lucide-react";
 import { MdContentCopy } from "react-icons/md";
 
 import {
@@ -30,7 +36,6 @@ import Trending from "../assets/Trending.png";
 import createstory from "../assets/createstory.jpg";
 import carosuel1 from "../assets/carosuel1.png";
 import like from "../assets/like.png";
-import Like1 from "../assets/Like1.png";
 import comment from "../assets/comment.png";
 import comment1 from "../assets/comment1.png";
 import Image from "../components/ui/Image";
@@ -40,14 +45,9 @@ import {
   FacebookShareButton,
   LinkedinShareButton,
   TwitterShareButton,
-  WhatsappShareButton
+  WhatsappShareButton,
 } from "react-share";
-import {
-  FaFacebook,
-  FaLinkedin,
-  FaTwitter,
-  FaWhatsapp,
-} from "react-icons/fa";
+import { FaFacebook, FaLinkedin, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import FollowedUsersList from "./FollowedUsersList";
 import CollectionList from "./CollectionList";
 import Button from "../components/ui/Button";
@@ -220,12 +220,9 @@ interface Story {
   }[];
 }
 
-
 function PostCarousel({ mediaItems }: PostCarouselProps) {
-
   const [current, setCurrent] = useState(0);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-
 
   // Auto slide every 3 seconds (only for images)
   React.useEffect(() => {
@@ -258,7 +255,7 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
   const handleNext = () => {
     setCurrent((prev) => (prev + 1) % mediaItems.length);
   };
-  
+
   return (
     <div className="relative w-full rounded-lg overflow-hidden">
       {/* Media Container */}
@@ -266,8 +263,9 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
         {mediaItems.map((item, index) => (
           <div
             key={index}
-            className={`w-full h-full transition-opacity duration-500 ${index === current ? "block" : "hidden"
-              }`}
+            className={`w-full h-full transition-opacity duration-500 ${
+              index === current ? "block" : "hidden"
+            }`}
           >
             {item.type === "image" ? (
               <img
@@ -319,8 +317,9 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
             <button
               key={idx}
               onClick={() => setCurrent(idx)}
-              className={`w-2 h-2 rounded-full transition-colors ${idx === current ? "bg-indigo-500" : "bg-gray-300"
-                }`}
+              className={`w-2 h-2 rounded-full transition-colors ${
+                idx === current ? "bg-indigo-500" : "bg-gray-300"
+              }`}
             ></button>
           ))}
         </div>
@@ -350,7 +349,7 @@ export default function SocialTopBar() {
   );
   const [isUploading, setIsUploading] = useState(false);
   const [_apiStoryMessage, setApiStoryMessage] = useState<string | null>(null);
-  const [copy, setCopy] = useState<Boolean>(false)
+  const [copy, setCopy] = useState<Boolean>(false);
 
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
@@ -370,13 +369,14 @@ export default function SocialTopBar() {
   >("posts");
   const [followedUsers, setFollowedUsers] = useState<FollowedUser[]>([]);
   const [collectionItems, setCollectionItems] = useState<CollectionItem[]>([]);
-  console.log("🚀 ~ SocialTopBar ~ collectionItems:", collectionItems)
+  console.log("🚀 ~ SocialTopBar ~ collectionItems:", collectionItems);
   const [_isPostsLoading, setIsPostsLoading] = useState(false);
   const [isFollowingLoading, setIsFollowingLoading] = useState(false);
   console.log("🚀 ~ SocialTopBar ~ isFollowingLoading:", isFollowingLoading);
   const [isCollectionLoading, setIsCollectionLoading] = useState(false);
   const [storiesData, setStoriesData] = useState<Story[]>([]);
   // const [addNewPost, setAddNewPost] = useState(false)
+
   const [isAdult, setIsAdult] = useState<Boolean>(false)
   const navigate = useNavigate(); 
   const { showToast } = useToast();
@@ -504,7 +504,6 @@ export default function SocialTopBar() {
     }
   };
 
-
   // Add this function to fetch followed users
   const fetchFollowedUsers = async () => {
     setIsFollowingLoading(true);
@@ -546,7 +545,7 @@ export default function SocialTopBar() {
         // Get the first image URL if available, or use profile picture as fallback
         const firstImageUrl =
           item.file &&
-            item.file.split(",")[0].trim() !== "https://dev.cness.io/file/"
+          item.file.split(",")[0].trim() !== "https://dev.cness.io/file/"
             ? item.file.split(",")[0].trim()
             : item.profile.profile_picture;
 
@@ -601,7 +600,7 @@ export default function SocialTopBar() {
         const newPosts = res?.data.data.rows || [];
         const totalPages = res?.data?.data?.count / 10 || 0;
 
-        console.log(page, 'res?.data.data.rows')
+        console.log(page, "res?.data.data.rows");
 
         if (newPosts.length === 0) {
           setHasMore(false); // No more posts to load
@@ -636,7 +635,7 @@ export default function SocialTopBar() {
         const newPosts = res?.data.data.rows || [];
         const totalPages = res?.data?.data?.count / 10 || 0;
 
-        console.log(page, 'res?.data.data.rows')
+        console.log(page, "res?.data.data.rows");
 
         if (newPosts.length === 0) {
           setHasMore(false); // No more posts to load
@@ -663,6 +662,7 @@ export default function SocialTopBar() {
     getUserPosts();
     fetchStory();
   }, []);
+
 
   useEffect(() => {
     if (userPosts.length > 0) {
@@ -700,7 +700,6 @@ export default function SocialTopBar() {
   // }, [addNewPost]);
 
   // Remove the second useEffect, as it can cause duplicate fetches or race conditions.
-
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -761,7 +760,7 @@ export default function SocialTopBar() {
           duration: 3000,
         });
 
-        getFreshPosts()
+        getFreshPosts();
 
         setShowPopup(false);
         // Reset form
@@ -878,12 +877,12 @@ export default function SocialTopBar() {
         prevPosts.map((post) =>
           post.id === postId
             ? {
-              ...post,
-              is_liked: !post.is_liked,
-              likes_count: post.is_liked
-                ? post.likes_count - 1
-                : post.likes_count + 1,
-            }
+                ...post,
+                is_liked: !post.is_liked,
+                likes_count: post.is_liked
+                  ? post.likes_count - 1
+                  : post.likes_count + 1,
+              }
             : post
         )
       );
@@ -1009,7 +1008,7 @@ export default function SocialTopBar() {
     };
 
     fetchInitialData();
-    MeDetail()
+    MeDetail();
   }, []);
 
   return (
@@ -1034,7 +1033,10 @@ export default function SocialTopBar() {
                     <div className="flex flex-col gap-2 md:gap-3">
                       <div className="flex items-center gap-3">
                         <img
-                          src={localStorage.getItem("profile_picture") || createstory}
+                          src={
+                            localStorage.getItem("profile_picture") ||
+                            createstory
+                          }
                           alt="User"
                           className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
                         />
@@ -1132,10 +1134,12 @@ export default function SocialTopBar() {
                           id={story.id}
                           userIcon={story.profile.profile_picture}
                           userName={`${story.profile.first_name} ${story.profile.last_name}`}
-                          title={story.stories[0].description || "Untitled Story"}
+                          title={
+                            story.stories[0].description || "Untitled Story"
+                          }
                           videoSrc={story.stories[0].video_file}
                         />
-                        
+
                         <div className="absolute bottom-2 left-2 flex items-center gap-2 z-20 text-white">
                           <img
                             src={story.profile.profile_picture}
@@ -1164,7 +1168,9 @@ export default function SocialTopBar() {
                       {/* Header */}
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 md:gap-3">
-                          <Link to={`/dashboard/userprofile/${post?.profile?.id}`}>
+                          <Link
+                            to={`/dashboard/userprofile/${post?.profile?.id}`}
+                          >
                             <img
                               src={post.profile.profile_picture}
                               className="w-8 h-8 md:w-10 md:h-10 rounded-full"
@@ -1177,10 +1183,21 @@ export default function SocialTopBar() {
                           </Link>
                           <div>
                             <p className="font-semibold text-sm md:text-base text-gray-800">
-                              <Link to={`/dashboard/userprofile/${post?.profile?.id}`}> {post.profile.first_name} {post.profile.last_name}</Link>
+                              <Link
+                                to={`/dashboard/userprofile/${post?.profile?.id}`}
+                              >
+                                {" "}
+                                {post.profile.first_name}{" "}
+                                {post.profile.last_name}
+                              </Link>
                               <span className="text-gray-500 text-xs md:text-sm">
                                 {" "}
-                                <Link to={`/dashboard/userprofile/${post?.profile?.id}`}> @{post.user.username}</Link>
+                                <Link
+                                  to={`/dashboard/userprofile/${post?.profile?.id}`}
+                                >
+                                  {" "}
+                                  @{post.user.username}
+                                </Link>
                               </span>
                             </p>
                             <p className="text-xs md:text-sm text-gray-400">
@@ -1189,6 +1206,7 @@ export default function SocialTopBar() {
                           </div>
                         </div>
                         {post.user_id !== loggedInUserID && (
+
                           <div className="flex gap-2">
                             {/* Connect Button */}
                             <button
@@ -1231,6 +1249,7 @@ export default function SocialTopBar() {
                               )}
                             </button>
                           </div>
+
                         )}
                       </div>
 
@@ -1238,15 +1257,20 @@ export default function SocialTopBar() {
                       <div className="mt-3 md:mt-4">
                         <p className="text-gray-800 text-sm md:text-base mb-2 md:mb-3">
                           {expandedPosts[post.id] ||
-                            post?.content?.length <= CONTENT_LIMIT
+                          post?.content?.length <= CONTENT_LIMIT
                             ? post.content
-                            : `${post?.content?.substring(0, CONTENT_LIMIT)}...`}
+                            : `${post?.content?.substring(
+                                0,
+                                CONTENT_LIMIT
+                              )}...`}
                           {post?.content?.length > CONTENT_LIMIT && (
                             <button
                               onClick={() => toggleExpand(post.id)}
                               className="text-blue-500 ml-1 text-xs md:text-sm font-medium hover:underline focus:outline-none"
                             >
-                              {expandedPosts[post.id] ? "Show less" : "Read more"}
+                              {expandedPosts[post.id]
+                                ? "Show less"
+                                : "Read more"}
                             </button>
                           )}
                         </p>
@@ -1345,14 +1369,17 @@ export default function SocialTopBar() {
                       <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
                         <button
                           onClick={() => handleLike(post.id)}
-                          className={`flex items-center justify-center gap-2 md:gap-4 px-6 py-4 md:px-6 md:py-4 border border-[#E5E7EB] rounded-xl text-xs md:text-lg ${post.is_liked ? "text-blue-600" : "text-blue-500"
-                            } hover:bg-blue-50 shadow-sm`}
+                          disabled={isLoading}
+                          className={`flex items-center justify-center gap-2 rounded-2xl border border-gray-200 py-3 font-opensans font-semibold text-[14px] leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 ${
+                            isLoading ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
                         >
-                          <img
-                            src={post.is_liked ? like : Like1}
-                            className="w-5 h-5 md:w-6 md:h-6"
+                          <ThumbsUp
+                            className="w-4 h-4"
+                            fill={post.is_liked ? "#7077FE" : "none"} // <-- condition here
+                            stroke={post.is_liked ? "#7077FE" : "#7077FE"} // keeps border visible
                           />
-                          Like
+                          <span>Like</span>
                         </button>
                         <button
                           onClick={() => {
@@ -1361,7 +1388,10 @@ export default function SocialTopBar() {
                           }}
                           className="flex items-center justify-center gap-2 md:gap-4 px-6 py-4 md:px-6 md:py-4 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm"
                         >
-                          <img src={comment1} className="w-5 h-5 md:w-6 md:h-6" />{" "}
+                          <img
+                            src={comment1}
+                            className="w-5 h-5 md:w-6 md:h-6"
+                          />{" "}
                           Comment
                         </button>
                         {/* <button className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm">
@@ -1372,7 +1402,7 @@ export default function SocialTopBar() {
                             onClick={() => toggleMenu(post.id)}
                             className="flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-4 md:px-6 md:py-4  border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm"
                           >
-                            <Share2  className="w-5 h-5 md:w-6 md:h-7" />
+                            <Share2 className="w-5 h-5 md:w-6 md:h-7" />
                             Share
                           </button>
                           {openMenuPostId === post.id && (
@@ -1411,10 +1441,15 @@ export default function SocialTopBar() {
                                     className="flex items-center relative"
                                     title="Copy link"
                                   >
-                                    <MdContentCopy size={30} className="text-gray-600" />
-                                    {copy && <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
-                                      Link Copied!
-                                    </div>}
+                                    <MdContentCopy
+                                      size={30}
+                                      className="text-gray-600"
+                                    />
+                                    {copy && (
+                                      <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
+                                        Link Copied!
+                                      </div>
+                                    )}
                                   </button>
                                 </li>
                               </ul>
@@ -1489,16 +1524,20 @@ export default function SocialTopBar() {
               Quick Actions
             </h3>
             <ul className="space-y-4 md:space-y-6 text-sm md:text-[15px] text-gray-700">
-               <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
-              <button
-    onClick={() => navigate("/dashboard/trendingpost")}
-    className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
-  >
-    <img src={Trending} className="w-4 h-4 md:w-5 md:h-5" alt="" />
-    Trending
-  </button>
-            </li>
-            {/*<li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
+              <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
+                <button
+                  onClick={() => navigate("/dashboard/trendingpost")}
+                  className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+                >
+                  <img
+                    src={Trending}
+                    className="w-4 h-4 md:w-5 md:h-5"
+                    alt=""
+                  />
+                  Trending
+                </button>
+              </li>
+              {/*<li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
               <img src={Mention} className="w-4 h-4 md:w-5 md:h-5" /> Mention &
               tags
             </li> */}
@@ -1513,8 +1552,8 @@ export default function SocialTopBar() {
                 className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
                 onClick={fetchFollowedUsers}
               >
-                <img src={people} className="w-4 h-4 md:w-5 md:h-5" /> People you
-                follow
+                <img src={people} className="w-4 h-4 md:w-5 md:h-5" /> People
+                you follow
               </li>
               {/* <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
               <img src={Leaderboard} className="w-4 h-4 md:w-5 md:h-5" />{" "}
@@ -1573,7 +1612,9 @@ export default function SocialTopBar() {
                   />
 
                   <div className="space-y-3 mb-4 flex rounded-[8px] border border-[#F07EFF1A]  justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
-                    <p className="mb-0 text-sm font-semibold">Add to your post :</p>
+                    <p className="mb-0 text-sm font-semibold">
+                      Add to your post :
+                    </p>
                     <div className="flex justify-end gap-4 w-6/12">
                       <div>
                         <label
@@ -1587,7 +1628,9 @@ export default function SocialTopBar() {
                             height={16}
                             className="object-contain rounded-0 cursor-pointer"
                           />
-                          <span className="text-black text-sm cursor-pointer">Video</span>
+                          <span className="text-black text-sm cursor-pointer">
+                            Video
+                          </span>
                         </label>
                         <input
                           type="file"
@@ -1610,7 +1653,9 @@ export default function SocialTopBar() {
                             height={20}
                             className="object-contain rounded-0 cursor-pointer"
                           />
-                          <span className="text-black text-sm cursor-pointer">Photo</span>
+                          <span className="text-black text-sm cursor-pointer">
+                            Photo
+                          </span>
                         </label>
                         <input
                           type="file"
@@ -1749,7 +1794,9 @@ export default function SocialTopBar() {
                             height={16}
                             className="object-contain rounded-0"
                           />
-                          <span className="text-black text-sm">Select Video</span>
+                          <span className="text-black text-sm">
+                            Select Video
+                          </span>
                           <input
                             type="file"
                             accept="video/*"
@@ -1838,7 +1885,8 @@ export default function SocialTopBar() {
                   Sorry!
                 </h2>
                 <p className="text-gray-600 text-sm sm:text-base">
-                  Only users 18 years or older can access the social media feature.
+                  Only users 18 years or older can access the social media
+                  feature.
                 </p>
                 <div className="w-full flex justify-center mt-4">
                   <Button
@@ -1846,7 +1894,7 @@ export default function SocialTopBar() {
                     className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                     type="submit"
                   >
-                    <Link to='/dashboard/user-profile'> Update Profile</Link>
+                    <Link to="/dashboard/user-profile"> Update Profile</Link>
                   </Button>
                 </div>
               </div>
@@ -1856,5 +1904,4 @@ export default function SocialTopBar() {
       )}
     </>
   );
-
 }
