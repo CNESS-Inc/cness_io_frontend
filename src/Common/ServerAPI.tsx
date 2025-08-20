@@ -910,13 +910,14 @@ export const GetEvent = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.event);
 };
-export const GetTrendingPost = (tag: string, tab:string|null=null) => {
+export const GetTrendingPost = (tag: string, tab:string|null=null,page:any) => {
   console.log("🚀 ~ GetTrendingPost ~ tab:", tab)
   console.log("🚀 ~ GetTrendingPost ~ tag:", tag)
   let data = {};
   let params: { [key: string]: any } = {};
-  // params["page_no"] = page;
+  params["page_no"] = page;
   params["tag"] = tag;
+
   return executeAPI(ServerAPI.APIMethod.GET, data, `/user/posts/${tab ? tab : 'trending'}`, params);
 };
 
