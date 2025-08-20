@@ -7,7 +7,7 @@ const BecomePartner = () => {
       <div className="rounded-xl border border-gray-200 bg-white p-0">
             <Parterform
               // Use your actual Marketplace form’s public URL (formperma link)
-              src="https://forms.zohopublic.com/vijicn1/form/BecameanMentor/formperma/mwyGIJHdCeSv97Vv2SwTmygPofaQEi7OwYEyE3hLqSg"
+              src="https://forms.zohopublic.com/vijicn1/form/BecameaPartner/formperma/P95-zn1fVjDdH3Gfzw89mzvoDjgtPhOOdEKmZRE7crI"
               title="Became a partner Submission"
               minHeight={900}
             />
