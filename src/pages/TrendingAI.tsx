@@ -47,51 +47,56 @@ export default function TrendingAI() {
 
 
 
-  const getUserPosts = async () => {
-    if (isLoading || !hasMore) return;
+const getUserPosts = async () => {
+  if (isLoading || !hasMore) return;
 
-    setIsLoading(true);
-    try {
-      const res = await GetTrendingPost(selectedTopic); // Use selectedTopic here
-      console.log("🚀 ~ getUserPosts ~ res:", res)
+  setIsLoading(true);
+  try {
+    const res = await GetTrendingPost(selectedTopic); // Make sure your API accepts page parameter
+    console.log("🚀 ~ getUserPosts ~ res:", res);
 
-      if (res?.data) {
-        const newPosts: Post[] = res?.data.data.rows?.map((el: any) => {
-          return {
-            avatar: el?.profile?.profile_picture || null,
-            name: `${el?.profile?.first_name || ''} ${el?.profile?.last_name || ''}`,
-            time: el?.createdAt,
-            following: el?.if_following || false,
-            media: {
-              type: el?.file_type,
-              src: el?.file,
-              poster: "/images/cover-landscape.jpg"
-            },
-            likes: el?.likes_count,
-            reflections: el?.reflections_count || 0,
-          }
-        }) || [];
+    if (res?.data?.data?.rows) {
+      const newPosts: Post[] = res.data.data.rows.map((el: any) => {
 
-        const totalPages = res?.data?.data?.count / 10 || 0;
+        return {
+          avatar: el?.profile?.profile_picture || null,
+          name: `${el?.profile?.first_name || ''} ${el?.profile?.last_name || ''}`.trim() || 'Unknown User',
+          time: el?.createdAt,
+          following: el?.if_following || false,
+          media: el?.file,
+          likes: el?.likes_count || 0,
+          reflections: el?.total_comment_count || 0,
+          id: el?.id || null,
+          isLiked: el?.is_liked || false,
+          content: el?.content || '',
+        };
+      });
 
-        if (newPosts.length === 0) {
+      const totalCount = res?.data?.data?.count || 0;
+      const itemsPerPage = 10;
+      const totalPages = Math.ceil(totalCount / itemsPerPage);
+
+      if (newPosts.length === 0) {
+        setHasMore(false);
+      } else {
+        setPosts(prevPosts => page === 1 ? newPosts : [...prevPosts, ...newPosts]);
+
+        if (page >= totalPages) {
           setHasMore(false);
         } else {
-          setPosts(prevPosts => [...prevPosts, ...newPosts]);
-
-          if (page >= totalPages) {
-            setHasMore(false);
-          } else {
-            setPage(page + 1);
-          }
+          setPage(prevPage => prevPage + 1);
         }
       }
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    } finally {
-      setIsLoading(false);
+    } else {
+      setHasMore(false);
     }
-  };
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    setHasMore(false);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const trendingTopics = [
     { label: "#AI" },

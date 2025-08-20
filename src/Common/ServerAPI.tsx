@@ -826,6 +826,14 @@ export const PostChildComments = (formattedData: any) => {
     EndPoint.postChildComment
   );
 };
+export const GetChildComments = (id: any) => {
+  let data = {};
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.postChildComment}/${id}`
+  );
+};
 export const PostCommentLike = (formattedData: any) => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
