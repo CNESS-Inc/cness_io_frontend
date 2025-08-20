@@ -1,7 +1,7 @@
 // import PNGs
 import like from "../../assets/like.svg";
 import comment from "../../assets/comment.svg";
-import repost from "../../assets/repost.svg";
+// import repost from "../../assets/repost.svg";
 import {
  Pen,
  X,
@@ -61,7 +61,7 @@ export default function MyPost({
    onViewPost,
    onDeletePost,
 }: MyPostProps) {
-
+  const total = likes + (reflections ?? 0);
   return (
     
 <article
@@ -183,18 +183,19 @@ export default function MyPost({
       >
         <img src={comment} className="w-8 h-8" />
       </button>
-      <button
+      {/* <button
         onClick={(e) => {
           e.stopPropagation();
           console.log("Repost clicked");
         }}
       >
         <img src={repost} className="w-8 h-8" />
-      </button>
+      </button> */}
     </div>
 
     <span className="whitespace-nowrap font-medium text-gray-600 text-sm">
-      {formatCount(likes)}
+      
+      {formatCount(total)}
     </span>
 
     <div className="ml-auto flex items-center gap-2">

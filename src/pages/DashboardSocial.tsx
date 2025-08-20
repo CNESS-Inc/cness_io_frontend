@@ -8,7 +8,13 @@ import {
   Share2,
   ThumbsUp,
   TrendingUp,
+  MoreVertical,
+  Bookmark,
+  Flag,
+  Link as LinkIcon,
 } from "lucide-react";
+import Modal from "../components/ui/Modal";
+
 import { MdContentCopy } from "react-icons/md";
 
 import {
@@ -24,6 +30,8 @@ import {
   UnFriend,
   SendFriendRequest,
   GetFriendStatus,
+  SavePost, 
+  ReportPost,
 } from "../Common/ServerAPI";
 
 // images
@@ -363,7 +371,12 @@ export default function SocialTopBar() {
   const [postVideoPreviewUrl, setPostVideoPreviewUrl] = useState<string | null>(
     null
   );
-  const [openMenuPostId, setOpenMenuPostId] = useState<string | null>(null);
+  // const [openMenuPostId, setOpenMenuPostId] = useState<string | null>(null);
+  const [openMenu, setOpenMenu] = useState<{
+    postId: string | null;
+    type: "options" | "share" | null;
+  }>({ postId: null, type: null });
+  
   const [activeView, setActiveView] = useState<
     "posts" | "following" | "collection"
   >("posts");
@@ -384,6 +397,12 @@ export default function SocialTopBar() {
   const [friendRequests, setFriendRequests] = useState<{[key: string]: string}>({});
   
   const [connectingUsers, setConnectingUsers] = useState<{[key: string]: boolean}>({});
+
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [selectedPostForReport, setSelectedPostForReport] = useState<string | null>(null);
+  const [reportReason, setReportReason] = useState("");
+  // const [isSavingPost, setIsSavingPost] = useState<string | null>(null);
+  const [isReportingPost, setIsReportingPost] = useState<string | null>(null);
 
   const handleConnect = async (userId: string) => {
     try {
@@ -577,7 +596,7 @@ export default function SocialTopBar() {
     }
   };
   
-  const menuRef = useRef<HTMLDivElement | null>(null);
+  const menuRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const containerRef = useRef<HTMLDivElement | null>(null);
   const loggedInUserID = localStorage.getItem("Id");
   const CONTENT_LIMIT = 150;
@@ -934,22 +953,47 @@ export default function SocialTopBar() {
   const myid = localStorage.getItem("Id");
   const urldata = `https://dev.cness.io/directory/user-profile/${myid}`;
 
+  /*const handleClickOutside = (event: MouseEvent) => {
+    console.log('menuRef.current', menuRef.current);
+    if (openMenuPostId && menuRef.current[openMenuPostId] &&
+      !menuRef.current[openMenuPostId]!.contains(event.target as Node)) {
+    setOpenMenuPostId(null);
+  }
+  
+  };*/
+
   const handleClickOutside = (event: MouseEvent) => {
-    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-      setOpenMenuPostId(null);
+    console.log('openMenu', openMenu);
+    if (!openMenu.postId || !openMenu.type) return;
+  
+    const key = `${openMenu.postId}-${openMenu.type}`;
+    const currentMenu = menuRef.current[key];
+  
+    if (currentMenu && !currentMenu.contains(event.target as Node)) {
+      setOpenMenu({ postId: null, type: null });
     }
-  };
+  };  
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [openMenu]);
 
-  const toggleMenu = (postId: string) => {
+  /*const toggleMenu = (postId: string) => {
     setOpenMenuPostId((prev) => (prev === postId ? null : postId));
+  };*/
+  const toggleMenu = (postId: string, type: "options" | "share") => {
+    setOpenMenu((prev) => {
+      if (prev.postId === postId && prev.type === type) {
+        return { postId: null, type: null }; // close
+      } else {
+        return { postId, type }; // open
+      }
+    });
   };
+  
 
   const handleScroll = () => {
     const container = containerRef.current;
@@ -1011,10 +1055,134 @@ export default function SocialTopBar() {
     MeDetail();
   }, []);
 
+
+  /* Report Modal and Save Post Modal and Copy Post Modal */
+  // Function to copy post link
+  const copyPostLink = async (postId: string) => {
+    toggleMenu(postId, "options");
+    const postUrl = `${window.location.origin}/post/${postId}`;
+    
+    try {
+      await navigator.clipboard.writeText(postUrl);
+      showToast({
+        type: "success",
+        message: "Post link copied to clipboard!",
+        duration: 2000,
+      });
+    } catch (error) {
+      showToast({
+        type: "error",
+        message: "Failed to copy link",
+        duration: 2000,
+      });
+    }
+  };
+
+  // Function to save post to collection
+  const savePostToCollection = async (postId: string) => {
+    
+    try {
+      const response = await SavePost(postId);
+      
+      if (response.success) {
+        showToast({
+          type: "success",
+          message: "Post saved to collection successfully!",
+          duration: 2000,
+        });
+        //setIsSavingPost(postId);
+        // Update the post's saved status in your posts array
+        setUserPosts(prevPosts => 
+          prevPosts.map(post => 
+            post.id === postId ? { ...post, is_saved: true } : post
+          )
+        );
+      } else {
+        throw new Error('Failed to save post');
+      }
+    } catch (error) {
+      showToast({
+        type: "error",
+        message: "Failed to save post to collection",
+        duration: 2000,
+      });
+    } 
+  };
+
+  // Function to report post
+  const reportPost = async () => {
+    if (!selectedPostForReport || !reportReason.trim()) {
+      showToast({
+        type: "error",
+        message: "Please provide a reason for reporting",
+        duration: 2000,
+      });
+      return;
+    }
+
+    setIsReportingPost(selectedPostForReport);
+    try {
+      const response = await ReportPost(selectedPostForReport, reportReason);
+      
+      if (response.success) {
+        showToast({
+          type: "success",
+          message: "Post reported successfully! Admin will review it soon and take action if needed.",
+          duration: 2000,
+        });
+        setShowReportModal(false);
+        setSelectedPostForReport(null);
+        setReportReason("");
+      } else {
+        throw new Error('Failed to report post');
+      }
+    } catch (error) {
+      showToast({
+        type: "error",
+        message: "Failed to report post",
+        duration: 2000,
+      });
+    } finally {
+      setIsReportingPost(null);
+    }
+  };
+
+  // Function to open report modal
+  const openReportModal = (postId: string) => {
+    setSelectedPostForReport(postId);
+    setShowReportModal(true);
+    // setOpenMenuPostId(null); // Close the three-dot menu
+  };
+
+  useEffect(() => {
+    /*const handleClickOutside = (event: MouseEvent) => {
+      if (openMenuPostId && menuRef.current[openMenuPostId] &&
+        !menuRef.current[openMenuPostId]!.contains(event.target as Node)) {
+        setOpenMenuPostId(null);
+      }
+    };*/
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!openMenu.postId || !openMenu.type) return;
+    
+      const key = `${openMenu.postId}-${openMenu.type}`;
+      const currentMenu = menuRef.current[key];
+    
+      if (currentMenu && !currentMenu.contains(event.target as Node)) {
+        setOpenMenu({ postId: null, type: null });
+      }
+    };  
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <>
       {isAdult ? (
-        <div className="flex flex-col lg:flex-row justify-between gap-4 lg:gap-6 px-2 md:px-4 lg:px-6 w-full">
+        <div className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-2 px-2 md:px-2 lg:px-0 w-full">
           {/* Left Side: Post & Stories - Full width on mobile */}
           <div
             className="w-full lg:max-w-[70%] overflow-y-auto h-[calc(100vh-100px)]"
@@ -1248,8 +1416,64 @@ export default function SocialTopBar() {
                                 "+ Follow"
                               )}
                             </button>
-                          </div>
 
+                            {/* Three Dots Menu */}
+                            <div className="relative">
+                              <button
+                                onClick={() => toggleMenu(post.id, "options")}
+                                className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition-colors"
+                                title="More options"
+                              >
+                                <MoreVertical className="w-5 h-5 text-gray-600" />
+                              </button>
+                              
+                              {openMenu.postId === post.id && openMenu.type === "options" && (
+                                <div
+                                  className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                                  ref={(el) => {
+                                    const key = `${post.id}-options`;
+                                    if (el) menuRef.current[key] = el;
+                                    else delete menuRef.current[key];
+                                  }}
+                                >
+                                  <ul className="space-y-1">
+                                    <li>
+                                      <button
+                                        onClick={() => {
+                                          copyPostLink(post.id)
+                                        }}
+                                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                      >
+                                        <LinkIcon className="w-4 h-4" />
+                                        Copy Post Link
+                                      </button>
+                                    </li>
+                                    <li>
+                                      <button
+                                        onClick={() => savePostToCollection(post.id)}
+                                        disabled={post.is_saved}
+                                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                      >
+                                        <Bookmark className="w-4 h-4" />
+                                        {post.is_saved ? "Saved" : "Save Post"}
+                                      </button>
+                                    </li>
+                                    <li>
+                                      <button
+                                        onClick={() => openReportModal(post.id)}
+                                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                      >
+                                        <Flag className="w-4 h-4" />
+                                        Report Post
+                                      </button>
+                                    </li>
+                                  </ul>
+                                </div>
+                              )}
+                            </div>
+
+                          </div>
+                          
                         )}
                       </div>
 
@@ -1370,12 +1594,12 @@ export default function SocialTopBar() {
                         <button
                           onClick={() => handleLike(post.id)}
                           disabled={isLoading}
-                          className={`flex items-center justify-center gap-2 rounded-2xl border border-gray-200 py-3 font-opensans font-semibold text-[14px] leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 ${
+                          className={`flex items-center justify-center gap-2 rounded-2xl border border-gray-200 py-1 h-[45px] font-opensans font-semibold text-[14px] leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 shadow-sm ${
                             isLoading ? "opacity-50 cursor-not-allowed" : ""
                           }`}
                         >
                           <ThumbsUp
-                            className="w-4 h-4"
+                            className="w-5 h-5 md:w-6 md:h-6"
                             fill={post.is_liked ? "#7077FE" : "none"} // <-- condition here
                             stroke={post.is_liked ? "#7077FE" : "#7077FE"} // keeps border visible
                           />
@@ -1386,7 +1610,7 @@ export default function SocialTopBar() {
                             setSelectedPostId(post.id);
                             setShowCommentBox(true);
                           }}
-                          className="flex items-center justify-center gap-2 md:gap-4 px-6 py-4 md:px-6 md:py-4 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm"
+                          className="flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  border border-[#E5E7EB] rounded-xl text-[14px] md:text-base text-[#7077FE] hover:bg-gray-50 shadow-sm"
                         >
                           <img
                             src={comment1}
@@ -1399,16 +1623,20 @@ export default function SocialTopBar() {
                 </button> */}
                         <div className="relative">
                           <button
-                            onClick={() => toggleMenu(post.id)}
-                            className="flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-4 md:px-6 md:py-4  border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm"
+                            onClick={() => toggleMenu(post.id, "share")}
+                            className="flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6   border border-[#E5E7EB] rounded-xl text-[14px] md:text-base text-[#7077FE] hover:bg-gray-50 shadow-sm"
                           >
-                            <Share2 className="w-5 h-5 md:w-6 md:h-7" />
+                            <Share2 className="w-5 h-5 md:w-6 md:h-6" />
                             Share
                           </button>
-                          {openMenuPostId === post.id && (
+                          {openMenu.postId === post.id && openMenu.type === "share" && (
                             <div
                               className="absolute top-10 left-0 bg-white shadow-lg rounded-lg p-3 z-10"
-                              ref={menuRef}
+                              ref={(el) => {
+                                const key = `${post.id}-share`;
+                                if (el) menuRef.current[key] = el;
+                                else delete menuRef.current[key];
+                              }}
                             >
                               <ul className="flex items-center gap-4">
                                 <li>
@@ -1902,6 +2130,43 @@ export default function SocialTopBar() {
           </div>
         </>
       )}
+
+      {/* Report Post Modal */}
+      <Modal isOpen={showReportModal} onClose={() => setShowReportModal(false)}>
+        <div className="p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Report Post
+          </h3>
+          <div className="mb-4">
+            <label htmlFor="reportReason" className="block text-sm font-medium text-gray-700 mb-2">
+              Reason why you report this post
+            </label>
+            <textarea
+              id="reportReason"
+              value={reportReason}
+              onChange={(e) => setReportReason(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              rows={4}
+              placeholder="Please provide a reason for reporting this post..."
+            />
+          </div>
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={() => setShowReportModal(false)}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={reportPost}
+              disabled={isReportingPost === selectedPostForReport || !reportReason.trim()}
+              className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isReportingPost === selectedPostForReport ? "Submitting..." : "Submit Report"}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }
