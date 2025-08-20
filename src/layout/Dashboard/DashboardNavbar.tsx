@@ -155,6 +155,22 @@ const DashboardNavbar = ({
     },
 
     {
+      id: "Social",
+      icon: <img src={iconMap["social"]} alt="Home Icon" className="w-5 h-5" />,
+      label: "Social",
+      active: false,
+      // path: "/dashboard/DashboardSocial",
+      isSocialDropdown: true,
+      childPaths: ["/dashboard/Feed"],
+      children: [
+        { label: "Feed", path: "/dashboard/feed" },
+        { label: "Profile", path: "/dashboard/Profile" },
+        { label: "My Connections", path: "/dashboard/MyConnection" },
+        // { label: "Messagings", path: "/dashboard/ComingSoon" },
+      ],
+    },
+    
+    {
       id: "market-place",
       icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
       label: "Market Place",
@@ -170,21 +186,7 @@ const DashboardNavbar = ({
         { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
       ],*/
     },
-    {
-      id: "Social",
-      icon: <img src={iconMap["social"]} alt="Home Icon" className="w-5 h-5" />,
-      label: "Social",
-      active: false,
-      // path: "/dashboard/DashboardSocial",
-      isSocialDropdown: true,
-      childPaths: ["/dashboard/Feed"],
-      children: [
-        { label: "Feed", path: "/dashboard/feed" },
-        { label: "Profile", path: "/dashboard/Profile" },
-        { label: "My Connections", path: "/dashboard/MyConnection" },
-        // { label: "Messagings", path: "/dashboard/ComingSoon" },
-      ],
-    },
+
     {
       id: "Community",
       icon: (

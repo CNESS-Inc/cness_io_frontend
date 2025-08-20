@@ -141,6 +141,8 @@ export const EndPoint = {
   Post_AllComments: "/user/post/comments",
   single_post: "/user/posts/get",
   user_post: "/user/posts",
+  save_post: "/user/posts/save",
+  report_post: "/user/posts/report",
   story: "/story",
   story_like: "/story/like",
   story_comment: "/story/comment",
@@ -1030,6 +1032,14 @@ export const SendFollowRequest = (formattedData: any) => {
 };
 export const AddVote = (formattedData: any) => {
   return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.vote);
+};
+
+export const SavePost = (postId: string) => {
+  return executeAPI(ServerAPI.APIMethod.POST, { post_id: postId }, EndPoint.save_post);
+};
+
+export const ReportPost = (postId: string, reason: string) => {
+  return executeAPI(ServerAPI.APIMethod.POST, { post_id: postId, reason: reason }, EndPoint.report_post);
 };
 
 export const LogOut = () => {
