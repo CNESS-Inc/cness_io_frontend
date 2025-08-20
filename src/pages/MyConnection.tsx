@@ -1,12 +1,18 @@
-import  { useState, useEffect } from "react";
-import ConnectionsCard from "../components/Profile/Tabs"
+import { useState, useEffect } from "react";
+import ConnectionsCard from "../components/Profile/Tabs";
 import FriendCard from "../components/Profile/Friendcard";
 import profile from "../assets/createstory.jpg";
 // import person from "../assets/person1.jpg";
 // import person1 from "../assets/person2.jpg";
 // import person2 from "../assets/person3.jpg";
-import FriendProfileModal  from "../components/Profile/FriendProfilepopup";
-import { GetConnectionUser, GetFriendRequest, AcceptFriendRequest, RejectFriendRequest } from "../Common/ServerAPI";
+import FriendProfileModal from "../components/Profile/FriendProfilepopup";
+import {
+  GetConnectionUser,
+  GetFriendRequest,
+  AcceptFriendRequest,
+  RejectFriendRequest,
+  GetUserPost,
+} from "../Common/ServerAPI";
 
 const MyConnection = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -28,11 +34,11 @@ const MyConnection = () => {
     if (activeTab === "Friend Requests") {
       fetchFriendRequests();
     }
-    if(activeTab === "All Friends"){
+    if (activeTab === "All Friends") {
       fetchAllConnections();
     }
   }, [activeTab]);
-  
+
   const fetchAllConnections = async () => {
     try {
       const response = await GetConnectionUser();
@@ -40,7 +46,7 @@ const MyConnection = () => {
         id: item.friend_user.id,
         name: `${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
         username: `@${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
-        image: item.friend_user.profile.profile_picture, 
+        image: item.friend_user.profile.profile_picture,
         isFollowing: item.isFollowing || false,
       }));
       setAllConnections(formattedRequests);
@@ -53,7 +59,7 @@ const MyConnection = () => {
     } catch (error) {
       console.error("Error fetching friend requests:", error);
     }
-  }
+  };
   const fetchFriendRequests = async () => {
     try {
       const response = await GetFriendRequest();
@@ -61,7 +67,7 @@ const MyConnection = () => {
         id: item.friend_user.id,
         name: `${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
         username: `@${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
-        image: item.friend_user.profile.profile_picture, 
+        image: item.friend_user.profile.profile_picture,
       }));
       setFriendRequests(formattedRequests);
     } catch (error) {
@@ -73,10 +79,12 @@ const MyConnection = () => {
     try {
       const formattedData = { friend_id: friendId };
       await AcceptFriendRequest(formattedData);
-      
+
       // Remove the accepted request from the list
-      setFriendRequests(prev => prev.filter(request => request.id !== friendId));
-      
+      setFriendRequests((prev) =>
+        prev.filter((request) => request.id !== friendId)
+      );
+
       // Optional: Show success message
       console.log("Friend request accepted successfully");
     } catch (error) {
@@ -84,15 +92,17 @@ const MyConnection = () => {
       // Handle error (show toast notification, etc.)
     }
   };
-  
+
   const handleRejectRequest = async (friendId: number) => {
     try {
       const formattedData = { friend_id: friendId };
       await RejectFriendRequest(formattedData);
-      
+
       // Remove the rejected request from the list
-      setFriendRequests(prev => prev.filter(request => request.id !== friendId));
-      
+      setFriendRequests((prev) =>
+        prev.filter((request) => request.id !== friendId)
+      );
+
       // Optional: Show success message
       console.log("Friend request rejected successfully");
     } catch (error) {
@@ -157,7 +167,7 @@ const MyConnection = () => {
     // ...more
   ];
   */
-/*const friendRequests : Connection[] =  [
+  /*const friendRequests : Connection[] =  [
     {
       id: 1,
       name: "NovaStar",
@@ -188,33 +198,31 @@ const MyConnection = () => {
       
     },]
 */
-const suggestions : Connection[] =  [
+  const suggestions: Connection[] = [
     {
       id: 1,
       name: "NovaStar",
       username: "@novawrites",
       image: profile,
-      
     },
     {
       id: 2,
       name: "LunaSky",
       username: "@lunascribbles",
       image: "/images/luna.jpg",
-      
-    },]
-
+    },
+  ];
 
   let activeConnections: Connection[] = [];
   if (activeTab === "All Friends") activeConnections = allConnections;
   if (activeTab === "Friend Requests") activeConnections = friendRequests;
   if (activeTab === "Suggestions") activeConnections = suggestions;
 
-const filteredConnections = activeConnections.filter(conn =>
-  conn.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-  conn.username.toLowerCase().includes(searchValue.toLowerCase())
-);
-
+  const filteredConnections = activeConnections.filter(
+    (conn) =>
+      conn.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+      conn.username.toLowerCase().includes(searchValue.toLowerCase())
+  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -225,6 +233,10 @@ const filteredConnections = activeConnections.filter(conn =>
         tabs={["All Friends", "Friend Requests", "Suggestions"]}
         onSearch={setSearchValue}
         onTabChange={setActiveTab}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        getUserPosts={GetUserPost}
+        // onTabChange={setActiveTab}
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -236,12 +248,11 @@ const filteredConnections = activeConnections.filter(conn =>
             letterSpacing: "0",
           }}
         >
-          { activeTab === "All Friends"
-            ? 'All Connections'
+          {activeTab === "All Friends"
+            ? "All Connections"
             : activeTab === "Friend Requests"
-            ? 'Friend Requests'
-            : 'Suggestions' 
-          }
+            ? "Friend Requests"
+            : "Suggestions"}
         </h2>
         {/* Search & Button */}
         <div className="flex w-full sm:w-auto items-center gap-2">
@@ -260,17 +271,19 @@ const filteredConnections = activeConnections.filter(conn =>
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M9.5 17a7.5 7.5 0 110-15 7.5 7.5 0 010 15z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-4.35-4.35M9.5 17a7.5 7.5 0 110-15 7.5 7.5 0 010 15z"
+              />
             </svg>
           </div>
-          <button
-            className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full text-sm transition"
-          >
+          <button className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full text-sm transition">
             Search Connections
           </button>
         </div>
       </div>
-
 
       <div className=" sm:grid gap-4 md:gap-5 lg:gap-6 justify-items-center grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-4 3xl:grid-cols-6">
         {filteredConnections.map((conn) => (
@@ -306,9 +319,7 @@ const filteredConnections = activeConnections.filter(conn =>
           onClose={() => setSelectedFriend(null)}
         />
       )}
-
     </div>
-   
   );
 };
 

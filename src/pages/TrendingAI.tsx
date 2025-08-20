@@ -1,102 +1,101 @@
-//import { useState } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import PostCard from "../components/Profile/Post";
-import ConnectionsCard from "../components/Profile/Tabs"
-// import person1 from "../assets/person1.jpg";
-// import person2 from "../assets/person2.jpg";
-// import carousel3 from "../assets/carosuel3.png";
+import ConnectionsCard from "../components/Profile/Tabs";
 import { TrendingUp } from "lucide-react";
-
 import { GetTrendingPost } from "../Common/ServerAPI";
 
 type Post = React.ComponentProps<typeof PostCard>;
 
-// const postss: Post[] = [
-//   {
-//     avatar: person2,
-//     name: "Anu",
-//     time: "2 hours ago",
-//     following: true,
-//     media: { type: "image", src: carousel3, alt: "Sea" },
-//     likes: 421000,
-//     reflections: 45,
-//   },
-//   {
-//     avatar: person1,
-//     name: "Olivia Gracia",
-//     time: "2 hours ago",
-//     following: true,
-//     media: { type: "video", src: "/test1.mp4", poster: "/images/cover-landscape.jpg" },
-//     likes: 19800,
-//     reflections: 12,
-//   },
-// ];
-
-
-
-
-
 export default function TrendingAI() {
-  const tabs = ["Top", "Latest", "People", "Media", "Lists"];
+  const tabs = ["Top", "Latest", "People"];
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState<number>(1);
-  const [posts, setPosts] = useState<Post[]>([]); // Initialize as empty array
+  const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedTopic, setSelectedTopic] = useState("Ai"); // Default to "Ai"
+  const [selectedTopic, setSelectedTopic] = useState("Ai");
+  const [activeTab, setActiveTab] = useState(tabs[0]);
+  
+  // Use refs to track values without causing re-renders
+  const selectedTopicRef = useRef(selectedTopic);
+  const activeTabRef = useRef(activeTab);
+  
+  // Update refs when state changes
+  useEffect(() => {
+    selectedTopicRef.current = selectedTopic;
+    activeTabRef.current = activeTab;
+  }, [selectedTopic, activeTab]);
 
+  // Memoize the getUserPosts function with minimal dependencies
+  const getUserPosts = useCallback(async (isNewSearch = false) => {
+    if ((isLoading && !isNewSearch) || (!isNewSearch && !hasMore)) return;
 
+    setIsLoading(true);
+    try {
+      const currentPage = isNewSearch ? 1 : page;
+      
+      // Use ref values instead of state to prevent recreation
+      const res = await GetTrendingPost(
+        selectedTopicRef.current, 
+        activeTabRef.current.toLowerCase()
+      );
+      
+      console.log("🚀 ~ getUserPosts ~ res:", res);
 
+      if (res?.data?.data?.rows) {
+        const newPosts: Post[] = res.data.data.rows.map((el: any) => {
+          return {
+            avatar: el?.profile?.profile_picture || null,
+            name: `${el?.profile?.first_name || ''} ${el?.profile?.last_name || ''}`.trim() || 'Unknown User',
+            time: el?.createdAt,
+            following: el?.if_following || false,
+            media: el?.file,
+            likes: el?.likes_count || 0,
+            reflections: el?.total_comment_count || 0,
+            id: el?.id || null,
+            isLiked: el?.is_liked || false,
+            content: el?.content || '',
+          };
+        });
 
-const getUserPosts = async () => {
-  if (isLoading || !hasMore) return;
+        const totalCount = res?.data?.data?.count || 0;
+        const itemsPerPage = 10;
+        const totalPages = Math.ceil(totalCount / itemsPerPage);
 
-  setIsLoading(true);
-  try {
-    const res = await GetTrendingPost(selectedTopic); // Make sure your API accepts page parameter
-    console.log("🚀 ~ getUserPosts ~ res:", res);
-
-    if (res?.data?.data?.rows) {
-      const newPosts: Post[] = res.data.data.rows.map((el: any) => {
-
-        return {
-          avatar: el?.profile?.profile_picture || null,
-          name: `${el?.profile?.first_name || ''} ${el?.profile?.last_name || ''}`.trim() || 'Unknown User',
-          time: el?.createdAt,
-          following: el?.if_following || false,
-          media: el?.file,
-          likes: el?.likes_count || 0,
-          reflections: el?.total_comment_count || 0,
-          id: el?.id || null,
-          isLiked: el?.is_liked || false,
-          content: el?.content || '',
-        };
-      });
-
-      const totalCount = res?.data?.data?.count || 0;
-      const itemsPerPage = 10;
-      const totalPages = Math.ceil(totalCount / itemsPerPage);
-
-      if (newPosts.length === 0) {
-        setHasMore(false);
-      } else {
-        setPosts(prevPosts => page === 1 ? newPosts : [...prevPosts, ...newPosts]);
-
-        if (page >= totalPages) {
+        if (newPosts.length === 0) {
           setHasMore(false);
         } else {
-          setPage(prevPage => prevPage + 1);
+          setPosts(prevPosts => isNewSearch ? newPosts : [...prevPosts, ...newPosts]);
+          
+          if (currentPage >= totalPages) {
+            setHasMore(false);
+          } else if (isNewSearch) {
+            setPage(2);
+            setHasMore(true);
+          } else {
+            setPage(prevPage => prevPage + 1);
+          }
         }
+      } else {
+        setHasMore(false);
       }
-    } else {
+    } catch (error) {
+      console.error("Error fetching posts:", error);
       setHasMore(false);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error("Error fetching posts:", error);
-    setHasMore(false);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  }, [page, isLoading, hasMore]); // Removed selectedTopic and activeTab from dependencies
+
+  // Reset and fetch new posts when tab or topic changes
+  useEffect(() => {
+    // Reset state
+    setPosts([]);
+    setPage(1);
+    setHasMore(true);
+    
+    // Call API with new parameters
+    getUserPosts(true);
+  }, [selectedTopic, activeTab]); // Removed getUserPosts from dependencies
 
   const trendingTopics = [
     { label: "#AI" },
@@ -108,27 +107,18 @@ const getUserPosts = async () => {
   const handleTopicClick = (topicLabel: string) => {
     const topicWithoutHash = topicLabel.replace('#', '');
     setSelectedTopic(topicWithoutHash);
-    setPosts([]); // Clear existing posts
-    setPage(1); // Reset pagination
-    setHasMore(true); // Reset hasMore
   };
-
-  useEffect(() => {
-    getUserPosts();
-  }, [selectedTopic]); // Add selectedTopic as dependency
-
-
 
   return (
     <div className="w-full px-0.5 py-0.5">
-
       <ConnectionsCard
         title="Trending Hash tags"
-        //subtitle="Explore the latest updates"
         tabs={tabs}
         hashtags={["DeepLearning", "MachineLearning", "AI", "FutureOfWork"]}
         onSearch={(value) => console.log("Searching:", value)}
-      //onBack={() => console.log("Back button clicked")}
+        setActiveTab={setActiveTab}
+        activeTab={activeTab}
+        getUserPosts={() => getUserPosts(true)}
       />
 
       {/* Content Area */}
@@ -152,8 +142,8 @@ const getUserPosts = async () => {
             <div>No posts found</div>
           )}
         </div>
+        
         {/* Right Column: Trending Topics */}
-        {/* Topics rail (right) */}
         <aside className="xl:sticky xl:top-4 self-start">
           <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm min-h-[560px]">
             <div className="mb-4 flex items-center gap-2">
@@ -188,7 +178,6 @@ const getUserPosts = async () => {
             <div className="my-5 h-px bg-gray-100" />
           </div>
         </aside>
-
       </div>
     </div>
   );
