@@ -183,7 +183,6 @@ export default function PostCard({
   reflections,
   onLike,
   onReflections,
-  onShare,
   isLiked,
   content,
   file,
