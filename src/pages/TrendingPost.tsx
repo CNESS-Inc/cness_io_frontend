@@ -3,7 +3,7 @@ import { ChevronLeft, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import PostCard from "../components/Profile/Post";
 import { Outlet, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { GetTrendingPost } from "../Common/ServerAPI";
 
 type Post = React.ComponentProps<typeof PostCard>;
@@ -24,18 +24,21 @@ export default function Trending() {
   const [page, setPage] = useState<number>(1);
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const observer = useRef<IntersectionObserver | null>(null);
+  const lastPostElementRef = useRef<HTMLDivElement>(null);
+  const initialLoad = useRef(true);
 
-  const getUserPosts = async () => {
+  const getUserPosts = useCallback(async () => {
     if (isLoading || !hasMore) return;
 
     setIsLoading(true);
     try {
-      const res = await GetTrendingPost("");
-      console.log("🚀 ~ getUserPosts ~ res:", res);
+      // Pass page parameter correctly to the API
+      const res = await GetTrendingPost("","", page);
+      console.log("🚀 ~ getUserPosts ~ res:", res, "Page:", page);
 
       if (res?.data?.data?.rows) {
         const newPosts: Post[] = res.data.data.rows.map((el: any) => {
-
           return {
             avatar: el?.profile?.profile_picture || null,
             name: `${el?.profile?.first_name || ""} ${
@@ -58,24 +61,104 @@ export default function Trending() {
         if (newPosts.length === 0) {
           setHasMore(false);
         } else {
-          setPosts((prevPosts) => [...prevPosts, ...newPosts]);
+          setPosts((prevPosts) => {
+            // Avoid duplicates by checking if post already exists
+            const existingIds = new Set(prevPosts.map(p => p.id));
+            const filteredNewPosts = newPosts.filter(p => !existingIds.has(p.id));
+            return [...prevPosts, ...filteredNewPosts];
+          });
 
           if (page >= totalPages) {
             setHasMore(false);
           } else {
-            setPage(page + 1);
+            setPage(prevPage => prevPage + 1);
           }
         }
       }
     } catch (error) {
       console.error("Error fetching posts:", error);
+      setHasMore(false);
     } finally {
       setIsLoading(false);
+      initialLoad.current = false;
     }
-  };
+  }, [page, isLoading, hasMore]);
 
+  // Set up intersection observer for infinite scroll
   useEffect(() => {
-    getUserPosts();
+    if (isLoading) return;
+
+    if (observer.current) observer.current.disconnect();
+
+    const callback = (entries: IntersectionObserverEntry[]) => {
+      if (entries[0].isIntersecting && hasMore && !initialLoad.current) {
+        getUserPosts();
+      }
+    };
+
+    observer.current = new IntersectionObserver(callback, {
+      root: null,
+      rootMargin: "100px",
+      threshold: 0.1,
+    });
+
+    if (lastPostElementRef.current) {
+      observer.current.observe(lastPostElementRef.current);
+    }
+
+    return () => {
+      if (observer.current) observer.current.disconnect();
+    };
+  }, [isLoading, hasMore, getUserPosts]);
+
+  // Initial load
+  useEffect(() => {
+    // Reset state when component mounts
+    setPosts([]);
+    setPage(1);
+    setHasMore(true);
+    setIsLoading(true);
+    
+    // Load first page immediately
+    const loadFirstPage = async () => {
+      try {
+        const res = await GetTrendingPost("","", 1);
+        console.log("Initial load response:", res);
+
+        if (res?.data?.data?.rows) {
+          const newPosts: Post[] = res.data.data.rows.map((el: any) => {
+            return {
+              avatar: el?.profile?.profile_picture || null,
+              name: `${el?.profile?.first_name || ""} ${
+                el?.profile?.last_name || ""
+              }`,
+              time: el?.createdAt,
+              following: el?.if_following || false,
+              media: el?.file,
+              likes: el?.likes_count || 0,
+              reflections: el?.reflections_count || 0,
+              id: el?.id || null,
+              content: el?.content || "",
+              isLiked: el?.is_liked || false,
+            };
+          });
+
+          const totalCount = res?.data?.data?.count || 0;
+          const totalPages = Math.ceil(totalCount / 10);
+
+          setPosts(newPosts);
+          setHasMore(page < totalPages);
+          setPage(2); // Set to next page
+        }
+      } catch (error) {
+        console.error("Error fetching initial posts:", error);
+      } finally {
+        setIsLoading(false);
+        initialLoad.current = false;
+      }
+    };
+
+    loadFirstPage();
   }, []);
 
   return (
@@ -108,16 +191,55 @@ export default function Trending() {
         <div className="space-y-5">
           {!isTrendingAI && (
             <>
-              {posts.map((p, i) => (
-                <PostCard
-                  key={i}
-                  {...p}
-                  onLike={() => console.log("like", i)}
-                  onAffirmation={() => console.log("affirmation", i)}
-                  onReflections={() => console.log("reflections", i)}
-                  onShare={() => console.log("share", i)}
-                />
-              ))}
+              {posts.length === 0 && !isLoading ? (
+                <div className="text-center py-10 text-gray-500">
+                  No trending posts found
+                </div>
+              ) : (
+                <>
+                  {posts.map((p, i) => {
+                    // Add ref to the last post element
+                    if (posts.length === i + 1) {
+                      return (
+                        <div ref={lastPostElementRef} key={i}>
+                          <PostCard
+                            {...p}
+                            onLike={() => console.log("like", i)}
+                            onAffirmation={() => console.log("affirmation", i)}
+                            onReflections={() => console.log("reflections", i)}
+                            onShare={() => console.log("share", i)}
+                          />
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <PostCard
+                          key={i}
+                          {...p}
+                          onLike={() => console.log("like", i)}
+                          onAffirmation={() => console.log("affirmation", i)}
+                          onReflections={() => console.log("reflections", i)}
+                          onShare={() => console.log("share", i)}
+                        />
+                      );
+                    }
+                  })}
+                  
+                  {/* Loading indicator */}
+                  {isLoading && (
+                    <div className="flex justify-center py-4">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                    </div>
+                  )}
+                  
+                  {/* No more posts message */}
+                  {!hasMore && posts.length > 0 && (
+                    <div className="text-center py-4 text-gray-500">
+                      No more posts to load
+                    </div>
+                  )}
+                </>
+              )}
             </>
           )}
 

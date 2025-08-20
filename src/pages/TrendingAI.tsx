@@ -25,6 +25,10 @@ export default function TrendingAI() {
     activeTabRef.current = activeTab;
   }, [selectedTopic, activeTab]);
 
+  // Create a ref for the last post element
+  const observer = useRef<IntersectionObserver | null>(null);
+  const lastPostElementRef = useRef<HTMLDivElement>(null);
+
   // Memoize the getUserPosts function with minimal dependencies
   const getUserPosts = useCallback(async (isNewSearch = false) => {
     if ((isLoading && !isNewSearch) || (!isNewSearch && !hasMore)) return;
@@ -36,7 +40,8 @@ export default function TrendingAI() {
       // Use ref values instead of state to prevent recreation
       const res = await GetTrendingPost(
         selectedTopicRef.current, 
-        activeTabRef.current.toLowerCase()
+        activeTabRef.current.toLowerCase(),
+        currentPage // Use currentPage instead of page
       );
       
       console.log("🚀 ~ getUserPosts ~ res:", res);
@@ -86,6 +91,33 @@ export default function TrendingAI() {
     }
   }, [page, isLoading, hasMore]); // Removed selectedTopic and activeTab from dependencies
 
+  // Set up intersection observer for infinite scroll
+  useEffect(() => {
+    if (isLoading) return;
+
+    if (observer.current) observer.current.disconnect();
+
+    const callback = (entries: IntersectionObserverEntry[]) => {
+      if (entries[0].isIntersecting && hasMore) {
+        getUserPosts(false);
+      }
+    };
+
+    observer.current = new IntersectionObserver(callback, {
+      root: null,
+      rootMargin: "100px",
+      threshold: 0.1,
+    });
+
+    if (lastPostElementRef.current) {
+      observer.current.observe(lastPostElementRef.current);
+    }
+
+    return () => {
+      if (observer.current) observer.current.disconnect();
+    };
+  }, [isLoading, hasMore, getUserPosts]);
+
   // Reset and fetch new posts when tab or topic changes
   useEffect(() => {
     // Reset state
@@ -126,20 +158,55 @@ export default function TrendingAI() {
         {/* Left Column: Posts */}
         <div className="lg:col-span-3 space-y-4">
           {isLoading && posts.length === 0 ? (
-            <div>Loading posts...</div>
+            <div className="flex justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            </div>
           ) : posts.length > 0 ? (
-            posts.map((post, i) => (
-              <PostCard
-                key={i}
-                {...post}
-                onLike={() => console.log("like", i)}
-                onAffirmation={() => console.log("affirmation", i)}
-                onReflections={() => console.log("reflections", i)}
-                onShare={() => console.log("share", i)}
-              />
-            ))
+            posts.map((post, i) => {
+              // Add ref to the last post element
+              if (posts.length === i + 1) {
+                return (
+                  <div ref={lastPostElementRef} key={i}>
+                    <PostCard
+                      {...post}
+                      onLike={() => console.log("like", i)}
+                      onAffirmation={() => console.log("affirmation", i)}
+                      onReflections={() => console.log("reflections", i)}
+                      onShare={() => console.log("share", i)}
+                    />
+                  </div>
+                );
+              } else {
+                return (
+                  <PostCard
+                    key={i}
+                    {...post}
+                    onLike={() => console.log("like", i)}
+                    onAffirmation={() => console.log("affirmation", i)}
+                    onReflections={() => console.log("reflections", i)}
+                    onShare={() => console.log("share", i)}
+                  />
+                );
+              }
+            })
           ) : (
-            <div>No posts found</div>
+            <div className="text-center py-10 text-gray-500">
+              No posts found for this topic
+            </div>
+          )}
+          
+          {/* Loading indicator for additional posts */}
+          {isLoading && posts.length > 0 && (
+            <div className="flex justify-center py-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            </div>
+          )}
+          
+          {/* No more posts message */}
+          {!hasMore && posts.length > 0 && (
+            <div className="text-center py-4 text-gray-500">
+              No more posts to load
+            </div>
           )}
         </div>
         
