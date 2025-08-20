@@ -3,8 +3,8 @@ import {
   GetComment,
   PostComments,
   PostChildComments,
-  PostCommentLike,
-  PostChildCommentLike,
+  // PostCommentLike,
+  // PostChildCommentLike,
   GetChildComments,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -225,67 +225,67 @@ const CommentBox = ({
     }
   };
 
-  const handleLikeComment = async (
-    commentId: string,
-    isReply: boolean = false,
-    replyId: string | null = null
-  ) => {
-    try {
-      console.log("click to like");
-      const formattedData = {
-        post_id: postId,
-        comment_id: commentId,
-      };
+  // const handleLikeComment = async (
+  //   commentId: string,
+  //   isReply: boolean = false,
+  //   replyId: string | null = null
+  // ) => {
+  //   try {
+  //     console.log("click to like");
+  //     const formattedData = {
+  //       post_id: postId,
+  //       comment_id: commentId,
+  //     };
 
-      const chaildFormData = {
-        post_id: postId,
-        parent_comment_id: commentId,
-        child_comment_id: replyId,
-      };
+  //     const chaildFormData = {
+  //       post_id: postId,
+  //       parent_comment_id: commentId,
+  //       child_comment_id: replyId,
+  //     };
 
-      if (isReply) {
-        await PostChildCommentLike(chaildFormData);
-      } else {
-        await PostCommentLike(formattedData);
-      }
+  //     if (isReply) {
+  //       await PostChildCommentLike(chaildFormData);
+  //     } else {
+  //       await PostCommentLike(formattedData);
+  //     }
 
-      setComments((prev) =>
-        prev.map((comment) => {
-          if (isReply) {
-            // Handle reply like
-            const updatedReplies = comment?.replies?.map((reply) => {
-              if (reply.id === replyId) {
-                return {
-                  ...reply,
-                  likes_count: reply.is_liked
-                    ? reply.likes_count - 1
-                    : reply.likes_count + 1,
-                  is_liked: !reply.is_liked,
-                };
-              }
-              return reply;
-            });
-            return { ...comment, replies: updatedReplies };
-          } else {
-            console.log(comment.id, commentId, "commentId commentId");
-            // Handle main comment like
-            if (comment.id === commentId) {
-              return {
-                ...comment,
-                likes_count: comment.is_liked
-                  ? comment.likes_count - 1
-                  : comment.likes_count + 1,
-                is_liked: !comment.is_liked,
-              };
-            }
-            return comment;
-          }
-        })
-      );
-    } catch (error: any) {
-      console.error("Error liking comment:", error.message || error);
-    }
-  };
+  //     setComments((prev) =>
+  //       prev.map((comment) => {
+  //         if (isReply) {
+  //           // Handle reply like
+  //           const updatedReplies = comment?.replies?.map((reply) => {
+  //             if (reply.id === replyId) {
+  //               return {
+  //                 ...reply,
+  //                 likes_count: reply.is_liked
+  //                   ? reply.likes_count - 1
+  //                   : reply.likes_count + 1,
+  //                 is_liked: !reply.is_liked,
+  //               };
+  //             }
+  //             return reply;
+  //           });
+  //           return { ...comment, replies: updatedReplies };
+  //         } else {
+  //           console.log(comment.id, commentId, "commentId commentId");
+  //           // Handle main comment like
+  //           if (comment.id === commentId) {
+  //             return {
+  //               ...comment,
+  //               likes_count: comment.is_liked
+  //                 ? comment.likes_count - 1
+  //                 : comment.likes_count + 1,
+  //               is_liked: !comment.is_liked,
+  //             };
+  //           }
+  //           return comment;
+  //         }
+  //       })
+  //     );
+  //   } catch (error: any) {
+  //     console.error("Error liking comment:", error.message || error);
+  //   }
+  // };
 
   const handleClose = () => {
     setIsClosing(true);
