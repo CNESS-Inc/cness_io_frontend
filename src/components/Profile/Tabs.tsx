@@ -10,6 +10,9 @@ type ConnectionsCardProps = {
   hashtags?: string[];
   onSearch?: (value: string) => void;
   onTabChange?: (tab: string) => void;
+  activeTab:any,
+  setActiveTab:any
+  getUserPosts:any
 };
 
 const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
@@ -20,9 +23,11 @@ const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
   hashtags = [],
   onSearch,
   onTabChange,
+  activeTab,
+  setActiveTab,
+  getUserPosts
 }) => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState(tabs[0]);
   const [searchValue, setSearchValue] = useState("");
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,6 +38,7 @@ const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
     onTabChange?.(tab);
+    getUserPosts("AI",tab)
   };
 
   return (
