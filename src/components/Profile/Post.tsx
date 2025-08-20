@@ -188,7 +188,6 @@ export default function PostCard({
   file,
   file_type,
 }: Props) {
-  console.log("🚀 ~ PostCard ~ media:", id);
   const [selectedPostId, setSelectedPostId] = useState<any | null>(null);
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [userPosts, setUserPosts] = useState<any[]>([]);
@@ -199,11 +198,9 @@ export default function PostCard({
     {}
   );
   const [openMenuPostId, setOpenMenuPostId] = useState<any>(null);
-    console.log("🚀 ~ PostCard ~ openMenuPostId:", openMenuPostId)
-    const menuRef = useRef<HTMLDivElement | null>(null);
-      const [copy, setCopy] = useState<Boolean>(false);
-    
-  
+  console.log("🚀 ~ PostCard ~ openMenuPostId:", openMenuPostId)
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const [copy, setCopy] = useState<Boolean>(false);
 
   const CONTENT_LIMIT = 150;
   const toggleExpand = (postId: any) => {
@@ -358,23 +355,22 @@ export default function PostCard({
   const myid = localStorage.getItem("Id");
   const urldata = `https://dev.cness.io/directory/user-profile/${myid}`;
 
-
   const toggleMenu = (id: any) => {
-    setOpenMenuPostId((prev:any) => (prev === id ? null : id));
+    setOpenMenuPostId((prev: any) => (prev === id ? null : id));
   };
 
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setOpenMenuPostId(null);
-      }
+  const handleClickOutside = (event: MouseEvent) => {
+    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      setOpenMenuPostId(null);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
     };
-  
-    useEffect(() => {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, []);
+  }, []);
 
   return (
     <>
@@ -488,59 +484,59 @@ export default function PostCard({
           </button>
           <div className="relative">
             <button
-            onClick={() => toggleMenu(id)}
-            className="flex items-center w-full justify-center gap-2 rounded-2xl border border-gray-200 bg-white py-3 font-opensans font-semibold text-[14px] leading-[150%] text-[#7077FE] hover:bg-gray-50"
-          >
-            <Share2 className="w-4 h-4 text-[#7077FE]" />
-            <span>Share</span>
-          </button>
-          {openMenuPostId == id &&(
-            <div
-              className="absolute top-10 left-0 bg-white shadow-lg rounded-lg p-3 z-10"
-              ref={menuRef}
+              onClick={() => toggleMenu(id)}
+              className="flex items-center w-full justify-center gap-2 rounded-2xl border border-gray-200 bg-white py-3 font-opensans font-semibold text-[14px] leading-[150%] text-[#7077FE] hover:bg-gray-50"
             >
-              <ul className="flex items-center gap-4">
-                <li>
-                  <FacebookShareButton url={urldata}>
-                    <FaFacebook size={32} color="#4267B2" />
-                  </FacebookShareButton>
-                </li>
-                <li>
-                  <LinkedinShareButton url={urldata}>
-                    <FaLinkedin size={32} color="#0077B5" />
-                  </LinkedinShareButton>
-                </li>
-                <li>
-                  <TwitterShareButton url={urldata}>
-                    <FaTwitter size={32} color="#1DA1F2" />
-                  </TwitterShareButton>
-                </li>
-                <li>
-                  <WhatsappShareButton url={urldata}>
-                    <FaWhatsapp size={32} color="#1DA1F2" />
-                  </WhatsappShareButton>
-                </li>
-                <li>
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(urldata);
-                      setCopy(true);
-                      setTimeout(() => setCopy(false), 1500);
-                    }}
-                    className="flex items-center relative"
-                    title="Copy link"
-                  >
-                    <MdContentCopy size={30} className="text-gray-600" />
-                    {copy && (
-                      <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
-                        Link Copied!
-                      </div>
-                    )}
-                  </button>
-                </li>
-              </ul>
-            </div>
-          )}
+              <Share2 className="w-4 h-4 text-[#7077FE]" />
+              <span>Share</span>
+            </button>
+            {openMenuPostId === id && (
+              <div
+                className="absolute top-10 left-0 bg-white shadow-lg rounded-lg p-3 z-10"
+                ref={menuRef}
+              >
+                <ul className="flex items-center gap-4">
+                  <li>
+                    <FacebookShareButton url={urldata}>
+                      <FaFacebook size={32} color="#4267B2" />
+                    </FacebookShareButton>
+                  </li>
+                  <li>
+                    <LinkedinShareButton url={urldata}>
+                      <FaLinkedin size={32} color="#0077B5" />
+                    </LinkedinShareButton>
+                  </li>
+                  <li>
+                    <TwitterShareButton url={urldata}>
+                      <FaTwitter size={32} color="#1DA1F2" />
+                    </TwitterShareButton>
+                  </li>
+                  <li>
+                    <WhatsappShareButton url={urldata}>
+                      <FaWhatsapp size={32} color="#1DA1F2" />
+                    </WhatsappShareButton>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(urldata);
+                        setCopy(true);
+                        setTimeout(() => setCopy(false), 1500);
+                      }}
+                      className="flex items-center relative"
+                      title="Copy link"
+                    >
+                      <MdContentCopy size={30} className="text-gray-600" />
+                      {copy && (
+                        <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
+                          Link Copied!
+                        </div>
+                      )}
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </article>
