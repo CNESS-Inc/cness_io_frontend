@@ -147,10 +147,12 @@ export default function TrendingAI() {
         title="Trending Hash tags"
         tabs={tabs}
         hashtags={["DeepLearning", "MachineLearning", "AI", "FutureOfWork"]}
-        onSearch={(value) => console.log("Searching:", value)}
+        onSearch={(value) => setSelectedTopic(value)}
         setActiveTab={setActiveTab}
         activeTab={activeTab}
         getUserPosts={() => getUserPosts(true)}
+        selectedTopic={selectedTopic}
+        onTopicChange={setSelectedTopic}
       />
 
       {/* Content Area */}
