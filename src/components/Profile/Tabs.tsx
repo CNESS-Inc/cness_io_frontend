@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // import { Search, ArrowLeft } from "lucide-react";
 import { ArrowLeft, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +14,8 @@ type ConnectionsCardProps = {
   activeTab:any,
   setActiveTab:any
   getUserPosts:any
+  selectedTopic:any
+  onTopicChange?: (topic: string) => void;
 };
 
 const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
@@ -26,10 +28,12 @@ const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
   onTabChange,
   activeTab,
   setActiveTab,
-  getUserPosts
+  getUserPosts,
+  selectedTopic,
+  onTopicChange
 }) => {
   const navigate = useNavigate();
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState(selectedTopic);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
@@ -42,6 +46,17 @@ const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
     getUserPosts("AI",tab)
   };
 
+   // Add this function to handle hashtag clicks
+const handleHashtagClick = (tag: string) => {
+  setSearchValue(tag);
+  onSearch?.(tag);
+  onTopicChange?.(tag); // Call the parent's topic change handler
+};
+
+  useEffect(() => {
+    setSearchValue(selectedTopic)
+  }, [selectedTopic])
+  
   return (
     <div className="rounded-[12px] border border-gray-200 bg-white flex flex-col gap-4 p-4 sm:p-6 w-full">
       {/* Top Section */}
@@ -86,6 +101,7 @@ const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
             <span
               key={tag}
               className="cursor-pointer hover:underline"
+              onClick={() => handleHashtagClick(tag)}
             >
               #{tag}
             </span>

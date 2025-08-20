@@ -235,8 +235,7 @@ const MyConnection = () => {
         onTabChange={setActiveTab}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        getUserPosts={GetUserPost}
-        // onTabChange={setActiveTab}
+        getUserPosts={GetUserPost} selectedTopic={undefined}        // onTabChange={setActiveTab}
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
