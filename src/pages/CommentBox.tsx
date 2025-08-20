@@ -3,8 +3,8 @@ import {
   GetComment,
   PostComments,
   PostChildComments,
-  PostCommentLike,
-  PostChildCommentLike,
+  // PostCommentLike,
+  // PostChildCommentLike,
   GetChildComments,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -225,67 +225,67 @@ const CommentBox = ({
     }
   };
 
-  const handleLikeComment = async (
-    commentId: string,
-    isReply: boolean = false,
-    replyId: string | null = null
-  ) => {
-    try {
-      console.log("click to like");
-      const formattedData = {
-        post_id: postId,
-        comment_id: commentId,
-      };
+  // const handleLikeComment = async (
+  //   commentId: string,
+  //   isReply: boolean = false,
+  //   replyId: string | null = null
+  // ) => {
+  //   try {
+  //     console.log("click to like");
+  //     const formattedData = {
+  //       post_id: postId,
+  //       comment_id: commentId,
+  //     };
 
-      const chaildFormData = {
-        post_id: postId,
-        parent_comment_id: commentId,
-        child_comment_id: replyId,
-      };
+  //     const chaildFormData = {
+  //       post_id: postId,
+  //       parent_comment_id: commentId,
+  //       child_comment_id: replyId,
+  //     };
 
-      if (isReply) {
-        await PostChildCommentLike(chaildFormData);
-      } else {
-        await PostCommentLike(formattedData);
-      }
+  //     if (isReply) {
+  //       await PostChildCommentLike(chaildFormData);
+  //     } else {
+  //       await PostCommentLike(formattedData);
+  //     }
 
-      setComments((prev) =>
-        prev.map((comment) => {
-          if (isReply) {
-            // Handle reply like
-            const updatedReplies = comment?.replies?.map((reply) => {
-              if (reply.id === replyId) {
-                return {
-                  ...reply,
-                  likes_count: reply.is_liked
-                    ? reply.likes_count - 1
-                    : reply.likes_count + 1,
-                  is_liked: !reply.is_liked,
-                };
-              }
-              return reply;
-            });
-            return { ...comment, replies: updatedReplies };
-          } else {
-            console.log(comment.id, commentId, "commentId commentId");
-            // Handle main comment like
-            if (comment.id === commentId) {
-              return {
-                ...comment,
-                likes_count: comment.is_liked
-                  ? comment.likes_count - 1
-                  : comment.likes_count + 1,
-                is_liked: !comment.is_liked,
-              };
-            }
-            return comment;
-          }
-        })
-      );
-    } catch (error: any) {
-      console.error("Error liking comment:", error.message || error);
-    }
-  };
+  //     setComments((prev) =>
+  //       prev.map((comment) => {
+  //         if (isReply) {
+  //           // Handle reply like
+  //           const updatedReplies = comment?.replies?.map((reply) => {
+  //             if (reply.id === replyId) {
+  //               return {
+  //                 ...reply,
+  //                 likes_count: reply.is_liked
+  //                   ? reply.likes_count - 1
+  //                   : reply.likes_count + 1,
+  //                 is_liked: !reply.is_liked,
+  //               };
+  //             }
+  //             return reply;
+  //           });
+  //           return { ...comment, replies: updatedReplies };
+  //         } else {
+  //           console.log(comment.id, commentId, "commentId commentId");
+  //           // Handle main comment like
+  //           if (comment.id === commentId) {
+  //             return {
+  //               ...comment,
+  //               likes_count: comment.is_liked
+  //                 ? comment.likes_count - 1
+  //                 : comment.likes_count + 1,
+  //               is_liked: !comment.is_liked,
+  //             };
+  //           }
+  //           return comment;
+  //         }
+  //       })
+  //     );
+  //   } catch (error: any) {
+  //     console.error("Error liking comment:", error.message || error);
+  //   }
+  // };
 
   const handleClose = () => {
     setIsClosing(true);
@@ -362,7 +362,7 @@ const CommentBox = ({
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-end justify-center bg-black/50 transition-opacity duration-300 ${
+      className={`fixed inset-0 z-50 flex items-end justify-center bg-black/50 transition-opacity duration-300 m-0 ${
         isClosing ? "opacity-0" : "opacity-100"
       }`}
     >
@@ -370,7 +370,7 @@ const CommentBox = ({
 
       <div
         ref={commentBoxRef}
-        className={`relative w-full max-w-xl bg-white rounded-t-2xl shadow-xl transition-all duration-300 transform ${
+        className={`relative w-full max-w-xl bg-white  shadow-xl px-[24px] transition-all duration-300 transform ${
           isClosing ? "translate-y-full" : "translate-y-0"
         }`}
         style={{
@@ -378,14 +378,25 @@ const CommentBox = ({
           animation: !isClosing ? "slideUp 0.3s ease-out forwards" : "none",
         }}
       >
-        <div className="flex justify-center py-2">
+        {/* <div className="flex justify-center py-2">
           <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
-        </div>
+        </div> */}
 
-        <div className="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10">
+        <div className="flex justify-between items-center p-4 border-b border-[#ECEEF2] sticky top-0 bg-white z-10">
+          <h3 className="font-semibold text-lg">Reflection Threads</h3>
           <button
             onClick={handleClose}
-            className="text-gray-500 hover:text-gray-700"
+            className="
+    w-[35.44px] h-[35.44px]
+    opacity-100
+    border-[#ECEEF2] border-[1px]
+    gap-[8.01px]
+    p-[6.4px]
+    rounded-[6.4px]
+    text-[#E1056D] hover:text-[#E1056D]
+    flex items-center justify-center
+    bg-transparent
+  "
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -395,6 +406,7 @@ const CommentBox = ({
               stroke="currentColor"
             >
               <path
+                stroke={"#E1056D"}
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
@@ -402,8 +414,6 @@ const CommentBox = ({
               />
             </svg>
           </button>
-          <h3 className="font-semibold text-lg">Comments</h3>
-          <div className="w-6"></div>
         </div>
 
         <div
@@ -429,7 +439,11 @@ const CommentBox = ({
                   {/* Main Comment */}
                   <div className="flex gap-3 py-2">
                     <img
-                      src={comment.profile.profile_picture ? comment.profile.profile_picture : "/profile.png"}
+                      src={
+                        comment.profile.profile_picture
+                          ? comment.profile.profile_picture
+                          : "/profile.png"
+                      }
                       alt={`${comment.profile.first_name} ${comment.profile.last_name}`}
                       className="w-10 h-10 rounded-full object-cover flex-shrink-0"
                       onError={(e) => {
@@ -517,7 +531,7 @@ const CommentBox = ({
                       <div className="flex-1 flex gap-2">
                         <input
                           type="text"
-                          placeholder="Write a reply..."
+                          placeholder="Add a reflection..."
                           className="flex-1 rounded-full px-4 py-2 focus:outline-none bg-gray-100 border-none text-sm"
                           value={replyText}
                           onChange={(e) => setReplyText(e.target.value)}
@@ -555,20 +569,20 @@ const CommentBox = ({
                                 target.src = "/profile.png";
                               }}
                             />
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-baseline gap-2">
-                                <span className="font-semibold text-sm">
+                            <div className="flex items-center justify-between w-full">
+                              <div className="flex items-baseline  gap-2">
+                                <span className="font-semibold text-sm me-[12px]">
                                   {reply.profile.first_name}{" "}
                                   {reply.profile.last_name}
                                 </span>
-                                <span className="text-xs text-gray-500">
+                                {/* <span className="text-xs text-gray-500">
                                   {formatTimeAgo(reply.createdAt)}
-                                </span>
-                              </div>
-                              <p className="mt-1 text-sm break-words">
+                                </span> */}
+                              <p className="text-sm break-words">
                                 {reply.text}
                               </p>
-                              <div className="flex items-center text-xs text-gray-500 mt-1 gap-2">
+                              </div>
+                              {/* <div className="flex items-center text-xs text-gray-500 mt-1 gap-2">
                                 <button
                                   onClick={() =>
                                     handleLikeComment(
@@ -583,6 +597,13 @@ const CommentBox = ({
                                 >
                                   Like ({reply.likes_count})
                                 </button>
+                              </div> */}
+                              <div className="flex items-center text-xs text-gray-500 mt-1 gap-2">
+                                <button
+                                  className="hover:underline text-[#E1056D]"
+                                >
+                                  Delete
+                                </button>
                               </div>
                             </div>
                           </div>
@@ -595,7 +616,7 @@ const CommentBox = ({
           )}
         </div>
 
-        <div className="p-4 border-t sticky bottom-0 bg-white">
+        <div className="p-4 border-t sticky bottom-0 border-[#ECEEF2] bg-white">
           <div className="flex items-center gap-2">
             <img
               src={profilePicture}
@@ -608,7 +629,7 @@ const CommentBox = ({
             />
             <input
               type="text"
-              placeholder="Add a comment..."
+              placeholder="Add a reflection..."
               className="flex-1 rounded-full px-4 py-2 focus:outline-none bg-gray-100 border-none"
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}

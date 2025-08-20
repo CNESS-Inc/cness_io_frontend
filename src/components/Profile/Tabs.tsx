@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // import { Search, ArrowLeft } from "lucide-react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 type ConnectionsCardProps = {
@@ -14,6 +14,8 @@ type ConnectionsCardProps = {
   activeTab:any,
   setActiveTab:any
   getUserPosts:any
+  selectedTopic:any
+  onTopicChange?: (topic: string) => void;
 };
 
 const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
@@ -22,19 +24,21 @@ const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
   tabs,
   label,
   hashtags = [],
-  // onSearch,
+  onSearch,
   onTabChange,
   activeTab,
   setActiveTab,
-  getUserPosts
+  getUserPosts,
+  selectedTopic,
+  onTopicChange
 }) => {
   const navigate = useNavigate();
-  const [_searchValue, _setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState(selectedTopic);
 
-  // const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setSearchValue(e.target.value);
-  //   onSearch?.(e.target.value);
-  // };
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+    onSearch?.(e.target.value);
+  };
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
@@ -42,6 +46,17 @@ const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
     getUserPosts("AI",tab)
   };
 
+   // Add this function to handle hashtag clicks
+const handleHashtagClick = (tag: string) => {
+  setSearchValue(tag);
+  onSearch?.(tag);
+  onTopicChange?.(tag); // Call the parent's topic change handler
+};
+
+  useEffect(() => {
+    setSearchValue(selectedTopic)
+  }, [selectedTopic])
+  
   return (
     <div className="rounded-[12px] border border-gray-200 bg-white flex flex-col gap-4 p-4 sm:p-6 w-full">
       {/* Top Section */}
@@ -69,7 +84,6 @@ const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
       {/* Search + Hashtags */}
       <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
         {/* Search Input */}
-        {/*
         <div className="flex items-center border border-gray-300 rounded-full px-3 py-2 w-full sm:w-80 bg-white">
           <span className="text-gray-500 text-sm mr-2">#</span>
           <input
@@ -81,13 +95,13 @@ const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
           />
           <Search className="w-4 h-4 text-gray-400" />
         </div>
-        */} 
         {/* Hashtags */}
         <div className="flex flex-wrap gap-3 text-sm text-teal-400">
           {hashtags.map((tag) => (
             <span
               key={tag}
               className="cursor-pointer hover:underline"
+              onClick={() => handleHashtagClick(tag)}
             >
               #{tag}
             </span>
