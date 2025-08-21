@@ -12,7 +12,7 @@ export default function PostForSocialMedia() {
   const GetPostData = async () => {
     setLoading(true);
     try {
-      const res = await GetTrendingPost()
+      const res = await GetTrendingPost("","",1)
       if (res?.success?.status) {
         setPostData(res?.data?.data?.rows); // Ensure it's an array
       } else {

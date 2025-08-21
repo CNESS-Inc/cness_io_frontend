@@ -17,7 +17,6 @@ import {
 } from "react-share";
 import {
   FaFacebook,
-  FaInstagram,
   FaLinkedin,
   FaTwitter,
   FaWhatsapp,
@@ -26,6 +25,7 @@ import badgeicon from "../../../assets/badgeicon.svg";
 import indv_aspiring from "../../../assets/indv_aspiring.svg";
 import indv_inspried from "../../../assets/indv_inspired.svg";
 import indv_leader from "../../../assets/indv_leader.svg";
+import { MdContentCopy } from "react-icons/md";
 
 // import { BiShare } from "react-icons/bi";
 
@@ -93,19 +93,19 @@ const SegmentedRing = ({
   tickLength = 7,
   dotRadius = 0.6, // Smaller dot size
 }: // Gap between line and dot
-{
-  value: number;
-  label?: string;
-  color?: string;
-  scoreColor?: string;
-  labelColor?: string;
-  size?: number;
-  thickness?: number;
-  segments?: number;
-  tickLength?: number;
-  dotRadius?: number;
-  dotGap?: number;
-}) => {
+  {
+    value: number;
+    label?: string;
+    color?: string;
+    scoreColor?: string;
+    labelColor?: string;
+    size?: number;
+    thickness?: number;
+    segments?: number;
+    tickLength?: number;
+    dotRadius?: number;
+    dotGap?: number;
+  }) => {
   const cx = size / 2;
   const cy = size / 2;
   const radius = size / 2 - tickLength;
@@ -168,6 +168,7 @@ const ScoreResult = () => {
   console.log("🚀 ~ ScoreResult ~ scoreData:", scoreData);
   const [loading, setLoading] = useState(true);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const [copy, setCopy] = useState<Boolean>(false)
 
   const fetchRatingDetails = async () => {
     try {
@@ -304,19 +305,19 @@ const ScoreResult = () => {
                   <th>Percentage</th>
               </tr>
               ${data.array
-                .map(
-                  (item: any) => `
+          .map(
+            (item: any) => `
               <tr>
                   <td>${item.section.name}</td>
                   <td>${item.section.total_weight}</td>
                   <td>${item.section.weight}</td>
                   <td>${Math.round(
-                    (item.section.weight / item.section.total_weight) * 100
-                  )}%</td>
+              (item.section.weight / item.section.total_weight) * 100
+            )}%</td>
               </tr>
               `
-                )
-                .join("")}
+          )
+          .join("")}
               <tr>
                   <th colspan="2">Total Score</th>
                   <th colspan="2">${data.final_score} / 100</th>
@@ -437,7 +438,7 @@ const ScoreResult = () => {
                 Score & Results
               </p>
               {scoreData.is_submitted_by_head &&
-              scoreData.cis_result.length > 0 ? (
+                scoreData.cis_result.length > 0 ? (
                 <div className="flex gap-2">
                   <div className="relative">
                     <button
@@ -463,9 +464,9 @@ const ScoreResult = () => {
                               <FaLinkedin size={32} color="#0077B5" />
                             </LinkedinShareButton>
                           </li>
-                          <li>
+                          {/* <li>
                             <FaInstagram size={32} color="#C13584" />
-                          </li>
+                          </li> */}
                           <TwitterShareButton url={urldata} title={tweetText}>
                             <FaTwitter size={32} color="#1DA1F2" />
                           </TwitterShareButton>
@@ -473,6 +474,22 @@ const ScoreResult = () => {
                             <WhatsappShareButton url={urldata}>
                               <FaWhatsapp size={32} color="#1DA1F2" />
                             </WhatsappShareButton>
+                          </li>
+                          <li>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(urldata);
+                                setCopy(true);
+                                setTimeout(() => setCopy(false), 1500);
+                              }}
+                              className="flex items-center relative"
+                              title="Copy link"
+                            >
+                              <MdContentCopy size={30} className="text-gray-600" />
+                              {copy && <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
+                                Link Copied!
+                              </div>}
+                            </button>
                           </li>
                         </ul>
                       </div>
@@ -529,7 +546,7 @@ const ScoreResult = () => {
                   </button>
                 </div>
               ) : (
-                <div className="flex gap-2 items-center">
+                <div className="flex gap-2 items-center hidden">
                   <div className="relative">
                     <button
                       className="bg-white border cursor-not-allowed border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 rounded-full shadow-md"
@@ -576,30 +593,30 @@ const ScoreResult = () => {
                 {(!scoreData.is_assessment_submited ||
                   !scoreData.is_submitted_by_head ||
                   scoreData.cis_score === 0) && (
-                  <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-[12px] shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
-                    <svg
-                      className="w-8 h-8 text-gray-700 opacity-80 mb-2"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fill="#4F46E5"
-                        d="M10 2a4 4 0 00-4 4v3H5a1 1 0 000 2h10a1 1 0 000-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v3H8V6z"
-                      />
-                      <path
-                        fill="#4F46E5"
-                        d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"
-                      />
-                    </svg>
-                    <p className="text-sm text-gray-700 font-medium">
-                      {!scoreData.is_assessment_submited
-                        ? "Complete Assessment to Unlock"
-                        : !scoreData.is_submitted_by_head
-                        ? "Score Under Review"
-                        : "Score Not Available"}
-                    </p>
-                  </div>
-                )}
+                    <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-[12px] shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
+                      <svg
+                        className="w-8 h-8 text-gray-700 opacity-80 mb-2"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fill="#4F46E5"
+                          d="M10 2a4 4 0 00-4 4v3H5a1 1 0 000 2h10a1 1 0 000-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v3H8V6z"
+                        />
+                        <path
+                          fill="#4F46E5"
+                          d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"
+                        />
+                      </svg>
+                      <p className="text-sm text-gray-700 font-medium">
+                        {!scoreData.is_assessment_submited
+                          ? "Complete Assessment to Unlock"
+                          : !scoreData.is_submitted_by_head
+                            ? "Score Under Review"
+                            : "Score Not Available"}
+                      </p>
+                    </div>
+                  )}
 
                 <div className="flex items-center gap-3 mb-2">
                   <div className="bg-[#E8CDFD] w-7 h-7 flex items-center justify-center rounded-full p-2">
@@ -691,8 +708,8 @@ const ScoreResult = () => {
                           scoreData.badge.level === "Aspiring"
                             ? indv_aspiring
                             : scoreData.badge.level === "Inspired"
-                            ? indv_inspried
-                            : indv_leader
+                              ? indv_inspried
+                              : indv_leader
                         }
                         alt={`${scoreData.badge.level} Badge`}
                         className="h-[87px] w-auto object-contain"

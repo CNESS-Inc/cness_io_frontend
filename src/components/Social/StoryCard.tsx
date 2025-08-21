@@ -18,15 +18,17 @@ const StoryCard: React.FC<StoryCardProps> = ({
   userName,
   title,
   videoSrc,
-  id,
+  // id,
 }) => {
   const navigate = useNavigate();
 
-  const handleReel = (id: any) => {
-    navigate(`/social/reel/${id}`);
+  const handleReel = () => {
+    navigate(`/story-design`);
+    // navigate(`/social/reel/${id}`);
   };
   return (
-    <div onClick={() => handleReel(id)}>
+    <div onClick={() => handleReel()}>
+    {/* <div onClick={() => handleReel(id)}> */}
       <div className="relative w-40 h-80 rounded-lg overflow-hidden shadow-md">
         <LazyLoadComponent>
           <video

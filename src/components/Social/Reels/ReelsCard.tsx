@@ -4,7 +4,7 @@ import '@sayings/react-reels/dist/index.css'
 import { useNavigate } from "react-router-dom";
 import ReelComment from "./ReelComment";
 import { GetStory, LikeStory } from "../../../Common/ServerAPI";
-
+import ReelShare from "./ReelShare";
 
 declare global {
   interface Element {
@@ -88,6 +88,7 @@ const ReelsCard = () => {
 
   // Function to handle comment click
   const handleCommentClick = (reel: any) => {
+    setOpenMenuReelId(null)
     setSelectedReelId(reel.id);
   };
 
@@ -134,6 +135,7 @@ const ReelsCard = () => {
 
       if (selectedReelId !== activePost?.id) {
         setSelectedReelId(null);
+        setOpenMenuReelId(null)
       }
 
       // // ✅ If last index, append more stories
@@ -171,6 +173,16 @@ const ReelsCard = () => {
     };
   }, [storyData, navigate]);
 
+  const urldata = window.location.href;
+  const [openMenuReelId, setOpenMenuReelId] = useState<string | null>(null);
+
+  const toggleMenu = (reelId: string) => {
+    setSelectedReelId(null)
+    setOpenMenuReelId((prev) => (prev === reelId ? null : reelId));
+  };
+
+
+
   return (
     <>
       <button
@@ -187,7 +199,11 @@ const ReelsCard = () => {
             onMenuItemClicked={(event) => console.log(event.value)}
             onLikeClicked={handleLikeClick}
             onCommentClicked={handleCommentClick} // Trigger input on comment click
-            onShareClicked={(reel) => console.log("Shared:", reel)}
+            //@ts-ignore
+            onShareClicked={(reel: any, event: any) => {
+              toggleMenu(reel.id);
+              setSelectedReelId(null)
+            }}
             onAvatarClicked={(reel) => console.log("Avatar Clicked:", reel)}
           />
         )}
@@ -201,6 +217,10 @@ const ReelsCard = () => {
               GetStoryData={GetStoryData}
             />
           </>
+        )}
+
+        {openMenuReelId && (
+          <ReelShare setOpenMenuReelId={setOpenMenuReelId} urldata={urldata}/>
         )}
       </div>
     </>

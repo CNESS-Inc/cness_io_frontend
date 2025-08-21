@@ -5,8 +5,8 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import { CommentStory, FetchCommentStory } from "../../../Common/ServerAPI";
 import LoadingSpinner from "../../ui/LoadingSpinner";
 
-
 const ReelComment = (props: any) => {
+  console.log("🚀 ~ ReelComment ~ props:", props)
   const [commentText, setCommentText] = useState("");
   const [commentData, setComentData] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -14,27 +14,28 @@ const ReelComment = (props: any) => {
 
   const handleCommentSubmit = async () => {
     if (!props?.selectedReelId || !commentText.trim()) return;
-    setPostLoading(true)
+    setPostLoading(true);
 
     try {
       const formattedData = {
         story_id: props?.selectedReelId,
         text: commentText,
-      }
-      await CommentStory(formattedData)
+      };
+      await CommentStory(formattedData);
       setCommentText(""); // Clear input after submitting
       await fetchComment();
       await props.GetStoryData();
     } catch (error) {
       console.error("Error submitting comment:", error);
-    }finally {
+    } finally {
       setPostLoading(false);
     }
   };
+
   const fetchComment = async () => {
     setIsLoading(true);
     try {
-      const response = await FetchCommentStory(props?.selectedReelId)
+      const response = await FetchCommentStory(props?.selectedReelId);
       setComentData(response?.data?.data?.rows);
     } catch (error) {
       console.error("Error submitting comment:", error);
@@ -42,6 +43,7 @@ const ReelComment = (props: any) => {
       setIsLoading(false);
     }
   };
+
   useEffect(() => {
     fetchComment();
   }, []);
@@ -53,38 +55,37 @@ const ReelComment = (props: any) => {
     <>
       {props?.selectedReelId && (
         <>
+          {/* Comment Modal - Now positioned on the right side */}
           <div
-            className="fixed left-1/2 transform -translate-x-1/2 bg-white rounded-t-lg shadow-md w-[400px]"
-            style={{ bottom: "65px" }}
+            className="fixed right-91 bottom-0 bg-white rounded-t-lg shadow-md w-full max-w-md z-50"
+            style={{ 
+              height: "calc(100vh - 200px)",
+              maxHeight: "calc(100vh - 200px)",
+            }}
           >
-            <div className="flex items-center">
+            <div className="flex items-center border-b p-3">
               <BsXLg
-                className="text-lg ms-3 cursor-pointer"
+                className="text-lg me-3 cursor-pointer"
                 onClick={() => props?.setSelectedReelId(null)}
               />
-              <p className="mt-2 mb-2 w-full text-center text-lg">Comments</p>
+              <p className="w-full text-center text-lg">Comments</p>
             </div>
             <div
               className="flex flex-col p-3"
-              style={{ height: "400px", overflowY: "scroll" }}
+              style={{ 
+                height: "calc(100% - 120px)", 
+                overflowY: "auto" 
+              }}
             >
               {isLoading ? (
                 <div className="flex justify-center items-center h-40">
-                  <LoadingSpinner/>
+                  <LoadingSpinner />
                 </div>
               ) : commentData?.length > 0 ? (
-                commentData.map((comment:any, index:any) => (
+                commentData.map((comment: any, index: any) => (
                   <div key={index} className="mt-2 mb-2 w-full">
                     <div className="flex items-start">
                       <Link to={""}>
-                        {/* <img
-                          src={
-                            comment?.profile?.profile_picture ||
-                            dummyProfilePicture
-                          }
-                          alt="profile"
-                          className="w-8 h-8 rounded-full mr-4"
-                        /> */}
                         <LazyLoadImage
                           src={
                             comment?.profile?.profile_picture ||
@@ -92,7 +93,7 @@ const ReelComment = (props: any) => {
                           }
                           alt="profile"
                           className="w-8 h-8 rounded-full mr-4"
-                          effect="blur" // Options: "blur", "opacity", "black-and-white"
+                          effect="blur"
                         />
                       </Link>
                       <div style={{ width: "100%" }}>
@@ -121,28 +122,29 @@ const ReelComment = (props: any) => {
                 </p>
               )}
             </div>
-          </div>
 
-          <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 bg-white p-3 rounded-b-lg shadow-md flex w-[400px]">
-            <input
-              type="text"
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              placeholder="Write a comment..."
-              className="w-400 p-2 border border-gray-300 rounded-l-md focus:outline-none "
-              disabled={postLoading}
-            />
-            <button
-              onClick={handleCommentSubmit}
-              className={`font-medium px-4 py-2 rounded-r-md transition ${
-                postLoading
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-gradient-to-r from-indigo-500 to-purple-500 text-white"
-              }`}
-              disabled={isLoading}
-            >
-              {postLoading ? "Posting..." : <BsFillSendFill />}
-            </button>
+            {/* Comment Input - Now fixed at the bottom of the right panel */}
+            <div className="absolute bottom-0 left-0 right-0 bg-white p-3 border-t flex">
+              <input
+                type="text"
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                placeholder="Write a comment..."
+                className="w-full p-2 border border-gray-300 rounded-l-md focus:outline-none"
+                disabled={postLoading}
+              />
+              <button
+                onClick={handleCommentSubmit}
+                className={`font-medium px-4 py-2 rounded-r-md transition ${
+                  postLoading
+                    ? "bg-gray-300 cursor-not-allowed"
+                    : "bg-gradient-to-r from-indigo-500 to-purple-500 text-white"
+                }`}
+                disabled={isLoading}
+              >
+                {postLoading ? "Posting..." : <BsFillSendFill />}
+              </button>
+            </div>
           </div>
         </>
       )}

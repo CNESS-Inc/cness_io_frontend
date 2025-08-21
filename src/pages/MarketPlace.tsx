@@ -1,5 +1,5 @@
-import { useState } from "react";
-
+// import { useState } from "react";
+import Marketform from "../components/zohoforms/Marketform";
 // import HeroCarousel from "../components/marketplaceComponents/HeroCarousel";
 // import CnessRecommendations from "../components/marketplaceComponents/CnessRecommendations";
 // import sorticon from "../assets/sort.png"; // update the path as needed
@@ -151,7 +151,7 @@ import { useState } from "react";
 // ];
 
 export default function MarketplacePage() {
-  const [_currentPage, _setCurrentPage] = useState(1);
+  //const [_currentPage, _setCurrentPage] = useState(1);
   // const itemsPerPage = 6;
 
   // const start = (currentPage - 1) * itemsPerPage;
@@ -181,7 +181,7 @@ export default function MarketplacePage() {
                     className="w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8A6CFF]"
                   />
                   <span className="absolute right-3 top-2.5 text-gray-400 text-sm">
-                    🔍
+                    //🔍
                   </span>
                 </div>
 
@@ -273,31 +273,14 @@ export default function MarketplacePage() {
         </div>
       </div> */}
 
-      <div className="max-w-6xl mt-0 shadow overflow-hidden p-8 text-center">
-        <div className="py-12">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            Market Place Feature Coming Soon
-          </h2>
-          <p className="text-gray-600 mb-6">
-            We're working hard to bring this feature to you. Please check back
-            later!
-          </p>
-          <div className="flex justify-center">
-            <svg
-              className="w-24 h-24 text-purple-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-              />
-            </svg>
-          </div>
+      <div className="p-0">
+        <div className="rounded-xl border border-gray-200 bg-white p-0">
+          <Marketform
+            // Use your actual Marketplace form’s public URL (formperma link)
+            src="https://forms.zohopublic.com/vijicn1/form/Marketplace/formperma/el8kVJRUNFZMb_NKSfiaeHS9G5UWi4TufI-Y2VACvgc"
+            title="Marketplace Submission"
+            minHeight={900}
+          />
         </div>
       </div>
     </>

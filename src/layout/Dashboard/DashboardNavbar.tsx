@@ -11,6 +11,7 @@ import {
 import { NavLink, useNavigate, useLocation, Link } from "react-router-dom";
 import { iconMap } from "../../assets/icons";
 import hambur from "../../assets/hambur.png";
+// import { generateSSOToken, API } from "../../Common/ServerAPI";
 // import { LogOut } from "../../Common/ServerAPI";
 // import { useToast } from "../../components/ui/Toast/ToastProvider";
 
@@ -58,6 +59,23 @@ const DashboardNavbar = ({
   //     });
   //   }
   // };
+
+  /*const generateSsoToken = async () => {
+    try {
+      const jwtToken = localStorage.getItem("jwt");
+      const payload = {
+        token: jwtToken,
+      };
+      const res = await generateSSOToken(payload);
+      
+      const ssoToken = res.data?.data?.sso_token;
+      if (ssoToken) {
+        window.open(`${API.MarketplaceBaseUrl}auth/login?sso_token=${ssoToken}`, '_blank');
+      }
+    } catch (err) {
+      console.error("Failed to load referred users", err);
+    }
+  };*/
 
   const mainNavItems = [
     {
@@ -137,25 +155,10 @@ const DashboardNavbar = ({
     },
 
     {
-      id: "market-place",
-      icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
-      label: "Market Place",
-      active: true,
-      //path: "/dashboard/market-place",
-      isMarketplaceDropdown: true,
-      childPaths: ["/dashboard/DigitalProducts"],
-      children: [
-        { label: "Buy Digital Products", path: "/dashboard/digital_products" },
-        { label: "Sell your Products", path: "/dashboard/SellProducts" },
-        { label: "Track Purchase & Sales", path: "/dashboard/Tracking" },
-        { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
-      ],
-    },
-    {
       id: "Social",
       icon: <img src={iconMap["social"]} alt="Home Icon" className="w-5 h-5" />,
       label: "Social",
-      active: true,
+      active: false,
       // path: "/dashboard/DashboardSocial",
       isSocialDropdown: true,
       childPaths: ["/dashboard/Feed"],
@@ -163,9 +166,27 @@ const DashboardNavbar = ({
         { label: "Feed", path: "/dashboard/feed" },
         { label: "Profile", path: "/dashboard/Profile" },
         { label: "My Connections", path: "/dashboard/MyConnection" },
-        { label: "Messagings", path: "/dashboard/ComingSoon" },
+        // { label: "Messagings", path: "/dashboard/ComingSoon" },
       ],
     },
+    
+    {
+      id: "market-place",
+      icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
+      label: "Market Place",
+      active: true,
+      path: "/dashboard/market-place",
+      /*isMarketplaceDropdown: true,
+      childPaths: ["/dashboard/DigitalProducts"],
+      children: [
+        {label: "Login To Market Place", path: "", customAction: generateSsoToken },
+        { label: "Buy Digital Products", path: "/dashboard/digital_products" },
+        { label: "Sell your Products", path: "/dashboard/SellProducts" },
+        { label: "Track Purchase & Sales", path: "/dashboard/Tracking" },
+        { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
+      ],*/
+    },
+
     {
       id: "Community",
       icon: (
@@ -185,7 +206,7 @@ const DashboardNavbar = ({
           label: "Manage Circles (Coming Soon)",
           path: "/dashboard/ComingSoon",
         },
-        { label: "Messagings", path: "/dashboard/ComingSoon" },
+        // { label: "Messagings", path: "/dashboard/ComingSoon" },
       ],
     },
     {
@@ -197,10 +218,11 @@ const DashboardNavbar = ({
       childPaths: ["/dashboard/BecomeMentor"],
       children: [
         { label: "Became an Mentor", path: "/dashboard/Become_mentor" },
-        { label: "Mentor Dashboard", path: "/dashboard/ComingSoon" },
-        { label: "Track Progress", path: "/dashboard/ComingSoon" },
-        { label: "Partner License & Toolkit", path: "/dashboard/ComingSoon" },
-        { label: "Partner Dashboard", path: "/dashboard/ComingSoon" },
+        { label: "Became a Partner", path: "/dashboard/Become_partner" },
+        // { label: "Mentor Dashboard", path: "/dashboard/ComingSoon" },
+        // { label: "Track Progress", path: "/dashboard/ComingSoon" },
+        // { label: "Partner License & Toolkit", path: "/dashboard/ComingSoon" },
+        // { label: "Partner Dashboard", path: "/dashboard/ComingSoon" },
       ],
     },
     {
@@ -420,17 +442,28 @@ const DashboardNavbar = ({
           {isDropdownOpen && (
             <div className="flex flex-col gap-1 mt-3 pl-8">
               {item.children.map((child: any, idx: number) => (
-                <NavLink
-                  key={idx}
-                  to={child.path}
-                  className={({ isActive }) =>
-                    `px-4 py-3 w-full rounded-md transition whitespace-nowrap ${
-                      isActive ? activeSubClasses : inactiveSubClasses
-                    }`
-                  }
-                >
-                  {child.label}
-                </NavLink>
+                child.path ? (
+                  <NavLink
+                    key={idx}
+                    to={child.path}
+                    className={({ isActive }) =>
+                      `px-4 py-3 w-full rounded-md transition whitespace-nowrap ${
+                        isActive ? activeSubClasses : inactiveSubClasses
+                      }`
+                    }
+                  >
+                    {child.label}
+                  </NavLink>
+                ) : (
+                  <NavLink
+                    key={idx}
+                    to="#"
+                    onClick={child.customAction}
+                    className={`px-4 py-3 w-full rounded-md transition whitespace-nowrap ${inactiveSubClasses}`}
+                  >
+                    {child.label}
+                  </NavLink>
+                )
               ))}
             </div>
           )}
@@ -477,9 +510,9 @@ const DashboardNavbar = ({
           <div className="flex items-center justify-between w-full py-[18px] px-4 md:px-6">
             <Link to="/dashboard">
               <img
-                className="w-[108.12px] h-[46.51px]"
+                className="h-auto w-[100px]"
                 alt="Company Logo"
-                src="https://c.animaapp.com/magahlmqpONVZN/img/component-1.svg"
+                src="/cnesslogo.png"
               />
             </Link>
             <div className="hidden md:block ml-auto">

@@ -1,5 +1,4 @@
 import axios, { type AxiosResponse } from "axios";
-
 // Define types for your API
 type ApiMethod = "GET" | "POST" | "PUT" | "DELETE";
 type LoginFormData = {
@@ -36,6 +35,9 @@ type getReferralAmountFromData = {
 type getMyRefferralCodeFromData = {
   user_id: string;
 }
+type getGenerateSSOTokenFromData = {
+  token: any;
+};
 type AccountFormData = {
   plan_id: string;
   plan_type: string;
@@ -77,6 +79,7 @@ export const API = {
   //  BaseUrl: "http://192.168.1.30:5025/api", //local
   // BaseUrl: "http://localhost:5025/api", //local
   BaseUrl: import.meta.env.VITE_API_BASE_URL || "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api",
+  MarketplaceBaseUrl: "http://localhost:3000/"
 };
 
 export const EndPoint = {
@@ -129,6 +132,7 @@ export const EndPoint = {
   report: "/quiz/report",
   get_all_post: "/user/posts/get/all",
   create_post: "/user/posts",
+  delete_post: "/user/posts",
   postComments: "/user/post/comments",
   postChildComment: "/user/post/comments/child",
   postCommentLike: "/user/post/comments/like",
@@ -137,6 +141,8 @@ export const EndPoint = {
   Post_AllComments: "/user/post/comments",
   single_post: "/user/posts/get",
   user_post: "/user/posts",
+  save_post: "/user/posts/save",
+  report_post: "/user/posts/report",
   story: "/story",
   story_like: "/story/like",
   story_comment: "/story/comment",
@@ -144,9 +150,15 @@ export const EndPoint = {
   trending_post: "/user/posts/trending",
   trending_movie: "/movie/trending",
   following: "/user/following",
+  follow_status: "/user/follow/status",
+  followers: "/user/follower",
+  following_followers: "/user/following-followers",
   connection: "/friend",
+  user_connection: "/friend/get-friend-status",
   connection_request: "/friend/request",
   delete_friend: "/friend/delete/friend",
+  friend_request_accept: "/friend/request/accept",
+  friend_request_reject: "/friend/request/reject",
   follow: "/user/follow",
   vote: "/poll/vote",
   googleLogin: "/auth/google-login",
@@ -173,6 +185,9 @@ export const EndPoint = {
   get_referral_amount: "/profile/user/getReferralAmount",
   subscription: "/subscription",
   get_badge: "/profile/get-user-badge",
+  generate_sso_token: "/auth/generate-sso-token",
+  profile_get_by_user_id: "/profile/get-user",
+  user_posts_by_user_id: "/user/posts/get-user-post",
 };
 
 export const GoogleLoginDetails = async (googleToken: string): ApiResponse => {
@@ -252,6 +267,13 @@ export const getMyRefferralCode = (formData: getMyRefferralCodeFromData): ApiRes
 export const getReferralEarning = (formData: getReferralAmountFromData): ApiResponse => {
 
   return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.get_referral_amount}?user_id=${formData.user_id}`);
+};
+
+export const generateSSOToken = (formData: getGenerateSSOTokenFromData): ApiResponse => {
+ const data: Partial<getGenerateSSOTokenFromData> = {
+    token: formData.token,
+  };
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.generate_sso_token);
 };
 
 export const getSubscriptionDetails = (): ApiResponse => {
@@ -784,6 +806,16 @@ export const AddPost = (formData: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.create_post);
 };
 
+export const DeleteUserPost = (
+  id: string
+): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.delete_post}/${id}`,
+  );
+};
+
 export const PostComments = (formattedData: any) => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
@@ -796,6 +828,14 @@ export const PostChildComments = (formattedData: any) => {
     ServerAPI.APIMethod.POST,
     formattedData,
     EndPoint.postChildComment
+  );
+};
+export const GetChildComments = (id: any) => {
+  let data = {};
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.postChildComment}/${id}`
   );
 };
 export const PostCommentLike = (formattedData: any) => {
@@ -872,10 +912,17 @@ export const GetEvent = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.event);
 };
-export const GetTrendingPost = () => {
+export const GetTrendingPost = (tag: string, tab:string|null=null,page:any) => {
+  console.log("🚀 ~ GetTrendingPost ~ tab:", tab)
+  console.log("🚀 ~ GetTrendingPost ~ tag:", tag)
   let data = {};
-  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.trending_post);
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["tag"] = tag;
+
+  return executeAPI(ServerAPI.APIMethod.GET, data, `/user/posts/${tab ? tab : 'trending'}`, params);
 };
+
 export const GetTrendingMovie = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.trending_movie);
@@ -884,6 +931,14 @@ export const GetFollowingUser = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.following);
 };
+export const GetFollowerUser = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.followers);
+};
+export const GetFollowingFollowerUsers = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.following_followers);
+}
 export const GetConnectionUser = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection);
@@ -902,11 +957,89 @@ export const UnFriend = (formattedData: any) => {
     EndPoint.delete_friend
   );
 };
+export const GetFriendRequest = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection_request);
+};
+export const AcceptFriendRequest = (formattedData: any) => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formattedData,
+    EndPoint.friend_request_accept
+  );
+};
+
+export const RejectFriendRequest = (formattedData: any) => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formattedData,
+    EndPoint.friend_request_reject
+  );
+};
+export const GetProfileByUserId = (userId: string) => {
+  let data = {};
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.profile_get_by_user_id}/${userId}`
+  );
+};
+
+export const GetFollowStatus = (userId: string) => {
+  let data = {};
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.follow_status}/${userId}`
+  );
+};
+
+export const GetUserPostsByUserId = (userId: string, page: number = 1) => {
+  let data = {};
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.user_posts_by_user_id}/${userId}`,
+    params
+  );
+};
+
+export const GetFollowingFollowersByUserId = (userId: string) => {
+  let data = {};
+  let params: { [key: string]: any } = {};
+  params["user_id"] = userId;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    EndPoint.following_followers,
+    params
+  );
+};
+
+export const SendFriendRequest = (formattedData: any) => {
+  return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.connection_request);
+};
+
+export const GetFriendStatus = (userId: string) => {
+  const data = {};
+ return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.user_connection}/${userId}`);
+};
+
 export const SendFollowRequest = (formattedData: any) => {
   return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.follow);
 };
 export const AddVote = (formattedData: any) => {
   return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.vote);
+};
+
+export const SavePost = (postId: string) => {
+  return executeAPI(ServerAPI.APIMethod.POST, { post_id: postId }, EndPoint.save_post);
+};
+
+export const ReportPost = (postId: string, reason: string) => {
+  return executeAPI(ServerAPI.APIMethod.POST, { post_id: postId, reason: reason }, EndPoint.report_post);
 };
 
 export const LogOut = () => {
@@ -923,7 +1056,7 @@ export const executeAPI = async <T = any,>(
   try {
     const token = localStorage.getItem("jwt");
     const isFormData = data instanceof FormData;
-
+    
     const response: AxiosResponse<T> = await axios({
       method: method,
       url: API.BaseUrl + endpoint,
@@ -937,7 +1070,7 @@ export const executeAPI = async <T = any,>(
         },
         ...(API.BaseUrl.trim().toLowerCase().startsWith("https://") && { withCredentials: true })
       });
-
+      
     const access_token = response.headers['access_token'];
 
     if (access_token != 'not-provide') {
@@ -949,7 +1082,7 @@ export const executeAPI = async <T = any,>(
   } catch (error: any) {
     // console.log("🚀 ~ error:", error)
 
-    if (error.response.data.error.statusCode == 401) {
+    if (error.response?.data?.error?.statusCode == 401) {
       localStorage.clear();
       window.location.href = '/';
     }
