@@ -26,8 +26,8 @@ const DashboardLayout = () => {
     location.pathname === "/DashboardDirectory/dashboardtechnology";
 
   return (
-    <div className="bg-[#f9f9f9] flex flex-row justify-center w-full min-h-screen relative">
-      <div className="bg-[#f9f9f9] w-full flex flex-col">
+    <div className="bg-[#f9f9f9] flex flex-col justify-center w-full min-h-screen relative">
+      <div className="bg-[#f9f9f9] w-full flex flex-col relative">
         {/* Mobile Header */}
         {!isMobileNavOpen && (
           <div className="md:hidden">
@@ -83,14 +83,14 @@ const DashboardLayout = () => {
                   <Outlet />
                 </div>
               </div>
-              <div className="hidden md:block w-full">
-                <Footer />
-              </div>
             </main>
           </div>
           
           
       </div>
+          <div className="hidden md:block w-full">
+            <Footer />
+          </div>
 
       {/* Mobile Sidebar Backdrop and Slide-in */}
       {isMobileNavOpen && (
