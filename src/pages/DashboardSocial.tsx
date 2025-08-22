@@ -14,6 +14,9 @@ import {
   Link as LinkIcon,
 } from "lucide-react";
 import Modal from "../components/ui/Modal";
+import TopicModal  from "../components/Social/Topicmodel";
+
+
 
 // import { MdContentCopy } from "react-icons/md";
 
@@ -59,6 +62,8 @@ import { FaFacebook, FaLinkedin, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import FollowedUsersList from "./FollowedUsersList";
 import CollectionList from "./CollectionList";
 import Button from "../components/ui/Button";
+
+
 
 interface Post {
   id: string;
@@ -197,6 +202,21 @@ interface CollectionItem {
 //   },
 // ];
 
+const dummyTopics: Topic[] = [
+  { id: "mindfulness",   topic_name: "Mindfulness",   slug: "mindfulness" },
+  { id: "sustainability", topic_name: "Sustainability", slug: "sustainability" },
+  { id: "community",     topic_name: "Community",     slug: "community" },
+  { id: "leadership",    topic_name: "Leadership",    slug: "leadership" },
+  { id: "innovation",    topic_name: "Innovation",    slug: "innovation" },
+  { id: "wellbeing",     topic_name: "Wellbeing",     slug: "wellbeing" },
+    { id: "mindfulness",   topic_name: "Mindfulness",   slug: "mindfulness" },
+  { id: "sustainability", topic_name: "Sustainability", slug: "sustainability" },
+  { id: "community",     topic_name: "Community",     slug: "community" },
+  { id: "leadership",    topic_name: "Leadership",    slug: "leadership" },
+  { id: "innovation",    topic_name: "Innovation",    slug: "innovation" },
+  { id: "wellbeing",     topic_name: "Wellbeing",     slug: "wellbeing" },
+];
+
 interface PostCarouselProps {
   mediaItems: Array<{
     type: "image" | "video";
@@ -227,6 +247,12 @@ interface Story {
     is_liked: boolean;
   }[];
 }
+
+type Topic = {
+  id: string;
+  topic_name: string;
+  slug: string;
+};
 
 function PostCarousel({ mediaItems }: PostCarouselProps) {
   const [current, setCurrent] = useState(0);
@@ -403,6 +429,8 @@ export default function SocialTopBar() {
   const [reportReason, setReportReason] = useState("");
   // const [isSavingPost, setIsSavingPost] = useState<string | null>(null);
   const [isReportingPost, setIsReportingPost] = useState<string | null>(null);
+//const [showTopicModal, setShowTopicModal] = useState(false);
+
 
   const handleConnect = async (userId: string) => {
     try {
@@ -985,6 +1013,8 @@ export default function SocialTopBar() {
   };
   
 
+  
+
   const handleScroll = () => {
     const container = containerRef.current;
     if (!container) return;
@@ -1169,9 +1199,50 @@ export default function SocialTopBar() {
     };
   }, []);
 
+  const [selectedTopic, setSelectedTopic] = useState<string>(""); // dropdown state
+  const [topics, setTopics] = useState<Topic[]>([]); // list of topics
+const [showTopicModal, setShowTopicModal] = useState(false);
+
+  
+
+  // Fetch topics from API (example)
+  useEffect(() => {
+    const fetchTopics = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/topics"); // your backend API
+        const data = await res.json();
+        setTopics(data);
+      } catch (err) {
+        console.error("Error fetching topics:", err);
+      }
+    };
+
+    fetchTopics();
+  }, []);
+
+  // Open the modal when the page mounts
+useEffect(() => {
+  setShowTopicModal(true);
+}, []);
+
+
+useEffect(() => {
+  const stored = localStorage.getItem("selected_topics");
+  // show overlay on first page load if nothing stored yet
+  if (!stored) setShowTopicModal(true);
+}, []);
+
+const handleTopicsSelected = (ids: string[]) => {
+  localStorage.setItem("selected_topics", JSON.stringify(ids));
+  setShowTopicModal(false);
+};
+
   return (
     <>
+
+   
       {isAdult ? (
+
         <div className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-2 px-2 md:px-2 lg:px-0 w-full">
           {/* Left Side: Post & Stories - Full width on mobile */}
           <div
@@ -1786,54 +1857,48 @@ export default function SocialTopBar() {
             )}
           </div>
 
-          {/* Right Side: Quick Actions - Full width on mobile, appears below */}
-          <div className="w-full lg:w-[100%] lg:max-w-[30%] h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm order-first lg:order-last mb-4 lg:mb-0">
-            <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
-              Quick Actions
-            </h3>
-            <div className="w-full border-t-[1px] border-[#C8C8C8] mt-4 md:mt-4 mb-6"></div>
-            <ul className="space-y-4 md:space-y-6 text-sm md:text-[15px] text-gray-700 px-4">
-              <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
-                <button
-                  onClick={() => navigate("/dashboard/trendingpost")}
-                  className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
-                >
-                  <img
-                    src={Trending}
-                    className="w-4 h-4 md:w-5 md:h-5"
-                    alt=""
-                  />
-                  Trending
-                </button>
-              </li>
-              {/*<li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
-              <img src={Mention} className="w-4 h-4 md:w-5 md:h-5" /> Mention &
-              tags
-            </li> */}
-              <li
-                className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
-                onClick={fetchCollectionItems}
-              >
-                <img src={Collection} className="w-4 h-4 md:w-5 md:h-5" /> My
-                Collection
-              </li>
-              <li
-                className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
-                onClick={fetchFollowedUsers}
-              >
-                <img src={people} className="w-4 h-4 md:w-5 md:h-5" /> People
-                you follow
-              </li>
-              {/* <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
-              <img src={Leaderboard} className="w-4 h-4 md:w-5 md:h-5" />{" "}
-              Leaderboard
-            </li>
-            <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
-              <img src={Announcement} className="w-4 h-4 md:w-5 md:h-5" />{" "}
-              Announcements
-            </li> */}
-            </ul>
-          </div>
+        {/* Right Sidebar Container */}
+<div className="w-full lg:w-[30%] flex flex-col gap-4">
+
+  {/* Quick Actions */}
+  <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
+    <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
+      Quick Actions
+    </h3>
+    <div className="w-full border-t border-[#C8C8C8] my-4"></div>
+    <ul className="space-y-4 text-sm md:text-[15px] text-gray-700 px-4">
+      <li onClick={() => navigate("/dashboard/trendingpost")} className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
+        <img src={Trending} className="w-5 h-5" alt="" /> Trending
+      </li>
+      <li onClick={fetchCollectionItems} className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
+        <img src={Collection} className="w-5 h-5" alt="" /> My Collection
+      </li>
+      <li onClick={fetchFollowedUsers} className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
+        <img src={people} className="w-5 h-5" alt="" /> People you follow
+      </li>
+    </ul>
+  </div>
+
+  {/* Topics BELOW Quick Actions */}
+  <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
+    <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
+      Topics
+    </h3>
+    <div className="w-full border-t border-[#C8C8C8] my-4"></div>
+    <ul className="space-y-3 text-sm md:text-[15px] text-gray-700 px-4">
+      {topics?.map((topic) => (
+        <li key={topic.id} onClick={() => navigate(`/topics/${topic.slug}`)} className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
+          <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+          {topic.topic_name}
+        </li>
+      ))}
+      {topics?.length === 0 && (
+        <li className="text-gray-400 italic">No topics available</li>
+      )}
+    </ul>
+  </div>
+</div>
+          
 
           {/* Popup Modals (unchanged) */}
           {showPopup && (
@@ -1994,15 +2059,32 @@ export default function SocialTopBar() {
                       </button>
                     </div>
                   )}
-                  <div className="flex justify-between">
-                    <button
-                      onClick={handleSubmitPost}
-                      className="w-[93px] h-[36px] me-0 py-1 text-sm ms-auto rounded-[100px] bg-[#7077FE] text-white cursor-pointer"
-                    >
-                      Post
-                    </button>
-                  </div>
-                </div>
+
+
+                  
+                  <div className="flex justify-between items-center mt-3">
+  <select
+    id="topic-select"
+    value={selectedTopic}
+    onChange={(e) => setSelectedTopic(e.target.value)}
+    className="w-80 mr-3 p-2 border border-[#ECEEF2] text-sm rounded-md outline-none focus:border-[#7077FE]"
+  >
+    <option value="">-- Select your conscious topic --</option>
+    {topics.map((topic: Topic) => (
+      <option key={topic.id} value={topic.id}>
+        {topic.topic_name}
+      </option>
+    ))}
+  </select>
+
+  <button
+    onClick={handleSubmitPost}
+    className="bg-[#7077FE] text-white px-6 py-2 rounded-full hover:bg-[#5b63e6]"
+  >
+    Post
+  </button>
+</div>
+</div>
               </div>
             </div>
           )}
@@ -2130,6 +2212,14 @@ export default function SocialTopBar() {
               }}
             />
           )}
+
+            {showTopicModal && (
+      <TopicModal
+        topics={dummyTopics}                 // ← correct prop name
+        onSelect={handleTopicsSelected} // ← now defined
+        onClose={() => setShowTopicModal(false)}
+      />
+    )}
         </div>
       ) : (
         <>
@@ -2209,5 +2299,6 @@ export default function SocialTopBar() {
         </div>
       </Modal>
     </>
+ 
   );
 }
