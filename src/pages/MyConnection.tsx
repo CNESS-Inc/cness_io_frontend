@@ -225,7 +225,7 @@ const MyConnection = () => {
   );
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       {/* Top Tabs + Search */}
       <ConnectionsCard
         title="My Connections"
@@ -237,54 +237,54 @@ const MyConnection = () => {
         setActiveTab={setActiveTab}
         getUserPosts={GetUserPost} selectedTopic={undefined}        // onTabChange={setActiveTab}
       />
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        {/* Left Title */}
-        <h2
-          className="text-[14px] font-medium capitalize leading-[100%]"
-          style={{
-            fontFamily: "Poppins",
-            letterSpacing: "0",
-          }}
-        >
-          {activeTab === "All Friends"
-            ? "All Connections"
-            : activeTab === "Friend Requests"
-            ? "Friend Requests"
-            : "Suggestions"}
-        </h2>
-        {/* Search & Button */}
-        <div className="flex w-full sm:w-auto items-center gap-2">
-          <div className="relative flex-1 sm:w-64">
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              className="w-full rounded-full border border-gray-300 pl-4 pr-10 py-2 text-sm focus:outline-none focus:border-indigo-500"
-            />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 absolute right-3 top-2.5 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-4.35-4.35M9.5 17a7.5 7.5 0 110-15 7.5 7.5 0 010 15z"
+      <div className="rounded-[12px] border border-gray-200 bg-white flex flex-col gap-4 sm:p-6 w-full">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          {/* Left Title */}
+          <h2
+            className="text-[14px] font-medium capitalize leading-[100%]"
+            style={{
+              fontFamily: "Poppins",
+              letterSpacing: "0",
+            }}
+          >
+            {activeTab === "All Friends"
+              ? "All Connections"
+              : activeTab === "Friend Requests"
+              ? "Friend Requests"
+              : "Suggestions"}
+          </h2>
+          {/* Search & Button */}
+          <div className="flex w-full sm:w-auto items-center gap-2">
+            <div className="relative flex-1 sm:w-64">
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                className="w-full rounded-full border border-gray-300 pl-4 pr-10 py-2 text-sm focus:outline-none focus:border-indigo-500"
               />
-            </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4 absolute right-3 top-2.5 text-black"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-4.35-4.35M9.5 17a7.5 7.5 0 110-15 7.5 7.5 0 010 15z"
+                />
+              </svg>
+            </div>
+            <button className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full text-sm transition">
+              Search Connections
+            </button>
           </div>
-          <button className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full text-sm transition">
-            Search Connections
-          </button>
         </div>
-      </div>
 
-      <div className=" sm:grid gap-4 md:gap-5 lg:gap-6 justify-items-center grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-4 3xl:grid-cols-6">
+        <div className=" sm:grid gap-4 md:gap-5 lg:gap-6 justify-items-center grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-4 3xl:grid-cols-6">
         {filteredConnections.map((conn) => (
           <FriendCard
             key={conn.id}
@@ -310,6 +310,7 @@ const MyConnection = () => {
             }
           />
         ))}
+      </div>
       </div>
       {/* Modal */}
       {selectedFriend && (

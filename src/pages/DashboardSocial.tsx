@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import Modal from "../components/ui/Modal";
 
-import { MdContentCopy } from "react-icons/md";
+// import { MdContentCopy } from "react-icons/md";
 
 import {
   AddPost,
@@ -357,7 +357,7 @@ export default function SocialTopBar() {
   );
   const [isUploading, setIsUploading] = useState(false);
   const [_apiStoryMessage, setApiStoryMessage] = useState<string | null>(null);
-  const [copy, setCopy] = useState<Boolean>(false);
+  // const [copy, setCopy] = useState<Boolean>(false);
 
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
@@ -953,17 +953,9 @@ export default function SocialTopBar() {
   const myid = localStorage.getItem("Id");
   const urldata = `https://dev.cness.io/directory/user-profile/${myid}`;
 
-  /*const handleClickOutside = (event: MouseEvent) => {
-    console.log('menuRef.current', menuRef.current);
-    if (openMenuPostId && menuRef.current[openMenuPostId] &&
-      !menuRef.current[openMenuPostId]!.contains(event.target as Node)) {
-    setOpenMenuPostId(null);
-  }
   
-  };*/
-
   const handleClickOutside = (event: MouseEvent) => {
-    console.log('openMenu', openMenu);
+    
     if (!openMenu.postId || !openMenu.type) return;
   
     const key = `${openMenu.postId}-${openMenu.type}`;
@@ -981,9 +973,7 @@ export default function SocialTopBar() {
     };
   }, [openMenu]);
 
-  /*const toggleMenu = (postId: string) => {
-    setOpenMenuPostId((prev) => (prev === postId ? null : postId));
-  };*/
+  
   const toggleMenu = (postId: string, type: "options" | "share") => {
     setOpenMenu((prev) => {
       if (prev.postId === postId && prev.type === type) {
@@ -1475,6 +1465,56 @@ export default function SocialTopBar() {
                           </div>
                           
                         )}
+
+                        {post.user_id == loggedInUserID && (
+                          <div className="flex gap-2">
+                            {/* Three Dots Menu */}
+                            <div className="relative">
+                              <button
+                                onClick={() => toggleMenu(post.id, "options")}
+                                className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition-colors"
+                                title="More options"
+                              >
+                                <MoreVertical className="w-5 h-5 text-gray-600" />
+                              </button>
+                              
+                              {openMenu.postId === post.id && openMenu.type === "options" && (
+                                <div
+                                  className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                                  ref={(el) => {
+                                    const key = `${post.id}-options`;
+                                    if (el) menuRef.current[key] = el;
+                                    else delete menuRef.current[key];
+                                  }}
+                                >
+                                  <ul className="space-y-1">
+                                    <li>
+                                      <button
+                                        onClick={() => {
+                                          copyPostLink(post.id)
+                                        }}
+                                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                      >
+                                        <LinkIcon className="w-4 h-4" />
+                                        Copy Post Link
+                                      </button>
+                                    </li>
+                                    <li>
+                                      <button
+                                        onClick={() => savePostToCollection(post.id)}
+                                        disabled={post.is_saved}
+                                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                      >
+                                        <Bookmark className="w-4 h-4" />
+                                        {post.is_saved ? "Saved" : "Save Post"}
+                                      </button>
+                                    </li>
+                                  </ul>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       {/* Post Content */}
@@ -1659,7 +1699,7 @@ export default function SocialTopBar() {
                                     <FaWhatsapp size={32} color="#1DA1F2" />
                                   </WhatsappShareButton>
                                 </li>
-                                <li>
+                                {/* <li>
                                   <button
                                     onClick={() => {
                                       navigator.clipboard.writeText(urldata);
@@ -1679,7 +1719,7 @@ export default function SocialTopBar() {
                                       </div>
                                     )}
                                   </button>
-                                </li>
+                                </li> */}
                               </ul>
                             </div>
                           )}
@@ -1748,10 +1788,11 @@ export default function SocialTopBar() {
 
           {/* Right Side: Quick Actions - Full width on mobile, appears below */}
           <div className="w-full lg:w-[100%] lg:max-w-[30%] h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm order-first lg:order-last mb-4 lg:mb-0">
-            <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4">
+            <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
               Quick Actions
             </h3>
-            <ul className="space-y-4 md:space-y-6 text-sm md:text-[15px] text-gray-700">
+            <div className="w-full border-t-[1px] border-[#C8C8C8] mt-4 md:mt-4 mb-6"></div>
+            <ul className="space-y-4 md:space-y-6 text-sm md:text-[15px] text-gray-700 px-4">
               <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
                 <button
                   onClick={() => navigate("/dashboard/trendingpost")}
@@ -2133,7 +2174,7 @@ export default function SocialTopBar() {
 
       {/* Report Post Modal */}
       <Modal isOpen={showReportModal} onClose={() => setShowReportModal(false)}>
-        <div className="p-6">
+        <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             Report Post
           </h3>
