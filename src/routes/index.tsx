@@ -55,6 +55,7 @@ import Mycollectionview from "../pages/Mycollectionview";
 import TrendingAI from "../pages/TrendingAI";
 import BecomePartner from "../pages/BecomePartner";
 import Pricing from "../pages/Pricing";
+import TopicPost from "../pages/TopicPost";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -102,7 +103,6 @@ export const router = createBrowserRouter([
       {
         path: "about",
         element: <About />,
-
       },
       {
         path: "comingSoon",
@@ -139,9 +139,10 @@ export const router = createBrowserRouter([
           },
           {
             path: "setting",
-            element:
+            element: (
               // import.meta.env.VITE_ENV_STAGE === "test" ? (
               <Setting />
+            ),
             // ) : (
             //   <ComingSoon />
             // ),
@@ -186,7 +187,6 @@ export const router = createBrowserRouter([
           {
             path: "search-listing",
             element: <SearchListing />,
-
           },
           {
             path: "userprofile/:id",
@@ -207,19 +207,18 @@ export const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                element:
-                  <Trendingpost />,
-
+                element: <Trendingpost />,
               },
               {
                 path: "trendingai",
-                element:
-                  <TrendingAI />,
-
-              }
-            ]
+                element: <TrendingAI />,
+              },
+            ],
           },
-
+          {
+            path: ":slug",
+            element: <TopicPost />,
+          },
 
           {
             path: "SearchExplore",
@@ -247,9 +246,10 @@ export const router = createBrowserRouter([
           },
           {
             path: "EditPublicListing",
-            element:
+            element: (
               // import.meta.env.VITE_ENV_STAGE === "test" ? (
               <EditPublicListing />
+            ),
             // ) : (
             //   <ComingSoon />
             // ),
@@ -280,9 +280,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "Profile",
-            element:
-              <Profile />
-
+            element: <Profile />,
           },
           {
             path: "MyCollection/:id",
@@ -290,9 +288,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "MyConnection",
-            element:
-              <MyConnection />,
-
+            element: <MyConnection />,
           },
           {
             path: "comingSoon",
@@ -334,10 +330,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element:
-          (
-            <DirectoryPage />
-          ), // ✅ now it's wrapped!
+        element: <DirectoryPage />, // ✅ now it's wrapped!
       },
 
       {
@@ -365,16 +358,13 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: 'story-design',
+    path: "story-design",
     children: [
       {
         index: true,
-        element:
-          (
-            <StoriesApp />
-          ), // ✅ now it's wrapped!
-      }
-    ]
+        element: <StoriesApp />, // ✅ now it's wrapped!
+      },
+    ],
   },
   {
     path: "social",
@@ -382,9 +372,10 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element:
+        element: (
           // import.meta.env.VITE_ENV_STAGE === "test" ? (
           <Social />
+        ),
         // ) : (
         //   <ComingSoon />
         // ),
@@ -429,7 +420,7 @@ export const router = createBrowserRouter([
     element: <PrivacyPolicy />,
   },
   {
-    path: '/community-guidelines',
+    path: "/community-guidelines",
     element: <CommunityGuidelines />,
   },
 
@@ -437,9 +428,8 @@ export const router = createBrowserRouter([
     path: "/sign-up",
     element: <Signingup />,
   },
-{
-  path: "/pricing",
-  element:<Pricing />,
-}
-
+  {
+    path: "/pricing",
+    element: <Pricing />,
+  },
 ]);

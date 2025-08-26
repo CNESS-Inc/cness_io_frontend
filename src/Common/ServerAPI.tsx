@@ -192,6 +192,7 @@ export const EndPoint = {
   user_posts_by_user_id: "/user/posts/get-user-post",
   get_topics: "/topics",
   select_topic: "/userselecttopics",
+  get_select_topic: "/userselecttopics",
 };
 
 export const GoogleLoginDetails = async (googleToken: string): ApiResponse => {
@@ -1140,6 +1141,14 @@ export const UserSelectedTopic = (
   return executeAPI(
     ServerAPI.APIMethod.POST,
     payload,
+    `${EndPoint.select_topic}/${id}/topics`
+  );
+};
+
+export const getUserSelectedTopic = (id: string): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
     `${EndPoint.select_topic}/${id}/topics`
   );
 };
