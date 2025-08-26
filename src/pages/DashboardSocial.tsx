@@ -35,6 +35,7 @@ import {
   ReportPost,
   getTopics,
   UserSelectedTopic,
+  getUserSelectedTopic,
 } from "../Common/ServerAPI";
 
 // images
@@ -789,9 +790,14 @@ export default function SocialTopBar() {
   };
 
   const handleSubmitPost = async () => {
-    if (!postMessage && !selectedImages.length && !selectedVideo) {
+    if (
+      !postMessage &&
+      !selectedImages.length &&
+      !selectedVideo &&
+      !selectedTopic
+    ) {
       showToast({
-        message: "Please add a message or select media.",
+        message: "Please add a message, select media, or choose a topic.",
         type: "error",
         duration: 3000,
       });
@@ -800,6 +806,7 @@ export default function SocialTopBar() {
 
     const formData = new FormData();
     formData.append("content", postMessage);
+    formData.append("topic_id", selectedTopic);
 
     // Append all selected images
     selectedImages.forEach((image) => {
@@ -825,6 +832,7 @@ export default function SocialTopBar() {
         setShowPopup(false);
         // Reset form
         setPostMessage("");
+        setSelectedTopic("");
         setSelectedImages([]);
         setSelectedVideo(null);
         if (postVideoPreviewUrl) {
@@ -1207,6 +1215,8 @@ export default function SocialTopBar() {
 
   const [selectedTopic, setSelectedTopic] = useState<string>(""); // dropdown state
   const [topics, setTopics] = useState<Topic[]>([]); // list of topics
+  const [userSelectedTopics, setUserSelectedTopics] = useState<Topic[]>([]); // list of user selected topics
+  const [visibleTopic, setVisibleTopic] = useState(10);
   const [showTopicModal, setShowTopicModal] = useState(false);
 
   // Fetch topics from API (example)
@@ -1230,9 +1240,11 @@ export default function SocialTopBar() {
   // }, []);
 
   useEffect(() => {
-    const stored = localStorage.getItem("selected_topics");
+    fetchUserSelectedTopics();
+
+    // const stored = localStorage.getItem("selected_topics");
     // show overlay on first page load if nothing stored yet
-    if (!stored) setShowTopicModal(true);
+    // if (!stored) setShowTopicModal(true);
   }, []);
 
   useEffect(() => {
@@ -1260,6 +1272,42 @@ export default function SocialTopBar() {
     }
   };
 
+  const fetchUserSelectedTopics = async () => {
+    if (!loggedInUserID) {
+      showToast({
+        message: "No user ID found.",
+        type: "error",
+        duration: 2000,
+      });
+      return;
+    }
+    try {
+      const response = await getUserSelectedTopic(loggedInUserID);
+      if (
+        response?.success?.statusCode === 200 &&
+        response?.data?.data?.length > 0
+      ) {
+        setUserSelectedTopics(response?.data?.data);
+      } else {
+        console.warn(
+          "Error during fetch user selected topics details",
+          response
+        );
+      }
+    } catch (error: any) {
+      console.error("Error fetching user selected topic details:", error);
+      if (error?.response?.status === 404) {
+        setShowTopicModal(true);
+      } else {
+        showToast({
+          message: "Failed to load User Selected Topics.",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    }
+  };
+
   const handleTopicsSelected = async (ids: string[]) => {
     if (!loggedInUserID) {
       showToast({
@@ -1274,13 +1322,21 @@ export default function SocialTopBar() {
 
       const response = await UserSelectedTopic(loggedInUserID, payload);
       if (response?.success?.statusCode === 201) {
-        const selectedIds = response?.data?.data?.map(
-          (item: Topic) => item?.id
-        );
-        if (selectedIds?.length) {
-          localStorage.setItem("selected_topics", JSON.stringify(selectedIds));
-        }
+        // const selectedIds = response?.data?.data?.map(
+        //   (item: Topic) => item?.id
+        // );
+        // if (selectedIds?.length) {
+        //   localStorage.setItem("selected_topics", JSON.stringify(selectedIds));
+        // }
         setShowTopicModal(false);
+        fetchUserSelectedTopics();
+      } else if (response?.success?.statusCode === 200) {
+        showToast({
+          message:
+            "Looks like you've selected every available Conscious Topics.",
+          type: "error",
+          duration: 3000,
+        });
       } else {
         console.warn("Error during add user selected topic", response);
       }
@@ -1962,25 +2018,67 @@ export default function SocialTopBar() {
               </ul>
             </div>
 
-            {/* Topics BELOW Quick Actions */}
+            {/* User Selected Topics Below Quick Actions */}
+            {userSelectedTopics?.length > 0 && (
+              <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
+                <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
+                  My Picks
+                </h3>
+                <div className="w-full border-t border-[#C8C8C8] my-4"></div>
+                <ul className="space-y-3 text-sm md:text-[15px] text-gray-700 px-4">
+                  {userSelectedTopics?.map((topic) => (
+                    <button
+                      key={topic.id}
+                      // onClick={() => navigate(`/topics/${topic.slug}`)}
+                      className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+                    >
+                      <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                      {topic.topic_name}
+                    </button>
+                  ))}
+                  {userSelectedTopics?.length === 0 && (
+                    <button disabled className="text-gray-400 italic">
+                      No topics available
+                    </button>
+                  )}
+                </ul>
+              </div>
+            )}
+
+            {/* Topics BELOW User Selected Topics */}
             <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
               <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
-                Topics
+                Explore Topics
               </h3>
               <div className="w-full border-t border-[#C8C8C8] my-4"></div>
               <ul className="space-y-3 text-sm md:text-[15px] text-gray-700 px-4">
-                {topics?.map((topic) => (
-                  <li
+                {topics?.slice(0, visibleTopic)?.map((topic) => (
+                  <button
                     key={topic.id}
-                    onClick={() => navigate(`/topics/${topic.slug}`)}
+                    onClick={() =>
+                      navigate(`/dashboard/${topic.slug}`, {
+                        state: {
+                          topics,
+                          userSelectedTopics,
+                        },
+                      })
+                    }
                     className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
                   >
                     <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
                     {topic.topic_name}
-                  </li>
+                  </button>
                 ))}
+                {visibleTopic < topics?.length && (
+                  <button
+                    onClick={() => setVisibleTopic((pre) => pre + 10)}
+                    className="text-sm text-blue-500 hover:underline hover:text-blue-600 transition cursor-pointer"
+                  >
+                    See more
+                  </button>
+                )}
                 {topics?.length === 0 && (
-                  <li className="text-gray-400 italic">No topics available</li>
+                  <button disabled className="text-gray-400 italic">No topics available</button>
                 )}
               </ul>
             </div>
@@ -2153,19 +2251,27 @@ export default function SocialTopBar() {
                       onChange={(e) => setSelectedTopic(e.target.value)}
                       className="w-80 mr-3 p-2 border border-[#ECEEF2] text-sm rounded-md outline-none focus:border-[#7077FE]"
                     >
-                      <option value="">
-                        -- Select your conscious topic --
+                      <option value="" disabled>
+                        -- What’s this post about? --
                       </option>
-                      {topics?.map((topic: Topic) => (
-                        <option key={topic.id} value={topic.id}>
-                          {topic.topic_name}
-                        </option>
-                      ))}
-                      {topics?.length === 0 && (
-                        <option className="text-gray-400 italic" disabled>
+                      {topics.length > 0 ? (
+                        topics.map((topic) => (
+                          <option key={topic.id} value={topic.id}>
+                            {topic.topic_name}
+                          </option>
+                        ))
+                      ) : (
+                        <option
+                          value=""
+                          disabled
+                          className="text-gray-400 italic"
+                        >
                           No topics available
                         </option>
-                      )}                      
+                      )}
+                      {topics.length > 0 && (
+                        <option value={999999}>Other</option>
+                      )}
                     </select>
 
                     <button
