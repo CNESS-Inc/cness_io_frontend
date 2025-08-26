@@ -14,9 +14,7 @@ import {
   Link as LinkIcon,
 } from "lucide-react";
 import Modal from "../components/ui/Modal";
-import TopicModal  from "../components/Social/Topicmodel";
-
-
+import TopicModal from "../components/Social/Topicmodel";
 
 // import { MdContentCopy } from "react-icons/md";
 
@@ -33,13 +31,15 @@ import {
   UnFriend,
   SendFriendRequest,
   GetFriendStatus,
-  SavePost, 
+  SavePost,
   ReportPost,
+  getTopics,
+  UserSelectedTopic,
 } from "../Common/ServerAPI";
 
 // images
 // import Announcement from "../assets/Announcement.png";
- import Collection from "../assets/Collection.png";
+import Collection from "../assets/Collection.png";
 // import Leaderboard from "../assets/Leaderboard.png";
 // import Mention from "../assets/Mention.png";
 import people from "../assets/people.png";
@@ -62,8 +62,6 @@ import { FaFacebook, FaLinkedin, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import FollowedUsersList from "./FollowedUsersList";
 import CollectionList from "./CollectionList";
 import Button from "../components/ui/Button";
-
-
 
 interface Post {
   id: string;
@@ -202,20 +200,28 @@ interface CollectionItem {
 //   },
 // ];
 
-const dummyTopics: Topic[] = [
-  { id: "mindfulness",   topic_name: "Mindfulness",   slug: "mindfulness" },
-  { id: "sustainability", topic_name: "Sustainability", slug: "sustainability" },
-  { id: "community",     topic_name: "Community",     slug: "community" },
-  { id: "leadership",    topic_name: "Leadership",    slug: "leadership" },
-  { id: "innovation",    topic_name: "Innovation",    slug: "innovation" },
-  { id: "wellbeing",     topic_name: "Wellbeing",     slug: "wellbeing" },
-    { id: "mindfulness",   topic_name: "Mindfulness",   slug: "mindfulness" },
-  { id: "sustainability", topic_name: "Sustainability", slug: "sustainability" },
-  { id: "community",     topic_name: "Community",     slug: "community" },
-  { id: "leadership",    topic_name: "Leadership",    slug: "leadership" },
-  { id: "innovation",    topic_name: "Innovation",    slug: "innovation" },
-  { id: "wellbeing",     topic_name: "Wellbeing",     slug: "wellbeing" },
-];
+// const dummyTopics: Topic[] = [
+//   { id: "mindfulness", topic_name: "Mindfulness", slug: "mindfulness" },
+//   {
+//     id: "sustainability",
+//     topic_name: "Sustainability",
+//     slug: "sustainability",
+//   },
+//   { id: "community", topic_name: "Community", slug: "community" },
+//   { id: "leadership", topic_name: "Leadership", slug: "leadership" },
+//   { id: "innovation", topic_name: "Innovation", slug: "innovation" },
+//   { id: "wellbeing", topic_name: "Wellbeing", slug: "wellbeing" },
+//   { id: "mindfulness", topic_name: "Mindfulness", slug: "mindfulness" },
+//   {
+//     id: "sustainability",
+//     topic_name: "Sustainability",
+//     slug: "sustainability",
+//   },
+//   { id: "community", topic_name: "Community", slug: "community" },
+//   { id: "leadership", topic_name: "Leadership", slug: "leadership" },
+//   { id: "innovation", topic_name: "Innovation", slug: "innovation" },
+//   { id: "wellbeing", topic_name: "Wellbeing", slug: "wellbeing" },
+// ];
 
 interface PostCarouselProps {
   mediaItems: Array<{
@@ -402,7 +408,7 @@ export default function SocialTopBar() {
     postId: string | null;
     type: "options" | "share" | null;
   }>({ postId: null, type: null });
-  
+
   const [activeView, setActiveView] = useState<
     "posts" | "following" | "collection"
   >("posts");
@@ -416,39 +422,44 @@ export default function SocialTopBar() {
   const [storiesData, setStoriesData] = useState<Story[]>([]);
   // const [addNewPost, setAddNewPost] = useState(false)
 
-  const [isAdult, setIsAdult] = useState<Boolean>(false)
-  const navigate = useNavigate(); 
+  const [isAdult, setIsAdult] = useState<Boolean>(false);
+  const navigate = useNavigate();
   const { showToast } = useToast();
 
-  const [friendRequests, setFriendRequests] = useState<{[key: string]: string}>({});
-  
-  const [connectingUsers, setConnectingUsers] = useState<{[key: string]: boolean}>({});
+  const [friendRequests, setFriendRequests] = useState<{
+    [key: string]: string;
+  }>({});
+
+  const [connectingUsers, setConnectingUsers] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   const [showReportModal, setShowReportModal] = useState(false);
-  const [selectedPostForReport, setSelectedPostForReport] = useState<string | null>(null);
+  const [selectedPostForReport, setSelectedPostForReport] = useState<
+    string | null
+  >(null);
   const [reportReason, setReportReason] = useState("");
   // const [isSavingPost, setIsSavingPost] = useState<string | null>(null);
   const [isReportingPost, setIsReportingPost] = useState<string | null>(null);
-//const [showTopicModal, setShowTopicModal] = useState(false);
-
+  //const [showTopicModal, setShowTopicModal] = useState(false);
 
   const handleConnect = async (userId: string) => {
     try {
-      setConnectingUsers(prev => ({ ...prev, [userId]: true }));
-      
+      setConnectingUsers((prev) => ({ ...prev, [userId]: true }));
+
       // Check if already connected
-      if (friendRequests[userId] === 'connected') {
+      if (friendRequests[userId] === "connected") {
         // If connected, delete friend
         const formattedData = {
           friend_id: userId,
         };
-        
+
         const response = await UnFriend(formattedData);
-        
+
         if (response.success) {
-          setFriendRequests(prev => ({
+          setFriendRequests((prev) => ({
             ...prev,
-            [userId]: 'connect'
+            [userId]: "connect",
           }));
           showToast({
             message: "Friend removed successfully",
@@ -461,17 +472,18 @@ export default function SocialTopBar() {
         const formattedData = {
           friend_id: userId,
         };
-        
+
         const response = await SendFriendRequest(formattedData);
-        
+
         if (response.success) {
           // Immediately update the button state to "requested"
-          setFriendRequests(prev => ({
+          setFriendRequests((prev) => ({
             ...prev,
-            [userId]: 'requested'
+            [userId]: "requested",
           }));
           showToast({
-            message: response.success.message || "Friend request sent successfully",
+            message:
+              response.success.message || "Friend request sent successfully",
             type: "success",
             duration: 3000,
           });
@@ -485,13 +497,13 @@ export default function SocialTopBar() {
         duration: 3000,
       });
     } finally {
-      setConnectingUsers(prev => ({ ...prev, [userId]: false }));
+      setConnectingUsers((prev) => ({ ...prev, [userId]: false }));
     }
   };
-  
+
   // Function to get friend status
   const getFriendStatus = (userId: string) => {
-    return friendRequests[userId] || 'connect';
+    return friendRequests[userId] || "connect";
   };
 
   // Function to check if user is friend (you'll need to implement this based on your API)
@@ -499,54 +511,57 @@ export default function SocialTopBar() {
     try {
       const response = await GetFriendStatus(userId);
       if (response.success) {
-         // The API returns data.data.rows array with all friends
+        // The API returns data.data.rows array with all friends
         const friendsList = response.data.data.rows || [];
-        
+
         // Find if this specific user is in the friends list
-        const friendRecord = friendsList.find((friend: any) => 
-          friend.friend_id === userId || friend.user_id === userId
+        const friendRecord = friendsList.find(
+          (friend: any) =>
+            friend.friend_id === userId || friend.user_id === userId
         );
-        console.log("🚀 ~ checkFriendStatus ~ friendRecord:", friendRecord)
+        console.log("🚀 ~ checkFriendStatus ~ friendRecord:", friendRecord);
         if (friendRecord) {
           // Check the request_status from the database
           const status = friendRecord.request_status;
-          
-          if (status === 'ACCEPT') {
-            setFriendRequests(prev => ({
+
+          if (status === "ACCEPT") {
+            setFriendRequests((prev) => ({
               ...prev,
-              [userId]: 'connected'
+              [userId]: "connected",
             }));
-          } else if (status === 'PENDING') {
-            setFriendRequests(prev => ({
+          } else if (status === "PENDING") {
+            setFriendRequests((prev) => ({
               ...prev,
-              [userId]: 'requested'
+              [userId]: "requested",
             }));
-          } else if (status === 'REJECT') {
-            setFriendRequests(prev => ({
+          } else if (status === "REJECT") {
+            setFriendRequests((prev) => ({
               ...prev,
-              [userId]: 'connect'
+              [userId]: "connect",
             }));
           } else {
-            setFriendRequests(prev => ({
+            setFriendRequests((prev) => ({
               ...prev,
-              [userId]: 'connect'
+              [userId]: "connect",
             }));
           }
         } else {
           // No friend record found, set to connect
-          console.log("🚀 ~ checkFriendStatus ~ No friend record found, set to connect")
-          setFriendRequests(prev => ({
+          console.log(
+            "🚀 ~ checkFriendStatus ~ No friend record found, set to connect"
+          );
+          setFriendRequests((prev) => ({
             ...prev,
-            [userId]: 'connect'
+            [userId]: "connect",
           }));
         }
       }
     } catch (error) {
       console.error("Error checking friend status:", error);
       // Set default status if API fails
-      setFriendRequests(prev => ({
+      setFriendRequests((prev) => ({
         ...prev,
-        [userId]: 'connect'
+        [userId]: "connect",
       }));
     }
   };
@@ -623,7 +638,7 @@ export default function SocialTopBar() {
       setIsCollectionLoading(false);
     }
   };
-  
+
   const menuRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const containerRef = useRef<HTMLDivElement | null>(null);
   const loggedInUserID = localStorage.getItem("Id");
@@ -710,10 +725,9 @@ export default function SocialTopBar() {
     fetchStory();
   }, []);
 
-
   useEffect(() => {
     if (userPosts.length > 0) {
-      userPosts.forEach(post => {
+      userPosts.forEach((post) => {
         if (post.user_id !== loggedInUserID) {
           checkFriendStatus(post.user_id);
         }
@@ -725,14 +739,13 @@ export default function SocialTopBar() {
   useEffect(() => {
     // Check friend status for all posts when component mounts
     if (userPosts.length > 0 && loggedInUserID) {
-      userPosts.forEach(post => {
+      userPosts.forEach((post) => {
         if (post.user_id !== loggedInUserID) {
           checkFriendStatus(post.user_id);
         }
       });
     }
   }, []); // Empty dependency array to run only on mount
-
 
   // The issue is likely due to how setPage and getUserPosts interact.
   // When setPage(1) is called, if page is already 1, React will not trigger the useEffect([page]) again.
@@ -981,18 +994,16 @@ export default function SocialTopBar() {
   const myid = localStorage.getItem("Id");
   const urldata = `https://dev.cness.io/directory/user-profile/${myid}`;
 
-  
   const handleClickOutside = (event: MouseEvent) => {
-    
     if (!openMenu.postId || !openMenu.type) return;
-  
+
     const key = `${openMenu.postId}-${openMenu.type}`;
     const currentMenu = menuRef.current[key];
-  
+
     if (currentMenu && !currentMenu.contains(event.target as Node)) {
       setOpenMenu({ postId: null, type: null });
     }
-  };  
+  };
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -1001,7 +1012,6 @@ export default function SocialTopBar() {
     };
   }, [openMenu]);
 
-  
   const toggleMenu = (postId: string, type: "options" | "share") => {
     setOpenMenu((prev) => {
       if (prev.postId === postId && prev.type === type) {
@@ -1011,9 +1021,6 @@ export default function SocialTopBar() {
       }
     });
   };
-  
-
-  
 
   const handleScroll = () => {
     const container = containerRef.current;
@@ -1075,13 +1082,12 @@ export default function SocialTopBar() {
     MeDetail();
   }, []);
 
-
   /* Report Modal and Save Post Modal and Copy Post Modal */
   // Function to copy post link
   const copyPostLink = async (postId: string) => {
     toggleMenu(postId, "options");
     const postUrl = `${window.location.origin}/post/${postId}`;
-    
+
     try {
       await navigator.clipboard.writeText(postUrl);
       showToast({
@@ -1100,10 +1106,9 @@ export default function SocialTopBar() {
 
   // Function to save post to collection
   const savePostToCollection = async (postId: string) => {
-    
     try {
       const response = await SavePost(postId);
-      
+
       if (response.success) {
         showToast({
           type: "success",
@@ -1112,13 +1117,13 @@ export default function SocialTopBar() {
         });
         //setIsSavingPost(postId);
         // Update the post's saved status in your posts array
-        setUserPosts(prevPosts => 
-          prevPosts.map(post => 
+        setUserPosts((prevPosts) =>
+          prevPosts.map((post) =>
             post.id === postId ? { ...post, is_saved: true } : post
           )
         );
       } else {
-        throw new Error('Failed to save post');
+        throw new Error("Failed to save post");
       }
     } catch (error) {
       showToast({
@@ -1126,7 +1131,7 @@ export default function SocialTopBar() {
         message: "Failed to save post to collection",
         duration: 2000,
       });
-    } 
+    }
   };
 
   // Function to report post
@@ -1143,18 +1148,19 @@ export default function SocialTopBar() {
     setIsReportingPost(selectedPostForReport);
     try {
       const response = await ReportPost(selectedPostForReport, reportReason);
-      
+
       if (response.success) {
         showToast({
           type: "success",
-          message: "Post reported successfully! Admin will review it soon and take action if needed.",
+          message:
+            "Post reported successfully! Admin will review it soon and take action if needed.",
           duration: 2000,
         });
         setShowReportModal(false);
         setSelectedPostForReport(null);
         setReportReason("");
       } else {
-        throw new Error('Failed to report post');
+        throw new Error("Failed to report post");
       }
     } catch (error) {
       showToast({
@@ -1184,15 +1190,15 @@ export default function SocialTopBar() {
 
     const handleClickOutside = (event: MouseEvent) => {
       if (!openMenu.postId || !openMenu.type) return;
-    
+
       const key = `${openMenu.postId}-${openMenu.type}`;
       const currentMenu = menuRef.current[key];
-    
+
       if (currentMenu && !currentMenu.contains(event.target as Node)) {
         setOpenMenu({ postId: null, type: null });
       }
-    };  
-  
+    };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -1201,48 +1207,96 @@ export default function SocialTopBar() {
 
   const [selectedTopic, setSelectedTopic] = useState<string>(""); // dropdown state
   const [topics, setTopics] = useState<Topic[]>([]); // list of topics
-const [showTopicModal, setShowTopicModal] = useState(false);
-
-  
+  const [showTopicModal, setShowTopicModal] = useState(false);
 
   // Fetch topics from API (example)
-  useEffect(() => {
-    const fetchTopics = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/topics"); // your backend API
-        const data = await res.json();
-        setTopics(data);
-      } catch (err) {
-        console.error("Error fetching topics:", err);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchTopics = async () => {
+  //     try {
+  //       const res = await fetch("http://localhost:5000/api/topics"); // your backend API
+  //       const data = await res.json();
+  //       setTopics(data);
+  //     } catch (err) {
+  //       console.error("Error fetching topics:", err);
+  //     }
+  //   };
 
+  //   fetchTopics();
+  // }, []);
+
+  // Open the modal when the page mounts
+  // useEffect(() => {
+  //   setShowTopicModal(true);
+  // }, []);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("selected_topics");
+    // show overlay on first page load if nothing stored yet
+    if (!stored) setShowTopicModal(true);
+  }, []);
+
+  useEffect(() => {
     fetchTopics();
   }, []);
 
-  // Open the modal when the page mounts
-useEffect(() => {
-  setShowTopicModal(true);
-}, []);
+  const fetchTopics = async () => {
+    try {
+      const response = await getTopics();
+      if (
+        response?.success?.statusCode === 200 &&
+        response?.data?.data?.length
+      ) {
+        setTopics(response?.data?.data);
+      } else {
+        console.warn("Error during fetch topics details", response);
+      }
+    } catch (error) {
+      console.error("Error fetching topic details:", error);
+      showToast({
+        message: "Failed to load Topics.",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
 
+  const handleTopicsSelected = async (ids: string[]) => {
+    if (!loggedInUserID) {
+      showToast({
+        message: "No user ID found.",
+        type: "error",
+        duration: 2000,
+      });
+      return;
+    }
+    try {
+      const payload = { topicIds: ids };
 
-useEffect(() => {
-  const stored = localStorage.getItem("selected_topics");
-  // show overlay on first page load if nothing stored yet
-  if (!stored) setShowTopicModal(true);
-}, []);
-
-const handleTopicsSelected = (ids: string[]) => {
-  localStorage.setItem("selected_topics", JSON.stringify(ids));
-  setShowTopicModal(false);
-};
+      const response = await UserSelectedTopic(loggedInUserID, payload);
+      if (response?.success?.statusCode === 201) {
+        const selectedIds = response?.data?.data?.map(
+          (item: Topic) => item?.id
+        );
+        if (selectedIds?.length) {
+          localStorage.setItem("selected_topics", JSON.stringify(selectedIds));
+        }
+        setShowTopicModal(false);
+      } else {
+        console.warn("Error during add user selected topic", response);
+      }
+    } catch (error) {
+      console.error("Error fetching badge details:", error);
+      showToast({
+        message: "Something went wrong. Please try again.",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
 
   return (
     <>
-
-   
       {isAdult ? (
-
         <div className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-2 px-2 md:px-2 lg:px-0 w-full">
           {/* Left Side: Post & Stories - Full width on mobile */}
           <div
@@ -1278,7 +1332,10 @@ const handleTopicsSelected = (ids: string[]) => {
                         />
                       </div>
                       <div className="flex justify-between md:justify-center md:gap-10 text-xs md:text-[15px] text-gray-700 mt-2 md:mt-3">
-                        <button className="flex items-center gap-1 md:gap-2" onClick={() => openPostPopup()}>
+                        <button
+                          className="flex items-center gap-1 md:gap-2"
+                          onClick={() => openPostPopup()}
+                        >
                           <Image
                             src="/youtube.png"
                             alt="youtube"
@@ -1290,7 +1347,10 @@ const handleTopicsSelected = (ids: string[]) => {
                             Video
                           </span>
                         </button>
-                        <button className="flex items-center gap-1 md:gap-2" onClick={() => openPostPopup()}>
+                        <button
+                          className="flex items-center gap-1 md:gap-2"
+                          onClick={() => openPostPopup()}
+                        >
                           <Image
                             src="/picture.png"
                             alt="picture"
@@ -1401,7 +1461,11 @@ const handleTopicsSelected = (ids: string[]) => {
                             to={`/dashboard/userprofile/${post?.profile?.id}`}
                           >
                             <img
-                              src={post.profile.profile_picture ? post.profile.profile_picture : "/profile.png" }
+                              src={
+                                post.profile.profile_picture
+                                  ? post.profile.profile_picture
+                                  : "/profile.png"
+                              }
                               className="w-8 h-8 md:w-10 md:h-10 rounded-full"
                               alt="User"
                               onError={(e) => {
@@ -1435,39 +1499,38 @@ const handleTopicsSelected = (ids: string[]) => {
                           </div>
                         </div>
                         {post.user_id !== loggedInUserID && (
-
                           <div className="flex gap-2">
                             {/* Connect Button */}
                             <button
                               onClick={() => handleConnect(post.user_id)}
                               disabled={connectingUsers[post.user_id] || false}
                               className={`flex items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
-                                ${getFriendStatus(post.user_id) === 'connected'
-                                  ? "bg-red-500 text-white hover:bg-red-600"
-                                  : getFriendStatus(post.user_id) === 'requested'
-                                  ? "bg-gray-400 text-white cursor-not-allowed"
-                                  : "bg-white text-black shadow-md"
-                                }`
-                              }
+                                ${
+                                  getFriendStatus(post.user_id) === "connected"
+                                    ? "bg-red-500 text-white hover:bg-red-600"
+                                    : getFriendStatus(post.user_id) ===
+                                      "requested"
+                                    ? "bg-gray-400 text-white cursor-not-allowed"
+                                    : "bg-white text-black shadow-md"
+                                }`}
                             >
-                              {connectingUsers[post.user_id] ? (
-                                "Loading..."
-                              ) : getFriendStatus(post.user_id) === 'connected' ? (
-                                "Connected"
-                              ) : getFriendStatus(post.user_id) === 'requested' ? (
-                                "Requested"
-                              ) : (
-                                "Connect"
-                              )}
+                              {connectingUsers[post.user_id]
+                                ? "Loading..."
+                                : getFriendStatus(post.user_id) === "connected"
+                                ? "Connected"
+                                : getFriendStatus(post.user_id) === "requested"
+                                ? "Requested"
+                                : "Connect"}
                             </button>
                             {/* Follow Button */}
                             <button
                               onClick={() => handleFollow(post.user_id)}
                               className={`flex items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
-                                ${post.if_following
-                                  ? "bg-transparent text-blue-500 hover:text-blue-600"
-                                  : "bg-[#7C81FF] text-white hover:bg-indigo-600"}`
-                              }
+                                ${
+                                  post.if_following
+                                    ? "bg-transparent text-blue-500 hover:text-blue-600"
+                                    : "bg-[#7C81FF] text-white hover:bg-indigo-600"
+                                }`}
                             >
                               {post.if_following ? (
                                 <>
@@ -1487,54 +1550,59 @@ const handleTopicsSelected = (ids: string[]) => {
                               >
                                 <MoreVertical className="w-5 h-5 text-gray-600" />
                               </button>
-                              
-                              {openMenu.postId === post.id && openMenu.type === "options" && (
-                                <div
-                                  className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
-                                  ref={(el) => {
-                                    const key = `${post.id}-options`;
-                                    if (el) menuRef.current[key] = el;
-                                    else delete menuRef.current[key];
-                                  }}
-                                >
-                                  <ul className="space-y-1">
-                                    <li>
-                                      <button
-                                        onClick={() => {
-                                          copyPostLink(post.id)
-                                        }}
-                                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-                                      >
-                                        <LinkIcon className="w-4 h-4" />
-                                        Copy Post Link
-                                      </button>
-                                    </li>
-                                    <li>
-                                      <button
-                                        onClick={() => savePostToCollection(post.id)}
-                                        disabled={post.is_saved}
-                                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
-                                      >
-                                        <Bookmark className="w-4 h-4" />
-                                        {post.is_saved ? "Saved" : "Save Post"}
-                                      </button>
-                                    </li>
-                                    <li>
-                                      <button
-                                        onClick={() => openReportModal(post.id)}
-                                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                                      >
-                                        <Flag className="w-4 h-4" />
-                                        Report Post
-                                      </button>
-                                    </li>
-                                  </ul>
-                                </div>
-                              )}
-                            </div>
 
+                              {openMenu.postId === post.id &&
+                                openMenu.type === "options" && (
+                                  <div
+                                    className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                                    ref={(el) => {
+                                      const key = `${post.id}-options`;
+                                      if (el) menuRef.current[key] = el;
+                                      else delete menuRef.current[key];
+                                    }}
+                                  >
+                                    <ul className="space-y-1">
+                                      <li>
+                                        <button
+                                          onClick={() => {
+                                            copyPostLink(post.id);
+                                          }}
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                        >
+                                          <LinkIcon className="w-4 h-4" />
+                                          Copy Post Link
+                                        </button>
+                                      </li>
+                                      <li>
+                                        <button
+                                          onClick={() =>
+                                            savePostToCollection(post.id)
+                                          }
+                                          disabled={post.is_saved}
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                        >
+                                          <Bookmark className="w-4 h-4" />
+                                          {post.is_saved
+                                            ? "Saved"
+                                            : "Save Post"}
+                                        </button>
+                                      </li>
+                                      <li>
+                                        <button
+                                          onClick={() =>
+                                            openReportModal(post.id)
+                                          }
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                        >
+                                          <Flag className="w-4 h-4" />
+                                          Report Post
+                                        </button>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                )}
+                            </div>
                           </div>
-                          
                         )}
 
                         {post.user_id == loggedInUserID && (
@@ -1548,41 +1616,46 @@ const handleTopicsSelected = (ids: string[]) => {
                               >
                                 <MoreVertical className="w-5 h-5 text-gray-600" />
                               </button>
-                              
-                              {openMenu.postId === post.id && openMenu.type === "options" && (
-                                <div
-                                  className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
-                                  ref={(el) => {
-                                    const key = `${post.id}-options`;
-                                    if (el) menuRef.current[key] = el;
-                                    else delete menuRef.current[key];
-                                  }}
-                                >
-                                  <ul className="space-y-1">
-                                    <li>
-                                      <button
-                                        onClick={() => {
-                                          copyPostLink(post.id)
-                                        }}
-                                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-                                      >
-                                        <LinkIcon className="w-4 h-4" />
-                                        Copy Post Link
-                                      </button>
-                                    </li>
-                                    <li>
-                                      <button
-                                        onClick={() => savePostToCollection(post.id)}
-                                        disabled={post.is_saved}
-                                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
-                                      >
-                                        <Bookmark className="w-4 h-4" />
-                                        {post.is_saved ? "Saved" : "Save Post"}
-                                      </button>
-                                    </li>
-                                  </ul>
-                                </div>
-                              )}
+
+                              {openMenu.postId === post.id &&
+                                openMenu.type === "options" && (
+                                  <div
+                                    className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                                    ref={(el) => {
+                                      const key = `${post.id}-options`;
+                                      if (el) menuRef.current[key] = el;
+                                      else delete menuRef.current[key];
+                                    }}
+                                  >
+                                    <ul className="space-y-1">
+                                      <li>
+                                        <button
+                                          onClick={() => {
+                                            copyPostLink(post.id);
+                                          }}
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                        >
+                                          <LinkIcon className="w-4 h-4" />
+                                          Copy Post Link
+                                        </button>
+                                      </li>
+                                      <li>
+                                        <button
+                                          onClick={() =>
+                                            savePostToCollection(post.id)
+                                          }
+                                          disabled={post.is_saved}
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                        >
+                                          <Bookmark className="w-4 h-4" />
+                                          {post.is_saved
+                                            ? "Saved"
+                                            : "Save Post"}
+                                        </button>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                )}
                             </div>
                           </div>
                         )}
@@ -1689,7 +1762,7 @@ const handleTopicsSelected = (ids: string[]) => {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                          <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
                             <img
                               src={comment}
                               alt="Comment"
@@ -1697,7 +1770,6 @@ const handleTopicsSelected = (ids: string[]) => {
                             />
                           </div>
                           <span>{post.comments_count}</span>
-                          
                         </div>
                       </div>
 
@@ -1740,37 +1812,38 @@ const handleTopicsSelected = (ids: string[]) => {
                             <Share2 className="w-5 h-5 md:w-6 md:h-6" />
                             Share
                           </button>
-                          {openMenu.postId === post.id && openMenu.type === "share" && (
-                            <div
-                              className="absolute top-10 left-0 bg-white shadow-lg rounded-lg p-3 z-10"
-                              ref={(el) => {
-                                const key = `${post.id}-share`;
-                                if (el) menuRef.current[key] = el;
-                                else delete menuRef.current[key];
-                              }}
-                            >
-                              <ul className="flex items-center gap-4">
-                                <li>
-                                  <FacebookShareButton url={urldata}>
-                                    <FaFacebook size={32} color="#4267B2" />
-                                  </FacebookShareButton>
-                                </li>
-                                <li>
-                                  <LinkedinShareButton url={urldata}>
-                                    <FaLinkedin size={32} color="#0077B5" />
-                                  </LinkedinShareButton>
-                                </li>
-                                <li>
-                                  <TwitterShareButton url={urldata}>
-                                    <FaTwitter size={32} color="#1DA1F2" />
-                                  </TwitterShareButton>
-                                </li>
-                                <li>
-                                  <WhatsappShareButton url={urldata}>
-                                    <FaWhatsapp size={32} color="#1DA1F2" />
-                                  </WhatsappShareButton>
-                                </li>
-                                {/* <li>
+                          {openMenu.postId === post.id &&
+                            openMenu.type === "share" && (
+                              <div
+                                className="absolute top-10 left-0 bg-white shadow-lg rounded-lg p-3 z-10"
+                                ref={(el) => {
+                                  const key = `${post.id}-share`;
+                                  if (el) menuRef.current[key] = el;
+                                  else delete menuRef.current[key];
+                                }}
+                              >
+                                <ul className="flex items-center gap-4">
+                                  <li>
+                                    <FacebookShareButton url={urldata}>
+                                      <FaFacebook size={32} color="#4267B2" />
+                                    </FacebookShareButton>
+                                  </li>
+                                  <li>
+                                    <LinkedinShareButton url={urldata}>
+                                      <FaLinkedin size={32} color="#0077B5" />
+                                    </LinkedinShareButton>
+                                  </li>
+                                  <li>
+                                    <TwitterShareButton url={urldata}>
+                                      <FaTwitter size={32} color="#1DA1F2" />
+                                    </TwitterShareButton>
+                                  </li>
+                                  <li>
+                                    <WhatsappShareButton url={urldata}>
+                                      <FaWhatsapp size={32} color="#1DA1F2" />
+                                    </WhatsappShareButton>
+                                  </li>
+                                  {/* <li>
                                   <button
                                     onClick={() => {
                                       navigator.clipboard.writeText(urldata);
@@ -1791,9 +1864,9 @@ const handleTopicsSelected = (ids: string[]) => {
                                     )}
                                   </button>
                                 </li> */}
-                              </ul>
-                            </div>
-                          )}
+                                </ul>
+                              </div>
+                            )}
                         </div>
                       </div>
                     </div>
@@ -1857,48 +1930,61 @@ const handleTopicsSelected = (ids: string[]) => {
             )}
           </div>
 
-        {/* Right Sidebar Container */}
-<div className="w-full lg:w-[30%] flex flex-col gap-4">
+          {/* Right Sidebar Container */}
+          <div className="w-full lg:w-[30%] flex flex-col gap-4">
+            {/* Quick Actions */}
+            <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
+              <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
+                Quick Actions
+              </h3>
+              <div className="w-full border-t border-[#C8C8C8] my-4"></div>
+              <ul className="space-y-4 text-sm md:text-[15px] text-gray-700 px-4">
+                <li
+                  onClick={() => navigate("/dashboard/trendingpost")}
+                  className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+                >
+                  <img src={Trending} className="w-5 h-5" alt="" /> Trending
+                </li>
+                <li
+                  onClick={fetchCollectionItems}
+                  className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+                >
+                  <img src={Collection} className="w-5 h-5" alt="" /> My
+                  Collection
+                </li>
+                <li
+                  onClick={fetchFollowedUsers}
+                  className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+                >
+                  <img src={people} className="w-5 h-5" alt="" /> People you
+                  follow
+                </li>
+              </ul>
+            </div>
 
-  {/* Quick Actions */}
-  <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
-    <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
-      Quick Actions
-    </h3>
-    <div className="w-full border-t border-[#C8C8C8] my-4"></div>
-    <ul className="space-y-4 text-sm md:text-[15px] text-gray-700 px-4">
-      <li onClick={() => navigate("/dashboard/trendingpost")} className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
-        <img src={Trending} className="w-5 h-5" alt="" /> Trending
-      </li>
-      <li onClick={fetchCollectionItems} className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
-        <img src={Collection} className="w-5 h-5" alt="" /> My Collection
-      </li>
-      <li onClick={fetchFollowedUsers} className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
-        <img src={people} className="w-5 h-5" alt="" /> People you follow
-      </li>
-    </ul>
-  </div>
-
-  {/* Topics BELOW Quick Actions */}
-  <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
-    <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
-      Topics
-    </h3>
-    <div className="w-full border-t border-[#C8C8C8] my-4"></div>
-    <ul className="space-y-3 text-sm md:text-[15px] text-gray-700 px-4">
-      {topics?.map((topic) => (
-        <li key={topic.id} onClick={() => navigate(`/topics/${topic.slug}`)} className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
-          <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-          {topic.topic_name}
-        </li>
-      ))}
-      {topics?.length === 0 && (
-        <li className="text-gray-400 italic">No topics available</li>
-      )}
-    </ul>
-  </div>
-</div>
-          
+            {/* Topics BELOW Quick Actions */}
+            <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
+              <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
+                Topics
+              </h3>
+              <div className="w-full border-t border-[#C8C8C8] my-4"></div>
+              <ul className="space-y-3 text-sm md:text-[15px] text-gray-700 px-4">
+                {topics?.map((topic) => (
+                  <li
+                    key={topic.id}
+                    onClick={() => navigate(`/topics/${topic.slug}`)}
+                    className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+                  >
+                    <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                    {topic.topic_name}
+                  </li>
+                ))}
+                {topics?.length === 0 && (
+                  <li className="text-gray-400 italic">No topics available</li>
+                )}
+              </ul>
+            </div>
+          </div>
 
           {/* Popup Modals (unchanged) */}
           {showPopup && (
@@ -2060,31 +2146,36 @@ const handleTopicsSelected = (ids: string[]) => {
                     </div>
                   )}
 
-
-                  
                   <div className="flex justify-between items-center mt-3">
-  <select
-    id="topic-select"
-    value={selectedTopic}
-    onChange={(e) => setSelectedTopic(e.target.value)}
-    className="w-80 mr-3 p-2 border border-[#ECEEF2] text-sm rounded-md outline-none focus:border-[#7077FE]"
-  >
-    <option value="">-- Select your conscious topic --</option>
-    {topics.map((topic: Topic) => (
-      <option key={topic.id} value={topic.id}>
-        {topic.topic_name}
-      </option>
-    ))}
-  </select>
+                    <select
+                      id="topic-select"
+                      value={selectedTopic}
+                      onChange={(e) => setSelectedTopic(e.target.value)}
+                      className="w-80 mr-3 p-2 border border-[#ECEEF2] text-sm rounded-md outline-none focus:border-[#7077FE]"
+                    >
+                      <option value="">
+                        -- Select your conscious topic --
+                      </option>
+                      {topics?.map((topic: Topic) => (
+                        <option key={topic.id} value={topic.id}>
+                          {topic.topic_name}
+                        </option>
+                      ))}
+                      {topics?.length === 0 && (
+                        <option className="text-gray-400 italic" disabled>
+                          No topics available
+                        </option>
+                      )}                      
+                    </select>
 
-  <button
-    onClick={handleSubmitPost}
-    className="bg-[#7077FE] text-white px-6 py-2 rounded-full hover:bg-[#5b63e6]"
-  >
-    Post
-  </button>
-</div>
-</div>
+                    <button
+                      onClick={handleSubmitPost}
+                      className="bg-[#7077FE] text-white px-6 py-2 rounded-full hover:bg-[#5b63e6]"
+                    >
+                      Post
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -2213,13 +2304,13 @@ const handleTopicsSelected = (ids: string[]) => {
             />
           )}
 
-            {showTopicModal && (
-      <TopicModal
-        topics={dummyTopics}                 // ← correct prop name
-        onSelect={handleTopicsSelected} // ← now defined
-        onClose={() => setShowTopicModal(false)}
-      />
-    )}
+          {showTopicModal && (
+            <TopicModal
+              topics={topics} // ← correct prop name
+              onSelect={handleTopicsSelected} // ← now defined
+              onClose={() => setShowTopicModal(false)}
+            />
+          )}
         </div>
       ) : (
         <>
@@ -2269,7 +2360,10 @@ const handleTopicsSelected = (ids: string[]) => {
             Report Post
           </h3>
           <div className="mb-4">
-            <label htmlFor="reportReason" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="reportReason"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Reason why you report this post
             </label>
             <textarea
@@ -2290,15 +2384,19 @@ const handleTopicsSelected = (ids: string[]) => {
             </button>
             <button
               onClick={reportPost}
-              disabled={isReportingPost === selectedPostForReport || !reportReason.trim()}
+              disabled={
+                isReportingPost === selectedPostForReport ||
+                !reportReason.trim()
+              }
               className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isReportingPost === selectedPostForReport ? "Submitting..." : "Submit Report"}
+              {isReportingPost === selectedPostForReport
+                ? "Submitting..."
+                : "Submit Report"}
             </button>
           </div>
         </div>
       </Modal>
     </>
- 
   );
 }
