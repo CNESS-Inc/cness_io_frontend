@@ -1435,6 +1435,7 @@ export default function SocialTopBar() {
                   </div>
 
                   {/* Story Strip Wrapper */}
+                  <h4 className="font-medium">Reflections</h4>
                   <div className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory mt-3 md:mt-4">
                     {/* Create Story Card */}
                     <div
@@ -1461,8 +1462,10 @@ export default function SocialTopBar() {
                           fill="#7C81FF"
                         />
                       </svg>
-                      <div className="absolute bottom-[46px] left-1/2 -translate-x-1/2 z-20 w-8 h-8 md:w-10 md:h-10 bg-white text-[#7C81FF] rounded-full flex items-center justify-center text-xl shadow-md leading-0">
-                        +
+                      <div className="absolute bottom-[46px] left-1/2 -translate-x-1/2 z-20">
+                        <div className="w-9 h-9 md:w-12 md:h-12 bg-white text-[#7C81FF] font-semibold rounded-full flex items-center justify-center text-xl shadow-md border-5">
+                          +
+                        </div>
                       </div>
                       <div className="absolute bottom-[14px] w-full text-center text-white text-xs md:text-[15px] font-medium z-20">
                         Create Story
@@ -1505,10 +1508,13 @@ export default function SocialTopBar() {
                   <div className="w-full border-t-[1px] border-[#C8C8C8] mt-4 md:mt-6"></div>
 
                   {/* Posts Section */}
+                  <div className="mt-4 px-6 py-3 bg-[rgba(112,119,254,0.1)] text-[#7077FE] font-medium rounded-xl text-center w-fit">
+                    REFLECTION SCROLL
+                  </div>
                   {userPosts.map((post) => (
                     <div
                       key={post.id}
-                      className="bg-white rounded-xl shadow-md p-3 md:p-4 w-full mx-auto mt-4 md:mt-6"
+                      className="bg-white rounded-xl shadow-md p-3 md:p-4 w-full mx-auto mt-4 md:mt-5"
                     >
                       {/* Header */}
                       <div className="flex items-center justify-between gap-2">
@@ -2029,7 +2035,14 @@ export default function SocialTopBar() {
                   {userSelectedTopics?.map((topic) => (
                     <button
                       key={topic.id}
-                      // onClick={() => navigate(`/topics/${topic.slug}`)}
+                      onClick={() =>
+                        navigate(`/dashboard/${topic.slug}`, {
+                          state: {
+                            topics,
+                            userSelectedTopics,
+                          },
+                        })
+                      }
                       className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
                     >
                       <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
@@ -2038,7 +2051,7 @@ export default function SocialTopBar() {
                   ))}
                   {userSelectedTopics?.length === 0 && (
                     <button disabled className="text-gray-400 italic">
-                      No topics available
+                      No selected topics available
                     </button>
                   )}
                 </ul>
@@ -2078,7 +2091,9 @@ export default function SocialTopBar() {
                   </button>
                 )}
                 {topics?.length === 0 && (
-                  <button disabled className="text-gray-400 italic">No topics available</button>
+                  <button disabled className="text-gray-400 italic">
+                    No topics available
+                  </button>
                 )}
               </ul>
             </div>
