@@ -188,6 +188,7 @@ const UserProfilePage = () => {
       professions: [],
       interests: [],
       identify_uploaded: null,
+      custom_profession: "",
     },
     resolver: yupResolver(
       yup.object().shape({
@@ -240,6 +241,7 @@ const UserProfilePage = () => {
         professions: yup.array().min(1, "At least one profession is required"),
         interests: yup.array().min(1, "At least one interest is required"),
         identify_uploaded: yup.mixed().nullable(),
+         custom_profession: yup.string().nullable(),
       })
     ),
   });
@@ -1335,14 +1337,18 @@ const UserProfilePage = () => {
                                 value: prof.id,
                                 label: prof.title,
                               }))}
-                              value={basicInfoForm
-                                .watch("professions")
-                                ?.map((profId: any) => ({
-                                  value: profId,
-                                  label: professional?.find(
-                                    (p: any) => p.id === profId
-                                  )?.title,
-                                }))}
+  value={basicInfoForm.watch("professions")?.map((profId: any) => {
+  if (profId === "other") {
+    // use custom_profession text if available, else fallback to "Other"
+    const customLabel = basicInfoForm.watch("custom_profession") || "Other";
+    return { value: "other", label: customLabel };
+  }
+
+  return {
+    value: profId,
+    label: professional?.find((p: any) => p.id === profId)?.title || "",
+  };
+})}
                               onChange={(selectedOptions) => {
                                 basicInfoForm.setValue(
                                   "professions",
