@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import hambur from "../../assets/hambur.png";
 import { LogOut } from "../../Common/ServerAPI";
 import { useToast } from "../../components/ui/Toast/ToastProvider";
+import { initSocket } from "../../Common/socket";
 
 const DashboardHeader = ({ toggleMobileNav }: any) => {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
 const [notificationCount, setNotificationCount] = useState(
   localStorage.getItem("notification_count") || "0"
 );
+  console.log("🚀 ~ DashboardHeader ~ notificationCount:", notificationCount)
   const [margaretName, setMargaretName] = useState(
     localStorage.getItem("margaret_name") || ""
   );
@@ -34,6 +36,36 @@ const [notificationCount, setNotificationCount] = useState(
   
   const { showToast } = useToast();
   
+useEffect(() => {
+  const token = localStorage.getItem("jwt");
+  if (!token) return;
+
+  const socket = initSocket(token);
+
+  const handleConnect = () => {
+    console.log("✅ Connected to socket server");
+  };
+  const handleError = (err: any) => {
+    console.error("❌ Connection failed:", err.message);
+  };
+  const handleNotification = (data: { count: number }) => {
+    console.log("🔔 Notification event:", data);
+    setNotificationCount(data.count.toString());
+    localStorage.setItem("notification_count", data.count.toString());
+  };
+
+  socket.on("connect", handleConnect);
+  socket.on("connect_error", handleError);
+  socket.on("notificationCount", handleNotification);
+
+  return () => {
+    // just remove listeners, don’t disconnect the shared socket
+    socket.off("connect", handleConnect);
+    socket.off("connect_error", handleError);
+    socket.off("notificationCount", handleNotification);
+  };
+}, []);
+
 
 
   // Watch for localStorage changes
