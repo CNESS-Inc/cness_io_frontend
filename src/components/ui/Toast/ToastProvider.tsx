@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useState } from 'react';
 import Toast from './Toast';
+import NotificationToast from './NotificationToast.tsx'; // We'll create this component
 
 type ToastType = {
   message: string;
-  type?: 'success' | 'error' | 'warning' | 'info' | 'cute';
+  type?: 'success' | 'error' | 'warning' | 'info' | 'cute' | 'notification';
   duration?: number;
+  title?: string; // For notification toasts
 };
 
 type ToastContextType = {
@@ -27,16 +29,35 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
+      
+      {/* Regular toasts (top center) */}
       <div className="fixed z-50 w-full pointer-events-none top-0 left-0 flex flex-col items-center">
-        {toasts.map((toast, index) => (
-          <Toast
-            key={index}
-            message={toast.message}
-            type={toast.type}
-            duration={toast.duration}
-            onClose={() => removeToast(index)}
-          />
-        ))}
+        {toasts.map((toast, index) => 
+          toast.type !== 'notification' && (
+            <Toast
+              key={index}
+              message={toast.message}
+              type={toast.type}
+              duration={toast.duration}
+              onClose={() => removeToast(index)}
+            />
+          )
+        )}
+      </div>
+      
+      {/* Notification toasts (left bottom) */}
+      <div className="fixed z-50 pointer-events-none bottom-4 left-4 flex flex-col items-start space-y-2">
+        {toasts.map((toast, index) => 
+          toast.type === 'notification' && (
+            <NotificationToast
+              key={index}
+              message={toast.message}
+              title={toast.title}
+              duration={toast.duration}
+              onClose={() => removeToast(index)}
+            />
+          )
+        )}
       </div>
     </ToastContext.Provider>
   );
