@@ -45,13 +45,27 @@ useEffect(() => {
   const handleConnect = () => {
     console.log("✅ Connected to socket server");
   };
+  
   const handleError = (err: any) => {
     console.error("❌ Connection failed:", err.message);
   };
-  const handleNotification = (data: { count: number }) => {
+  
+  const handleNotification = (data: { count: number; message: { title: string; description: string } }) => {
     console.log("🔔 Notification event:", data);
+    
+    // Update notification count
     setNotificationCount(data.count.toString());
     localStorage.setItem("notification_count", data.count.toString());
+    
+    // Show notification message as toast
+    if (data.message) {
+      showToast({
+      message: data.message.description,
+      title: data.message.title,
+      type: "notification", // This will make it appear in bottom left
+      duration: 5000, // 5 seconds
+    });
+    }
   };
 
   socket.on("connect", handleConnect);
@@ -59,12 +73,11 @@ useEffect(() => {
   socket.on("notificationCount", handleNotification);
 
   return () => {
-    // just remove listeners, don’t disconnect the shared socket
     socket.off("connect", handleConnect);
     socket.off("connect_error", handleError);
     socket.off("notificationCount", handleNotification);
   };
-}, []);
+}, [showToast]); // Add showToast to dependency array
 
 
 
