@@ -190,11 +190,27 @@ export const EndPoint = {
   generate_sso_token: "/auth/generate-sso-token",
   profile_get_by_user_id: "/profile/get-user",
   user_posts_by_user_id: "/user/posts/get-user-post",
-  get_topics: "/topics",
-  select_topic: "/userselecttopics",
-  get_select_topic: "/userselecttopics",
-  by_topic_post: "/user/posts/topic",
+
+  // Messaging endpoints
+  conversations: "/messaging/conversations",
+  sendMessage: "/messaging/send",
+  conversationMessages: "/messaging/conversations",
 };
+
+// Messaging endpoints
+export const GetConversations = () => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.conversations);
+};
+
+export const GetConversationMessages = (conversationId: string | number) => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.conversationMessages}/${conversationId}/messages`);
+};
+
+export const SendMessage = (formattedData: any) => {
+  return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.sendMessage);
+
+};
+
 
 export const GoogleLoginDetails = async (googleToken: string): ApiResponse => {
   const data = { token: googleToken };
