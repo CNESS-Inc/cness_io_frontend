@@ -5,6 +5,7 @@ export interface Message {
   sender_id: string;
   receiver_id: string;
   content: string;
+  attachments?: File[];
   createdAt: string;
   updatedAt: string;
   is_read: boolean;
@@ -40,11 +41,11 @@ export const getConversationMessages = async (conversationId: string | number) =
 };
 
 // Send a message
-export const sendMessage = async (data: SendMessageData) => {
+export const sendMessage = async (formData: FormData) => {
   try {
     // For now, return mock data since you haven't added the API endpoints yet
     // When you add the endpoints, uncomment the line below
-    const response = await SendMessage(data);
+    const response = await SendMessage(formData);
     
     // Mock response for testing
     const mockMessage = {

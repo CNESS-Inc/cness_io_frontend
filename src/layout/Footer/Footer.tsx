@@ -5,9 +5,16 @@ import Image from "../../components/ui/Image";
 import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
 import BackToTopButton from "./BackToTop";
 
+
+import { MessagingProvider } from "../../components/Messaging/MessagingContext";
+import PersistentMessagingWidget from "../../components/Messaging/PersistentMessagingWidget";
+
 const Footer = () => {
   return (
     <>
+    <MessagingProvider>
+      <PersistentMessagingWidget />
+    </MessagingProvider>
     <BackToTopButton/>
       <footer className="bg-[#F7F7F7] text-black py-8 md:py-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto lg:flex md:grid flex justify-between lg:grid-cols-2 grid-cols-2 md:grid-cols-5 lg:gap-6 md:gap-8 gap-2">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 // import { MessageCircle, X, Search, Send, Paperclip, Smile, Image as ImageIcon } from "lucide-react";
-import { MessageCircle, X, Send, Paperclip, Smile, Image as ImageIcon } from "lucide-react";
+import { MessageCircle, X, Send, Paperclip } from "lucide-react";
 // import { GetConnectionUser } from "../../Common/ServerAPI";
 import { useToast } from "../ui/Toast/ToastProvider";
 import { useMessaging } from "./MessagingContext";
@@ -26,6 +26,14 @@ interface Message {
   is_read: boolean;
   conversation_id: string;
   user_id?: string | null;
+  // Add new fields for attachments
+  attachments?: Array<{
+    id: string;
+    type: 'image' | 'file';
+    url: string;
+    filename: string;
+    size?: number;
+  }>;
 }
 
 const PersistentMessagingWidget: React.FC = () => {
@@ -37,8 +45,19 @@ const PersistentMessagingWidget: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [isLoading] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState<string | null>(null);
+  // Add new state variables for image handling
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+
+  // Add new state variables for image modal
+  const [selectedImageForModal, setSelectedImageForModal] = useState<string | null>(null);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  
   const { showToast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -130,7 +149,8 @@ const PersistentMessagingWidget: React.FC = () => {
           createdAt: msg.timestamp,
           updatedAt: msg.timestamp,
           is_read: msg.isRead,
-          conversation_id: msg.conversationId?.toString() || ""
+          conversation_id: msg.conversationId?.toString() || "",
+          attachments: msg.attachments
         }));
         
         setMessages(transformedMessages);
@@ -146,6 +166,32 @@ const PersistentMessagingWidget: React.FC = () => {
         type: "error",
         duration: 5000
       });
+    }
+  };
+
+  // Function to trigger file input
+  const handleImageButtonClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  // Add new image modal functions
+  
+  // Function to open image modal
+  const openImageModal = (imageUrl: string) => {
+    setSelectedImageForModal(imageUrl);
+    setIsImageModalOpen(true);
+  };
+
+  // Function to close image modal
+  const closeImageModal = () => {
+    setSelectedImageForModal(null);
+    setIsImageModalOpen(false);
+  };
+
+  // Function to handle escape key press for modal
+  const handleModalKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      closeImageModal();
     }
   };
 
@@ -173,31 +219,51 @@ const PersistentMessagingWidget: React.FC = () => {
   };
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !selectedConnection) return;
+    // Check if there's content or images to send
+    if ((!newMessage.trim() && selectedImages.length === 0) || !selectedConnection) return;
 
     try {
-      // Use the sendMessage function from context
-      await sendMessage(selectedConnection.id, newMessage);
+      setIsUploading(true);
       
-      // Create a new message object
-      const message: Message = {
-        id: Date.now().toString(),
-        sender_id: localStorage.getItem("Id") || "currentUser",
-        receiver_id: selectedConnection.id.toString(),
-        content: newMessage,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        is_read: false,
-        conversation_id: selectedConnection.conversationId?.toString() || ""
-      };
+      let messageContent = newMessage.trim();
+      
+      // Send message with or without attachments using FormData
+      if (messageContent || selectedImages.length > 0) {
+        // Use the sendMessage function from context with attachments
+        // This will create FormData internally and send to API
+        await sendMessage(selectedConnection.id, messageContent, selectedImages);
+        
+        // Create a new message object for local display
+        const message: Message = {
+          id: Date.now().toString(),
+          sender_id: localStorage.getItem("Id") || "currentUser",
+          receiver_id: selectedConnection.id.toString(),
+          content: messageContent,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          is_read: false,
+          conversation_id: selectedConnection.conversationId?.toString() || "",
+          // Create local attachments for display (using blob URLs for now)
+          attachments: selectedImages.map((image, index) => ({
+            id: Date.now().toString() + index,
+            type: 'image' as const,
+            url: URL.createObjectURL(image), // This is temporary - replace with actual Cloudinary URL from API response
+            filename: image.name,
+            size: image.size
+          }))
+        };
 
-      setMessages(prev => [...prev, message]);
-      setNewMessage("");
-      showToast({
-        message: "Message sent!",
-        type: "success",
-        duration: 5000
-      });
+        setMessages(prev => [...prev, message]);
+        setNewMessage("");
+        clearImagePreviews(); // Clear image previews after sending
+        
+        showToast({
+          message: "Message sent!",
+          type: "success",
+          duration: 5000
+        });
+      }
+      
     } catch (error) {
       console.error("Error sending message:", error);
       showToast({
@@ -205,6 +271,8 @@ const PersistentMessagingWidget: React.FC = () => {
         type: "error",
         duration: 5000
       });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -222,11 +290,80 @@ const PersistentMessagingWidget: React.FC = () => {
     }
   };
 
+  // Function to handle image selection
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    
+    // Filter only image files
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+    
+    if (imageFiles.length === 0) {
+      showToast({
+        message: "Please select only image files",
+        type: "error",
+        duration: 3000
+      });
+      return;
+    }
+    
+    // Limit to 5 images
+    if (selectedImages.length + imageFiles.length > 5) {
+      showToast({
+        message: "Maximum 5 images allowed",
+        type: "error",
+        duration: 3000
+      });
+      return;
+    }
+    
+    // Add new images to existing ones
+    setSelectedImages(prev => [...prev, ...imageFiles]);
+    
+    // Create preview URLs for new images
+    imageFiles.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreviews(prev => [...prev, reader.result as string]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // Function to remove image preview
+  const removeImagePreview = (index: number) => {
+    setSelectedImages(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Function to clear all image previews
+  const clearImagePreviews = () => {
+    setSelectedImages([]);
+    setImagePreviews([]);
+  };
+
+  // Function to trigger file input
+  // const handleImageButtonClick = () => {
+  //   fileInputRef.current?.click();
+  // };
+
+  
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem("Id");
+    
+    if(loggedInUser) {
+      setLoggedInUser(loggedInUser);
+    }
+  }, []);
+
+  if(!loggedInUser) {
+    return null;
+  }
+
   if (!isOpen) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all duration-200 flex items-center justify-center z-50"
+        className="fixed bottom-20 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all duration-200 flex items-center justify-center z-50"
         style={{
           zIndex: 9999
         }}
@@ -238,9 +375,9 @@ const PersistentMessagingWidget: React.FC = () => {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 w-80 h-96 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 flex flex-col">
+    <div className="fixed bottom-20 right-6 w-[30vw] h-[80vh] bg-white rounded-lg shadow-2xl border border-gray-200 z-50 flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-gray-50 rounded-t-lg">
+      <div className="flex items-center justify-between p-4 border-b border-blue-600 bg-blue-600 rounded-t-lg">
         <div className="flex items-center gap-3">
           <img
             src="/profile.png"
@@ -248,14 +385,14 @@ const PersistentMessagingWidget: React.FC = () => {
             className="w-8 h-8 rounded-full"
           />
           <div>
-            <h3 className="font-semibold text-gray-900">Messaging</h3>
-            <p className="text-xs text-gray-500">Your conversations</p>
+            <h3 className="font-semibold text-white">Messaging</h3>
+            <p className="text-xs text-white">Your conversations</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={handleCloseWidget}
-            className="p-1 hover:bg-gray-200 rounded"
+            className="p-1 bg-white rounded"
           >
             <X size={16} />
           </button>
@@ -279,7 +416,7 @@ const PersistentMessagingWidget: React.FC = () => {
                   <div
                     key={connection.id}
                     onClick={() => handleConnectionClick(connection)}
-                    className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100"
+                    className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer border-b border-blue-600"
                   >
                     <img
                       src={connection.profileImage || "/profile.png"}
@@ -315,7 +452,7 @@ const PersistentMessagingWidget: React.FC = () => {
             {selectedConnection && (
               <>
                 {/* Chat Header */}
-                <div className="flex items-center justify-between p-3 border-b bg-gray-50">
+                <div className="flex items-center justify-between p-3 border-b border-blue-600 bg-gray-50">
                   <div className="flex items-center gap-3">
                     <img
                       src={selectedConnection.profileImage || "/profile.png"}
@@ -326,7 +463,6 @@ const PersistentMessagingWidget: React.FC = () => {
                       <h4 className="font-medium text-gray-900 text-sm">
                         {selectedConnection.name}
                       </h4>
-                      <p className="text-xs text-gray-500">1st connection</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -340,7 +476,7 @@ const PersistentMessagingWidget: React.FC = () => {
                 </div>
 
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-3 space-y-3">
+                <div className="flex-1 min-h-60 overflow-y-auto p-3 space-y-3">
                 {messages.map((message) => {
                     const currentUserId = localStorage.getItem("Id");
                     const isOwnMessage = message.sender_id === currentUserId;
@@ -357,7 +493,44 @@ const PersistentMessagingWidget: React.FC = () => {
                                 : "bg-gray-200 text-gray-900"
                             }`}
                         >
-                            <p>{message.content}</p>
+                            {/* Message content - only show if there's content */}
+                            {message.content && message.content.trim() !== "" && (
+                              <p className="mb-2">{message.content}</p>
+                            )}
+                            
+                            {/* Message attachments - show if attachments exist */}
+                            {message.attachments && message.attachments.length > 0 && (
+                              <div className="space-y-2">
+                                {message.attachments.map((attachment) => (
+                                  <div key={attachment.id} className="relative">
+                                    {attachment.type === 'image' && (
+                                      <img
+                                        src={attachment.url}
+                                        alt={attachment.filename}
+                                        className="max-w-auto h-auto rounded cursor-pointer hover:opacity-90 transition-opacity"
+                                        onClick={() => {
+                                          // Open image modal when clicked
+                                          openImageModal(attachment.url);
+                                        }}
+                                        onError={(e) => {
+                                          // Handle image load errors
+                                          console.error('Failed to load image:', attachment.url);
+                                          e.currentTarget.style.display = 'none';
+                                        }}
+                                      />
+                                    )}
+                                    {attachment.type === 'file' && (
+                                      <div className="flex items-center gap-2 p-2 bg-gray-100 rounded">
+                                        <Paperclip size={16} />
+                                        <span className="text-xs truncate">{attachment.filename}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                            
+                            {/* Show timestamp */}
                             <p className={`text-xs mt-1 ${
                             isOwnMessage ? "text-blue-100" : "text-gray-500"
                             }`}>
@@ -372,37 +545,87 @@ const PersistentMessagingWidget: React.FC = () => {
                 </div>
 
                 {/* Message Input */}
-                <div className="p-3 border-t">
+                <div className="p-3 border-t border-blue-600">
+                  {/* Image Previews */}
+                  {imagePreviews.length > 0 && (
+                    <div className="mb-3 p-2 bg-gray-50 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs text-gray-600">Selected Images ({imagePreviews.length})</span>
+                        <button
+                          onClick={clearImagePreviews}
+                          className="text-xs text-red-500 hover:text-red-700"
+                        >
+                          Clear All
+                        </button>
+                      </div>
+                      <div className="flex gap-2 overflow-x-auto">
+                        {imagePreviews.map((preview, index) => (
+                          <div key={index} className="relative flex-shrink-0">
+                            <img
+                              src={preview}
+                              alt={`Preview ${index + 1}`}
+                              className="w-16 h-16 object-cover rounded border"
+                            />
+                            <button
+                              onClick={() => removeImagePreview(index)}
+                              className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   <div className="flex items-center gap-2">
+                    <button 
+                      className="p-1 h-9 w-9 flex justify-center items-center bg-blue-600 rounded"
+                      onClick={handleImageButtonClick}
+                      disabled={isUploading}
+                      >
+                        <Paperclip size={16} className="text-white" />
+                    </button>
                     <input
                       type="text"
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
                       placeholder="Write a message..."
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg outline-none text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                      disabled={isUploading}
                     />
                     <button
                       onClick={handleSendMessage}
-                      disabled={!newMessage.trim()}
-                      className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={!newMessage.trim() && selectedImages.length === 0}
+                      className="p-2 w-9 h-9 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <Send size={16} />
+                      {isUploading ? (
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      ) : (
+                        <Send size={16} />
+                      )}
                     </button>
                   </div>
+                  {/* Hidden file input */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                    className="hidden"
+                  />
                   <div className="flex items-center justify-between mt-2">
                     <div className="flex items-center gap-2">
-                      <button className="p-1 hover:bg-gray-100 rounded">
-                        <ImageIcon size={16} className="text-gray-500" />
-                      </button>
-                      <button className="p-1 hover:bg-gray-100 rounded">
+                      
+                      {/* <button className="p-1 hover:bg-gray-100 rounded">
                         <Paperclip size={16} className="text-gray-500" />
                       </button>
                       <button className="p-1 hover:bg-gray-100 rounded">
                         <Smile size={16} className="text-gray-500" />
-                      </button>
+                      </button> */}
                     </div>
-                    <p className="text-xs text-gray-500">Press Enter to send</p>
+                    <p className="text-xs text-gray-500">{isUploading ? "Uploading..." : "Press Enter to send"}</p>
                   </div>
                 </div>
               </>
@@ -410,7 +633,46 @@ const PersistentMessagingWidget: React.FC = () => {
           </div>
         )}
       </div>
+      {/* Image Modal */}
+      {isImageModalOpen && selectedImageForModal && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
+          onClick={closeImageModal} // Close modal when clicking outside
+          onKeyDown={handleModalKeyDown} // Handle escape key
+          tabIndex={0} // Make div focusable for keyboard events
+        >
+          {/* Modal Content */}
+          <div className="relative max-w-[90vw] max-h-[90vh] p-4">
+            {/* Close Button */}
+            <button
+              onClick={closeImageModal}
+              className="absolute top-2 right-2 w-8 h-8 bg-white bg-opacity-20 hover:bg-opacity-30 text-gray-500 rounded-full flex items-center justify-center z-10 transition-all duration-200"
+              aria-label="Close modal"
+            >
+              <X size={20} />
+            </button>
+            
+            {/* Image Container */}
+            <div className="relative">
+              <img
+                src={selectedImageForModal}
+                alt="Full size image"
+                className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+                onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on image
+              />
+            </div>
+            
+            {/* Image Info */}
+            <div className="mt-4 text-center text-white">
+              <p className="text-sm opacity-80">
+                Click outside or press ESC to close
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
+    // </div>
   );
 };
 
