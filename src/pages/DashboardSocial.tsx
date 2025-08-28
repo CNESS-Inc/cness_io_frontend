@@ -298,9 +298,9 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
   };
 
   return (
-    <div className="relative w-full rounded-lg overflow-hidden">
+    <div className="relative w-full overflow-hidden">
       {/* Media Container */}
-      <div className="w-full aspect-video bg-black">
+      <div className="w-full aspect-video rounded-3xl  bg-black">
         {mediaItems.map((item, index) => (
           <div
             key={index}
@@ -312,14 +312,14 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
               <img
                 src={item.url}
                 alt={`Slide ${index}`}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-3xl"
               />
             ) : (
               <video
                 ref={(el) => {
                   videoRefs.current[index] = el;
                 }}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-3xl"
                 controls
                 muted
                 loop
@@ -423,6 +423,7 @@ export default function SocialTopBar() {
   const [storiesData, setStoriesData] = useState<Story[]>([]);
   // const [addNewPost, setAddNewPost] = useState(false)
 
+  const [userInfo, setUserInfo] = useState<any>();
   const [isAdult, setIsAdult] = useState<Boolean>(false);
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -663,8 +664,6 @@ export default function SocialTopBar() {
         const newPosts = res?.data.data.rows || [];
         const totalPages = res?.data?.data?.count / 10 || 0;
 
-        console.log(page, "res?.data.data.rows");
-
         if (newPosts.length === 0) {
           setHasMore(false); // No more posts to load
         } else {
@@ -697,8 +696,6 @@ export default function SocialTopBar() {
       if (res?.data) {
         const newPosts = res?.data.data.rows || [];
         const totalPages = res?.data?.data?.count / 10 || 0;
-
-        console.log(page, "res?.data.data.rows");
 
         if (newPosts.length === 0) {
           setHasMore(false); // No more posts to load
@@ -1053,6 +1050,9 @@ export default function SocialTopBar() {
   const MeDetail = async () => {
     try {
       const response = await MeDetails();
+      if (response?.data?.data?.user) {
+        setUserInfo(response?.data?.data?.user);
+      }
       const dobString = response?.data?.data?.user?.dob;
       if (!dobString) {
         setIsAdult(false);
@@ -1568,19 +1568,19 @@ export default function SocialTopBar() {
                               disabled={connectingUsers[post.user_id] || false}
                               className={`flex items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
                                 ${
-                                  getFriendStatus(post.user_id) === "connected"
-                                    ? "bg-red-500 text-white hover:bg-red-600"
-                                    : getFriendStatus(post.user_id) ===
-                                      "requested"
+                                  // getFriendStatus(post.user_id) === "connected"
+                                  //   ? "bg-red-500 text-white hover:bg-red-600"
+                                  //   :
+                                  getFriendStatus(post.user_id) === "requested"
                                     ? "bg-gray-400 text-white cursor-not-allowed"
                                     : "bg-white text-black shadow-md"
                                 }`}
                             >
                               {connectingUsers[post.user_id]
                                 ? "Loading..."
-                                : getFriendStatus(post.user_id) === "connected"
-                                ? "Connected"
-                                : getFriendStatus(post.user_id) === "requested"
+                                : // : getFriendStatus(post.user_id) === "connected"
+                                // ? "Connected"
+                                getFriendStatus(post.user_id) === "requested"
                                 ? "Requested"
                                 : "Connect"}
                             </button>
@@ -1768,7 +1768,7 @@ export default function SocialTopBar() {
                               const item = mediaItems[0];
                               return item.type === "video" ? (
                                 <video
-                                  className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-lg"
+                                  className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl"
                                   controls
                                   muted
                                   autoPlay
@@ -1781,7 +1781,7 @@ export default function SocialTopBar() {
                                 <img
                                   src={item.url}
                                   alt="Post content"
-                                  className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-lg mb-2"
+                                  className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl mb-2"
                                   onError={(e) => {
                                     const target = e.target as HTMLImageElement;
                                     target.src = carosuel1;
@@ -1794,52 +1794,61 @@ export default function SocialTopBar() {
                       </div>
 
                       {/* Reactions and Action Buttons */}
-                      <div className="flex justify-start items-center mt-3 px-1 text-xs md:text-sm text-gray-600 gap-2">
-                        <div className="flex items-center gap-1 md:gap-2">
-                          <div className="flex items-center -space-x-2 md:-space-x-3">
+                      <div className="flex justify-between items-center mt-3 px-1 text-xs md:text-sm text-gray-600 gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1 md:gap-2">
+                            <div className="flex items-center -space-x-2 md:-space-x-3">
+                              <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                                <img
+                                  src={like}
+                                  alt="Like"
+                                  className="w-6 h-6 md:w-8 md:h-8"
+                                />
+                              </div>
+                              {/* <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                                  <img
+                                    src={comment}
+                                    alt="Comment"
+                                    className="w-6 h-6 md:w-8 md:h-8"
+                                  />
+                                </div> */}
+                              {/* <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                                  <img
+                                    src={repost}
+                                    alt="Repost"
+                                    className="w-6 h-6 md:w-8 md:h-8"
+                                  />
+                                </div> */}
+                              <span className="text-xs md:text-sm text-gray-500 pl-3 md:pl-5">
+                                {post.likes_count}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
                             <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
                               <img
-                                src={like}
-                                alt="Like"
+                                src={comment}
+                                alt="Comment"
                                 className="w-6 h-6 md:w-8 md:h-8"
                               />
                             </div>
-                            {/* <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
-                      <img
-                        src={comment}
-                        alt="Comment"
-                        className="w-6 h-6 md:w-8 md:h-8"
-                      />
-                    </div> */}
-                            {/* <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
-                      <img
-                        src={repost}
-                        alt="Repost"
-                        className="w-6 h-6 md:w-8 md:h-8"
-                      />
-                    </div> */}
-                            <span className="text-xs md:text-sm text-gray-500 pl-3 md:pl-5">
-                              {post.likes_count}
+                            <span>{post.comments_count}</span>
+                          </div>
+                        </div>
+                        {post.comments_count > 0 && (
+                          <div>
+                            <span className="text-sm text-[#64748B]">
+                              {post.comments_count} Reflections Thread
                             </span>
                           </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
-                            <img
-                              src={comment}
-                              alt="Comment"
-                              className="w-6 h-6 md:w-8 md:h-8"
-                            />
-                          </div>
-                          <span>{post.comments_count}</span>
-                        </div>
+                        )}
                       </div>
 
                       <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
                         <button
                           onClick={() => handleLike(post.id)}
                           disabled={isLoading}
-                          className={`flex items-center justify-center gap-2 rounded-2xl border border-gray-200 py-1 h-[45px] font-opensans font-semibold text-[14px] leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 shadow-sm ${
+                          className={`flex items-center justify-center gap-2 rounded-2xl border border-gray-200 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 shadow-sm ${
                             isLoading ? "opacity-50 cursor-not-allowed" : ""
                           }`}
                         >
@@ -1848,20 +1857,20 @@ export default function SocialTopBar() {
                             fill={post.is_liked ? "#7077FE" : "none"} // <-- condition here
                             stroke={post.is_liked ? "#7077FE" : "#7077FE"} // keeps border visible
                           />
-                          <span>Like</span>
+                          <span>Affirmation Modal</span>
                         </button>
                         <button
                           onClick={() => {
                             setSelectedPostId(post.id);
                             setShowCommentBox(true);
                           }}
-                          className="flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  border border-[#E5E7EB] rounded-xl text-[14px] md:text-base text-[#7077FE] hover:bg-gray-50 shadow-sm"
+                          className="flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  border border-[#E5E7EB] rounded-xl font-semibold text-sm md:text-base text-[#7077FE] hover:bg-gray-50 shadow-sm"
                         >
                           <img
                             src={comment1}
                             className="w-5 h-5 md:w-6 md:h-6"
                           />{" "}
-                          Comment
+                          Reflections Thread
                         </button>
                         {/* <button className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm">
                   <img src={repost1} className="w-5 h-5 md:w-6 md:h-6" /> Repost
@@ -1869,7 +1878,7 @@ export default function SocialTopBar() {
                         <div className="relative">
                           <button
                             onClick={() => toggleMenu(post.id, "share")}
-                            className="flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6   border border-[#E5E7EB] rounded-xl text-[14px] md:text-base text-[#7077FE] hover:bg-gray-50 shadow-sm"
+                            className="flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6   border border-[#E5E7EB] rounded-xl font-semibold text-sm md:text-base text-[#7077FE] hover:bg-gray-50 shadow-sm"
                           >
                             <Share2 className="w-5 h-5 md:w-6 md:h-6" />
                             Share
@@ -2113,15 +2122,39 @@ export default function SocialTopBar() {
                       className="object-contain"
                     />
                   </div>
-                  <h2 className="text-lg font-semibold mb-0 text-gray-800">
+                  <h2 className="text-lg font-semibold mb-0 text-[#897AFF]">
                     Create Post
                   </h2>
                   <button
                     onClick={() => setShowPopup(false)}
-                    className="text-black text-[26px] hover:text-black cursor-pointer"
+                    className="text-[#E1056D] text-[26px] hover:text-black cursor-pointer"
                   >
                     ×
                   </button>
+                </div>
+                <div className="mt-4 px-3 flex items-center gap-2 md:gap-3">
+                  <Link to={`/dashboard/userprofile/${userInfo?.id}`}>
+                    <img
+                      src={
+                        userInfo.profile_picture
+                          ? userInfo.profile_picture
+                          : "/profile.png"
+                      }
+                      className="w-8 h-8 md:w-10 md:h-10 rounded-full"
+                      alt="User"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/profile.png";
+                      }}
+                    />
+                  </Link>
+                  <div>
+                    <p className="font-semibold text-sm md:text-base text-black">
+                      <Link to={`/dashboard/userprofile/${userInfo?.id}`}>
+                        {userInfo.name}
+                      </Link>
+                    </p>
+                  </div>
                 </div>
 
                 {/* {apiMessage && (
@@ -2135,11 +2168,11 @@ export default function SocialTopBar() {
                   {apiMessage}
                 </div>
               )} */}
-                <div className="px-3 mt-5 pb-5">
+                <div className="px-3 mt-4 pb-5">
                   <textarea
                     rows={4}
                     className="w-full p-3 border border-[#ECEEF2] text-black placeholder:text-[#64748B] text-sm rounded-md resize-none mb-3 outline-none focus:border-[#897AFF1A]"
-                    placeholder="What's on your mind?"
+                    placeholder={`What's on your mind? ${userInfo.main_name}...`}
                     value={postMessage}
                     onChange={(e) => setPostMessage(e.target.value)}
                   />
