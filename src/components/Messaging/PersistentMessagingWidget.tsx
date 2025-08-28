@@ -36,7 +36,7 @@ const PersistentMessagingWidget: React.FC = () => {
   const [selectedConnection, setSelectedConnection] = useState<Connection | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
   const { showToast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   

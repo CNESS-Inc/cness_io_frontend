@@ -195,6 +195,12 @@ export const EndPoint = {
   conversations: "/messaging/conversations",
   sendMessage: "/messaging/send",
   conversationMessages: "/messaging/conversations",
+
+  // Topics endpoints
+  get_topics: "/topics",
+  select_topic: "/topics/select",
+  by_topic_post: "/user/posts/by-topic",
+  
 };
 
 // Messaging endpoints
