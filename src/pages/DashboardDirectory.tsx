@@ -10,6 +10,15 @@ import {
 } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
+import { LiaCertificateSolid } from "react-icons/lia";
+import { Menu } from "@headlessui/react";
+import {
+  FaAngleDown,
+  FaAngleUp,
+  FaCheck,
+  FaSortAlphaDown,
+  FaSortAlphaUp,
+} from "react-icons/fa";
 
 type Company = {
   level: unknown;
@@ -43,6 +52,20 @@ export default function DashboardDirectory() {
   const [textWidth, setTextWidth] = useState(0);
   const [Domain, setDomain] = useState([]);
   const { showToast } = useToast();
+  const [selected, setSelected] = useState("");
+  const [order, setOrder] = useState<"asc" | "desc">("asc");
+
+  const options = [
+    { value: "aspiring", label: "Aspiring" },
+    { value: "popular", label: "Popular" },
+    { value: "inspired", label: "Inspired" },
+  ];
+
+  // const handleSelect = (value: string) => {
+  //   setSelected(value);
+  //   if (value === "aspiring") fetchInspiringCompany();
+  //   if (value === "popular") fetchPopularCompany();
+  // };
 
   // Pagination states
   const [popularPagination, setPopularPagination] = useState<PaginationData>({
@@ -238,44 +261,44 @@ export default function DashboardDirectory() {
                 {selectedDomainText || "All Domains"}
               </span>
 
-<div className="w-full flex justify-center md:justify-start items-center my-1 px-4 md:px-0">
-  <div  className="relative w-full max-w-[200px] md:w-fit"
-             
-             style={{
-      width: textWidth ? `${textWidth}px` : "100%",
-      minWidth: "120px",
-      maxWidth: "100%",
-    }}
+              <div className="w-full flex justify-center md:justify-start items-center my-1 px-4 md:px-0">
+                <div
+                  className="relative w-full max-w-[200px] md:w-fit"
+                  style={{
+                    width: textWidth ? `${textWidth}px` : "100%",
+                    minWidth: "120px",
+                    maxWidth: "100%",
+                  }}
                 >
-                 <select
-      className="bg-[#7077FE] rounded-full text-white font-semibold px-3 py-2 pr-6 appearance-none focus:outline-none cursor-pointer text-[12px] w-full"
-                value={selectedDomain}
-                onChange={(e) => {
-                  setSelectedDomain(e.target.value);
-                  const selectedText =
-                    e.target.options[e.target.selectedIndex].text;
-                  setSelectedDomainText(selectedText);
-                }}
-              >
-                <option value="" className="text-white text-[12px]">
-                  All Profession
-                </option>
-                {Domain.map((domain: any) => (
-                  <option
-                    key={domain.id}
-                    value={domain.id}
-                    className="text-white text-[12px]"
+                  <select
+                    className="bg-[#7077FE] rounded-full text-white font-semibold px-3 py-2 pr-6 appearance-none focus:outline-none cursor-pointer text-[12px] w-full"
+                    value={selectedDomain}
+                    onChange={(e) => {
+                      setSelectedDomain(e.target.value);
+                      const selectedText =
+                        e.target.options[e.target.selectedIndex].text;
+                      setSelectedDomainText(selectedText);
+                    }}
                   >
-                    {domain.title}
-                  </option>
-                ))}
-              </select>
-    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white text-xs pointer-events-none">
-                ▼
+                    <option value="" className="text-white text-[12px]">
+                      All Profession
+                    </option>
+                    {Domain.map((domain: any) => (
+                      <option
+                        key={domain.id}
+                        value={domain.id}
+                        className="text-white text-[12px]"
+                      >
+                        {domain.title}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white text-xs pointer-events-none">
+                    ▼
+                  </div>
+                </div>
               </div>
             </div>
-</div>
-</div>
             {/* Search Input - full width on mobile */}
             <div className="relative flex-grow bg-white border border-gray-200 rounded-full md:rounded-full px-3 h-[100%] shadow-sm ">
               <input
@@ -295,7 +318,7 @@ export default function DashboardDirectory() {
             </div>
           </div>
 
-<p className="text-gray-700 text-xs md:text-sm mt-12 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
+          <p className="text-gray-700 text-xs md:text-sm mt-12 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
             <span
               className="font-medium text-[#F07EFF] underline cursor-pointer"
               onClick={() => navigate("/dashboard/company-profile")}
@@ -310,7 +333,73 @@ export default function DashboardDirectory() {
       {/* Popular Companies Section */}
       <section className="py-16 px-1 bg-[#f9f9f9] border-t border-gray-100">
         <div className="w-full mx-auto">
-          <h2 className="text-xl font-semibold mb-4">Popular People</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">Popular People</h2>
+
+            {/* Filter + Sort */}
+            <div className="flex items-center gap-3">
+              <Menu as="div" className="relative inline-block text-left">
+                <div>
+                  <Menu.Button className="flex items-center gap-2 px-2 py-2 border border-gray-300 rounded-md bg-white text-sm text-gray-700 hover:bg-gray-50">
+                    <LiaCertificateSolid className="text-pink-700" size={20} />
+                    {selected
+                      ? options.find((o) => o.value === selected)?.label
+                      : "Certification Level"}
+                  </Menu.Button>
+                </div>
+
+                <Menu.Items className="absolute right-0 mt-2 w-32 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg focus:outline-none z-50">
+                  <div className="py-2">
+                    {options.map((option) => (
+                      <Menu.Item key={option.value}>
+                        {({ active }) => (
+                          <button
+                            // onClick={() => handleSelect(option.value)}
+                            onClick={() => setSelected(option.value)}
+                            className={`flex items-center w-full px-4 py-2 text-sm ${
+                              active ? "bg-gray-100" : ""
+                            }`}
+                          >
+                            <span
+                              className={`w-4 h-4 mr-3 rounded-full border flex items-center justify-center ${
+                                selected === option.value
+                                  ? "border-pink-600 bg-pink-600"
+                                  : "border-gray-400"
+                              }`}
+                            >
+                              {selected === option.value && (
+                                <FaCheck className="text-white text-[10px]" />
+                              )}
+                            </span>
+                            {option.label}
+                          </button>
+                        )}
+                      </Menu.Item>
+                    ))}
+                  </div>
+                </Menu.Items>
+              </Menu>
+
+              {/* Sort Dropdown */}
+              <button
+                onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
+                className="flex items-center justify-between w-26 px-4 py-2 border border-gray-300 rounded-md bg-white text-sm text-gray-700 hover:bg-gray-50"
+              >
+                {/* Left icon + label */}
+                <div className="flex items-center gap-2">
+                  <FaSortAlphaUp className="text-indigo-600" />
+                  <span>A - Z</span>
+                </div>
+
+                {/* Right toggle icon */}
+                {order === "asc" ? (
+                  <FaAngleDown className="text-gray-500" />
+                ) : (
+                  <FaAngleUp className="text-gray-500" />
+                )}
+              </button>
+            </div>
+          </div>
 
           {isLoading.popular ? (
             <div className="flex justify-center py-10">
