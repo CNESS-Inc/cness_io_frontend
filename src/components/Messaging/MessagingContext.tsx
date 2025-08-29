@@ -17,6 +17,7 @@ interface APIMessage {
   createdAt: string;
   updatedAt: string;
   user_id: string | null;
+  attachments: string | null;
 }
 
 interface Message {
@@ -27,6 +28,14 @@ interface Message {
   timestamp: string;
   isRead: boolean;
   conversationId?: string;
+  // Add attachments support
+  attachments?: Array<{
+    id: string;
+    type: 'image' | 'file';
+    url: string;
+    filename: string;
+    size?: number;
+  }>;
 }
 
 interface Conversation {
@@ -44,7 +53,7 @@ interface MessagingContextType {
   conversations: Conversation[];
   activeConversation: Conversation | null;
   setActiveConversation: (conversation: Conversation | null) => void;
-  sendMessage: (conversationId: string | number, content: string) => Promise<void>;
+  sendMessage: (conversationId: string | number, content: string, attachments?: File[]) => Promise<void>;
   loadConversationMessages: (conversationId: string | number) => Promise<Message[]>;
   loadConversations: () => Promise<Conversation[]>;
   refreshConversations: () => Promise<Conversation[]>;
@@ -95,7 +104,8 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
         lastMessage: item?.conversation?.last_message || "",
         lastMessageTime: item?.conversation?.createdAt || new Date().toISOString(),
         unreadCount: item?.conversation?.user_id !== currentUserId ? (item?.conversation?.unread_count > 0 ? item?.conversation?.unread_count : '') : '',
-        messages: [] // Start with empty messages, they'll be loaded when needed
+        messages: [], // Start with empty messages, they'll be loaded when needed  
+        attachments: []
       }));
       
       setConversations(conversationsWithMessages);
@@ -110,13 +120,23 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
     }
   };
 
-  const sendMessage = async (conversationId: string | number, content: string) => {
+  const sendMessage = async (conversationId: string | number, content: string, attachments?: File[]) => {
     try {
+
+      // Create FormData for message with attachments
+      const formData = new FormData();
+      formData.append("receiverId", conversationId.toString());
+      formData.append("content", content);
+      
+      // Append all selected images as files (similar to handleSubmitPost)
+      if (attachments && attachments.length > 0) {
+        attachments.forEach((attachment) => {
+          formData.append("file", attachment);
+        });
+      }
+
       // Send message via API
-      await sendMessageAPI({
-        receiverId: conversationId,
-        content
-      });
+      await sendMessageAPI(formData);
 
       // Update local state
       const message: Message = {
@@ -163,15 +183,34 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
       const apiMessages: APIMessage[] = response.data?.data || [];
       
       // Transform API message format to internal Message format
-      const transformedMessages: Message[] = apiMessages.map((msg: APIMessage) => ({
-        id: msg.id,
-        senderId: msg.sender_id,
-        receiverId: msg.receiver_id,
-        content: msg.content,
-        timestamp: msg.createdAt,
-        isRead: msg.is_read,
-        conversationId: msg.conversation_id
-      }));
+      const transformedMessages: Message[] = apiMessages.map((msg: APIMessage) => {
+        // Handle attachments - convert comma-separated string to array of objects
+        let messageAttachments: any[] = [];
+        
+        if (msg.attachments && typeof msg.attachments === 'string' && msg.attachments !== 'null') {
+          // Split comma-separated URLs and create attachment objects
+          const attachmentUrls = msg.attachments.split(',').map(url => url.trim());
+          
+          messageAttachments = attachmentUrls.map((url, index) => ({
+            id: `${msg.id}_attachment_${index}`,
+            type: 'image' as const, // Assuming all attachments are images for now
+            url: url,
+            filename: `attachment_${index + 1}`,
+            // size: 0 // Size not available from API
+          }));
+        }
+        
+        return {
+          id: msg.id,
+          senderId: msg.sender_id,
+          receiverId: msg.receiver_id,
+          content: msg.content,
+          timestamp: msg.createdAt,
+          isRead: msg.is_read,
+          conversationId: msg.conversation_id,
+          attachments: messageAttachments // Use processed attachments
+        };
+      });
       
       // Update conversation with messages
       setConversations(prev => prev.map(conv => {
@@ -180,9 +219,9 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
           return { ...conv, 
             messages: transformedMessages, 
             lastMessage: latestMessage?.content || conv.lastMessage,
-          lastMessageTime: latestMessage?.timestamp || conv.lastMessageTime,
-          // Reset unread count since messages are now loaded
-          unreadCount: ''
+            lastMessageTime: latestMessage?.timestamp || conv.lastMessageTime,
+            // Reset unread count since messages are now loaded
+            unreadCount: ''
           };
         }
         return conv;
@@ -214,7 +253,8 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
         lastMessageTime: item?.conversation?.createdAt || new Date().toISOString(),
         unreadCount: item?.conversation?.user_id !== currentUserId ? 
           (item?.conversation?.unread_count > 0 ? item?.conversation?.unread_count : '') : '',
-        messages: [] // Start with empty messages, they'll be loaded when needed
+        messages: [], // Start with empty messages, they'll be loaded when needed
+        attachments: []
       }));
       
       setConversations(conversationsWithMessages);

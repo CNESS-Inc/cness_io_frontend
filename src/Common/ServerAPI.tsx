@@ -212,8 +212,8 @@ export const GetConversationMessages = (conversationId: string | number) => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.conversationMessages}/${conversationId}/messages`);
 };
 
-export const SendMessage = (formattedData: any) => {
-  return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.sendMessage);
+export const SendMessage = (formData: FormData) => {
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.sendMessage);
 
 };
 
