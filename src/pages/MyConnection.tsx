@@ -27,6 +27,8 @@ const MyConnection = () => {
     name: string;
     username: string;
     image: string;
+    profileImage: string;
+    conversationId?: string | number;
     isFollowing?: boolean;
   }
 
@@ -47,6 +49,8 @@ const MyConnection = () => {
         name: `${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
         username: `@${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
         image: item.friend_user.profile.profile_picture,
+        profileImage: item.friend_user.profile.profile_picture,
+        conversationId: item?.conversation?.id || null,
         isFollowing: item.isFollowing || false,
       }));
       setAllConnections(formattedRequests);
@@ -68,6 +72,7 @@ const MyConnection = () => {
         name: `${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
         username: `@${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
         image: item.friend_user.profile.profile_picture,
+        profileImage: item.friend_user.profile.profile_picture,
       }));
       setFriendRequests(formattedRequests);
     } catch (error) {
@@ -110,6 +115,12 @@ const MyConnection = () => {
       // Handle error (show toast notification, etc.)
     }
   };
+  const handleChatClick = (connection: Connection) => {
+  // Dispatch custom event to open messaging
+  window.dispatchEvent(new CustomEvent('openMessaging', { 
+    detail: { connection } 
+  }));
+};
 
   /*
   const allConnections : Connection[] = [
@@ -204,12 +215,14 @@ const MyConnection = () => {
       name: "NovaStar",
       username: "@novawrites",
       image: profile,
+      profileImage: profile,
     },
     {
       id: 2,
       name: "LunaSky",
       username: "@lunascribbles",
       image: "/images/luna.jpg",
+      profileImage: profile,
     },
   ];
 
@@ -291,6 +304,7 @@ const MyConnection = () => {
             name={conn.name}
             username={conn.username.replace("@", "")}
             image={conn.image}
+            connection={conn}
             actions={
               activeTab === "All Friends"
                 ? ["chat"]
@@ -298,7 +312,7 @@ const MyConnection = () => {
                 ? ["accept", "reject"]
                 : []
             }
-            onChat={() => console.log("Chat with", conn.name)}
+            onChat={() => handleChatClick(conn)}
             onAccept={() => handleAcceptRequest(conn.id)}
             onReject={() => handleRejectRequest(conn.id)}
             onMaximize={() =>
