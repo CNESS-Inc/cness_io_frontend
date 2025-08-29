@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { GetComment, GetChildComments, PostChildComments, PostComments } from "../../Common/ServerAPI";
 import { BsThreeDots } from "react-icons/bs";
 import { FiEdit2, FiLink2, FiSend, FiTrash2, FiX } from "react-icons/fi";

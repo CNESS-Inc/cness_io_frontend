@@ -53,13 +53,6 @@ import comment1 from "../assets/comment1.png";
 import Image from "../components/ui/Image";
 import CommentBox from "./CommentBox";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import {
-  FacebookShareButton,
-  LinkedinShareButton,
-  TwitterShareButton,
-  WhatsappShareButton,
-} from "react-share";
-import { FaFacebook, FaLinkedin, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import FollowedUsersList from "./FollowedUsersList";
 import CollectionList from "./CollectionList";
 import Button from "../components/ui/Button";
@@ -995,9 +988,6 @@ export default function SocialTopBar() {
   const isVideoFile = (url: string) => {
     return url.match(/\.(mp4|webm|ogg|mov)$/i) !== null;
   };
-
-  const myid = localStorage.getItem("Id");
-  const urldata = `https://dev.cness.io/directory/user-profile/${myid}`;
 
   const handleClickOutside = (event: MouseEvent) => {
     if (!openMenu.postId || !openMenu.type) return;

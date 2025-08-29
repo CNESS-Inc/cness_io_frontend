@@ -1,7 +1,7 @@
 "use client";
 import { Menu } from "@headlessui/react";
 import { LiaCertificateSolid } from "react-icons/lia";
-import { FaCheck, FaSortAlphaUp, FaAngleDown, FaAngleUp } from "react-icons/fa";
+import { FaSortAlphaUp, FaAngleDown, FaAngleUp } from "react-icons/fa";
 
 interface Option {
   value: string;
@@ -14,6 +14,7 @@ interface CompanyFiltersProps {
   setSelected: (val: string) => void;
   order: "asc" | "desc";
   setOrder: (val: "asc" | "desc") => void;
+  ClassName?: string;
 }
 
 export default function CompanyFilters({
@@ -22,40 +23,39 @@ export default function CompanyFilters({
   setSelected,
   order,
   setOrder,
+  ClassName = ""
 }: CompanyFiltersProps) {
+  const activeLabel =
+    selected
+      ? (options.find(o => o.value === selected)?.label ?? "Certification Level")
+      : "Certification Level";
+
   return (
-    <div className="flex items-center gap-3">
-      {/* Certification Dropdown */}
+    <div className={`flex items-center gap-3 ${ClassName}`}>
+      {/* Category Filter Dropdown */}
       <Menu as="div" className="relative inline-block text-left">
         <div>
           <Menu.Button className="flex items-center gap-2 px-2 py-2 border border-gray-300 rounded-md bg-white text-sm text-gray-700 hover:bg-gray-50">
             <LiaCertificateSolid className="text-pink-700" size={20} />
-            {selected
-              ? options.find((o) => o.value === selected)?.label
-              : "Certification Level"}
+            {activeLabel}
           </Menu.Button>
         </div>
 
-        <Menu.Items className="absolute right-0 mt-2 w-40 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg focus:outline-none z-50">
+        <Menu.Items className="absolute right-0 mt-2 w-44 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg focus:outline-none z-50">
           <div className="py-2">
             {options.map((option) => (
               <Menu.Item key={option.value}>
                 {({ active }) => (
                   <button
                     onClick={() => setSelected(option.value)}
-                    className={`flex items-center w-full px-4 py-2 text-sm ${
-                      active ? "bg-gray-100" : ""
-                    }`}
+                    className={`flex items-center w-full px-4 py-2 text-sm ${active ? "bg-gray-100" : ""}`}
                   >
                     <span
-                      className={`w-4 h-4 mr-3 rounded-full border flex items-center justify-center ${
-                        selected === option.value
-                          ? "border-pink-600 bg-pink-600"
-                          : "border-gray-400"
-                      }`}
+                      className={`relative w-4 h-4 mr-3 rounded-full border
+                    ${selected === option.value ? "border-pink-600" : "border-gray-400"}`}
                     >
                       {selected === option.value && (
-                        <FaCheck className="text-white text-[10px]" />
+                        <span className="absolute inset-[3px] rounded-full bg-pink-600" />
                       )}
                     </span>
                     {option.label}

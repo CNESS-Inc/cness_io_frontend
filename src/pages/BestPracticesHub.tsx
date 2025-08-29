@@ -9,6 +9,7 @@ import {
   SaveBestpractices,
   GetSaveBestpractices,
   GetValidProfessionalDetails,
+  GetInterestsDetails,
 } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -73,6 +74,7 @@ export default function BestPracticesHub() {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
   const { showToast } = useToast();
+  const [intereset, setInterestData] = useState<any[]>([]);
   const [profession, setProfession] = useState<Profession[]>([]);
   const [selectedProfession, setSelectedProfession] = useState("");
   const [activeModal, setActiveModal] = useState<"bestpractices" | null>(null);
@@ -200,6 +202,20 @@ useEffect(() => {
     await fetchBestPractices(1, professionId, searchText);
   };
 
+  const GetInterest = async () => {
+    try {
+      const response = await GetInterestsDetails();
+      setInterestData(response.data.data);
+    } catch (error: any) {
+      console.error("Error fetching intrusts:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
   const fetchProfession = async () => {
     try {
       const res = await GetValidProfessionalDetails();
@@ -269,6 +285,7 @@ useEffect(() => {
   };
 
   useEffect(() => {
+    GetInterest();
     fetchProfession();
     fetchBestPractices();
   }, []);
@@ -449,17 +466,38 @@ useEffect(() => {
                     onChange={handleProfessionChange}
                   >
                     <option value="" className="text-white text-[12px]">
-                      All Profession
+                      All Profession & Interests
                     </option>
-                    {profession.map((prof: any) => (
-                      <option
-                        key={prof.id}
-                        value={prof.id}
-                        className="text-black"
-                      >
-                        {prof.title}
-                      </option>
-                    ))}
+
+                    {profession.length > 0 && (
+                      <optgroup label="Professions">
+                        {profession.map((prof: any) => (
+                          <option
+                            key={`p-${prof.id}`}
+                            value={prof.id}
+                            className="text-black"
+                            data-type="profession"
+                          >
+                            {prof.title}
+                          </option>
+                        ))}
+                      </optgroup>
+                    )}
+
+                    {/* {intereset.length > 0 && (
+                      <optgroup label="Interests">
+                        {intereset.map((intr: any) => (
+                          <option
+                            key={`i-${intr.id}`}
+                            value={intr.id}
+                            className="text-black"
+                            data-type="interest"
+                          >
+                            {intr.title}
+                          </option>
+                        ))}
+                      </optgroup>
+                    )} */}
                   </select>
 
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white text-xs pointer-events-none">
@@ -509,7 +547,8 @@ useEffect(() => {
                 {selectedProfession && selectedProfession !== "" && (
                   <span className="text-[#7077FE] ml-1 font-semibold">
                     "
-                    {profession.find((p) => p.id === selectedProfession)?.title}
+                    {profession.find((p) => p.id === selectedProfession)?.title ||
+                      intereset.find((i) => i.id === selectedProfession)?.title}
                     "
                   </span>
                 )}
@@ -660,7 +699,7 @@ useEffect(() => {
                         <img
                           src={
                             company?.user?.profilePicture &&
-                            company?.user?.profilePicture !==
+                              company?.user?.profilePicture !==
                               "http://localhost:5026/file/"
                               ? company?.user?.profilePicture
                               : "/profile.png"
@@ -689,7 +728,7 @@ useEffect(() => {
                           <img
                             src={
                               company.file &&
-                              company.file !== "http://localhost:5026/file/"
+                                company.file !== "http://localhost:5026/file/"
                                 ? company.file
                                 : iconMap["companycard1"]
                             }
@@ -725,7 +764,7 @@ useEffect(() => {
                         {company.description.length > 100 && (
                           <span
                             className="text-purple-600 underline cursor-pointer ml-1"
-                            // onClick={(e) => toggleDescription(e, company.id)}
+                          // onClick={(e) => toggleDescription(e, company.id)}
                           >
                             {expandedDescriptions[company.id]
                               ? "Read Less"
@@ -818,11 +857,10 @@ useEffect(() => {
                       <button
                         onClick={() => fetchBestPractices(1)}
                         disabled={isLoading.popular}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                          1 === pagination.currentPage
-                            ? "bg-indigo-500 text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-100"
-                        }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${1 === pagination.currentPage
+                          ? "bg-indigo-500 text-white"
+                          : "bg-white text-gray-700 hover:bg-gray-100"
+                          }`}
                       >
                         1
                       </button>
@@ -848,11 +886,10 @@ useEffect(() => {
                         key={page}
                         onClick={() => fetchBestPractices(page)}
                         disabled={isLoading.popular}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                          page === pagination.currentPage
-                            ? "bg-indigo-500 text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-100"
-                        }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${page === pagination.currentPage
+                          ? "bg-indigo-500 text-white"
+                          : "bg-white text-gray-700 hover:bg-gray-100"
+                          }`}
                       >
                         {page}
                       </button>
@@ -874,11 +911,10 @@ useEffect(() => {
                             fetchBestPractices(pagination.totalPages)
                           }
                           disabled={isLoading.popular}
-                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                            pagination.totalPages === pagination.currentPage
-                              ? "bg-indigo-500 text-white"
-                              : "bg-white text-gray-700 hover:bg-gray-100"
-                          }`}
+                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${pagination.totalPages === pagination.currentPage
+                            ? "bg-indigo-500 text-white"
+                            : "bg-white text-gray-700 hover:bg-gray-100"
+                            }`}
                         >
                           {pagination.totalPages}
                         </button>

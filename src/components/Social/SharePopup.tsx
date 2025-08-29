@@ -22,7 +22,6 @@ interface SharePopupProps {
 
 const SharePopup: React.FC<SharePopupProps> = ({
   isOpen,
-  onClose,
   url,
   position = "bottom",
   className = "",
