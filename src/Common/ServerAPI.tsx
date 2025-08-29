@@ -198,7 +198,7 @@ export const EndPoint = {
 
   // Topics endpoints
   get_topics: "/topics",
-  select_topic: "/topics/select",
+  select_topic: "/userselecttopics",
   by_topic_post: "/user/posts/by-topic",
   
 };

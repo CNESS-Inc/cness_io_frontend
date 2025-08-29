@@ -265,6 +265,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
                 body={post.content}
                 likes={post.likes || 0}
                 reflections={post.reflections || 0}
+                date={post.date || new Date().toISOString()}
               />
             ))}
           </div>

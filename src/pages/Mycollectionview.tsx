@@ -23,6 +23,7 @@ interface Post {
   id: string;
   media: Media;
   comments?: any[];
+  date: string;
 }
 
 const demoCards: Card[] = [
@@ -93,8 +94,8 @@ const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   onLike={() => console.log("Like post", c.id)}
   onOpenReflections={() => console.log("Open reflections", c.id)}
   insightsCount={30}
-onClick={() =>
-  setSelectedPost({ id: c.id, media: c.media, comments: [] })
+  onClick={() =>
+  setSelectedPost({ id: c.id, media: c.media, comments: [], date: new Date().toISOString() })
 }/>
         ))}
       </div>
@@ -106,6 +107,10 @@ onClick={() =>
         <PostPopup
           post={selectedPost}
           onClose={() => setSelectedPost(null)}
+          onDeletePost={() => {
+            console.log("Delete post", selectedPost.id);
+            setSelectedPost(null);
+          }}
         />
       )}
         
