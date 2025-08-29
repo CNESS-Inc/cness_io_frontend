@@ -1,6 +1,6 @@
 import React from "react";
 // import { MessageCircle, CircleCheckBig, Trash2, Maximize } from "lucide-react";
-import { CircleCheckBig, Trash2, Maximize } from "lucide-react";
+import { CircleCheckBig, Trash2, Maximize, MessageCircle } from "lucide-react";
 
 type FriendCardProps = {
   image: string;
@@ -23,6 +23,8 @@ const FriendCard: React.FC<FriendCardProps> = ({
   onReject,
   onMaximize,
 }) => {
+  const profileImage = image && image.trim() !== "" ? image : "/profile.png";
+
   return (
     <div
       className="flex-none bg-white w-full lg:max-w-[100%] max-w-[263px] h-[291px] rounded-[12px] p-[12px] pb-[18px] shadow border border-gray-200 mx-auto">
@@ -30,7 +32,7 @@ const FriendCard: React.FC<FriendCardProps> = ({
       {/* Image */}
       <div className="relative w-full h-[209px] xs:h-[160px]">
         <img
-          src={image}
+          src={profileImage}
           alt={name}
           className="w-full h-full object-cover rounded-[12px]"
         />
@@ -51,15 +53,15 @@ const FriendCard: React.FC<FriendCardProps> = ({
         </div>
 
         <div className="flex gap-2">
-          {/*  {actions.includes("chat") && (
+           {actions.includes("chat") && (
             <button
-              onClick={onChat}
-              className="p-2 rounded-full bg-[#7077FE] text-white hover:opacity-90"
+              // onClick={onChat}
+              className="p-2 rounded-lg bg-[#7077FE] text-white hover:opacity-90"
               aria-label="Chat"
             >
               <MessageCircle size={16} />
             </button>
-          )} */}
+          )}
           {actions.includes("accept") && (
             <button
               onClick={onAccept}

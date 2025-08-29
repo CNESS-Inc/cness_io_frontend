@@ -459,7 +459,8 @@ export default function Profile() {
                     }
                   }}
                   onOpenReflections={() =>
-                    console.log("Open reflections for post", i)
+                    // console.log("Open reflections for post", i)
+                    setSelectedPost(post)
                   }
                   onDeletePost={() => {
                     if (post.id !== undefined) {
@@ -513,6 +514,8 @@ export default function Profile() {
                 });
               }
             }}
+            likesCount={selectedPost.likes ?? 0}
+            insightsCount={selectedPost.reflections ?? 0}
           />
         )}
 
@@ -625,6 +628,7 @@ export default function Profile() {
                   await handleDeletePost(deleteConfirmation.postId);
                   // await fetchMineBestPractices(); // Refresh the list
                   setDeleteConfirmation({ isOpen: false, postId: null });
+                  setSelectedPost(null);
                 }
               }}
               className="w-full sm:w-auto py-2 px-6 sm:py-3 sm:px-8"

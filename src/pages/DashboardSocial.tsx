@@ -53,16 +53,11 @@ import comment1 from "../assets/comment1.png";
 import Image from "../components/ui/Image";
 import CommentBox from "./CommentBox";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import {
-  FacebookShareButton,
-  LinkedinShareButton,
-  TwitterShareButton,
-  WhatsappShareButton,
-} from "react-share";
-import { FaFacebook, FaLinkedin, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import FollowedUsersList from "./FollowedUsersList";
 import CollectionList from "./CollectionList";
 import Button from "../components/ui/Button";
+import SharePopup from "../components/Social/SharePopup";
+import { buildShareUrl, copyPostLink } from "../lib/utils";
 
 interface Post {
   id: string;
@@ -304,9 +299,8 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
         {mediaItems.map((item, index) => (
           <div
             key={index}
-            className={`w-full h-full transition-opacity duration-500 ${
-              index === current ? "block" : "hidden"
-            }`}
+            className={`w-full h-full transition-opacity duration-500 ${index === current ? "block" : "hidden"
+              }`}
           >
             {item.type === "image" ? (
               <img
@@ -358,9 +352,8 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
             <button
               key={idx}
               onClick={() => setCurrent(idx)}
-              className={`w-2 h-2 rounded-full transition-colors ${
-                idx === current ? "bg-indigo-500" : "bg-gray-300"
-              }`}
+              className={`w-2 h-2 rounded-full transition-colors ${idx === current ? "bg-indigo-500" : "bg-gray-300"
+                }`}
             ></button>
           ))}
         </div>
@@ -609,7 +602,7 @@ export default function SocialTopBar() {
         // Get the first image URL if available, or use profile picture as fallback
         const firstImageUrl =
           item.file &&
-          item.file.split(",")[0].trim() !== "https://dev.cness.io/file/"
+            item.file.split(",")[0].trim() !== "https://dev.cness.io/file/"
             ? item.file.split(",")[0].trim()
             : item.profile.profile_picture;
 
@@ -942,12 +935,12 @@ export default function SocialTopBar() {
         prevPosts.map((post) =>
           post.id === postId
             ? {
-                ...post,
-                is_liked: !post.is_liked,
-                likes_count: post.is_liked
-                  ? post.likes_count - 1
-                  : post.likes_count + 1,
-              }
+              ...post,
+              is_liked: !post.is_liked,
+              likes_count: post.is_liked
+                ? post.likes_count - 1
+                : post.likes_count + 1,
+            }
             : post
         )
       );
@@ -995,9 +988,6 @@ export default function SocialTopBar() {
   const isVideoFile = (url: string) => {
     return url.match(/\.(mp4|webm|ogg|mov)$/i) !== null;
   };
-
-  const myid = localStorage.getItem("Id");
-  const urldata = `https://dev.cness.io/directory/user-profile/${myid}`;
 
   const handleClickOutside = (event: MouseEvent) => {
     if (!openMenu.postId || !openMenu.type) return;
@@ -1092,25 +1082,25 @@ export default function SocialTopBar() {
 
   /* Report Modal and Save Post Modal and Copy Post Modal */
   // Function to copy post link
-  const copyPostLink = async (postId: string) => {
-    toggleMenu(postId, "options");
-    const postUrl = `${window.location.origin}/post/${postId}`;
+  // const copyPostLink = async (postId: string) => {
+  //   toggleMenu(postId, "options");
+  //   const postUrl = `${window.location.origin}/post/${postId}`;
 
-    try {
-      await navigator.clipboard.writeText(postUrl);
-      showToast({
-        type: "success",
-        message: "Post link copied to clipboard!",
-        duration: 2000,
-      });
-    } catch (error) {
-      showToast({
-        type: "error",
-        message: "Failed to copy link",
-        duration: 2000,
-      });
-    }
-  };
+  //   try {
+  //     await navigator.clipboard.writeText(postUrl);
+  //     showToast({
+  //       type: "success",
+  //       message: "Post link copied to clipboard!",
+  //       duration: 2000,
+  //     });
+  //   } catch (error) {
+  //     showToast({
+  //       type: "error",
+  //       message: "Failed to copy link",
+  //       duration: 2000,
+  //     });
+  //   }
+  // };
 
   // Function to save post to collection
   const savePostToCollection = async (postId: string) => {
@@ -1568,12 +1558,12 @@ export default function SocialTopBar() {
                               disabled={connectingUsers[post.user_id] || false}
                               className={`flex items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
                                 ${
-                                  // getFriendStatus(post.user_id) === "connected"
-                                  //   ? "bg-red-500 text-white hover:bg-red-600"
-                                  //   :
-                                  getFriendStatus(post.user_id) === "requested"
-                                    ? "bg-gray-400 text-white cursor-not-allowed"
-                                    : "bg-white text-black shadow-md"
+                                // getFriendStatus(post.user_id) === "connected"
+                                //   ? "bg-red-500 text-white hover:bg-red-600"
+                                //   :
+                                getFriendStatus(post.user_id) === "requested"
+                                  ? "bg-gray-400 text-white cursor-not-allowed"
+                                  : "bg-white text-black shadow-md"
                                 }`}
                             >
                               {connectingUsers[post.user_id]
@@ -1581,17 +1571,16 @@ export default function SocialTopBar() {
                                 : // : getFriendStatus(post.user_id) === "connected"
                                 // ? "Connected"
                                 getFriendStatus(post.user_id) === "requested"
-                                ? "Requested"
-                                : "Connect"}
+                                  ? "Requested"
+                                  : "Connect"}
                             </button>
                             {/* Follow Button */}
                             <button
                               onClick={() => handleFollow(post.user_id)}
                               className={`flex items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
-                                ${
-                                  post.if_following
-                                    ? "bg-transparent text-blue-500 hover:text-blue-600"
-                                    : "bg-[#7C81FF] text-white hover:bg-indigo-600"
+                                ${post.if_following
+                                  ? "bg-transparent text-blue-500 hover:text-blue-600"
+                                  : "bg-[#7C81FF] text-white hover:bg-indigo-600"
                                 }`}
                             >
                               {post.if_following ? (
@@ -1627,7 +1616,10 @@ export default function SocialTopBar() {
                                       <li>
                                         <button
                                           onClick={() => {
-                                            copyPostLink(post.id);
+                                            copyPostLink(`${window.location.origin}/post/${post.id}`,
+                                              (msg) => showToast({ type: "success", message: msg, duration: 2000 }),
+                                              (msg) => showToast({ type: "error", message: msg, duration: 2000 })
+                                            );
                                           }}
                                           className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
                                         >
@@ -1693,7 +1685,10 @@ export default function SocialTopBar() {
                                       <li>
                                         <button
                                           onClick={() => {
-                                            copyPostLink(post.id);
+                                            copyPostLink(`${window.location.origin}/post/${post.id}`,
+                                              (msg) => showToast({ type: "success", message: msg, duration: 2000 }),
+                                              (msg) => showToast({ type: "error", message: msg, duration: 2000 })
+                                            );
                                           }}
                                           className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
                                         >
@@ -1727,12 +1722,12 @@ export default function SocialTopBar() {
                       <div className="mt-3 md:mt-4">
                         <p className="text-gray-800 text-sm md:text-base mb-2 md:mb-3">
                           {expandedPosts[post.id] ||
-                          post?.content?.length <= CONTENT_LIMIT
+                            post?.content?.length <= CONTENT_LIMIT
                             ? post.content
                             : `${post?.content?.substring(
-                                0,
-                                CONTENT_LIMIT
-                              )}...`}
+                              0,
+                              CONTENT_LIMIT
+                            )}...`}
                           {post?.content?.length > CONTENT_LIMIT && (
                             <button
                               onClick={() => toggleExpand(post.id)}
@@ -1848,9 +1843,8 @@ export default function SocialTopBar() {
                         <button
                           onClick={() => handleLike(post.id)}
                           disabled={isLoading}
-                          className={`flex items-center justify-center gap-2 rounded-2xl border border-gray-200 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 shadow-sm ${
-                            isLoading ? "opacity-50 cursor-not-allowed" : ""
-                          }`}
+                          className={`flex items-center justify-center gap-2 rounded-2xl border border-gray-200 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 shadow-sm ${isLoading ? "opacity-50 cursor-not-allowed" : ""
+                            }`}
                         >
                           <ThumbsUp
                             className="w-5 h-5 md:w-6 md:h-6"
@@ -1883,61 +1877,14 @@ export default function SocialTopBar() {
                             <Share2 className="w-5 h-5 md:w-6 md:h-6" />
                             Share
                           </button>
-                          {openMenu.postId === post.id &&
-                            openMenu.type === "share" && (
-                              <div
-                                className="absolute top-10 left-0 bg-white shadow-lg rounded-lg p-3 z-10"
-                                ref={(el) => {
-                                  const key = `${post.id}-share`;
-                                  if (el) menuRef.current[key] = el;
-                                  else delete menuRef.current[key];
-                                }}
-                              >
-                                <ul className="flex items-center gap-4">
-                                  <li>
-                                    <FacebookShareButton url={urldata}>
-                                      <FaFacebook size={32} color="#4267B2" />
-                                    </FacebookShareButton>
-                                  </li>
-                                  <li>
-                                    <LinkedinShareButton url={urldata}>
-                                      <FaLinkedin size={32} color="#0077B5" />
-                                    </LinkedinShareButton>
-                                  </li>
-                                  <li>
-                                    <TwitterShareButton url={urldata}>
-                                      <FaTwitter size={32} color="#1DA1F2" />
-                                    </TwitterShareButton>
-                                  </li>
-                                  <li>
-                                    <WhatsappShareButton url={urldata}>
-                                      <FaWhatsapp size={32} color="#1DA1F2" />
-                                    </WhatsappShareButton>
-                                  </li>
-                                  {/* <li>
-                                  <button
-                                    onClick={() => {
-                                      navigator.clipboard.writeText(urldata);
-                                      setCopy(true);
-                                      setTimeout(() => setCopy(false), 1500);
-                                    }}
-                                    className="flex items-center relative"
-                                    title="Copy link"
-                                  >
-                                    <MdContentCopy
-                                      size={30}
-                                      className="text-gray-600"
-                                    />
-                                    {copy && (
-                                      <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
-                                        Link Copied!
-                                      </div>
-                                    )}
-                                  </button>
-                                </li> */}
-                                </ul>
-                              </div>
-                            )}
+                          {openMenu.postId === post.id && openMenu.type === "share" && (
+                            <SharePopup
+                              isOpen={true}
+                              onClose={() => toggleMenu(post.id, "share")}
+                              url={buildShareUrl()} // or pass your own URL if needed
+                              position="bottom"
+                            />
+                          )}
                         </div>
                       </div>
                     </div>
