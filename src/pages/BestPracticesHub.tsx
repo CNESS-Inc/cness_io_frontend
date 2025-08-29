@@ -365,7 +365,8 @@ useEffect(() => {
       await CreateBestPractice(formData);
 
       showToast({
-        message: "Best practices has been created and please wait until admin reviews it!",
+        message:
+          "Best practices has been created and please wait until admin reviews it!",
         type: "success",
         duration: 5000,
       });
@@ -433,17 +434,14 @@ useEffect(() => {
                 {selectedDomainText || "All Profession"}
               </span>
 
-
               <div className="w-full flex justify-center md:justify-start items-center my-1 px-4 md:px-0">
-                <div className="relative w-full max-w-[200px] md:w-fit"
-
-
+                <div
+                  className="relative w-full max-w-[200px] md:w-fit"
                   style={{
                     width: textWidth ? `${textWidth}px` : "100%",
                     minWidth: "120px",
                     maxWidth: "100%",
                   }}
-
                 >
                   <select
                     className="bg-[#7077FE] rounded-full text-white font-semibold px-3 py-2 pr-6 appearance-none focus:outline-none cursor-pointer text-[12px] w-full"
@@ -464,13 +462,11 @@ useEffect(() => {
                     ))}
                   </select>
 
-
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white text-xs pointer-events-none">
                     <span className="block">▼</span>
                   </div>
                 </div>
               </div>
-
             </div>
             {/* Search Input */}
             <div className="relative flex-grow">
@@ -491,9 +487,7 @@ useEffect(() => {
             </div>
           </div>
 
-
           <p className="text-gray-700 text-xs md:text-sm mt-2 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
-
             <span
               className="font-medium underline cursor-pointer text-[#F07EFF]"
               onClick={openModal}
@@ -666,7 +660,7 @@ useEffect(() => {
                         <img
                           src={
                             company?.user?.profilePicture &&
-                              company?.user?.profilePicture !==
+                            company?.user?.profilePicture !==
                               "http://localhost:5026/file/"
                               ? company?.user?.profilePicture
                               : "/profile.png"
@@ -695,7 +689,7 @@ useEffect(() => {
                           <img
                             src={
                               company.file &&
-                                company.file !== "http://localhost:5026/file/"
+                              company.file !== "http://localhost:5026/file/"
                                 ? company.file
                                 : iconMap["companycard1"]
                             }
@@ -731,7 +725,7 @@ useEffect(() => {
                         {company.description.length > 100 && (
                           <span
                             className="text-purple-600 underline cursor-pointer ml-1"
-                          // onClick={(e) => toggleDescription(e, company.id)}
+                            // onClick={(e) => toggleDescription(e, company.id)}
                           >
                             {expandedDescriptions[company.id]
                               ? "Read Less"
@@ -824,10 +818,11 @@ useEffect(() => {
                       <button
                         onClick={() => fetchBestPractices(1)}
                         disabled={isLoading.popular}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${1 === pagination.currentPage
-                          ? "bg-indigo-500 text-white"
-                          : "bg-white text-gray-700 hover:bg-gray-100"
-                          }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
+                          1 === pagination.currentPage
+                            ? "bg-indigo-500 text-white"
+                            : "bg-white text-gray-700 hover:bg-gray-100"
+                        }`}
                       >
                         1
                       </button>
@@ -853,10 +848,11 @@ useEffect(() => {
                         key={page}
                         onClick={() => fetchBestPractices(page)}
                         disabled={isLoading.popular}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${page === pagination.currentPage
-                          ? "bg-indigo-500 text-white"
-                          : "bg-white text-gray-700 hover:bg-gray-100"
-                          }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
+                          page === pagination.currentPage
+                            ? "bg-indigo-500 text-white"
+                            : "bg-white text-gray-700 hover:bg-gray-100"
+                        }`}
                       >
                         {page}
                       </button>
@@ -878,10 +874,11 @@ useEffect(() => {
                             fetchBestPractices(pagination.totalPages)
                           }
                           disabled={isLoading.popular}
-                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${pagination.totalPages === pagination.currentPage
-                            ? "bg-indigo-500 text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-100"
-                            }`}
+                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${
+                            pagination.totalPages === pagination.currentPage
+                              ? "bg-indigo-500 text-white"
+                              : "bg-white text-gray-700 hover:bg-gray-100"
+                          }`}
                         >
                           {pagination.totalPages}
                         </button>
@@ -909,13 +906,15 @@ useEffect(() => {
       </section>
 
       <Modal isOpen={activeModal === "bestpractices"} onClose={closeModal}>
-        <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
-          <h2 className="text-xl font-bold mb-4 font-['Poppins'] font-semibold leading-normal">Add Best Practice</h2>
-          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+        <div className="max-w-2xl mx-auto bg-white rounded-2xl p-6 sm:p-10">
+          <h2 className="text-xl font-bold mb-4 font-['Poppins'] font-semibold leading-normal">
+            Add Best Practice
+          </h2>
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-6">
             <div>
               <label
                 htmlFor="title"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
                 Title*
               </label>
@@ -925,7 +924,7 @@ useEffect(() => {
                 name="title"
                 value={newPractice.title}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
                 required
               />
             </div>
@@ -933,7 +932,7 @@ useEffect(() => {
             <div>
               <label
                 htmlFor="description"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
                 Description*
               </label>
@@ -943,7 +942,7 @@ useEffect(() => {
                 value={newPractice.description}
                 onChange={handleInputChange}
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
                 required
               />
             </div>
@@ -951,7 +950,7 @@ useEffect(() => {
             <div>
               <label
                 htmlFor="profession"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
                 Profession*
               </label>
@@ -960,7 +959,7 @@ useEffect(() => {
                 name="profession"
                 value={newPractice.profession}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
                 required
               >
                 <option value="">Select a profession</option>
@@ -975,7 +974,7 @@ useEffect(() => {
             <div>
               <label
                 htmlFor="file"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
                 File *
               </label>
@@ -998,11 +997,11 @@ useEffect(() => {
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   style={{ cursor: "pointer" }}
                 />
-                <div className="flex items-center w-full h-[45px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm text-gray-800 focus-within:ring-2 focus-within:ring-purple-500">
+                <div className="flex items-center w-full h-[45px] px-4 py-3 border bg-white border-gray-300 rounded-lg shadow-sm text-sm text-gray-800 focus-within:ring-2 focus-within:ring-purple-500">
                   <button
                     type="button"
                     tabIndex={-1}
-                    className="mr-3 px-5 py-2 bg-[#7077FE] text-white rounded-full text-sm font-medium hover:bg-[#5a60d6] transition"
+                    className="mr-3 px-4 py-2 bg-[#7077FE] text-white rounded-full text-sm font-medium hover:bg-[#5a60d6] transition"
                     style={{ minWidth: 0 }}
                     onClick={() => {
                       // trigger file input click
@@ -1018,16 +1017,14 @@ useEffect(() => {
                     {newPractice?.file ? (
                       newPractice?.file?.name
                     ) : (
-                      <span className="text-gray-400">
-                        No file chosen
-                      </span>
+                      <span className="text-gray-400">No file chosen</span>
                     )}
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-row justify-end gap-2 pt-4 flex-wrap">
+            <div className="flex justify-end gap-3 pt-4">
               <Button
                 type="button"
                 onClick={closeModal}
