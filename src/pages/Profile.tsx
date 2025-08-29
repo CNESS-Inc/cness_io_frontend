@@ -505,11 +505,6 @@ export default function Profile() {
               // optional
             }}
             onClose={() => setSelectedPost(null)}
-                 onLike={() => {
-                    if (post.id !== undefined) {
-                      handleLikePost(post.id);
-                    }
-                  }}
             onDeletePost={() => {
               if (selectedPost.id !== undefined) {
                 setDeleteConfirmation({

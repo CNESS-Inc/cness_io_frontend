@@ -46,7 +46,7 @@ interface PopupProps {
   insightsCount?: number;
 }
 
-const PostPopup: React.FC<PopupProps> = ({ post, onClose, onDeletePost, insightsCount }) => {
+const PostPopup: React.FC<PopupProps> = ({ post, onClose, onDeletePost }) => {
   const menuRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const [comments, setComments] = useState<Comment[]>([]);
   const [open, setOpen] = useState(false);

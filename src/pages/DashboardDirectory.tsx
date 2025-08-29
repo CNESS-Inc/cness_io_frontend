@@ -16,7 +16,6 @@ import {
   FaAngleDown,
   FaAngleUp,
   FaCheck,
-  FaSortAlphaDown,
   FaSortAlphaUp,
 } from "react-icons/fa";
 

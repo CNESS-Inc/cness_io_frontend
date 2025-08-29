@@ -39,6 +39,7 @@ function toPost(item: SavedItem): MyPostProps {
       media: { type: "image", src: item.src, alt: item.alt },
       likes: 0,
       reflections: 0,
+      date: new Date().toISOString(),
     };
   }
   if (item.type === "video") {
@@ -46,6 +47,7 @@ function toPost(item: SavedItem): MyPostProps {
       media: { type: "video", src: item.src, poster: item.poster },
       likes: 0,
       reflections: 0,
+      date: new Date().toISOString(),
     };
   }
   // text
@@ -54,6 +56,7 @@ function toPost(item: SavedItem): MyPostProps {
     body: item.text,
     likes: 0,
     reflections: 0,
+    date: new Date().toISOString(),
   };
 }
 
