@@ -1,17 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
 import Button from "../../ui/Button";
-import Lottie from "lottie-react";
+//import Lottie from "lottie-react";
 import MobileHeroSection from "./MobileHeroSection";
 
 export default function HeroSection() {
   const [isMobile, setIsMobile] = useState(false);
   const [step, setStep] = useState(0);
-  const [flip1, setFlip1] = useState<any>(null);
-  const [flip2, setFlip2] = useState<any>(null);
-  const [flip3, setFlip3] = useState<any>(null);
-  const [flip4, setFlip4] = useState<any>(null);
-  const [sphere, setSphere] = useState<any>(null);
+  //const [flip1, setFlip1] = useState<any>(null);
+  //const [flip2, setFlip2] = useState<any>(null);
+  //const [flip3, setFlip3] = useState<any>(null);
+  //const [flip4, setFlip4] = useState<any>(null);
+  //const [sphere, setSphere] = useState<any>(null);
 
 
   useEffect(() => {
@@ -25,28 +25,28 @@ export default function HeroSection() {
   }, []);
 
 
-  useEffect(() => {
-    const loadLotties = async () => {
-      try {
-        const [f1, f2, f3, f4, sph] = await Promise.all([
-          fetch("https://cnessioassets.project-69e.workers.dev/New-Flip01.json").then(res => res.json()),
-          fetch("https://cnessioassets.project-69e.workers.dev/New-Flip02.json").then(res => res.json()),
-          fetch("https://cnessioassets.project-69e.workers.dev/New-Flip03.json").then(res => res.json()),
-          fetch("https://cnessioassets.project-69e.workers.dev/New-Flip04.json").then(res => res.json()),
-          fetch("https://cnessioassets.project-69e.workers.dev/Second-globe.json").then(res => res.json())
-        ]);
-        setFlip1(f1);
-        setFlip2(f2);
-        setFlip3(f3);
-        setFlip4(f4);
-        setSphere(sph);
-      } catch (err) {
-        console.error("Failed to load Lottie animations", err);
-      }
-    };
+  //useEffect(() => {
+    //const loadLotties = async () => {
+     // try {
+        //const [f1, f2, f3, f4, sph] = await Promise.all([
+         // fetch("https://cnessioassets.project-69e.workers.dev/New-Flip01.json").then(res => res.json()),
+          //fetch("https://cnessioassets.project-69e.workers.dev/New-Flip02.json").then(res => res.json()),
+          //fetch("https://cnessioassets.project-69e.workers.dev/New-Flip03.json").then(res => res.json()),
+          //fetch("https://cnessioassets.project-69e.workers.dev/New-Flip04.json").then(res => res.json()),
+          //fetch("https://cnessioassets.project-69e.workers.dev/Second-globe.json").then(res => res.json())
+        //]);
+       // setFlip1(f1);
+        //setFlip2(f2);
+        //setFlip3(f3);
+        //setFlip4(f4);
+        //setSphere(sph);
+     // } catch (err) {
+       // console.error("Failed to load Lottie animations", err);
+     // }
+   // };
 
-    loadLotties();
-  }, []);
+   // loadLotties();
+ // }, []);
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -58,25 +58,25 @@ export default function HeroSection() {
     return () => timers.forEach(clearTimeout);
   }, []);
 
-  const [lottieSize, setLottieSize] = useState({ width: 200, height: 200 });
+  //const [lottieSize, setLottieSize] = useState({ width: 200, height: 200 });
 
-  useEffect(() => {
-    const updateSize = () => {
-      const width = window.innerWidth;
-      if (width < 640) {
-        setLottieSize({ width: 200, height: 200 });
-      } else if (width < 1024) {
-        setLottieSize({ width: 240, height: 240 });
-      } else if (width < 1537) {
-        setLottieSize({ width: 280, height: 280 });
-      } else {
-        setLottieSize({ width: 320, height: 320 });
-      }
-    };
-    updateSize();
-    window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
+  //useEffect(() => {
+    //const updateSize = () => {
+     // const width = window.innerWidth;
+      //if (width < 640) {
+      //  setLottieSize({ width: 200, height: 200 });
+     // } else if (width < 1024) {
+       // setLottieSize({ width: 240, height: 240 });
+      //} else if (width < 1537) {
+       // setLottieSize({ width: 280, height: 280 });
+     // } else {
+      //  setLottieSize({ width: 320, height: 320 });
+      //}
+    //};
+    //updateSize();
+    //window.addEventListener("resize", updateSize);
+    //return () => window.removeEventListener("resize", updateSize);
+ // }, []);
 
   if (isMobile) return <MobileHeroSection />;
 
@@ -115,19 +115,34 @@ export default function HeroSection() {
               (step >= 5 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6')
             }>
                 <Button
-                className="rounded-[100px] hero-section-btn w-fit lg:py-3 py-2 lg:px-8 px-4 lg:text-base text-[14px] self-stretch  bg-linear-to-r from-[#7077FE] to-[#9747FF]"
+                className="rounded-[100px] hero-section-btn w-fit lg:py-3 py-2 lg:px-8 px-4
+             lg:text-base text-[14px] font-['Open Sans'] font-normal
+             leading-[100%] tracking-[0px] text-center
+             bg-gradient-to-r from-[#7077FE] to-[#9747FF]"
                 onClick={() => window.location.href = "/sign-up"}
                 >
-                Get Started
+                Start your Conscious Journey
                 </Button>
-              <Button variant="white-outline" className="lg:text-base hero-section-btn text-[14px] lg:py-3 py-2 lg:px-8 px-4" size="md" onClick={() => window.location.href = "/sign-up"}>
-                Explore the Movement
+              <Button variant="white-outline" className="lg:text-base hero-section-btn text-[14px] lg:py-3 py-2 lg:px-8 px-4
+             shadow-md font-['Plus Jakarta Sans'] font-medium leading-[100%]
+             tracking-[0px] text-center" size="md" onClick={() => window.location.href = "/sign-up"}>
+               Discover CNESS
               </Button>
             </div>
           </div>
         </div>
 
-        <Lottie
+  <div className="flex justify-center pb-6">
+    <img
+      src="https://cdn.cness.io/herosection.webp"
+      alt="Hero Section"
+      className="w-[1375px] max-w-full h-[405px] rounded-[32px] object-cover"
+    />
+  </div>
+
+
+
+        {/*<Lottie
           animationData={flip1}
           loop
           style={lottieSize}
@@ -264,7 +279,7 @@ export default function HeroSection() {
               className="lg:mt-80 mt-50"
             />
           )}
-        </div>
+        </div>*/}
       </section>
     </>
   );

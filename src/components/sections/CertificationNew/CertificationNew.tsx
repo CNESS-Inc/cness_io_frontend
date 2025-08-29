@@ -2,17 +2,49 @@ import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import LottieOnView from "../../ui/LottieOnView";
 
+type LottieAsset = { id?: string; p?: string; u?: string; e?: number; [k:string]: unknown };
+type LottieJSON  = { assets?: LottieAsset[]; [k:string]: unknown };
+
 const Certification = () => {
-  const [animationData, setAnimationData] = useState(null);
+  const [animationData, setAnimationData] = useState<LottieJSON | null>(null);
+  const [lottieKey, setLottieKey] = useState(0); // force remount
 
   useEffect(() => {
-    
-    fetch("https://cnessioassets.project-69e.workers.dev/Card-bg.json")
-      .then((res) => res.json())
-      .then((data) => setAnimationData(data))
-      .catch((err) => console.error("Failed to load Lottie JSON:", err));
-  }, []);
+    const IMG_URLS = [
+      "https://cdn.cness.io/13.webp",
+      "https://cdn.cness.io/17.webp",
+      "https://cdn.cness.io/16.webp",
+    ];
 
+    fetch("https://cnessioassets.project-69e.workers.dev/Card-bg.json")
+      .then(res => res.json() as Promise<LottieJSON>)
+      .then(json => {
+        const assets = Array.isArray(json.assets) ? [...json.assets] : [];
+
+        // Log what we’re replacing (helps debug)
+        // console.log("assets:", assets.map(a => ({ id:a.id, p:a.p?.slice(0,40), e:a.e })));
+
+       let replaced = 0;
+for (let i = 0; i < assets.length && replaced < IMG_URLS.length; i++) {
+  const a = assets[i];
+  const p = a?.p;
+  const isBitmap =
+    typeof p === "string" &&
+    (p.startsWith("data:image") || /\.(png|jpe?g|webp|gif)$/i.test(p));
+
+  if (isBitmap) {
+    const { u, ...rest } = a;
+    assets[i] = { ...rest, p: IMG_URLS[replaced], e: 1 };
+    replaced++;
+  }
+}
+
+    setAnimationData({ ...json, assets });
+        setLottieKey(k => k + 1); // force Lottie component to re-initialize
+      })
+      .catch(err => console.error("Failed to load Lottie JSON:", err));
+  }, []);
+  
   return (
     <div className='py-20 w-full bg-[#FAFAFA] px-6'>
       <div className='max-w-[1336px] w-full mx-auto flex lg:flex-row flex-col justify-between'>
@@ -57,8 +89,9 @@ const Certification = () => {
         <div className='certificate-animation md:h-[100%] rounded-2xl lg:w-[40%] w-full lg:mt-0 mt-15'>
           {animationData && (
             <LottieOnView
-              animationData={animationData}
-              loop
+              key={lottieKey}               // <- ensures reload after patch
+          animationData={animationData}
+          loop
               className="w-full lg:h-full lg:scale-120"
             />
           )}

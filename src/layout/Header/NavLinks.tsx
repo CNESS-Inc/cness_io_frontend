@@ -7,11 +7,12 @@ import SignupForm from "./SignupForm";
 import LoginForm from "./LoginForm.tsx";
 
 const links = [
-  { name: "Why", href: "/why" },
-  // { name: "What", href: "/what" },
-  { name: "About", href: "/about" },
-  { name: "Directory", href: "/directory" },
+  { name: "Ecosystem", href: "/ecosystem" },
   { name: "Social", href: "/social" },
+  { name: "Certifications", href: "/certifications" },
+  { name: "Premium", href: "/premium" },
+   { name: "About", href: "/about" },
+    { name: "FAQs", href: "/faq" },
 ];
 
 export default function NavLinks({ className }: { className?: string }) {
@@ -72,7 +73,7 @@ export default function NavLinks({ className }: { className?: string }) {
               variant="white-outline"   
               className="w-[104px] h-[39px] rounded-[100px] p-0
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
-    flex items-center justify-center"
+    flex items-center justify-center shadow-sm text-[#64748B]"
               onClick={openSignupModal}>
                 <span className="relative top-[0.5px]">Sign Up</span>
               </Button>
@@ -81,7 +82,7 @@ export default function NavLinks({ className }: { className?: string }) {
                 variant="gradient-primary"
                className="w-[104px] h-[39px] rounded-[100px] p-0
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
-    flex items-center justify-center"
+    flex items-center justify-center text-[#FFFFFF]"
                 onClick={openLoginModal}
               >
  <span className="relative top-[0.5px]">Login</span>
