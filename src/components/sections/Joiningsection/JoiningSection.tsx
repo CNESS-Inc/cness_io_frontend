@@ -40,7 +40,7 @@ export default function JoiningSection()
            
             <Button
               // variant="gradient-primary"
-              className="jakarta w-fit rounded-[100px] h-[42px] py-1 px-8 self-stretch text-[14px]  bg-linear-to-r from-[#7077FE] to-[#9747FF]"
+              className="jakarta font-normal w-fit rounded-[100px] h-[42px] py-1 px-8 self-stretch text-[14px]  bg-linear-to-r from-[#7077FE] to-[#9747FF]"
               onClick={() => window.location.href = redirectPath}>
               Create Your Profile
             </Button>
