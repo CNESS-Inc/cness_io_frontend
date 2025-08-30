@@ -1,13 +1,25 @@
 import React from "react";
-// import { MessageCircle, CircleCheckBig, Trash2, Maximize } from "lucide-react";
-import { CircleCheckBig, Trash2, Maximize, MessageCircle } from "lucide-react";
+
+import { MessageCircle, CircleCheckBig, Trash2, Maximize } from "lucide-react";
+
+interface Connection {
+  id: string | number;
+  name: string;
+  username: string;
+  profileImage: string;
+  lastMessage?: string;
+  lastMessageTime?: string;
+  unreadCount?: number | string;
+  conversationId?: string | number;
+
 
 type FriendCardProps = {
   image: string;
   name: string;
   username: string;
+  connection: Connection;
   actions?: Array<"chat" | "accept" | "reject">;
-  onChat?: () => void;
+  onChat?: (connection: Connection) => void; // Update this prop
   onAccept?: () => void;
   onReject?: () => void;
   onMaximize?: () => void;
@@ -17,8 +29,9 @@ const FriendCard: React.FC<FriendCardProps> = ({
   image,
   name,
   username,
+  connection,
   actions = [],
-  // onChat,
+  onChat,
   onAccept,
   onReject,
   onMaximize,
@@ -26,9 +39,7 @@ const FriendCard: React.FC<FriendCardProps> = ({
   const profileImage = image && image.trim() !== "" ? image : "/profile.png";
 
   return (
-    <div
-      className="flex-none bg-white w-full lg:max-w-[100%] max-w-[263px] h-[291px] rounded-[12px] p-[12px] pb-[18px] shadow border border-gray-200 mx-auto">
-
+    <div className="flex-none bg-white w-full lg:max-w-[100%] max-w-[263px] h-[291px] rounded-[12px] p-[12px] pb-[18px] shadow border border-gray-200 mx-auto">
       {/* Image */}
       <div className="relative w-full h-[209px] xs:h-[160px]">
         <img
@@ -53,10 +64,12 @@ const FriendCard: React.FC<FriendCardProps> = ({
         </div>
 
         <div className="flex gap-2">
-           {actions.includes("chat") && (
+
+          {actions.includes("chat") && (
             <button
-              // onClick={onChat}
-              className="p-2 rounded-lg bg-[#7077FE] text-white hover:opacity-90"
+              onClick={() => onChat?.(connection)} // Pass connection to callback
+              className="p-2 rounded-full bg-[#7077FE] text-white hover:opacity-90"
+
               aria-label="Chat"
             >
               <MessageCircle size={16} />
