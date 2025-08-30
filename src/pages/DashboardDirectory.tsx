@@ -5,19 +5,14 @@ import { iconMap } from "../assets/icons";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
 import {
   GetAspiringCompanies,
+  GetInspiringCompanies,
   GetPopularCompanyDetails,
   GetValidProfessionalDetails,
 } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { LiaCertificateSolid } from "react-icons/lia";
-import { Menu } from "@headlessui/react";
-import {
-  FaAngleDown,
-  FaAngleUp,
-  FaCheck,
-  FaSortAlphaUp,
-} from "react-icons/fa";
+import CompanyFilters from "../components/directory/CompanyFilters";
+import Pagination from "../components/directory/CompanyPagination";
 
 type Company = {
   level: unknown;
@@ -45,26 +40,31 @@ type PaginationData = {
 
 export default function DashboardDirectory() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
+
   const [selectedDomain, setSelectedDomain] = useState("");
   const [searchQuery, setSearchQuery] = useState<any>("");
-  const [selectedDomainText, setSelectedDomainText] = useState("All Domains");
+  const [selectedDomainText, setSelectedDomainText] = useState("");
   const [textWidth, setTextWidth] = useState(0);
   const [Domain, setDomain] = useState([]);
-  const { showToast } = useToast();
-  const [selected, setSelected] = useState("");
+  const measureRef = useRef<HTMLSpanElement>(null);
+
+  type Filter = "" | "popular" | "aspiring" | "inspired";
+  const [selected, setSelected] = useState<Filter>(""); // All
   const [order, setOrder] = useState<"asc" | "desc">("asc");
 
   const options = [
-    { value: "aspiring", label: "Aspiring" },
-    { value: "popular", label: "Popular" },
-    { value: "inspired", label: "Inspired" },
+    { value: "" as Filter, label: "All" },
+    { value: "popular" as Filter, label: "Popular" },
+    { value: "aspiring" as Filter, label: "Aspiring" },
+    { value: "inspired" as Filter, label: "Inspired" },
   ];
 
-  // const handleSelect = (value: string) => {
-  //   setSelected(value);
-  //   if (value === "aspiring") fetchInspiringCompany();
-  //   if (value === "popular") fetchPopularCompany();
-  // };
+  const [isLoading, setIsLoading] = useState({
+    popular: false,
+    aspiring: false,
+    inspiring: false,
+  });
 
   // Pagination states
   const [popularPagination, setPopularPagination] = useState<PaginationData>({
@@ -73,10 +73,6 @@ export default function DashboardDirectory() {
     totalItems: 0,
     itemsPerPage: 10,
   });
-  console.log(
-    "🚀 ~ DashboardDirectory ~ popularPagination:",
-    popularPagination
-  );
 
   const [aspiringPagination, setAspiringPagination] = useState<PaginationData>({
     currentPage: 1,
@@ -85,14 +81,18 @@ export default function DashboardDirectory() {
     itemsPerPage: 10,
   });
 
+  const [inspiringPagination, setInspiringPagination] =
+    useState<PaginationData>({
+      currentPage: 1,
+      totalPages: 1,
+      totalItems: 0,
+      itemsPerPage: 10,
+    });
+
   const [popularCompanies, setPopularCompanies] = useState<Company[]>([]);
-  console.log("🚀 ~ DirectoryPage ~ popularCompanies:", popularCompanies);
   const [aspiringCompanies, setAspiringCompanies] = useState<Company[]>([]);
-  const [isLoading, setIsLoading] = useState({
-    popular: false,
-    inspiring: false,
-  });
-  const measureRef = useRef<HTMLSpanElement>(null);
+  const [inspiringCompanies, setInspiringCompanies] = useState<Company[]>([]);
+
   useEffect(() => {
     if (measureRef.current) {
       setTextWidth(measureRef.current.offsetWidth);
@@ -164,6 +164,48 @@ export default function DashboardDirectory() {
   const fetchInspiringCompany = async (page: number = 1) => {
     setIsLoading((prev) => ({ ...prev, inspiring: true }));
     try {
+      const res = await GetInspiringCompanies(
+        page,
+        aspiringPagination.itemsPerPage
+      );
+      if (res?.data?.data) {
+        const transformedCompanies = res.data.data.rows.map((company: any) => ({
+          id: company.id,
+          name: company.name,
+          location: company.location || "Unknown",
+          domain: company.domain || "General",
+          category: "Inspiring",
+          logo: company.profile_picture || iconMap["aspcompany1"],
+          banner: company.profile_banner || iconMap["aspcompany1"],
+          description: company.bio || "No description available",
+          tags: company.tags || [],
+          rating: company.average,
+          isCertified: company.is_certified || false,
+          level: company?.level?.level,
+        }));
+        setInspiringCompanies(transformedCompanies);
+        setInspiringPagination((prev) => ({
+          ...prev,
+          currentPage: page,
+          totalPages: Math.ceil(res.data.data.count / prev.itemsPerPage),
+          totalItems: res.data.data.count,
+        }));
+      }
+    } catch (error: any) {
+      console.error("Error fetching inspiring companies:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    } finally {
+      setIsLoading((prev) => ({ ...prev, inspiring: false }));
+    }
+  };
+
+  const fetchAspiringCompany = async (page: number = 1) => {
+    setIsLoading((prev) => ({ ...prev, inspiring: true }));
+    try {
       const res = await GetAspiringCompanies(
         page,
         aspiringPagination.itemsPerPage
@@ -207,7 +249,14 @@ export default function DashboardDirectory() {
     fetchDomain();
     fetchPopularCompany();
     fetchInspiringCompany();
+    fetchAspiringCompany();
   }, []);
+
+  useEffect(() => {
+    if (selected === "popular") fetchPopularCompany(1);
+    if (selected === "aspiring") fetchAspiringCompany(1);
+    if (selected === "inspired") fetchInspiringCompany(1);
+  }, [selected]);
 
   const handleSearch = () => {
     if (selectedDomain || searchQuery) {
@@ -228,6 +277,20 @@ export default function DashboardDirectory() {
       handleSearch();
     }
   };
+
+  const sortByName = (list: Company[]) =>
+    [...list].sort((a, b) =>
+      order === "asc"
+        ? a.name.localeCompare(b.name)
+        : b.name.localeCompare(a.name)
+    );
+
+  const activeList = (() => {
+    if (selected === "popular") return { title: "Popular People", list: sortByName(popularCompanies), loading: isLoading.popular, pagination: popularPagination, onPage: fetchPopularCompany };
+    if (selected === "aspiring") return { title: "Aspiring People", list: sortByName(aspiringCompanies), loading: isLoading.aspiring, pagination: aspiringPagination, onPage: fetchAspiringCompany };
+    if (selected === "inspired") return { title: "Inspiring People", list: sortByName(inspiringCompanies), loading: isLoading.inspiring, pagination: inspiringPagination, onPage: fetchInspiringCompany };
+    return null; // All
+  })();
 
   return (
     <>
@@ -329,252 +392,199 @@ export default function DashboardDirectory() {
         </div>
       </section>
 
-      {/* Popular Companies Section */}
-      <section className="py-16 px-1 bg-[#f9f9f9] border-t border-gray-100">
-        <div className="w-full mx-auto">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">Popular People</h2>
+      <section className="py-6 px-1 bg-[#f9f9f9] border-t border-gray-100">
+        <div className="w-full mx-auto flex items-center">
+          <h2 className="text-xl font-semibold">{
+            selected === "popular" ? "Leader Board" :
+              selected === "aspiring" ? "Aspiring People" :
+                selected === "inspired" ? "Inspired People" : "All People"
+          }</h2>
 
-            {/* Filter + Sort */}
-            <div className="flex items-center gap-3">
-              <Menu as="div" className="relative inline-block text-left">
-                <div>
-                  <Menu.Button className="flex items-center gap-2 px-2 py-2 border border-gray-300 rounded-md bg-white text-sm text-gray-700 hover:bg-gray-50">
-                    <LiaCertificateSolid className="text-pink-700" size={20} />
-                    {selected
-                      ? options.find((o) => o.value === selected)?.label
-                      : "Certification Level"}
-                  </Menu.Button>
+          <CompanyFilters
+            options={options}
+            selected={selected}
+            setSelected={setSelected as any}
+            order={order}
+            setOrder={setOrder}
+            ClassName="ml-auto"   
+          />
+        </div>
+      </section>
+
+      {/* Popular Companies Section */}
+      {activeList ? (
+        <section className="py-6 border-t border-gray-100">
+          <div className="w-full mx-auto">
+            {activeList.loading ? (
+              <div className="flex justify-center py-10">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
+              </div>
+            ) : activeList.list.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-5 gap-x-4 gap-y-4">
+                  {activeList.list.map((company) => (
+                    <CompanyCard
+                      id={company.id}
+                      key={company.id}
+                      name={company.name}
+                      domain={company.domain}
+                      logoUrl={company.logo}
+                      bannerUrl={company.banner}
+                      location={company.location}
+                      description={company.description}
+                      tags={company.tags}
+                      rating={company.rating}
+                      isCertified={company.isCertified}
+                      is_organization={company.is_organization}
+                      is_person={company.is_person}
+                      routeKey={company.id}
+                      level={company.level}
+                    />
+                  ))}
                 </div>
 
-                <Menu.Items className="absolute right-0 mt-2 w-32 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg focus:outline-none z-50">
-                  <div className="py-2">
-                    {options.map((option) => (
-                      <Menu.Item key={option.value}>
-                        {({ active }) => (
-                          <button
-                            // onClick={() => handleSelect(option.value)}
-                            onClick={() => setSelected(option.value)}
-                            className={`flex items-center w-full px-4 py-2 text-sm ${
-                              active ? "bg-gray-100" : ""
-                            }`}
-                          >
-                            <span
-                              className={`w-4 h-4 mr-3 rounded-full border flex items-center justify-center ${
-                                selected === option.value
-                                  ? "border-pink-600 bg-pink-600"
-                                  : "border-gray-400"
-                              }`}
-                            >
-                              {selected === option.value && (
-                                <FaCheck className="text-white text-[10px]" />
-                              )}
-                            </span>
-                            {option.label}
-                          </button>
-                        )}
-                      </Menu.Item>
+                <Pagination
+                  pagination={activeList.pagination}
+                  isLoading={activeList.loading}
+                  onPageChange={activeList.onPage}
+                  align="end"
+                />
+              </>
+            ) : (
+              <p className="text-gray-500">No results found.</p>
+            )}
+          </div>
+        </section>
+      ) : (
+        <>
+          <section className="py-12 px-1 bg-[#f9f9f9] border-t border-gray-100">
+            <div className="w-full mx-auto">
+              <h3 className="text-lg font-semibold mb-4">Popular People</h3>
+              {isLoading.popular ? (
+                <div className="flex justify-center py-10">
+                  <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
+                </div>
+              ) : popularCompanies.length > 0 ? (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-6 gap-x-4 gap-y-4">
+                    {sortByName(popularCompanies).map((company) => (
+                      <CompanyCard
+                        id={company.id}
+                        key={company.id}
+                        name={company.name}
+                        domain={company.domain}
+                        logoUrl={company.logo}
+                        bannerUrl={company.banner}
+                        location={company.location}
+                        description={company.description}
+                        tags={company.tags}
+                        rating={company.rating}
+                        isCertified={company.isCertified}
+                        is_organization={company.is_organization}
+                        is_person={company.is_person}
+                        routeKey={company.id}
+                        level={company.level}
+                      />
                     ))}
                   </div>
-                </Menu.Items>
-              </Menu>
+                  <Pagination
+                    pagination={popularPagination}
+                    isLoading={isLoading.popular}
+                    onPageChange={fetchPopularCompany}
+                    align="end"
+                  />
+                </>
+              ) : (
+                <p className="text-gray-500">No popular people found.</p>
+              )}
+            </div>
+          </section>
 
-              {/* Sort Dropdown */}
-              <button
-                onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
-                className="flex items-center justify-between w-26 px-4 py-2 border border-gray-300 rounded-md bg-white text-sm text-gray-700 hover:bg-gray-50"
-              >
-                {/* Left icon + label */}
-                <div className="flex items-center gap-2">
-                  <FaSortAlphaUp className="text-indigo-600" />
-                  <span>A - Z</span>
+          {/* Aspiring */}
+          <section className="py-12 border-t border-gray-100">
+            <div className="w-full mx-auto">
+              <h3 className="text-lg font-semibold mb-4">Aspiring People</h3>
+              {isLoading.aspiring ? (
+                <div className="flex justify-center py-10">
+                  <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
                 </div>
-
-                {/* Right toggle icon */}
-                {order === "asc" ? (
-                  <FaAngleDown className="text-gray-500" />
-                ) : (
-                  <FaAngleUp className="text-gray-500" />
-                )}
-              </button>
+              ) : aspiringCompanies.length > 0 ? (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-5 gap-x-4 gap-y-4">
+                    {sortByName(aspiringCompanies).map((company) => (
+                      <CompanyCard
+                        id={company.id}
+                        key={company.id}
+                        name={company.name}
+                        domain={company.domain}
+                        logoUrl={company.logo}
+                        bannerUrl={company.banner}
+                        location={company.location}
+                        description={company.description}
+                        tags={company.tags}
+                        rating={company.rating}
+                        isCertified={company.isCertified}
+                        routeKey={company.id}
+                        level={company.level}
+                      />
+                    ))}
+                  </div>
+                  <Pagination
+                    pagination={aspiringPagination}
+                    isLoading={isLoading.aspiring}
+                    onPageChange={fetchAspiringCompany}
+                    align="end"
+                  />
+                </>
+              ) : (
+                <p className="text-gray-500">No aspiring people found.</p>
+              )}
             </div>
-          </div>
+          </section>
 
-          {isLoading.popular ? (
-            <div className="flex justify-center py-10">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
+          {/* Inspiring */}
+          <section className="py-12 border-t border-gray-100">
+            <div className="w-full mx-auto">
+              <h3 className="text-lg font-semibold mb-4">Inspiring People</h3>
+              {isLoading.inspiring ? (
+                <div className="flex justify-center py-10">
+                  <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
+                </div>
+              ) : inspiringCompanies.length > 0 ? (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-5 gap-x-4 gap-y-4">
+                    {sortByName(inspiringCompanies).map((company) => (
+                      <CompanyCard
+                        id={company.id}
+                        key={company.id}
+                        name={company.name}
+                        domain={company.domain}
+                        logoUrl={company.logo}
+                        bannerUrl={company.banner}
+                        location={company.location}
+                        description={company.description}
+                        tags={company.tags}
+                        rating={company.rating}
+                        isCertified={company.isCertified}
+                        routeKey={company.id}
+                        level={company.level}
+                      />
+                    ))}
+                  </div>
+                  <Pagination
+                    pagination={inspiringPagination}
+                    isLoading={isLoading.inspiring}
+                    onPageChange={fetchInspiringCompany}
+                    align="end"
+                  />
+                </>
+              ) : (
+                <p className="text-gray-500">No inspiring people found.</p>
+              )}
             </div>
-          ) : popularCompanies.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-6 gap-x-4 gap-y-4">
-              {popularCompanies.map((company) => (
-                <CompanyCard
-                  id={company.id}
-                  key={company.id}
-                  name={company.name}
-                  domain={company.domain}
-                  logoUrl={company.logo}
-                  bannerUrl={company.banner}
-                  location={company.location}
-                  description={company.description}
-                  tags={company.tags}
-                  rating={company.rating}
-                  isCertified={company.isCertified}
-                  is_organization={company.is_organization}
-                  is_person={company.is_person}
-                  routeKey={company.id}
-                  level={company.level}
-                />
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-500">No popular people found.</p>
-          )}
-
-          {popularPagination.totalPages > 0 && (
-            <div className="mt-8">
-              <div className="flex justify-end">
-                <nav
-                  className="inline-flex rounded-md shadow-sm -space-x-px text-sm"
-                  aria-label="Pagination"
-                >
-                  <button
-                    onClick={() =>
-                      fetchPopularCompany(popularPagination.currentPage - 1)
-                    }
-                    disabled={
-                      popularPagination.currentPage === 1 || isLoading.popular
-                    }
-                    className="px-3 py-1 rounded-l-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
-                  >
-                    «
-                  </button>
-
-                  {Array.from(
-                    { length: popularPagination.totalPages },
-                    (_, i) => i + 1
-                  ).map((page) => (
-                    <button
-                      key={page}
-                      onClick={() => fetchPopularCompany(page)}
-                      disabled={isLoading.popular}
-                      className={`px-3 py-1 border border-gray-300 ${
-                        page === popularPagination.currentPage
-                          ? "bg-indigo-500 text-white"
-                          : "bg-white text-gray-700 hover:bg-gray-100"
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
-
-                  <button
-                    onClick={() =>
-                      fetchPopularCompany(popularPagination.currentPage + 1)
-                    }
-                    disabled={
-                      popularPagination.currentPage ===
-                        popularPagination.totalPages || isLoading.popular
-                    }
-                    className="px-3 py-1 rounded-r-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
-                  >
-                    »
-                  </button>
-                </nav>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Inspiring Companies Section */}
-      <section className="py-16 border-t border-gray-100">
-        <div className="w-full mx-auto">
-          <h2 className="text-xl font-semibold mb-4">Aspiring People</h2>
-
-          {isLoading.inspiring ? (
-            <div className="flex justify-center py-10">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
-            </div>
-          ) : aspiringCompanies.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-5 gap-x-4 gap-y-4">
-              {aspiringCompanies.map((company) => (
-                <CompanyCard
-                  id={company.id}
-                  key={company.id}
-                  name={company.name}
-                  domain={company.domain}
-                  logoUrl={company.logo}
-                  bannerUrl={company.banner}
-                  location={company.location}
-                  description={company.description}
-                  tags={company.tags}
-                  rating={company.rating}
-                  isCertified={company.isCertified}
-                  routeKey={company.id}
-                  level={company.level}
-                />
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-500">No aspiring people found.</p>
-          )}
-
-          {aspiringPagination.totalPages > 0 && (
-            <div className="mt-8 overflow-x-auto">
-              <div className="flex justify-center sm:justify-end flex-wrap gap-2">
-                <nav
-                  className="inline-flex rounded-md shadow-sm -space-x-px text-sm"
-                  aria-label="Pagination"
-                >
-                  <button
-                    onClick={() =>
-                      fetchInspiringCompany(aspiringPagination.currentPage - 1)
-                    }
-                    disabled={
-                      aspiringPagination.currentPage === 1 ||
-                      isLoading.inspiring
-                    }
-                    className="px-3 py-1 rounded-l-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
-                  >
-                    «
-                  </button>
-
-                  {Array.from(
-                    { length: aspiringPagination.totalPages },
-                    (_, i) => i + 1
-                  ).map((page) => (
-                    <button
-                      key={page}
-                      onClick={() => fetchInspiringCompany(page)}
-                      disabled={isLoading.inspiring}
-                      className={`px-3 py-1 border border-gray-300 ${
-                        page === aspiringPagination.currentPage
-                          ? "bg-indigo-500 text-white"
-                          : "bg-white text-gray-700 hover:bg-gray-100"
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
-
-                  <button
-                    onClick={() =>
-                      fetchInspiringCompany(aspiringPagination.currentPage + 1)
-                    }
-                    disabled={
-                      aspiringPagination.currentPage ===
-                        aspiringPagination.totalPages || isLoading.inspiring
-                    }
-                    className="px-3 py-1 rounded-r-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
-                  >
-                    »
-                  </button>
-                </nav>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
+          </section>
+        </>
+      )}
     </>
   );
 }

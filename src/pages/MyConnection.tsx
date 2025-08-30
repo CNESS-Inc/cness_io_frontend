@@ -13,6 +13,7 @@ import {
   RejectFriendRequest,
   GetUserPost,
 } from "../Common/ServerAPI";
+import { useToast } from "../components/ui/Toast/ToastProvider";
 
 const MyConnection = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -21,6 +22,7 @@ const MyConnection = () => {
   const [allConnections, setAllConnections] = useState<Connection[]>([]);
   const [friendRequests, setFriendRequests] = useState<Connection[]>([]);
   const [followStatus, setFollowStatus] = useState<{[key: number]: boolean}>({});
+  const { showToast } = useToast();
 
   interface Connection {
     id: number;
@@ -89,7 +91,11 @@ const MyConnection = () => {
       setFriendRequests((prev) =>
         prev.filter((request) => request.id !== friendId)
       );
-
+      showToast({
+        message: "You’ve got a new friend!",
+        type: "success",
+        duration: 3000,
+      });
       // Optional: Show success message
       console.log("Friend request accepted successfully");
     } catch (error) {

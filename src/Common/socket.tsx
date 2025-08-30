@@ -4,7 +4,7 @@ let socket: Socket | null = null;
 
 export const initSocket = (token: string) => {
   if (!socket) {
-    socket = io("https://d2nmifvo7hb2lq.cloudfront.net", {
+    socket = io("https://socket.dev.cness.io", {
       auth: { token },
     });
 

@@ -149,7 +149,7 @@ export default function FeaturedSection() {
             className="jakarta w-fit rounded-[100px] h-[38px] text-[16px] font-[400] text-[#fff] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#9747FF] mt-6"
             onClick={() => window.location.href = "/sign-up"}
           >
-            Apply to be featured
+           Know More
           </Button>
         </div>
       </div>

@@ -1,21 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
-import { GetComment, PostComments } from "../../Common/ServerAPI";
+import React, { useState, useEffect } from "react";
+import { GetComment, GetChildComments, PostChildComments, PostComments } from "../../Common/ServerAPI";
 import { BsThreeDots } from "react-icons/bs";
 import { FiEdit2, FiLink2, FiSend, FiTrash2, FiX } from "react-icons/fi";
 import { useToast } from "../ui/Toast/ToastProvider";
 import {
-  FacebookShareButton,
-  LinkedinShareButton,
-  TwitterShareButton,
-  WhatsappShareButton,
-} from "react-share";
-import {
-  FaFacebook,
-  FaLinkedin,
   FaRegSmile,
-  FaTwitter,
-  FaWhatsapp,
 } from "react-icons/fa";
+import SharePopup from "../Social/SharePopup";
+import { buildShareUrl, copyPostLink } from "../../lib/utils";
+import like from "../../assets/like.svg";
+import comment from "../../assets/comment.svg";
+
 interface Media {
   type: "image" | "video" | "text";
   src: string;
@@ -24,41 +19,90 @@ interface Media {
   images?: string[]; // for multi-image support
 }
 
-interface Comment {
-  user: string;
+type CommentItem = {
+  id: string;
+  user_id: string;
   text: string;
-  time: string;
-  userimage: string;
-}
+  createdAt: string;
+  likes_count?: number;
+  child_comment_count?: number;
+  replies?: Reply[];
+  profile: {
+    first_name: string;
+    last_name: string;
+    profile_picture: string;
+  };
+  is_liked?: boolean;
+};
 
 interface Post {
   id: string;
   date: string;
   media: Media;
   images?: string[]; // for multi-image support
-  comments?: Comment[];
+  comments?: CommentItem[];
 }
+
+type Reply = {
+  id: string;
+  user_id: string;
+  text: string;
+  createdAt: string;
+  likes_count?: number;
+  profile: {
+    first_name: string;
+    last_name: string;
+    profile_picture: string;
+  };
+  is_liked?: boolean;
+};
 
 interface PopupProps {
   post: Post;
   onClose: () => void;
   onDeletePost: () => void;
   insightsCount?: number;
+  likesCount?: number;
 }
 
-const PostPopup: React.FC<PopupProps> = ({ post, onClose, onDeletePost }) => {
-  const menuRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  const [comments, setComments] = useState<Comment[]>([]);
+const PostPopup: React.FC<PopupProps> = ({ post, onClose, onDeletePost, likesCount, insightsCount }) => {
+  const [comments, setComments] = useState<CommentItem[]>([]);
+  const [isCommentsLoading, setIsCommentsLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [commentInput, setCommentInput] = useState("");
   const [posting, setPosting] = useState(false);
-  const { showToast } = useToast();
+  const [commentInput, setCommentInput] = useState("");
+  const [replyInput, setReplyInput] = useState("");
+  const [showReplyBoxFor, setShowReplyBoxFor] = useState<string | null>(null);
+  const [expandedComments, setExpandedComments] = useState<Record<string, boolean>>(
+    {}
+  );
+  const [loadingReplies, setLoadingReplies] = useState<Record<string, boolean>>(
+    {}
+  );
+
   const [openMenu, setOpenMenu] = useState<{
     postId: string | null;
     type: "options" | "share" | null;
   }>({ postId: null, type: null });
+
   const myid = localStorage.getItem("Id");
   const urldata = `https://dev.cness.io/directory/user-profile/${myid}`;
+
+  const { showToast } = useToast();
+
+  const images =
+    (post.images && post.images.length > 1 && post.images) ||
+    (post.media.images && post.media.images.length > 1 && post.media.images) ||
+    undefined;
+  const [currentImage, setCurrentImage] = useState(0);
+
+  // Helper for carousel navigation
+  const handlePrev = () =>
+    setCurrentImage((prev) =>
+      images ? (prev - 1 + images.length) % images.length : 0
+    );
+  const handleNext = () =>
+    setCurrentImage((prev) => (images ? (prev + 1) % images.length : 0));
 
   const handlePostComment = async () => {
     if (!commentInput.trim()) return;
@@ -70,11 +114,20 @@ const PostPopup: React.FC<PopupProps> = ({ post, onClose, onDeletePost }) => {
       GetComment(post.id)
         .then((data) => {
           const rows = data.data.data?.rows || [];
-          const mapped = rows.map((item: any) => ({
-            user: item.profile.first_name + item.profile.last_name || "Unknown",
-            userimage: item.profile.profile_picture || "",
+          const mapped: CommentItem[] = rows.map((item: any) => ({
+            id: item.id,
+            user_id: item.user_id,
             text: item.text || "",
-            time: timeAgo(item.createdAt),
+            createdAt: item.createdAt,
+            likes_count: item.likes_count,
+            child_comment_count: item.child_comment_count,
+            replies: [],
+            profile: {
+              first_name: item.profile.first_name,
+              last_name: item.profile.last_name,
+              profile_picture: item.profile.profile_picture || "",
+            },
+            is_liked: item.is_liked,
           }));
           setComments(mapped);
         })
@@ -85,21 +138,6 @@ const PostPopup: React.FC<PopupProps> = ({ post, onClose, onDeletePost }) => {
     setPosting(false);
   };
 
-  useEffect(() => {
-    GetComment(post.id)
-      .then((data) => {
-        const rows = data.data.data?.rows || [];
-        const mapped = rows.map((item: any) => ({
-          user: item.profile.first_name + item.profile.last_name || "Unknown",
-          userimage: item.profile.profile_picture || "",
-          text: item.text || "",
-          time: timeAgo(item.createdAt), // You can use a helper to format time
-        }));
-        setComments(mapped);
-      })
-      .catch(() => setComments([]));
-  }, [post.id]);
-
   function timeAgo(dateString: string) {
     const date = new Date(dateString);
     const now = new Date();
@@ -109,6 +147,106 @@ const PostPopup: React.FC<PopupProps> = ({ post, onClose, onDeletePost }) => {
     if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
     return `${Math.floor(diff / 86400)} days ago`;
   }
+
+  function formatCount(count: number) {
+    if (count >= 1_000_000) return (count / 1_000_000).toFixed(1) + "M";
+    if (count >= 1_000) return (count / 1_000).toFixed(0) + "K";
+    return String(count);
+  }
+
+  useEffect(() => {
+    setIsCommentsLoading(true);
+    GetComment(post.id)
+      .then((data) => {
+        const rows = data.data.data?.rows || [];
+        const mapped: CommentItem[] = rows.map((item: any) => ({
+          id: item.id,
+          user_id: item.user_id,
+          text: item.text || "",
+          createdAt: item.createdAt,
+          likes_count: item.likes_count,
+          child_comment_count: item.child_comment_count,
+          replies: [],
+          profile: {
+            first_name: item.profile.first_name,
+            last_name: item.profile.last_name,
+            profile_picture: item.profile.profile_picture || "",
+          },
+          is_liked: item.is_liked,
+        }));
+        setComments(mapped);
+      })
+      .catch(() => setComments([]))
+      .finally(() => setIsCommentsLoading(false));
+  }, [post.id]);
+
+  const handleReplySubmit = async (id: string) => {
+    if (!replyInput.trim()) return;
+    setPosting(true);
+    try {
+      await PostChildComments({ post_id: post.id, comment_id: id, text: replyInput });
+      setReplyInput("");
+      setShowReplyBoxFor("");
+      // Refresh comments after posting
+      GetComment(post.id)
+        .then((data) => {
+          const rows = data.data.data?.rows || [];
+          const mapped: CommentItem[] = rows.map((item: any) => ({
+            id: item.id,
+            user_id: item.user_id,
+            text: item.text || "",
+            createdAt: item.createdAt,
+            likes_count: item.likes_count,
+            child_comment_count: item.child_comment_count,
+            replies: [],
+            profile: {
+              first_name: item.profile.first_name,
+              last_name: item.profile.last_name,
+              profile_picture: item.profile.profile_picture || "",
+            },
+            is_liked: item.is_liked,
+          }));
+          setComments(mapped);
+        })
+        .catch(() => setComments([]));
+    } catch (error) {
+      // Optionally show error to user
+    }
+    setPosting(false);
+  };
+
+  const fetchAndToggleReplies = async (commentId: string) => {
+    if (expandedComments[commentId]) {
+      setExpandedComments((prev) => ({ ...prev, [commentId]: false }));
+      return;
+    }
+    if (!comments.find((c) => c.id === commentId)?.replies?.length) {
+      setLoadingReplies((prev) => ({ ...prev, [commentId]: true }));
+      try {
+        const res = await GetChildComments(commentId);
+        const rows = res?.data?.data?.rows || [];
+        const mappedReplies: Reply[] = rows.map((child: any) => ({
+          id: child.id,
+          user_id: child.user_id,
+          text: child.text,
+          createdAt: child.createdAt,
+          likes_count: child.likes_count,
+          profile: {
+            first_name: child.profile.first_name,
+            last_name: child.profile.last_name,
+            profile_picture: child.profile.profile_picture,
+          },
+          is_liked: child.is_liked,
+        }));
+        setComments((prev) =>
+          prev.map((c) => (c.id === commentId ? { ...c, replies: mappedReplies } : c))
+        );
+      } finally {
+        setLoadingReplies((prev) => ({ ...prev, [commentId]: false }));
+      }
+    }
+    setExpandedComments((prev) => ({ ...prev, [commentId]: true }));
+  };
 
   // Use comments from props or fallback
   /*const comments = post.comments || [
@@ -134,21 +272,6 @@ const PostPopup: React.FC<PopupProps> = ({ post, onClose, onDeletePost }) => {
     },
   ];*/
 
-  // Carousel state for images
-  const images =
-    (post.images && post.images.length > 1 && post.images) ||
-    (post.media.images && post.media.images.length > 1 && post.media.images) ||
-    undefined;
-  const [currentImage, setCurrentImage] = useState(0);
-
-  // Helper for carousel navigation
-  const handlePrev = () =>
-    setCurrentImage((prev) =>
-      images ? (prev - 1 + images.length) % images.length : 0
-    );
-  const handleNext = () =>
-    setCurrentImage((prev) => (images ? (prev + 1) % images.length : 0));
-
   const toggleMenu = (postId: string, type: "options" | "share") => {
     setOpenMenu((prev) => {
       if (prev.postId === postId && prev.type === type) {
@@ -159,32 +282,12 @@ const PostPopup: React.FC<PopupProps> = ({ post, onClose, onDeletePost }) => {
     });
   };
 
-  const copyPostLink = async (postId: string) => {
-    toggleMenu(postId, "options");
-    const postUrl = `${window.location.origin}/post/${postId}`;
-
-    try {
-      await navigator.clipboard.writeText(postUrl);
-      showToast({
-        type: "success",
-        message: "Post link copied to clipboard!",
-        duration: 2000,
-      });
-    } catch (error) {
-      showToast({
-        type: "error",
-        message: "Failed to copy link",
-        duration: 2000,
-      });
-    }
-  };
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-      <div className="flex flex-col md:flex-row justify-between bg-black h-[80vh] w-full max-w-7xl">
+      <div className="flex flex-col lg:flex-row justify-between bg-black h-[90vh] lg:h-[80vh] w-full max-w-7xl mx-4 xl:mx-auto">
         {/* Left side - media */}
-        <div className="flex-1 basis-[60%] min-w-0 flex">
-          <div className="bg-black rounded-2xl p-3 sm:p-4 md:p-6 w-full flex">
+        <div className="flex-1 lg:basis-[60%] min-w-0 flex h-full">
+          <div className="bg-black rounded-2xl p-2 sm:p-4 lg:p-6 w-full flex h-full">
             <div className="bg-white rounded-xl w-full flex flex-col p-3 sm:p-5 shadow-sm">
               <div className="relative flex items-start justify-between mb-4">
                 <div>
@@ -195,14 +298,22 @@ const PostPopup: React.FC<PopupProps> = ({ post, onClose, onDeletePost }) => {
                 </div>
 
                 {/* Dots button */}
-                <button
-                  className="flex items-center justify-center w-9 h-9 rounded-xl bg-white shadow-sm shadow-gray-200/60 hover:shadow-xl hover:scale-[1.03] active:scale-100 transition"
-                  onClick={() => setOpen(!open)}
-                >
-                  <BsThreeDots className="text-gray-800" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    className="flex items-center justify-center w-9 h-9 rounded-xl bg-white shadow-sm shadow-gray-200/60 hover:shadow-xl hover:scale-[1.03] active:scale-100 transition"
+                    onClick={() => setOpen(!open)}
+                  >
+                    <BsThreeDots className="text-gray-800" />
+                  </button>
+                  <button
+                    onClick={onClose}
+                    className="visible lg:invisible w-8 h-8 flex lg:hidden items-center justify-center rounded-lg hover:bg-gray-100 transition shadow-sm"
+                  >
+                    <span className="text-pink-500 text-lg font-bold">✕</span>
+                  </button>
+                </div>
                 {open && (
-                  <div className="absolute -right-32 top-10 mt-2 w-56 rounded-2xl bg-white shadow-lg ring-1 ring-black/5 overflow-hidden z-50">
+                  <div className="absolute right-0 top-10 mt-2 w-56 rounded-2xl bg-white shadow-lg ring-1 ring-black/5 overflow-hidden z-50">
                     {/* Header with close */}
                     <div className="flex items-center justify-between px-4 py-4 bg-[rgba(137,122,255,0.1)]">
                       <button
@@ -227,7 +338,6 @@ const PostPopup: React.FC<PopupProps> = ({ post, onClose, onDeletePost }) => {
                           e.stopPropagation();
                           onDeletePost?.();
                           setOpen(false);
-                          onClose?.();
                         }}
                       >
                         <FiTrash2 className="text-red-500" /> Delete
@@ -238,7 +348,10 @@ const PostPopup: React.FC<PopupProps> = ({ post, onClose, onDeletePost }) => {
                       <button
                         className="flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50 border-b border-[#E2E8F0]"
                         onClick={() => {
-                          copyPostLink(post.id);
+                          copyPostLink(`${window.location.origin}/post/${post.id}`,
+                            (msg) => showToast({ type: "success", message: msg, duration: 2000 }),
+                            (msg) => showToast({ type: "error", message: msg, duration: 2000 })
+                          );
                         }}
                       >
                         <FiLink2 className="text-red-500" /> Copy Link
@@ -248,40 +361,14 @@ const PostPopup: React.FC<PopupProps> = ({ post, onClose, onDeletePost }) => {
                         onClick={() => toggleMenu(post.id, "share")}
                       >
                         <FiSend className="text-blue-500" /> Share to..
-                        {openMenu.postId === post.id &&
-                          openMenu.type === "share" && (
-                            <div
-                              className="absolute -top-14 left-0 bg-white shadow-lg rounded-lg p-3 z-10"
-                              ref={(el) => {
-                                const key = `${post.id}-share`;
-                                if (el) menuRef.current[key] = el;
-                                else delete menuRef.current[key];
-                              }}
-                            >
-                              <ul className="flex items-center gap-4">
-                                <li>
-                                  <FacebookShareButton url={urldata}>
-                                    <FaFacebook size={32} color="#4267B2" />
-                                  </FacebookShareButton>
-                                </li>
-                                <li>
-                                  <LinkedinShareButton url={urldata}>
-                                    <FaLinkedin size={32} color="#0077B5" />
-                                  </LinkedinShareButton>
-                                </li>
-                                <li>
-                                  <TwitterShareButton url={urldata}>
-                                    <FaTwitter size={32} color="#1DA1F2" />
-                                  </TwitterShareButton>
-                                </li>
-                                <li>
-                                  <WhatsappShareButton url={urldata}>
-                                    <FaWhatsapp size={32} color="#1DA1F2" />
-                                  </WhatsappShareButton>
-                                </li>
-                              </ul>
-                            </div>
-                          )}
+                        {openMenu.postId === post.id && openMenu.type === "share" && (
+                          <SharePopup
+                            isOpen={true}
+                            onClose={() => toggleMenu(post.id, "share")}
+                            url={buildShareUrl(urldata)} // you already have urldata in this file
+                            position="top"
+                          />
+                        )}
                       </button>
                     </div>
                   </div>
@@ -289,7 +376,7 @@ const PostPopup: React.FC<PopupProps> = ({ post, onClose, onDeletePost }) => {
               </div>
 
               {/* Media area */}
-              <div className="relative flex-1 min-h-[280px] rounded-lg overflow-hidden bg-gray-50">
+              <div className="relative flex-1 min-h-[200px] sm:min-h-[280px] rounded-lg overflow-hidden bg-gray-50">
                 {Array.isArray(images) && images.length > 0 ? (
                   <>
                     <img
@@ -319,11 +406,10 @@ const PostPopup: React.FC<PopupProps> = ({ post, onClose, onDeletePost }) => {
                           {images.map((_, idx) => (
                             <span
                               key={idx}
-                              className={`inline-block w-2 h-2 rounded-full ${
-                                idx === currentImage
-                                  ? "bg-gray-800"
-                                  : "bg-gray-300"
-                              }`}
+                              className={`inline-block w-2 h-2 rounded-full ${idx === currentImage
+                                ? "bg-gray-800"
+                                : "bg-gray-300"
+                                }`}
                             />
                           ))}
                         </div>
@@ -356,106 +442,173 @@ const PostPopup: React.FC<PopupProps> = ({ post, onClose, onDeletePost }) => {
         </div>
 
         {/* Right side - comments */}
-        <div
-          className="w-[40%] flex flex-col bg-white px-6 pb-6 overflow-y-auto border border-[#E5E7EB]"
-          // style={{
-          //   width: 610,
-          //   height: "80vh",
-          //   paddingRight: 24,
-          //   paddingBottom: 24,
-          //   paddingLeft: 24,
-          //   borderWidth: 1,
-          //   borderColor: "#E5E7EB",
-          //   gap: 24,
-          // }}
+        <div className="w-full lg:w-[40%] flex flex-col bg-white pb-6 overflow-y-auto border-t lg:border-l lg:border-t-0 border-[#E5E7EB] h-full"
         >
           {/* Close button */}
-          <div className="flex items-center justify-between border-b border-gray-200 px-4 py-4">
+          <div className="flex items-center justify-between border-b border-gray-200 px-4 py-4 mx-4 lg:mx-6">
             <h2 className="text-lg font-semibold text-gray-900">
               Reflection Threads
             </h2>
             <button
               onClick={onClose}
-              className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition shadow-sm"
+              className="invisible lg:visible w-8 h-8 hidden lg:flex items-center justify-center rounded-lg hover:bg-gray-100 transition shadow-sm"
             >
               <span className="text-pink-500 text-lg font-bold">✕</span>
             </button>
           </div>
 
           {/* Comments section */}
-          <div className="pt-8 flex-1 overflow-y-auto space-y-4 w-full">
-            {comments.map((comment, idx) => (
-              <div key={idx} className="flex flex-col gap-3 w-full">
-                <div className="flex items-center justify-between">
-                  <div className="flex justify-start items-center gap-2">
-                    <img
-                      src={comment.userimage}
-                      alt={comment.user}
-                      className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-                    />
-                    <span className="text-sm font-semibold text-gray-900">
-                      {comment.user}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      {comment.time}
-                    </span>
-                  </div>
-                  <button className="text-sm text-blue-500 hover:underline">
-                    Reply
-                  </button>
-                </div>
-
-                <div className="bg-gray-50 rounded-lg p-3 px-4 text-sm text-gray-800">
-                  {comment.text}
-                </div>
+          <div className="pt-4 lg:pt-8 flex-1 overflow-y-auto space-y-4 w-full px-4 lg:px-6">
+            {isCommentsLoading ? (
+              <div className="flex items-center justify-center py-6">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-500"></div>
               </div>
-            ))}
+            ) : comments.length === 0 ? (
+              <div className="flex items-center justify-center">
+                <p className="text-gray-500 text-sm">No comments yet</p>
+              </div>
+            ) : (
+              comments.map((comment) => (
+                <div key={comment.id} className="flex flex-col gap-3 w-full">
+                  <div className="flex items-center justify-between">
+                    <div className="flex justify-start items-center gap-2">
+                      <img
+                        src={comment.profile.profile_picture || "/profile.png"}
+                        alt={`${comment.profile.first_name} ${comment.profile.last_name}`}
+                        className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                      />
+                      <span className="text-sm font-semibold text-gray-900">
+                        {comment.profile.first_name} {comment.profile.last_name}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        {timeAgo(comment.createdAt)}
+                      </span>
+                    </div>
+                    <button
+                      className="text-sm text-blue-500 hover:underline"
+                      onClick={() => setShowReplyBoxFor(showReplyBoxFor === comment.id ? null : comment.id)}
+                    >
+                      Reply
+                    </button>
+                  </div>
+
+                  <div className="bg-gray-50 rounded-lg p-3 px-4 text-sm text-gray-800">
+                    {comment.text}
+                  </div>
+
+                  <div className="flex items-center text-xs text-gray-500">
+                    {comment.child_comment_count ? (
+                      <button
+                        className="hover:underline flex items-center"
+                        onClick={() => fetchAndToggleReplies(comment.id)}
+                        disabled={!!loadingReplies[comment.id]}
+                      >
+                        {loadingReplies[comment.id]
+                          ? "Loading..."
+                          : expandedComments[comment.id]
+                          ? "— Close replies"
+                          : `— View Replies (${comment.child_comment_count})`}
+                      </button>
+                    ) : null}
+                  </div>
+
+                  {showReplyBoxFor === comment.id && (
+                    <div className="ml-12 mb-2 flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Add a reflection..."
+                        className="flex-1 rounded-full px-4 py-2 focus:outline-none bg-gray-100 border-none text-sm"
+                        value={replyInput}
+                        onChange={(e) => setReplyInput(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleReplySubmit(comment.id)}
+                      />
+                      <button
+                        className={`px-3 py-1 rounded-full text-sm ${replyInput ? "text-purple-600 hover:text-purple-700" : "text-purple-300 cursor-not-allowed"}`}
+                        disabled={!replyInput}
+                        onClick={() => handleReplySubmit(comment.id)}
+                      >
+                        Post
+                      </button>
+                    </div>
+                  )}
+
+                  {expandedComments[comment.id] && comment.replies && comment.replies.length > 0 && (
+                    <div className="ml-12 space-y-3 border-l-2 border-gray-200 pl-3">
+                      {comment.replies.map((reply) => (
+                        <div key={reply.id} className="flex gap-3 pt-2">
+                          <img
+                            src={reply.profile.profile_picture || "/profile.png"}
+                            alt={`${reply.profile.first_name} ${reply.profile.last_name}`}
+                            className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                          />
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex items-baseline gap-2">
+                              <span className="font-semibold text-sm">
+                                {reply.profile.first_name} {reply.profile.last_name}
+                              </span>
+                              <p className="text-sm break-words">{reply.text}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
           </div>
 
-          {/* Add comment input */}
-          <div className="mt-auto flex gap-2">
-            {/* <div className="ml-auto flex items-center gap-2">
-              {insightsCount !== undefined && (
-                <span className="text-sm text-gray-500">
-                  {insightsCount} Insights Discussion
-                </span>
+          {/* Actions row */}
+          <div className="border-t border-gray-300 px-4 lg:px-6">
+            <div className="mt-3 flex items-center justify-between gap-3 text-gray-600">
+              <div className="flex items-center gap-2">
+                <div className="flex items-center -space-x-2 sm:-space-x-3">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center">
+                    <img src={like} alt="Like" className="w-6 h-6 sm:w-8 sm:h-8" />
+                  </div>
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center">
+                    <img src={comment} alt="Comment" className="w-6 h-6 sm:w-8 sm:h-8" />
+                  </div>
+                  {typeof likesCount === "number" && (
+                    <span className="pl-3 sm:pl-5 text-xs sm:text-sm text-gray-500">
+                      {formatCount(likesCount)}
+                    </span>
+                  )}
+                </div>
+              </div>
+              {typeof insightsCount === "number" && (
+                <button
+                  onClick={() => {
+                    const el = document.getElementById("popup-comments-top");
+                    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }}
+                  className="text-[13px] sm:text-sm text-[#64748B] hover:text-[#475569] font-medium whitespace-nowrap"
+                >
+                  {insightsCount} Reflections Thread
+                </button>
               )}
-              <span
-                aria-hidden
-                className="hidden sm:block h-4 w-px bg-gray-200"
-              />
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onOpenReflections?.();
-                }}
-                className="whitespace-nowrap font-medium text-[grey] hover:text-[grey] text-sm"
-              >
-                {reflections !== undefined && (
-                  <span className="text-sm text-gray-500">
-                    {reflections} Reflections Thread
-                  </span>
-                )}
-              </button>
-            </div> */}
+            </div>
+          </div>
+
+          <div className="mt-3 px-4 lg:px-6">
             <div className="relative flex items-center w-full">
               <FaRegSmile className="absolute left-3 text-gray-400" />
               <input
                 type="text"
                 placeholder="Add a Reflection..."
-                className="flex-1 border border-gray-300 rounded-full pl-10 pr-4 py-3 text-sm"
+                className="flex-1 border border-gray-300 rounded-full pl-10 pr-28 py-3 text-sm"
                 value={commentInput}
                 onChange={(e) => setCommentInput(e.target.value)}
                 disabled={posting}
               />
+              <button
+                className="absolute right-2 rounded-full bg-[#7077FE] hover:bg-[#5b63e6] text-white px-5 py-2 text-sm"
+                onClick={handlePostComment}
+                disabled={posting || !commentInput.trim()}
+              >
+                {posting ? "Posting..." : "Post"}
+              </button>
             </div>
-            <button
-              className="bg-[#7077FE] text-white rounded-full px-8 py-2 text-sm"
-              onClick={handlePostComment}
-              disabled={posting || !commentInput.trim()}
-            >
-              {posting ? "Posting..." : "Post"}
-            </button>
           </div>
         </div>
       </div>

@@ -16,69 +16,69 @@ import './AwarenessSection.css';
 export default function AwarenessSection() {
   const cards = [
     {
-      title: "Sacred Symbols Icon Set",
-      description: "100+ vector symbols with spiritual significance",
-      image: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753777576/member-1_mvwqde.png',
+      title: "E Books",
+      description: "Discover our 21-day guided journaling ebook designed to help you reset your mindset and embrace a positive outlook.",
+      image: 'https://cdn.cness.io/ebooks.webp',
       altText: "Individual joining certification program",
-      button: "Add to cart",
-      price: "$999",
-      bg_image: "url('/product-bg-1.png')",
-      badge: {
-        label: "Top Rated",
-        gradient: "linear-gradient(90deg, #544b40 0%, #64594b 100%)",
-      },
+      //button: "Add to cart",
+      //price: "$999",
+      bg_image: "url('/product-bg-1.png')", 
+      //badge: {
+       // label: "Top Rated",
+        //gradient: "linear-gradient(90deg, #544b40 0%, #64594b 100%)",
+      //},
     },
     {
-      title: "Color Palettes Collection",
-      description: "Curated color schemes for various design projects",
-      image: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753777921/aware_2_x13l3l.jpg',
+      title: "Digital Books",
+      description: "Join our 21-day guided journaling webinar to refresh your mindset and cultivate positivity.",
+      image: 'https://cdn.cness.io/digitalbooks.webp',
       altText: "Organization certification process",
-      button: "Add to cart",
-      price: "$49",
+      //button: "Add to cart",
+      //price: "$49",
       bg_image: "url('/product-bg-2.png')",
-      badge: {
-        label: "New Arrival",
-        gradient: "linear-gradient(90deg, #5f5a50 0%, #7f7463 100%)",
-      },
+      //badge: {
+        //label: "New Arrival",
+        //gradient: "linear-gradient(90deg, #5f5a50 0%, #7f7463 100%)",
+      //},
     },
     {
-      title: "Nature Photography Pack",
+      title: "Library",
       description: "High-resolution images capturing the beauty of nature",
-      image: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753777924/aware_3_yk4pl6.jpg',
-      altText: "Mentorship and partnership opportunities",
-      button: "Add to cart",
-      price: "$150",
+      image: 'https://cdn.cness.io/library.webp',
+      altText: "Check out our 21-day guided journaling ebook, crafted to help you shift your mindset and cultivate a more positive perspective.",
+      //button: "Add to cart",
+      //price: "$150",
       bg_image: "url('/product-bg-3.png')",
-      badge: {
-        label: "Trending",
-        gradient: "linear-gradient(90deg, #39979c 0%, #5b898e 100%)",
-      },
+      //badge: {
+        //label: "Trending",
+        //gradient: "linear-gradient(90deg, #39979c 0%, #5b898e 100%)",
+      //},
     },
     {
-      title: "Mentor or Partner with CNESS",
-      description: "Teach, guide, grow the movement.",
-      image: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753777576/member-1_mvwqde.png',
+      title: "Our specially curated audio tapes.",
+      description: "Listen to our 21-day guided journaling audio series, designed to help you transform your mindset and foster a more positive outlook.",
+      image: 'https://cdn.cness.io/audiotapes.webp',
       altText: "Mentorship and partnership opportunities",
-      button: "Add to cart",
-      price: "$99",
+      //button: "Add to cart",
+      //price: "$99",
       bg_image: "url('/product-bg-1.png')",
-      badge: {
-        label: "Trending",
-        gradient: "linear-gradient(90deg, #39979c 0%, #5b898e 100%)",
-      },
+      //badge: {
+        //label: "Trending",
+        //gradient: "linear-gradient(90deg, #39979c 0%, #5b898e 100%)",
+      //},
     },
     {
-      title: "Sacred Symbols Icon Set",
-      description: "100+ vector symbols with spiritual significance",
-      image: 'https://res.cloudinary.com/diudvzdkb/image/upload/v1753777921/aware_2_x13l3l.jpg',
+      title: "Library",
+      description: "Discover our 21-day guided journaling ebook designed to help you reset your mindset and embrace a positive outlook",
+      image: 'https://cdn.cness.io/library.webp',
       altText: "Individual joining certification program",
-      button: "Add to cart",
-      price: "$999",
+      //button: "Add to cart",
+      //price: "$999",
       bg_image: "url('/product-bg-1.png')",
-      badge: {
-        label: "Top Rated",
-        gradient: "linear-gradient(90deg, #544b40 0%, #64594b 100%)",
-      },
+      //badge: {
+        //label: "Top Rated",
+        //gradient: "linear-gradient(90deg, #544b40 0%, #64594b 100%)",
+      //},
     },
   ];
 
@@ -171,13 +171,13 @@ export default function AwarenessSection() {
           <motion.div
             ref={firstLoadRef}
             key="first-load"
-            className="first-load h-[800px] flex flex-col items-center space-y-8 lg:py-24 py-15 px-4 bg-[#F7F7F7]"
+           className="first-load min-h-[960px] md:min-h-[1040px] lg:min-h-[1160px] flex flex-col items-center space-y-8 lg:py-24 py-15 px-4 bg-[#F7F7F7]"
             style={{ position: 'relative', zIndex: 2 }}
             initial={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -40 }}
             transition={{ duration: 0.7, ease: 'easeInOut' }}
           >
-            <div className="py-24 px-0 flex lg:flex-row flex-col items-center justify-between h-[800px] max-w-[800px] w-full mx-auto">
+            <div className="py-24 px-0 flex lg:flex-row flex-col items-center justify-between min-h-[720px] max-w-[1000px] w-full mx-auto">
               <div className="lg:w-6/12">
                 <h3 className="poppins leading-9 text-[32px] text-black font-regular">Where conscious creations</h3>
                 <p className="openSans text-[#898989] font-regular text-[14px] mt-4">Explore a wide range of conscious products<br /> crafted by verified creators who prioritize<br /> sustainability and ethical practices.</p>
@@ -202,7 +202,7 @@ export default function AwarenessSection() {
         {showSecond && (
           <motion.div
             key="second-load"
-            className="second-load h-[800px] flex flex-col items-center space-y-8 lg:py-24 py-15 px-4 bg-[#F7F7F7]"
+            className="second-load h-[900px] flex flex-col items-center space-y-8 lg:py-24 py-15 px-4 bg-[#F7F7F7]"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 40 }}
@@ -210,7 +210,7 @@ export default function AwarenessSection() {
           >
             <div className="max-w-[1336px] mx-auto w-full">
               <div className="flex flex-col items-center gap-8 md:gap-[52px] w-full">
-                <div className="text-center max-w-4xl">
+    <div className="text-center max-w-4xl mx-auto px-4">
                   <h1 className="jakarta text-3xl md:text-[32px] font-normal leading-tight">
                     <span className="font-regular bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text">
                       Where conscious creations{" "}
@@ -219,6 +219,18 @@ export default function AwarenessSection() {
                       find their people
                     </span>
                   </h1>
+
+<p
+        className="
+          mx-auto mt-3 md:mt-4
+          text-[#898989] text-[14px] leading-[27px] font-normal
+          w-full md:max-w-[707px]
+        "
+      >
+  Explore a wide range of conscious products crafted by verified creators who
+  <br></br>
+  prioritize sustainability and ethical practices.
+</p>
                 </div>
 
                 <Swiper
@@ -250,17 +262,17 @@ export default function AwarenessSection() {
                           onTouchEnd={handleTouchEnd}
                           className="h-full w-full"
                         >
-                          <Card className="flex flex-col md:h-[350px] h-full w-full rounded-[12px] overflow-hidden">
+                          <Card className="flex flex-col md:h-[408px] h-full w-full rounded-[12px] overflow-hidden">
                             <div
                               className="relative w-full rounded-t-[12px] overflow-hidden"
-                              style={{ height: "200px" }}
+                              style={{ height: "290px" }}
                             >
                               <img
                                 src={card.image}
                                 alt={card.altText}
                                 className="w-full h-full object-cover rounded-t-[12px]"
                               />
-                              {card.badge && (
+                             {/* {card.badge && (
                                 <div
                                   className="absolute top-3 left-3 text-[11px] font-medium px-3 py-1 rounded-full text-white shadow-md flex items-center gap-2"
                                   style={{ backgroundImage: card.badge.gradient }}
@@ -268,7 +280,7 @@ export default function AwarenessSection() {
                                   <span className="inline-block w-[6px] h-[6px] bg-[#60C750] rounded-full"></span>
                                   <span className="text-[#fff] text-[11px] font-semibold">{card.badge.label}</span>
                                 </div>
-                              )}
+                              )}*/}
                             </div>
 
                             <div className="relative flex-grow flex flex-col">
@@ -280,10 +292,10 @@ export default function AwarenessSection() {
                                   <h2 className="text-[14px] font-semibold text-white leading-7 md:leading-8">
                                     {card.title}
                                   </h2>
-                                  <p className="text-[11px] text-[#ECEEF2] leading-6">
-                                    {card.description}
-                                  </p>
-                                  <div className="flex justify-between mt-auto items-center">
+                                 <p className="font-['Open_Sans'] font-normal text-[12px] leading-[18px] text-[#ECEEF2]">
+  {card.description}
+</p>
+                                  {/* <div className="flex justify-between mt-auto items-center">
                                     <p className="text-white text-[14px] font-semibold">
                                       {card.price}
                                     </p>
@@ -293,7 +305,7 @@ export default function AwarenessSection() {
                                     >
                                       <p className="text-[12px]">{card.button}</p>
                                     </Button>
-                                  </div>
+                                  </div>*/}
                                 </div>
                               </CardContent>
                             </div>
@@ -304,25 +316,38 @@ export default function AwarenessSection() {
                   ))}
                 </Swiper>
 
-                <div className="flex lg:flex-row md:flex-row flex-col max-w-[750px] w-full mx-auto mt-6">
+                <div className="flex lg:flex-row md:flex-row flex-col max-w-[750px] w-full mx-auto mt-0">
                   <p className="lg:w-6/12 md:w-5/12 w-full text-[#898989] text-[14px] font-regular">
-                    Explore a wide range of conscious products
+                    Showcase your products in our conscious
                     <br />
-                    crafted by verified creators who prioritize
+                     Marketplace, connect with the right audience,
                     <br />
-                    sustainability and ethical practices.
+                     And grow your business in a purpose-driven 
+                    <br />
+                    Ecosystem.
                   </p>
                   <div className="flex lg:justify-end justify-start md:gap-6 gap-2 lg:w-8/12 md:w-7/12 w-full lg:-mt-0 md:mt-0 mt-4">
-                    <Button
+                    {/*<Button
                       variant="outline"
                       className="bg-white awareness-btn w-fit h-[42px] border-[#2222241a] md:px-4 px-1 sm:px-6 py-1 rounded-[100px] text-[#222224] font-medium md:text-[14px] text-[12px] lg:w-full md:w-full"
                       onClick={() => navigate("/comingSoon")}>
                       Start Selling
-                    </Button>
-                    <Button className="rounded-[100px] w-fit h-[42px] awareness-btn text-center py-1 md:px-4 px-1 lg:w-full md:w-full self-stretch md:text-[14px] text-[12px] bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-white"
-                      onClick={() => navigate("/comingSoon")}>
-                      Browse Marketplace
-                    </Button>
+                    </Button>*/}
+                   <Button
+  variant="gradient-primary"
+  className="
+    inline-flex items-center justify-center
+    rounded-[100px]
+    w-full md:w-[157px] h-[43px]
+    px-0 gap-[12.19px]
+    font-['Open Sans'] font-normal
+    text-[16px] leading-[100%] tracking-[0]
+    text-white
+  "
+  onClick={() => navigate('/comingSoon')}
+>
+  Become a Seller
+</Button>
                   </div>
                 </div>
               </div>
