@@ -11,7 +11,7 @@ interface Connection {
   lastMessageTime?: string;
   unreadCount?: number | string;
   conversationId?: string | number;
-
+}
 
 type FriendCardProps = {
   image: string;
