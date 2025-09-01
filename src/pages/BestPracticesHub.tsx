@@ -74,9 +74,16 @@ export default function BestPracticesHub() {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
   const { showToast } = useToast();
-  const [intereset, setInterestData] = useState<any[]>([]);
   const [profession, setProfession] = useState<Profession[]>([]);
-  const [selectedProfession, setSelectedProfession] = useState("");
+  const [interest, setInterestData] = useState<any[]>([]);
+  const [selectedFilter, setSelectedFilter] = useState<{
+    id: string;
+    type: "profession" | "interest" | "";
+  }>({
+    id: "",
+    type: "",
+  });
+  // const [selectedProfession, setSelectedProfession] = useState("");
   const [activeModal, setActiveModal] = useState<"bestpractices" | null>(null);
   const [textWidth, setTextWidth] = useState(0);
   const measureRef = useRef<HTMLSpanElement>(null);
@@ -156,6 +163,7 @@ useEffect(() => {
     title: "",
     description: "",
     profession: "",
+    interest: "",
     file: null as File | null,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -186,34 +194,23 @@ useEffect(() => {
     if (measureRef.current) {
       setTextWidth(measureRef.current.offsetWidth);
     }
-  }, [selectedProfession]);
+  }, [selectedFilter, selectedDomainText]);
 
-  const handleProfessionChange = async (
+  const handleFilterChange = async (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    const professionId = e.target.value;
-    setSelectedProfession(professionId);
+    const id = e.target.value;
+    const type = e.target.options[e.target.selectedIndex].dataset.type as
+      | "profession"
+      | "interest"
+      | "";
 
-    // Update the selected domain text
+    setSelectedFilter({ id, type });
+
     const selectedText = e.target.options[e.target.selectedIndex].text;
     setSelectedDomainText(selectedText);
 
-    // Fetch best practices with the new profession filter
-    await fetchBestPractices(1, professionId, searchText);
-  };
-
-  const GetInterest = async () => {
-    try {
-      const response = await GetInterestsDetails();
-      setInterestData(response.data.data);
-    } catch (error: any) {
-      console.error("Error fetching intrusts:", error);
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    }
+    await fetchBestPractices(1, id, type, searchText);
   };
 
   const fetchProfession = async () => {
@@ -230,9 +227,24 @@ useEffect(() => {
     }
   };
 
+  const fetchIntrusts = async () => {
+    try {
+      const res = await GetInterestsDetails();
+      setInterestData(res?.data?.data);
+    } catch (error: any) {
+      console.error("Error fetching Intrusts:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
   const fetchBestPractices = async (
     page: number = 1,
-    professionId: string = "",
+    id: string = "",
+    type: "profession" | "interest" | "" = "",
     searchText: string = ""
   ) => {
     setIsLoading((prev) => ({ ...prev, popular: true }));
@@ -240,7 +252,8 @@ useEffect(() => {
       const res = await GetAllBestPractices(
         page,
         pagination.itemsPerPage,
-        professionId,
+        type === "profession" ? id : "",
+        type === "interest" ? id : "",
         searchText
       );
       if (res?.data?.data) {
@@ -251,6 +264,7 @@ useEffect(() => {
             description: practice.description,
             file: practice.file,
             profession: practice.profession_data?.title || "General",
+            interest: practice.interest_data?.name || "",
             user: {
               username: practice.user?.username || "Anonymous",
               profilePicture:
@@ -285,13 +299,13 @@ useEffect(() => {
   };
 
   useEffect(() => {
-    GetInterest();
     fetchProfession();
+    fetchIntrusts();
     fetchBestPractices();
   }, []);
 
   const handleSearch = () => {
-    fetchBestPractices(1, selectedProfession, searchText);
+    fetchBestPractices(1, selectedFilter.id, selectedFilter.type, searchText);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -311,6 +325,7 @@ useEffect(() => {
       title: "",
       description: "",
       profession: "",
+      interest: "",
       file: null,
     });
   };
@@ -370,11 +385,25 @@ useEffect(() => {
     e.preventDefault();
     setIsSubmitting(true);
 
+    const hasProfession = !!newPractice.profession;
+    const hasInterest = !!newPractice.interest;
+
+    if ((!hasProfession && !hasInterest)) {
+      showToast({
+        message: "Please select either a profession or an interest.",
+        type: "error",
+        duration: 5000,
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("title", newPractice.title);
       formData.append("description", newPractice.description);
       formData.append("profession", newPractice.profession);
+      formData.append("interest", newPractice.interest);
       if (newPractice.file) {
         formData.append("file", newPractice.file);
       }
@@ -462,13 +491,12 @@ useEffect(() => {
                 >
                   <select
                     className="bg-[#7077FE] rounded-full text-white font-semibold px-3 py-2 pr-6 appearance-none focus:outline-none cursor-pointer text-[12px] w-full"
-                    value={selectedProfession}
-                    onChange={handleProfessionChange}
+                    value={selectedFilter.id}
+                    onChange={handleFilterChange}
                   >
                     <option value="" className="text-white text-[12px]">
                       All Profession & Interests
                     </option>
-
                     {profession.length > 0 && (
                       <optgroup label="Professions">
                         {profession.map((prof: any) => (
@@ -483,21 +511,20 @@ useEffect(() => {
                         ))}
                       </optgroup>
                     )}
-
-                    {/* {intereset.length > 0 && (
+                    {interest && interest.length > 0 && (
                       <optgroup label="Interests">
-                        {intereset.map((intr: any) => (
+                        {interest.map((interest: any) => (
                           <option
-                            key={`i-${intr.id}`}
-                            value={intr.id}
+                            key={`i-${interest.id}`}
+                            value={interest.id}
                             className="text-black"
                             data-type="interest"
                           >
-                            {intr.title}
+                            {interest.name}
                           </option>
                         ))}
                       </optgroup>
-                    )} */}
+                    )}
                   </select>
 
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white text-xs pointer-events-none">
@@ -541,22 +568,23 @@ useEffect(() => {
       <section className="py-8 px-1 sm:py-16 bg-[#f9f9f9] border-t border-gray-100">
         <div className="w-full mx-auto ">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
-            {(selectedProfession || searchText) && (
+            {(selectedFilter.id || searchText) && (
               <h4 className="poppins font-medium text-base sm:text-lg leading-[150%] tracking-normal">
                 Best Practices For{" "}
-                {selectedProfession && selectedProfession !== "" && (
+                {selectedFilter.id && (
                   <span className="text-[#7077FE] ml-1 font-semibold">
                     "
-                    {profession.find((p) => p.id === selectedProfession)?.title ||
-                      intereset.find((i) => i.id === selectedProfession)?.title}
+                    {selectedFilter.type === "profession"
+                      ? profession.find((p) => p.id === selectedFilter.id)
+                          ?.title
+                      : interest.find((i: any) => i.id === selectedFilter.id)
+                          ?.name}
                     "
                   </span>
                 )}
                 {searchText?.trim() && (
                   <>
-                    {selectedProfession && selectedProfession !== ""
-                      ? " and "
-                      : " "}
+                    {selectedFilter.id ? " and " : " "}
                     <span className="text-[#7077FE] font-semibold">
                       "{searchText.trim()}"
                     </span>
@@ -565,7 +593,7 @@ useEffect(() => {
               </h4>
             )}
 
-            {!selectedProfession && !searchText && (
+            {!selectedFilter.id && !searchText && (
               <h4 className="poppins font-medium text-base sm:text-lg leading-[150%] tracking-normal">
                 Best Practices For{" "}
               </h4>
@@ -699,7 +727,7 @@ useEffect(() => {
                         <img
                           src={
                             company?.user?.profilePicture &&
-                              company?.user?.profilePicture !==
+                            company?.user?.profilePicture !==
                               "http://localhost:5026/file/"
                               ? company?.user?.profilePicture
                               : "/profile.png"
@@ -728,7 +756,7 @@ useEffect(() => {
                           <img
                             src={
                               company.file &&
-                                company.file !== "http://localhost:5026/file/"
+                              company.file !== "http://localhost:5026/file/"
                                 ? company.file
                                 : iconMap["companycard1"]
                             }
@@ -764,7 +792,7 @@ useEffect(() => {
                         {company.description.length > 100 && (
                           <span
                             className="text-purple-600 underline cursor-pointer ml-1"
-                          // onClick={(e) => toggleDescription(e, company.id)}
+                            // onClick={(e) => toggleDescription(e, company.id)}
                           >
                             {expandedDescriptions[company.id]
                               ? "Read Less"
@@ -843,7 +871,12 @@ useEffect(() => {
                 <nav className="inline-flex rounded-md shadow-sm -space-x-px text-xs sm:text-sm">
                   <button
                     onClick={() =>
-                      fetchBestPractices(pagination.currentPage - 1)
+                      fetchBestPractices(
+                        pagination.currentPage - 1,
+                        selectedFilter.id,
+                        selectedFilter.type,
+                        searchText
+                      )
                     }
                     disabled={pagination.currentPage === 1 || isLoading.popular}
                     className="px-2 sm:px-3 py-1 rounded-l-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
@@ -855,12 +888,20 @@ useEffect(() => {
                     <>
                       {/* Always show first page */}
                       <button
-                        onClick={() => fetchBestPractices(1)}
+                        onClick={() =>
+                          fetchBestPractices(
+                            1,
+                            selectedFilter.id,
+                            selectedFilter.type,
+                            searchText
+                          )
+                        }
                         disabled={isLoading.popular}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${1 === pagination.currentPage
-                          ? "bg-indigo-500 text-white"
-                          : "bg-white text-gray-700 hover:bg-gray-100"
-                          }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
+                          1 === pagination.currentPage
+                            ? "bg-indigo-500 text-white"
+                            : "bg-white text-gray-700 hover:bg-gray-100"
+                        }`}
                       >
                         1
                       </button>
@@ -884,12 +925,20 @@ useEffect(() => {
                     .map((page) => (
                       <button
                         key={page}
-                        onClick={() => fetchBestPractices(page)}
+                        onClick={() =>
+                          fetchBestPractices(
+                            page,
+                            selectedFilter.id,
+                            selectedFilter.type,
+                            searchText
+                          )
+                        }
                         disabled={isLoading.popular}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${page === pagination.currentPage
-                          ? "bg-indigo-500 text-white"
-                          : "bg-white text-gray-700 hover:bg-gray-100"
-                          }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
+                          page === pagination.currentPage
+                            ? "bg-indigo-500 text-white"
+                            : "bg-white text-gray-700 hover:bg-gray-100"
+                        }`}
                       >
                         {page}
                       </button>
@@ -908,13 +957,19 @@ useEffect(() => {
                       {pagination.totalPages > 1 && (
                         <button
                           onClick={() =>
-                            fetchBestPractices(pagination.totalPages)
+                            fetchBestPractices(
+                              pagination.totalPages,
+                              selectedFilter.id,
+                              selectedFilter.type,
+                              searchText
+                            )
                           }
                           disabled={isLoading.popular}
-                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${pagination.totalPages === pagination.currentPage
-                            ? "bg-indigo-500 text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-100"
-                            }`}
+                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${
+                            pagination.totalPages === pagination.currentPage
+                              ? "bg-indigo-500 text-white"
+                              : "bg-white text-gray-700 hover:bg-gray-100"
+                          }`}
                         >
                           {pagination.totalPages}
                         </button>
@@ -924,7 +979,12 @@ useEffect(() => {
 
                   <button
                     onClick={() =>
-                      fetchBestPractices(pagination.currentPage + 1)
+                      fetchBestPractices(
+                        pagination.currentPage + 1,
+                        selectedFilter.id,
+                        selectedFilter.type,
+                        searchText
+                      )
                     }
                     disabled={
                       pagination.currentPage === pagination.totalPages ||
@@ -942,15 +1002,15 @@ useEffect(() => {
       </section>
 
       <Modal isOpen={activeModal === "bestpractices"} onClose={closeModal}>
-        <div className="max-w-2xl mx-auto bg-white rounded-2xl p-6 sm:p-10">
+        <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
           <h2 className="text-xl font-bold mb-4 font-['Poppins'] font-semibold leading-normal">
             Add Best Practice
           </h2>
-          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             <div>
               <label
                 htmlFor="title"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 mb-1"
               >
                 Title*
               </label>
@@ -960,7 +1020,7 @@ useEffect(() => {
                 name="title"
                 value={newPractice.title}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
                 required
               />
             </div>
@@ -968,7 +1028,7 @@ useEffect(() => {
             <div>
               <label
                 htmlFor="description"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 mb-1"
               >
                 Description*
               </label>
@@ -978,7 +1038,7 @@ useEffect(() => {
                 value={newPractice.description}
                 onChange={handleInputChange}
                 rows={4}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
                 required
               />
             </div>
@@ -986,7 +1046,7 @@ useEffect(() => {
             <div>
               <label
                 htmlFor="profession"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 mb-1"
               >
                 Profession*
               </label>
@@ -995,8 +1055,8 @@ useEffect(() => {
                 name="profession"
                 value={newPractice.profession}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
-                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
+                // required
               >
                 <option value="">Select a profession</option>
                 {profession.map((prof) => (
@@ -1009,8 +1069,32 @@ useEffect(() => {
 
             <div>
               <label
+                htmlFor="interest"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Interest*
+              </label>
+              <select
+                id="interest"
+                name="interest"
+                value={newPractice.interest}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
+                // required
+              >
+                <option value="">Select a interest</option>
+                {interest.map((interest) => (
+                  <option key={interest.id} value={interest.id}>
+                    {interest.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label
                 htmlFor="file"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 mb-1"
               >
                 File *
               </label>
@@ -1033,11 +1117,11 @@ useEffect(() => {
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   style={{ cursor: "pointer" }}
                 />
-                <div className="flex items-center w-full h-[45px] px-4 py-3 border bg-white border-gray-300 rounded-lg shadow-sm text-sm text-gray-800 focus-within:ring-2 focus-within:ring-purple-500">
+                <div className="flex items-center w-full h-[45px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm text-gray-800 focus-within:ring-2 focus-within:ring-purple-500">
                   <button
                     type="button"
                     tabIndex={-1}
-                    className="mr-3 px-4 py-2 bg-[#7077FE] text-white rounded-full text-sm font-medium hover:bg-[#5a60d6] transition"
+                    className="mr-3 px-5 py-2 bg-[#7077FE] text-white rounded-full text-sm font-medium hover:bg-[#5a60d6] transition"
                     style={{ minWidth: 0 }}
                     onClick={() => {
                       // trigger file input click
@@ -1060,7 +1144,7 @@ useEffect(() => {
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex flex-row justify-end gap-2 pt-4 flex-wrap">
               <Button
                 type="button"
                 onClick={closeModal}
