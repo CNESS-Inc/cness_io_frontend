@@ -116,7 +116,7 @@ const Communitynew: React.FC = () => {
         <h2 className="poppins lg:leading-16 md:leading-14 leading-9 text-[32px] font-[600] bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
                text-transparent bg-clip-text mb-3 w-fit mx-auto">
           A Community Built Around
-          <span className="bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text"> Conscious Living</span>
+          <span className="bg-gradient-to-r from-[#a545f4] to-[#B646F1] text-transparent bg-clip-text"> Conscious Living</span>
         </h2>
         <p className="openSans text-[#64748B] text-[18px] text-center w-fit mx-auto">
           Whether you're here to grow your career, share your passion, or simply<br />
@@ -163,7 +163,7 @@ const Communitynew: React.FC = () => {
       </div>
 
       {/* Bottom Section */}
-      <div className="community-bottom m-0 bg-[url(https://res.cloudinary.com/diudvzdkb/image/upload/v1753780353/community-bg_cqdnuq.png)] w-full lg:px-8 md:px-8 px-4 py-12 flex justify-center items-center flex-col bg-cover bg-center">
+      <div className="community-bottom m-0 bg-[url(https://res.cloudinary.com/diudvzdkb/image/upload/v1753780353/community-bg_cqdnuq.png)] w-full lg:px-8 md:px-8 px-4 py-16 flex justify-center items-center flex-col bg-cover bg-center">
         <h3 className="poppins lg:text-[32px] md:text-[32px] text-[23px] font-[600] bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
                text-transparent bg-clip-text mb-3 text-center community-heading">
           Connect with the trustworthy. Work with the <br />reliable. Grow with the Dependable.

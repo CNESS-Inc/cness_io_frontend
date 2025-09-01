@@ -82,12 +82,8 @@ export default function HeroSection() {
 
   return (
     <>
-      <section className="relative  rounded-[12px]  lg:mx-[12px] bg-[#f4f3f9] hero-section overflow-hidden
-            min-[1024px]:h-[100vh] 
-            min-[1536px]:h-[100vh]
-            
-            ">
-        <div className="absolute inset-0 flex items-start justify-center z-10 lg:pt-22 md:pt-18 pt-8">
+      <section className="relative  rounded-[12px]  lg:mx-[12px] bg-[#f4f3f9] hero-section overflow-hidden ">
+        <div className=" inset-0 flex items-start justify-center  lg:pt-22 md:pt-18 pt-8">
           <div className="text-center px-4">
 
             <h1
@@ -132,7 +128,7 @@ export default function HeroSection() {
           </div>
         </div>
 
-  <div className="flex justify-center pb-6">
+  <div className="flex justify-center pb-12 pt-20">
     <img
       src="https://cdn.cness.io/herosection.webp"
       alt="Hero Section"

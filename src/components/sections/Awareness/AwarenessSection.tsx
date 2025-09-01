@@ -316,17 +316,11 @@ export default function AwarenessSection() {
                   ))}
                 </Swiper>
 
-                <div className="flex lg:flex-row md:flex-row flex-col max-w-[750px] w-full mx-auto mt-0">
-                  <p className="lg:w-6/12 md:w-5/12 w-full text-[#898989] text-[14px] font-regular">
-                    Showcase your products in our conscious
-                    <br />
-                     Marketplace, connect with the right audience,
-                    <br />
-                     And grow your business in a purpose-driven 
-                    <br />
-                    Ecosystem.
+                <div className="flex lg:flex-row md:flex-row flex-col max-w-[550px] w-full mx-auto mt-0">
+                  <p className="lg:w-8/12 md:w-5/12 w-full text-[#898989] text-[14px] font-regular">
+                    Explore a wide range of conscious products<br/> crafted by verified creators who prioritize <br/>sustainability and ethical practices.
                   </p>
-                  <div className="flex lg:justify-end justify-start md:gap-6 gap-2 lg:w-8/12 md:w-7/12 w-full lg:-mt-0 md:mt-0 mt-4">
+                  <div className="flex lg:justify-end justify-start md:gap-6 gap-2 lg:w-4/12 md:w-7/12 w-full lg:-mt-0 md:mt-0 mt-4">
                     {/*<Button
                       variant="outline"
                       className="bg-white awareness-btn w-fit h-[42px] border-[#2222241a] md:px-4 px-1 sm:px-6 py-1 rounded-[100px] text-[#222224] font-medium md:text-[14px] text-[12px] lg:w-full md:w-full"

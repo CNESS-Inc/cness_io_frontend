@@ -52,8 +52,8 @@ export default function Highlight() {
     },
   ];
 
- return (
-<section className="highlight-section lg:min-h-[560px] px-4 sm:px-6 lg:px-8 py-15 sm:py-12 lg:py-[80px] bg-[#FAFAFA] relative lg:bg-[url(https://res.cloudinary.com/diudvzdkb/image/upload/v1753780724/highlight-ellipse_hahibm.png)] bg-no-repeat lg:bg-[position:right_bottom_3rem] overflow-hidden">
+  return (
+    <section className="highlight-section lg:min-h-[560px] px-4 sm:px-6 lg:px-8 py-18 sm:py-12 lg:py-[80px] bg-[#FAFAFA] relative lg:bg-[url(https://res.cloudinary.com/diudvzdkb/image/upload/v1753780724/highlight-ellipse_hahibm.png)] bg-no-repeat lg:bg-[position:right_bottom_3rem] overflow-hidden">
       <div className="max-w-[1336px] mx-auto flex lg:flex-row flex-col">
         <div className="md:px-0 lg:px-0 lg:w-5/12 w-full">
           <div className="w-full">
@@ -70,7 +70,7 @@ export default function Highlight() {
               <br /> need to grow is here.
             </p>
             <Button className="jakarta w-fit rounded-[100px] h-[42px] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#F07EFF] self-stretch transition-colors duration-500 ease-in-out"
-            onClick={() => window.location.href = "/sign-up"}>
+              onClick={() => window.location.href = "/sign-up"}>
               See how it all works →
             </Button>
           </div>
@@ -102,17 +102,17 @@ export default function Highlight() {
                     />
 
                     <div className={`${isOpen ? '' : 'flex-1'}`}>
-                    {isOpen ? (
-  // Top-left when expanded
-  <span className="text-[#4B4B4B] text-[14px] font-[600] mb-2">
-    /0{index + 1}
-  </span>
-) : (
-  // Bottom-right when collapsed
-  <span className="absolute bottom-3 right-4 text-[#4B4B4B] text-[14px] font-[600]">
-    /0{index + 1}
-  </span>
-)}
+                      {isOpen ? (
+                        // Top-left when expanded
+                        <span className="text-[#4B4B4B] text-[14px] font-[600] mb-2">
+                          /0{index + 1}
+                        </span>
+                      ) : (
+                        // Bottom-right when collapsed
+                        <span className="absolute bottom-3 right-4 text-[#4B4B4B] text-[14px] font-[600]">
+                          /0{index + 1}
+                        </span>
+                      )}
 
                       {isOpen && (
                         <>
@@ -153,7 +153,7 @@ export default function Highlight() {
                     />
 
                     <div>
-                      <span className="text-[#4B4B4B] text-[18px] font-[600]">
+                      <span className="text-[#64748B] text-[18px] font-[400]">
                         /0{index + 1}
                       </span>
 
