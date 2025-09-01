@@ -76,23 +76,27 @@ export default function HeroSection() {
       </div>
       {/* Top content */}
       <div className="flex flex-col items-center text-center z-10 pt-16 px-4">
+
         <h1
-          className={
-            `poppins text-[32px] md:text-[42px] lg:leading-14 font-bold mb-6
-             bg-gradient-to-b from-[#4E4E4E] to-[#232323]
-             text-transparent bg-clip-text transition-all duration-1000 ease-in-out ` +
-            (step >= 4
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 -translate-y-6")
-          }
-        >
+          style={{ fontFamily: "Poppins, sans-serif" }}
+  className={`font-medium 
+    text-[32px] md:text-[42px] 
+    leading-[115%] tracking-[-0.02em] 
+    text-center antialiased
+    bg-gradient-to-b from-[#232323] to-[#4E4E4E]
+    text-transparent bg-clip-text
+    transition-all duration-1000 ease-in-out ` +
+    (step >= 4 ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-6")
+  
+  }
+>
           The World’s First
           <br /> Consciousness Super-App
         </h1>
 
         <p
           className={
-            `openSans lg:text-lg md:text-[16px] text-[12px] text-[#64748B] lg:mb-10 md:mb-12 mb-4 
+            `openSans lg:text-lg md:text-[16px] text-[12px] text-[#64748B] lg:mb-10 md:mb-12 mb-4 mt-6
              max-w-2xl mx-auto transition-all duration-1000 ease-in-out ` +
             (step >= 5
               ? "opacity-100 translate-y-0"
@@ -112,14 +116,15 @@ export default function HeroSection() {
           }
         >
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto justify-center items-center">
-            <Button
+            <Button 
+           variant="gradient-primary"
               className="
                 w-full sm:w-fit
                 rounded-[100px] hero-section-btn
                 py-2 px-4 text-[14px]
                 sm:py-3 sm:px-8 sm:text-base
                 font-['Open Sans'] font-normal leading-[100%] text-center
-                bg-gradient-to-r from-[#7077FE] to-[#9747FF]
+               
               "
               onClick={() => (window.location.href = '/sign-up')}
             >
@@ -129,12 +134,14 @@ export default function HeroSection() {
             <Button
               variant="white-outline"
               className="
-                w-full sm:w-fit
-                hero-section-btn
-                py-2 px-4 text-[14px]
-                sm:py-3 sm:px-8 sm:text-base
-                shadow-sm font-['Plus Jakarta Sans'] font-medium leading-[100%]
-                tracking-[0px] text-center
+            w-full sm:w-fit
+    hero-section-btn
+    py-2 px-4 text-[14px]
+    sm:py-3 sm:px-8 sm:text-base
+    font-['Plus Jakarta Sans'] font-medium leading-[100%]
+    tracking-[0px] text-center
+    border border-[#E2E8F0]
+    shadow-[0_1px_2px_rgba(0,0,0,0.1)]
               "
               size="md"
               onClick={() => (window.location.href = '/sign-up')}
@@ -182,13 +189,13 @@ export default function HeroSection() {
             </div>
 
             {/* ---- Row 2 (3 pills) ---- */}
-            <div className="absolute top-[40%] left-[60%]">
+            <div className="absolute top-[40%] left-[58%]">
               <Pill title="Mentor Hub" subtitle="Guidance. Build your conscious tribe." Icon={BookOpen} iconBg="bg-green-100" iconClass="text-green-600" />
             </div>
             <div className="absolute top-[40%] left-[75%]">
               <Pill title="Social feed" subtitle="Reflect. Share. Inspire" Icon={MessageCircle} iconBg="bg-blue-100" iconClass="text-blue-600" />
             </div>
-            <div className="absolute top-[40%] right-[2%]">
+            <div className="absolute top-[40%] right-[-2%]">
               <Pill title="Directory" subtitle="Get discovered for who you are." Icon={Compass} iconBg="bg-[#FFCC00]/20" iconClass="text-[#FFCC00]" />
             </div>
           </div>

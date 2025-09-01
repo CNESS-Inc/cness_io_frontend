@@ -113,7 +113,8 @@ const Communitynew: React.FC = () => {
       className={`community-section ${isVisible ? 'animate-in' : ''}`}
     >
       <div className="community-header">
-        <h2 className="poppins lg:leading-16 md:leading-14 leading-9 text-[32px] font-[600] bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
+        <h2 style={{ fontFamily: "Poppins, sans-serif" }}
+        className="poppins lg:leading-16 md:leading-14 leading-9 text-[32px] font-[500] bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
                text-transparent bg-clip-text mb-3 w-fit mx-auto">
           A Community Built Around
           <span className="bg-gradient-to-r from-[#a545f4] to-[#B646F1] text-transparent bg-clip-text"> Conscious Living</span>
@@ -162,16 +163,7 @@ const Communitynew: React.FC = () => {
         </div>
       </div>
 
-      {/* Bottom Section */}
-      <div className="community-bottom m-0 bg-[url(https://res.cloudinary.com/diudvzdkb/image/upload/v1753780353/community-bg_cqdnuq.png)] w-full lg:px-8 md:px-8 px-4 py-16 flex justify-center items-center flex-col bg-cover bg-center">
-        <h3 className="poppins lg:text-[32px] md:text-[32px] text-[23px] font-[600] bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
-               text-transparent bg-clip-text mb-3 text-center community-heading">
-          Connect with the trustworthy. Work with the <br />reliable. Grow with the Dependable.
-        </h3>
-        <p className="openSans mt-2 lg:text-[18px] md:text-[16px] text-[14px] font-[400] text-[#494949] text-center">
-          On CNESS, every profile, product, and organization is aligned with values you can count on.
-        </p>
-      </div>
+    
     </section>
   );
 };
