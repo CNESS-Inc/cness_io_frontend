@@ -132,6 +132,7 @@ export const EndPoint = {
   answer: "/quiz/answer",
   final_submission: "/quiz/final-submition",
   report: "/quiz/report",
+  get_front_all_post: "/user/posts/get/front/all",
   get_all_post: "/user/posts/get/all",
   create_post: "/user/posts",
   delete_post: "/user/posts",
@@ -872,7 +873,17 @@ export const GetUsersearchProfileDetails = (
 };
 
 // Social APIS
-
+export const GetPostsDetails = (page: any) => {
+  let data = {};
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  return executeAPI( 
+    ServerAPI.APIMethod.GET,
+    data,
+    EndPoint.get_front_all_post,
+    params
+  );
+} 
 export const PostsDetails = (page: any) => {
   let data = {};
   let params: { [key: string]: any } = {};

@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:include schemaLocation="Ticket.xsd"/>
+  <xs:include schemaLocation="SpeedLineConnectMessage.xsd"/>
+  <xs:simpleType name="TpsTicketActionCode">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="taAdd"/>
+      <xs:enumeration value="taPrice"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="TpsAddTicketMessage">
+    <xs:complexContent>
+      <xs:extension base="TpsSpeedLineConnectMessage">
+        <xs:sequence>
+          <xs:element name="ActionCode" type="TpsTicketActionCode"/>
+          <xs:element name="Ticket" type="TpsTicket"/>
+          <xs:element name="ResponseFormat" type="TpsTicketResponseFormat"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="AddTicketMessage" type="TpsAddTicketMessage"></xs:element>
+</xs:schema>

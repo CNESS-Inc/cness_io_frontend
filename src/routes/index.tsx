@@ -12,6 +12,7 @@ import AssessmentQuestion from "../pages/AssessmentQuestion";
 import Setting from "../pages/Setting";
 //import What from "../pages/What";
 import Social from "../pages/Social";
+import SocialFront from "../pages/SocialFront";
 import SinglePost from "../components/Social/SinglePost";
 import ReelsCard from "../components/Social/Reels/ReelsCard";
 import About from "../pages/About";
@@ -390,6 +391,10 @@ export const router = createBrowserRouter([
         element: <ReelsCard />,
       },
     ],
+  },
+  {
+    path: "social-front", 
+    element : <SocialFront />,
   },
   {
     path: "/email-verify",
