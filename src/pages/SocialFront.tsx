@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import LeftSocial from "../components/sections/FrontSocialSection/SocialNavbar.tsx";
-import { Outlet, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Header from "../layout/Header/Header.tsx";
 import Footer from "../layout/Footer/Footer.tsx";
 import SocialFeed from "../components/sections/FrontSocialSection/SocialFeed.tsx"; 

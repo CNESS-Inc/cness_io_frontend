@@ -42,11 +42,8 @@ import {
 
 // images
 // import Announcement from "../assets/Announcement.png";
-import Collection from "../../../assets/Collection.png";
 // import Leaderboard from "../assets/Leaderboard.png";
 // import Mention from "../assets/Mention.png";
-import people from "../../../assets/people.png";
-import Trending from "../../../assets/Trending.png";
 import createstory from "../../../assets/createstory.jpg";
 import carosuel1 from "../../../assets/carosuel1.png";
 import like from "../../../assets/like.png";
@@ -321,7 +318,7 @@ export default function SocialFeed() {
   // const [addNewPost, setAddNewPost] = useState(false)
 
   const [userInfo, setUserInfo] = useState<any>();
-  const [isAdult, setIsAdult] = useState<Boolean>(false);
+  // const [isAdult, setIsAdult] = useState<Boolean>(false);
   const navigate = useNavigate();
   const { showToast } = useToast();
 
@@ -933,7 +930,7 @@ export default function SocialFeed() {
       }
       const dobString = response?.data?.data?.user?.dob;
       if (!dobString) {
-        setIsAdult(false);
+        // setIsAdult(false);
         return;
       }
 
@@ -947,13 +944,13 @@ export default function SocialFeed() {
       }
 
       if (age >= 18) {
-        setIsAdult(true);
+        // setIsAdult(true);
       } else {
-        setIsAdult(false);
+        // setIsAdult(false);
       }
     } catch (error) {
       console.error("Error fetching me details:", error);
-      setIsAdult(false);
+      // setIsAdult(false);
     }
   };
 
@@ -1069,7 +1066,6 @@ export default function SocialFeed() {
   const [selectedTopic, setSelectedTopic] = useState<string>(""); // dropdown state
   const [topics, setTopics] = useState<Topic[]>([]); // list of topics
   const [userSelectedTopics, setUserSelectedTopics] = useState<Topic[]>([]); // list of user selected topics
-  const [visibleTopic, setVisibleTopic] = useState(10);
   const [showTopicModal, setShowTopicModal] = useState(false);
 
 
