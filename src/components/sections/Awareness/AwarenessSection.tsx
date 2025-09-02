@@ -179,7 +179,8 @@ export default function AwarenessSection() {
           >
             <div className="py-24 px-0 flex lg:flex-row flex-col items-center justify-between min-h-[720px] max-w-[1000px] w-full mx-auto">
               <div className="lg:w-6/12">
-                <h3 className="poppins leading-9 text-[32px] text-black font-regular">Where conscious creations</h3>
+                <h3 style={{ fontFamily: "Poppins, sans-serif" }}
+                className=" leading-9 text-[32px] text-black font-500">Where conscious creations</h3>
                 <p className="openSans text-[#898989] font-regular text-[14px] mt-4">Explore a wide range of conscious products<br /> crafted by verified creators who prioritize<br /> sustainability and ethical practices.</p>
 
               </div>
@@ -211,24 +212,25 @@ export default function AwarenessSection() {
             <div className="max-w-[1336px] mx-auto w-full">
               <div className="flex flex-col items-center gap-8 md:gap-[52px] w-full">
     <div className="text-center max-w-4xl mx-auto px-4">
-                  <h1 className="jakarta text-3xl md:text-[32px] font-normal leading-tight">
-                    <span className="font-regular bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text">
-                      Where conscious creations{" "}
+                  <h1 style={{ fontFamily: "Poppins, sans-serif" }}
+                  className="text-3xl md:text-[32px] font-500 leading-tight">
+                    <span className="font-medium text-[#000000] bg-clip-text">
+                      Where Conscious Creations{" "}
                     </span>
-                    <span className="font-bold bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">
-                      find their people
+                    <span className="font-medium bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">
+                      Find Their People
                     </span>
                   </h1>
 
 <p
         className="
-          mx-auto mt-3 md:mt-4
-          text-[#898989] text-[14px] leading-[27px] font-normal
+          mx-auto mt-3 md:mt-3
+          text-[#898989] text-[18px] leading-[27px] font-normal
           w-full md:max-w-[707px]
         "
       >
   Explore a wide range of conscious products crafted by verified creators who
-  <br></br>
+  <br />
   prioritize sustainability and ethical practices.
 </p>
                 </div>
@@ -317,8 +319,15 @@ export default function AwarenessSection() {
                 </Swiper>
 
                 <div className="flex lg:flex-row md:flex-row flex-col max-w-[550px] w-full mx-auto mt-0">
-                  <p className="lg:w-8/12 md:w-5/12 w-full text-[#898989] text-[14px] font-regular">
-                    Explore a wide range of conscious products<br/> crafted by verified creators who prioritize <br/>sustainability and ethical practices.
+                  <p className="lg:w-8/12 md:w-5/12 w-full text-[#898989] text-[18px] font-regular">
+                    Showcase your products in our conscious
+  <br />
+marketplace, connect with the right
+<br />
+audience, and grow your business in a
+<br />
+purpose-driven ecosystem.          
+
                   </p>
                   <div className="flex lg:justify-end justify-start md:gap-6 gap-2 lg:w-4/12 md:w-7/12 w-full lg:-mt-0 md:mt-0 mt-4">
                     {/*<Button
@@ -347,7 +356,20 @@ export default function AwarenessSection() {
               </div>
             </div>
           </motion.div>
+
+          
         )}
+          {/* Bottom Section */}
+      <div className="community-bottom m-0 bg-[url(https://res.cloudinary.com/diudvzdkb/image/upload/v1753780353/community-bg_cqdnuq.png)] w-full lg:px-8 md:px-8 px-4 py-16 flex justify-center items-center flex-col bg-cover bg-center">
+        <h3 style={{ fontFamily: "Poppins, sans-serif" }}
+        className="lg:text-[32px] md:text-[32px] text-[23px] font-medium bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
+               text-transparent bg-clip-text mb-3 text-center community-heading">
+          Connect with the trustworthy. Work with the <br />Reliable. Grow with the Dependable.
+        </h3>
+        <p className="openSans mt-2 lg:text-[18px] md:text-[16px] text-[14px] font-[400] text-[#494949] text-center">
+          On CNESS, every profile, product, and organization is aligned with values you can count on.
+        </p>
+      </div>
       </AnimatePresence>
     </>
   );

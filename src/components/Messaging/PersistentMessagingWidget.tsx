@@ -455,7 +455,7 @@ const PersistentMessagingWidget: React.FC = () => {
     <>
       {/* Conversation Panel - Left Side */}
       {showConversationPanel && selectedConnection && (
-        <div className="fixed bottom-0 right-[calc(31vw+24px)] w-[25vw] h-[80vh] bg-white rounded-lg rounded-bl-none rounded-br-none rounded-br-none shadow-2xl border border-gray-200 z-50 flex flex-col">
+        <div className="fixed bottom-0 right-[calc(31vw+24px)] w-[25vw] h-[80vh] bg-white rounded-lg rounded-bl-none rounded-br-none shadow-2xl border border-gray-200 z-50 flex flex-col">
           {/* Chat Header */}
           <div className="flex items-center justify-between p-3 border-b border-[#ddd] bg-[#897AFF1A] rounded-t-lg">
             <div className="flex items-center gap-3">

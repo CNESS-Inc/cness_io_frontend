@@ -8,10 +8,13 @@ import SignupForm from "./SignupForm";
 import LoginForm from "./LoginForm";
 
 const links = [
-{ name: "Why", href: "/why" },
-  // { name: "What", href: "/what" },
-  { name: "About", href: "/about" },
-  { name: "Directory", href: "/directory" },
+  { name: "Home", href: "/" },
+  { name: "Ecosystem", href: "/ecosystem" },
+  { name: "Social", href: "/social" },
+  { name: "Certifications", href: "/certifications" },
+  { name: "Premium", href: "/premium" },
+   { name: "WhyCNESS", href: "/whycness" },
+    { name: "FAQs", href: "/faq" },
 ];
 
 export default function MobileMenu({ isOpen }: { isOpen: boolean }) {

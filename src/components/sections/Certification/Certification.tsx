@@ -17,7 +17,9 @@ const Certification = () => {
     <div className='py-20 w-full bg-[#FAFAFA] px-6 pb-28'>
       <div className='max-w-[1336px] w-full mx-auto flex lg:flex-row flex-col justify-between'>
         <div className='lg:w-[60%] w-full flex flex-col justify-center items-start'>
-          <h3 className='poppins leading-10 text-[32px] font-medium text-black'>
+
+          <h3 style={{ fontFamily: "Poppins, sans-serif" }}
+          className=' leading-10 text-[42px] font-medium text-black'>
             Certification Makes It Official.
           </h3>
           <p className='openSans text-[18px] font-Regular pt-[10px] mb-2'>

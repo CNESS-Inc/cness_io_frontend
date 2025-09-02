@@ -22,7 +22,8 @@ export default function MobileSection() {
         <div className="flex lg:flex-row flex-col lg:h-[400px]">
           <div className="lg:w-7/12 w-full flex items-center">
             <div className="lg:w-full w-full bg-white lg:p-8 md:p-8 p-4  rounded-[12px] flex items-start flex-col justify-center">
-              <h2 className="poppins lg:leading-16 md:leading-14 leading-9 pb-1 text-[32px] font-[600] bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
+              <h2 style={{ fontFamily: "Poppins, sans-serif" }}
+              className="poppins lg:leading-16 md:leading-14 leading-9 pb-1 text-[32px] font-[500] bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
                text-transparent bg-clip-text mb-3">A Conscious coach in your pocket</h2>
               <p className="openSans text-[#64748B] text-[18px] font-[400]">Meet Ariven AI — your consciousness companion. It reflects, prompts,<br /> and guides you to stay aligned with your values, choices, and<br /> evolution.</p>
               {/*<Button
