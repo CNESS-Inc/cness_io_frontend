@@ -6,6 +6,9 @@ import DashboardFilterSidebar from "./DashboardFilterSidebar"; // ✅ Adjust pat
 import hambur from "../../assets/hambur.png";
 import Footer from "../Footer/Footer";
 
+import { MessagingProvider } from "../../components/Messaging/MessagingContext";
+import PersistentMessagingWidget from "../../components/Messaging/PersistentMessagingWidget";
+
 const DashboardLayout = () => {
   const location = useLocation();
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -88,8 +91,13 @@ const DashboardLayout = () => {
           
           
       </div>
-          <div className="hidden md:block w-full">
-            <Footer />
+          <div className="w-full">
+            <MessagingProvider>
+              <PersistentMessagingWidget />
+            </MessagingProvider>
+            <div className="hidden md:block ">
+              <Footer />
+            </div>
           </div>
 
       {/* Mobile Sidebar Backdrop and Slide-in */}

@@ -3,26 +3,15 @@ import {
   // HelpCircleIcon,
   ChevronDownIcon,
   ChevronUpIcon,
-  // LogOutIcon,
-  BadgePlus,
-  TrendingUp,
-  Zap,
+  
 } from "lucide-react";
-import { NavLink, useNavigate, useLocation, Link } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { iconMap } from "../../../assets/icons";
-import hambur from "../../../assets/hambur.png";
-// import { generateSSOToken, API } from "../../Common/ServerAPI";
-// import { LogOut } from "../../Common/ServerAPI";
-// import { useToast } from "../../components/ui/Toast/ToastProvider";
 
 const SocialNavbar = ({
   isMobileNavOpen,
-  // toggleMobileNav,
+  
 }: // currentPath,
-// selectedDomain,
-// setSelectedDomain,
-// sort,
-// setSort
 {
   isMobileNavOpen: boolean;
   // toggleMobileNav: () => void;
@@ -41,7 +30,7 @@ const SocialNavbar = ({
   const mainNavItems = [
     {
       id: "Login_Sign_up",
-      icon: <img src={iconMap["socialuser"]} alt="Home Icon" className="w-5 h-5" />,
+      icon: <img src={iconMap["socialuser"]} alt="Home Icon" className="w-5 h-5 transition duration-200 group-hover:brightness-0 group-hover:invert" />,
       label: "Login / Sing up",
       active: true,
       path: "/",
@@ -49,7 +38,7 @@ const SocialNavbar = ({
     {
       id: "Home",
       icon: (
-        <img src={iconMap["socialhome"]} alt="Home Icon" className="w-5 h-5" />
+        <img src={iconMap["socialhome"]} alt="Home Icon" className="w-5 h-5 transition duration-200 group-hover:brightness-0 group-hover:invert" />
       ),
       label: "Home",
       active: true,
@@ -58,7 +47,7 @@ const SocialNavbar = ({
     {
       id: "Search",
       icon: (
-        <img src={iconMap["socialsearch"]} alt="Home Icon" className="w-5 h-5" />
+        <img src={iconMap["socialsearch"]} alt="Home Icon" className="w-5 h-5 transition duration-200 group-hover:brightness-0 group-hover:invert" />
       ),
       label: "Search",
       active: true,
@@ -67,30 +56,13 @@ const SocialNavbar = ({
     {
       id: "Trending",
       icon: (
-        <img src={iconMap["socialtrending"]} alt="Home Icon" className="w-5 h-5" />
+        <img src={iconMap["socialtrending"]} alt="Home Icon" className="w-5 h-5 transition duration-200 group-hover:brightness-0 group-hover:invert" />
       ),
       label: "Trending",
       active: true,
       path: "/",
     },
-    {
-      id: "Leaderboard",
-      icon: (
-        <img src={iconMap["leaderboard"]} alt="Home Icon" className="w-5 h-5" />
-      ),
-      label: "Leaderboard",
-      active: true,
-      path: "/",
-    },
-     {
-      id: "Announcements",
-      icon: (
-        <img src={iconMap["socialannouncement"]} alt="Home Icon" className="w-5 h-5" />
-      ),
-      label: "Announcements",
-      active: true,
-      path: "/",
-    },
+    
   ];
 
   
@@ -286,7 +258,7 @@ const SocialNavbar = ({
         end={item.path === "/dashboard"}
         onClick={handleClick}
         className={({ isActive }) =>
-          `${baseClasses} ${isActive ? activeMainClasses : inactiveMainClasses}`
+          `group  ${baseClasses} ${isActive ? activeMainClasses : inactiveMainClasses}`
         }
       >
         <div className="flex items-start gap-3 w-full relative">{content}</div>

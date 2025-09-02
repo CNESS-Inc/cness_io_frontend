@@ -6,15 +6,12 @@ import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
 import BackToTopButton from "./BackToTop";
 
 
-import { MessagingProvider } from "../../components/Messaging/MessagingContext";
-import PersistentMessagingWidget from "../../components/Messaging/PersistentMessagingWidget";
+
 
 const Footer = () => {
   return (
     <>
-    <MessagingProvider>
-      <PersistentMessagingWidget />
-    </MessagingProvider>
+    
     <BackToTopButton/>
       <footer className="bg-[#F7F7F7] text-black py-8 md:py-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto lg:flex md:grid flex justify-between lg:grid-cols-2 grid-cols-2 md:grid-cols-5 lg:gap-6 md:gap-8 gap-2">
@@ -34,7 +31,7 @@ const Footer = () => {
                 className="h-auto w-[120px] md:w-[144.16px] lg:hidden md:hidden block"
               />
             </Link>
-<p className="text-[16px] font-[400] font-openSans leading-[160%] text-[#1E1E1E] lg:block md:block hidden">
+            <p className="text-[16px] font-[400] font-openSans leading-[160%] text-[#1E1E1E] lg:block md:block hidden">
             CNESS is a consciousness-based certification and <br />growth platform designed to empower purpose-
             <br /> driven individuals and organizations.
             </p>
@@ -103,16 +100,16 @@ const Footer = () => {
       {/* Bottom section */}
       <div className="py-4 bg-[#C6C4FF] px-4 sm:px-6">
         <div className="max-w-7xl mx-auto lg:flex flex-col md:flex-row justify-between items-center gap-2 hidden">
-<div
-  className="text-[15px] leading-[100%] font-[500] font-[Plus Jakarta Sans] text-white"
-  style={{
-    letterSpacing: "-0.2px",
-    fontStyle: "normal",
-  }}
->
-  Copyright © {new Date().getFullYear()}
-</div>          
-<div className="flex flex-wrap justify-between gap-4 md:gap-16 lg:gap-24">
+          <div
+            className="text-[15px] leading-[100%] font-[500] font-[Plus Jakarta Sans] text-white"
+            style={{
+              letterSpacing: "-0.2px",
+              fontStyle: "normal",
+            }}
+          >
+            Copyright © {new Date().getFullYear()}
+          </div>          
+          <div className="flex flex-wrap justify-between gap-4 md:gap-16 lg:gap-24">
 
             <Link to="/terms-and-conditions" className="text-[15px] leading-[100%] font-[500] font-[Plus Jakarta Sans] text-white">
               Terms & Conditions
