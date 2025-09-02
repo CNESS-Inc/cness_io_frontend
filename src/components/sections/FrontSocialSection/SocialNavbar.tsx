@@ -4,13 +4,9 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   // LogOutIcon,
-  BadgePlus,
-  TrendingUp,
-  Zap,
 } from "lucide-react";
-import { NavLink, useNavigate, useLocation, Link } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { iconMap } from "../../../assets/icons";
-import hambur from "../../../assets/hambur.png";
 // import { generateSSOToken, API } from "../../Common/ServerAPI";
 // import { LogOut } from "../../Common/ServerAPI";
 // import { useToast } from "../../components/ui/Toast/ToastProvider";
