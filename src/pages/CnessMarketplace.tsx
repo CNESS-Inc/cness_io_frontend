@@ -1,22 +1,21 @@
 import MarketplaceHero from "../components/marketplaceComponents/MarketplaceHero";
 //import LazySection from "../components/ui/LazySection";
 import Header from "../layout/Header";
- import Footer from "../layout/Footer/Footer";
- import Seller from "../components/marketplaceComponents/Seller";
+import Footer from "../layout/Footer/Footer";
+import Seller from "../components/marketplaceComponents/Seller";
 import SellerForm from "../components/marketplaceComponents/SellerForm";
 
 const Marketplace = () => {
+  return (
+    <>
+      <Header />
 
-    return(
-        <>  
-        <Header />
-       
-                <MarketplaceHero />
+      <MarketplaceHero />
 
-                <Seller />  
-             <SellerForm />
-             <Footer/>
+      <Seller />
+      <SellerForm />
+      <Footer />
     </>
-    );
-}
-export default Marketplace
+  );
+};
+export default Marketplace;

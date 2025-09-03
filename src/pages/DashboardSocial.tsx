@@ -299,8 +299,9 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
         {mediaItems.map((item, index) => (
           <div
             key={index}
-            className={`w-full h-full transition-opacity duration-500 ${index === current ? "block" : "hidden"
-              }`}
+            className={`w-full h-full transition-opacity duration-500 ${
+              index === current ? "block" : "hidden"
+            }`}
           >
             {item.type === "image" ? (
               <img
@@ -352,8 +353,9 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
             <button
               key={idx}
               onClick={() => setCurrent(idx)}
-              className={`w-2 h-2 rounded-full transition-colors ${idx === current ? "bg-indigo-500" : "bg-gray-300"
-                }`}
+              className={`w-2 h-2 rounded-full transition-colors ${
+                idx === current ? "bg-indigo-500" : "bg-gray-300"
+              }`}
             ></button>
           ))}
         </div>
@@ -602,7 +604,7 @@ export default function SocialTopBar() {
         // Get the first image URL if available, or use profile picture as fallback
         const firstImageUrl =
           item.file &&
-            item.file.split(",")[0].trim() !== "https://dev.cness.io/file/"
+          item.file.split(",")[0].trim() !== "https://dev.cness.io/file/"
             ? item.file.split(",")[0].trim()
             : item.profile.profile_picture;
 
@@ -935,12 +937,12 @@ export default function SocialTopBar() {
         prevPosts.map((post) =>
           post.id === postId
             ? {
-              ...post,
-              is_liked: !post.is_liked,
-              likes_count: post.is_liked
-                ? post.likes_count - 1
-                : post.likes_count + 1,
-            }
+                ...post,
+                is_liked: !post.is_liked,
+                likes_count: post.is_liked
+                  ? post.likes_count - 1
+                  : post.likes_count + 1,
+              }
             : post
         )
       );
@@ -1558,12 +1560,12 @@ export default function SocialTopBar() {
                               disabled={connectingUsers[post.user_id] || false}
                               className={`flex items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
                                 ${
-                                // getFriendStatus(post.user_id) === "connected"
-                                //   ? "bg-red-500 text-white hover:bg-red-600"
-                                //   :
-                                getFriendStatus(post.user_id) === "requested"
-                                  ? "bg-gray-400 text-white cursor-not-allowed"
-                                  : "bg-white text-black shadow-md"
+                                  // getFriendStatus(post.user_id) === "connected"
+                                  //   ? "bg-red-500 text-white hover:bg-red-600"
+                                  //   :
+                                  getFriendStatus(post.user_id) === "requested"
+                                    ? "bg-gray-400 text-white cursor-not-allowed"
+                                    : "bg-white text-black shadow-md"
                                 }`}
                             >
                               {connectingUsers[post.user_id]
@@ -1571,16 +1573,17 @@ export default function SocialTopBar() {
                                 : // : getFriendStatus(post.user_id) === "connected"
                                 // ? "Connected"
                                 getFriendStatus(post.user_id) === "requested"
-                                  ? "Requested"
-                                  : "Connect"}
+                                ? "Requested"
+                                : "Connect"}
                             </button>
                             {/* Follow Button */}
                             <button
                               onClick={() => handleFollow(post.user_id)}
                               className={`flex items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
-                                ${post.if_following
-                                  ? "bg-transparent text-blue-500 hover:text-blue-600"
-                                  : "bg-[#7C81FF] text-white hover:bg-indigo-600"
+                                ${
+                                  post.if_following
+                                    ? "bg-transparent text-blue-500 hover:text-blue-600"
+                                    : "bg-[#7C81FF] text-white hover:bg-indigo-600"
                                 }`}
                             >
                               {post.if_following ? (
@@ -1616,9 +1619,20 @@ export default function SocialTopBar() {
                                       <li>
                                         <button
                                           onClick={() => {
-                                            copyPostLink(`${window.location.origin}/post/${post.id}`,
-                                              (msg) => showToast({ type: "success", message: msg, duration: 2000 }),
-                                              (msg) => showToast({ type: "error", message: msg, duration: 2000 })
+                                            copyPostLink(
+                                              `${window.location.origin}/post/${post.id}`,
+                                              (msg) =>
+                                                showToast({
+                                                  type: "success",
+                                                  message: msg,
+                                                  duration: 2000,
+                                                }),
+                                              (msg) =>
+                                                showToast({
+                                                  type: "error",
+                                                  message: msg,
+                                                  duration: 2000,
+                                                })
                                             );
                                           }}
                                           className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
@@ -1685,9 +1699,20 @@ export default function SocialTopBar() {
                                       <li>
                                         <button
                                           onClick={() => {
-                                            copyPostLink(`${window.location.origin}/post/${post.id}`,
-                                              (msg) => showToast({ type: "success", message: msg, duration: 2000 }),
-                                              (msg) => showToast({ type: "error", message: msg, duration: 2000 })
+                                            copyPostLink(
+                                              `${window.location.origin}/post/${post.id}`,
+                                              (msg) =>
+                                                showToast({
+                                                  type: "success",
+                                                  message: msg,
+                                                  duration: 2000,
+                                                }),
+                                              (msg) =>
+                                                showToast({
+                                                  type: "error",
+                                                  message: msg,
+                                                  duration: 2000,
+                                                })
                                             );
                                           }}
                                           className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
@@ -1722,12 +1747,12 @@ export default function SocialTopBar() {
                       <div className="mt-3 md:mt-4">
                         <p className="text-gray-800 text-sm md:text-base mb-2 md:mb-3">
                           {expandedPosts[post.id] ||
-                            post?.content?.length <= CONTENT_LIMIT
+                          post?.content?.length <= CONTENT_LIMIT
                             ? post.content
                             : `${post?.content?.substring(
-                              0,
-                              CONTENT_LIMIT
-                            )}...`}
+                                0,
+                                CONTENT_LIMIT
+                              )}...`}
                           {post?.content?.length > CONTENT_LIMIT && (
                             <button
                               onClick={() => toggleExpand(post.id)}
@@ -1843,8 +1868,9 @@ export default function SocialTopBar() {
                         <button
                           onClick={() => handleLike(post.id)}
                           disabled={isLoading}
-                          className={`flex items-center justify-center gap-2 rounded-2xl border border-gray-200 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 shadow-sm ${isLoading ? "opacity-50 cursor-not-allowed" : ""
-                            }`}
+                          className={`flex items-center justify-center gap-2 rounded-2xl border border-gray-200 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 shadow-sm ${
+                            isLoading ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
                         >
                           <ThumbsUp
                             className="w-5 h-5 md:w-6 md:h-6"
@@ -1877,14 +1903,15 @@ export default function SocialTopBar() {
                             <Share2 className="w-5 h-5 md:w-6 md:h-6" />
                             Share
                           </button>
-                          {openMenu.postId === post.id && openMenu.type === "share" && (
-                            <SharePopup
-                              isOpen={true}
-                              onClose={() => toggleMenu(post.id, "share")}
-                              url={buildShareUrl()} // or pass your own URL if needed
-                              position="bottom"
-                            />
-                          )}
+                          {openMenu.postId === post.id &&
+                            openMenu.type === "share" && (
+                              <SharePopup
+                                isOpen={true}
+                                onClose={() => toggleMenu(post.id, "share")}
+                                url={buildShareUrl()} // or pass your own URL if needed
+                                position="bottom"
+                              />
+                            )}
                         </div>
                       </div>
                     </div>
@@ -1983,9 +2010,17 @@ export default function SocialTopBar() {
             {/* User Selected Topics Below Quick Actions */}
             {userSelectedTopics?.length > 0 && (
               <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
-                <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
-                  My Picks
-                </h3>
+                <div className="flex items-center justify-between mb-3 md:mb-4 px-4">
+                  <h3 className="text-gray-700 font-semibold text-base md:text-lg">
+                    My Picks
+                  </h3>
+                  {/* <button
+                    onClick={() => setShowTopicModal(true)}
+                    className="text-sm text-blue-500 hover:underline hover:text-blue-600 transition cursor-pointer"
+                  >
+                    Change
+                  </button> */}
+                </div>
                 <div className="w-full border-t border-[#C8C8C8] my-4"></div>
                 <ul className="space-y-3 text-sm md:text-[15px] text-gray-700 px-4">
                   {userSelectedTopics?.map((topic) => (
@@ -2498,7 +2533,6 @@ export default function SocialTopBar() {
           </div>
         </div>
       </Modal>
-
     </>
   );
 }
