@@ -39,9 +39,9 @@ export default function Modal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+    <div className="fixed -top-5 inset-0 z-50">
       <div
-        className={`flex min-h-screen p-4 sm:p-6 ${positionClasses[position]}`}
+        className={`flex  p-4 sm:p-6 ${positionClasses[position]}`}
       >
         <div
           className="fixed inset-0 transition-opacity duration-500 ease-in-out opacity-60 bg-black"
@@ -53,7 +53,6 @@ export default function Modal({
         <div
           className={`relative bg-white rounded-2xl shadow-xl transition-all transform ${modalSizeClasses[position]}`}
           style={{
-            maxHeight: "90vh",
             overflowY: "auto", 
           }}
           role="dialog"

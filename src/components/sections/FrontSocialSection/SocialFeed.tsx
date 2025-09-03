@@ -38,15 +38,11 @@ import {
   UserSelectedTopic,
   getUserSelectedTopic,
   GetPostsDetails,
+  GetAllStory,
+  GoogleLoginDetails
 } from "../../../Common/ServerAPI";
 
-// images
-// import Announcement from "../assets/Announcement.png";
-import Collection from "../../../assets/Collection.png";
-// import Leaderboard from "../assets/Leaderboard.png";
-// import Mention from "../assets/Mention.png";
-import people from "../../../assets/people.png";
-import Trending from "../../../assets/Trending.png";
+
 import createstory from "../../../assets/createstory.jpg";
 import carosuel1 from "../../../assets/carosuel1.png";
 import like from "../../../assets/like.png";
@@ -59,6 +55,10 @@ import FollowedUsersList from "../../../pages/FollowedUsersList";
 import CollectionList from "../../../pages/CollectionList";
 import SharePopup from "../../../components/Social/SharePopup";
 import { buildShareUrl, copyPostLink } from "../../../lib/utils";
+import Button from "../../../components/ui/Button";
+
+import { useGoogleLogin } from "@react-oauth/google";
+import ReCAPTCHA from "react-google-recaptcha";
 
 interface Post {
   id: string;
@@ -157,6 +157,15 @@ interface Story {
     comments_count: number;
     is_liked: boolean;
   }[];
+}
+
+interface FormErrors {
+  username?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+  referralCode?: string;
+  recaptcha?: string;
 }
 
 type Topic = {
@@ -312,16 +321,16 @@ export default function SocialFeed() {
   >("posts");
   const [followedUsers, setFollowedUsers] = useState<FollowedUser[]>([]);
   const [collectionItems, setCollectionItems] = useState<CollectionItem[]>([]);
-  console.log("🚀 ~ SocialTopBar ~ collectionItems:", collectionItems);
+  
   const [_isPostsLoading, setIsPostsLoading] = useState(false);
   const [isFollowingLoading, setIsFollowingLoading] = useState(false);
-  console.log("🚀 ~ SocialTopBar ~ isFollowingLoading:", isFollowingLoading);
+ 
   const [isCollectionLoading, setIsCollectionLoading] = useState(false);
   const [storiesData, setStoriesData] = useState<Story[]>([]);
   // const [addNewPost, setAddNewPost] = useState(false)
 
   const [userInfo, setUserInfo] = useState<any>();
-  const [isAdult, setIsAdult] = useState<Boolean>(false);
+  // const [isAdult, setIsAdult] = useState<Boolean>(false);
   const navigate = useNavigate();
   const { showToast } = useToast();
 
@@ -343,61 +352,82 @@ export default function SocialFeed() {
   const [isReportingPost, setIsReportingPost] = useState<string | null>(null);
   //const [showTopicModal, setShowTopicModal] = useState(false);
 
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [recaptchaValue, setRecaptchaValue] = useState<string | null>(null);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
+
+  const RECAPTCHA_SITE_KEY = "6LcmM3YrAAAAAIoMONSmkAGazWwUXdCE6fzI473L";
+
+  const handleCaptchaChange = (value: string | null) => {
+    setRecaptchaValue(value);
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors.recaptcha;
+      return newErrors;
+    });
+  };
+
   const handleConnect = async (userId: string) => {
-    try {
-      setConnectingUsers((prev) => ({ ...prev, [userId]: true }));
+    if(!loggedInUserID){
+        setShowRegisterModal(true); 
+        return; 
+    }
+    else{
+      try {
+        setConnectingUsers((prev) => ({ ...prev, [userId]: true }));
 
-      // Check if already connected
-      if (friendRequests[userId] === "connected") {
-        // If connected, delete friend
-        const formattedData = {
-          friend_id: userId,
-        };
+        // Check if already connected
+        if (friendRequests[userId] === "connected") {
+          // If connected, delete friend
+          const formattedData = {
+            friend_id: userId,
+          };
 
-        const response = await UnFriend(formattedData);
+          const response = await UnFriend(formattedData);
 
-        if (response.success) {
-          setFriendRequests((prev) => ({
-            ...prev,
-            [userId]: "connect",
-          }));
-          showToast({
-            message: "Friend removed successfully",
-            type: "success",
-            duration: 3000,
-          });
+          if (response.success) {
+            setFriendRequests((prev) => ({
+              ...prev,
+              [userId]: "connect",
+            }));
+            showToast({
+              message: "Friend removed successfully",
+              type: "success",
+              duration: 3000,
+            });
+          }
+        } else {
+          // If not connected, send friend request
+          const formattedData = {
+            friend_id: userId,
+          };
+
+          const response = await SendFriendRequest(formattedData);
+
+          if (response.success) {
+            // Immediately update the button state to "requested"
+            setFriendRequests((prev) => ({
+              ...prev,
+              [userId]: "requested",
+            }));
+            showToast({
+              message:
+                response.success.message || "Friend request sent successfully",
+              type: "success",
+              duration: 3000,
+            });
+          }
         }
-      } else {
-        // If not connected, send friend request
-        const formattedData = {
-          friend_id: userId,
-        };
-
-        const response = await SendFriendRequest(formattedData);
-
-        if (response.success) {
-          // Immediately update the button state to "requested"
-          setFriendRequests((prev) => ({
-            ...prev,
-            [userId]: "requested",
-          }));
-          showToast({
-            message:
-              response.success.message || "Friend request sent successfully",
-            type: "success",
-            duration: 3000,
-          });
-        }
+      } catch (error) {
+        console.error("Error handling connect:", error);
+        showToast({
+          message: "Something went wrong. Please try again.",
+          type: "error",
+          duration: 3000,
+        });
+      } finally {
+        setConnectingUsers((prev) => ({ ...prev, [userId]: false }));
       }
-    } catch (error) {
-      console.error("Error handling connect:", error);
-      showToast({
-        message: "Something went wrong. Please try again.",
-        type: "error",
-        duration: 3000,
-      });
-    } finally {
-      setConnectingUsers((prev) => ({ ...prev, [userId]: false }));
     }
   };
 
@@ -630,8 +660,12 @@ export default function SocialFeed() {
         getUserPosts();
         fetchStory();
     }else{
-        setShowRegisterModal(true);
+
         getUserPosts();
+        fetchStory();
+        setTimeout(() => {
+            setShowRegisterModal(true); 
+        }, 2000);
     }
     
   }, []);
@@ -813,7 +847,16 @@ export default function SocialFeed() {
 
   const fetchStory = async () => {
     try {
-      const res = await GetStory();
+      let res;
+      if(loggedInUserID)
+      {
+          res = await await GetStory();
+      }
+      else
+      {
+          res = await GetAllStory();;
+      }
+      
       setStoriesData(res?.data?.data || []);
     } catch (error) {
       console.error("Error fetching stories:", error);
@@ -821,16 +864,35 @@ export default function SocialFeed() {
   };
 
   const openPostPopup = () => {
-    setShowPopup(true);
-    setApiMessage(null);
+    if(!loggedInUserID){
+        setShowRegisterModal(true);
+        return;
+    }
+    else
+    {
+      setShowPopup(true);
+      setApiMessage(null);
+    }
+    
   };
 
   const openStoryPopup = () => {
-    setShowStoryPopup(true);
-    setApiStoryMessage(null);
+    if(!loggedInUserID){
+        setShowRegisterModal(true);
+        return;
+    }
+    else
+    {
+      setShowStoryPopup(true);
+      setApiStoryMessage(null);
+    }
   };
 
   const handleLike = async (postId: string) => {
+    if(!loggedInUserID){
+        setShowRegisterModal(true); 
+        return; 
+    }
     try {
       const formattedData = { post_id: postId };
       PostsLike(formattedData);
@@ -853,20 +915,27 @@ export default function SocialFeed() {
   };
 
   const handleFollow = async (userId: string) => {
-    try {
-      const formattedData = {
-        following_id: userId,
-      };
-      await SendFollowRequest(formattedData);
-      setUserPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.user_id === userId
-            ? { ...post, if_following: !post.if_following }
-            : post
-        )
-      );
-    } catch (error) {
-      console.error("Error fetching selection details:", error);
+    if(!loggedInUserID){
+        setShowRegisterModal(true); 
+        return; 
+    } 
+    else
+    {
+      try {
+        const formattedData = {
+          following_id: userId,
+        };
+        await SendFollowRequest(formattedData);
+        setUserPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post.user_id === userId
+              ? { ...post, if_following: !post.if_following }
+              : post
+          )
+        );
+      } catch (error) {
+        console.error("Error fetching selection details:", error);
+      }
     }
   };
 
@@ -908,6 +977,7 @@ export default function SocialFeed() {
     if (!container) return;
 
     const { scrollTop, scrollHeight, clientHeight } = container;
+    
     if (scrollTop + clientHeight >= scrollHeight - 10) {
         
         getUserPosts(); // Call API when the user scrolls near the bottom\
@@ -917,6 +987,7 @@ export default function SocialFeed() {
   //@ts-ignore
   useEffect(() => {
    const container = containerRef.current;
+   
     if (container) {
       container.addEventListener("scroll", handleScroll);
     }
@@ -933,7 +1004,7 @@ export default function SocialFeed() {
       }
       const dobString = response?.data?.data?.user?.dob;
       if (!dobString) {
-        setIsAdult(false);
+        // setIsAdult(false);
         return;
       }
 
@@ -945,15 +1016,9 @@ export default function SocialFeed() {
       if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
         age--;
       }
-
-      if (age >= 18) {
-        setIsAdult(true);
-      } else {
-        setIsAdult(false);
-      }
     } catch (error) {
       console.error("Error fetching me details:", error);
-      setIsAdult(false);
+      // setIsAdult(false);
     }
   };
 
@@ -974,6 +1039,10 @@ export default function SocialFeed() {
 
   // Function to save post to collection
   const savePostToCollection = async (postId: string) => {
+    if(!loggedInUserID){
+        setShowRegisterModal(true); 
+        return; 
+    }
     try {
       const response = await SavePost(postId);
 
@@ -1043,9 +1112,13 @@ export default function SocialFeed() {
 
   // Function to open report modal
   const openReportModal = (postId: string) => {
+    if(!loggedInUserID){
+        setShowRegisterModal(true); 
+        return; 
+    }
     setSelectedPostForReport(postId);
     setShowReportModal(true);
-    // setOpenMenuPostId(null); // Close the three-dot menu
+    
   };
 
   useEffect(() => {
@@ -1069,7 +1142,6 @@ export default function SocialFeed() {
   const [selectedTopic, setSelectedTopic] = useState<string>(""); // dropdown state
   const [topics, setTopics] = useState<Topic[]>([]); // list of topics
   const [userSelectedTopics, setUserSelectedTopics] = useState<Topic[]>([]); // list of user selected topics
-  const [visibleTopic, setVisibleTopic] = useState(10);
   const [showTopicModal, setShowTopicModal] = useState(false);
 
 
@@ -1179,6 +1251,33 @@ export default function SocialFeed() {
     }
   };
 
+  const handleGoogleLoginSuccess = async (tokenResponse: any) => {
+      const token = tokenResponse.access_token;
+  
+      try {
+        const data = await GoogleLoginDetails(token); // ✅ use your centralized API call
+        console.log("Backend response:", data);
+  
+        if (data) {
+          localStorage.setItem("token", data.jwt);
+          navigate("/log-in");
+        } else {
+          alert("Google login succeeded, but no JWT received.");
+        }
+      } catch (error) {
+        console.error("Google login error:", error);
+        alert("Google login failed. Please try again.");
+      }
+    };
+
+  const login = useGoogleLogin({
+    onSuccess: handleGoogleLoginSuccess,
+    onError: () => {
+      console.error("Google login failed");
+      alert("Google login failed.");
+    },
+  });
+
   return (
     <>
 
@@ -1189,12 +1288,7 @@ export default function SocialFeed() {
             ref={containerRef}
           >
             {activeView === "posts" ? (
-              <>
-                {/* {isPostsLoading ? (
-                <div className="flex justify-center items-center h-64">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
-                </div>
-              ) : ( */}
+              
                 <>
                   {/* Start a Post */}
                   <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-4 md:p-6 rounded-xl mb-4 md:mb-5">
@@ -1639,20 +1733,7 @@ export default function SocialFeed() {
                                   className="w-6 h-6 md:w-8 md:h-8"
                                 />
                               </div>
-                              {/* <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
-                                  <img
-                                    src={comment}
-                                    alt="Comment"
-                                    className="w-6 h-6 md:w-8 md:h-8"
-                                  />
-                                </div> */}
-                              {/* <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
-                                  <img
-                                    src={repost}
-                                    alt="Repost"
-                                    className="w-6 h-6 md:w-8 md:h-8"
-                                  />
-                                </div> */}
+                              
                               <span className="text-xs md:text-sm text-gray-500 pl-3 md:pl-5">
                                 {post.likes_count}
                               </span>
@@ -1729,8 +1810,6 @@ export default function SocialFeed() {
                     </div>
                   ))}
                 </>
-                {/* )} */}
-              </>
             ) : activeView === "following" ? (
               <div className="bg-white rounded-xl shadow-md p-4 mt-4">
                 <div className="flex items-center justify-between mb-4">
@@ -1813,13 +1892,13 @@ export default function SocialFeed() {
                   onClick={fetchFollowedUsers}
                   className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
                 >
-                  3. #Social_impact
+                  3. #Social_impact 🔥
                 </li>
                 <li
                   onClick={fetchFollowedUsers}
                   className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
                 >
-                  4. #Save_water
+                  4. #Save_water 💧
                 </li>
               </ul>
             </div>
@@ -2268,13 +2347,13 @@ export default function SocialFeed() {
 
       {/* Register popup */}
       <RegisterModal isOpen={showRegisterModal} onClose={() => setShowRegisterModal(false)}>
-        <div className="flex items-center justify-center min-h-screen">
+        <div className="flex items-center justify-center">
             <div className="w-6/12">
                 <Image
                     src="/registerwelcome.png"
                     alt="registerwelcome"
                     width={'100%'}
-                    height={'100%'}
+                    height={'650px'}
                     className="object-contain rounded-0"
                 />
             </div>
@@ -2288,7 +2367,15 @@ export default function SocialFeed() {
             </p>
 
             {/* Google Sign up */}
-            <button className="mt-6 w-full flex items-center justify-center border border-gray-300 rounded-lg px-4 py-2 text-gray-700 font-medium hover:bg-gray-50 transition">
+            <button 
+            type="button"
+            onClick={() => {
+              login();
+              navigate("/log-in", {
+                state: { autoGoogleLogin: true },
+              });
+            }}
+            className="mt-6 w-full flex items-center justify-center border border-gray-300 rounded-lg px-4 py-2 text-gray-700 font-medium hover:bg-gray-50 transition">
               <img
                 src="/google-icon-logo.svg"  alt="Google" className="h-5 w-5 mr-2"
               /> Register with Google
@@ -2309,47 +2396,69 @@ export default function SocialFeed() {
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
               />
             </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
-              <input
-                type="password"
-                placeholder="Type your password"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Password must be at least 8 characters with uppercase, number, and special character
-              </p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Re-type Password
-              </label>
-              <input
-                type="password"
-                placeholder="Re-type your password"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Referral code (optional)
-              </label>
-              <input
-                type="text"
-                placeholder="Enter your referral code"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
-              />
-            </div>
-            <div className="mb-4">
-              <div className="w-full h-16 border rounded-md flex items-center justify-center bg-gray-100 text-gray-500">
-                CAPTCHA
+            <div className="flex justify-between">
+              <div className="mb-4 w-[48%]">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  placeholder="Type your password"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                />
+                
+              </div>
+              <div className="mb-4 w-[48%]">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Re-type Password
+                </label>
+                <input
+                  type="password"
+                  placeholder="Re-type your password"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                />
               </div>
             </div>
-            <button className="w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none relative overflow-hidden cursor-pointer bg-gradient-to-r from-[#7077FE] to-[#F07EFF] hover:from-[#7077FE] hover:to-[#7077FE] text-white relative flex items-center gap-2 font-[Poppins] font-medium text-[15px] leading-5 flex justify-center rounded-[100px] py-3 px-10 self-stretch transition-colors duration-500 ease-in-out ">
-              Sign up
-            </button>
+            <p className="text-xs text-gray-500 mt-0 mb-4">
+              Password must be at least 8 characters with uppercase, number, and special character
+            </p>
+            <div className="flex flex-col gap-2 justify-between ">
+              <div className="mb-4 w-[100%]">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Referral code (optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter your referral code"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                />
+            </div>
+            <div className="mb-6 w-[100%]">
+              <div className="w-full h-16 rounded-md flex items-center justify-center  text-gray-500">
+                <ReCAPTCHA
+                    ref={recaptchaRef}
+                    sitekey={RECAPTCHA_SITE_KEY}
+                    onChange={handleCaptchaChange}
+                    style={{ width: '100%' }}
+                  />
+                  {errors.recaptcha && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.recaptcha}
+                    </p>
+                  )}
+              </div>
+            </div>
+            </div>
+            
+
+            <Button
+              type="submit"
+              variant="gradient-primary"
+              className="w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none relative overflow-hidden cursor-pointer bg-gradient-to-r from-[#7077FE] to-[#F07EFF] hover:from-[#7077FE] hover:to-[#7077FE] text-white relative flex items-center gap-2 font-[Poppins] font-medium text-[15px] leading-5 flex justify-center rounded-[100px] py-3 px-10 self-stretch transition-colors duration-500 ease-in-out"
+              disabled={!recaptchaValue}
+            >
+              Sign Up
+            </Button>
             <p className="text-sm text-center text-gray-600 mt-4">
               Already have an account?{" "}
               <a href="#" className="text-purple-600 hover:underline font-medium">

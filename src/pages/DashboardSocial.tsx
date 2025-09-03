@@ -430,7 +430,6 @@ export default function SocialTopBar() {
   }>({});
 
   const [showReportModal, setShowReportModal] = useState(false);
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [selectedPostForReport, setSelectedPostForReport] = useState<
     string | null
   >(null);
@@ -715,7 +714,6 @@ export default function SocialTopBar() {
   useEffect(() => {
     getUserPosts();
     fetchStory();
-    setShowRegisterModal(true);
   }, []);
 
   useEffect(() => {
@@ -2499,92 +2497,6 @@ export default function SocialTopBar() {
             </button>
           </div>
         </div>
-      </Modal>
-
-      {/* Register popup */}
-      <Modal isOpen={showRegisterModal} onClose={() => setShowRegisterModal(false)}>
-        <div className="flex items-center justify-center min-h-screen bg-gray-50">
-          <div className="w-full max-w-md relative">
-
-            <h2 className="text-2xl font-bold text-center text-gray-900">
-              Create a Free Account
-            </h2>
-            <p className="text-sm text-gray-500 text-center mt-1">
-              ✅ Forever free plan &nbsp; ✅ Setup in minutes
-            </p>
-
-            {/* Google Sign up */}
-            <button className="mt-6 w-full flex items-center justify-center border border-gray-300 rounded-lg px-4 py-2 text-gray-700 font-medium hover:bg-gray-50 transition">
-              <img
-                src="/google-icon-logo.svg"  alt="Google" className="h-5 w-5 mr-2"
-              /> Register with Google
-            </button>
-
-            <div className="flex items-center my-6">
-              <hr className="flex-grow border-gray-300" />
-              <span className="px-2 text-sm text-gray-500">Or sign up with</span>
-              <hr className="flex-grow border-gray-300" />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email
-              </label>
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
-              <input
-                type="password"
-                placeholder="Type your password"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Password must be at least 8 characters with uppercase, number, and special character
-              </p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Re-type Password
-              </label>
-              <input
-                type="password"
-                placeholder="Re-type your password"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Referral code (optional)
-              </label>
-              <input
-                type="text"
-                placeholder="Enter your referral code"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
-              />
-            </div>
-            <div className="mb-4">
-              <div className="w-full h-16 border rounded-md flex items-center justify-center bg-gray-100 text-gray-500">
-                CAPTCHA
-              </div>
-            </div>
-            <button className="w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none relative overflow-hidden cursor-pointer bg-gradient-to-r from-[#7077FE] to-[#F07EFF] hover:from-[#7077FE] hover:to-[#7077FE] text-white relative flex items-center gap-2 font-[Poppins] font-medium text-[15px] leading-5 flex justify-center rounded-[100px] py-3 px-10 self-stretch transition-colors duration-500 ease-in-out ">
-              Sign up
-            </button>
-            <p className="text-sm text-center text-gray-600 mt-4">
-              Already have an account?{" "}
-              <a href="#" className="text-purple-600 hover:underline font-medium">
-                Login
-              </a>
-            </p>
-          </div>
-        </div>
-
       </Modal>
 
     </>

@@ -58,6 +58,8 @@ import BecomePartner from "../pages/BecomePartner";
 import Pricing from "../pages/Pricing";
 import TopicPost from "../pages/TopicPost";
 import CnessMarketplace from "../pages/CnessMarketplace";
+import Certifications from "../pages/Certifications";
+
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -105,6 +107,10 @@ export const router = createBrowserRouter([
       {
         path: "about",
         element: <About />,
+      },
+      {
+        path: "certifications",
+        element: <Certifications />,
       },
       {
         path: "comingSoon",
