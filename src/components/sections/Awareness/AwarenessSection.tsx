@@ -347,7 +347,7 @@ purpose-driven ecosystem.
     text-[16px] leading-[100%] tracking-[0]
     text-white
   "
-  onClick={() => navigate('/comingSoon')}
+  onClick={() => navigate('/cness-marketplace')}
 >
   Become a Seller
 </Button>
