@@ -1,21 +1,21 @@
-import { Smile, Paperclip,MousePointer2  } from "lucide-react";
+//import { Smile, Paperclip,MousePointer2  } from "lucide-react";
 //import React from "react";
-import ReactCountryFlag from "react-country-flag";
-import { useState } from "react";
-import Button from "../../ui/Button";
+//import ReactCountryFlag from "react-country-flag";
+//import { useState } from "react";
+//import Button from "../../ui/Button";
 import call from "../../../assets/call.svg";
 import atsymbol from "../../../assets/atsymbol.svg";
 
-const COUNTRIES = [
-  { code: "US", dial: "+1", label: "+1" },
-  { code: "IN", dial: "+91", label: "+91" },
-  { code: "GB", dial: "+44", label: "+44" },
-];
+//const COUNTRIES = [
+  //{ code: "US", dial: "+1", label: "+1" },
+  //{ code: "IN", dial: "+91", label: "+91" },
+  //{ code: "GB", dial: "+44", label: "+44" },
+//];
 
 export default function GetInTouch()
 
 {
-    const [country, setCountry] = useState(COUNTRIES[0]); // default US
+    //const [country, setCountry] = useState(COUNTRIES[0]); // default US
 
   return (  
 <section
@@ -31,8 +31,20 @@ export default function GetInTouch()
   />
 
   <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+ {/* Form (Zoho Embed) */}
+        <div className="w-[600px] h-[712px] bg-white shadow-lg rounded-[28px] p-[37px] flex flex-col justify-left">
+          <iframe
+            src="https://forms.zohopublic.com/vijicn1/form/GetInTouch/formperma/x_WVVrlIZduQfJsgakmb-blY_rSPpNEQCpUVPe5E7nk"
+            className="w-full h-full border-0 rounded-lg"
+            style={{ overflow: "hidden" }}
+            scrolling="no"
+            title="CNESS Seller Form"
+          />
+        </div>
+
+
     {/* LEFT: Title + Form */}
-    <div className="flex flex-col items-start">
+    {/*<div className="flex flex-col items-start">
       <h2
         style={{ fontFamily: "Poppins, sans-serif" }}
         className="text-[24px] md:text-[28px] lg:text-[32px] font-medium leading-[120%] tracking-[-0.02em] mb-4 md:mb-6"
@@ -41,10 +53,10 @@ export default function GetInTouch()
       </h2>
 
       {/* Form card */}
-      <div className="bg-white rounded-[24px] md:rounded-[30px] shadow-[2px_2px_16px_5px_rgba(0,0,0,0.05)] w-full max-w-[544px] p-5 md:p-7">
+      {/*<div className="bg-white rounded-[24px] md:rounded-[30px] shadow-[2px_2px_16px_5px_rgba(0,0,0,0.05)] w-full max-w-[544px] p-5 md:p-7">
         <form className="flex flex-col gap-5 md:gap-6">
           {/* Name */}
-          <div className="flex flex-col gap-2">
+         {/* <div className="flex flex-col gap-2">
             <label className="font-inter text-[14px] md:text-[16px] text-black">Name</label>
             <input
               type="text"
@@ -54,7 +66,7 @@ export default function GetInTouch()
           </div>
 
           {/* Phone */}
-          <div className="flex flex-col gap-2">
+         {/* <div className="flex flex-col gap-2">
             <label className="font-inter text-[14px] md:text-[16px] text-black">Phone Number</label>
             <div className="flex items-center rounded-sm border-2 border-[#EEEEEE] overflow-hidden">
               <div className="relative">
@@ -84,7 +96,7 @@ export default function GetInTouch()
           </div>
 
           {/* Email */}
-          <div className="flex flex-col gap-2">
+          {/*<div className="flex flex-col gap-2">
             <label className="font-inter text-[14px] md:text-[16px] text-black">Email Address</label>
             <input
               type="email"
@@ -94,7 +106,7 @@ export default function GetInTouch()
           </div>
 
           {/* Notes */}
-          <div className="flex flex-col gap-2">
+          {/*<div className="flex flex-col gap-2">
             <label className="font-inter text-[14px] md:text-[16px] text-black">
               Looking for a Solution? We Can Help
             </label>
@@ -119,7 +131,7 @@ export default function GetInTouch()
           </div>
 
           {/* Submit */}
-          <Button
+          {/*<Button
             variant="gradient-primary"
             type="submit"
             className="

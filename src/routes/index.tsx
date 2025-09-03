@@ -57,7 +57,9 @@ import TrendingAI from "../pages/TrendingAI";
 import BecomePartner from "../pages/BecomePartner";
 import Pricing from "../pages/Pricing";
 import TopicPost from "../pages/TopicPost";
+import CnessMarketplace from "../pages/CnessMarketplace";
 import Certifications from "../pages/Certifications";
+
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -113,6 +115,11 @@ export const router = createBrowserRouter([
       {
         path: "comingSoon",
         element: <ComingSoon />,
+      },
+
+      {
+        path: "cness-marketplace",
+        element: <CnessMarketplace />,
       },
 
       {
