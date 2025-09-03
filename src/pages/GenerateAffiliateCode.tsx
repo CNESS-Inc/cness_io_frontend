@@ -15,6 +15,7 @@ import {
   FaTwitter,
   FaWhatsapp,
 } from "react-icons/fa";
+import Select from "react-select";
 
 interface ReferredUser {
   id: string;
@@ -38,6 +39,20 @@ const AffiliateGenerateCode = () => {
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const baseUrl = window.location.origin;
+
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [withdrawCountryCode, setWithdrawCountryCode] = useState('');
+  const [withdrawPhone, setWithdrawPhone] = useState('');
+  const [withdrawError, setWithdrawError] = useState('');
+
+  const countryCode = ["+376", "+971", "+93", "+1268", "+355", "+1264", "+374", "+244", "+672", "+54", "+1684", "+43", "+61", "+297", "+358", "+994", "+387", "+1246", "+880", "+32", "+226", "+359", "+973", "+257", "+229", "+590", "+1441", "+673", "+591", "+55", "+1242", "+975", "+267", "+375", "+501", "+1", "+61", "+243", "+236", "+242", "+41", "+225", "+682", "+56", "+237", "+86", "+57", "+506", "+53", "+238", "+61", "+357", "+420", "+49", "+253", "+45", "+1767", "+1849", "+213", "+593", "+372", "+20", "+291", "+34", "+251", "+358", "+679", "+500", "+691", "+298", "+33", "+241", "+44", "+1473", "+995", "+594", "+44", "+233", "+350", "+299", "+220", "+224", "+590", "+240", "+30", "+500", "+502", "+1671", "+245", "+595", "+852", "+504", "+385", "+509", "+36", "+62", "+353", "+972", "+44", "+91", "+246", "+964", "+98", "+354", "+39", "+44", "+1876", "+962", "+81"];
+
+  const countryCodeOptions = countryCode.map((code) => ({
+    value: code,
+    label: code,
+  }));
+
 
   useEffect(() => {
     let userID = localStorage.getItem("Id");
@@ -134,6 +149,47 @@ const AffiliateGenerateCode = () => {
     };
   }, []);
 
+  const withdrawalRequest = () => {
+    setIsWithdrawModalOpen(true);
+    setWithdrawAmount('');
+    setWithdrawCountryCode(countryCode[0]); // Set default country code
+    setWithdrawPhone('');
+    setWithdrawError('');
+  };
+
+  const handleWithdrawSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setWithdrawError('');
+    const amountNum = Number(withdrawAmount);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      setWithdrawError('Enter a valid amount.');
+      return;
+    }
+    if (amountNum > Number(referreEarning)) {
+      setWithdrawError('Requested amount exceeds your referral earning.');
+      return;
+    }
+    if (!withdrawPhone.trim()) {
+      setWithdrawError('Enter your phone number.');
+      return;
+    }
+    // Call your withdrawal API here
+    try {
+      // Example payload
+      // const payload = {
+      //   user_id: localStorage.getItem("Id"),
+      //   amount: amountNum,
+      //   country_code: withdrawCountryCode,
+      //   phone: withdrawPhone,
+      // };
+      // await withdrawalApi(payload); // Replace with your API
+      setIsWithdrawModalOpen(false);
+      alert("Withdrawal request submitted!");
+    } catch (err) {
+      setWithdrawError('Failed to submit request. Try again.');
+    }
+  };
+
   return (
     <>
       <div className="w-full min-h-screen mt-8">
@@ -162,9 +218,17 @@ const AffiliateGenerateCode = () => {
         {/* Tab Content */}
         {activeTab === 'users' && (
           <div className="min-h-screen bg-white px-4 py-6 sm:px-6 font-sans">
-            <div>
+            <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-semibold mb-4">Your Referral Earning: {referreEarning}</h3>
-              <span></span>
+              
+              <div>
+                <Button
+                  type="button"
+                  onClick={withdrawalRequest}
+                  >
+                  Withdraw
+                </Button>
+              </div>
             </div>
             <h3 className="text-lg font-semibold mb-4">Your Referred Users</h3>
 
@@ -230,7 +294,7 @@ const AffiliateGenerateCode = () => {
                 <h3 className="text-lg font-semibold mb-4">Affiliate Details</h3>
                 <div className="flex flex-col gap-2">
                   <p className="text-sm"><span className="font-bold">Code:</span> <span>{currentReferralCode} </span></p>
-<div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                     <p className="text-sm"><span className="font-bold">Affiliate Link:</span>  <span>{baseUrl}/sign-up?referral_code={currentReferralCode}</span></p>
                     <div className="relative w-fit ms-3 ">
                       <button
@@ -290,7 +354,7 @@ const AffiliateGenerateCode = () => {
 
       {/* Modal */}
       <Modal isOpen={isModalOpen} onClose={closeModal}>
-<div className="text-center px-4 py-6 max-w-md w-full">
+        <div className="text-center px-4 py-6 max-w-md w-full">
           <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-r from-[#7077FE] to-[#F07EFF]">
             <svg
               className="h-8 w-8 text-white"
@@ -322,6 +386,52 @@ const AffiliateGenerateCode = () => {
             </Button>
           </div>
         </div>
+      </Modal>
+
+      {/* Withdraw Modal */}
+      <Modal isOpen={isWithdrawModalOpen} onClose={() => setIsWithdrawModalOpen(false)}>
+        <form onSubmit={handleWithdrawSubmit} className="p-0 min-w-[400px] w-full">
+          <h2 className="text-lg font-bold mb-4">Withdrawal Request</h2>
+          <div className="mb-3">
+            <label className="block mb-1 font-medium">Request Money</label>
+            <input
+              type="number"
+              value={withdrawAmount}
+              onChange={e => setWithdrawAmount(e.target.value)}
+              className="w-full border px-3 py-2 rounded"
+              min="1"
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label className="block mb-1 font-medium">Phone Number (with country code)</label>
+            <div className="flex justify-between ">
+              <Select
+                options={countryCodeOptions}
+                value={countryCodeOptions.find(option => option.value === withdrawCountryCode)}
+                onChange={(selectedOption) =>
+                  setWithdrawCountryCode(selectedOption?.value ?? '')
+                }
+                isSearchable={false}
+                placeholder="Code"
+              />
+              <input
+                type="text"
+                value={withdrawPhone}
+                onChange={e => setWithdrawPhone(e.target.value)}
+                className="w-full border px-3 py-2 rounded"
+                placeholder="Enter phone number"
+                required
+              />
+            </div>
+            
+          </div>
+          {withdrawError && <div className="text-red-500 mb-2">{withdrawError}</div>}
+          <div className="flex justify-between flex-row-reverse gap-3 mt-4">
+            <Button type="submit" variant="gradient-primary">Submit</Button>
+            <Button type="button" onClick={() => setIsWithdrawModalOpen(false)}>Cancel</Button>
+          </div>
+        </form>
       </Modal>
     </>
   );

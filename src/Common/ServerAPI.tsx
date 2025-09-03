@@ -147,6 +147,7 @@ export const EndPoint = {
   save_post: "/user/posts/save",
   report_post: "/user/posts/report",
   story: "/story",
+  get_front_all_story: "/story/get/front/all",
   story_like: "/story/like",
   story_comment: "/story/comment",
   event: "/event",
@@ -886,6 +887,10 @@ export const GetPostsDetails = (page: any) => {
     params
   );
 } 
+export const GetAllStory = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.get_front_all_story);
+}
 export const PostsDetails = (page: any) => {
   let data = {};
   let params: { [key: string]: any } = {};

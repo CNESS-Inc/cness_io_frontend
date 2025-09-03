@@ -440,7 +440,7 @@ const PersistentMessagingWidget: React.FC = () => {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-8 right-4 w-14 h-14 bg-[#7077FE] text-white rounded-full shadow-lg hover:bg-blue-700 transition-all duration-200 flex items-center justify-center z-50"
+        className="fixed bottom-8 right-4 w-14 h-14 bg-[#7077FE] text-white rounded-full shadow-lg hover:bg-blue-700 transition-all duration-200 flex items-center justify-center z-50 mohan"
         style={{
           zIndex: 9999
         }}
@@ -455,9 +455,11 @@ const PersistentMessagingWidget: React.FC = () => {
     <>
       {/* Conversation Panel - Left Side */}
       {showConversationPanel && selectedConnection && (
-        <div className="fixed bottom-0 right-[calc(31vw+24px)] w-[25vw] h-[80vh] bg-white rounded-lg rounded-bl-none rounded-br-none shadow-2xl border border-gray-200 z-50 flex flex-col">
+
+        <div className="fixed bottom-0 lg:right-[calc(31vw+24px)] right-6 lg:w-[25vw] w-[90vw] lg:h-[80vh] h-[60vh] bg-white rounded-lg rounded-bl-none rounded-br-none rounded-br-none shadow-2xl border border-gray-200 z-100 flex flex-col">
+
           {/* Chat Header */}
-          <div className="flex items-center justify-between p-3 border-b border-[#ddd] bg-[#897AFF1A] rounded-t-lg">
+          <div className="flex items-center justify-between p-3 border-b border-[#ddd] bg-blue-600 rounded-t-lg">
             <div className="flex items-center gap-3">
               <img
                 src={selectedConnection.profileImage || "/profile.png"}
@@ -465,7 +467,7 @@ const PersistentMessagingWidget: React.FC = () => {
                 className="w-8 h-8 rounded-full object-cover"
               />
               <div>
-                <h4 className="font-medium text-gray-900 text-sm">
+                <h4 className="font-medium text-white text-sm">
                   {selectedConnection.name}
                 </h4>
               </div>
@@ -473,7 +475,7 @@ const PersistentMessagingWidget: React.FC = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={handleCloseConversation}
-                className="p-1 bg-transparent text-[#E1056D] rounded"
+                className="p-1 bg-transparent text-[#FFF] rounded"
               >
                 <X size={18} />
               </button>
@@ -687,9 +689,9 @@ const PersistentMessagingWidget: React.FC = () => {
       )}
 
       {/* Main Messaging Widget - Right Side */}
-      <div className="fixed bottom-0 right-6 w-[30vw] h-[80vh] bg-white rounded-lg rounded-bl-none rounded-br-none shadow-2xl border border-gray-200 z-50 flex flex-col">
+      <div className="fixed bottom-0 right-6 lg:w-[30vw] w-[90vw] lg:h-[80vh] h-[50vh] bg-white rounded-lg rounded-bl-none rounded-br-none shadow-2xl border border-gray-200 z-50 flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[#ddd] bg-[#897AFF1A] rounded-t-lg">
+        <div className="flex items-center justify-between p-4 border-b border-[#ddd] bg-blue-600 rounded-t-lg">
           <div className="flex items-center gap-3">
             <img
               src={ localStorage.getItem("profile_picture") ?? "/profile.png" }
@@ -698,14 +700,14 @@ const PersistentMessagingWidget: React.FC = () => {
             />
             </div>
             <div>
-              <h3 className="font-semibold text-[#897AFF]">Messaging</h3>
+              <h3 className="font-semibold text-[#fff]">Messaging</h3>
               {/* <p className="text-xs text-white">Your conversations</p> */}
             </div>
           
           <div className="flex items-center gap-2">
             <button
               onClick={handleCloseWidget}
-              className="p-1 bg-transparent text-[#E1056D] rounded"
+              className="p-1 bg-transparent text-[#FFF] rounded"
             >
               <X size={18} />
             </button>
