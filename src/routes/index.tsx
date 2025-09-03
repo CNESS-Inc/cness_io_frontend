@@ -59,6 +59,8 @@ import Pricing from "../pages/Pricing";
 import TopicPost from "../pages/TopicPost";
 import CnessMarketplace from "../pages/CnessMarketplace";
 import Certifications from "../pages/Certifications";
+import Faqs from "../pages/Faqs";
+import EcoSystem from "../pages/EcoSystem";
 
 
 // Lazy-loaded pages
@@ -111,6 +113,14 @@ export const router = createBrowserRouter([
       {
         path: "certifications",
         element: <Certifications />,
+      },
+      {
+        path: "ecosystem",
+        element: <EcoSystem />,
+      },
+      {
+        path: "faq",
+        element: <Faqs />,
       },
       {
         path: "comingSoon",
