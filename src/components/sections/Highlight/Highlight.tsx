@@ -61,13 +61,23 @@ export default function Highlight() {
             rounded-tl-[100px] rounded-br-[100px] rounded-tr-[10px] rounded-bl-[10px] bg-white">
               Highlights
             </span>
-            <h3 className="poppins leading-9 text-[32px] font-[600] mb-2 lg:text-nowrap">
-              Your conscious identity, activated.
+            <h3 className="font-poppins font-medium
+    text-[32px] md:text-[42px]
+    leading-[54px] tracking-[-0.02em]
+    capitalize text-centerp">
+              Your conscious identity,
+              <br />
+               <span className="
+    bg-gradient-to-r from-[#D747EA] to-[#7741FB]
+    text-transparent bg-clip-text
+  ">
+               Activated.
+               </span>
             </h3>
             <p className="openSans text-[#64748B] text-[18px] font-[400] mb-6">
               CNESS helps you build visibility, earn credibility, and express your
-              <br /> purpose — socially, creatively, and professionally. Everything you
-              <br /> need to grow is here.
+              <br /> purpose — socially, creatively, and professionally.  Showcase your skills, share your story, connect with like-minded people, and unlock opportunities to grow with confidence and purpose.
+              
             </p>
             <Button className="jakarta w-fit rounded-[100px] h-[42px] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#F07EFF] self-stretch transition-colors duration-500 ease-in-out"
               onClick={() => window.location.href = "/sign-up"}>

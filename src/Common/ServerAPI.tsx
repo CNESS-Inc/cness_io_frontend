@@ -602,12 +602,14 @@ export const GetAllBestPractices = (
   page: number,
   limit: number,
   professionId: string,
+  interestId: string,
   searchText: string
 ): ApiResponse => {
   let params: { [key: string]: any } = {};
   params["page_no"] = page;
   params["limit"] = limit;
   params["profession"] = professionId;
+  params["interest"] = interestId;
   params["text"] = searchText;
   return executeAPI(
     ServerAPI.APIMethod.GET,

@@ -2,8 +2,9 @@
 
 import { Link } from "react-router-dom";
 import Image from "../../components/ui/Image";
-import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
 import BackToTopButton from "./BackToTop";
+import vector from "../../assets/Vector.svg";
 
 
 
@@ -19,7 +20,7 @@ const Footer = () => {
           <div className="lg:col-span-2 lg:w-[40%] md:col-span-2  space-y-4">
             <Link to="/" className="flex items-center" aria-label="Home">
               <Image
-                src="/logo.png"
+                src="/cnesslogo.png"
                 alt="Company Logo"
                 width={120}
                 className="h-auto w-[120px] md:w-[144.16px] lg:block md:block hidden"
@@ -53,11 +54,11 @@ const Footer = () => {
               <div className="w-fit space-y-3 md:space-y-4 ">
                 <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#6F74DD] poppins">Quick Links</h4>
                 <ul className="space-y-1 md:space-y-2">
-                  <li><Link to="/" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Home</Link></li>
-                  <li><a href="/about" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">About Us</a></li>
-                   <li><a href="/directory" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">Directory</a></li>
-                  <li><a href="/sign-up" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">Certifications</a></li>
-                  <li><Link to="/comingsoon" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">Career</Link></li>
+                  <li><Link to="/" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Ecosystem</Link></li>
+                  <li><a href="/about" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">Social</a></li>
+                   <li><a href="/directory" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">Certification</a></li>
+                  <li><a href="/sign-up" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">Premimum</a></li>
+                  <li><Link to="/comingsoon" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">Why CNESS</Link></li>
                 </ul>
               </div>
 
@@ -73,7 +74,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <a href="https://x.com/CnessInc" className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">
-                      <FaTwitter className="me-2 md:me-3" />
+                     <img src={vector} alt="X" className="w-4 h-4 me-2 md:me-3" />
                       X
                     </a>
                   </li>
@@ -98,7 +99,7 @@ const Footer = () => {
       </footer>
 
       {/* Bottom section */}
-      <div className="py-4 bg-[#C6C4FF] px-4 sm:px-6">
+      <div className="py-4 bg-[#373578] px-4 sm:px-6">
         <div className="max-w-7xl mx-auto lg:flex flex-col md:flex-row justify-between items-center gap-2 hidden">
           <div
             className="text-[15px] leading-[100%] font-[500] font-[Plus Jakarta Sans] text-white"
@@ -111,10 +112,10 @@ const Footer = () => {
           </div>          
           <div className="flex flex-wrap justify-between gap-4 md:gap-16 lg:gap-24">
 
-            <Link to="/terms-and-conditions" className="text-[15px] leading-[100%] font-[500] font-[Plus Jakarta Sans] text-white">
+            <Link to="/terms-and-conditions" className="text-[15px] leading-[100%] font-[600] font-[Plus Jakarta Sans] text-white">
               Terms & Conditions
             </Link>
-            <Link to="/privacy-policy" className="text-[15px] leading-[100%] font-[500] font-[Plus Jakarta Sans] text-white">
+            <Link to="/privacy-policy" className="text-[15px] leading-[100%] font-[600] font-[Plus Jakarta Sans] text-white">
               Privacy Policy
             </Link>
           </div>

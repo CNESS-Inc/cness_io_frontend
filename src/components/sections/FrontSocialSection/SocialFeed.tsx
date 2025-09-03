@@ -42,7 +42,7 @@ import {
   GoogleLoginDetails
 } from "../../../Common/ServerAPI";
 
-// images
+
 import createstory from "../../../assets/createstory.jpg";
 import carosuel1 from "../../../assets/carosuel1.png";
 import like from "../../../assets/like.png";
@@ -1016,12 +1016,6 @@ export default function SocialFeed() {
       if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
         age--;
       }
-
-      /*if (age >= 18) {
-        setIsAdult(true);
-      } else {
-        setIsAdult(false);
-      }*/
     } catch (error) {
       console.error("Error fetching me details:", error);
       // setIsAdult(false);

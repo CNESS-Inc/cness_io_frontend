@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Button from "../../ui/Button";
+//import Button from "../../ui/Button";
 import OptimizeImage from "../../ui/OptimizeImage"; // Assuming OptimizeImage replaces Image
 
 const thumbnails = [
@@ -74,7 +74,9 @@ export default function FeaturedSection() {
   };
 
   const heading = (
-    <h2 className="poppins featured-heading lg:text-[42px] md:text-[42px] text-[28px] font-semibold bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text overflow-x-hidden">
+    <h2 
+    style={{ fontFamily: "Poppins, sans-serif" }}
+    className="poppins featured-heading lg:text-[42px] md:text-[42px] text-[28px] font-medium bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text overflow-x-hidden">
       Your Voice Deserves a <br />
       Conscious{" "}
       <span
@@ -140,17 +142,17 @@ export default function FeaturedSection() {
           }
         >
           <h5 className="poppins text-[18px] font-semibold mb-2">Go live. Share your voice. Be seen by the conscious world.</h5>
-          <p className="openSans text-[14px] font-regular text-[#64748B]">
+          <p className="openSans text-[16px] font-regular text-[#64748B]">
             Host live talks. Stream music. Share reflections. Submit your content to be<br />
             featured on CNESS TV — our curated stream of purpose-led creators, artists,<br />
             and changemakers.
           </p>
-          <Button
+          {/*<Button
             className="jakarta w-fit rounded-[100px] h-[38px] text-[16px] font-[400] text-[#fff] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#9747FF] mt-6"
             onClick={() => window.location.href = "/sign-up"}
           >
            Know More
-          </Button>
+          </Button>*/}
         </div>
       </div>
     </section>
