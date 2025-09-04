@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Button from "../../ui/Button";
-import { MessageCircle, ShoppingBag, BookOpen, Compass,  } from "lucide-react";
+//import { MessageCircle, ShoppingBag, BookOpen, Compass,  } from "lucide-react";
 import SignupModel from "../../OnBoarding/Signup";
 
 export default function HeroSection() {
@@ -84,7 +84,7 @@ export default function HeroSection() {
           {/* responsive height using aspect-ratio; keeps the face framed via object-position */}
           <div className="w-full rounded-[32px] overflow-hidden aspect-[1900/460]">
             <img
-              src="https://cdn.cness.io/herosection.webp"
+              src="https://cdn.cness.io/Hero%20section1.webp"
               alt="Hero Section"
               className="w-full h-full object-cover object-[58%_50%] sm:object-[60%_50%] md:object-[62%_50%] lg:object-[64%_50%] xl:object-[66%_50%] 2xl:object-[68%_50%]"
             />
@@ -92,7 +92,7 @@ export default function HeroSection() {
 
           {/* floating pills only on large screens to avoid crowding mobile */}
              {/* ⬇️ Paste the pills overlay block here ⬇️ */}
-       {/* Pills overlay: inside the SAME relative/aspect box */}
+       {/* Pills overlay: inside the SAME relative/aspect box 
     <div className="absolute inset-0 hidden lg:block pointer-events-none z-10">
       {[
         // row 1
@@ -113,7 +113,7 @@ export default function HeroSection() {
             key={i}
             className="absolute pointer-events-auto -translate-x-1/2 -translate-y-1/2"
             style={{
-              /* clamp within frame just in case */
+              /* clamp within frame just in case 
               left: `min(${leftPct}%, 98%)`,
               top: `${topPct}%`,
             }}
@@ -123,17 +123,17 @@ export default function HeroSection() {
                 <p.Icon className={`h-3.5 w-3.5 ${p.ic}`} strokeWidth={2} />
               </span>
               <div className="leading-tight">
-                {/* freeze sizes so pill width doesn't shift */}
+                {/* freeze sizes so pill width doesn't shift 
                 <div className="font-semibold text-gray-800 text-[12px]"> {p.title} </div>
                 <div className="text-[11px] text-slate-500"> {p.sub} </div>
               </div>
             </div>
           </div>
         );
-      })}
+      })}*/}
     </div>
   </div>
-</div>
+
             
        
 
