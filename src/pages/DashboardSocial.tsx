@@ -36,6 +36,7 @@ import {
   getTopics,
   UserSelectedTopic,
   getUserSelectedTopic,
+  updateUserSelectedTopic,
 } from "../Common/ServerAPI";
 
 // images
@@ -1312,28 +1313,31 @@ export default function SocialTopBar() {
     try {
       const payload = { topicIds: ids };
 
-      const response = await UserSelectedTopic(loggedInUserID, payload);
-      if (response?.success?.statusCode === 201) {
-        // const selectedIds = response?.data?.data?.map(
-        //   (item: Topic) => item?.id
-        // );
-        // if (selectedIds?.length) {
-        //   localStorage.setItem("selected_topics", JSON.stringify(selectedIds));
-        // }
+      let response;
+
+      if (!userSelectedTopics || userSelectedTopics.length === 0) {
+        // call add selected topics
+        response = await UserSelectedTopic(loggedInUserID, payload);
+      } else {
+        // Already has topics → call UPDATE
+        response = await updateUserSelectedTopic(loggedInUserID, payload);
+      }
+
+      if (
+        response?.success?.statusCode === 200 ||
+        response?.success?.statusCode === 201
+      ) {
         setShowTopicModal(false);
         fetchUserSelectedTopics();
-      } else if (response?.success?.statusCode === 200) {
+      } else {
         showToast({
-          message:
-            "Looks like you've selected every available Conscious Topics.",
+          message: response?.error?.message || "Error saving topics",
           type: "error",
           duration: 3000,
         });
-      } else {
-        console.warn("Error during add user selected topic", response);
       }
     } catch (error) {
-      console.error("Error fetching badge details:", error);
+      console.error("Error saving topics:", error);
       showToast({
         message: "Something went wrong. Please try again.",
         type: "error",
@@ -2014,12 +2018,12 @@ export default function SocialTopBar() {
                   <h3 className="text-gray-700 font-semibold text-base md:text-lg">
                     My Picks
                   </h3>
-                  {/* <button
+                  <button
                     onClick={() => setShowTopicModal(true)}
                     className="text-sm text-blue-500 hover:underline hover:text-blue-600 transition cursor-pointer"
                   >
                     Change
-                  </button> */}
+                  </button>
                 </div>
                 <div className="w-full border-t border-[#C8C8C8] my-4"></div>
                 <ul className="space-y-3 text-sm md:text-[15px] text-gray-700 px-4">
@@ -2443,6 +2447,7 @@ export default function SocialTopBar() {
           {showTopicModal && (
             <TopicModal
               topics={topics} // ← correct prop name
+              userSelectedTopics={userSelectedTopics} // ← correct prop name
               onSelect={handleTopicsSelected} // ← now defined
               onClose={() => setShowTopicModal(false)}
             />

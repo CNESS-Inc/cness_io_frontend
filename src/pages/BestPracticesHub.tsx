@@ -388,7 +388,7 @@ useEffect(() => {
     const hasProfession = !!newPractice.profession;
     const hasInterest = !!newPractice.interest;
 
-    if ((!hasProfession && !hasInterest)) {
+    if (!hasProfession && !hasInterest) {
       showToast({
         message: "Please select either a profession or an interest.",
         type: "error",
@@ -467,7 +467,7 @@ useEffect(() => {
           <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             {/* Profession Selector */}
 
-            <div className="relative rounded-full ">
+            <div className="relative rounded-full">
               {/* Measurement span with exact same text styling */}
               <span
                 className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4 py-2 "
@@ -482,10 +482,10 @@ useEffect(() => {
 
               <div className="w-full flex justify-center md:justify-start items-center my-1 px-4 md:px-0">
                 <div
-                  className="relative w-full max-w-[200px] md:w-fit"
+                  className="relative w-auto md:w-fit"
                   style={{
                     width: textWidth ? `${textWidth}px` : "100%",
-                    minWidth: "120px",
+                    minWidth: "180px",
                     maxWidth: "100%",
                   }}
                 >

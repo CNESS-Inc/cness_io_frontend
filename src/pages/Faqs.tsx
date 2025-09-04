@@ -279,19 +279,19 @@ export default function Faqs() {
         <div className="flex flex-col items-center text-center z-10 py-16 px-4">
           <h1
             style={{ fontFamily: "Poppins, sans-serif" }}
-            className="font-medium text-[42px] md:text-[42px] leading-[115%] tracking-[0.03rem] text-center antialiased bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
+            className="font-medium text-[32px] md:text-[42px] leading-[115%] tracking-[0.03rem] text-center antialiased bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
           >
             Frequently Asked Questions
           </h1>
 
           <p
-            className="openSans lg:text-lg md:text-[16px] text-[12px] text-[#64748B] lg:mb-10 md:mb-12 mb-4 mt-4
+            className="openSans lg:text-lg md:text-[16px] text-[12px] text-[#64748B] mb-5 lg:mb-10 md:mb-12 mb-4 mt-4
             max-w-4xl mx-auto transition-all duration-1000 ease-in-out"
           >
             Find quick answers to common questions about our CNESS and <br />
             Ecosystem.
           </p>
-          <div className="flex justify-between items-center w-[625px] h-[66px] px-[34px] py-[18px] border border-[#CBD5E1] rounded-[40px] bg-white">
+          <div className="flex justify-between items-center w-[300px] sm:w-[525px] lg:w-[625px] h-[50px] md:h-[66px] px-[34px] py-[18px] border border-[#CBD5E1] rounded-[40px] bg-white">
             <input
               type="text"
               placeholder="Search"
@@ -326,7 +326,7 @@ export default function Faqs() {
         <FAQSection faqs={faqCategories} />
       </LazySection>
       <LazySection effect="fade-up" delay={0.2}>
-        <div className="flex flex-col items-center text-center z-10 pt-16 pb-10 px-4">
+        <div className="flex flex-col items-center text-center z-10 pb-10 px-4">
           <h1
             style={{ fontFamily: "Poppins, sans-serif" }}
             className="font-medium text-[42px] md:text-[42px] leading-[115%] tracking-[0.03rem] text-center antialiased bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"

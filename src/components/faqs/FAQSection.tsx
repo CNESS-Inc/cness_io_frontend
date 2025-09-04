@@ -82,9 +82,8 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
   );
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 pt-5 pb-10">
-      {/* Tabs */}
-      <div className="flex flex-wrap gap-2">
+    <div className="w-full max-w-7xl mx-auto px-4 pt-5 md:pb-10 lg:pb-20">
+      <div className="flex md:hidden flex-col gap-3">
         {faqs.map((category) => (
           <button
             key={category.id}
@@ -93,17 +92,40 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
               setOpenInCol1(null);
               setOpenInCol2(null);
             }}
-            className={`px-12 py-3 text-base transition rounded-t-xl ${
-              activeTabId === category.id
-                ? "text-[#1A1A1A] font-semibold bg-[#E2F9FF]"
-                : "text-[#64748B] font-normal border-t border-l border-r border-[#CBD5E1]"
-            }`}
+            className={`w-full px-6 py-3 text-sm rounded-xl transition
+        ${
+          activeTabId === category.id
+            ? "bg-[#E2F9FF] text-[#1A1A1A] font-semibold"
+            : "border border-[#CBD5E1] text-[#64748B]"
+        }`}
           >
             {category.title}
           </button>
         ))}
       </div>
-      <div className="relative flex flex-col gap-10 pt-10 pb-20 justify-center items-center rounded-tr-3xl rounded-br-3xl rounded-bl-3xl overflow-hidden">
+      {/* Medium+ screens: separate buttons */}
+      <div className="hidden md:flex gap-4 flex-wrap">
+        {faqs.map((category) => (
+          <button
+            key={category.id}
+            onClick={() => {
+              setActiveTabId(category.id);
+              setOpenInCol1(null);
+              setOpenInCol2(null);
+            }}
+            className={`px-6 lg:px-12 py-2 lg:py-3 text-sm md:text-base transition rounded-t-xl
+        ${
+          activeTabId === category.id
+            ? "text-[#1A1A1A] font-semibold bg-[#E2F9FF]"
+            : "text-[#64748B] font-normal border-t border-l border-r border-[#CBD5E1]"
+        }`}
+          >
+            {category.title}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-10 md:mt-0 relative flex flex-col gap-10 pt-10 pb-20 justify-center items-center md:rounded-tr-3xl md:rounded-br-3xl md:rounded-bl-3xl overflow-hidden">
         <img
           src={bg}
           alt="gradient"

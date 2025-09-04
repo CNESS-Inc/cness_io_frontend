@@ -1,20 +1,32 @@
 // TopicModal.tsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export interface Topic {
   id: string;
-  topic_name: string;   // ← expected by the modal
+  topic_name: string; // ← expected by the modal
   slug?: string;
 }
 
 export interface TopicModalProps {
   topics: Topic[];
+  userSelectedTopics: Topic[];
   onSelect: (selected: string[]) => void;
   onClose?: () => void;
 }
 
-export default function TopicModal({ topics, onSelect, onClose }: TopicModalProps) {
+export default function TopicModal({
+  topics,
+  userSelectedTopics,
+  onSelect,
+  onClose,
+}: TopicModalProps) {
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (userSelectedTopics && userSelectedTopics.length > 0) {
+      setSelectedTopics(userSelectedTopics.map((t) => t.id));
+    }
+  }, [userSelectedTopics]);
 
   const handleToggle = (id: string) => {
     setSelectedTopics((prev) =>
@@ -42,7 +54,7 @@ export default function TopicModal({ topics, onSelect, onClose }: TopicModalProp
           Choose Your Conscious Topics
         </h2>
         <p className="text-gray-600 text-center mb-6">
-         What’s on your mind? Pick topics to share and explore.
+          What’s on your mind? Pick topics to share and explore.
         </p>
 
         <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto">
@@ -67,7 +79,9 @@ export default function TopicModal({ topics, onSelect, onClose }: TopicModalProp
             disabled={selectedTopics.length === 0}
             className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg shadow-md disabled:opacity-50"
           >
-            Continue
+            {userSelectedTopics && userSelectedTopics.length > 0
+              ? "Update"
+              : "Continue"}
           </button>
         </div>
       </div>
