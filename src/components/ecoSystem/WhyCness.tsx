@@ -1,5 +1,5 @@
 import line1 from "../../assets/Line 1.png";
-import line2 from "../../assets/Line 2.png";
+import line2 from "../../assets/line 2.png";
 import logo from "../../assets/logo.png";
 import shine from "../../assets/shine.svg";
 import why1 from "../../assets/why1.png";
