@@ -1,17 +1,17 @@
-import Button from "../components/ui/Button";
+import EcoHero from "../components/ecoSystem/EcoHero";
+import EcoSystemApp from "../components/ecoSystem/EcoSystemApp";
 import LazySection from "../components/ui/LazySection";
 import Header from "../layout/Header";
 import joinImage from "../assets/join-team.png";
+import Button from "../components/ui/Button";
+import WhatOffer from "../components/ecoSystem/WhatOffer";
+import WhyCness from "../components/ecoSystem/WhyCness";
 import GetInTouch from "../components/sections/GetInTouch";
 import Subscribe from "../components/sections/Subscribe";
 import Footer from "../layout/Footer/Footer";
-import CertificationsHero from "../components/certificationsComponents/CertificationsHero";
-import Benefit from "../components/certificationsComponents/Benefit";
-import CertificationLevel from "../components/certificationsComponents/CertificationLevel";
-import Process from "../components/certificationsComponents/Process";
 import SectionFaq from "../components/faqs/SectionFaq";
 
-export default function Certifications() {
+export default function EcoSystem() {
   const faqs = [
     {
       question: "Who can apply?",
@@ -39,30 +39,18 @@ export default function Certifications() {
         "No worries — you can reattempt after revisiting the learning material.",
     },
   ];
-
   return (
     <>
       <Header />
-      {/* hero section */}
       <LazySection effect="fade-up" delay={0.2}>
-        <CertificationsHero />
-        <Benefit />
-        <CertificationLevel />
+        <EcoHero />
       </LazySection>
-
-      {/* certification process section  */}
       <LazySection effect="fade-up" delay={0.2}>
-        <Process />
+        <EcoSystemApp />
       </LazySection>
-
-      {/* faq section  */}
-      <LazySection effect="fade-up" delay={0.2}>
-        <SectionFaq faqs={faqs} />
-      </LazySection>
-
       <LazySection effect="fade-up" delay={0.2}>
         <section className="flex flex-col items-center relative w-full ">
-          <div className="relative w-full  lg:h-[350px] md:h-[350px] h-[420px] overflow-hidden rounded-xl">
+          <div className="relative w-full lg:h-[350px] md:h-[350px] h-[420px] overflow-hidden rounded-xl">
             <div className=" sm:flex gap-[53.5px] top-2 left-0 inline-flex items-center absolute opacity-50 join-section-bg">
               <div className="bg-[#00D2FF] relative w-[480px] h-[365px] rounded-[182.5px] blur-[175px] bg-first" />
               <div className="bg-[#6340FF] relative w-[450px] h-[365px] rounded-[182.5px] blur-[175px] bg-second" />
@@ -84,10 +72,13 @@ export default function Certifications() {
                   style={{ fontFamily: "Poppins, sans-serif" }}
                   className="font-medium text-[#2a2a2a] text-center text-2xl sm:text-3xl md:text-[42px] tracking-normal sm:tracking-[0] leading-[1.3] sm:leading-[50px] w-full"
                 >
-                  Join us on this Journey to grow, connect,
-                  <br />
-                  and make an impact.
+                  Start your journey from Loneliness to <br /> Wholeness to
+                  Recognition.
                 </h2>
+                <p className="text-center w-full font-['Open Sans'] text-[#494949] font-400 text-[16px] leading-[24.38px] tracking-[0px]">
+                  Join a movement that sees you, supports you, and helps your
+                  conscious work shine.
+                </p>
               </div>
 
               <div className="flex items-center justify-center w-full joining-btn ">
@@ -96,16 +87,24 @@ export default function Certifications() {
                   className="jakarta font-normal w-fit rounded-[100px] h-[42px] py-1 px-8 self-stretch text-[14px] "
                   onClick={() => (window.location.href = "/sign-up")}
                 >
-                  Join Us
+                  Create Your Profile
                 </Button>
               </div>
             </div>
           </div>
         </section>
       </LazySection>
-
+      <LazySection effect="fade-up" delay={0.2}>
+        <WhatOffer />
+      </LazySection>
+      <LazySection effect="fade-up" delay={0.2}>
+        <WhyCness />
+      </LazySection>
       <LazySection effect="fade-up" delay={0.2}>
         <GetInTouch />
+      </LazySection>
+      <LazySection effect="fade-up" delay={0.2}>
+        <SectionFaq faqs={faqs} />
       </LazySection>
       <LazySection effect="fade-up" delay={0.2}>
         <Subscribe />

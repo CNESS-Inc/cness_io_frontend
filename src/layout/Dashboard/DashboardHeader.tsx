@@ -24,6 +24,8 @@ interface Notification {
   title: string;
   description: string;
   createdAt: string;
+  redirection: string | null;
+  data_id: string | null;
   sender_user: {
     id: string;
     role: string | null;
@@ -57,7 +59,6 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
   
   // State for notifications from API
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  console.log("🚀 ~ DashboardHeader ~ notifications:", notifications)
   
   const { showToast } = useToast();
   
@@ -75,8 +76,18 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
       console.error("❌ Connection failed:", err.message);
     };
     
-    const handleNotification = (data: { count: number; message: { title: string; description: string } }) => {
-      console.log("🔔 Notification event:", data);
+    const handleNotification = (data: {
+      redirection: any;
+      data_id: any;
+      id: string;
+      notification_type: string;
+      is_read: boolean;
+      sender_id: string | null;
+      createdAt: any;
+      receiver_id: string;
+      sender_profile: { user_id: string; first_name: string; last_name: string; } | null;
+      sender_user: { id: string; role: string | null; is_active: boolean; } | null; count: number; message: { title: string; description: string } 
+}) => {
       
       // Update notification count
       setNotificationCount(data.count.toString());
@@ -85,16 +96,18 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
       // Add new notification to the top of the list
       if (data.message) {
         const newNotification: Notification = {
-          id: Date.now().toString(),
-          notification_type: "activity",
-          is_read: false,
-          sender_id: null,
-          receiver_id: "",
-          title: data.message.title,
-          description: data.message.description,
-          createdAt: new Date().toISOString(),
-          sender_user: null,
-          sender_profile: null
+          id: data?.id,
+          notification_type: data?.notification_type,
+          is_read: data?.is_read,
+          sender_id: data?.sender_id,
+          receiver_id: data?.receiver_id,
+          title: data.message?.title,
+          description: data?.message?.description,
+          createdAt: data?.createdAt?.toISOString(),
+          sender_user: data?.sender_user,
+          sender_profile: data?.sender_profile,
+          redirection: data?.redirection,
+          data_id: data?.data_id,
         };
         
         setNotifications((prev: Notification[]) => [newNotification, ...prev.slice(0, 9)]);
@@ -219,6 +232,42 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
     navigate("/dashboard/notification");
   };
 
+  // Handle notification click and redirect based on redirection type
+  const handleNotificationItemClick = (notification: Notification) => {
+  setIsNotificationDropdownOpen(false);
+
+  // Mark notification as read
+  setNotifications(prev =>
+    prev.map(n =>
+      n.id === notification.id ? { ...n, is_read: true } : n
+    )
+  );
+
+  // Build query string
+  const query = `?openpost=true&dataset=${notification.data_id || ""}`;
+
+  // Handle redirection based on notification type
+  switch (notification.redirection) {
+    case "profile":
+      if (notification.data_id) {
+        navigate(`/dashboard/userprofile/${notification.data_id}`);
+      }
+      break;
+
+    case "post":
+      if (notification.data_id) {
+        navigate(`/dashboard/profile${query}`);
+      }
+      break;
+
+    default:
+      // For notifications without specific redirection or unknown types
+      navigate(`/dashboard/notification${query}`);
+      break;
+  }
+};
+
+
   // Format the date to a more readable format
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -336,6 +385,7 @@ const DashboardHeader = ({ toggleMobileNav }: any) => {
                       <div 
                         key={notification.id} 
                         className={`px-4 py-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${!notification.is_read ? 'bg-blue-50' : ''}`}
+                        onClick={() => handleNotificationItemClick(notification)}
                       >
                         <div className="flex justify-between items-start">
                           <h4 className="font-medium text-sm text-gray-800">{notification.title}</h4>

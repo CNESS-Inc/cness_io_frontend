@@ -14,29 +14,18 @@ import {
   Link as LinkIcon,
 } from "lucide-react";
 import Modal from "../../../components/ui/Modal";
-import TopicModal from "../../../components/Social/Topicmodel";
 import RegisterModal from './RegisterModal'
 
 // import { MdContentCopy } from "react-icons/md";
 
 import {
-  AddPost,
   AddStory,
-  GetFollowingUser,
   GetStory,
-  GetUserPost,
   MeDetails,
   PostsDetails,
-  PostsLike,
-  SendFollowRequest,
-  UnFriend,
-  SendFriendRequest,
   GetFriendStatus,
-  SavePost,
   ReportPost,
-  getTopics,
-  UserSelectedTopic,
-  getUserSelectedTopic,
+  getAllTopics,
   GetPostsDetails,
   GetAllStory,
   GoogleLoginDetails
@@ -54,11 +43,14 @@ import { useToast } from "../../../components/ui/Toast/ToastProvider";
 import FollowedUsersList from "../../../pages/FollowedUsersList";
 import CollectionList from "../../../pages/CollectionList";
 import SharePopup from "../../../components/Social/SharePopup";
-import { buildShareUrl, copyPostLink } from "../../../lib/utils";
+import { buildShareUrl } from "../../../lib/utils";
 import Button from "../../../components/ui/Button";
 
 import { useGoogleLogin } from "@react-oauth/google";
 import ReCAPTCHA from "react-google-recaptcha";
+
+import { registerUser } from "../../../pages/Signingup";
+
 
 interface Post {
   id: string;
@@ -287,8 +279,7 @@ export default function SocialFeed() {
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [postMessage, setPostMessage] = useState("");
-  const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
-  const [_apiMessage, setApiMessage] = useState<string | null>(null);
+  const [_apiMessage] = useState<string | null>(null);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
   const [storyMessage, setStoryMessage] = useState("");
   const [selectedStoryVideo, setSelectedStoryVideo] = useState<File | null>(
@@ -304,7 +295,7 @@ export default function SocialFeed() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>(
+  const [expandedPosts] = useState<Record<string, boolean>>(
     {}
   );
   const [postVideoPreviewUrl, setPostVideoPreviewUrl] = useState<string | null>(
@@ -316,16 +307,16 @@ export default function SocialFeed() {
     type: "options" | "share" | null;
   }>({ postId: null, type: null });
 
-  const [activeView, setActiveView] = useState<
+  const [activeView] = useState<
     "posts" | "following" | "collection"
   >("posts");
   const [followedUsers, setFollowedUsers] = useState<FollowedUser[]>([]);
-  const [collectionItems, setCollectionItems] = useState<CollectionItem[]>([]);
+  const [collectionItems] = useState<CollectionItem[]>([]);
   
   const [_isPostsLoading, setIsPostsLoading] = useState(false);
-  const [isFollowingLoading, setIsFollowingLoading] = useState(false);
+  const [isFollowingLoading] = useState(false);
  
-  const [isCollectionLoading, setIsCollectionLoading] = useState(false);
+  const [isCollectionLoading] = useState(false);
   const [storiesData, setStoriesData] = useState<Story[]>([]);
   // const [addNewPost, setAddNewPost] = useState(false)
 
@@ -338,7 +329,7 @@ export default function SocialFeed() {
     [key: string]: string;
   }>({});
 
-  const [connectingUsers, setConnectingUsers] = useState<{
+  const [connectingUsers] = useState<{
     [key: string]: boolean;
   }>({});
 
@@ -367,69 +358,108 @@ export default function SocialFeed() {
     });
   };
 
-  const handleConnect = async (userId: string) => {
-    if(!loggedInUserID){
-        setShowRegisterModal(true); 
-        return; 
+  const [registerForm, setRegisterForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    referralCode: "",
+  });
+const [registerLoading, setRegisterLoading] = useState(false);
+const [registerError, setRegisterError] = useState<string | null>(null);
+
+const handleRegisterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  setRegisterForm({ ...registerForm, [e.target.name]: e.target.value });
+};
+
+const handleRegisterSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setRegisterError(null);
+
+  // Username validation
+  if (!registerForm.username.trim()) {
+    setRegisterError("Username is required");
+    return;
+  } else if (registerForm.username.length < 3) {
+    setRegisterError("Username must be at least 3 characters");
+    return;
+  } else if (registerForm.username.length > 20) {
+    setRegisterError("Username must be less than 20 characters");
+    return;
+  } else if (!/^[a-zA-Z0-9_]+$/.test(registerForm.username)) {
+    setRegisterError("Username can only contain letters, numbers, and underscores");
+    return;
+  }
+
+  // Email validation
+  if (!registerForm.email.trim()) {
+    setRegisterError("Email is required");
+    return;
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(registerForm.email)) {
+    setRegisterError("Please enter a valid email address");
+    return;
+  }
+
+  // Password validation
+  if (!registerForm.password) {
+    setRegisterError("Password is required");
+    return;
+  } else if (registerForm.password.length < 8) {
+    setRegisterError("Password must be at least 8 characters");
+    return;
+  } else if (!/[A-Z]/.test(registerForm.password)) {
+    setRegisterError("Password must contain at least one uppercase letter");
+    return;
+  } else if (!/[0-9]/.test(registerForm.password)) {
+    setRegisterError("Password must contain at least one number");
+    return;
+  } else if (!/[^A-Za-z0-9]/.test(registerForm.password)) {
+    setRegisterError("Password must contain at least one special character");
+    return;
+  }
+
+  // Confirm password validation
+  if (!registerForm.confirmPassword) {
+    setRegisterError("Please confirm your password");
+    return;
+  } else if (registerForm.password !== registerForm.confirmPassword) {
+    setRegisterError("Passwords do not match");
+    return;
+  }
+
+  // Recaptcha validation
+  if (!recaptchaValue) {
+    setRegisterError("Please complete the captcha.");
+    return;
+  }
+
+  setRegisterLoading(true);
+  try {
+    const result = await registerUser({
+      username: registerForm.username,
+      email: registerForm.email,
+      password: registerForm.password,
+      referralCode: registerForm.referralCode,
+      recaptcha: recaptchaValue || "",
+    });
+    console.log("🚀 ~ handleRegisterSubmit ~ result:", result);
+    if (result?.success) {
+      setShowRegisterModal(false);
+      showToast({
+        type: "success",
+        message: "A verification email has been sent. Please verify to login.!",
+        duration: 2000,
+      });
+    } else {
+      setRegisterError(result.message || "Registration failed.");
     }
-    else{
-      try {
-        setConnectingUsers((prev) => ({ ...prev, [userId]: true }));
+  } catch (err: any) {
+    setRegisterError(err.message || "Registration error.");
+  } finally {
+    setRegisterLoading(false);
+  }
+};
 
-        // Check if already connected
-        if (friendRequests[userId] === "connected") {
-          // If connected, delete friend
-          const formattedData = {
-            friend_id: userId,
-          };
-
-          const response = await UnFriend(formattedData);
-
-          if (response.success) {
-            setFriendRequests((prev) => ({
-              ...prev,
-              [userId]: "connect",
-            }));
-            showToast({
-              message: "Friend removed successfully",
-              type: "success",
-              duration: 3000,
-            });
-          }
-        } else {
-          // If not connected, send friend request
-          const formattedData = {
-            friend_id: userId,
-          };
-
-          const response = await SendFriendRequest(formattedData);
-
-          if (response.success) {
-            // Immediately update the button state to "requested"
-            setFriendRequests((prev) => ({
-              ...prev,
-              [userId]: "requested",
-            }));
-            showToast({
-              message:
-                response.success.message || "Friend request sent successfully",
-              type: "success",
-              duration: 3000,
-            });
-          }
-        }
-      } catch (error) {
-        console.error("Error handling connect:", error);
-        showToast({
-          message: "Something went wrong. Please try again.",
-          type: "error",
-          duration: 3000,
-        });
-      } finally {
-        setConnectingUsers((prev) => ({ ...prev, [userId]: false }));
-      }
-    }
-  };
 
   // Function to get friend status
   const getFriendStatus = (userId: string) => {
@@ -496,89 +526,13 @@ export default function SocialFeed() {
     }
   };
 
-  // Add this function to fetch followed users
-  const fetchFollowedUsers = async () => {
-    setIsFollowingLoading(true);
-    setActiveView("following");
-    try {
-      const res = await GetFollowingUser();
-      // Transform the API response to match FollowedUser interface
-      const transformedUsers = res.data.data.rows.map((item: any) => ({
-        id: item.following_id,
-        username: item.following_user.username,
-        first_name: item.following_user.profile.first_name,
-        last_name: item.following_user.profile.last_name,
-        profile_picture: item.following_user.profile.profile_picture,
-        is_following: true, // Since these are users you're following
-      }));
 
-      setFollowedUsers(transformedUsers);
-    } catch (error) {
-      console.error("Error fetching followed users:", error);
-      // Optional: Show error to user
-      showToast({
-        message: "Failed to load followed users",
-        type: "error",
-        duration: 3000,
-      });
-    } finally {
-      setIsFollowingLoading(false);
-    }
-  };
-
-  const fetchCollectionItems = async () => {
-    setIsCollectionLoading(true);
-    setActiveView("collection");
-    try {
-      const res = await GetUserPost();
-
-      // Transform the API response to match CollectionItem interface
-      const transformedItems = res.data.data.rows.map((item: any) => {
-        // Get the first image URL if available, or use profile picture as fallback
-        const firstImageUrl =
-          item.file &&
-            item.file.split(",")[0].trim() !== "https://dev.cness.io/file/"
-            ? item.file.split(",")[0].trim()
-            : item.profile.profile_picture;
-
-        return {
-          id: item.id,
-          title:
-            item.content.length > 30
-              ? `${item.content.substring(0, 30)}...`
-              : item.content || "Untitled Post",
-          description: `Posted by ${item.profile.first_name} ${item.profile.last_name}`,
-          image_url: firstImageUrl,
-          created_at: item.createdAt,
-          // Add any additional fields you want to display
-          originalData: item, // Keep original data if needed for navigation
-        };
-      });
-
-      setCollectionItems(transformedItems);
-    } catch (error) {
-      console.error("Error fetching collection items:", error);
-      // Optional: Show error to user
-      showToast({
-        message: "Failed to load collection items",
-        type: "error",
-        duration: 3000,
-      });
-    } finally {
-      setIsCollectionLoading(false);
-    }
-  };
 
   const menuRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const containerRef = useRef<HTMLDivElement | null>(null);
   const loggedInUserID = localStorage.getItem("Id");
   const CONTENT_LIMIT = 150;
-  const toggleExpand = (postId: string) => {
-    setExpandedPosts((prev) => ({
-      ...prev,
-      [postId]: !prev[postId],
-    }));
-  };
+  
 
   const getUserPosts = async () => {
     if (isLoading || !hasMore) return;
@@ -622,47 +576,15 @@ export default function SocialFeed() {
     }
   };
 
-  const getFreshPosts = async () => {
-    if (isLoading || !hasMore) return;
-
-    setIsLoading(true);
-    setIsPostsLoading(true);
-    try {
-      // Call the API to get the posts for the current page
-      const res = await PostsDetails(1);
-      if (res?.data) {
-        const newPosts = res?.data.data.rows || [];
-        const totalPages = res?.data?.data?.count / 10 || 0;
-
-        if (newPosts.length === 0) {
-          setHasMore(false); // No more posts to load
-        } else {
-          setUserPosts(newPosts);
-
-          // Check if the current page is the last page
-          if (page >= totalPages) {
-            setHasMore(false); // We've loaded all available pages
-          } else {
-            setPage(2); // Load the next page
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    } finally {
-      setIsLoading(false);
-      setIsPostsLoading(false);
-    }
-  };
-
+  
   useEffect(() => {
     if(loggedInUserID){
-        getUserPosts();
-        fetchStory();
+        navigate("/dashboard/feed");
     }else{
 
         getUserPosts();
         fetchStory();
+        fetchTopics();
         setTimeout(() => {
             setShowRegisterModal(true); 
         }, 2000);
@@ -705,7 +627,6 @@ export default function SocialFeed() {
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setSelectedVideo(file);
       // Create preview URL
       const videoUrl = URL.createObjectURL(file);
       setPostVideoPreviewUrl(videoUrl);
@@ -716,66 +637,6 @@ export default function SocialFeed() {
     setSelectedImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmitPost = async () => {
-    if (
-      !postMessage &&
-      !selectedImages.length &&
-      !selectedVideo &&
-      !selectedTopic
-    ) {
-      showToast({
-        message: "Please add a message, select media, or choose a topic.",
-        type: "error",
-        duration: 3000,
-      });
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("content", postMessage);
-    formData.append("topic_id", selectedTopic);
-
-    // Append all selected images
-    selectedImages.forEach((image) => {
-      formData.append("file", image);
-    });
-
-    // Append video if selected
-    if (selectedVideo) {
-      formData.append("file", selectedVideo);
-    }
-
-    try {
-      const response = await AddPost(formData);
-      if (response) {
-        showToast({
-          message: "Post created successfully",
-          type: "success",
-          duration: 3000,
-        });
-
-        getFreshPosts();
-
-        setShowPopup(false);
-        // Reset form
-        setPostMessage("");
-        setSelectedTopic("");
-        setSelectedImages([]);
-        setSelectedVideo(null);
-        if (postVideoPreviewUrl) {
-          URL.revokeObjectURL(postVideoPreviewUrl);
-          setPostVideoPreviewUrl(null);
-        }
-      }
-    } catch (err: any) {
-      console.error(err);
-      showToast({
-        message: err?.response?.data?.error?.message || "Failed to create post",
-        type: "error",
-        duration: 5000,
-      });
-    }
-  };
 
   const handleStoryVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -860,82 +721,6 @@ export default function SocialFeed() {
       setStoriesData(res?.data?.data || []);
     } catch (error) {
       console.error("Error fetching stories:", error);
-    }
-  };
-
-  const openPostPopup = () => {
-    if(!loggedInUserID){
-        setShowRegisterModal(true);
-        return;
-    }
-    else
-    {
-      setShowPopup(true);
-      setApiMessage(null);
-    }
-    
-  };
-
-  const openStoryPopup = () => {
-    if(!loggedInUserID){
-        setShowRegisterModal(true);
-        return;
-    }
-    else
-    {
-      setShowStoryPopup(true);
-      setApiStoryMessage(null);
-    }
-  };
-
-  const handleLike = async (postId: string) => {
-    if(!loggedInUserID){
-        setShowRegisterModal(true); 
-        return; 
-    }
-    try {
-      const formattedData = { post_id: postId };
-      PostsLike(formattedData);
-      setUserPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === postId
-            ? {
-              ...post,
-              is_liked: !post.is_liked,
-              likes_count: post.is_liked
-                ? post.likes_count - 1
-                : post.likes_count + 1,
-            }
-            : post
-        )
-      );
-    } catch (error) {
-      console.error("Error fetching like details:", error);
-    }
-  };
-
-  const handleFollow = async (userId: string) => {
-    if(!loggedInUserID){
-        setShowRegisterModal(true); 
-        return; 
-    } 
-    else
-    {
-      try {
-        const formattedData = {
-          following_id: userId,
-        };
-        await SendFollowRequest(formattedData);
-        setUserPosts((prevPosts) =>
-          prevPosts.map((post) =>
-            post.user_id === userId
-              ? { ...post, if_following: !post.if_following }
-              : post
-          )
-        );
-      } catch (error) {
-        console.error("Error fetching selection details:", error);
-      }
     }
   };
 
@@ -1025,7 +810,6 @@ export default function SocialFeed() {
   useEffect(() => {
     const fetchInitialData = async () => {
         setIsPostsLoading(true);
-        await getUserPosts();
         setIsPostsLoading(false);
     };
     
@@ -1035,41 +819,6 @@ export default function SocialFeed() {
     }
   }, []);
 
-  
-
-  // Function to save post to collection
-  const savePostToCollection = async (postId: string) => {
-    if(!loggedInUserID){
-        setShowRegisterModal(true); 
-        return; 
-    }
-    try {
-      const response = await SavePost(postId);
-
-      if (response.success) {
-        showToast({
-          type: "success",
-          message: "Post saved to collection successfully!",
-          duration: 2000,
-        });
-        //setIsSavingPost(postId);
-        // Update the post's saved status in your posts array
-        setUserPosts((prevPosts) =>
-          prevPosts.map((post) =>
-            post.id === postId ? { ...post, is_saved: true } : post
-          )
-        );
-      } else {
-        throw new Error("Failed to save post");
-      }
-    } catch (error) {
-      showToast({
-        type: "error",
-        message: "Failed to save post to collection",
-        duration: 2000,
-      });
-    }
-  };
 
   // Function to report post
   const reportPost = async () => {
@@ -1110,16 +859,6 @@ export default function SocialFeed() {
     }
   };
 
-  // Function to open report modal
-  const openReportModal = (postId: string) => {
-    if(!loggedInUserID){
-        setShowRegisterModal(true); 
-        return; 
-    }
-    setSelectedPostForReport(postId);
-    setShowReportModal(true);
-    
-  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -1141,25 +880,10 @@ export default function SocialFeed() {
 
   const [selectedTopic, setSelectedTopic] = useState<string>(""); // dropdown state
   const [topics, setTopics] = useState<Topic[]>([]); // list of topics
-  const [userSelectedTopics, setUserSelectedTopics] = useState<Topic[]>([]); // list of user selected topics
-  const [showTopicModal, setShowTopicModal] = useState(false);
-
-
-  useEffect(() => {
-    if(loggedInUserID){
-        fetchUserSelectedTopics();
-    }
-  }, []);
-
-  useEffect(() => {
-    if(loggedInUserID){
-        fetchTopics();
-    }
-  }, []);
 
   const fetchTopics = async () => {
     try {
-      const response = await getTopics();
+      const response = await getAllTopics();
       if (
         response?.success?.statusCode === 200 &&
         response?.data?.data?.length
@@ -1178,78 +902,6 @@ export default function SocialFeed() {
     }
   };
 
-  const fetchUserSelectedTopics = async () => {
-    if (!loggedInUserID) {
-      showToast({
-        message: "No user ID found.",
-        type: "error",
-        duration: 2000,
-      });
-      return;
-    }
-    try {
-      const response = await getUserSelectedTopic(loggedInUserID);
-      if (
-        response?.success?.statusCode === 200 &&
-        response?.data?.data?.length > 0
-      ) {
-        setUserSelectedTopics(response?.data?.data);
-      } else {
-        console.warn(
-          "Error during fetch user selected topics details",
-          response
-        );
-      }
-    } catch (error: any) {
-      console.error("Error fetching user selected topic details:", error);
-      if (error?.response?.status === 404) {
-        setShowTopicModal(true);
-      } else {
-        showToast({
-          message: "Failed to load User Selected Topics.",
-          type: "error",
-          duration: 3000,
-        });
-      }
-    }
-  };
-
-  const handleTopicsSelected = async (ids: string[]) => {
-    if (!loggedInUserID) {
-      showToast({
-        message: "No user ID found.",
-        type: "error",
-        duration: 2000,
-      });
-      return;
-    }
-    try {
-      const payload = { topicIds: ids };
-
-      const response = await UserSelectedTopic(loggedInUserID, payload);
-      if (response?.success?.statusCode === 201) {
-       
-        setShowTopicModal(false);
-        fetchUserSelectedTopics();
-      } else if (response?.success?.statusCode === 200) {
-        showToast({
-          message:
-            "Looks like you've selected every available Conscious Topics.",
-          type: "error",
-          duration: 3000,
-        });
-      } else {
-        console.warn("Error during add user selected topic", response);
-      }
-    } catch (error) {
-      console.error("Error fetching badge details:", error);
-      showToast({
-        message: "Something went wrong. Please try again.",
-        type: "error",
-        duration: 3000,
-      });
-    }
-  };
 
   const handleGoogleLoginSuccess = async (tokenResponse: any) => {
       const token = tokenResponse.access_token;
@@ -1306,14 +958,14 @@ export default function SocialFeed() {
                           type="text"
                           placeholder="Start a Post"
                           className="flex-1 cursor-pointer px-3 py-1 md:px-4 md:py-2 rounded-full border border-gray-300 text-sm md:text-[16px] focus:outline-none bg-white"
-                          onClick={() => openPostPopup()}
+                          onClick={() => navigate("/log-in")}
                           readOnly
                         />
                       </div>
                       <div className="flex justify-between md:justify-center md:gap-10 text-xs md:text-[15px] text-gray-700 mt-2 md:mt-3">
                         <button
                           className="flex items-center gap-1 md:gap-2"
-                          onClick={() => openPostPopup()}
+                          onClick={() => navigate("/log-in")}
                         >
                           <Image
                             src="/youtube.png"
@@ -1328,7 +980,7 @@ export default function SocialFeed() {
                         </button>
                         <button
                           className="flex items-center gap-1 md:gap-2"
-                          onClick={() => openPostPopup()}
+                          onClick={() => navigate("/log-in")}
                         >
                           <Image
                             src="/picture.png"
@@ -1362,7 +1014,7 @@ export default function SocialFeed() {
                   <div className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory mt-3 md:mt-4">
                     {/* Create Story Card */}
                     <div
-                      onClick={() => openStoryPopup()}
+                      onClick={() => navigate("/log-in")}
                       className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-[12px] overflow-hidden relative cursor-pointer shrink-0 snap-start"
                     >
                       <img
@@ -1399,7 +1051,8 @@ export default function SocialFeed() {
                     {storiesData.map((story) => (
                       <div
                         key={story.id}
-                        className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-[12px] overflow-hidden relative"
+                        className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-[12px] overflow-hidden relative mohan"
+                        onClick={() => navigate("/log-in")}
                       >
                         <StoryCard
                           id={story.id}
@@ -1487,7 +1140,7 @@ export default function SocialFeed() {
                           <div className="flex gap-2">
                             {/* Connect Button */}
                             <button
-                              onClick={() => handleConnect(post.user_id)}
+                              onClick={() => navigate("/log-in")}
                               disabled={connectingUsers[post.user_id] || false}
                               className={`flex items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
                                 ${
@@ -1509,7 +1162,7 @@ export default function SocialFeed() {
                             </button>
                             {/* Follow Button */}
                             <button
-                              onClick={() => handleFollow(post.user_id)}
+                              onClick={() => navigate("/log-in")}
                               className={`flex items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
                                 ${post.if_following
                                   ? "bg-transparent text-blue-500 hover:text-blue-600"
@@ -1548,12 +1201,7 @@ export default function SocialFeed() {
                                     <ul className="space-y-1">
                                       <li>
                                         <button
-                                          onClick={() => {
-                                            copyPostLink(`${window.location.origin}/post/${post.id}`,
-                                              (msg) => showToast({ type: "success", message: msg, duration: 2000 }),
-                                              (msg) => showToast({ type: "error", message: msg, duration: 2000 })
-                                            );
-                                          }}
+                                          onClick={() => navigate("/log-in") }
                                           className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
                                         >
                                           <LinkIcon className="w-4 h-4" />
@@ -1563,7 +1211,7 @@ export default function SocialFeed() {
                                       <li>
                                         <button
                                           onClick={() =>
-                                            savePostToCollection(post.id)
+                                            navigate("/log-in")
                                           }
                                           disabled={post.is_saved}
                                           className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
@@ -1577,7 +1225,7 @@ export default function SocialFeed() {
                                       <li>
                                         <button
                                           onClick={() =>
-                                            openReportModal(post.id)
+                                            navigate("/log-in")
                                           }
                                           className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
                                         >
@@ -1617,12 +1265,7 @@ export default function SocialFeed() {
                                     <ul className="space-y-1">
                                       <li>
                                         <button
-                                          onClick={() => {
-                                            copyPostLink(`${window.location.origin}/post/${post.id}`,
-                                              (msg) => showToast({ type: "success", message: msg, duration: 2000 }),
-                                              (msg) => showToast({ type: "error", message: msg, duration: 2000 })
-                                            );
-                                          }}
+                                          onClick={() => navigate("/log-in") }
                                           className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
                                         >
                                           <LinkIcon className="w-4 h-4" />
@@ -1632,7 +1275,7 @@ export default function SocialFeed() {
                                       <li>
                                         <button
                                           onClick={() =>
-                                            savePostToCollection(post.id)
+                                            navigate("/log-in")
                                           }
                                           disabled={post.is_saved}
                                           className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
@@ -1663,7 +1306,7 @@ export default function SocialFeed() {
                             )}...`}
                           {post?.content?.length > CONTENT_LIMIT && (
                             <button
-                              onClick={() => toggleExpand(post.id)}
+                              onClick={() => navigate("/log-in") }
                               className="text-blue-500 ml-1 text-xs md:text-sm font-medium hover:underline focus:outline-none"
                             >
                               {expandedPosts[post.id]
@@ -1761,7 +1404,7 @@ export default function SocialFeed() {
 
                       <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
                         <button
-                          onClick={() => handleLike(post.id)}
+                          onClick={() => navigate("/log-in")}
                           disabled={isLoading}
                           className={`flex items-center justify-center gap-2 rounded-2xl border border-gray-200 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 shadow-sm ${isLoading ? "opacity-50 cursor-not-allowed" : ""
                             }`}
@@ -1774,10 +1417,7 @@ export default function SocialFeed() {
                           <span>Affirmation Modal</span>
                         </button>
                         <button
-                          onClick={() => {
-                            setSelectedPostId(post.id);
-                            setShowCommentBox(true);
-                          }}
+                          onClick={() => navigate("/log-in") }
                           className="flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  border border-[#E5E7EB] rounded-xl font-semibold text-sm md:text-base text-[#7077FE] hover:bg-gray-50 shadow-sm"
                         >
                           <img
@@ -1791,7 +1431,7 @@ export default function SocialFeed() {
                 </button> */}
                         <div className="relative">
                           <button
-                            onClick={() => toggleMenu(post.id, "share")}
+                            onClick={() => navigate("/log-in")}
                             className="flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6   border border-[#E5E7EB] rounded-xl font-semibold text-sm md:text-base text-[#7077FE] hover:bg-gray-50 shadow-sm"
                           >
                             <Share2 className="w-5 h-5 md:w-6 md:h-6" />
@@ -1800,7 +1440,7 @@ export default function SocialFeed() {
                           {openMenu.postId === post.id && openMenu.type === "share" && (
                             <SharePopup
                               isOpen={true}
-                              onClose={() => toggleMenu(post.id, "share")}
+                              onClose={() => navigate("/log-in") }
                               url={buildShareUrl()} // or pass your own URL if needed
                               position="bottom"
                             />
@@ -1817,7 +1457,7 @@ export default function SocialFeed() {
                     People You Follow
                   </h3>
                   <button
-                    onClick={() => setActiveView("posts")}
+                    onClick={() => navigate("/log-in") }
                     className="text-sm text-[#7C81FF] hover:underline"
                   >
                     Back to Posts
@@ -1849,7 +1489,7 @@ export default function SocialFeed() {
                     My Collection
                   </h3>
                   <button
-                    onClick={() => setActiveView("posts")}
+                    onClick={() => navigate("/log-in") }
                     className="text-sm text-[#7C81FF] hover:underline"
                   >
                     Back to Posts
@@ -1876,66 +1516,21 @@ export default function SocialFeed() {
               </h3>
               <div className="w-full border-t border-[#C8C8C8] my-4"></div>
               <ul className="space-y-4 text-sm md:text-[15px] text-gray-700 px-4">
-                <li
-                  onClick={() => navigate("/dashboard/trendingpost")}
-                  className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
-                >
-                 1. #AI
-                </li>
-                <li
-                  onClick={fetchCollectionItems}
-                  className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
-                >
-                  2. #Consicous
-                </li>
-                <li
-                  onClick={fetchFollowedUsers}
-                  className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
-                >
-                  3. #Social_impact 🔥
-                </li>
-                <li
-                  onClick={fetchFollowedUsers}
-                  className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
-                >
-                  4. #Save_water 💧
-                </li>
+                { /* Replace with actual trending topics */}
+                { topics.map((topic, index) => (
+                  <li
+                    key={index}   
+                    onClick={() => navigate("/log-in") }
+                    className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+                  >
+                    {index + 1}. #{topic.topic_name}
+                  </li>
+                )) }
+                
               </ul>
             </div>
 
-            {/* User Selected Topics Below Quick Actions */}
-            {userSelectedTopics?.length > 0 && (
-              <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
-                <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
-                  My Picks
-                </h3>
-                <div className="w-full border-t border-[#C8C8C8] my-4"></div>
-                <ul className="space-y-3 text-sm md:text-[15px] text-gray-700 px-4">
-                  {userSelectedTopics?.map((topic) => (
-                    <button
-                      key={topic.id}
-                      onClick={() =>
-                        navigate(`/dashboard/${topic.slug}`, {
-                          state: {
-                            topics,
-                            userSelectedTopics,
-                          },
-                        })
-                      }
-                      className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
-                    >
-                      <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-                      {topic.topic_name}
-                    </button>
-                  ))}
-                  {userSelectedTopics?.length === 0 && (
-                    <button disabled className="text-gray-400 italic">
-                      No selected topics available
-                    </button>
-                  )}
-                </ul>
-              </div>
-            )}
+            
 
           </div>
 
@@ -2111,11 +1706,7 @@ export default function SocialFeed() {
                         src={postVideoPreviewUrl}
                       />
                       <button
-                        onClick={() => {
-                          setSelectedVideo(null);
-                          URL.revokeObjectURL(postVideoPreviewUrl);
-                          setPostVideoPreviewUrl(null);
-                        }}
+                        onClick={() => navigate("/log-in") }
                         className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center"
                       >
                         ×
@@ -2154,7 +1745,7 @@ export default function SocialFeed() {
                     </select>
 
                     <button
-                      onClick={handleSubmitPost}
+                      onClick={() => navigate("/log-in") }
                       className="bg-[#7077FE] text-white px-6 py-2 rounded-full hover:bg-[#5b63e6]"
                     >
                       Post
@@ -2182,7 +1773,7 @@ export default function SocialFeed() {
                     Upload Story
                   </h2>
                   <button
-                    onClick={() => setShowStoryPopup(false)}
+                    onClick={() => navigate("/log-in")}
                     className="text-black text-[26px] hover:text-black cursor-pointer"
                   >
                     ×
@@ -2289,13 +1880,7 @@ export default function SocialFeed() {
             />
           )}
 
-          {showTopicModal && (
-            <TopicModal
-              topics={topics} // ← correct prop name
-              onSelect={handleTopicsSelected} // ← now defined
-              onClose={() => setShowTopicModal(false)}
-            />
-          )}
+          
         </div>
 
      
@@ -2347,26 +1932,14 @@ export default function SocialFeed() {
 
       {/* Register popup */}
       <RegisterModal isOpen={showRegisterModal} onClose={() => setShowRegisterModal(false)}>
-        <div className="flex items-center justify-center">
-            <div className="w-6/12">
-                <Image
-                    src="/registerwelcome.png"
-                    alt="registerwelcome"
-                    width={'100%'}
-                    height={'650px'}
-                    className="object-contain rounded-0"
-                />
-            </div>
+        {/* Register Form */}
+        <form onSubmit={handleRegisterSubmit} className="flex items-center justify-center">
+          <div className="w-6/12">
+            <Image src="/registerwelcome.png" alt="registerwelcome" width={'100%'} height={'650px'} className="object-contain rounded-0" />
+          </div>
           <div className="w-6/12 relative pl-8">
-
-            <h2 className="text-2xl font-bold text-center text-gray-900">
-              Create a Free Account
-            </h2>
-            <p className="text-sm text-gray-500 text-center mt-1">
-              ✓ Forever free plan &nbsp; ✓ Setup in minutes
-            </p>
-
-            {/* Google Sign up */}
+            <h2 className="text-2xl font-bold text-center text-gray-900">Create a Free Account</h2>
+            <p className="text-sm text-gray-500 text-center mt-1">✓ Forever free plan &nbsp; ✓ Setup in minutes</p>
             <button 
             type="button"
             onClick={() => {
@@ -2380,42 +1953,60 @@ export default function SocialFeed() {
                 src="/google-icon-logo.svg"  alt="Google" className="h-5 w-5 mr-2"
               /> Register with Google
             </button>
-
             <div className="flex items-center my-6">
               <hr className="flex-grow border-gray-300" />
               <span className="px-2 text-sm text-gray-500">Or sign up with</span>
               <hr className="flex-grow border-gray-300" />
             </div>
+            
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
               <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                type="text"
+                name="username"
+                value={registerForm.username}
+                onChange={handleRegisterChange}
+                placeholder="Username"
+                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none" 
+                required
               />
             </div>
+              <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={registerForm.email}
+                onChange={handleRegisterChange}
+                placeholder="Enter your email"
+                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                required
+              />
+            </div>
+          
             <div className="flex justify-between">
               <div className="mb-4 w-[48%]">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Password
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
                 <input
                   type="password"
+                  name="password"
+                  value={registerForm.password}
+                  onChange={handleRegisterChange}
                   placeholder="Type your password"
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                  required
                 />
-                
               </div>
               <div className="mb-4 w-[48%]">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Re-type Password
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Re-type Password</label>
                 <input
                   type="password"
+                  name="confirmPassword"
+                  value={registerForm.confirmPassword}
+                  onChange={handleRegisterChange}
                   placeholder="Re-type your password"
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                  required
                 />
               </div>
             </div>
@@ -2424,50 +2015,49 @@ export default function SocialFeed() {
             </p>
             <div className="flex flex-col gap-2 justify-between ">
               <div className="mb-4 w-[100%]">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Referral code (optional)
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Referral code (optional)</label>
                 <input
                   type="text"
+                  name="referralCode"
+                  value={registerForm.referralCode}
+                  onChange={handleRegisterChange}
                   placeholder="Enter your referral code"
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
                 />
-            </div>
-            <div className="mb-6 w-[100%]">
-              <div className="w-full h-16 rounded-md flex items-center justify-center  text-gray-500">
-                <ReCAPTCHA
+              </div>
+              <div className="mb-6 w-[100%]">
+                <div className="w-full h-16 rounded-md flex items-center justify-center  text-gray-500">
+                  <ReCAPTCHA
                     ref={recaptchaRef}
                     sitekey={RECAPTCHA_SITE_KEY}
                     onChange={handleCaptchaChange}
                     style={{ width: '100%' }}
                   />
                   {errors.recaptcha && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {errors.recaptcha}
-                    </p>
+                    <p className="mt-1 text-sm text-red-600">{errors.recaptcha}</p>
                   )}
+                </div>
               </div>
             </div>
-            </div>
-            
-
+            {registerError && (
+              <p className="text-sm text-red-600 mb-2">{registerError}</p>
+            )}
             <Button
               type="submit"
               variant="gradient-primary"
               className="w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none relative overflow-hidden cursor-pointer bg-gradient-to-r from-[#7077FE] to-[#F07EFF] hover:from-[#7077FE] hover:to-[#7077FE] text-white relative flex items-center gap-2 font-[Poppins] font-medium text-[15px] leading-5 flex justify-center rounded-[100px] py-3 px-10 self-stretch transition-colors duration-500 ease-in-out"
-              disabled={!recaptchaValue}
+              disabled={registerLoading || !recaptchaValue}
             >
-              Sign Up
+              {registerLoading ? "Signing Up..." : "Sign Up"}
             </Button>
             <p className="text-sm text-center text-gray-600 mt-4">
               Already have an account?{" "}
-              <a href="#" className="text-purple-600 hover:underline font-medium">
+              <Link to="/log-in" className="text-purple-600 hover:underline font-medium">
                 Login
-              </a>
+              </Link>
             </p>
           </div>
-        </div>
-
+        </form>
       </RegisterModal>
 
     </>

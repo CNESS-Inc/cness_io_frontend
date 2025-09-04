@@ -59,6 +59,8 @@ import Pricing from "../pages/Pricing";
 import TopicPost from "../pages/TopicPost";
 import CnessMarketplace from "../pages/CnessMarketplace";
 import Certifications from "../pages/Certifications";
+import Faqs from "../pages/Faqs";
+import EcoSystem from "../pages/EcoSystem";
 import Premium from "../pages/Premium";
 import WhyCness from "../pages/WhyCness";
 
@@ -113,6 +115,14 @@ export const router = createBrowserRouter([
       {
         path: "certifications",
         element: <Certifications />,
+      },
+      {
+        path: "ecosystem",
+        element: <EcoSystem />,
+      },
+      {
+        path: "faq",
+        element: <Faqs />,
       },
       {
         path: "comingSoon",
@@ -301,9 +311,10 @@ export const router = createBrowserRouter([
             element: <CreatorGuideline />,
           },
           {
-            path: "Profile",
+            path: "Profile/:id?",
             element: <Profile />,
           },
+
           {
             path: "MyCollection/:id",
             element: <Mycollectionview />,
@@ -414,8 +425,8 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "social-front", 
-    element : <SocialFront />,
+    path: "social-front",
+    element: <SocialFront />,
   },
   {
     path: "/email-verify",

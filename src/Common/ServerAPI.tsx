@@ -187,6 +187,7 @@ export const EndPoint = {
   get_my_referrals: "/profile/user/getmyreferrals",
   get_my_referral_code: "/profile/user/getMyReferralCode",
   get_referral_amount: "/profile/user/getReferralAmount",
+  affiliate_withdrawal_request: "/profile/user/affiliateWithdrawalRequest",
   subscription: "/subscription",
   get_badge: "/profile/get-user-badge",
   generate_sso_token: "/auth/generate-sso-token",
@@ -202,6 +203,7 @@ export const EndPoint = {
   get_topics: "/topics",
   select_topic: "/userselecttopics",
   by_topic_post: "/user/posts/topic",
+  get_all_topics: "/topics/get/all",
   
 };
 
@@ -317,6 +319,22 @@ export const getReferralEarning = (
     ServerAPI.APIMethod.GET,
     null,
     `${EndPoint.get_referral_amount}?user_id=${formData.user_id}`
+  );
+};
+
+export const withdrawalAmount = (
+  formData: { user_id: any; amount: number; country_code: string; phone: string;}
+): ApiResponse => {
+  const data: Partial<{ user_id: any; amount: number; country_code: string; phone: string;}> = {
+    user_id: formData?.user_id,
+    amount: formData?.amount,
+    country_code: formData?.country_code,
+    phone: formData?.phone,
+  };
+  return executeAPI(  
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.affiliate_withdrawal_request
   );
 };
 
@@ -1175,6 +1193,10 @@ export const getTopics = (): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.GET, null, EndPoint.get_topics);
 };
 
+export const getAllTopics = (): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.GET, null, EndPoint.get_all_topics);
+};
+
 export const UserSelectedTopic = (
   id: string,
   payload: { topicIds: string[] }
@@ -1190,6 +1212,17 @@ export const getUserSelectedTopic = (id: string): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.GET,
     null,
+    `${EndPoint.select_topic}/${id}/topics`
+  );
+};
+
+export const updateUserSelectedTopic = (
+  id: string,
+  payload: { topicIds: string[] }
+): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PUT,
+    payload,
     `${EndPoint.select_topic}/${id}/topics`
   );
 };

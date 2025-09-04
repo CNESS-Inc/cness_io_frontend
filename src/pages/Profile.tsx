@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { useEffect } from "react"; // at top
 import FollowingModal from "../components/Profile/Following";
 import FollowersModal from "../components/Profile/Followers";
@@ -204,6 +204,7 @@ const demoPosts: MyPostProps[] = [
 
 export default function Profile() {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(
     location.state?.activeTab || profiles[0].tabs[0].label
   );
@@ -211,6 +212,7 @@ export default function Profile() {
   //const handleAddCollection = () => setBoards(demoBoards);
   const navigate = useNavigate();
   const [selectedPost, setSelectedPost] = useState<MyPostProps | null>(null);
+  console.log("🚀 ~ Profile ~ selectedPost:", selectedPost)
   const [openFollowing, setOpenFollowing] = useState(false);
   const [openFollowers, setopenfollowers] = useState(false);
 
@@ -225,6 +227,25 @@ export default function Profile() {
     isOpen: boolean;
     postId: string | null;
   }>({ isOpen: false, postId: null });
+
+  
+
+  useEffect(() => {
+    // Check if URL has the openpost parameter and a post ID
+    const shouldOpenPost = searchParams.get('openpost') === 'true';
+    const postIdFromUrl = searchParams.get('dataset');
+    
+    if (shouldOpenPost && postIdFromUrl && userPosts.length > 0) {
+      // Find the post with matching ID
+      const postToOpen = userPosts.find(post => post.id === postIdFromUrl);
+      if (postToOpen) {
+        setSelectedPost(postToOpen);
+        
+        // Optional: Clear the URL parameters after opening the post
+        // navigate(location.pathname, { replace: true });
+      }
+    }
+  }, [searchParams, userPosts, navigate, location.pathname]);
 
   const fetchFollowingUsers = async () => {
     try {
