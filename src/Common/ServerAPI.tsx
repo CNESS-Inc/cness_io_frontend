@@ -1194,6 +1194,17 @@ export const getUserSelectedTopic = (id: string): ApiResponse => {
   );
 };
 
+export const updateUserSelectedTopic = (
+  id: string,
+  payload: { topicIds: string[] }
+): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PUT,
+    payload,
+    `${EndPoint.select_topic}/${id}/topics`
+  );
+};
+
 export const getPostByTopicId = (
   id: string,
   page_no: number = 1,

@@ -10,7 +10,7 @@ interface CertificationFaqProps {
   faqs: FaqItem[];
 }
 
-export default function CertificationFaq({ faqs }: CertificationFaqProps) {
+export default function SectionFaq({ faqs }: CertificationFaqProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const toggle = (index: number) => {

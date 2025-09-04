@@ -9,7 +9,7 @@ import CertificationsHero from "../components/certificationsComponents/Certifica
 import Benefit from "../components/certificationsComponents/Benefit";
 import CertificationLevel from "../components/certificationsComponents/CertificationLevel";
 import Process from "../components/certificationsComponents/Process";
-import CertificationFaq from "../components/certificationsComponents/CertificationFaq";
+import SectionFaq from "../components/faqs/SectionFaq";
 
 export default function Certifications() {
   const faqs = [
@@ -57,7 +57,7 @@ export default function Certifications() {
 
       {/* faq section  */}
       <LazySection effect="fade-up" delay={0.2}>
-        <CertificationFaq faqs={faqs} />
+        <SectionFaq faqs={faqs} />
       </LazySection>
 
       <LazySection effect="fade-up" delay={0.2}>

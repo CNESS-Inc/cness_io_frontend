@@ -2292,6 +2292,7 @@ export default function SocialFeed() {
           {showTopicModal && (
             <TopicModal
               topics={topics} // ← correct prop name
+              userSelectedTopics={userSelectedTopics} // ← correct prop name
               onSelect={handleTopicsSelected} // ← now defined
               onClose={() => setShowTopicModal(false)}
             />
