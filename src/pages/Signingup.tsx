@@ -584,3 +584,40 @@ export default function Signingup() {
     </>
   );
 }
+
+export async function registerUser({
+  username,
+  email,
+  password,
+  referralCode,
+  // recaptcha,
+}: {
+  username: string;
+  email: string;
+  password: string;
+  referralCode?: string;
+  recaptcha: string;
+}) {
+  // You can add extra validation here if needed
+  try {
+    const payload = {
+      username,
+      email,
+      password,
+      referral_code: referralCode || "",
+    };
+    // Call your API
+    const response = await RegisterDetails(payload);
+    if (response?.success) {
+      return { success: true, message: response.success.message };
+    } else {
+      return { success: false, message: "Registration failed" };
+    }
+  } catch (error: any) {
+    // Handle server errors
+    if (error?.response?.data?.error?.message) {
+      return { success: false, message: error.response.data.error.message };
+    }
+    return { success: false, message: error.message || "Registration error" };
+  }
+}
