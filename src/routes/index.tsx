@@ -62,7 +62,6 @@ import Certifications from "../pages/Certifications";
 import Faqs from "../pages/Faqs";
 import EcoSystem from "../pages/EcoSystem";
 
-
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
 const DirectoryPage = lazy(() => import("../pages/DirectoryPage"));
@@ -302,9 +301,10 @@ export const router = createBrowserRouter([
             element: <CreatorGuideline />,
           },
           {
-            path: "Profile",
+            path: "Profile/:id?",
             element: <Profile />,
           },
+
           {
             path: "MyCollection/:id",
             element: <Mycollectionview />,
@@ -415,8 +415,8 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "social-front", 
-    element : <SocialFront />,
+    path: "social-front",
+    element: <SocialFront />,
   },
   {
     path: "/email-verify",
