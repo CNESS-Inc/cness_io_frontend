@@ -1,7 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
-import { GenerateAffiliateCode, getReferredUsers, getMyRefferralCode, getReferralEarning } from "../Common/ServerAPI";
+import { 
+  GenerateAffiliateCode, 
+  getReferredUsers, 
+  getMyRefferralCode, 
+  getReferralEarning,
+  withdrawalAmount
+} from "../Common/ServerAPI";
 import {
   FacebookShareButton,
   LinkedinShareButton,
@@ -173,16 +179,17 @@ const AffiliateGenerateCode = () => {
       setWithdrawError('Enter your phone number.');
       return;
     }
-    // Call your withdrawal API here
+    
     try {
       // Example payload
-      // const payload = {
-      //   user_id: localStorage.getItem("Id"),
-      //   amount: amountNum,
-      //   country_code: withdrawCountryCode,
-      //   phone: withdrawPhone,
-      // };
-      // await withdrawalApi(payload); // Replace with your API
+      const payload = {
+        user_id: localStorage.getItem("Id"),
+        amount: amountNum,
+        country_code: withdrawCountryCode,
+        phone: withdrawPhone,
+      };
+      const response =  await withdrawalAmount(payload); // Replace with your API
+      console.log('Withdrawal response:', response);
       setIsWithdrawModalOpen(false);
       alert("Withdrawal request submitted!");
     } catch (err) {
@@ -392,18 +399,18 @@ const AffiliateGenerateCode = () => {
       <Modal isOpen={isWithdrawModalOpen} onClose={() => setIsWithdrawModalOpen(false)}>
         <form onSubmit={handleWithdrawSubmit} className="p-0 min-w-[400px] w-full">
           <h2 className="text-lg font-bold mb-4">Withdrawal Request</h2>
-          <div className="mb-3">
+          <div className="mb-4">
             <label className="block mb-1 font-medium">Request Money</label>
             <input
               type="number"
               value={withdrawAmount}
               onChange={e => setWithdrawAmount(e.target.value)}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
               min="1"
               required
             />
           </div>
-          <div className="mb-3">
+          <div className="mb-4">
             <label className="block mb-1 font-medium">Phone Number (with country code)</label>
             <div className="flex justify-between ">
               <Select
@@ -419,7 +426,7 @@ const AffiliateGenerateCode = () => {
                 type="text"
                 value={withdrawPhone}
                 onChange={e => setWithdrawPhone(e.target.value)}
-                className="w-full border px-3 py-2 rounded"
+                className="ml-2 w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
                 placeholder="Enter phone number"
                 required
               />
@@ -429,7 +436,7 @@ const AffiliateGenerateCode = () => {
           {withdrawError && <div className="text-red-500 mb-2">{withdrawError}</div>}
           <div className="flex justify-between flex-row-reverse gap-3 mt-4">
             <Button type="submit" variant="gradient-primary">Submit</Button>
-            <Button type="button" onClick={() => setIsWithdrawModalOpen(false)}>Cancel</Button>
+            <Button type="button" variant="white-outline" onClick={() => setIsWithdrawModalOpen(false)}>Cancel</Button>
           </div>
         </form>
       </Modal>
