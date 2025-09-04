@@ -33,7 +33,7 @@ const SocialNavbar = ({
       icon: <img src={iconMap["socialuser"]} alt="Home Icon" className="w-5 h-5 transition duration-200 group-hover:brightness-0 group-hover:invert" />,
       label: "Login / Sing up",
       active: true,
-      path: "/",
+      path: "/log-in",
     },
     {
       id: "Home",
@@ -51,7 +51,7 @@ const SocialNavbar = ({
       ),
       label: "Search",
       active: true,
-      path: "/",
+      path: "/log-in",
     },
     {
       id: "Trending",
@@ -60,7 +60,7 @@ const SocialNavbar = ({
       ),
       label: "Trending",
       active: true,
-      path: "/",
+      path: "/log-in",
     },
     
   ];
