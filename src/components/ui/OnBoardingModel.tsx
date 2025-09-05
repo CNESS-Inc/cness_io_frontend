@@ -58,7 +58,7 @@ export default function PopupOnboardingModal({
         aria-modal="true"
         className="
          relative grid grid-cols-1 md:grid-cols-[475px_475px]
-    w-full max-w-[1020px] h-auto md:h-[730px]
+    w-full max-w-[1020px] h-auto md:min-h-[850px]
     rounded-[32px] p-[20px] md:p-[30px]
     shadow-2xl bg-white
         "
@@ -69,7 +69,7 @@ export default function PopupOnboardingModal({
         <div
           className="
             relative overflow-hidden rounded-[32px]
-            w-[475px] h-[670px]
+            w-[475px] h-[800px]
             px-[60px] pt-[86px] pb-[86px]
           "
         >
@@ -78,13 +78,17 @@ export default function PopupOnboardingModal({
             alt=""
             className="absolute inset-0 h-full w-full object-cover"
           />
-         <div
-  className="absolute inset-0"
-  style={{
-    background: "linear-gradient(135deg, #FFFFFF 0%, #FEDEDE 40%, #EE9CE5 100%)",
-    opacity: 0.6,
-  }}
-/>
+          <div
+            className="absolute inset-0"
+            style={{
+              background: "linear-gradient(135deg, #FFFFFF 0%, #FEDEDE 40%, #EE9CE5 100%)",
+              opacity: 0.6,
+            }}
+          />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-center w-full">
+            <h2 className="text-center font-[Poppins] font-medium text-[42px] leading-[100%] tracking-[-0.03em] mb-5 bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text">Welcome!</h2>
+            <span className="text-[#64748B] text-center text-[16px]">Discover certifications, connect with like-<br/>minded people, grow your ideas, and make an<br/> impact—all in one place.</span>
+          </div>
           
           {/* (Optional) left-side content can be slotted here later */}
         </div>

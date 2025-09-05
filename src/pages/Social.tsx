@@ -1,36 +1,41 @@
-import LeftSocial from "../components/Social/LeftSocial.tsx";
-import { Outlet, useLocation } from "react-router-dom";
-import RightSocial from "../components/Social/RightSocial.tsx";
+import { useState, useEffect } from "react";
+import LeftSocial from "../components/sections/FrontSocialSection/SocialNavbar.tsx";
+import { useLocation } from "react-router-dom";
 import Header from "../layout/Header/Header.tsx";
 import Footer from "../layout/Footer/Footer.tsx";
-import AllSocialPost from "../components/Social/AllSocialPost.tsx";
+import SocialFeed from "../components/sections/FrontSocialSection/SocialFeed.tsx"; 
 
 const Social = () => {
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const [selectedDomain, setSelectedDomain] = useState<string>("");
+  const [sort, setSort] = useState<"az" | "za">("az");
   const location = useLocation();
 
-  const isSinglePost = location.pathname.includes("singlepost");
+  useEffect(() => {
+      if (window.innerWidth >= 768) {
+        setIsMobileNavOpen(true);
+      }
+    }, []);
 
   return (
     <>
       <Header />
 
-      <div className="flex flex-col w-full gap-4 p-4 md:flex-row">
+      <div className="flex flex-col w-full bg-[#F7F7F7] gap-4 p-4 md:flex-row h-full">
         {/* First Part (1/3 width on medium screens and above) */}
-        <div className="w-full md:w-1/4 md:sticky ">
-          <LeftSocial />
+        <div className="w-full md:w-1/4 bg-white rounded-[12px] h-[300px]">
+          <LeftSocial
+            isMobileNavOpen={isMobileNavOpen}
+            currentPath={location.pathname}
+            selectedDomain={selectedDomain}
+            setSelectedDomain={setSelectedDomain}
+            sort={sort}
+            setSort={setSort}
+          />
         </div>
-
-        {/* Second Part (2/3 width on medium screens and above) */}
-        {!isSinglePost && <AllSocialPost />}
-        <Outlet />
-
-        {/* Third Part (1/3 width on medium screens and above) */}
-        <div className="w-full md:w-1/4  md:sticky">
-          <RightSocial />
-        </div>
+    
+        <SocialFeed />
       </div>
-
-      {/* <StoryPostModel isModalOpen={isModalOpen} closeModal={closeModal} /> */}
 
       <Footer />
     </>

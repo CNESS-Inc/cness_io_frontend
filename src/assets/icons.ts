@@ -44,6 +44,8 @@ import socialsearch from './social_search.png';
 import socialtrending from './social_trending.png';
 import leaderboard from './social_leaderboard.png';
 import socialannouncement from './social_announcement.png';
+import storyplus from './plus.png';
+import sociallike from './social_like.png';
 
 
 
@@ -92,6 +94,8 @@ socialhome,
 socialsearch,
 socialtrending,
 leaderboard,
-socialannouncement
+socialannouncement,
+storyplus,
+sociallike
 
 };
