@@ -23,6 +23,8 @@ import {
 } from "react-icons/fa";
 import Select from "react-select";
 
+import { useToast } from "../components/ui/Toast/ToastProvider";
+
 interface ReferredUser {
   id: string;
   username: string;
@@ -51,6 +53,8 @@ const AffiliateGenerateCode = () => {
   const [withdrawCountryCode, setWithdrawCountryCode] = useState('');
   const [withdrawPhone, setWithdrawPhone] = useState('');
   const [withdrawError, setWithdrawError] = useState('');
+
+  const { showToast } = useToast();
 
   const countryCode = ["+376", "+971", "+93", "+1268", "+355", "+1264", "+374", "+244", "+672", "+54", "+1684", "+43", "+61", "+297", "+358", "+994", "+387", "+1246", "+880", "+32", "+226", "+359", "+973", "+257", "+229", "+590", "+1441", "+673", "+591", "+55", "+1242", "+975", "+267", "+375", "+501", "+1", "+61", "+243", "+236", "+242", "+41", "+225", "+682", "+56", "+237", "+86", "+57", "+506", "+53", "+238", "+61", "+357", "+420", "+49", "+253", "+45", "+1767", "+1849", "+213", "+593", "+372", "+20", "+291", "+34", "+251", "+358", "+679", "+500", "+691", "+298", "+33", "+241", "+44", "+1473", "+995", "+594", "+44", "+233", "+350", "+299", "+220", "+224", "+590", "+240", "+30", "+500", "+502", "+1671", "+245", "+595", "+852", "+504", "+385", "+509", "+36", "+62", "+353", "+972", "+44", "+91", "+246", "+964", "+98", "+354", "+39", "+44", "+1876", "+962", "+81"];
 
@@ -189,9 +193,15 @@ const AffiliateGenerateCode = () => {
         phone: withdrawPhone,
       };
       const response =  await withdrawalAmount(payload); // Replace with your API
-      console.log('Withdrawal response:', response);
-      setIsWithdrawModalOpen(false);
-      alert("Withdrawal request submitted!");
+      // console.log('Withdrawal response:', response);
+      if(response.data?.status !== 'success'){
+        setIsWithdrawModalOpen(false);
+        showToast({
+          message: 'Withdrawal request submitted successfully.',
+          type: "error",
+          duration: 5000,
+        });
+      }
     } catch (err) {
       setWithdrawError('Failed to submit request. Try again.');
     }
