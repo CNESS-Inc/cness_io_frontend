@@ -37,6 +37,7 @@ const DashboardNavbar = ({
   const [openDropdown, setOpenDropdown] = useState<{ [key: string]: boolean }>(
     {}
   );
+    const loggedInUserID = localStorage.getItem("Id");
   // const showFilterSidebar =
   //   currentPath.includes("/dashboard/DashboardDirectory/technology") ||
   //   currentPath.includes("/dashboard/search-listing");
@@ -169,7 +170,7 @@ const DashboardNavbar = ({
         // { label: "Messagings", path: "/dashboard/ComingSoon" },
       ],
     },
-    
+
     {
       id: "market-place",
       icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
@@ -225,22 +226,22 @@ const DashboardNavbar = ({
         // { label: "Partner Dashboard", path: "/dashboard/ComingSoon" },
       ],
     },
-    {
-      id: "Learning_Lab",
-      icon: (
-        <img src={iconMap["learning"]} alt="Home Icon" className="w-6 h-6" />
-      ),
-      label: "Learning Lab",
-      active: false,
-      isLearningLabDropdown: true,
-      childPaths: ["/dashboard/learning-lab"],
-      children: [
-        { label: "Modules", path: "/dashboard/learning-lab" },
-        { label: "Learning Progress", path: "/dashboard/ComingSoon" },
-        { label: "Renewal", path: "/dashboard/ComingSoon" },
-        { label: "Resources", path: "/dashboard/ComingSoon" },
-      ],
-    },
+    // {
+    //   id: "Learning_Lab",
+    //   icon: (
+    //     <img src={iconMap["learning"]} alt="Home Icon" className="w-6 h-6" />
+    //   ),
+    //   label: "Learning Lab",
+    //   active: false,
+    //   isLearningLabDropdown: true,
+    //   childPaths: ["/dashboard/learning-lab"],
+    //   children: [
+    //     { label: "Modules", path: "/dashboard/learning-lab" },
+    //     { label: "Learning Progress", path: "/dashboard/ComingSoon" },
+    //     { label: "Renewal", path: "/dashboard/ComingSoon" },
+    //     { label: "Resources", path: "/dashboard/ComingSoon" },
+    //   ],
+    // },
 
     {
       icon: <BadgePlus className="w-5 h-5" />,
@@ -379,7 +380,8 @@ const DashboardNavbar = ({
           {isProfileOpen && (
             <div className="flex flex-col gap-1 mt-3 pl-8">
               <NavLink
-                to="/dashboard/user-profile"
+                to={`/dashboard/user-profile/${loggedInUserID}`}
+                end
                 className={({ isActive }) =>
                   `px-3 py-3 rounded-lg w-full transition whitespace-nowrap ${
                     isActive ? activeSubClasses : inactiveSubClasses
@@ -387,6 +389,17 @@ const DashboardNavbar = ({
                 }
               >
                 My Profile
+              </NavLink>
+              <NavLink
+                to="/dashboard/user-profile"
+                end
+                className={({ isActive }) =>
+                  `px-3 py-3 rounded-lg w-full transition whitespace-nowrap ${
+                    isActive ? activeSubClasses : inactiveSubClasses
+                  }`
+                }
+              >
+                Edit Profile
               </NavLink>
               <NavLink
                 to="/dashboard/company-profile"
@@ -441,7 +454,7 @@ const DashboardNavbar = ({
 
           {isDropdownOpen && (
             <div className="flex flex-col gap-1 mt-3 pl-8">
-              {item.children.map((child: any, idx: number) => (
+              {item.children.map((child: any, idx: number) =>
                 child.path ? (
                   <NavLink
                     key={idx}
@@ -464,7 +477,7 @@ const DashboardNavbar = ({
                     {child.label}
                   </NavLink>
                 )
-              ))}
+              )}
             </div>
           )}
         </div>
