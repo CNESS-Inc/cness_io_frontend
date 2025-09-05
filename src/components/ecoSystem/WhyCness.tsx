@@ -38,7 +38,7 @@ export default function WhyCness() {
           "linear-gradient(101.22deg, #ACA0F8 -6.56%, #CE8FFC 61.3%, #FFF2C0 129.16%)",
       }}
     >
-        <div className="invisible lg:visible hidden lg:flex absolute top-0 left-0 w-[15rem]">
+      <div className="invisible lg:visible hidden lg:flex absolute top-0 left-0 w-[15rem]">
         <img
           src={ellipse}
           alt=""
@@ -78,24 +78,42 @@ export default function WhyCness() {
             />
           </div>
         </div>
-        <img src={line2} alt="bottom-line" className="max-h-[30px] sm:max-h-[50px] md:max-h-[80px] xl:max-h-[117px]" />
+        <img
+          src={line2}
+          alt="bottom-line"
+          className="max-h-[30px] sm:max-h-[50px] md:max-h-[80px] xl:max-h-[117px]"
+        />
       </div>
       <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-3 gap-5 xl:gap-18 pb-5">
         {whyItems.map((item) => (
           <div key={item.id} className="relative group w-full h-full">
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-white/20 via-transparent to-white/20 opacity-40 blur-[2px]"></div>
-            <div className="relative bg-white/10 backdrop-blur-lg rounded-3xl px-2 lg:px-7 py-10 text-center flex flex-col items-center justify-center border border-white/20 w-full h-full">
+            <div className="absolute inset-0 rounded-3xl pointer-events-none z-0"></div>
+
+            <div
+              className="relative z-10 w-full h-full rounded-3xl px-5 lg:px-7 py-10 flex flex-col items-center justify-center text-center"
+              style={{
+                background: "rgba(255, 255, 255, 0.1)",
+                WebkitBackdropFilter: "blur(36px)",
+                boxShadow: `inset 2px 2px 4px rgba(0, 0, 0, 0.08), inset -2px -2px 3px rgba(255, 255, 255, 0.25)`,
+                border: "0.02px solid rgba(255, 255, 255, 0.7)",
+              }}
+            >
               <img
                 src={item.icon}
                 alt={item.title}
                 className="w-12 h-12 mb-6"
               />
 
-              <h3 className="text-white font-medium text-base lg:text-lg lg:w-[80%]">
+              <h3
+                style={{ fontFamily: "Poppins, sans-serif" }}
+                className="text-white font-medium text-base lg:text-lg lg:w-[90%]"
+              >
                 {item.title}
               </h3>
 
-              <p className="pt-3 text-white text-sm font-normal">{item.desc}</p>
+              <p className="font-['Open Sans'] openSans pt-3 text-white text-sm font-normal">
+                {item.desc}
+              </p>
             </div>
           </div>
         ))}
