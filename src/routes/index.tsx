@@ -4,7 +4,7 @@ import AppLayout from "../layout/AppLayout";
 import EmailVerify from "../components/ui/EmailVerify";
 import PaymentVerify from "../components/ui/PaymentVerify";
 import ResetPassword from "../components/ui/ResetPassword";
-import Why from "../pages/Why";
+//import Why from "../pages/Why";
 // import What from "../pages/What";
 import GenerateBadgeCode from "../pages/GenerateBadgeCode";
 import GenerateAffiliateCode from "../pages/GenerateAffiliateCode";
@@ -61,6 +61,9 @@ import CnessMarketplace from "../pages/CnessMarketplace";
 import Certifications from "../pages/Certifications";
 import Faqs from "../pages/Faqs";
 import EcoSystem from "../pages/EcoSystem";
+import Premium from "../pages/Premium";
+import WhyCness from "../pages/WhyCness";
+
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -97,10 +100,10 @@ export const router = createBrowserRouter([
         element: <HomePage />,
       },
 
-      {
-        path: "why",
-        element: <Why />,
-      },
+      //{
+      // // path: "why",
+       // element: <Why />,
+      //},
       // {
       //   path: "what",
       //   element: <What />,
@@ -130,7 +133,14 @@ export const router = createBrowserRouter([
         path: "cness-marketplace",
         element: <CnessMarketplace />,
       },
-
+    {
+      path: "premium",
+      element: <Premium />,
+    },
+    {
+      path:"whycness",
+      element:<WhyCness />
+    },
       {
         path: "dashboard",
         element: <DashboardLayout />, // ✅ now it's wrapped!

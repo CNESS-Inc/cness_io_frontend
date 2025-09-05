@@ -1,4 +1,4 @@
-import AwarenessSection from "../components/sections/Awareness";
+import AwarenessNew from "../components/sections/AwarenessNew";
 import JoiningSection from "../components/sections/Joiningsection";
 import MobileSection from "../components/sections/MobileSection";
 import SocialMedia from "../components/sections/SocialMedia";
@@ -39,7 +39,7 @@ const Home = () => {
       </LazySection>
       {/* <Stepper /> */}
       <LazySection effect="fade-up" delay={0.3}>
-        <AwarenessSection />
+        <AwarenessNew />
       </LazySection>
       <LazySection effect="fade-up" delay={0.2}>
         <Certification />
