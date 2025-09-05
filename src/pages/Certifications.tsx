@@ -2,6 +2,7 @@ import Button from "../components/ui/Button";
 import LazySection from "../components/ui/LazySection";
 import Header from "../layout/Header";
 import joinImage from "../assets/join-team.png";
+import blush_join from "../assets/blush join.png";
 import GetInTouch from "../components/sections/GetInTouch";
 import Subscribe from "../components/sections/Subscribe";
 import Footer from "../layout/Footer/Footer";
@@ -63,10 +64,13 @@ export default function Certifications() {
       <LazySection effect="fade-up" delay={0.2}>
         <section className="flex flex-col items-center relative w-full ">
           <div className="relative w-full  lg:h-[350px] md:h-[350px] h-[420px] overflow-hidden rounded-xl">
-            <div className=" sm:flex gap-[53.5px] top-2 left-0 inline-flex items-center absolute opacity-50 join-section-bg">
-              <div className="bg-[#00D2FF] relative w-[480px] h-[365px] rounded-[182.5px] blur-[175px] bg-first" />
-              <div className="bg-[#6340FF] relative w-[450px] h-[365px] rounded-[182.5px] blur-[175px] bg-second" />
-              <div className="bg-[#FF994A] relative w-[520px] h-[365px] rounded-[182.5px] blur-[175px] bg-third" />
+            <div className="absolute inset-0">
+              <img
+                className="absolute h-full left-0 top-0"
+                src={blush_join}
+                alt=""
+                role="presentation"
+              />
             </div>
 
             <div className="absolute inset-0">

@@ -58,50 +58,68 @@ export default function Benefit() {
       <img
         src={Ellipse1}
         alt=""
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none select-none"
+        className="absolute top-0 left-0 w-full h-full max-h-[1551px] pointer-events-none select-none"
         aria-hidden="true"
       />
-      <div className="relative flex flex-col items-center text-center z-10 pt-16 px-4">
+      <div className="relative flex flex-col items-center text-center z-10 pt-[60px] px-20 px-4">
         <div className="w-full">
           <span
-            className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-[500] px-4 py-1 rounded-[100px] mb-6 inline-block 
-            rounded-tl-[100px] rounded-br-[100px] rounded-tr-[10px] rounded-bl-[10px] bg-white"
+            style={{ fontFamily: "Poppins, sans-serif" }}
+            className="badge text-[#D748EA] border border-[#F07EFF] text-xs font-medium px-4 py-1 rounded-[100px] inline-block 
+            rounded-tl-[100px] rounded-br-[100px] rounded-tr-[10px] rounded-bl-[10px] bg-transperant"
           >
             Why it matters
           </span>
-          <h3 className="font-poppins font-medium text-[32px] md:text-[42px] leading-[54px] tracking-[-0.02em] capitalize text-centerp">
+          <h3
+            style={{ fontFamily: "Poppins, sans-serif" }}
+            className="pt-6 font-poppins font-medium text-[32px] md:text-[42px] leading-[54px] tracking-[-0.02em] capitalize text-centerp"
+          >
             Benefits of our{" "}
-            <span className="bg-gradient-to-r from-[#D747EA] to-[#7741FB] text-transparent bg-clip-text">
+            <span
+              className="text-transparent bg-clip-text"
+              style={{
+                backgroundImage:
+                  "linear-gradient(90deg, #6340FF 59.13%, #D748EA 94.71%)",
+                WebkitBackgroundClip: "text", // Required for Safari
+                WebkitTextFillColor: "transparent", // Required for Safari
+                display: "inline-block",
+              }}
+            >
               Certification
             </span>
           </h3>
         </div>
-        <div className="flex flex-wrap gap-4 justify-center my-8">
+        <div className="pt-5 flex flex-wrap gap-4 justify-center">
           {benefits.map((item, idx) => (
             <div
               key={idx}
-              className="flex items-center gap-2 rounded-full border border-[#CBD5E1] bg-white px-5 py-2 shadow-sm hover:shadow-md transition cursor-pointer"
+              className="flex items-center gap-2 rounded-full border border-[#CBD5E1] bg-white px-5 py-2 transition cursor-pointer"
             >
               <img src={item.icon} alt={item.label} className="w-6 h-6" />
-              <span className="font-medium text-[#64748B]">{item.label}</span>
+              <span className="font-normal text-base text-[#64748B] font-['Open Sans'] openSans">
+                {item.label}
+              </span>
             </div>
           ))}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+        <div className="pt-16 grid grid-cols-1 md:grid-cols-2 gap-[26px] pb-10">
           {features.map((item, idx) => (
             <div
               key={idx}
-              className="flex flex-col sm:flex-row items-start text-left gap-4 rounded-2xl border border-[#DFDFDF] bg-white p-6 shadow-sm hover:shadow-md transition"
+              className="px-5 py-10 flex flex-col sm:flex-row items-start text-left gap-4 rounded-[20px] border border-[#DFDFDF] bg-white hover:shadow-md transition"
             >
               <div className="flex-shrink-0 w-14 h-14 flex items-center justify-center rounded-lg bg-[#6340FF]/10">
                 <img src={item.icon} alt={item.title} className="w-8 h-8" />
               </div>
 
               <div>
-                <h3 className="font-medium text-[#222224] text-lg lg:text-xl leading-snug">
+                <h3
+                  className="font-medium text-[#222224] text-lg lg:text-xl leading-snug"
+                  style={{ fontFamily: "Poppins, sans-serif" }}
+                >
                   {item.title}
                 </h3>
-                <p className="font-normal text-sm lg:text-base text-[#64748B] mt-1">
+                <p className="openSans font-['Open Sans'] font-normal text-sm lg:text-base text-[#64748B] mt-1">
                   {item.desc}
                 </p>
               </div>

@@ -53,13 +53,16 @@ export default function WhatOffer() {
   return (
     <div className="w-full max-w-7xl flex mx-auto flex-col justify-center items-center py-16 px-4">
       <div className="w-full text-center">
-        <h3 className="font-poppins font-medium text-[32px] md:text-[42px] leading-[54px] tracking-[-0.02em] capitalize text-centerp">
+        <h3
+          style={{ fontFamily: "Poppins, sans-serif" }}
+          className="font-poppins font-medium text-[32px] md:text-[42px] leading-[54px] tracking-[-0.02em] capitalize text-centerp"
+        >
           What{" "}
           <span className="bg-gradient-to-r from-[#D747EA] to-[#7741FB] text-transparent bg-clip-text">
             We Offer
           </span>
         </h3>
-        <p className="pt-2 text-center w-full font-['Open Sans'] text-[#64748B] font-400 text-[16px] leading-[24.38px] tracking-[0px]">
+        <p className="font-['Open Sans'] openSans pt-2 text-center w-full font-['Open Sans'] text-[#64748B] font-400 text-[16px] leading-[24.38px] tracking-[0px]">
           CNESS is a super app that brings together tools for professional
           growth and <br />
           personal connection in one ecosystem.
@@ -78,15 +81,20 @@ export default function WhatOffer() {
               </div>
 
               {/* Number */}
-              <span className="block text-lg text-[#4B4B4B] font-normal mb-2">
+              <span className="openSans font-['Open Sans'] block text-lg text-[#4B4B4B] font-normal mb-2">
                 /{item.id}
               </span>
 
               {/* Title */}
-              <h3 className="text-2xl font-medium text-black">{item.title}</h3>
+              <h3
+                style={{ fontFamily: "Poppins, sans-serif" }}
+                className="text-2xl font-medium text-black"
+              >
+                {item.title}
+              </h3>
 
               {/* Description */}
-              <p className="mt-2 text-base font-normal text-[#64748B] leading-relaxed">
+              <p className="openSans font-['Open Sans'] mt-2 text-base font-normal text-[#64748B] leading-relaxed">
                 {item.description}
               </p>
             </div>

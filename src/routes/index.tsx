@@ -158,6 +158,10 @@ export const router = createBrowserRouter([
             element: <UserProfilePage />,
           },
           {
+            path: "user-profile/:id",
+            element: <UserProfilePage />,
+          },
+          {
             path: "company-profile",
             element: <OrganaizationProfilepage />,
           },

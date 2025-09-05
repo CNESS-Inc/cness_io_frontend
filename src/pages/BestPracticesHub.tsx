@@ -1048,7 +1048,7 @@ useEffect(() => {
                 htmlFor="profession"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Profession*
+                Profession
               </label>
               <select
                 id="profession"
@@ -1072,7 +1072,7 @@ useEffect(() => {
                 htmlFor="interest"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Interest*
+                Interest
               </label>
               <select
                 id="interest"
@@ -1144,7 +1144,7 @@ useEffect(() => {
               </div>
             </div>
 
-            <div className="flex flex-row justify-end gap-2 pt-4 flex-wrap">
+            <div className="flex flex-row justify-center gap-2 pt-4 flex-wrap">
               <Button
                 type="button"
                 onClick={closeModal}
