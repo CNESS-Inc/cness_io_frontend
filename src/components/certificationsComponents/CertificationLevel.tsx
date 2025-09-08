@@ -13,7 +13,8 @@ export default function CertificationLevel() {
       description:
         "Entry-level certification for those beginning their journey of conscious growth.",
       icon: group1,
-      position: "md:translate-y-32 md:-translate-x-5 lg:translate-y-46 lg:-translate-x-20 xl:translate-y-68 xl:-translate-x-34", // bottom-left
+      position:
+        "md:translate-y-32 md:-translate-x-5 lg:translate-y-46 lg:-translate-x-20 xl:translate-y-68 xl:-translate-x-44", // bottom-left
       lockRotation: "31.39deg",
     },
     {
@@ -29,7 +30,8 @@ export default function CertificationLevel() {
       description:
         "Advanced recognition for change makers driving initiatives, leading communities, and creating impact.",
       icon: group3,
-      position: "md:translate-x-4 md:-translate-y-14 lg:translate-x-20 xl:-translate-y-20 xl:translate-x-34", // top-right
+      position:
+        "md:translate-x-4 md:-translate-y-14 lg:translate-x-20 xl:-translate-y-20 xl:translate-x-44", // top-right
       lockRotation: "0deg",
     },
   ];
@@ -44,28 +46,40 @@ export default function CertificationLevel() {
       <img
         src={Ellipse2}
         alt=""
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none select-none"
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-h-[1551px] pointer-events-none select-none"
         aria-hidden="true"
       />
-      <div className="relative flex flex-col items-center text-center z-10 pt-16 lg:mb-10 xl:mb-32 px-4">
+      <div className="relative flex flex-col items-center text-center z-10 pt-[86px] lg:mb-10 xl:mb-32 px-4">
         <div className="w-full pb-8">
-          <h3 className="font-poppins font-medium text-[32px] md:text-[42px] leading-[54px] tracking-[-0.02em] capitalize text-centerp">
-            <span className="bg-gradient-to-r from-[#D747EA] to-[#7741FB] text-transparent bg-clip-text">
-              Certification{" "}
+          <h3
+            style={{ fontFamily: "Poppins, sans-serif" }}
+            className="font-poppins font-medium text-[32px] md:text-[42px] leading-[54px] tracking-[-0.02em] capitalize text-centerp"
+          >
+            <span
+              className="text-transparent bg-clip-text"
+              style={{
+                backgroundImage:
+                  "linear-gradient(90deg, #6340FF 39.42%, #D748EA 72.12%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                display: "inline-block",
+              }}
+            >
+              Certification&nbsp;
             </span>
             Level
           </h3>
-          <p className="openSans lg:text-lg md:text-[16px] text-[12px] text-[#64748B] lg:mb-10 md:mb-12 my-4 max-w-4xl mx-auto transition-all duration-1000 ease-in-out">
+          <p className="openSans font-['Open Sans'] lg:text-lg md:text-[16px] text-[12px] text-[#64748B] lg:mb-10 md:mb-12 my-4 max-w-4xl mx-auto transition-all duration-1000 ease-in-out">
             Everyone starts somewhere. We recognise progress at every stage of
             your journey
           </p>
         </div>
-        <div className="relative md:py-10 lg:py-20">
+        <div className="relative md:py-10 lg:py-24">
           {/* dashed connector line */}
           <img
             src={line}
             alt="connector"
-            className="absolute left-1/2 top-[120px] -translate-x-1/2 pointer-events-none select-none w-full max-w-sm lg:max-w-lg xl:max-w-2xl"
+            className="absolute left-1/2 top-[120px] -translate-x-1/2 pointer-events-none select-none w-full max-w-sm lg:max-w-lg xl:max-w-3xl"
             style={{ zIndex: 1 }}
           />
 
@@ -99,10 +113,13 @@ export default function CertificationLevel() {
                     />
                   </div>
                 </div>
-                <h3 className="text-2xl xl:text-3xl font-medium text-black mt-6 mb-2">
+                <h3
+                  style={{ fontFamily: "Poppins, sans-serif" }}
+                  className="text-2xl xl:text-3xl font-medium text-black mt-6 mb-2"
+                >
                   {level.title}
                 </h3>
-                <p className="text-[#64748B] text-sm xl:text-base font-normal w-full xl:max-w-xl mx-auto">
+                <p className="font-['Open Sans'] openSans text-[#64748B] text-sm xl:text-base font-normal w-full xl:max-w-xl mx-auto">
                   {level.description}
                 </p>
               </div>

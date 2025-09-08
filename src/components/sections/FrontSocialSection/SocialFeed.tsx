@@ -10,13 +10,13 @@ import {
   TrendingUp,
   MoreVertical,
   Bookmark,
-  Flag,
   Link as LinkIcon,
 } from "lucide-react";
 import Modal from "../../../components/ui/Modal";
-import RegisterModal from './RegisterModal'
+import { iconMap } from "../../../assets/icons";
 
-// import { MdContentCopy } from "react-icons/md";
+import SignupModel from "../../OnBoarding/Signup";
+
 
 import {
   AddStory,
@@ -27,15 +27,13 @@ import {
   ReportPost,
   getAllTopics,
   GetPostsDetails,
-  GetAllStory,
-  GoogleLoginDetails
+  GetAllStory
 } from "../../../Common/ServerAPI";
 
 
 import createstory from "../../../assets/createstory.jpg";
 import carosuel1 from "../../../assets/carosuel1.png";
-import like from "../../../assets/like.png";
-import comment from "../../../assets/comment.png";
+// import comment from "../../../assets/comment.png";
 import comment1 from "../../../assets/comment1.png";
 import Image from "../../../components/ui/Image";
 import CommentBox from "../../../pages/CommentBox";
@@ -44,12 +42,6 @@ import FollowedUsersList from "../../../pages/FollowedUsersList";
 import CollectionList from "../../../pages/CollectionList";
 import SharePopup from "../../../components/Social/SharePopup";
 import { buildShareUrl } from "../../../lib/utils";
-import Button from "../../../components/ui/Button";
-
-import { useGoogleLogin } from "@react-oauth/google";
-import ReCAPTCHA from "react-google-recaptcha";
-
-import { registerUser } from "../../../pages/Signingup";
 
 
 interface Post {
@@ -151,14 +143,6 @@ interface Story {
   }[];
 }
 
-interface FormErrors {
-  username?: string;
-  email?: string;
-  password?: string;
-  confirmPassword?: string;
-  referralCode?: string;
-  recaptcha?: string;
-}
 
 type Topic = {
   id: string;
@@ -203,9 +187,9 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
   };
 
   return (
-    <div className="relative w-full overflow-hidden">
+    <div className="relative w-full overflow-visible ">
       {/* Media Container */}
-      <div className="w-full aspect-video rounded-3xl  bg-black">
+      <div className="w-full aspect-video rounded-3xl overflow-hidden bg-black">
         {mediaItems.map((item, index) => (
           <div
             key={index}
@@ -242,22 +226,22 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
         <>
           <button
             onClick={handlePrev}
-            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 shadow-md w-8 h-8 rounded-full flex items-center justify-center z-10"
+            className="absolute -left-4 top-1/2 transform -translate-y-1/2 bg-white shadow-md w-[42px] h-[42px] rounded-full flex items-center justify-center z-10"
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={22} />
           </button>
           <button
             onClick={handleNext}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 shadow-md w-8 h-8 rounded-full flex items-center justify-center z-10"
+            className="absolute -right-4 top-1/2 transform -translate-y-1/2 bg-white shadow-md w-[42px] h-[42px] rounded-full flex items-center justify-center z-10"
           >
-            <ChevronRight size={20} />
+            <ChevronRight size={22} />
           </button>
         </>
       )}
 
       {/* Show dots only if there are multiple items */}
       {mediaItems.length > 1 && (
-        <div className="flex justify-center gap-1 mt-2">
+        <div className="flex justify-center gap-1 mt-4 mb-4">
           {mediaItems.map((_, idx) => (
             <button
               key={idx}
@@ -334,132 +318,15 @@ export default function SocialFeed() {
   }>({});
 
   const [showReportModal, setShowReportModal] = useState(false);
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
+
   const [selectedPostForReport, setSelectedPostForReport] = useState<
     string | null
   >(null);
   const [reportReason, setReportReason] = useState("");
   // const [isSavingPost, setIsSavingPost] = useState<string | null>(null);
   const [isReportingPost, setIsReportingPost] = useState<string | null>(null);
-  //const [showTopicModal, setShowTopicModal] = useState(false);
-
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [recaptchaValue, setRecaptchaValue] = useState<string | null>(null);
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
-
-  const RECAPTCHA_SITE_KEY = "6LcmM3YrAAAAAIoMONSmkAGazWwUXdCE6fzI473L";
-
-  const handleCaptchaChange = (value: string | null) => {
-    setRecaptchaValue(value);
-    setErrors((prev) => {
-      const newErrors = { ...prev };
-      delete newErrors.recaptcha;
-      return newErrors;
-    });
-  };
-
-  const [registerForm, setRegisterForm] = useState({
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    referralCode: "",
-  });
-const [registerLoading, setRegisterLoading] = useState(false);
-const [registerError, setRegisterError] = useState<string | null>(null);
-
-const handleRegisterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  setRegisterForm({ ...registerForm, [e.target.name]: e.target.value });
-};
-
-const handleRegisterSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setRegisterError(null);
-
-  // Username validation
-  if (!registerForm.username.trim()) {
-    setRegisterError("Username is required");
-    return;
-  } else if (registerForm.username.length < 3) {
-    setRegisterError("Username must be at least 3 characters");
-    return;
-  } else if (registerForm.username.length > 20) {
-    setRegisterError("Username must be less than 20 characters");
-    return;
-  } else if (!/^[a-zA-Z0-9_]+$/.test(registerForm.username)) {
-    setRegisterError("Username can only contain letters, numbers, and underscores");
-    return;
-  }
-
-  // Email validation
-  if (!registerForm.email.trim()) {
-    setRegisterError("Email is required");
-    return;
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(registerForm.email)) {
-    setRegisterError("Please enter a valid email address");
-    return;
-  }
-
-  // Password validation
-  if (!registerForm.password) {
-    setRegisterError("Password is required");
-    return;
-  } else if (registerForm.password.length < 8) {
-    setRegisterError("Password must be at least 8 characters");
-    return;
-  } else if (!/[A-Z]/.test(registerForm.password)) {
-    setRegisterError("Password must contain at least one uppercase letter");
-    return;
-  } else if (!/[0-9]/.test(registerForm.password)) {
-    setRegisterError("Password must contain at least one number");
-    return;
-  } else if (!/[^A-Za-z0-9]/.test(registerForm.password)) {
-    setRegisterError("Password must contain at least one special character");
-    return;
-  }
-
-  // Confirm password validation
-  if (!registerForm.confirmPassword) {
-    setRegisterError("Please confirm your password");
-    return;
-  } else if (registerForm.password !== registerForm.confirmPassword) {
-    setRegisterError("Passwords do not match");
-    return;
-  }
-
-  // Recaptcha validation
-  if (!recaptchaValue) {
-    setRegisterError("Please complete the captcha.");
-    return;
-  }
-
-  setRegisterLoading(true);
-  try {
-    const result = await registerUser({
-      username: registerForm.username,
-      email: registerForm.email,
-      password: registerForm.password,
-      referralCode: registerForm.referralCode,
-      recaptcha: recaptchaValue || "",
-    });
-    console.log("🚀 ~ handleRegisterSubmit ~ result:", result);
-    if (result?.success) {
-      setShowRegisterModal(false);
-      showToast({
-        type: "success",
-        message: "A verification email has been sent. Please verify to login.!",
-        duration: 2000,
-      });
-    } else {
-      setRegisterError(result.message || "Registration failed.");
-    }
-  } catch (err: any) {
-    setRegisterError(err.message || "Registration error.");
-  } finally {
-    setRegisterLoading(false);
-  }
-};
-
+  const [openSignup, setOpenSignup] = useState(false);
+  // const [wheelCount, setWheelCount] = useState(0);
 
   // Function to get friend status
   const getFriendStatus = (userId: string) => {
@@ -526,13 +393,28 @@ const handleRegisterSubmit = async (e: React.FormEvent) => {
     }
   };
 
-
-
   const menuRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const containerRef = useRef<HTMLDivElement | null>(null);
   const loggedInUserID = localStorage.getItem("Id");
   const CONTENT_LIMIT = 150;
   
+  const wheelCountRef = useRef(0);
+
+  useEffect(() => {
+  const handleWheel = () => {
+    wheelCountRef.current += 1;
+    console.log("Wheel event count:", wheelCountRef.current);
+    if (wheelCountRef.current % 3 === 0) {
+      setOpenSignup(true);
+    }
+  };
+
+  window.addEventListener("wheel", handleWheel);
+
+  return () => {
+    window.removeEventListener("wheel", handleWheel);
+  };
+}, []);
 
   const getUserPosts = async () => {
     if (isLoading || !hasMore) return;
@@ -586,8 +468,8 @@ const handleRegisterSubmit = async (e: React.FormEvent) => {
         fetchStory();
         fetchTopics();
         setTimeout(() => {
-            setShowRegisterModal(true); 
-        }, 2000);
+            setOpenSignup(true);
+        }, 3000);
     }
     
   }, []);
@@ -762,13 +644,23 @@ const handleRegisterSubmit = async (e: React.FormEvent) => {
     if (!container) return;
 
     const { scrollTop, scrollHeight, clientHeight } = container;
+
     
     if (scrollTop + clientHeight >= scrollHeight - 10) {
         
-        getUserPosts(); // Call API when the user scrolls near the bottom\
+      getUserPosts(); 
        
     }
   };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setOpenSignup(true);
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   //@ts-ignore
   useEffect(() => {
    const container = containerRef.current;
@@ -902,41 +794,13 @@ const handleRegisterSubmit = async (e: React.FormEvent) => {
     }
   };
 
-
-  const handleGoogleLoginSuccess = async (tokenResponse: any) => {
-      const token = tokenResponse.access_token;
-  
-      try {
-        const data = await GoogleLoginDetails(token); // ✅ use your centralized API call
-        console.log("Backend response:", data);
-  
-        if (data) {
-          localStorage.setItem("token", data.jwt);
-          navigate("/log-in");
-        } else {
-          alert("Google login succeeded, but no JWT received.");
-        }
-      } catch (error) {
-        console.error("Google login error:", error);
-        alert("Google login failed. Please try again.");
-      }
-    };
-
-  const login = useGoogleLogin({
-    onSuccess: handleGoogleLoginSuccess,
-    onError: () => {
-      console.error("Google login failed");
-      alert("Google login failed.");
-    },
-  });
-
   return (
     <>
 
         <div className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-2 px-2 md:px-2 lg:px-0 w-full">
           {/* Left Side: Post & Stories - Full width on mobile */}
           <div
-            className="w-full lg:max-w-[70%] "
+            className="w-full lg:max-w-[70%]"
             ref={containerRef}
           >
             {activeView === "posts" ? (
@@ -993,18 +857,7 @@ const handleRegisterSubmit = async (e: React.FormEvent) => {
                             Photo
                           </span>
                         </button>
-                        {/* <button className="hidden md:flex items-center gap-1 md:gap-2">
-                          <Image
-                            src="/list.png"
-                            alt="list"
-                            width={20}
-                            height={16}
-                            className="object-contain rounded-0 w-5 md:w-6"
-                          />
-                          <span className="text-black text-xs md:text-sm">
-                            List
-                          </span>
-                        </button> */}
+                        
                       </div>
                     </div>
                   </div>
@@ -1038,8 +891,8 @@ const handleRegisterSubmit = async (e: React.FormEvent) => {
                         />
                       </svg>
                       <div className="absolute bottom-[46px] left-1/2 -translate-x-1/2 z-20">
-                        <div className="w-9 h-9 md:w-12 md:h-12 bg-white text-[#7C81FF] font-semibold rounded-full flex items-center justify-center text-xl shadow-md border-5">
-                          +
+                        <div className="w-9 h-9 md:w-12 md:h-12 bg-white text-[#7C81FF] font-semibold rounded-full flex items-center justify-center text-xl  border-5">
+                          <img src={iconMap["storyplus"]} alt="storyplus" className="w-4 h-4 transition duration-200 group-hover:brightness-0 group-hover:invert" />
                         </div>
                       </div>
                       <div className="absolute bottom-[14px] w-full text-center text-white text-xs md:text-[15px] font-medium z-20">
@@ -1084,9 +937,7 @@ const handleRegisterSubmit = async (e: React.FormEvent) => {
                   <div className="w-full border-t-[1px] border-[#C8C8C8] mt-4 md:mt-6"></div>
 
                   {/* Posts Section */}
-                  <div className="mt-4 px-6 py-3 bg-[rgba(112,119,254,0.1)] text-[#7077FE] font-medium rounded-xl text-center w-fit">
-                    REFLECTION SCROLL
-                  </div>
+                 
                   {userPosts.map((post) => (
                     <div
                       key={post.id}
@@ -1179,7 +1030,7 @@ const handleRegisterSubmit = async (e: React.FormEvent) => {
                             </button>
 
                             {/* Three Dots Menu */}
-                            <div className="relative">
+                            {/* <div className="relative">
                               <button
                                 onClick={() => toggleMenu(post.id, "options")}
                                 className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition-colors"
@@ -1236,7 +1087,7 @@ const handleRegisterSubmit = async (e: React.FormEvent) => {
                                     </ul>
                                   </div>
                                 )}
-                            </div>
+                            </div> */}
                           </div>
                         )}
 
@@ -1318,7 +1169,7 @@ const handleRegisterSubmit = async (e: React.FormEvent) => {
 
                         {/* Dynamic Media Block */}
                         {post.file && (
-                          <div className="rounded-lg overflow-hidden">
+                          <div className="rounded-lg">
                             {(() => {
                               const urls = post.file
                                 .split(",")
@@ -1370,19 +1221,15 @@ const handleRegisterSubmit = async (e: React.FormEvent) => {
                           <div className="flex items-center gap-1 md:gap-2">
                             <div className="flex items-center -space-x-2 md:-space-x-3">
                               <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
-                                <img
-                                  src={like}
-                                  alt="Like"
-                                  className="w-6 h-6 md:w-8 md:h-8"
-                                />
+                                <img src={iconMap["sociallike"]} alt="Home Icon" className="w-8 h-8 transition duration-200 group-hover:brightness-0 group-hover:invert" />
                               </div>
                               
-                              <span className="text-xs md:text-sm text-gray-500 pl-3 md:pl-5">
+                              <span className="text-[14px] text-[#64748B] pl-3 md:pl-5">
                                 {post.likes_count}
                               </span>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
+                          {/* <div className="flex items-center gap-2">
                             <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
                               <img
                                 src={comment}
@@ -1391,7 +1238,7 @@ const handleRegisterSubmit = async (e: React.FormEvent) => {
                               />
                             </div>
                             <span>{post.comments_count}</span>
-                          </div>
+                          </div> */}
                         </div>
                         {post.comments_count > 0 && (
                           <div>
@@ -1426,9 +1273,7 @@ const handleRegisterSubmit = async (e: React.FormEvent) => {
                           />{" "}
                           Reflections Thread
                         </button>
-                        {/* <button className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm">
-                  <img src={repost1} className="w-5 h-5 md:w-6 md:h-6" /> Repost
-                </button> */}
+                        
                         <div className="relative">
                           <button
                             onClick={() => navigate("/log-in")}
@@ -1504,15 +1349,15 @@ const handleRegisterSubmit = async (e: React.FormEvent) => {
                 )}
               </div>
             )}
-            <button className="mt-10 mb-10 w-[214px] h-[43px] bg-[#20B9EB] text-white rounded-[100px] mx-auto block">Show more result</button>
+            <button className="mt-10 mb-10 w-[214px] h-[43px] bg-[#7C81FF] text-white rounded-[100px] mx-auto block" onClick={() => navigate("/log-in")}>Show more result</button>
           </div>
 
           {/* Right Sidebar Container */}
           <div className="w-full lg:w-[30%] flex flex-col gap-4">
             {/* Quick Actions */}
             <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
-              <h3 className="text-black font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
-                Trending Topics
+              <h3 className="text-black flex items-center gap-2 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
+                <img src={iconMap["socialtrending"]} alt="Home Icon" className="w-7 h-7 transition duration-200 group-hover:brightness-0 group-hover:invert" /> Trending Topics
               </h3>
               <div className="w-full border-t border-[#C8C8C8] my-4"></div>
               <ul className="space-y-4 text-sm md:text-[15px] text-gray-700 px-4">
@@ -1931,8 +1776,8 @@ const handleRegisterSubmit = async (e: React.FormEvent) => {
       </Modal>
 
       {/* Register popup */}
+      {/*
       <RegisterModal isOpen={showRegisterModal} onClose={() => setShowRegisterModal(false)}>
-        {/* Register Form */}
         <form onSubmit={handleRegisterSubmit} className="flex items-center justify-center">
           <div className="w-6/12">
             <Image src="/registerwelcome.png" alt="registerwelcome" width={'100%'} height={'650px'} className="object-contain rounded-0" />
@@ -2059,7 +1904,9 @@ const handleRegisterSubmit = async (e: React.FormEvent) => {
           </div>
         </form>
       </RegisterModal>
+      */}
 
+      <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
     </>
   );
 }

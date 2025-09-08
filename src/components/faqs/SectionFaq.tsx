@@ -28,21 +28,25 @@ export default function SectionFaq({ faqs }: CertificationFaqProps) {
           {/* Left Content */}
           <div className="w-full flex flex-col items-center justify-center md:justify-start md:items-start text-center md:text-left">
             <span
+              style={{ fontFamily: "Poppins, sans-serif" }}
               className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-[500] px-4 py-1 rounded-[100px] inline-block 
             rounded-tl-[100px] rounded-br-[100px] rounded-tr-[10px] rounded-bl-[10px] bg-white"
             >
               Support
             </span>
-            <h1 className="text-[32px] md:text-[42px] font-medium text-[#222224] leading-tight pt-4 md:pt-2">
+            <h1
+              style={{ fontFamily: "Poppins, sans-serif" }}
+              className="text-[32px] md:text-[42px] font-medium text-[#222224] leading-tight pt-4 md:pt-2"
+            >
               FAQs
             </h1>
-            <p className="text-base text-[#64748B] pt-4 md:pt-2">
+            <p className="openSans font-['Open Sans'] text-base text-[#64748B] pt-4 md:pt-2">
               Have questions? We’ve got you covered. Explore our FAQs to find
               quick answers about certifications, benefits, levels, and the
               process to get started.
             </p>
             <div className="pt-4 md:pt-2 mb-4 md:mb-6">
-              <span className="relative inline-block bg-gradient-to-r from-[#6340FF] to-[#D748EA] text-transparent bg-clip-text text-base font-semibold after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-full after:h-[1px] after:bg-gradient-to-r after:from-[#6340FF] after:to-[#D748EA]">
+              <span className="font-['Open Sans'] openSans relative inline-block bg-gradient-to-r from-[#6340FF] to-[#D748EA] text-transparent bg-clip-text text-base font-semibold after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-full after:h-[1px] after:bg-gradient-to-r after:from-[#6340FF] after:to-[#D748EA]">
                 Chat with our friendly team
               </span>
             </div>
@@ -59,7 +63,10 @@ export default function SectionFaq({ faqs }: CertificationFaqProps) {
                     onClick={() => toggle(i)}
                     className="flex items-center justify-between w-full px-6 text-left focus:outline-none"
                   >
-                    <span className="text-lg font-medium text-[#222224]">
+                    <span
+                      className="text-lg font-medium text-[#222224]"
+                      style={{ fontFamily: "Poppins, sans-serif" }}
+                    >
                       {faq.question}
                     </span>
                     {isOpen ? (
@@ -75,7 +82,7 @@ export default function SectionFaq({ faqs }: CertificationFaqProps) {
                       isOpen ? "max-h-40 py-2" : "max-h-0 py-0"
                     }`}
                   >
-                    <p className="text-base text-[#64748B] font-normal">
+                    <p className="openSans font-['Open Sans'] text-base text-[#64748B] font-normal">
                       {faq.answer}
                     </p>
                   </div>

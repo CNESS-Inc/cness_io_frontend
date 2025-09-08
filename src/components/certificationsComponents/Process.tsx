@@ -39,15 +39,19 @@ export default function Process() {
         {/* Left Content */}
         <div className="w-full flex flex-col items-center justify-center md:justify-start md:items-start text-center md:text-left">
           <span
+            style={{ fontFamily: "Poppins, sans-serif" }}
             className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-[500] px-4 py-1 rounded-[100px] inline-block 
                rounded-tl-[100px] rounded-br-[100px] rounded-tr-[10px] rounded-bl-[10px] bg-white"
           >
             How It Works
           </span>
-          <h1 className="text-[32px] md:text-[42px] font-medium text-[#222224] leading-tight pt-2">
+          <h1
+            className="text-[32px] md:text-[42px] font-medium text-[#222224] leading-tight pt-2"
+            style={{ fontFamily: "Poppins, sans-serif" }}
+          >
             Our Certification Process
           </h1>
-          <p className="text-base text-[#64748B] mt-2">
+          <p className="openSans font-['Open Sans'] text-base text-[#64748B] mt-2">
             We’ve made the path to certification clear and straightforward — so
             you can focus on learning, growing, and getting recognized without
             complications.
@@ -55,8 +59,11 @@ export default function Process() {
           <div className="mt-4 mb-6">
             <Button
               variant="gradient-primary"
-              className="rounded-full py-2 px-4 sm:py-3 sm:px-8 text-sm sm:text-base font-normal"
+              className="font-['Plus Jakarta Sans'] rounded-full py-2 px-4 sm:py-3 sm:px-8 text-sm sm:text-base font-normal"
               onClick={() => (window.location.href = "/sign-up")}
+              style={{
+                fontFamily: "Plus Jakarta Sans",
+              }}
             >
               Get Started
             </Button>
@@ -100,13 +107,19 @@ export default function Process() {
                 key={i}
                 className="pl-6 pr-4 py-6 bg-white border border-[#DFDFDF] shadow-sm rounded-4xl"
               >
-                <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] text-transparent bg-clip-text text-xl font-semibold">
+                <span
+                  style={{ fontFamily: "Poppins, sans-serif" }}
+                  className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] text-transparent bg-clip-text text-xl font-semibold"
+                >
                   {step.step}
                 </span>
-                <h2 className="text-xl lg:text-2xl font-medium text-[#222224] mt-1">
+                <h2
+                  style={{ fontFamily: "Poppins, sans-serif" }}
+                  className="text-xl lg:text-2xl font-medium text-[#222224] mt-1"
+                >
                   {step.title}
                 </h2>
-                <p className="text-sm lg:text-base font-normal text-[#64748B] mt-1">
+                <p className="openSans font-['Open Sans'] text-sm lg:text-base font-normal text-[#64748B] mt-1">
                   {step.desc}
                 </p>
               </div>

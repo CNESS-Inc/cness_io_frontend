@@ -31,7 +31,7 @@ export default function EcoHero() {
           backgroundImage: `url(${texture})`,
         }}
       ></div>
-      <div className="flex flex-col items-center text-center z-10 py-16 px-4">
+      <div className="flex flex-col items-center text-center z-10 pt-20 pb-16 px-4">
         <h1
           style={{ fontFamily: "Poppins, sans-serif" }}
           className="font-medium text-[42px] md:text-[42px] leading-[115%] tracking-[0.03rem] text-center antialiased bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
@@ -48,8 +48,11 @@ export default function EcoHero() {
         <div className="flex justify-center items-center">
           <Button
             variant="gradient-primary"
-            className="w-full sm:w-fit rounded-[100px] hero-section-btn py-2 px-4 text-[14px] sm:py-3 sm:px-8 sm:text-base font-['Open Sans'] font-normal leading-[100%] text-center"
+            className="w-full sm:w-fit rounded-[100px] hero-section-btn py-2 px-4 text-[14px] sm:py-3 sm:px-8 sm:text-base font-normal leading-[100%] text-center"
             onClick={() => (window.location.href = "/sign-up")}
+            style={{
+              fontFamily: "Plus Jakarta Sans",
+            }}
           >
             Explore
           </Button>
