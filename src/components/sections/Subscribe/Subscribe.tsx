@@ -2,7 +2,7 @@ import Button from "../../ui/Button";
 
 export default function Subscribe() {
   return (
-    <div className="w-full h-auto bg-gradient-to-r from-[#f9f9fb] to-[#fdfdfd] py-12 px-6 rounded-xl shadow-sm">
+    <div className="w-full h-auto bg-gradient-to-r from-[#FAFAFA] to-[#F6F5FA] py-12 px-6 rounded-xl shadow-sm">
       <div className="max-w-5xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-6">
         {/* Left text */}
         <div className="text-center lg:text-left relative lg:right-30">
@@ -23,7 +23,7 @@ export default function Subscribe() {
         </div>
 
         {/* Right form */}
-        <form className="w-full max-w-md">
+        <form className="w-full max-w-xl">
           {/* Input + Button in one row */}
           <div className="flex flex-row items-center gap-5">
             <input
@@ -38,7 +38,7 @@ export default function Subscribe() {
                 bg-white px-3
                 text-[14px] text-slate-800
                 outline-none
-                focus:ring-2 focus:ring-[#9AA2FF]/40 focus:border-[#7077FE]
+                focus:ring-2 focus:ring-[#9AA2FF]/40 focus:border-[#7077FE] 
               "
             />
             <Button
