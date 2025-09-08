@@ -407,6 +407,7 @@ useEffect(() => {
       if (newPractice.file) {
         formData.append("file", newPractice.file);
       }
+      formData.append("tags", '["tag1","tag2","tag3","tag4","tag2","tag3","tag4","tag5"]');
 
       await CreateBestPractice(formData);
 
