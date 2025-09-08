@@ -194,10 +194,18 @@ const AffiliateGenerateCode = () => {
       };
       const response =  await withdrawalAmount(payload); // Replace with your API
       // console.log('Withdrawal response:', response);
-      if(response.data?.status !== 'success'){
+      if(response.success){
         setIsWithdrawModalOpen(false);
         showToast({
           message: 'Withdrawal request submitted successfully.',
+          type: "success",
+          duration: 5000,
+        });
+      }
+      else{
+        setIsWithdrawModalOpen(false);
+        showToast({
+          message: response.error?.message,
           type: "error",
           duration: 5000,
         });
