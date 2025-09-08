@@ -1023,7 +1023,7 @@ useEffect(() => {
 
       <Modal isOpen={activeModal === "bestpractices"} onClose={closeModal}>
         <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
-          <h2 className="text-xl font-bold mb-4 font-['Poppins'] font-semibold leading-normal">
+          <h2 className="text-xl mb-4 font-['Poppins'] font-semibold leading-normal">
             Add Best Practice
           </h2>
           <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
