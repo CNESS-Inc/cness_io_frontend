@@ -43,20 +43,22 @@ export default function GetInTouch()
         </div>
 
         {/* RIGHT: Copy + Contacts */}
-        <div className="place-self-center flex flex-col items-center lg:items-start text-center lg:text-left gap-3 md:gap-4">
+        <div className="place-self-center flex flex-col items-center lg:items-start 
+                text-center lg:text-left gap-3 md:gap-3 
+                lg:ml-[-60px]">
           <h3
             style={{ fontFamily: "Poppins, sans-serif" }}
-            className="text-[22px] sm:text-[24px] md:text-[28px] lg:text-[33px] font-medium leading-[1.15] tracking-[-0.03em]"
+            className="text-[22px] sm:text-[24px] md:text-[28px] lg:text-[33px] font-medium leading-[1.15] tracking-[-0.03em] text-center "
           >
             We’d <span className="text-[#9747FF]">love</span> to hear from you
           </h3>
 
           <p
             style={{ fontFamily: "Inter, sans-serif" }}
-            className="text-[14px] md:text-[16px] leading-[22px] md:leading-[27px] tracking-[-0.02em] text-gray-600"
+            className="text-[14px] md:text-[16px] leading-[22px] md:leading-[27px] tracking-[-0.02em] text-gray-600 text-center"
           >
             Whether you’re a business, a creator, or simply curious about CNESS.
-            <br className="hidden md:block" />
+            <br />
             Reach out and let’s connect.
           </p>
 

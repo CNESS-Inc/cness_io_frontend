@@ -1,4 +1,7 @@
+
+
 "use client";
+import insta from "../../assets/instagram.png"
 
 type Socials = Partial<{
   linkedin: string;
@@ -42,8 +45,8 @@ export default function TeamMemberCard({
       <div
         className={
           selected
-            ? "p-[6px] rounded-[28px] bg-gradient-to-br"
-            : "p-[1.5px] rounded-[28px] border border-[#ECEEF2]"
+            ? "p-[1px] rounded-[28px] bg-gradient-to-br"
+            : "p-[1px] rounded-[28px] border border-[#ECEEF2]"
         }
         style={
           selected
@@ -57,18 +60,18 @@ export default function TeamMemberCard({
             selected ? "bg-transparent" : "bg-white"
           }`}
         >
-          <div className="flex flex-col gap-3 w-full h-full p-3 sm:p-4">
+          <div className="flex flex-col gap-3 w-full h-full p-3 sm:p-3">
             {/* IMAGE */}
             <div className="w-full aspect-[4/3]">
               <img
                 src={imageUrl}
                 alt={name}
-                className="w-full h-full object-cover rounded-[20px]"
+                className="w-full h-full object-cover rounded-[24px]"
               />
             </div>
 
             {/* DETAILS */}
-            <div className="flex flex-col justify-between rounded-[20px] border border-[#ECEEF2] bg-white px-4 py-3 flex-1">
+            <div className="flex flex-col justify-between  rounded-[26px] md:rounded-[26px] lg:rounded-[26px]  bg-white px-5 py-4 flex-1">
               <div className="flex flex-col items-start gap-1">
                 <p className="font-['Poppins'] text-base sm:text-lg md:text-xl font-medium leading-tight text-[#111827]">
                   {name}
@@ -79,7 +82,7 @@ export default function TeamMemberCard({
               </div>
 
               {!!socials && (
-                <div className="flex items-center gap-3 mt-3">
+                <div className="flex items-center gap-3 mt-5">
                   {/* Social Icons */}
                   {socials.linkedin && (
                     <a
@@ -95,18 +98,16 @@ export default function TeamMemberCard({
                     </a>
                   )}
                   {socials.instagram && (
-                    <a
-                      href={socials.instagram}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex w-7 h-7 items-center justify-center rounded-full bg-[#F6F5FA] text-[#111827]"
-                      aria-label="Instagram"
-                    >
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                        <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5-5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3-3 0 0 0-3-3H7zm5 3.5a5.5 5.5 0 1 1 0 11 5.5-5.5 0 0 1 0-11zm6-1a1 1 0 1 1 0 2 1-1 0 0 1 0-2z" />
-                      </svg>
-                    </a>
-                  )}
+                   <a
+  href={socials.instagram}
+  target="_blank"
+  rel="noreferrer"
+  //className="inline-flex w-7 h-7 items-center justify-center rounded-full bg-[#F6F5FA] text-[#111827]"
+  aria-label="Instagram"
+>
+  <img src={insta} alt="Instagram" width={30} height={30} />
+</a>
+                  )}  
                   {socials.x && (
                     <a
                       href={socials.x}
