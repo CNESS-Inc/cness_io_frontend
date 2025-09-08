@@ -11,12 +11,12 @@ import GenerateAffiliateCode from "../pages/GenerateAffiliateCode";
 import AssessmentQuestion from "../pages/AssessmentQuestion";
 import Setting from "../pages/Setting";
 //import What from "../pages/What";
+// import Social from "../pages/Social";
 import Social from "../pages/Social";
-import SocialFront from "../pages/SocialFront";
-import SinglePost from "../components/Social/SinglePost";
-import ReelsCard from "../components/Social/Reels/ReelsCard";
+// import SinglePost from "../components/Social/SinglePost";
+// import ReelsCard from "../components/Social/Reels/ReelsCard";
 import About from "../pages/About";
-import SocialLayout from "../layout/SocialLayout";
+// import SocialLayout from "../layout/SocialLayout";
 import UploadProof from "../pages/UploadProof";
 import LearningLab from "../pages/LearningLab";
 import UpgradeBadge from "../pages/UpgradeBadge";
@@ -403,7 +403,7 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  {
+  /*{
     path: "social",
     element: <SocialLayout />,
     children: [
@@ -427,10 +427,10 @@ export const router = createBrowserRouter([
         element: <ReelsCard />,
       },
     ],
-  },
+  },*/
   {
-    path: "social-front",
-    element: <SocialFront />,
+    path: "social",
+    element: <Social />,
   },
   {
     path: "/email-verify",
