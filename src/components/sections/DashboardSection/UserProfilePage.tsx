@@ -2020,7 +2020,6 @@ const UserProfilePage = () => {
                     </Tab.Panel>
 
                     {/* Social Links Tab */}
-                    {/* Social Links Tab */}
                     <Tab.Panel>
                       <form
                         onSubmit={socialLinksForm.handleSubmit(

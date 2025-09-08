@@ -76,6 +76,8 @@ export default function BestPracticesHub() {
   const { showToast } = useToast();
   const [profession, setProfession] = useState<Profession[]>([]);
   const [interest, setInterestData] = useState<any[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
+  const [inputValue, setInputValue] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<{
     id: string;
     type: "profession" | "interest" | "";
@@ -404,6 +406,7 @@ useEffect(() => {
       formData.append("description", newPractice.description);
       formData.append("profession", newPractice.profession);
       formData.append("interest", newPractice.interest);
+      formData.append("tags", JSON.stringify(tags));
       if (newPractice.file) {
         formData.append("file", newPractice.file);
       }
@@ -444,6 +447,23 @@ useEffect(() => {
       .replace(/\-\-+/g, "-")
       .replace(/^-+/, "")
       .replace(/-+$/, "");
+  };
+
+  const removeTag = (index: number) => {
+    const newTags = [...tags];
+    newTags.splice(index, 1);
+    setTags(newTags);
+  };
+
+  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && inputValue.trim()) {
+      e.preventDefault();
+      const newTag = inputValue.trim();
+      if (!tags.includes(newTag)) {
+        setTags([...tags, newTag]);
+        setInputValue("");
+      }
+    }
   };
 
   return (
@@ -1089,6 +1109,39 @@ useEffect(() => {
                   </option>
                 ))}
               </select>
+            </div>
+
+            <label
+              htmlFor="interest"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Tags
+            </label>
+            <div className="w-full border border-gray-300 bg-white rounded-xl px-3 py-2">
+              <div className="flex flex-wrap gap-2 mb-1">
+                {tags.map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className="flex items-center bg-[#f3f1ff] text-[#6269FF] px-3 py-1 rounded-full text-[14px]"
+                  >
+                    {tag}
+                    <button
+                      onClick={() => removeTag(idx)}
+                      className="ml-1 text-[#6269FF] hover:text-red-500 font-bold"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <input
+                type="text"
+                className="w-full text-sm bg-white focus:outline-none placeholder-gray-400"
+                placeholder="Add tags (e.g. therapy, online, free-consult)"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleTagKeyDown}
+              />
             </div>
 
             <div>
