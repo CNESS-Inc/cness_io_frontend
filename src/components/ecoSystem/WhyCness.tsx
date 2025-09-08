@@ -89,48 +89,22 @@ export default function WhyCness() {
           <div key={item.id} className="relative group w-full h-full">
             <div className="absolute inset-0 rounded-3xl pointer-events-none z-0"></div>
 
-            <div
-              className="w-full h-full
-    relative rounded-[28px] overflow-hidden
-    [--r:28px] [--c:rgba(255,255,255,0.7)]
-    [--gap-tr:0px] [--gap-lb:0px] [--gap-rt:0px] [--gap-bl:0px]
-  "
-              style={{
-                background: `
-      /* TL arc */
-      radial-gradient(var(--r) at var(--r) var(--r),
-        transparent calc(var(--r) - 1px),
-        var(--c) calc(var(--r) - 1px) var(--r),
-        transparent var(--r)
-      ) top left / var(--r) var(--r) no-repeat,
-
-      /* TOP line — overlap +1px into the arc to avoid seam */
-      linear-gradient(to right, var(--c) 0 100%)
-        top left / calc(100% - var(--r) - var(--gap-tr) + 1px) 1px no-repeat,
-
-      /* LEFT line — overlap +1px into the arc */
-      linear-gradient(to bottom, var(--c) 0 100%)
-        top left / 1px calc(100% - var(--r) - var(--gap-lb) + 1px) no-repeat,
-
-      /* BR arc */
-      radial-gradient(var(--r) at calc(100% - var(--r)) calc(100% - var(--r)),
-        transparent calc(var(--r) - 1px),
-        var(--c) calc(var(--r) - 1px) var(--r),
-        transparent var(--r)
-      ) bottom right / var(--r) var(--r) no-repeat,
-
-      /* RIGHT line — overlap +1px into BR arc */
-      linear-gradient(to bottom, var(--c) 0 100%)
-        top right / 1px calc(100% - var(--r) - var(--gap-rt) + 1px) no-repeat,
-
-      /* BOTTOM line — overlap +1px into BR arc */
-      linear-gradient(to right, var(--c) 0 100%)
-        bottom left / calc(100% - var(--r) - var(--gap-bl) + 1px) 1px no-repeat
-    `,
-              }}
-            >
+            <div className="relative z-10 w-full h-full rounded-tr-[30px] rounded-bl-4xl overflow-hidden">
               <div
-                className="relative z-10 rounded-[28px] px-5 lg:px-7 py-10 flex flex-col items-center justify-center text-center w-full h-full"
+                className="pointer-events-none absolute inset-0 rounded-[28px]"
+                style={{
+                  padding: "1px",
+                  background:
+                    "linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.4))",
+                  WebkitMask:
+                    "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+                  WebkitMaskComposite: "xor",
+                  maskComposite: "exclude",
+                }}
+              />
+
+              <div
+                className="relative z-20 rounded-[28px] px-5 lg:px-7 py-10 flex flex-col items-center justify-center text-center w-full h-full"
                 style={{
                   background: "rgba(255,255,255,0.1)",
                   WebkitBackdropFilter: "blur(36px)",
@@ -138,20 +112,27 @@ export default function WhyCness() {
                     "inset 2px 2px 4px rgba(0,0,0,0.08), inset -2px -2px 3px rgba(255,255,255,0.25)",
                 }}
               >
-                <img src={item.icon} alt={item.title} className="w-12 h-12 mb-6" />
+                <img
+                  src={item.icon}
+                  alt={item.title}
+                  className="w-12 h-12 mb-6"
+                />
+
                 <h3
                   style={{ fontFamily: "Poppins, sans-serif" }}
                   className="text-white font-medium text-base lg:text-lg lg:w-[90%]"
                 >
                   {item.title}
                 </h3>
-                <p className="pt-3 text-white text-sm font-normal">{item.desc}</p>
+
+                <p className="font-['Open Sans'] openSans pt-3 text-white text-sm font-normal">
+                  {item.desc}
+                </p>
               </div>
             </div>
-
           </div>
         ))}
       </div>
-    </div >
+    </div>
   );
 }
