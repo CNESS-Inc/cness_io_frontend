@@ -172,6 +172,9 @@ export default function EcoSystemApp() {
                 />
                 <div className="relative z-10">
                   <h3
+                    style={{
+                      fontFamily: "Poppins, sans-serif"
+                    }}
                     className={`font-medium text-2xl ${
                       activeCard === i ? "text-white" : "text-black"
                     }`}
@@ -179,6 +182,9 @@ export default function EcoSystemApp() {
                     {cards[i].title}
                   </h3>
                   <span
+                    style={{
+                      fontFamily: "Poppins, sans-serif"
+                    }}
                     className={`text-sm font-semibold ${
                       activeCard === i ? "text-white" : "text-[#6F41FD]"
                     }`}
@@ -186,7 +192,7 @@ export default function EcoSystemApp() {
                     {cards[i].subtitle}
                   </span>
                   <p
-                    className={`mt-2 text-base font-normal  ${
+                    className={`mt-2 text-base font-normal font-['Open Sans'] openSans ${
                       activeCard === i ? "text-white" : "text-[#64748B]"
                     }`}
                   >
@@ -232,6 +238,9 @@ export default function EcoSystemApp() {
                 />
                 <div className="relative z-10">
                   <h3
+                    style={{
+                      fontFamily: "Poppins, sans-serif"
+                    }}
                     className={`font-medium text-2xl ${
                       activeCard === i ? "text-white" : "text-black"
                     }`}
@@ -239,7 +248,7 @@ export default function EcoSystemApp() {
                     {cards[i].title}
                   </h3>
                   <p
-                    className={`mt-2 text-base font-normal  ${
+                    className={`mt-2 text-base font-normal openSans font-['Open Sans'] ${
                       activeCard === i ? "text-white" : "text-[#64748B]"
                     }`}
                   >
@@ -255,45 +264,56 @@ export default function EcoSystemApp() {
         <div className="w-full md:pt-24 xl:pt-0 flex flex-col justify-center mx-auto gap-4">
           <div className="flex flex-col mx-auto">
             <div className="w-full">
-            <h3 className="font-poppins text-2xl font-light leading-[54px] tracking-[-0.02em] capitalize">
-              <span className="bg-gradient-to-r from-[#D747EA] to-[#7741FB] text-transparent text-[42px] font-medium bg-clip-text">
-                {rightCards[activeCard].title}
-              </span>
-            </h3>
-            <h3 className="font-poppins font-medium text-[32px] md:text-[42px] leading-[54px] tracking-[-0.02em] capitalize">
-              {rightCards[activeCard].subtitle}
-            </h3>
-          </div>
-
-          <ul className="flex flex-col gap-3 py-8">
-            {rightCards[activeCard].list.map((item, idx) => (
-              <li
-                key={idx}
-                className="text-[#64748B] font-normal text-base leading-6"
+              <h3 className="font-poppins text-2xl font-light leading-[54px] tracking-[-0.02em] capitalize">
+                <span
+                  style={{
+                    fontFamily: "Poppins, sans-serif"
+                  }}
+                  className="bg-gradient-to-r from-[#D747EA] to-[#7741FB] text-transparent text-[42px] font-medium bg-clip-text"
+                >
+                  {rightCards[activeCard].title}
+                </span>
+              </h3>
+              <h3
+                style={{
+                  fontFamily: "Poppins, sans-serif"
+                }}
+                className="font-poppins font-medium text-[32px] md:text-[42px] leading-[54px] tracking-[-0.02em] capitalize"
               >
-                • {item}
-              </li>
-            ))}
-          </ul>
+                {rightCards[activeCard].subtitle}
+              </h3>
+            </div>
 
-          <div className="flex items-center gap-4">
-            <button
-              className="text-white text-base px-6 py-2 rounded-full font-semibold"
-              style={{
-                background:
-                  "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
-              }}
-            >
-              {rightCards[activeCard].button}
-            </button>
-            <p className="flex flex-col text-[#64748B] text-base font-normal">
-              {rightCards[activeCard].caption.before}
-              <span className="text-black">
-                {rightCards[activeCard].caption.highlight}
-              </span>
-              {rightCards[activeCard].caption.after}
-            </p>
-          </div>
+            <ul className="flex flex-col gap-3 py-8">
+              {rightCards[activeCard].list.map((item, idx) => (
+                <li
+                  key={idx}
+                  className="text-[#64748B] font-normal text-base leading-6 font-['Open Sans'] openSans"
+                >
+                  • {item}
+                </li>
+              ))}
+            </ul>
+
+            <div className="flex items-center gap-4">
+              <button
+                className="text-white text-base px-6 py-2 rounded-full font-semibold"
+                style={{
+                   fontFamily: "Plus Jakarta Sans",
+                  background:
+                    "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
+                }}
+              >
+                {rightCards[activeCard].button}
+              </button>
+              <p className="flex flex-col text-[#64748B] text-base font-normal font-['Open Sans'] openSans">
+                {rightCards[activeCard].caption.before}
+                <span className="text-black">
+                  {rightCards[activeCard].caption.highlight}
+                </span>
+                {rightCards[activeCard].caption.after}
+              </p>
+            </div>
           </div>
         </div>
       </div>

@@ -15,7 +15,7 @@ export default function SellerForm() {
             src="https://forms.zohopublic.com/vijicn1/form/SellerForm/formperma/cg_YdZsqMd1myB1bzzytsXvBByc4kI4DzhufAv4Cu2s"
             className="w-full flex-1 border-0 rounded-lg"
             style={{ minHeight: "600px", height: "100%", overflow: "hidden" }}
-            scrolling="yes"
+            scrolling="no"
             title="CNESS Seller Form"
           />
         </div>

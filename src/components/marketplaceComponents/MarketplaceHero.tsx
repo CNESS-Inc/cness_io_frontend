@@ -8,10 +8,10 @@ style={{
 >
   {/* Text container */}
   <div className="mx-auto max-w-[1100px] px-6 text-center">
-    <h2 className="font-['Poppins'] font-medium text-[32px] leading-[100%] tracking-[-0.02em] text-gray-900">
-      CNESS Marketplace
-    </h2>
-    <p className="mt-3 font-['Open Sans'] font-normal text-[16px] leading-[22px] text-gray-700">
+   <h2 className="font-['Poppins'] font-medium text-[42px] leading-[100%] tracking-[-0.02em] bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text">
+  CNESS Marketplace
+</h2>
+    <p className="mt-3 font-['Open Sans'] font-normal text-[16px] leading-[22px] text-[#64748B]">
       CNESS Marketplace is a digital hub for conscious creators to share music,
       podcasts, courses, eBooks, art,
       <br /> and videos. Every offering is rooted in
@@ -21,15 +21,24 @@ style={{
   </div>
 
   {/* Image container (centered with spacing on sides) */}
-  <div className="mt-10 px-6">
-    <div className="mx-auto max-w-[1600px] rounded-[32px] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.08)]">
+          <div className="w-full px-4 lg:px-16 pb-12 pt-20">
+            <div className="mx-auto max-w-[1900px] rounded-[32px] overflow-hidden">
       <img
         src="https://cdn.cness.io/marketplace.webp"
         alt="CNESS Marketplace preview"
         className="
-          w-full 
-          h-[421px] sm:h-[300px] md:h-[421px] lg:h-[421px] xl:h-[421px] 2xl:h-[520px]
-          object-cover
+          mx-auto w-full max-w-[1900px] rounded-[32px]
+              object-cover
+              /* heights per breakpoint */
+              h-[240px] sm:h-[280px] md:h-[320px] lg:h-[405px] xl:h-[460px] 2xl:h-[460px]
+              /* keep the man’s face in frame as width grows */
+              object-[58%_50%]       /* base: a bit right of center */
+              sm:object-[60%_50%]
+              md:object-[62%_50%]
+              lg:object-[64%_50%]
+              xl:object-[66%_50%]
+              2xl:object-[68%_50%]
+            
         "
       />
     </div>

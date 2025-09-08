@@ -1,6 +1,5 @@
 import { useState } from "react";
-import bg from "../../assets/Blush.svg";
-import ellipse from "../../assets/Ellipse faq.png";
+import bg from "../../assets/blush faq.png";
 import { FaAngleDown } from "react-icons/fa";
 
 interface FaqItem {
@@ -26,6 +25,14 @@ function splitIntoColumns<T>(array: T[], numCols: number): T[][] {
   });
   return cols;
 }
+
+const buttonBgColors = [
+  "#E2F9FF", // 1st
+  "#E2F2FF", // 2nd
+  "#E7E5FF", // 3rd
+  "#EDE6FB", // 4th
+  "#F8EEEF", // 5th
+];
 
 export default function FAQSection({ faqs }: FAQSectionProps) {
   const [activeTabId, setActiveTabId] = useState(faqs[0]?.id || "");
@@ -82,7 +89,7 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
   );
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 pt-5 md:pb-10 lg:pb-20">
+    <div className="w-full 2xl:max-w-7xl mx-auto px-[5%] 2xl:px-0 pt-5 md:pb-10 lg:pb-20">
       <div className="flex md:hidden flex-col gap-3">
         {faqs.map((category) => (
           <button
@@ -105,7 +112,7 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
       </div>
       {/* Medium+ screens: separate buttons */}
       <div className="hidden md:flex gap-4 flex-wrap">
-        {faqs.map((category) => (
+        {faqs.map((category, index) => (
           <button
             key={category.id}
             onClick={() => {
@@ -113,12 +120,17 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
               setOpenInCol1(null);
               setOpenInCol2(null);
             }}
-            className={`px-6 lg:px-12 py-2 lg:py-3 text-sm md:text-base transition rounded-t-xl
-        ${
-          activeTabId === category.id
-            ? "text-[#1A1A1A] font-semibold bg-[#E2F9FF]"
-            : "text-[#64748B] font-normal border-t border-l border-r border-[#CBD5E1]"
-        }`}
+            className={`px-6 lg:px-12 py-2 lg:py-3 text-sm md:text-base transition rounded-t-xl ${
+              activeTabId === category.id
+                ? "text-[#1A1A1A] font-semibold"
+                : "text-[#64748B] font-normal border-t border-l border-r border-[#CBD5E1]"
+            }`}
+            style={{
+              backgroundColor:
+                activeTabId === category.id
+                  ? buttonBgColors[index]
+                  : "transparent",
+            }}
           >
             {category.title}
           </button>
@@ -130,12 +142,6 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
           src={bg}
           alt="gradient"
           className="absolute top-0 left-0 w-full h-full object-cover -z-10"
-        />
-        <img
-          src={ellipse}
-          alt=""
-          className="absolute top-0 left-0 max-w-xl h-[30rem] pointer-events-none select-none"
-          aria-hidden="true"
         />
         <div className="relative z-10 text-center text-2xl font-semibold text-[#1A1A1A]">
           {activeCategory?.title}

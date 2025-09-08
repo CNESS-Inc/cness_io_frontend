@@ -26,7 +26,7 @@ export default function CertificationsHero() {
         <h1
           style={{ fontFamily: "Poppins, sans-serif" }}
           className={
-            `font-medium text-[32px] md:text-[42px] leading-[115%] tracking-[-0.02em] text-center antialiased bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out` +
+            `font-medium text-[32px] md:text-[42px] leading-[115%] tracking-[-0.02em] text-center antialiased bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text transition-all duration-1000 ease-in-out` +
             (step >= 4
               ? "opacity-100 translate-y-0"
               : "opacity-0 -translate-y-6")
@@ -37,8 +37,7 @@ export default function CertificationsHero() {
 
         <p
           className={
-            `openSans lg:text-lg md:text-[16px] text-[12px] text-[#64748B] lg:mb-10 md:mb-12 mb-4 mt-6
-            max-w-4xl mx-auto transition-all duration-1000 ease-in-out ` +
+            `openSans md:text-base text-[#64748B] lg:mb-10 md:mb-12 mb-4 mt-6 max-w-4xl mx-auto transition-all duration-1000 ease-in-out font-['Open Sans']` +
             (step >= 5
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-6")
@@ -67,9 +66,12 @@ export default function CertificationsHero() {
                 rounded-[100px] hero-section-btn
                 py-2 px-4 text-[14px]
                 sm:py-3 sm:px-8 sm:text-base
-                font-['Open Sans'] font-normal leading-[100%] text-center
+                font-['Plus Jakarta Sans'] font-semibold leading-[100%] text-center
                
               "
+              style={{
+                fontFamily: "Plus Jakarta Sans",
+              }}
               onClick={() => (window.location.href = "/sign-up")}
             >
               Get Certified
@@ -79,7 +81,7 @@ export default function CertificationsHero() {
       </div>
 
       {/* Bottom Image */}
-      <div className="w-full px-4 lg:px-16 pb-12 pt-20">
+      <div className="w-full px-4 lg:px-16 pb-18 pt-20">
         <div className="mx-auto max-w-[1900px] rounded-[32px] overflow-hidden">
           <img
             src="https://cdn.cness.io/Rectangle%201.png"
