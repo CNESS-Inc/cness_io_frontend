@@ -46,6 +46,7 @@ import leaderboard from './social_leaderboard.png';
 import socialannouncement from './social_announcement.png';
 import storyplus from './plus.png';
 import sociallike from './social_like.png';
+import userplus from './userplus.png';
 
 
 
@@ -96,6 +97,7 @@ socialtrending,
 leaderboard,
 socialannouncement,
 storyplus,
-sociallike
+sociallike,
+userplus
 
 };

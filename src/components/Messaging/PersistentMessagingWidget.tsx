@@ -459,7 +459,7 @@ const PersistentMessagingWidget: React.FC = () => {
         <div className="fixed bottom-0 lg:right-[calc(31vw+24px)] right-6 lg:w-[25vw] w-[90vw] lg:h-[80vh] h-[60vh] bg-white rounded-lg rounded-bl-none rounded-br-none rounded-br-none shadow-2xl border border-gray-200 z-100 flex flex-col">
 
           {/* Chat Header */}
-          <div className="flex items-center justify-between p-3 border-b border-[#ddd] bg-blue-600 rounded-t-lg">
+          <div className="flex items-center justify-between p-3 border-b border-[#ddd] bg-[#7C81FF] rounded-t-lg">
             <div className="flex items-center gap-3">
               <img
                 src={selectedConnection.profileImage || "/profile.png"}
@@ -618,17 +618,17 @@ const PersistentMessagingWidget: React.FC = () => {
             
             <div className="flex items-center gap-2 relative">
               <button 
-                className="p-1 h-9 w-9 flex justify-center items-center bg-blue-600 rounded"
+                className="p-1 h-9 w-9 flex justify-center items-center border-blue-600 border rounded group hover:bg-blue-600 transitions-all transition-colors transition-duration-300"
                 onClick={handleImageButtonClick}
                 disabled={isUploading}
               >
-                <Paperclip size={16} className="text-white" />
+                <Paperclip size={16} className="text-blue-600 group-hover:text-white" />
               </button>
               
               {/* Emoji Button */}
               <button
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                className="p-1 h-9 w-9 flex justify-center items-center bg-blue-600 rounded"
+                className="p-1 h-9 w-9 flex justify-center items-center border-blue-600 border rounded hover:bg-blue-600 transitions-all transition-colors transition-duration-300"
                 disabled={isUploading}
               >
                 <span className="text-white text-lg">😊</span>
@@ -691,7 +691,7 @@ const PersistentMessagingWidget: React.FC = () => {
       {/* Main Messaging Widget - Right Side */}
       <div className="fixed bottom-0 right-6 lg:w-[30vw] w-[90vw] lg:h-[80vh] h-[50vh] bg-white rounded-lg rounded-bl-none rounded-br-none shadow-2xl border border-gray-200 z-50 flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[#ddd] bg-blue-600 rounded-t-lg">
+        <div className="flex items-center justify-between p-4 border-b border-[#ddd] bg-[#7C81FF] rounded-t-lg">
           <div className="flex items-center gap-3">
             <img
               src={ localStorage.getItem("profile_picture") ?? "/profile.png" }
