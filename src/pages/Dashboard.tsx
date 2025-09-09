@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import DashboardSection from "../components/sections/DashboardSection";
+// import DashboardSection from "../components/sections/DashboardSection";
 import { DashboardDetails } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import DashboardFirsttimeSection from "../components/sections/DashboardSection/DashboardFirsttimeSection";
