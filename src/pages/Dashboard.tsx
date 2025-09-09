@@ -1,8 +1,8 @@
-
 import { useEffect, useRef, useState } from "react";
 import DashboardSection from "../components/sections/DashboardSection";
 import { DashboardDetails } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
+import DashboardFirsttimeSection from "../components/sections/DashboardSection/DashboardFirsttimeSection";
 
 // interface DashboardLayoutProps {
 //   children: React.ReactNode;
@@ -25,8 +25,7 @@ interface ApiResponse<T> {
 
 const Dashboard = () => {
   const [_user, setUser] = useState<UserData | null>(null);
-    const { showToast } = useToast();
-  
+  const { showToast } = useToast();
 
   const hasFetched = useRef(false);
 
@@ -35,10 +34,10 @@ const Dashboard = () => {
       const response: ApiResponse<UserData> = await DashboardDetails();
       if (response?.data?.data) {
         setUser(response.data.data);
-        localStorage.setItem("name",response.data.data?.name);
+        localStorage.setItem("name", response.data.data?.name);
         // localStorage.setItem("profile_picture",response.data.data?.profile_picture);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error fetching dashboard data:", error);
       showToast({
         message: error?.response?.data?.error?.message,
@@ -56,8 +55,10 @@ const Dashboard = () => {
   }, []);
 
   return (
-  
-      <DashboardSection />
+    <>
+      <DashboardFirsttimeSection />
+      {/* <DashboardSection /> */}
+    </>
   );
 };
 
