@@ -7,15 +7,16 @@ import {
   ChevronRight,
   Share2,
   ThumbsUp,
+  MessageSquare,
   TrendingUp,
-  MoreVertical,
+  // MoreVertical,
   Bookmark,
-  Flag,
-  Link as LinkIcon,
+  // Flag,
+  // Link as LinkIcon,
 } from "lucide-react";
 import Modal from "../components/ui/Modal";
 import TopicModal from "../components/Social/Topicmodel";
-
+import { iconMap } from "../assets/icons";
 // import { MdContentCopy } from "react-icons/md";
 
 import {
@@ -43,14 +44,15 @@ import {
 // import Announcement from "../assets/Announcement.png";
 import Collection from "../assets/Collection.png";
 // import Leaderboard from "../assets/Leaderboard.png";
-// import Mention from "../assets/Mention.png";
+import Mention from "../assets/Mention.png";
 import people from "../assets/people.png";
 import Trending from "../assets/Trending.png";
 import createstory from "../assets/createstory.jpg";
 import carosuel1 from "../assets/carosuel1.png";
-import like from "../assets/like.png";
-import comment from "../assets/comment.png";
-import comment1 from "../assets/comment1.png";
+// import like from "../assets/like.png";
+import like from "../assets/social_like.png";
+// import comment from "../assets/comment.png";
+// import comment1 from "../assets/comment1.png";
 import Image from "../components/ui/Image";
 import CommentBox from "./CommentBox";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -58,7 +60,8 @@ import FollowedUsersList from "./FollowedUsersList";
 import CollectionList from "./CollectionList";
 import Button from "../components/ui/Button";
 import SharePopup from "../components/Social/SharePopup";
-import { buildShareUrl, copyPostLink } from "../lib/utils";
+// import { buildShareUrl, copyPostLink } from "../lib/utils";
+import { buildShareUrl } from "../lib/utils";
 
 interface Post {
   id: string;
@@ -125,100 +128,6 @@ interface CollectionItem {
     };
   };
 }
-
-// const curatedCards = [
-//   {
-//     id: 1,
-//     title: "Chasing Dreams",
-//     subtitle: "By The Dreamers",
-//     duration: "4.05 Min",
-//     image: chasing,
-//   },
-//   {
-//     id: 2,
-//     title: "Into the Wild",
-//     subtitle: "By Nature’s Voice",
-//     duration: "5.20 Min",
-//     image: Bcard1,
-//   },
-//   {
-//     id: 3,
-//     title: "Rise Up and Shine",
-//     subtitle: "By Selena",
-//     duration: "3.10 Min",
-//     image: Bcard2,
-//   },
-
-//   {
-//     id: 3,
-//     title: "Rise Up and Shine",
-//     subtitle: "By Selena",
-//     duration: "3.10 Min",
-//     image: Bcard3,
-//   },
-// ];
-
-// const storyList = [
-//   {
-//     id: "101",
-//     userIcon: "/avatars/liam.jpg",
-//     userName: "Liam Anderson",
-//     title: "Chasing Dreams",
-//     videoSrc: "/consciousness_social_media.mp4",
-//   },
-//   {
-//     id: "102",
-//     userIcon: "/avatars/noah.jpg",
-//     userName: "Noah Thompson",
-//     title: "Into the Clouds",
-//     videoSrc: "/test1.mp4",
-//   },
-//   {
-//     id: "103",
-//     userIcon: "/avatars/oliver.jpg",
-//     userName: "Oliver Bennett",
-//     title: "Zen & Peace",
-//     videoSrc: "/consciousness_social_media.mp4",
-//   },
-//   {
-//     id: "104",
-//     userIcon: "/avatars/lucas.jpg",
-//     userName: "Lucas Mitchell",
-//     title: "Walking Free",
-//     videoSrc: "/test1.mp4",
-//   },
-
-//   {
-//     id: "105",
-//     userIcon: "/avatars/lucas.jpg",
-//     userName: "Lucas Mitchell",
-//     title: "Walking Free",
-//     videoSrc: "/test1.mp4",
-//   },
-// ];
-
-// const dummyTopics: Topic[] = [
-//   { id: "mindfulness", topic_name: "Mindfulness", slug: "mindfulness" },
-//   {
-//     id: "sustainability",
-//     topic_name: "Sustainability",
-//     slug: "sustainability",
-//   },
-//   { id: "community", topic_name: "Community", slug: "community" },
-//   { id: "leadership", topic_name: "Leadership", slug: "leadership" },
-//   { id: "innovation", topic_name: "Innovation", slug: "innovation" },
-//   { id: "wellbeing", topic_name: "Wellbeing", slug: "wellbeing" },
-//   { id: "mindfulness", topic_name: "Mindfulness", slug: "mindfulness" },
-//   {
-//     id: "sustainability",
-//     topic_name: "Sustainability",
-//     slug: "sustainability",
-//   },
-//   { id: "community", topic_name: "Community", slug: "community" },
-//   { id: "leadership", topic_name: "Leadership", slug: "leadership" },
-//   { id: "innovation", topic_name: "Innovation", slug: "innovation" },
-//   { id: "wellbeing", topic_name: "Wellbeing", slug: "wellbeing" },
-// ];
 
 interface PostCarouselProps {
   mediaItems: Array<{
@@ -294,7 +203,7 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
   };
 
   return (
-    <div className="relative w-full overflow-hidden">
+    <div className="relative w-full ">
       {/* Media Container */}
       <div className="w-full aspect-video rounded-3xl  bg-black">
         {mediaItems.map((item, index) => (
@@ -334,15 +243,15 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
         <>
           <button
             onClick={handlePrev}
-            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 shadow-md w-8 h-8 rounded-full flex items-center justify-center z-10"
+            className="absolute -left-4 top-1/2 transform -translate-y-1/2 bg-white shadow-md w-[42px] h-[42px] rounded-full flex items-center justify-center z-10"
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={22} />
           </button>
           <button
             onClick={handleNext}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 shadow-md w-8 h-8 rounded-full flex items-center justify-center z-10"
+            className="absolute -right-4 top-1/2 transform -translate-y-1/2 bg-white shadow-md w-[42px] h-[42px] rounded-full flex items-center justify-center z-10"
           >
-            <ChevronRight size={20} />
+            <ChevronRight size={22} />
           </button>
         </>
       )}
@@ -411,10 +320,10 @@ export default function SocialTopBar() {
   >("posts");
   const [followedUsers, setFollowedUsers] = useState<FollowedUser[]>([]);
   const [collectionItems, setCollectionItems] = useState<CollectionItem[]>([]);
-  console.log("🚀 ~ SocialTopBar ~ collectionItems:", collectionItems);
+  
   const [_isPostsLoading, setIsPostsLoading] = useState(false);
   const [isFollowingLoading, setIsFollowingLoading] = useState(false);
-  console.log("🚀 ~ SocialTopBar ~ isFollowingLoading:", isFollowingLoading);
+
   const [isCollectionLoading, setIsCollectionLoading] = useState(false);
   const [storiesData, setStoriesData] = useState<Story[]>([]);
   // const [addNewPost, setAddNewPost] = useState(false)
@@ -741,19 +650,6 @@ export default function SocialTopBar() {
     }
   }, []); // Empty dependency array to run only on mount
 
-  // The issue is likely due to how setPage and getUserPosts interact.
-  // When setPage(1) is called, if page is already 1, React will not trigger the useEffect([page]) again.
-  // Also, getUserPosts uses the current value of 'page' (from closure), so calling getUserPosts() right after setPage(1) may not use the updated value.
-  // Solution: When addNewPost is true, reset posts and page, then fetch posts directly.
-
-  // useEffect(() => {
-  //   if (addNewPost) {
-
-  //   }
-  //   // eslint-disable-next-line
-  // }, [addNewPost]);
-
-  // Remove the second useEffect, as it can cause duplicate fetches or race conditions.
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -770,14 +666,7 @@ export default function SocialTopBar() {
     }
   };
 
-  // const handleRemoveMedia = () => {
-  //   setSelectedImages([]);
-  //   setSelectedVideo(null);
-  //   if (postVideoPreviewUrl) {
-  //     URL.revokeObjectURL(postVideoPreviewUrl);
-  //     setPostVideoPreviewUrl(null);
-  //   }
-  // };
+
   const handleRemoveImage = (index: number) => {
     setSelectedImages((prev) => prev.filter((_, i) => i !== index));
   };
@@ -970,24 +859,6 @@ export default function SocialTopBar() {
     }
   };
 
-  // const handleSave = async (postId: string) => {
-  //   try {
-  //     setUserPosts((prevPosts) =>
-  //       prevPosts.map((post) =>
-  //         post.id === postId ? { ...post, is_saved: !post.is_saved } : post
-  //       )
-  //     );
-  //     // Add your API call to save/unsave the post here
-  //     // await savePostAPI(postId);
-  //   } catch (error) {
-  //     console.error("Error handling save:", error);
-  //   }
-  // };
-
-  // const isImageFile = (url: string) => {
-  //   return url.match(/\.(jpeg|jpg|gif|png|webp)$/i) !== null;
-  // };
-
   const isVideoFile = (url: string) => {
     return url.match(/\.(mp4|webm|ogg|mov)$/i) !== null;
   };
@@ -1083,28 +954,7 @@ export default function SocialTopBar() {
     MeDetail();
   }, []);
 
-  /* Report Modal and Save Post Modal and Copy Post Modal */
-  // Function to copy post link
-  // const copyPostLink = async (postId: string) => {
-  //   toggleMenu(postId, "options");
-  //   const postUrl = `${window.location.origin}/post/${postId}`;
-
-  //   try {
-  //     await navigator.clipboard.writeText(postUrl);
-  //     showToast({
-  //       type: "success",
-  //       message: "Post link copied to clipboard!",
-  //       duration: 2000,
-  //     });
-  //   } catch (error) {
-  //     showToast({
-  //       type: "error",
-  //       message: "Failed to copy link",
-  //       duration: 2000,
-  //     });
-  //   }
-  // };
-
+  
   // Function to save post to collection
   const savePostToCollection = async (postId: string) => {
     try {
@@ -1175,19 +1025,13 @@ export default function SocialTopBar() {
   };
 
   // Function to open report modal
-  const openReportModal = (postId: string) => {
+  /*const openReportModal = (postId: string) => {
     setSelectedPostForReport(postId);
     setShowReportModal(true);
     // setOpenMenuPostId(null); // Close the three-dot menu
   };
-
+  */
   useEffect(() => {
-    /*const handleClickOutside = (event: MouseEvent) => {
-      if (openMenuPostId && menuRef.current[openMenuPostId] &&
-        !menuRef.current[openMenuPostId]!.contains(event.target as Node)) {
-        setOpenMenuPostId(null);
-      }
-    };*/
 
     const handleClickOutside = (event: MouseEvent) => {
       if (!openMenu.postId || !openMenu.type) return;
@@ -1209,35 +1053,14 @@ export default function SocialTopBar() {
   const [selectedTopic, setSelectedTopic] = useState<string>(""); // dropdown state
   const [topics, setTopics] = useState<Topic[]>([]); // list of topics
   const [userSelectedTopics, setUserSelectedTopics] = useState<Topic[]>([]); // list of user selected topics
-  const [visibleTopic, setVisibleTopic] = useState(10);
+  // const [visibleTopic, setVisibleTopic] = useState(10);
   const [showTopicModal, setShowTopicModal] = useState(false);
 
-  // Fetch topics from API (example)
-  // useEffect(() => {
-  //   const fetchTopics = async () => {
-  //     try {
-  //       const res = await fetch("http://localhost:5000/api/topics"); // your backend API
-  //       const data = await res.json();
-  //       setTopics(data);
-  //     } catch (err) {
-  //       console.error("Error fetching topics:", err);
-  //     }
-  //   };
-
-  //   fetchTopics();
-  // }, []);
-
-  // Open the modal when the page mounts
-  // useEffect(() => {
-  //   setShowTopicModal(true);
-  // }, []);
+  
 
   useEffect(() => {
     fetchUserSelectedTopics();
 
-    // const stored = localStorage.getItem("selected_topics");
-    // show overlay on first page load if nothing stored yet
-    // if (!stored) setShowTopicModal(true);
   }, []);
 
   useEffect(() => {
@@ -1346,13 +1169,34 @@ export default function SocialTopBar() {
     }
   };
 
+  const formatMessageTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+
+    if (diffInDays === 0) {
+      return 'Today';
+    } else if (diffInDays === 1) {
+      return 'Yesterday';
+    } else if (diffInDays < 7) {
+      return date.toLocaleDateString('en-US', { weekday: 'long' });
+    } else {
+      return date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+      });
+    }
+  };
+
   return (
     <>
       {isAdult ? (
         <div className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-2 px-2 md:px-2 lg:px-0 w-full">
           {/* Left Side: Post & Stories - Full width on mobile */}
           <div
-            className="w-full lg:max-w-[70%] overflow-y-auto h-[calc(100vh-100px)]"
+            className="w-full lg:max-w-[75%]"
             ref={containerRef}
           >
             {activeView === "posts" ? (
@@ -1364,21 +1208,21 @@ export default function SocialTopBar() {
               ) : ( */}
                 <>
                   {/* Start a Post */}
-                  <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-4 md:p-6 rounded-xl mb-4 md:mb-5">
+                  <div className="bg-gradient-to-r from-[#7077fe36] to-[#f07eff21] p-4 md:p-10 rounded-xl mb-4 md:mb-5">
                     <div className="flex flex-col gap-2 md:gap-3">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-8">
                         <img
                           src={
                             localStorage.getItem("profile_picture") ||
                             createstory
                           }
                           alt="User"
-                          className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
+                          className="w-8 h-8 md:w-16 md:h-16 rounded-full object-cover"
                         />
                         <input
                           type="text"
-                          placeholder="Start a Post"
-                          className="flex-1 cursor-pointer px-3 py-1 md:px-4 md:py-2 rounded-full border border-gray-300 text-sm md:text-[16px] focus:outline-none bg-white"
+                          placeholder="Create a Conscious Act"
+                          className="flex-1 cursor-pointer px-3 py-1 md:px-4 md:py-2 rounded-full border border-[#CBD5E1] text-[16px] md:text-[16px] focus:outline-none bg-[#FAFAFA] placeholder:text-black h-[52px] open-sans"
                           onClick={() => openPostPopup()}
                           readOnly
                         />
@@ -1431,8 +1275,8 @@ export default function SocialTopBar() {
                   </div>
 
                   {/* Story Strip Wrapper */}
-                  <h4 className="font-medium">Reflections</h4>
-                  <div className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory mt-3 md:mt-4">
+                  <h4 className="font-medium">Inspiration Reels</h4>
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory mt-3 md:mt-4">
                     {/* Create Story Card */}
                     <div
                       onClick={() => openStoryPopup()}
@@ -1459,8 +1303,8 @@ export default function SocialTopBar() {
                         />
                       </svg>
                       <div className="absolute bottom-[46px] left-1/2 -translate-x-1/2 z-20">
-                        <div className="w-9 h-9 md:w-12 md:h-12 bg-white text-[#7C81FF] font-semibold rounded-full flex items-center justify-center text-xl shadow-md border-5">
-                          +
+                        <div className="w-9 h-9 md:w-12 md:h-12 bg-white text-[#7C81FF] font-semibold rounded-full flex items-center justify-center text-xl border-5">
+                          <img src={iconMap["storyplus"]} alt="plus" className="w-4 h-4 transition duration-200 group-hover:brightness-0 group-hover:invert" />
                         </div>
                       </div>
                       <div className="absolute bottom-[14px] w-full text-center text-white text-xs md:text-[15px] font-medium z-20">
@@ -1501,11 +1345,10 @@ export default function SocialTopBar() {
                       </div>
                     ))}
                   </div>
-                  <div className="w-full border-t-[1px] border-[#C8C8C8] mt-4 md:mt-6"></div>
 
                   {/* Posts Section */}
-                  <div className="mt-4 px-6 py-3 bg-[rgba(112,119,254,0.1)] text-[#7077FE] font-medium rounded-xl text-center w-fit">
-                    REFLECTION SCROLL
+                  <div className="mt-1 h-[56px] px-6 py-4 bg-[rgba(112,119,254,0.1)] text-[#7077FE] font-medium rounded-[8px] text-left w-full font-family-Poppins text-[16px]">
+                    Reflection Scroll
                   </div>
                   {userPosts.map((post) => (
                     <div
@@ -1552,7 +1395,7 @@ export default function SocialTopBar() {
                               </span>
                             </p>
                             <p className="text-xs md:text-sm text-gray-400">
-                              {new Date(post.createdAt).toLocaleString()}
+                              {formatMessageTime(post.createdAt)}
                             </p>
                           </div>
                         </div>
@@ -1562,7 +1405,7 @@ export default function SocialTopBar() {
                             <button
                               onClick={() => handleConnect(post.user_id)}
                               disabled={connectingUsers[post.user_id] || false}
-                              className={`flex items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
+                              className={`flex items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors font-family-open-sans h-[35px]
                                 ${
                                   // getFriendStatus(post.user_id) === "connected"
                                   //   ? "bg-red-500 text-white hover:bg-red-600"
@@ -1572,34 +1415,38 @@ export default function SocialTopBar() {
                                     : "bg-white text-black shadow-md"
                                 }`}
                             >
-                              {connectingUsers[post.user_id]
-                                ? "Loading..."
-                                : // : getFriendStatus(post.user_id) === "connected"
-                                // ? "Connected"
-                                getFriendStatus(post.user_id) === "requested"
-                                ? "Requested"
-                                : "Connect"}
+                              <span className="flex items-center gap-1 text-[#0B3449]">
+                                <img src={iconMap["userplus"]} alt="userplus" className="w-4 h-4" />
+                                {connectingUsers[post.user_id]
+                                  ? "Loading..."
+                                  : // : getFriendStatus(post.user_id) === "connected"
+                                  // ? "Connected"
+                                  getFriendStatus(post.user_id) === "requested"
+                                  ? "Requested"
+                                  : "Connect"}
+                              </span>
                             </button>
                             {/* Follow Button */}
                             <button
                               onClick={() => handleFollow(post.user_id)}
-                              className={`flex items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
+                              className={`flex items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
                                 ${
                                   post.if_following
-                                    ? "bg-transparent text-blue-500 hover:text-blue-600"
-                                    : "bg-[#7C81FF] text-white hover:bg-indigo-600"
+                                    ? "bg-transparent text-[#7077FE] hover:text-[#7077FE]/80"
+                                    : "bg-[#7077FE] text-white hover:bg-indigo-600 h-[35px]"
                                 }`}
                             >
                               {post.if_following ? (
                                 <>
-                                  <TrendingUp className="w-5 h-5" /> Following
+                                  <TrendingUp className="w-5 h-5 text-[#7077FE]" /> Resonating
                                 </>
                               ) : (
-                                "+ Follow"
+                                "+ Resonate"
                               )}
                             </button>
 
                             {/* Three Dots Menu */}
+                            {/*
                             <div className="relative">
                               <button
                                 onClick={() => toggleMenu(post.id, "options")}
@@ -1674,12 +1521,14 @@ export default function SocialTopBar() {
                                   </div>
                                 )}
                             </div>
+                            */}
                           </div>
                         )}
-
+              
                         {post.user_id == loggedInUserID && (
                           <div className="flex gap-2">
                             {/* Three Dots Menu */}
+                            {/*
                             <div className="relative">
                               <button
                                 onClick={() => toggleMenu(post.id, "options")}
@@ -1743,6 +1592,7 @@ export default function SocialTopBar() {
                                   </div>
                                 )}
                             </div>
+                            */}
                           </div>
                         )}
                       </div>
@@ -1771,7 +1621,7 @@ export default function SocialTopBar() {
 
                         {/* Dynamic Media Block */}
                         {post.file && (
-                          <div className="rounded-lg overflow-hidden">
+                          <div className="rounded-lg">
                             {(() => {
                               const urls = post.file
                                 .split(",")
@@ -1829,26 +1679,12 @@ export default function SocialTopBar() {
                                   className="w-6 h-6 md:w-8 md:h-8"
                                 />
                               </div>
-                              {/* <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
-                                  <img
-                                    src={comment}
-                                    alt="Comment"
-                                    className="w-6 h-6 md:w-8 md:h-8"
-                                  />
-                                </div> */}
-                              {/* <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
-                                  <img
-                                    src={repost}
-                                    alt="Repost"
-                                    className="w-6 h-6 md:w-8 md:h-8"
-                                  />
-                                </div> */}
                               <span className="text-xs md:text-sm text-gray-500 pl-3 md:pl-5">
                                 {post.likes_count}
                               </span>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
+                          {/* <div className="flex items-center gap-2">
                             <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
                               <img
                                 src={comment}
@@ -1857,55 +1693,55 @@ export default function SocialTopBar() {
                               />
                             </div>
                             <span>{post.comments_count}</span>
-                          </div>
+                          </div> */}
                         </div>
                         {post.comments_count > 0 && (
                           <div>
                             <span className="text-sm text-[#64748B]">
-                              {post.comments_count} Reflections Thread
+                              {post.comments_count} Reflections
                             </span>
                           </div>
                         )}
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
+                      <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4 mt-3 md:mt-5">
                         <button
                           onClick={() => handleLike(post.id)}
                           disabled={isLoading}
-                          className={`flex items-center justify-center gap-2 rounded-2xl border border-gray-200 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 shadow-sm ${
+                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 ${
                             isLoading ? "opacity-50 cursor-not-allowed" : ""
                           }`}
                         >
                           <ThumbsUp
                             className="w-5 h-5 md:w-6 md:h-6"
                             fill={post.is_liked ? "#7077FE" : "none"} // <-- condition here
-                            stroke={post.is_liked ? "#7077FE" : "#7077FE"} // keeps border visible
+                            stroke={post.is_liked ? "#7077FE" : "#000"} // keeps border visible
                           />
-                          <span>Affirmation Modal</span>
+                          <span className={`${post.is_liked ? "#7077FE" : "text-black"}`}>Appreciate</span>
                         </button>
                         <button
                           onClick={() => {
                             setSelectedPostId(post.id);
                             setShowCommentBox(true);
                           }}
-                          className="flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  border border-[#E5E7EB] rounded-xl font-semibold text-sm md:text-base text-[#7077FE] hover:bg-gray-50 shadow-sm"
+                          className={`flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  font-semibold text-sm md:text-base  hover:bg-gray-50 ${selectedPostId === post.id ? "text-[#7077FE]" : "text-black"}`}
                         >
-                          <img
-                            src={comment1}
-                            className="w-5 h-5 md:w-6 md:h-6"
-                          />{" "}
-                          Reflections Thread
+                          <MessageSquare
+                            className="w-5 h-5 md:w-6 md:h-6 filter transiton-all"
+                            fill={selectedPostId === post.id ? "#7077FE" : "none"}
+                            stroke={selectedPostId === post.id ? "#7077FE" : "#000"}
+                          />
+                          {" "} 
+                          <span className={`${selectedPostId === post.id ? "#7077FE" : "text-black"}`}>Reflections</span>
                         </button>
-                        {/* <button className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm">
-                  <img src={repost1} className="w-5 h-5 md:w-6 md:h-6" /> Repost
-                </button> */}
+                        
                         <div className="relative">
                           <button
                             onClick={() => toggleMenu(post.id, "share")}
-                            className="flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6   border border-[#E5E7EB] rounded-xl font-semibold text-sm md:text-base text-[#7077FE] hover:bg-gray-50 shadow-sm"
+                            className={`flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 text-black`}
                           >
                             <Share2 className="w-5 h-5 md:w-6 md:h-6" />
-                            Share
+                            <span className="text-black">Share</span>
                           </button>
                           {openMenu.postId === post.id &&
                             openMenu.type === "share" && (
@@ -1915,11 +1751,42 @@ export default function SocialTopBar() {
                                 url={buildShareUrl()} // or pass your own URL if needed
                                 position="bottom"
                               />
-                            )}
+                            )}    
                         </div>
+                          
+                        
+                        
+                          <button
+                            onClick={() =>
+                              savePostToCollection(post.id)
+                            }
+                            disabled={post.is_saved}
+                            className={`flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 ${post.is_saved ? "text-[#7077FE]" : "text-[#000]"}`}
+                          >
+                            <Bookmark stroke={post.is_saved ? "#7077FE" : "#000"} fill={post.is_saved ? "#7077FE" : "#fff"} className="w-5 h-5 md:w-6 md:h-6" />
+                            {post.is_saved
+                              ? "Saved"
+                              : "Save"}
+                          </button>
+                        
+
                       </div>
                     </div>
                   ))}
+
+                  {/* Load More Button */}
+                  {hasMore && userPosts.length >= 10 && (
+                    <div className="flex justify-center mt-6">
+                      <button
+                        onClick={getUserPosts}
+                        disabled={isLoading}
+                        className="px-6 py-2 bg-[#7077FE] text-white rounded-full hover:bg-[#5b63e6] disabled:opacity-50"
+                      >
+                        {isLoading ? "Showing..." : "Show More Results"}
+                      </button>
+                    </div>
+                  )}
+
                 </>
                 {/* )} */}
               </>
@@ -1980,38 +1847,46 @@ export default function SocialTopBar() {
           </div>
 
           {/* Right Sidebar Container */}
-          <div className="w-full lg:w-[30%] flex flex-col gap-4">
+          <div className="w-full lg:w-[25%] flex flex-col gap-4">
             {/* Quick Actions */}
             <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
               <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
                 Quick Actions
               </h3>
               <div className="w-full border-t border-[#C8C8C8] my-4"></div>
-              <ul className="space-y-4 text-sm md:text-[15px] text-gray-700 px-4">
+              <ul className="space-y-4 text-sm md:text-[15px] text-gray-700 ">
                 <li
                   onClick={() => navigate("/dashboard/trendingpost")}
-                  className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+                  className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-2 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"
                 >
                   <img src={Trending} className="w-5 h-5" alt="" /> Trending
                 </li>
                 <li
+                  // onClick={() => navigate("/dashboard/trendingpost")}
+                  className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-2 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"
+                >
+                  <img src={Mention} className="w-5 h-5" alt="" /> Mention & tags
+                </li>
+                <li
                   onClick={fetchCollectionItems}
-                  className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+                  className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-2 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"
                 >
                   <img src={Collection} className="w-5 h-5" alt="" /> My
                   Collection
                 </li>
                 <li
                   onClick={fetchFollowedUsers}
-                  className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+                  className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-0 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"
                 >
                   <img src={people} className="w-5 h-5" alt="" /> People you
                   follow
                 </li>
+                
               </ul>
             </div>
 
             {/* User Selected Topics Below Quick Actions */}
+            {/*
             {userSelectedTopics?.length > 0 && (
               <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
                 <div className="flex items-center justify-between mb-3 md:mb-4 px-4">
@@ -2052,8 +1927,9 @@ export default function SocialTopBar() {
                 </ul>
               </div>
             )}
-
+            */}
             {/* Topics BELOW User Selected Topics */}
+            {/*
             <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
               <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
                 Explore Topics
@@ -2092,6 +1968,7 @@ export default function SocialTopBar() {
                 )}
               </ul>
             </div>
+            */}
           </div>
 
           {/* Popup Modals (unchanged) */}
