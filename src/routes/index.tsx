@@ -63,12 +63,14 @@ import Faqs from "../pages/Faqs";
 import EcoSystem from "../pages/EcoSystem";
 import Premium from "../pages/Premium";
 import WhyCness from "../pages/WhyCness";
+//import SellerDashboard from "../pages/SellerDashboard";
 
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
 const DirectoryPage = lazy(() => import("../pages/DirectoryPage"));
-const Dashboard = lazy(() => import("../pages/Dashboard"));
+//const Dashboard = lazy(() => import("../pages/Dashboard"));
+const SellerDashboard = lazy(() => import("../pages/SellerDashboard"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 const ScoreResult = lazy(
   () => import("../components/sections/DashboardSection/ScoreResult")
@@ -142,12 +144,14 @@ export const router = createBrowserRouter([
       element:<WhyCness />
     },
       {
+      
         path: "dashboard",
         element: <DashboardLayout />, // ✅ now it's wrapped!
         children: [
           {
             index: true,
-            element: <Dashboard />,
+            //element: <Dashboard />,
+            element: <SellerDashboard />,
           },
           {
             path: "score-result",

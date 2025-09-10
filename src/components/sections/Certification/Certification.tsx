@@ -7,7 +7,7 @@ const Certification = () => {
 
   useEffect(() => {
     
-    fetch("https://cnessioassets.project-69e.workers.dev/Card-bg.json")
+    fetch("https://cnessioassets.project-69e.workers.dev/badgecard.json")
       .then((res) => res.json())
       .then((data) => setAnimationData(data))
       .catch((err) => console.error("Failed to load Lottie JSON:", err));
