@@ -1,10 +1,21 @@
-import HomeHeroBackground from "../ui/Premiumbackground";
+//import HomeHeroBackground from "../ui/Premiumbackground";
 
 export default function PremiumHero() {
   return (
-<section className="relative w-full h-[237px] md:h-[237px] overflow-hidden">
+<section className="relative w-full h-[237px] md:h-[237px] overflow-hidden border-b border-[#ECEEF2] shadow-none">
       {/* Background animation */}
-      <HomeHeroBackground />
+      <div
+    className="absolute inset-0 -z-10"
+style={{
+    background: `
+      linear-gradient(90deg,
+        rgba(255, 153, 74, 0.15) 0%,
+        rgba(255, 153, 74, 0.05) 20%,
+        #ffffff 100%
+      )
+    `
+  }}
+  />
 
       {/* Text container */}
       <div className="relative z-10 mx-auto max-w-[1100px] h-full px-6 text-center mt-6">
