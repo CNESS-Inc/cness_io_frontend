@@ -370,7 +370,7 @@ const CommentBox = ({
 
       <div
         ref={commentBoxRef}
-        className={`relative w-full max-w-xl bg-white  shadow-xl px-[24px] transition-all duration-300 transform ${
+        className={`relative w-full max-w-xl bg-white  shadow-xl px-[16px] transition-all duration-300 transform ${
           isClosing ? "translate-y-full" : "translate-y-0"
         }`}
         style={{
@@ -382,8 +382,8 @@ const CommentBox = ({
           <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
         </div> */}
 
-        <div className="flex justify-between items-center p-4 border-b border-[#ECEEF2] sticky top-0 bg-white z-10">
-          <h3 className="font-semibold text-lg">Reflection Threads</h3>
+        <div className="flex justify-between items-center p-3 border-b border-[#ECEEF2] sticky top-0 bg-white z-10">
+          <h3 className="font-semibold text-[16px]">Reflection</h3>
           <button
             onClick={handleClose}
             className="
@@ -433,32 +433,33 @@ const CommentBox = ({
               <p>Be the first to comment</p>
             </div>
           ) : (
-            <div className="space-y-4 py-2">
+            <div className="space-y-4 py-2 pt-4">
               {comments.map((comment) => (
                 <div key={comment.id} className="flex flex-col">
                   {/* Main Comment */}
                   <div className="flex gap-3 py-2">
-                    <img
-                      src={
-                        comment.profile.profile_picture
-                          ? comment.profile.profile_picture
-                          : "/profile.png"
-                      }
-                      alt={`${comment.profile.first_name} ${comment.profile.last_name}`}
-                      className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "/profile.png";
-                      }}
-                    />
+                    
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between">
-                        <div className="flex items-baseline gap-2">
-                          <span className="font-semibold">
+                        <div className="flex items-center gap-2 mb-[10px]">
+                          <img
+                            src={
+                              comment.profile.profile_picture
+                                ? comment.profile.profile_picture
+                                : "/profile.png"
+                            }
+                            alt={`${comment.profile.first_name} ${comment.profile.last_name}`}
+                            className="w-[36px] h-[36px] rounded-full object-cover flex-shrink-0"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = "/profile.png";
+                            }}
+                          />
+                          <span className="font-semibold text-[#081021] text-[14px]">
                             {comment.profile.first_name}{" "}
                             {comment.profile.last_name}
                           </span>
-                          <span className="text-xs text-gray-500">
+                          <span className="text-[12px] text-[#64748B]">
                             {formatTimeAgo(comment.createdAt)}
                           </span>
                         </div>
@@ -469,7 +470,7 @@ const CommentBox = ({
                                 showReply === comment.id ? null : comment.id
                               )
                             }
-                            className="hover:underline text-[#7077FE]"
+                            className="hover:underline text-[#7077FE] text-[12px]"
                           >
                             Reply
                           </button>
@@ -618,7 +619,7 @@ const CommentBox = ({
 
         <div className="p-4 border-t sticky bottom-0 border-[#ECEEF2] bg-white">
           <div className="flex items-center gap-2">
-            <img
+            {/* <img
               src={profilePicture}
               alt="Your profile"
               className="w-10 h-10 rounded-full object-cover flex-shrink-0"
@@ -626,7 +627,7 @@ const CommentBox = ({
                 const target = e.target as HTMLImageElement;
                 target.src = "/profile.png";
               }}
-            />
+            /> */}
             <input
               type="text"
               placeholder="Add a reflection..."
