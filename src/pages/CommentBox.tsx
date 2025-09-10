@@ -6,9 +6,13 @@ import {
   // PostCommentLike,
   // PostChildCommentLike,
   GetChildComments,
+  deleteCommentAPI,
+  deleteChildCommentAPI,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-
+import like from "../assets/social_like.png";
+import EmojiPicker from 'emoji-picker-react';
+import { iconMap } from "../assets/icons";
 interface Comment {
   child_comment_count: number;
   id: string;
@@ -59,6 +63,8 @@ const CommentBox = ({
   const [isClosing, setIsClosing] = useState(false);
   const [showReply, setShowReply] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [postLikes, setPostLikes] = useState(0);
   const commentBoxRef = useRef<HTMLDivElement>(null);
   const profilePicture =
     localStorage.getItem("profile_picture") || "/profile.png";
@@ -75,6 +81,7 @@ const CommentBox = ({
     try {
       const res = await GetComment(postId);
       setComments(res?.data?.data?.rows || []);
+      setPostLikes(res?.data?.data?.postlikes || 0);
     } catch (error) {
       console.error("Error fetching comments:", error);
     } finally {
@@ -289,6 +296,7 @@ const CommentBox = ({
 
   const handleClose = () => {
     setIsClosing(true);
+    setShowEmojiPicker(false);
     setTimeout(() => {
       onClose();
     }, 300);
@@ -360,6 +368,82 @@ const CommentBox = ({
     setExpandedComments((prev) => ({ ...prev, [commentId]: true }));
   };
 
+  const onEmojiClick = (emojiObject: any) => {
+    setCommentText(prev => prev + emojiObject.emoji);
+    setShowEmojiPicker(false);
+  };
+
+  const deleteComment = async (commentId: string) => {
+    try {
+          await deleteCommentAPI(commentId);
+          setComments((prev) => prev.filter((comment) => comment.id !== commentId));
+          showToast({
+            message: "Reflection deleted successfully.",
+            type: "success",
+            duration: 3000,
+          });
+        } catch (error) {
+          showToast({
+            message: "Failed to delete reflection.",
+            type: "error",
+            duration: 3000,
+          });
+        }
+    }
+
+  const deleteChildComment = async (replyId: string) => {
+  try {
+    await deleteChildCommentAPI(replyId);
+
+    // Find the parent comment and check if this is the last reply BEFORE updating state
+    const parentComment = comments.find(comment =>
+      comment.replies.some(reply => reply.id === replyId)
+    );
+
+    let shouldCollapse = false;
+    let parentId = null;
+
+    if (parentComment) {
+      shouldCollapse = parentComment.replies.length === 1;
+      parentId = parentComment.id;
+    }
+
+    setComments(prev =>
+      prev.map(comment => {
+        if (comment.replies.some(reply => reply.id === replyId)) {
+          const newReplies = comment.replies.filter(reply => reply.id !== replyId);
+          return {
+            ...comment,
+            replies: newReplies,
+            child_comment_count: Math.max(0, (comment.child_comment_count || 1) - 1),
+          };
+        }
+        return comment;
+      })
+    );
+
+    // Collapse replies if no replies left for the parent
+    if (shouldCollapse && parentId) {
+      setExpandedComments(prev => ({
+        ...prev,
+        [parentId]: false,
+      }));
+    }
+
+    showToast({
+      message: "Reflection deleted successfully.",
+      type: "success",
+      duration: 3000,
+    });
+  } catch (error) {
+    showToast({
+      message: "Failed to delete reflection.",
+      type: "error",
+      duration: 3000,
+    });
+  }
+};
+
   return (
     <div
       className={`fixed inset-0 z-50 flex items-end justify-center bg-black/50 transition-opacity duration-300 m-0 ${
@@ -387,16 +471,16 @@ const CommentBox = ({
           <button
             onClick={handleClose}
             className="
-    w-[35.44px] h-[35.44px]
-    opacity-100
-    border-[#ECEEF2] border-[1px]
-    gap-[8.01px]
-    p-[6.4px]
-    rounded-[6.4px]
-    text-[#E1056D] hover:text-[#E1056D]
-    flex items-center justify-center
-    bg-transparent
-  "
+              w-[35.44px] h-[35.44px]
+              opacity-100
+              border-[#ECEEF2] border-[1px]
+              gap-[8.01px]
+              p-[6.4px]
+              rounded-[6.4px]
+              text-[#E1056D] hover:text-[#E1056D]
+              flex items-center justify-center
+              bg-transparent
+            "
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -417,7 +501,7 @@ const CommentBox = ({
         </div>
 
         <div
-          className="overflow-y-auto px-4"
+          className="overflow-y-auto px-0"
           style={{
             maxHeight: "calc(90vh - 120px)",
             scrollBehavior: "smooth",
@@ -428,9 +512,8 @@ const CommentBox = ({
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
             </div>
           ) : comments.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-8 text-center text-gray-500">
-              <p>No comments yet</p>
-              <p>Be the first to comment</p>
+            <div className="flex flex-col items-center justify-center p-8 text-center text-[#999999] border-2 border-dashed border-[#897AFF80] mx-0 my-6 rounded-lg">
+              <p className="text-[14px]">No Reflections yet</p>
             </div>
           ) : (
             <div className="space-y-4 py-2 pt-4">
@@ -464,6 +547,15 @@ const CommentBox = ({
                           </span>
                         </div>
                         <div className="flex items-center text-xs text-gray-500 mt-1 gap-2">
+                          {comment.user_id === localStorage.getItem("Id") && (
+                            
+                            <button
+                              onClick={() => deleteComment(comment.id) }
+                              className="hover:underline text-[#E1056D]"
+                            >
+                              Delete
+                            </button>
+                          )}
                           <button
                             onClick={() =>
                               setShowReply(
@@ -599,13 +691,16 @@ const CommentBox = ({
                                   Like ({reply.likes_count})
                                 </button>
                               </div> */}
+                              {reply.user_id === localStorage.getItem("Id") && (
                               <div className="flex items-center text-xs text-gray-500 mt-1 gap-2">
                                 <button
-                                  className="hover:underline text-[#E1056D]"
+                                  onClick={() => deleteChildComment(reply.id) }
+                                  className="hover:underline text-[12px] font-[500] text-[#E1056D]"
                                 >
                                   Delete
                                 </button>
                               </div>
+                              )}
                             </div>
                           </div>
                         ))}
@@ -617,8 +712,8 @@ const CommentBox = ({
           )}
         </div>
 
-        <div className="p-4 border-t sticky bottom-0 border-[#ECEEF2] bg-white">
-          <div className="flex items-center gap-2">
+        <div className="px-0 py-4 border-t sticky bottom-0 border-[#ECEEF2] bg-white">
+          <div className="flex flex-col items-center gap-2">
             {/* <img
               src={profilePicture}
               alt="Your profile"
@@ -628,7 +723,57 @@ const CommentBox = ({
                 target.src = "/profile.png";
               }}
             /> */}
-            <input
+            <div className="flex w-full">
+              <div className="flex justify-between w-full mb-2 items-center mt-3 px-1 text-xs md:text-sm text-gray-600 gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 md:gap-2">
+                    <div className="flex items-center -space-x-2 md:-space-x-3">
+                      <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                        <img
+                          src={like}
+                          alt="Like"
+                          className="w-6 h-6 md:w-8 md:h-8"
+                        />
+                      </div>
+                      <span className="text-xs md:text-sm text-gray-500 pl-3 md:pl-5">
+                        {postLikes} Likes
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                {comments.length > 0 && (
+                  <div>
+                    <span className="text-[14px] text-[#64748B]">
+                      {comments.length} Reflections
+                    </span>
+                  </div>
+                )}
+            </div>
+            </div>
+            
+          <div className="flex items-center w-full flex-1 rounded-full px-4 py-2 focus:outline-none bg-gray-100 border-none">
+            {/* Emoji Button */}
+            <button
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              className="p-1 h-9 w-9 flex justify-center items-center "
+              // disabled={isUploading}
+            >
+              <span className="text-white text-lg">
+                <img src={iconMap["emoji"]} alt="emoji" className="w-6 h-6 transition duration-200 group-hover:brightness-0 group-hover:invert" />
+              </span>
+            </button>
+            {/* Emoji Picker */}
+            {showEmojiPicker && (
+              <div className="absolute bottom-14 left-0 mb-2">
+                <EmojiPicker
+                  onEmojiClick={onEmojiClick}
+                  width={300}
+                  height={400}
+                />
+              </div>
+            )}
+
+             <input
               type="text"
               placeholder="Add a reflection..."
               className="flex-1 rounded-full px-4 py-2 focus:outline-none bg-gray-100 border-none"
@@ -637,16 +782,17 @@ const CommentBox = ({
               onKeyPress={(e) => e.key === "Enter" && handleSubmitComment()}
             />
             <button
-              className={`px-4 py-2 rounded-full font-medium ${
+              className={`px-4 py-2 rounded-full font-medium w-[93px] ${
                 commentText
                   ? "text-purple-600 hover:text-purple-700"
-                  : "text-purple-300 cursor-not-allowed"
+                  : "text-white cursor-not-allowed bg-[#7077FE]"
               }`}
               disabled={!commentText}
               onClick={handleSubmitComment}
             >
               Post
             </button>
+          </div>
           </div>
         </div>
       </div>

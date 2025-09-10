@@ -136,6 +136,8 @@ export const EndPoint = {
   get_all_post: "/user/posts/get/all",
   create_post: "/user/posts",
   delete_post: "/user/posts",
+  deleteComment: "/user/post/comments/delete",
+  deleteChildComment: "/user/post/comments/child/delete",
   postComments: "/user/post/comments",
   postChildComment: "/user/post/comments/child",
   postCommentLike: "/user/post/comments/like",
@@ -934,6 +936,21 @@ export const DeleteUserPost = (id: string): ApiResponse => {
   );
 };
 
+export const deleteCommentAPI = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.deleteComment}/${id}`
+  );
+};
+
+export const deleteChildCommentAPI = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.deleteChildComment}/${id}`
+  );
+};
 export const PostComments = (formattedData: any) => {
   return executeAPI(
     ServerAPI.APIMethod.POST,

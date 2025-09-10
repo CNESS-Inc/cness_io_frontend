@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { FaVolumeUp, FaBackward, FaForward, FaPlay, FaPause, FaExpand } from "react-icons/fa";
 import StoryCard from "../components/Social/StoryCard";
+
 import {
   ChevronLeft,
   ChevronRight,
@@ -62,6 +64,7 @@ import Button from "../components/ui/Button";
 import SharePopup from "../components/Social/SharePopup";
 // import { buildShareUrl, copyPostLink } from "../lib/utils";
 import { buildShareUrl } from "../lib/utils";
+
 
 interface Post {
   id: string;
@@ -165,6 +168,138 @@ type Topic = {
   topic_name: string;
   slug: string;
 };
+
+
+const InlineCustomVideoPlayer = ({ url }: { url: string }) => {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [volume, setVolume] = useState(1);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  const handleTimeUpdate = () => {
+    if (videoRef.current) {
+      setCurrentTime(videoRef.current.currentTime);
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (videoRef.current) {
+      setDuration(videoRef.current.duration);
+    }
+  };
+
+  const togglePlayPause = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) {
+      video.play();
+      setIsPlaying(true);
+    } else {
+      video.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const time = parseFloat(e.target.value);
+    if (videoRef.current) {
+      videoRef.current.currentTime = time;
+      setCurrentTime(time);
+    }
+  };
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    if (videoRef.current) {
+      videoRef.current.volume = newVolume;
+    }
+  };
+
+  const handleFullscreen = () => {
+    const video = videoRef.current;
+    if (video && video.requestFullscreen) {
+      video.requestFullscreen();
+    }
+  };
+
+  const formatTime = (sec: number) => {
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  };
+
+  return (
+    <div className="w-full object-cover rounded-3xl relative group">
+      <video
+        ref={videoRef}
+        className="w-full lg:h-[500px] md:h-[400px] h-[300px] object-cover rounded-3xl"
+        muted
+        autoPlay
+        loop
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
+      >
+        <source src={url} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+
+      {/* Custom Controls */}
+      <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 bg-[#333] max-w-[95%] w-full text-white px-8 py-4 flex items-center justify-between gap-3 rounded-xl text-sm mx-auto absolute bottom-3 left-1/2 -translate-x-1/2">
+        {/* Volume */}
+        <div className="flex items-center gap-2">
+          <FaVolumeUp />
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={volume}
+            onChange={handleVolumeChange}
+            className="w-20 h-1 bg-white/80 rounded-lg appearance-none cursor-pointer accent-white"
+          />
+        </div>
+
+        {/* Backward */}
+        <button onClick={() => videoRef.current && (videoRef.current.currentTime -= 5)}>
+          <FaBackward size={14} />
+        </button>
+
+        {/* Play / Pause */}
+        <button onClick={togglePlayPause}>
+          {isPlaying ? <FaPause size={22} /> : <FaPlay size={22} />}
+        </button>
+
+        {/* Forward */}
+        <button onClick={() => videoRef.current && (videoRef.current.currentTime += 5)}>
+          <FaForward size={14} />
+        </button>
+
+        {/* Fullscreen */}
+        <button onClick={handleFullscreen}>
+          <FaExpand />
+        </button>
+
+        {/* Time + Progress */}
+        <div className="flex items-center gap-2 flex-1 ml-2">
+          <span className="text-xs w-10 text-right">{formatTime(currentTime)}</span>
+          <input
+            type="range"
+            min="0"
+            max={duration}
+            step="0.1"
+            value={currentTime}
+            onChange={handleSeek}
+            className="w-full h-1 bg-white/80 rounded-lg appearance-none cursor-pointer accent-white"
+          />
+          <span className="text-xs w-10">{formatTime(duration)}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
 function PostCarousel({ mediaItems }: PostCarouselProps) {
   const [current, setCurrent] = useState(0);
@@ -1641,16 +1776,7 @@ export default function SocialTopBar() {
                               // Single item rendering
                               const item = mediaItems[0];
                               return item.type === "video" ? (
-                                <video
-                                  className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl"
-                                  controls
-                                  muted
-                                  autoPlay
-                                  loop
-                                >
-                                  <source src={item.url} type="video/mp4" />
-                                  Your browser does not support the video tag.
-                                </video>
+                                <InlineCustomVideoPlayer url={item.url} />
                               ) : (
                                 <img
                                   src={item.url}
@@ -1761,9 +1887,9 @@ export default function SocialTopBar() {
                               savePostToCollection(post.id)
                             }
                             disabled={post.is_saved}
-                            className={`flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 ${post.is_saved ? "text-[#7077FE]" : "text-[#000]"}`}
+                            className={`flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 `}
                           >
-                            <Bookmark stroke={post.is_saved ? "#7077FE" : "#000"} fill={post.is_saved ? "#7077FE" : "#fff"} className="w-5 h-5 md:w-6 md:h-6" />
+                            <Bookmark stroke={post.is_saved ? "#FF616C" : "#000"} fill={post.is_saved ? "#FF616C" : "#fff"} className="w-5 h-5 md:w-6 md:h-6" />
                             {post.is_saved
                               ? "Saved"
                               : "Save"}

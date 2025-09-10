@@ -47,6 +47,7 @@ import socialannouncement from './social_announcement.png';
 import storyplus from './plus.png';
 import sociallike from './social_like.png';
 import userplus from './userplus.png';
+import emoji from './emoji.png'
 
 
 
@@ -98,6 +99,7 @@ leaderboard,
 socialannouncement,
 storyplus,
 sociallike,
-userplus
+userplus,
+emoji
 
 };
