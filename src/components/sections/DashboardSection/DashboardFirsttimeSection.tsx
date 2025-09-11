@@ -13,8 +13,10 @@ import poster from "../../../assets/best practice poster.png";
 import learningLab from "../../../assets/learning lab.png";
 import marketplace from "../../../assets/marketplace.png";
 import { HiOutlineLockClosed } from "react-icons/hi2";
+import { useNavigate } from "react-router-dom";
 
 export default function DashboardFirsttimeSection() {
+  const navigate = useNavigate();
   const { showToast } = useToast();
   const [user, setUser] = useState<any | null>(null);
   const [isVisible, setIsVisible] = useState(true);
@@ -124,7 +126,10 @@ export default function DashboardFirsttimeSection() {
               we offer.
             </h5>
             <div className="pt-12">
-              <button className="flex items-center gap-3 bg-white text-black text-sm font-normal py-2 ps-3 pe-2 rounded-full">
+              <button
+                className="flex items-center gap-3 bg-white text-black text-sm font-normal py-2 ps-3 pe-2 rounded-full"
+                onClick={() => navigate("/dashboard/user-profile")}
+              >
                 <span className="font-['Open_Sans',Helvetica]">
                   Create Profile
                 </span>
@@ -161,6 +166,7 @@ export default function DashboardFirsttimeSection() {
             <div className="py-5">
               <button
                 className="flex items-center gap-3 bg-white text-black text-sm font-normal py-2 ps-3 pe-2 rounded-full"
+                onClick={() => navigate("/dashboard/assesment")}
                 style={{
                   border: "1px solid var(--Stroke, rgba(236, 238, 242, 1))",
                   boxShadow: "0px 1px 10px 0px rgba(0, 0, 0, 0.05)",
@@ -231,7 +237,10 @@ export default function DashboardFirsttimeSection() {
                 practices!
               </h5>
               <div className="pt-3">
-                <button className="flex items-center gap-3 bg-white text-black text-sm font-normal py-2 ps-3 pe-2 rounded-full">
+                <button
+                  className="flex items-center gap-3 bg-white text-black text-sm font-normal py-2 ps-3 pe-2 rounded-full"
+                  onClick={() => navigate("/dashboard/DashboardDirectory")}
+                >
                   <span className="font-['Open_Sans',Helvetica]">
                     Work With Us
                   </span>
@@ -299,7 +308,10 @@ export default function DashboardFirsttimeSection() {
                     Reimagined for conscious expressions
                   </h5>
                   <div className="pt-6">
-                    <button className="flex items-center gap-3 bg-white text-black text-sm font-normal py-2 ps-3 pe-2 rounded-full">
+                    <button
+                      className="flex items-center gap-3 bg-white text-black text-sm font-normal py-2 ps-3 pe-2 rounded-full"
+                      onClick={() => navigate("/dashboard/Profile")}
+                    >
                       <span className="font-['Open_Sans',Helvetica]">
                         Create Profile
                       </span>
@@ -349,6 +361,7 @@ export default function DashboardFirsttimeSection() {
               <div className="pt-5">
                 <button
                   className="flex items-center gap-3 bg-white text-black text-sm font-normal py-2 ps-3 pe-2 rounded-full"
+                  onClick={() => navigate("/dashboard/bestpractices")}
                   style={{
                     border: "1px solid var(--Stroke, rgba(236, 238, 242, 1))",
                     boxShadow: "0px 1px 10px 0px rgba(0, 0, 0, 0.05)",
