@@ -204,7 +204,7 @@ export const EndPoint = {
   select_topic: "/userselecttopics",
   by_topic_post: "/user/posts/topic",
   get_all_topics: "/topics/get/all",
-  
+  add_partner_inquiry: '/partner-inquiry'
 };
 
 // Messaging endpoints
@@ -323,15 +323,15 @@ export const getReferralEarning = (
 };
 
 export const withdrawalAmount = (
-  formData: { user_id: any; amount: number; country_code: string; phone: string;}
+  formData: { user_id: any; amount: number; country_code: string; phone: string; }
 ): ApiResponse => {
-  const data: Partial<{ user_id: any; amount: number; country_code: string; phone: string;}> = {
+  const data: Partial<{ user_id: any; amount: number; country_code: string; phone: string; }> = {
     user_id: formData?.user_id,
     amount: formData?.amount,
     country_code: formData?.country_code,
     phone: formData?.phone,
   };
-  return executeAPI(  
+  return executeAPI(
     ServerAPI.APIMethod.POST,
     data,
     EndPoint.affiliate_withdrawal_request
@@ -898,13 +898,13 @@ export const GetPostsDetails = (page: any) => {
   let data = {};
   let params: { [key: string]: any } = {};
   params["page_no"] = page;
-  return executeAPI( 
+  return executeAPI(
     ServerAPI.APIMethod.GET,
     data,
     EndPoint.get_front_all_post,
     params
   );
-} 
+}
 export const GetAllStory = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.get_front_all_story);
@@ -1236,12 +1236,19 @@ export const getPostByTopicId = (
     page_no,
     limit,
   };
-
   return executeAPI(
     ServerAPI.APIMethod.GET,
     null,
     `${EndPoint.by_topic_post}/${id}`,
     params
+  );
+};
+
+export const createPartnerInquiry = (formData: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.add_partner_inquiry
   );
 };
 
