@@ -104,7 +104,6 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
               fontFamily: "Poppins",
               fontWeight: 500,
               fontStyle: "Medium",
-              fontSize: "15px",
               lineHeight: "20px",
             }}
             >

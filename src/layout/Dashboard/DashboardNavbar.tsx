@@ -218,7 +218,7 @@ const DashboardNavbar = ({
       isMentorDropdown: true,
       childPaths: ["/dashboard/BecomeMentor"],
       children: [
-        { label: "Became an Mentor", path: "/dashboard/Become_mentor" },
+        { label: "Became an Mentor", path: "/dashboard/become-mentor" },
         { label: "Became a Partner", path: "/dashboard/Become_partner" },
         // { label: "Mentor Dashboard", path: "/dashboard/ComingSoon" },
         // { label: "Track Progress", path: "/dashboard/ComingSoon" },

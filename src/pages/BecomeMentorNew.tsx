@@ -17,13 +17,15 @@ import {
 } from "../components/ui/DashboardCard";
 import Button from "../components/ui/Button";
 import mentor_banner from "../../public/mentor_banner.png";
-import { Label, Select, Textarea } from "@headlessui/react";
 import { Input } from "../components/ui/input";
 import { cn } from "../lib/utils";
 import { useState } from "react";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 const BecomeMentor = () => {
   const [currentStep, _setCurrentStep] = useState(1);
+  const [phone, setPhone] = useState("");
   const benefits = [
     {
       icon: Eye,
@@ -59,22 +61,27 @@ const BecomeMentor = () => {
 
   const steps = [
     {
+      step: 1,
       title: "Apply",
       description: "Fill out the mentor application form.",
     },
     {
+      step: 2,
       title: "Review",
       description: "Our team evaluates your expertise and profile.",
     },
     {
+      step: 3,
       title: "Onboarding",
       description: "Once approved, you'll get access to your mentor dashboard.",
     },
     {
+      step: 4,
       title: "Grow Together",
-      description: "Start mentoring and help others grow in their careers.",
+      description: "Fill out the mentor application form.",
     },
   ];
+
   return (
     <>
       {/* <div className="p-0">
@@ -213,60 +220,29 @@ const BecomeMentor = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 p-4">
             {/* Steps - col-3 */}
             <div className="lg:col-span-3 space-y-6">
-              {[
-                {
-                  step: 1,
-                  title: "Apply",
-                  description: "Fill out the mentor application form.",
-                  icon: Users,
-                  completed: true,
-                },
-                {
-                  step: 2,
-                  title: "Review",
-                  description: "Our team evaluates your expertise and profile.",
-                  icon: Eye,
-                  completed: false,
-                },
-                {
-                  step: 3,
-                  title: "Onboarding",
-                  description:
-                    "Once approved, you'll get access to your mentor dashboard.",
-                  icon: BookOpen,
-                  completed: false,
-                },
-                {
-                  step: 4,
-                  title: "Grow Together",
-                  description: "Fill out the mentor application form.",
-                  icon: Award,
-                  completed: false,
-                },
-              ].map((step, index) => {
+              {steps.map((step, index) => {
                 const stepNumber = index + 1;
                 const isActive = currentStep === stepNumber;
                 const isCompleted = currentStep > stepNumber;
                 const isLast = index === steps.length - 1;
 
                 return (
-                  <div key={index} className="relative flex items-start">
-                    {/* Step Circle */}
+                  <div key={index} className="relative flex items-start mb-0">
+                    {/* Step Circle + Line */}
                     <div className="flex flex-col items-center">
                       <div
                         className={cn(
-                          "flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all duration-300",
+                          "flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 mt-0",
                           {
-                            "border-step-active bg-step-active text-white":
-                              isActive,
-                            "border-step-completed bg-step-completed text-white":
-                              isCompleted,
-                            "border-step-inactive bg-background text-muted-foreground":
+                            // purple background for active + completed
+                            "bg-[#6340FF] text-white": isActive || isCompleted,
+                            // gray for future steps
+                            "bg-gray-200 text-gray-500":
                               !isActive && !isCompleted,
                           }
                         )}
                       >
-                        {isCompleted ? (
+                        {isActive || isCompleted ? (
                           <Check className="h-5 w-5" />
                         ) : (
                           <span className="text-sm font-medium">
@@ -275,35 +251,27 @@ const BecomeMentor = () => {
                         )}
                       </div>
 
-                      {/* Connecting Line */}
+                      {/* vertical line */}
                       {!isLast && (
                         <div
-                          className={cn(
-                            "mt-2 h-16 w-0.5 transition-all duration-300",
-                            {
-                              "bg-step-completed": isCompleted,
-                              "bg-step-line": !isCompleted,
-                            }
-                          )}
+                          className={cn("h-16 w-0.5", {
+                            "bg-[#6340FF]": isActive || isCompleted,
+                            "bg-gray-200": !isActive && !isCompleted,
+                          })}
                         />
                       )}
                     </div>
 
                     {/* Step Content */}
-                    <div className="ml-4 flex-1 pb-8">
+                    <div className="ml-4 flex-1">
                       <h3
                         className={cn(
-                          "text-lg font-semibold transition-colors duration-300",
-                          {
-                            "text-step-active": isActive,
-                            "text-foreground": isCompleted,
-                            "text-muted-foreground": !isActive && !isCompleted,
-                          }
+                          "font-['Poppins',Helvetica] text-lg font-semibold transition-colors duration-300 text-[#6340FF]"
                         )}
                       >
                         {step.title}
                       </h3>
-                      <p className="mt-1 text-sm text-muted-foreground">
+                      <p className="font-['Open_Sans',Helvetica] mt-1 text-sm text-gray-500">
                         {step.description}
                       </p>
                     </div>
@@ -314,35 +282,75 @@ const BecomeMentor = () => {
 
             {/* Form - col-9 */}
             <div className="lg:col-span-9">
-              <Card className="max-w-4xl mx-auto shadow-lg border-border/50">
-                <CardContent className="p-8">
+              <Card className="flex opacity-100   shadow-none ">
+                <CardContent className="w-full pt-[30px] pr-[26px] pb-[30px] pl-[26px] gap-[30px] rounded-[25px] bg-[#F7F7F7]">
                   <form className="space-y-6">
                     {/* Personal Information */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label htmlFor="firstName">First Name</Label>
-                        <Input id="firstName" placeholder="Enter first name" />
+                        <label
+                          htmlFor="firstName"
+                          className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
+                        >
+                          First Name
+                        </label>
+                        <Input
+                          id="firstName"
+                          placeholder="Enter first name"
+                          className="h-[53px] opacity-100 pr-[10px] pl-[10px] gap-[10px] rounded-[4px] bg-white border-2 border-[#EEEEEE] focus-visible:border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-transparent"
+                        />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="lastName">Last Name</Label>
-                        <Input id="lastName" placeholder="Enter last name" />
+                        <label
+                          htmlFor="lastName"
+                          className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
+                        >
+                          Last Name
+                        </label>
+                        <Input
+                          id="lastName"
+                          className="h-[53px] opacity-100 pr-[10px] pl-[10px] gap-[10px] rounded-[4px] bg-white border-2 border-[#EEEEEE] focus-visible:ring-transparent"
+                          placeholder="Enter last name"
+                        />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label htmlFor="phone">Phone Number</Label>
-                        <Input
-                          id="phone"
-                          type="tel"
-                          placeholder="Enter phone number"
-                        />
+                        <label
+                          htmlFor="phone"
+                          className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
+                        >
+                          Phone Number
+                        </label>
+                        <PhoneInput
+  country={"us"}
+  value={phone}
+  onChange={(value) => setPhone(value)}
+  containerClass="!w-full" // make wrapper full width
+  inputClass="
+    !w-full 
+    !h-[53px] 
+    !bg-white 
+    !border-2 
+    !border-[#EEEEEE] 
+    !rounded-[4px] 
+    pl-[60px]   // 👈 increase this to whatever you want (e.g. 60px, 64px)
+  "
+/>
+
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="email">Email Address</Label>
+                        <label
+                          htmlFor="email"
+                          className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
+                        >
+                          Email Address
+                        </label>
                         <Input
                           id="email"
                           type="email"
+                          className="h-[53px] opacity-100 pr-[10px] pl-[10px] gap-[10px] rounded-[4px] bg-white border-2 border-[#EEEEEE] focus-visible:ring-transparent"
                           placeholder="Enter email address"
                         />
                       </div>
@@ -350,70 +358,87 @@ const BecomeMentor = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label htmlFor="experience">Years of Experience</Label>
-                        <Select>
-                          {/* <SelectTrigger>
-                            <SelectValue placeholder="Select years of experience" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="1-3">1-3 years</SelectItem>
-                            <SelectItem value="4-7">4-7 years</SelectItem>
-                            <SelectItem value="8-15">8-15 years</SelectItem>
-                            <SelectItem value="15+">15+ years</SelectItem>
-                          </SelectContent> */}
-                        </Select>
+                        <label
+                          htmlFor="experience"
+                          className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
+                        >
+                          Years of Experience
+                        </label>
+                        <Input
+                          id="experience"
+                          type="text"
+                          className="h-[53px] opacity-100 pr-[10px] pl-[10px] gap-[10px] rounded-[4px] bg-white border-2 border-[#EEEEEE] focus-visible:ring-transparent"
+                          placeholder="Enter your years of experience"
+                        />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="website">
+                        <label
+                          htmlFor="website"
+                          className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
+                        >
                           Website / Social Media Link (if any)
-                        </Label>
-                        <Input id="website" placeholder="Enter website URL" />
+                        </label>
+                        <Input
+                          id="website"
+                          placeholder="Enter your link"
+                          className="h-[53px] opacity-100 pr-[10px] pl-[10px] gap-[10px] rounded-[4px] bg-white border-2 border-[#EEEEEE] focus-visible:ring-transparent"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label
+                          htmlFor="bio"
+                          className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
+                        >
+                          Short Bio
+                        </label>
+                        <textarea
+                          id="bio"
+                          placeholder="Tell us about yourself..."
+                          className="min-h-[100px] block w-full rounded-md px-3 py-2 bg-white border-2 border-[#EEEEEE] focus:outline-none focus:ring-0"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label
+                          htmlFor="motivation"
+                          className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
+                        >
+                          Why do you want to become a mentor?
+                        </label>
+                        <textarea
+                          id="motivation"
+                          placeholder="Share your motivation..."
+                          className="min-h-[100px] block w-full px-3 py-2 rounded-[4px] bg-white border-2 border-[#EEEEEE] focus:outline-none focus:ring-0"
+                        />
                       </div>
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="bio">Short Bio</Label>
-                      <Textarea
-                        id="bio"
-                        placeholder="Tell us about yourself..."
-                        className="min-h-[100px]"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="motivation">
-                        Why do you want to become a mentor?
-                      </Label>
-                      <Textarea
-                        id="motivation"
-                        placeholder="Share your motivation..."
-                        className="min-h-[100px]"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="availability">
+                      <label
+                        htmlFor="availability"
+                        className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
+                      >
                         Availability (Hours per month you can commit)
-                      </Label>
-                      <Select>
-                        {/* <SelectTrigger>
-                          <SelectValue placeholder="Select your availability" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="5-10">5-10 hours</SelectItem>
-                          <SelectItem value="10-20">10-20 hours</SelectItem>
-                          <SelectItem value="20-30">20-30 hours</SelectItem>
-                          <SelectItem value="30+">30+ hours</SelectItem>
-                        </SelectContent> */}
-                      </Select>
+                      </label>
+                      <Input
+                        id="availability"
+                        type="text"
+                        className="h-[53px] opacity-100 pr-[10px] pl-[10px] gap-[10px] rounded-[4px] bg-white border-2 border-[#EEEEEE] focus-visible:ring-transparent"
+                        placeholder="Select your Availability"
+                      />
                     </div>
-                    <Button
-                      variant="gradient-primary"
-                      className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
-                      type="submit"
-                    >
-                      Submit Application
-                    </Button>
+                    <div className="flex justify-center">
+                      <Button
+                        variant="gradient-primary"
+                        className="font-['Open_Sans',Helvetica] font-normal text-[16px] leading-none tracking-normal text-center w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
+                        type="submit"
+                      >
+                        Submit
+                      </Button>
+                    </div>
                   </form>
                 </CardContent>
               </Card>
