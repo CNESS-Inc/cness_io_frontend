@@ -1,13 +1,10 @@
 import {
-  Award,
-  BookOpen,
   Check,
   Eye,
   GraduationCap,
   Key,
   Network,
   Target,
-  Users,
 } from "lucide-react";
 import { Card, CardContent } from "../components/ui/Card";
 import {
@@ -324,21 +321,20 @@ const BecomeMentor = () => {
                           Phone Number
                         </label>
                         <PhoneInput
-  country={"us"}
-  value={phone}
-  onChange={(value) => setPhone(value)}
-  containerClass="!w-full" // make wrapper full width
-  inputClass="
-    !w-full 
-    !h-[53px] 
-    !bg-white 
-    !border-2 
-    !border-[#EEEEEE] 
-    !rounded-[4px] 
-    pl-[60px]   // 👈 increase this to whatever you want (e.g. 60px, 64px)
-  "
-/>
-
+                          country={"us"}
+                          value={phone}
+                          onChange={(value) => setPhone(value)}
+                          containerClass="!w-full" // make wrapper full width
+                          inputClass="
+                          !w-full 
+                          !h-[53px] 
+                          !bg-white 
+                          !border-2 
+                          !border-[#EEEEEE] 
+                          !rounded-[4px] 
+                          pl-[60px]   // 👈 increase this to whatever you want (e.g. 60px, 64px)
+                        "
+                        />
                       </div>
                       <div className="space-y-2">
                         <label
