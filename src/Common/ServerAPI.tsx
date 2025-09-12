@@ -48,6 +48,11 @@ type AccountData = {
 type EmailVerifyData = {
   token: any;
 };
+
+type FriendSuggestionData = {
+  search?: string;
+  limit?: number;
+};
 type PaymentVerifyData = {
   session_id: any;
 };
@@ -1255,6 +1260,15 @@ export const createPartnerInquiry = (formData: any): ApiResponse => {
 export const LogOut = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.logout);
+};
+
+export const getFriendsForTagging = (params: FriendSuggestionData): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.postComments + "/friends-for-tagging",
+    params
+  );
 };
 
 export const executeAPI = async <T = any,>(
