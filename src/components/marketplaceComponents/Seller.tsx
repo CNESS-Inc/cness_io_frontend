@@ -2,7 +2,7 @@ import { CircleCheckBig } from "lucide-react";
 
 export default function SellerSection() {
   return (
-    <section className="w-full bg-white py-12 md:py-16">
+    <section className="w-full bg-white px-20 py-[86px]">
       {/* Container */}
       <div className="max-w-[1500px] mx-auto bg-[#F5F7F9] rounded-[24px] md:rounded-[32px] px-6 sm:px-10 md:px-16 lg:px-[120px] py-8 sm:py-12 md:py-[50px] flex flex-col lg:flex-row gap-10 lg:gap-[30px]">
         
