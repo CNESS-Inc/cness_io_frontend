@@ -1,5 +1,8 @@
 // import { useState } from "react";
+import MarketplaceHero from "../components/marketplaceComponents/MarketplaceHero";
+import LazySection from "../components/ui/LazySection";
 import Marketform from "../components/zohoforms/Marketform";
+import Seller from "../components/marketplaceComponents/Seller";
 // import HeroCarousel from "../components/marketplaceComponents/HeroCarousel";
 // import CnessRecommendations from "../components/marketplaceComponents/CnessRecommendations";
 // import sorticon from "../assets/sort.png"; // update the path as needed
@@ -272,6 +275,13 @@ export default function MarketplacePage() {
           </div>
         </div>
       </div> */}
+
+      <LazySection effect="fade-up" delay={0.2}>
+        <MarketplaceHero />
+      </LazySection>
+      <LazySection effect="fade-up" delay={0.1}>
+        <Seller />
+      </LazySection>
 
       <div className="p-0">
         <div className="rounded-xl border border-gray-200 bg-white p-0">

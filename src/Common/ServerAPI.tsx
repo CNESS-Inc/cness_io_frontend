@@ -179,6 +179,8 @@ export const EndPoint = {
   bp_comment_like: "/best-practice/comment/like",
   bp_comment_reply: "/best-practice/comment/reply",
   singleBp: "/best-practice/get",
+  followBp: "/best-practice/follow",
+  get_followbestpractices: "/best-practice/get/follow/best-practice",
   user_notification: "/notification",
   notification_count: "/notification/count",
   update_notification: "/notification/update-status",
@@ -204,7 +206,7 @@ export const EndPoint = {
   select_topic: "/userselecttopics",
   by_topic_post: "/user/posts/topic",
   get_all_topics: "/topics/get/all",
-  add_partner_inquiry: '/partner-inquiry'
+  add_partner_inquiry: "/partner-inquiry",
 };
 
 // Messaging endpoints
@@ -213,14 +215,16 @@ export const GetConversations = () => {
 };
 
 export const GetConversationMessages = (conversationId: string | number) => {
-  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.conversationMessages}/${conversationId}/messages`);
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.conversationMessages}/${conversationId}/messages`
+  );
 };
 
 export const SendMessage = (formData: FormData) => {
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.sendMessage);
-
 };
-
 
 export const GoogleLoginDetails = async (googleToken: string): ApiResponse => {
   const data = { token: googleToken };
@@ -322,10 +326,18 @@ export const getReferralEarning = (
   );
 };
 
-export const withdrawalAmount = (
-  formData: { user_id: any; amount: number; country_code: string; phone: string; }
-): ApiResponse => {
-  const data: Partial<{ user_id: any; amount: number; country_code: string; phone: string; }> = {
+export const withdrawalAmount = (formData: {
+  user_id: any;
+  amount: number;
+  country_code: string;
+  phone: string;
+}): ApiResponse => {
+  const data: Partial<{
+    user_id: any;
+    amount: number;
+    country_code: string;
+    phone: string;
+  }> = {
     user_id: formData?.user_id,
     amount: formData?.amount,
     country_code: formData?.country_code,
@@ -730,6 +742,15 @@ export const GetSaveBestpractices = (): ApiResponse => {
   );
 };
 
+export const GetFollowBestpractices = (): ApiResponse => {
+  const data = {};
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.get_followbestpractices}`
+  );
+};
+
 export const CreateBestpracticesComment = (formData: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
@@ -761,6 +782,10 @@ export const GetSingleBestPractice = (id: any): ApiResponse => {
     `${EndPoint.singleBp}/${id}`
   );
 };
+export const SendBpFollowRequest = (payload: any) => {
+  return executeAPI(ServerAPI.APIMethod.POST, payload, EndPoint.followBp);
+};
+
 export const GetUserNotification = (): ApiResponse => {
   const data = {};
   return executeAPI(
@@ -904,11 +929,15 @@ export const GetPostsDetails = (page: any) => {
     EndPoint.get_front_all_post,
     params
   );
-}
+};
 export const GetAllStory = () => {
   let data = {};
-  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.get_front_all_story);
-}
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    EndPoint.get_front_all_story
+  );
+};
 export const PostsDetails = (page: any) => {
   let data = {};
   let params: { [key: string]: any } = {};
