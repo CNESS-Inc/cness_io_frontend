@@ -216,7 +216,7 @@ export default function SellerDashboard() {
         {/* LEFT column stacks: TrueProfile -> Certification -> BestPractices -> Directory */}
         <div className="col-span-12 lg:col-span-8 space-y-5">
           <TrueProfileCard
-            avatarUrl="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=facearea&facepad=3&crop=faces"
+            avatarUrl={userProfilePicture}
             completion={user?.profile_progress || 100}
             onUpdateProfile={() => navigate(`/dashboard/user-profile/${Id}`)}
             onOpen={() => console.log("Open True Profile")}
