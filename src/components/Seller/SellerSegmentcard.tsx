@@ -718,7 +718,7 @@ export function SocialStackCard({
   resonating = 100,
   resonators = 1000,
   //onViewProfile,
-  onSearch,
+  // onSearch,
   onOpen,
 
   // adventure
