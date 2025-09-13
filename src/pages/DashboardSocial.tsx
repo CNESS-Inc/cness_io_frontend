@@ -1361,7 +1361,7 @@ export default function SocialTopBar() {
                                   ? post.profile.profile_picture
                                   : "/profile.png"
                               }
-                              className="w-8 h-8 md:w-10 md:h-10 rounded-full"
+                              className="w-8 h-8 md:w-[63px] md:h-[63px] rounded-full"
                               alt="User"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
@@ -1370,7 +1370,7 @@ export default function SocialTopBar() {
                             />
                           </Link>
                           <div>
-                            <p className="font-semibold text-sm md:text-base text-gray-800">
+                            <p className="font-semibold text-sm md:text-base text-black">
                               <Link
                                 to={`/dashboard/userprofile/${post?.profile?.id}`}
                               >
@@ -1378,7 +1378,7 @@ export default function SocialTopBar() {
                                 {post.profile.first_name}{" "}
                                 {post.profile.last_name}
                               </Link>
-                              <span className="text-gray-500 text-xs md:text-sm">
+                              <span className="text-[#999999] text-xs md:text-[12px] font-[400]">
                                 {" "}
                                 <Link
                                   to={`/dashboard/userprofile/${post?.profile?.id}`}
@@ -1388,7 +1388,7 @@ export default function SocialTopBar() {
                                 </Link>
                               </span>
                             </p>
-                            <p className="text-xs md:text-sm text-gray-400">
+                            <p className="text-xs md:text-[12px] text-[#606060]">
                               {formatMessageTime(post.createdAt)}
                             </p>
                           </div>
@@ -1667,7 +1667,7 @@ export default function SocialTopBar() {
                       </div>
 
                       {/* Reactions and Action Buttons */}
-                      <div className="flex justify-between items-center mt-3 px-1 text-xs md:text-sm text-gray-600 gap-2">
+                      <div className="flex justify-between items-center mt-6 px-1 text-xs md:text-sm text-gray-600 gap-2">
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-1 md:gap-2">
                             <div className="flex items-center -space-x-2 md:-space-x-3">
@@ -1867,11 +1867,11 @@ export default function SocialTopBar() {
           <div className="w-full lg:w-[25%] flex flex-col gap-4">
             {/* Quick Actions */}
             <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
-              <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
+              <h3 className="text-[#081021] font-semibold text-base md:text-[14px] mb-3 md:mb-4 px-4">
                 Quick Actions
               </h3>
-              <div className="w-full border-t border-[#C8C8C8] my-4"></div>
-              <ul className="space-y-4 text-sm md:text-[15px] text-gray-700 ">
+              <div className="w-full border-t border-[#E1E1E1] my-4"></div>
+              <ul className="space-y-4 text-sm md:text-[14px] text-[#000000] ">
                 <li
                   onClick={() => navigate("/dashboard/trendingpost")}
                   className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-2 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"
@@ -1945,10 +1945,10 @@ export default function SocialTopBar() {
             )}
             {/* Topics BELOW User Selected Topics */}
             <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
-              <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
+              <h3 className="text-[#081021] font-semibold text-base md:text-[14px] mb-3 md:mb-4 px-4">
                 Explore Topics
               </h3>
-              <div className="w-full border-t border-[#C8C8C8] my-4"></div>
+              <div className="w-full border-t border-[#E1E1E1] my-4"></div>
               <ul className="space-y-3 text-sm md:text-[15px] text-gray-700 px-4">
                 {topics?.slice(0, visibleTopic)?.map((topic) => (
                   <button
