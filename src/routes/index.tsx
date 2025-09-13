@@ -28,7 +28,7 @@ import SearchListing from "../pages/SearchListing";
 import DigitalProducts from "../pages/DigitalProducts";
 // import Feed from "../pages/Feed";
 import SearchExplore from "../pages/SearchExplore";
-import BecomeMentor from "../pages/BecomeMentor";
+import BecomeMentor from "../pages/BecomeMentorNew";
 //import DashboardDirectoryPage from "../pages/DashboardDirectoryPage";
 import EditPublicListing from "../pages/EditPublicListing";
 import VisibilitySettings from "../pages/VisibilitySettings";
@@ -266,7 +266,7 @@ export const router = createBrowserRouter([
             element: <SearchExplore />,
           },
           {
-            path: "Become_mentor",
+            path: "become-mentor",
             element: <BecomeMentor />,
           },
           {

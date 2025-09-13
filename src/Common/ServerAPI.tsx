@@ -48,6 +48,11 @@ type AccountData = {
 type EmailVerifyData = {
   token: any;
 };
+
+type FriendSuggestionData = {
+  search?: string;
+  limit?: number;
+};
 type PaymentVerifyData = {
   session_id: any;
 };
@@ -160,6 +165,7 @@ export const EndPoint = {
   connection: "/friend",
   user_connection: "/friend/get-friend-status",
   connection_request: "/friend/request",
+  suggestions: "/friend/suggestions",
   delete_friend: "/friend/delete/friend",
   friend_request_accept: "/friend/request/accept",
   friend_request_reject: "/friend/request/reject",
@@ -168,6 +174,7 @@ export const EndPoint = {
   googleLogin: "/auth/google-login",
   all_bestPractices: "/best-practice/all",
   bp: "/best-practice",
+  bp_recommended: "/best-practice/recommended",
   save_bestPractices: "/best-practice/get/save/best-practice",
   mine_bestPractices: "/best-practice/get-by-user-id",
   add_bestpractices: "/best-practice",
@@ -180,6 +187,8 @@ export const EndPoint = {
   bp_comment_like: "/best-practice/comment/like",
   bp_comment_reply: "/best-practice/comment/reply",
   singleBp: "/best-practice/get",
+  followBp: "/best-practice/follow",
+  get_followbestpractices: "/best-practice/get/follow/best-practice",
   user_notification: "/notification",
   notification_count: "/notification/count",
   update_notification: "/notification/update-status",
@@ -205,9 +214,7 @@ export const EndPoint = {
   select_topic: "/userselecttopics",
   by_topic_post: "/user/posts/topic",
   get_all_topics: "/topics/get/all",
-  
-
-
+  add_partner_inquiry: "/partner-inquiry",
 };
 
 // Messaging endpoints
@@ -216,14 +223,16 @@ export const GetConversations = () => {
 };
 
 export const GetConversationMessages = (conversationId: string | number) => {
-  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.conversationMessages}/${conversationId}/messages`);
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.conversationMessages}/${conversationId}/messages`
+  );
 };
 
 export const SendMessage = (formData: FormData) => {
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.sendMessage);
-
 };
-
 
 export const GoogleLoginDetails = async (googleToken: string): ApiResponse => {
   const data = { token: googleToken };
@@ -325,16 +334,24 @@ export const getReferralEarning = (
   );
 };
 
-export const withdrawalAmount = (
-  formData: { user_id: any; amount: number; country_code: string; phone: string;}
-): ApiResponse => {
-  const data: Partial<{ user_id: any; amount: number; country_code: string; phone: string;}> = {
+export const withdrawalAmount = (formData: {
+  user_id: any;
+  amount: number;
+  country_code: string;
+  phone: string;
+}): ApiResponse => {
+  const data: Partial<{
+    user_id: any;
+    amount: number;
+    country_code: string;
+    phone: string;
+  }> = {
     user_id: formData?.user_id,
     amount: formData?.amount,
     country_code: formData?.country_code,
     phone: formData?.phone,
   };
-  return executeAPI(  
+  return executeAPI(
     ServerAPI.APIMethod.POST,
     data,
     EndPoint.affiliate_withdrawal_request
@@ -645,6 +662,9 @@ export const DeleteBestPractices = (id: number): ApiResponse => {
 export const GetBestPracticesById = (id: number): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.bp}/get/${id}`);
 };
+export const GetRecommendedBestPractices = (): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.bp_recommended}`);
+};
 export const UpdateBestPractice = (payload: {
   id: string;
   profession: string;
@@ -733,6 +753,15 @@ export const GetSaveBestpractices = (): ApiResponse => {
   );
 };
 
+export const GetFollowBestpractices = (): ApiResponse => {
+  const data = {};
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.get_followbestpractices}`
+  );
+};
+
 export const CreateBestpracticesComment = (formData: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
@@ -764,6 +793,10 @@ export const GetSingleBestPractice = (id: any): ApiResponse => {
     `${EndPoint.singleBp}/${id}`
   );
 };
+export const SendBpFollowRequest = (payload: any) => {
+  return executeAPI(ServerAPI.APIMethod.POST, payload, EndPoint.followBp);
+};
+
 export const GetUserNotification = (): ApiResponse => {
   const data = {};
   return executeAPI(
@@ -901,17 +934,21 @@ export const GetPostsDetails = (page: any) => {
   let data = {};
   let params: { [key: string]: any } = {};
   params["page_no"] = page;
-  return executeAPI( 
+  return executeAPI(
     ServerAPI.APIMethod.GET,
     data,
     EndPoint.get_front_all_post,
     params
   );
-} 
+};
 export const GetAllStory = () => {
   let data = {};
-  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.get_front_all_story);
-}
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    EndPoint.get_front_all_story
+  );
+};
 export const PostsDetails = (page: any) => {
   let data = {};
   let params: { [key: string]: any } = {};
@@ -1095,6 +1132,10 @@ export const GetFriendRequest = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection_request);
 };
+export const GetFriendSuggestions = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.suggestions);
+};
 export const AcceptFriendRequest = (formattedData: any) => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
@@ -1239,7 +1280,6 @@ export const getPostByTopicId = (
     page_no,
     limit,
   };
-
   return executeAPI(
     ServerAPI.APIMethod.GET,
     null,
@@ -1248,9 +1288,26 @@ export const getPostByTopicId = (
   );
 };
 
+export const createPartnerInquiry = (formData: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.add_partner_inquiry
+  );
+};
+
 export const LogOut = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.logout);
+};
+
+export const getFriendsForTagging = (params: FriendSuggestionData): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.postComments + "/friends-for-tagging",
+    params
+  );
 };
 
 export const executeAPI = async <T = any,>(

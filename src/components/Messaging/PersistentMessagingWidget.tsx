@@ -618,17 +618,17 @@ const PersistentMessagingWidget: React.FC = () => {
             
             <div className="flex items-center gap-2 relative">
               <button 
-                className="p-1 h-9 w-9 flex justify-center items-center border-blue-600 border rounded group hover:bg-blue-600 transitions-all transition-colors transition-duration-300"
+                className="p-1 h-9 w-9 flex justify-center items-center border-[#ECEEF2] border rounded  hover:bg-[#F8F3FF] transitions-all transition-colors transition-duration-300"
                 onClick={handleImageButtonClick}
                 disabled={isUploading}
               >
-                <Paperclip size={16} className="text-blue-600 group-hover:text-white" />
+                <Paperclip size={16} className="text-purple-600 " />
               </button>
               
               {/* Emoji Button */}
               <button
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                className="p-1 h-9 w-9 flex justify-center items-center border-blue-600 border rounded hover:bg-blue-600 transitions-all transition-colors transition-duration-300"
+                className="p-1 h-9 w-9 flex justify-center items-center border-[#ECEEF2] border rounded hover:bg-[#F8F3FF] transitions-all transition-colors transition-duration-300"
                 disabled={isUploading}
               >
                 <span className="text-white text-lg">😊</span>
@@ -656,7 +656,7 @@ const PersistentMessagingWidget: React.FC = () => {
               <button
                 onClick={handleSendMessage}
                 disabled={!newMessage.trim() && selectedImages.length === 0}
-                className="p-2 w-9 h-9 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 w-9 h-9 bg-purple-600 text-white rounded-lg hover:purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isUploading ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

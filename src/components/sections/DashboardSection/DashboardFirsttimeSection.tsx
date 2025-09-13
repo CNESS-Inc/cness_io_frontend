@@ -13,8 +13,10 @@ import poster from "../../../assets/best practice poster.png";
 import learningLab from "../../../assets/learning lab.png";
 import marketplace from "../../../assets/marketplace.png";
 import { HiOutlineLockClosed } from "react-icons/hi2";
+import { useNavigate } from "react-router-dom";
 
 export default function DashboardFirsttimeSection() {
+  const navigate = useNavigate();
   const { showToast } = useToast();
   const [user, setUser] = useState<any | null>(null);
   const [isVisible, setIsVisible] = useState(true);
@@ -56,11 +58,11 @@ export default function DashboardFirsttimeSection() {
   ];
 
   return (
-    <section className="flex flex-col w-full items-start gap-3 py-2">
+    <section className="flex flex-col w-full items-start gap-3 py-2 pb-12">
       {/* Header Section */}
       <header className="w-full">
-        <div className="flex items-start justify-between">
-          <div>
+        <div className="flex flex-col lg:flex-row items-start justify-start lg:justify-between gap-4">
+          <div className="order-2 lg:order-1">
             <div className="md:py-2 flex items-center gap-2.5">
               <h1 className="font-['Poppins',Helvetica] text-2xl font-medium md:text-[32px] leading-8">
                 <span className="text-[#222224]">Hello </span>
@@ -77,7 +79,7 @@ export default function DashboardFirsttimeSection() {
             </div>
           </div>
           {isVisible && (
-            <div className="w-full max-w-sm bg-[rgba(255,204,0,0.1)] font-medium text-xs text-[#222224] px-3 py-2.5 flex items-center justify-between rounded-lg">
+            <div className="order-1 lg:order-2 w-full max-w-sm bg-[rgba(255,204,0,0.1)] font-medium text-xs text-[#222224] px-3 py-2.5 flex items-center justify-between rounded-lg">
               <div className="flex items-center gap-2">
                 <div className="flex w-6 h-6 2xl:w-10 2xl:h-10 items-center justify-center">
                   <img
@@ -103,7 +105,7 @@ export default function DashboardFirsttimeSection() {
       </header>
       <div className="flex flex-col lg:flex-row gap-3 w-full h-full">
         {/* First Card */}
-        <div className="w-3/5 flex flex-col items-center justify-center gap-3">
+        <div className="w-full lg:w-3/5 flex flex-col items-center justify-center gap-3">
           <div
             className="w-full relative p-6 rounded-xl bg-[#6E62E5]"
             style={{
@@ -119,12 +121,15 @@ export default function DashboardFirsttimeSection() {
             <h6 className="font-['Open_Sans',Helvetica] font-normal text-white">
               TRUE PROFILE
             </h6>
-            <h5 className="pt-3 pe-5 font-['Poppins',Helvetica] font-medium text-2xl text-white leading-[32px]">
+            <h5 className="pt-3 pe-5 font-['Poppins',Helvetica] font-medium text-xl md:text-2xl text-white leading-[32px]">
               Access your True profile and begin exploring the various products
               we offer.
             </h5>
             <div className="pt-12">
-              <button className="flex items-center gap-3 bg-white text-black text-sm font-normal py-2 ps-3 pe-2 rounded-full">
+              <button
+                className="flex items-center gap-3 bg-white text-black text-sm font-normal py-2 ps-3 pe-2 rounded-full"
+                onClick={() => navigate("/dashboard/user-profile")}
+              >
                 <span className="font-['Open_Sans',Helvetica]">
                   Create Profile
                 </span>
@@ -151,16 +156,17 @@ export default function DashboardFirsttimeSection() {
             className="w-full relative p-6 rounded-xl bg-white"
             style={{ borderColor: "var(--Stroke, rgba(236, 238, 242, 1))" }}
           >
-            <h6 className="font-['Poppins',Helvetica] font-medium text-[28px] text-[#222224]">
+            <h6 className="font-['Poppins',Helvetica] font-medium text-[22px] sm:text-[28px] text-[#222224]">
               Certification Makes It Official.
             </h6>
-            <h5 className="pt-3 font-['Open_Sans',Helvetica] font-normal text-lg text-[#999999] leading-[32px]">
+            <h5 className="pt-3 font-['Open_Sans',Helvetica] font-normal text-base sm:text-lg text-[#999999] leading-[32px]">
               Get your conscious identity verified and unlock everything CNESS
               has to offer.
             </h5>
             <div className="py-5">
               <button
                 className="flex items-center gap-3 bg-white text-black text-sm font-normal py-2 ps-3 pe-2 rounded-full"
+                onClick={() => navigate("/dashboard/assesment")}
                 style={{
                   border: "1px solid var(--Stroke, rgba(236, 238, 242, 1))",
                   boxShadow: "0px 1px 10px 0px rgba(0, 0, 0, 0.05)",
@@ -182,10 +188,10 @@ export default function DashboardFirsttimeSection() {
                 border: "1px solid var(--Stroke, rgba(236, 238, 242, 1))",
               }}
             >
-              <h6 className="font-['Open_Sans',Helvetica] font-normal text-lg text-[#222224]">
+              <h6 className="font-['Open_Sans',Helvetica] font-normal text-base sm:text-lg text-[#222224]">
                 Certification Levels
               </h6>
-              <div className="grid grid-cols-3 gap-[18px] w-full h-full pt-6">
+              <div className="grid sm:grid-cols-3 gap-[18px] w-full h-full pt-6">
                 {badgeLevels.map((badge, index) => (
                   <div
                     key={index}
@@ -201,7 +207,7 @@ export default function DashboardFirsttimeSection() {
                         className="w-full h-full"
                       />
                     </div>
-                    <h6 className="font-['Poppins',Helvetica] font-semibold text-lg text-[#222224]">
+                    <h6 className="font-['Poppins',Helvetica] font-semibold text-base sm:text-lg text-[#222224]">
                       {badge.title}
                     </h6>
                   </div>
@@ -218,86 +224,25 @@ export default function DashboardFirsttimeSection() {
             <img
               src={Directory}
               alt="star bg"
-              className="absolute top-0 left-0 w-full h-full pointer-events-none select-none z-0"
+              className="absolute top-0 left-0 w-full h-full pointer-events-none select-none"
               aria-hidden="true"
             />
-            <h6 className="font-['Poppins',Helvetica] font-medium text-2xl text-black">
-              Directory
-            </h6>
-            <h5 className="pt-3 pe-5 font-['Open_Sans',Helvetica] font-normal text-sm text-[#898989]">
-              Check out our diverse selection of eco-friendly products made by
-              trusted creators who care about sustainability and ethical
-              practices!
-            </h5>
-            <div className="pt-3">
-              <button className="flex items-center gap-3 bg-white text-black text-sm font-normal py-2 ps-3 pe-2 rounded-full">
-                <span className="font-['Open_Sans',Helvetica]">
-                  Work With Us
-                </span>
-                <div className="w-6 h-6 bg-[#F07EFF] rounded-full flex items-center justify-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-3 h-3 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="w-2/5 flex flex-col gap-3">
-          <div
-            className="relative w-full h-full h-[438px] rounded-xl"
-            style={{
-              border: "1px solid var(--Stroke, rgba(236, 238, 242, 1))",
-              boxShadow: "0px 2px 100px 10px rgba(0, 0, 0, 0.05)",
-            }}
-          >
-            <img
-              src={object}
-              alt="object bg"
-              className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none rounded-xl select-none z-0"
-              aria-hidden="true"
-            />
-            <div className="absolute top-1 right-0 px-3 pt-3 z-10">
-              <div className="flex items-center gap-1 max-w-fit">
-                <img
-                  src={comunity}
-                  alt="comunity"
-                  className="w-[80px] h-[25px] object-contain pointer-events-none select-none"
-                  aria-hidden="true"
-                />
-                <h5 className="font-['Open_Sans',Helvetica] font-normal text-xs text-[#222224] leading-[32px]">
-                  2000+ Happy Users
-                </h5>
-              </div>
-            </div>
-            <div
-              className="absolute bottom-0 px-3 pt-3 pb-[18px] w-full rounded-b-xl rounded-tr-xl"
-              style={{
-                background: "rgba(255, 255, 255, 0.1)",
-                backdropFilter: "blur(100px)",
-              }}
-            >
-              <h6 className="font-['Poppins',Helvetica] font-medium text-2xl text-white">
-                Social Media
+            <div className="relative">
+              <h6 className="font-['Poppins',Helvetica] font-medium text-xl md:text-2xl text-black">
+                Directory
               </h6>
-              <h5 className="pe-5 font-['Open_Sans',Helvetica] text-base font-normal text-white leading-[32px]">
-                Reimagined for conscious expressions
+              <h5 className="pt-3 pe-5 font-['Open_Sans',Helvetica] font-normal text-sm text-[#898989]">
+                Check out our diverse selection of eco-friendly products made by
+                trusted creators who care about sustainability and ethical
+                practices!
               </h5>
-              <div className="pt-6">
-                <button className="flex items-center gap-3 bg-white text-black text-sm font-normal py-2 ps-3 pe-2 rounded-full">
+              <div className="pt-3">
+                <button
+                  className="flex items-center gap-3 bg-white text-black text-sm font-normal py-2 ps-3 pe-2 rounded-full"
+                  onClick={() => navigate("/dashboard/DashboardDirectory")}
+                >
                   <span className="font-['Open_Sans',Helvetica]">
-                    Create Profile
+                    Work With Us
                   </span>
                   <div className="w-6 h-6 bg-[#F07EFF] rounded-full flex items-center justify-center">
                     <svg
@@ -319,6 +264,79 @@ export default function DashboardFirsttimeSection() {
               </div>
             </div>
           </div>
+        </div>
+        <div className="w-full lg:w-2/5 flex flex-col gap-3">
+          <div
+            className="w-full h-full rounded-xl"
+            style={{
+              border: "1px solid var(--Stroke, rgba(236, 238, 242, 1))",
+              boxShadow: "0px 2px 100px 10px rgba(0, 0, 0, 0.05)",
+            }}
+          >
+            <div className="relative w-full h-[438px] lg:h-full">
+              <img
+                src={object}
+                alt="object bg"
+                className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none rounded-xl select-none z-0"
+                aria-hidden="true"
+              />
+              <div className="absolute top-1 right-0 px-3 pt-3 z-10">
+                <div className="flex items-center gap-1 max-w-fit">
+                  <img
+                    src={comunity}
+                    alt="comunity"
+                    className="w-[80px] h-[25px] object-contain pointer-events-none select-none"
+                    aria-hidden="true"
+                  />
+                  <h5 className="font-['Open_Sans',Helvetica] font-normal text-xs text-[#222224] leading-[32px]">
+                    2000+ Happy Users
+                  </h5>
+                </div>
+              </div>
+              <div
+                className="absolute bottom-0 px-3 pt-3 pb-[18px] w-full rounded-b-xl rounded-tr-xl"
+                style={{
+                  background: "rgba(255, 255, 255, 0.1)",
+                  backdropFilter: "blur(100px)",
+                }}
+              >
+                <div className="relative w-full h-full">
+                  <h6 className="font-['Poppins',Helvetica] font-medium text-xl md:text-2xl text-white">
+                    Social Media
+                  </h6>
+                  <h5 className="pe-5 font-['Open_Sans',Helvetica] text-base font-normal text-white leading-[32px]">
+                    Reimagined for conscious expressions
+                  </h5>
+                  <div className="pt-6">
+                    <button
+                      className="flex items-center gap-3 bg-white text-black text-sm font-normal py-2 ps-3 pe-2 rounded-full"
+                      onClick={() => navigate("/dashboard/Profile")}
+                    >
+                      <span className="font-['Open_Sans',Helvetica]">
+                        Create Profile
+                      </span>
+                      <div className="w-6 h-6 bg-[#F07EFF] rounded-full flex items-center justify-center">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="w-3 h-3 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div
             className="w-full h-full relative py-6 px-[18px] rounded-xl bg-white"
             style={{
@@ -332,7 +350,7 @@ export default function DashboardFirsttimeSection() {
               aria-hidden="true"
             />
             <div className="pt-5">
-              <h6 className="font-['Poppins',Helvetica] text-2xl font-medium text-black">
+              <h6 className="font-['Poppins',Helvetica] text-xl md:text-2xl font-medium text-black">
                 Best Practices
               </h6>
               <h5 className="pt-3 pe-5 font-['Open_Sans',Helvetica] font-normal text-sm text-[#898989]">
@@ -343,6 +361,7 @@ export default function DashboardFirsttimeSection() {
               <div className="pt-5">
                 <button
                   className="flex items-center gap-3 bg-white text-black text-sm font-normal py-2 ps-3 pe-2 rounded-full"
+                  onClick={() => navigate("/dashboard/bestpractices")}
                   style={{
                     border: "1px solid var(--Stroke, rgba(236, 238, 242, 1))",
                     boxShadow: "0px 1px 10px 0px rgba(0, 0, 0, 0.05)",
@@ -375,7 +394,7 @@ export default function DashboardFirsttimeSection() {
       </div>
       <div className="flex flex-col lg:flex-row gap-3 w-full h-full">
         {/* First Card */}
-        <div className="w-3/5 flex flex-col items-center justify-center gap-3">
+        <div className="w-full lg:w-3/5 flex flex-col items-center justify-center gap-3">
           <div
             className="w-full h-full relative py-6 px-[18px] rounded-xl bg-white"
             style={{
@@ -385,11 +404,11 @@ export default function DashboardFirsttimeSection() {
             <img
               src={learningLab}
               alt="Learning Lab"
-              className="w-full h-[350px] 2xl:h-auto pointer-events-none select-none z-0 rounded-xl"
+              className="w-full max-h-[350px] 2xl:max-h-none 2xl:h-auto pointer-events-none select-none z-0 rounded-xl object-cover"
               aria-hidden="true"
             />
             <div className="pt-5">
-              <h6 className="font-['Poppins',Helvetica] text-2xl font-medium text-black">
+              <h6 className="font-['Poppins',Helvetica] text-xl md:text-2xl font-medium text-black">
                 Learning Lab
               </h6>
               <h5 className="pt-3 pe-5 font-['Open_Sans',Helvetica] font-normal text-sm text-[#898989]">
@@ -419,9 +438,9 @@ export default function DashboardFirsttimeSection() {
             </div>
           </div>
         </div>
-        <div className="w-2/5 flex flex-col gap-3">
+        <div className="w-full lg:w-2/5 flex flex-col gap-3">
           <div
-            className="w-full h-full relative py-8 px-[20px] px-[18px] rounded-xl bg-white"
+            className="w-full h-full relative py-8 px-[20px] px-[18px] rounded-xl bg-[#FAFAFA]"
             style={{
               border: "1px solid var(--Stroke, rgba(236, 238, 242, 1))",
             }}
@@ -429,11 +448,11 @@ export default function DashboardFirsttimeSection() {
             <img
               src={marketplace}
               alt="star bg"
-              className="w-full h-[324px] 2xl:h-auto pointer-events-none select-none z-0 rounded-xl"
+              className="w-full max-h-[324px] 2xl:max-h-none 2xl:h-auto pointer-events-none select-none z-0 rounded-xl"
               aria-hidden="true"
             />
             <div className="pt-5">
-              <h6 className="font-['Poppins',Helvetica] text-2xl font-medium text-black">
+              <h6 className="font-['Poppins',Helvetica] text-xl md:text-2xl font-medium text-black">
                 Marketplace
               </h6>
               <h5 className="pt-3 pe-5 font-['Open_Sans',Helvetica] font-normal text-sm text-[#898989]">

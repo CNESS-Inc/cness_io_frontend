@@ -10,6 +10,8 @@ import {
   GetSaveBestpractices,
   GetValidProfessionalDetails,
   GetInterestsDetails,
+  SendBpFollowRequest,
+  GetFollowBestpractices,
 } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -92,6 +94,7 @@ export default function BestPracticesHub() {
   const [selectedDomainText, setSelectedDomainText] = useState("All Domains");
   const isMobile = useMediaQuery("(max-width: 640px)");
   const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
+  const [followedItems, setFollowedItems] = useState<Set<string>>(new Set());
   //const [badge, setBadge] = useState<any>([]);
   //const [selectedCert, setSelectedCert] = useState<string>("");
   //const [sort, setSort] = useState<"az" | "za">("az");
@@ -111,6 +114,20 @@ export default function BestPracticesHub() {
       }
     };
     fetchSavedBestPractices();
+  }, []);
+
+  useEffect(() => {
+    const fetchFollowedBestPractices = async () => {
+      try {
+        const res = await GetFollowBestpractices();
+        const followedIds =
+          res?.data?.data?.rows.map((item: any) => item.id) || [];
+        setFollowedItems(new Set(followedIds));
+      } catch (error) {
+        setSavedItems(new Set());
+      }
+    };
+    fetchFollowedBestPractices();
   }, []);
 
   {
@@ -373,7 +390,6 @@ useEffect(() => {
       // showToast({ message: "Liked!", type: "success", duration: 1500 });
       // You may want to refetch or update likesCount in bestPractices state
       // For now, just log
-      console.log(`Liked best practice with id: ${id}`);
     } catch (error) {
       showToast({
         message: "Failed to like. Please try again.",
@@ -465,6 +481,65 @@ useEffect(() => {
       }
     }
   };
+
+  const toggleFollow = async (bpId: string) => {
+    try {
+      const payload = { bp_id: bpId };
+      await SendBpFollowRequest(payload);
+
+      setFollowedItems((prev) => {
+        const updated = new Set(prev);
+        if (updated.has(bpId)) {
+          updated.delete(bpId);
+          showToast({
+            message: "Following removed - no more updates from this practice.",
+            type: "error",
+            duration: 2000,
+          });
+        } else {
+          updated.add(bpId);
+          showToast({
+            message: "Followed successfully - stay updated!",
+            type: "success",
+            duration: 2000,
+          });
+        }
+        return updated;
+      });
+    } catch (error) {
+      showToast({
+        message: "Failed to update follow. Please try again.",
+        type: "error",
+        duration: 2000,
+      });
+    }
+  };
+
+  // const handleFollow = async (userId: string) => {
+  //   try {
+  //     const payload = {
+  //       bp_id: userId,
+  //     };
+  //     const res = await SendBpFollowRequest(payload);
+  //     if (res?.success?.statusCode === 200) {
+  //       showToast({
+  //         message: "Following activated - never miss their updates!",
+  //         type: "success",
+  //         duration: 2000,
+  //       });
+  //       fetchBestPractices();
+  //     }
+  //     console.log("resfbhgh", res);
+  //     await fetchBestPractices();
+  //   } catch (error) {
+  //     showToast({
+  //         message: "Following removed - no more updates from them.",
+  //         type: "error",
+  //         duration: 2000,
+  //       });
+  //     console.error("Error fetching selection details:", error);
+  //   }
+  // };
 
   return (
     <>
@@ -790,9 +865,28 @@ useEffect(() => {
                           />
                         )}
                       </div>
-                      <h3 className="text-base sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">
-                        {company.title}
-                      </h3>
+                      <div className="w-full flex justify-between items-center gap-3">
+                        <h3 className="text-base sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">
+                          {company.title}
+                        </h3>
+                        <div>
+                          {!followedItems.has(company.id) ? (
+                            <button
+                              className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleFollow(company.id);
+                              }}
+                            >
+                              + Follow
+                            </button>
+                          ) : (
+                            <button className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF] whitespace-nowrap">
+                              Following
+                            </button>
+                          )}
+                        </div>
+                      </div>
                       <p className="text-sm font-semibold text-gray-900">
                         Overview
                       </p>
@@ -1023,7 +1117,7 @@ useEffect(() => {
 
       <Modal isOpen={activeModal === "bestpractices"} onClose={closeModal}>
         <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
-          <h2 className="text-xl font-bold mb-4 font-['Poppins'] font-semibold leading-normal">
+          <h2 className="text-xl font-bold mb-4 font-['Poppins'] leading-normal">
             Add Best Practice
           </h2>
           <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">

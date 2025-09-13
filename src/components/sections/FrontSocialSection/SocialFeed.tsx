@@ -7,6 +7,7 @@ import {
   ChevronRight,
   Share2,
   ThumbsUp,
+  MessageSquare,
   TrendingUp,
   MoreVertical,
   Bookmark,
@@ -34,7 +35,6 @@ import {
 import createstory from "../../../assets/createstory.jpg";
 import carosuel1 from "../../../assets/carosuel1.png";
 // import comment from "../../../assets/comment.png";
-import comment1 from "../../../assets/comment1.png";
 import Image from "../../../components/ui/Image";
 import CommentBox from "../../../pages/CommentBox";
 import { useToast } from "../../../components/ui/Toast/ToastProvider";
@@ -398,23 +398,74 @@ export default function SocialFeed() {
   const loggedInUserID = localStorage.getItem("Id");
   const CONTENT_LIMIT = 150;
   
-  const wheelCountRef = useRef(0);
-
   useEffect(() => {
-  const handleWheel = () => {
-    wheelCountRef.current += 1;
-    console.log("Wheel event count:", wheelCountRef.current);
-    if (wheelCountRef.current % 3 === 0) {
+    // Reset wheel count on component mount (fresh start)
+    sessionStorage.removeItem('wheelCount');
+    sessionStorage.removeItem('signupShown');
+    console.log("Reset wheel count and signup status");
+    
+    let scrollCount = 0;
+    let lastScrollTime = 0;
+    const SCROLL_THRESHOLD = 200; // Minimum time between scrolls in ms
+    
+    const checkAndShowSignup = () => {
+      // Check if signup has already been shown in this session
+      const hasShownSignup = sessionStorage.getItem('signupShown') === 'true';
+      
+      if (hasShownSignup) {
+        console.log("Signup already shown, ignoring");
+        return false; // Don't do anything if already shown
+      }
+      
+      console.log("Showing signup popup");
       setOpenSignup(true);
-    }
-  };
+      sessionStorage.setItem('signupShown', 'true');
+      return true;
+    };
+    
+    const handleWheel = () => {
+      const now = Date.now();
+      
+      // Only count if enough time has passed since last scroll
+      if (now - lastScrollTime > SCROLL_THRESHOLD) {
+        scrollCount += 1;
+        lastScrollTime = now;
+        console.log("Wheel scroll count:", scrollCount);
+        
+        if (scrollCount >= 4) {
+          console.log("Showing signup popup after 4 wheel scrolls");
+          checkAndShowSignup();
+        }
+      } else {
+        console.log("Wheel scroll too soon, ignoring (debounced)");
+      }
+    };
 
-  window.addEventListener("wheel", handleWheel);
+    const handleScroll = () => {
+      // Calculate scroll percentage
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      const scrollPercentage = (scrollTop / (documentHeight - windowHeight)) * 100;
+      
+      console.log("Scroll position:", Math.round(scrollPercentage) + "%");
+      
+      // Show signup when user reaches 30% of scrollable content
+      if (scrollPercentage >= 30) {
+        console.log("Reached 30% scroll position, showing signup popup");
+        checkAndShowSignup();
+      }
+    };
 
-  return () => {
-    window.removeEventListener("wheel", handleWheel);
-  };
-}, []);
+    // Add both event listeners
+    window.addEventListener("wheel", handleWheel, { passive: true });
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   const getUserPosts = async () => {
     if (isLoading || !hasMore) return;
@@ -469,7 +520,7 @@ export default function SocialFeed() {
         fetchTopics();
         setTimeout(() => {
             setOpenSignup(true);
-        }, 3000);
+        }, 60000);
     }
     
   }, []);
@@ -656,7 +707,7 @@ export default function SocialFeed() {
   useEffect(() => {
     const interval = setInterval(() => {
       setOpenSignup(true);
-    }, 30000); // 30 seconds
+    }, 60000); // 60 seconds
 
     return () => clearInterval(interval);
   }, []);
@@ -807,7 +858,7 @@ export default function SocialFeed() {
               
                 <>
                   {/* Start a Post */}
-                  <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-4 md:p-6 rounded-xl mb-4 md:mb-5">
+                  <div className="bg-gradient-to-r from-[#7077fe36] to-[#f07eff21] p-4 md:p-6 rounded-xl mb-4 md:mb-5">
                     <div className="flex flex-col gap-2 md:gap-3">
                       <div className="flex items-center gap-3">
                         <img
@@ -955,7 +1006,7 @@ export default function SocialFeed() {
                                   ? post.profile.profile_picture
                                   : "/profile.png"
                               }
-                              className="w-8 h-8 md:w-10 md:h-10 rounded-full"
+                              className="w-8 h-8 md:w-[63px] md:h-[63px] rounded-full"
                               alt="User"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
@@ -1253,34 +1304,51 @@ export default function SocialFeed() {
                         <button
                           onClick={() => navigate("/log-in")}
                           disabled={isLoading}
-                          className={`flex items-center justify-center gap-2 rounded-2xl border border-gray-200 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 shadow-sm ${isLoading ? "opacity-50 cursor-not-allowed" : ""
+                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 ${isLoading ? "opacity-50 cursor-not-allowed" : ""
                             }`}
                         >
                           <ThumbsUp
                             className="w-5 h-5 md:w-6 md:h-6"
                             fill={post.is_liked ? "#7077FE" : "none"} // <-- condition here
-                            stroke={post.is_liked ? "#7077FE" : "#7077FE"} // keeps border visible
+                            stroke={post.is_liked ? "#7077FE" : "#000"} // keeps border visible
                           />
-                          <span>Affirmation Modal</span>
+                          <span className={`${
+                              post.is_liked ? "#7077FE" : "text-black"
+                            }`}
+                          > Affirmation Modal
+                          </span>
                         </button>
                         <button
                           onClick={() => navigate("/log-in") }
-                          className="flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  border border-[#E5E7EB] rounded-xl font-semibold text-sm md:text-base text-[#7077FE] hover:bg-gray-50 shadow-sm"
+                          className="flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  font-semibold text-sm md:text-base  hover:bg-gray-50"
                         >
-                          <img
-                            src={comment1}
-                            className="w-5 h-5 md:w-6 md:h-6"
-                          />{" "}
-                          Reflections Thread
+                        <MessageSquare
+                          className="w-5 h-5 md:w-6 md:h-6 filter transiton-all"
+                          fill={
+                            selectedPostId === post.id ? "#7077FE" : "none"
+                          }
+                          stroke={
+                            selectedPostId === post.id ? "#7077FE" : "#000"
+                          }
+                        />{" "}
+                          <span 
+                          className={`${
+                            selectedPostId === post.id
+                              ? "#7077FE"
+                              : "text-black"
+                          }`}
+                          >
+                            Reflections Thread
+                          </span>
                         </button>
                         
                         <div className="relative">
                           <button
                             onClick={() => navigate("/log-in")}
-                            className="flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6   border border-[#E5E7EB] rounded-xl font-semibold text-sm md:text-base text-[#7077FE] hover:bg-gray-50 shadow-sm"
+                            className="flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 text-black"
                           >
                             <Share2 className="w-5 h-5 md:w-6 md:h-6" />
-                            Share
+                            <span className="text-black">Share</span>
                           </button>
                           {openMenu.postId === post.id && openMenu.type === "share" && (
                             <SharePopup

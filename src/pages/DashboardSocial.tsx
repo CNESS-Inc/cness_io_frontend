@@ -320,7 +320,7 @@ export default function SocialTopBar() {
   >("posts");
   const [followedUsers, setFollowedUsers] = useState<FollowedUser[]>([]);
   const [collectionItems, setCollectionItems] = useState<CollectionItem[]>([]);
-  
+
   const [_isPostsLoading, setIsPostsLoading] = useState(false);
   const [isFollowingLoading, setIsFollowingLoading] = useState(false);
 
@@ -650,7 +650,6 @@ export default function SocialTopBar() {
     }
   }, []); // Empty dependency array to run only on mount
 
-
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     setSelectedImages((prev) => [...prev, ...files]); // Append new images to existing ones
@@ -665,7 +664,6 @@ export default function SocialTopBar() {
       setPostVideoPreviewUrl(videoUrl);
     }
   };
-
 
   const handleRemoveImage = (index: number) => {
     setSelectedImages((prev) => prev.filter((_, i) => i !== index));
@@ -954,7 +952,6 @@ export default function SocialTopBar() {
     MeDetail();
   }, []);
 
-  
   // Function to save post to collection
   const savePostToCollection = async (postId: string) => {
     try {
@@ -1032,7 +1029,6 @@ export default function SocialTopBar() {
   };
   */
   useEffect(() => {
-
     const handleClickOutside = (event: MouseEvent) => {
       if (!openMenu.postId || !openMenu.type) return;
 
@@ -1053,14 +1049,11 @@ export default function SocialTopBar() {
   const [selectedTopic, setSelectedTopic] = useState<string>(""); // dropdown state
   const [topics, setTopics] = useState<Topic[]>([]); // list of topics
   const [userSelectedTopics, setUserSelectedTopics] = useState<Topic[]>([]); // list of user selected topics
-  // const [visibleTopic, setVisibleTopic] = useState(10);
+  const [visibleTopic, setVisibleTopic] = useState(10);
   const [showTopicModal, setShowTopicModal] = useState(false);
-
-  
 
   useEffect(() => {
     fetchUserSelectedTopics();
-
   }, []);
 
   useEffect(() => {
@@ -1176,16 +1169,16 @@ export default function SocialTopBar() {
     const diffInDays = Math.floor(diffInHours / 24);
 
     if (diffInDays === 0) {
-      return 'Today';
+      return "Today";
     } else if (diffInDays === 1) {
-      return 'Yesterday';
+      return "Yesterday";
     } else if (diffInDays < 7) {
-      return date.toLocaleDateString('en-US', { weekday: 'long' });
+      return date.toLocaleDateString("en-US", { weekday: "long" });
     } else {
-      return date.toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric' 
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
       });
     }
   };
@@ -1195,10 +1188,7 @@ export default function SocialTopBar() {
       {isAdult ? (
         <div className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-2 px-2 md:px-2 lg:px-0 w-full">
           {/* Left Side: Post & Stories - Full width on mobile */}
-          <div
-            className="w-full lg:max-w-[75%]"
-            ref={containerRef}
-          >
+          <div className="w-full lg:max-w-[75%]" ref={containerRef}>
             {activeView === "posts" ? (
               <>
                 {/* {isPostsLoading ? (
@@ -1304,7 +1294,11 @@ export default function SocialTopBar() {
                       </svg>
                       <div className="absolute bottom-[46px] left-1/2 -translate-x-1/2 z-20">
                         <div className="w-9 h-9 md:w-12 md:h-12 bg-white text-[#7C81FF] font-semibold rounded-full flex items-center justify-center text-xl border-5">
-                          <img src={iconMap["storyplus"]} alt="plus" className="w-4 h-4 transition duration-200 group-hover:brightness-0 group-hover:invert" />
+                          <img
+                            src={iconMap["storyplus"]}
+                            alt="plus"
+                            className="w-4 h-4 transition duration-200 group-hover:brightness-0 group-hover:invert"
+                          />
                         </div>
                       </div>
                       <div className="absolute bottom-[14px] w-full text-center text-white text-xs md:text-[15px] font-medium z-20">
@@ -1367,7 +1361,7 @@ export default function SocialTopBar() {
                                   ? post.profile.profile_picture
                                   : "/profile.png"
                               }
-                              className="w-8 h-8 md:w-10 md:h-10 rounded-full"
+                              className="w-8 h-8 md:w-[63px] md:h-[63px] rounded-full"
                               alt="User"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
@@ -1376,7 +1370,7 @@ export default function SocialTopBar() {
                             />
                           </Link>
                           <div>
-                            <p className="font-semibold text-sm md:text-base text-gray-800">
+                            <p className="font-semibold text-sm md:text-base text-black">
                               <Link
                                 to={`/dashboard/userprofile/${post?.profile?.id}`}
                               >
@@ -1384,7 +1378,7 @@ export default function SocialTopBar() {
                                 {post.profile.first_name}{" "}
                                 {post.profile.last_name}
                               </Link>
-                              <span className="text-gray-500 text-xs md:text-sm">
+                              <span className="text-[#999999] text-xs md:text-[12px] font-[400]">
                                 {" "}
                                 <Link
                                   to={`/dashboard/userprofile/${post?.profile?.id}`}
@@ -1394,7 +1388,7 @@ export default function SocialTopBar() {
                                 </Link>
                               </span>
                             </p>
-                            <p className="text-xs md:text-sm text-gray-400">
+                            <p className="text-xs md:text-[12px] text-[#606060]">
                               {formatMessageTime(post.createdAt)}
                             </p>
                           </div>
@@ -1416,7 +1410,11 @@ export default function SocialTopBar() {
                                 }`}
                             >
                               <span className="flex items-center gap-1 text-[#0B3449]">
-                                <img src={iconMap["userplus"]} alt="userplus" className="w-4 h-4" />
+                                <img
+                                  src={iconMap["userplus"]}
+                                  alt="userplus"
+                                  className="w-4 h-4"
+                                />
                                 {connectingUsers[post.user_id]
                                   ? "Loading..."
                                   : // : getFriendStatus(post.user_id) === "connected"
@@ -1438,7 +1436,8 @@ export default function SocialTopBar() {
                             >
                               {post.if_following ? (
                                 <>
-                                  <TrendingUp className="w-5 h-5 text-[#7077FE]" /> Resonating
+                                  <TrendingUp className="w-5 h-5 text-[#7077FE]" />{" "}
+                                  Resonating
                                 </>
                               ) : (
                                 "+ Resonate"
@@ -1524,7 +1523,7 @@ export default function SocialTopBar() {
                             */}
                           </div>
                         )}
-              
+
                         {post.user_id == loggedInUserID && (
                           <div className="flex gap-2">
                             {/* Three Dots Menu */}
@@ -1668,7 +1667,7 @@ export default function SocialTopBar() {
                       </div>
 
                       {/* Reactions and Action Buttons */}
-                      <div className="flex justify-between items-center mt-3 px-1 text-xs md:text-sm text-gray-600 gap-2">
+                      <div className="flex justify-between items-center mt-6 px-1 text-xs md:text-sm text-gray-600 gap-2">
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-1 md:gap-2">
                             <div className="flex items-center -space-x-2 md:-space-x-3">
@@ -1717,24 +1716,45 @@ export default function SocialTopBar() {
                             fill={post.is_liked ? "#7077FE" : "none"} // <-- condition here
                             stroke={post.is_liked ? "#7077FE" : "#000"} // keeps border visible
                           />
-                          <span className={`${post.is_liked ? "#7077FE" : "text-black"}`}>Appreciate</span>
+                          <span
+                            className={`${
+                              post.is_liked ? "#7077FE" : "text-black"
+                            }`}
+                          >
+                            Appreciate
+                          </span>
                         </button>
                         <button
                           onClick={() => {
                             setSelectedPostId(post.id);
                             setShowCommentBox(true);
                           }}
-                          className={`flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  font-semibold text-sm md:text-base  hover:bg-gray-50 ${selectedPostId === post.id ? "text-[#7077FE]" : "text-black"}`}
+                          className={`flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  font-semibold text-sm md:text-base  hover:bg-gray-50 ${
+                            selectedPostId === post.id
+                              ? "text-[#7077FE]"
+                              : "text-black"
+                          }`}
                         >
                           <MessageSquare
                             className="w-5 h-5 md:w-6 md:h-6 filter transiton-all"
-                            fill={selectedPostId === post.id ? "#7077FE" : "none"}
-                            stroke={selectedPostId === post.id ? "#7077FE" : "#000"}
-                          />
-                          {" "} 
-                          <span className={`${selectedPostId === post.id ? "#7077FE" : "text-black"}`}>Reflections</span>
+                            fill={
+                              selectedPostId === post.id ? "#7077FE" : "none"
+                            }
+                            stroke={
+                              selectedPostId === post.id ? "#7077FE" : "#000"
+                            }
+                          />{" "}
+                          <span
+                            className={`${
+                              selectedPostId === post.id
+                                ? "#7077FE"
+                                : "text-black"
+                            }`}
+                          >
+                            Reflections
+                          </span>
                         </button>
-                        
+
                         <div className="relative">
                           <button
                             onClick={() => toggleMenu(post.id, "share")}
@@ -1751,25 +1771,23 @@ export default function SocialTopBar() {
                                 url={buildShareUrl()} // or pass your own URL if needed
                                 position="bottom"
                               />
-                            )}    
+                            )}
                         </div>
-                          
-                        
-                        
-                          <button
-                            onClick={() =>
-                              savePostToCollection(post.id)
-                            }
-                            disabled={post.is_saved}
-                            className={`flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 ${post.is_saved ? "text-[#7077FE]" : "text-[#000]"}`}
-                          >
-                            <Bookmark stroke={post.is_saved ? "#7077FE" : "#000"} fill={post.is_saved ? "#7077FE" : "#fff"} className="w-5 h-5 md:w-6 md:h-6" />
-                            {post.is_saved
-                              ? "Saved"
-                              : "Save"}
-                          </button>
-                        
 
+                        <button
+                          onClick={() => savePostToCollection(post.id)}
+                          disabled={post.is_saved}
+                          className={`flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 ${
+                            post.is_saved ? "text-[#7077FE]" : "text-[#000]"
+                          }`}
+                        >
+                          <Bookmark
+                            stroke={post.is_saved ? "#7077FE" : "#000"}
+                            fill={post.is_saved ? "#7077FE" : "#fff"}
+                            className="w-5 h-5 md:w-6 md:h-6"
+                          />
+                          {post.is_saved ? "Saved" : "Save"}
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -1786,7 +1804,6 @@ export default function SocialTopBar() {
                       </button>
                     </div>
                   )}
-
                 </>
                 {/* )} */}
               </>
@@ -1850,11 +1867,11 @@ export default function SocialTopBar() {
           <div className="w-full lg:w-[25%] flex flex-col gap-4">
             {/* Quick Actions */}
             <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
-              <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
+              <h3 className="text-[#081021] font-semibold text-base md:text-[14px] mb-3 md:mb-4 px-4">
                 Quick Actions
               </h3>
-              <div className="w-full border-t border-[#C8C8C8] my-4"></div>
-              <ul className="space-y-4 text-sm md:text-[15px] text-gray-700 ">
+              <div className="w-full border-t border-[#E1E1E1] my-4"></div>
+              <ul className="space-y-4 text-sm md:text-[14px] text-[#000000] ">
                 <li
                   onClick={() => navigate("/dashboard/trendingpost")}
                   className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-2 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"
@@ -1865,7 +1882,8 @@ export default function SocialTopBar() {
                   // onClick={() => navigate("/dashboard/trendingpost")}
                   className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-2 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"
                 >
-                  <img src={Mention} className="w-5 h-5" alt="" /> Mention & tags
+                  <img src={Mention} className="w-5 h-5" alt="" /> Mention &
+                  tags
                 </li>
                 <li
                   onClick={fetchCollectionItems}
@@ -1881,12 +1899,10 @@ export default function SocialTopBar() {
                   <img src={people} className="w-5 h-5" alt="" /> People you
                   follow
                 </li>
-                
               </ul>
             </div>
 
             {/* User Selected Topics Below Quick Actions */}
-            {/*
             {userSelectedTopics?.length > 0 && (
               <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
                 <div className="flex items-center justify-between mb-3 md:mb-4 px-4">
@@ -1927,14 +1943,12 @@ export default function SocialTopBar() {
                 </ul>
               </div>
             )}
-            */}
             {/* Topics BELOW User Selected Topics */}
-            {/*
             <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
-              <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
+              <h3 className="text-[#081021] font-semibold text-base md:text-[14px] mb-3 md:mb-4 px-4">
                 Explore Topics
               </h3>
-              <div className="w-full border-t border-[#C8C8C8] my-4"></div>
+              <div className="w-full border-t border-[#E1E1E1] my-4"></div>
               <ul className="space-y-3 text-sm md:text-[15px] text-gray-700 px-4">
                 {topics?.slice(0, visibleTopic)?.map((topic) => (
                   <button
@@ -1968,7 +1982,6 @@ export default function SocialTopBar() {
                 )}
               </ul>
             </div>
-            */}
           </div>
 
           {/* Popup Modals (unchanged) */}

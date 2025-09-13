@@ -8,6 +8,7 @@ import {
   SaveBestpractices,
   CreateBestpracticesComment,
   GetBestpracticesComment,
+  SendBpFollowRequest,
   //GetBestpracticesComment
 } from "../Common/ServerAPI";
 import blush from "../assets/Blush.png";
@@ -22,6 +23,7 @@ const dummyProfilePicture =
 
 const SingleBP = () => {
   const [isSaved, setIs_saved] = useState<boolean>(false);
+  const [isFollowed, setIs_followed] = useState<boolean>(false);
 
   useEffect(() => {
     // getUserPosts();
@@ -34,8 +36,10 @@ const SingleBP = () => {
   const [singlepost, setSinglePost] = useState<any>({});
   const [media, setMedia] = useState<string>("");
   const [_saved, setSaved] = useState(false);
+  const [_followed, setFollowed] = useState(false);
   const [_localLikeCount, setLocalLikeCount] = useState<number>(0);
   const [isLiked, setIsLiked] = useState(false);
+   const [isFollowing, setIsFollowing] = useState<boolean>(false);
   //const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
 
   const handleCommentChange = (event: any) => {
@@ -65,7 +69,7 @@ const SingleBP = () => {
         text: comment,
       };
       await CreateBestpracticesComment(payload);
-      setCommentCount(commentCount + 1)
+      setCommentCount(commentCount + 1);
       setComment("");
       fetchComments();
     } catch (error) {
@@ -75,9 +79,9 @@ const SingleBP = () => {
   const fetchSinglePost = async (id: any) => {
     try {
       const res = await GetSingleBestPractice(id);
-      console.log("🚀 ~ fetchSinglePost ~ res:", res);
       setCommentCount(res.data?.data?.comments_count);
       setIs_saved(res.data?.data?.is_saved);
+      setIsFollowing(res.data?.data?.is_bp_following);
       setSinglePost(res?.data?.data);
       setMedia(res?.data?.data?.file);
       setLocalLikeCount(res?.data?.data?.likes_count);
@@ -119,6 +123,24 @@ const SingleBP = () => {
       }
     } catch (error) {
       console.error("Error saving/unsaving best practice:", error);
+    }
+  };
+
+  const fetchFollowedPost = async () => {
+    try {
+      const res = await SendBpFollowRequest({ bp_id: id });
+
+      if (res?.success?.statusCode === 200) {
+        setIs_followed(true);
+        setFollowed(true);
+      } else if (res?.success) {
+        setIs_followed(false);
+        setFollowed(false);
+      }
+    } catch (error) {
+      console.error("Error following/unfollowing:", error);
+      setIs_followed(false);
+      setFollowed(false);
     }
   };
 
@@ -165,16 +187,15 @@ useEffect(() => {
         {/* ← Gray background wrapper */}
         <div className="w-full flex flex-col gap-6">
           {/* Top Default Banner */}
-          <div className="relative w-full min-h-[500px] bg-[#F3f1ff">
+          <div className="relative w-full min-h-[300px] bg-[#F3f1ff">
             {/* Top Banner */}
-            <div className="w-full h-[250px] sm:h-[300px] md:h-[400px] overflow-hidden">
+            <div className="w-full h-[200px] overflow-hidden">
               <img
                 src={blush}
                 alt="banner"
                 className="w-full h-full object-cover rounded-lg shadow-md"
               />
-              <div className="absolute inset-0 flex items-start justify-center pt-6 sm:pt-10 md:pt-40">
-
+              <div className="absolute inset-0 flex items-start justify-center pt-6 sm:pt-8">
                 <h1 className="text-white text-xl sm:text-3xl md:text-4xl font-semibold drop-shadow-lg text-center">
                   {singlepost.title || "Best Practices"}
                 </h1>
@@ -185,8 +206,7 @@ useEffect(() => {
             {media &&
               media !== "http://localhost:5026/file/" &&
               !media.endsWith("/file/") && (
-                <div className="absolute top-[200px] sm:top-[260px] md:top-[320px] left-1/2 transform -translate-x-1/2 w-[90%] sm:w-[80%] md:w-[70%] z-10">
-
+                <div className="absolute top-[140px] left-1/2 transform -translate-x-1/2 w-[90%] sm:w-[80%] md:w-[70%] z-10">
                   <img
                     src={media}
                     alt="Best Practice Banner"
@@ -200,13 +220,12 @@ useEffect(() => {
                 </div>
               )}
 
-
             {/* Profile Image - correctly centered between top and user banner */}
-            <div className="absolute z-20 top-[150px] sm:top-[270px] md:top-[250px] left-1/2 transform -translate-x-1/2">
+            <div className="absolute z-20 top-[90px] left-1/2 transform -translate-x-1/2">
               <img
                 src={
                   singlepost.profile?.profile_picture &&
-                    singlepost.profile.profile_picture !==
+                  singlepost.profile.profile_picture !==
                     "http://localhost:5026/file/"
                     ? singlepost.profile.profile_picture
                     : "/profile.png"
@@ -230,7 +249,6 @@ useEffect(() => {
       </p>
     
   </div>*/}
-
         </div>
         {/* Interaction Icons */}
         <div className="flex justify-center items-center gap-6 mt-[60px] sm:mt-[100px] md:mt-[180px] mb-4 px-4">
@@ -238,12 +256,14 @@ useEffect(() => {
 
           <button onClick={handleLike} className="flex items-center gap-2">
             <div
-              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center cursor-pointer ${isLiked ? "bg-[#6269FF]" : "bg-[#7077EF]"
-                }`}
+              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center cursor-pointer ${
+                isLiked ? "bg-[#6269FF]" : "bg-[#7077EF]"
+              }`}
             >
               <BiLike
-                className={`text-white text-base sm:text-lg ${isLiked ? "scale-110" : ""
-                  }`}
+                className={`text-white text-base sm:text-lg ${
+                  isLiked ? "scale-110" : ""
+                }`}
               />
             </div>
             <span className="text-sm text-gray-800">
@@ -255,19 +275,36 @@ useEffect(() => {
             <div className="w-10 h-10 rounded-full bg-[#F07EFF] flex items-center justify-center cursor-pointer">
               <BiComment className="text-white text-lg" />
             </div>
-            <span className="text-sm text-gray-800">
-              {commentCount || 0}
-            </span>
+            <span className="text-sm text-gray-800">{commentCount || 0}</span>
           </button>
 
-
-          <button onClick={fetchSavedPost} className="flex items-center cursor-pointer">
+          <button
+            onClick={fetchSavedPost}
+            className="flex items-center cursor-pointer"
+          >
             {isSaved && isSaved !== undefined ? (
               <FaBookmark className="text-[#72DBF2] text-2xl" />
             ) : (
               <FaRegBookmark className="text-[#72DBF2] text-xl" />
             )}
           </button>
+          <div>
+            {!isFollowing ? (
+              <button
+                className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap"
+                onClick={fetchFollowedPost}
+              >
+                + Follow
+              </button>
+            ) : (
+              <button
+                className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF] whitespace-nowrap"
+                onClick={fetchFollowedPost}
+              >
+                Following
+              </button>
+            )}
+          </div>
         </div>
         {/* Main Content Area */}
         {/* Image/Video Section
@@ -292,7 +329,6 @@ useEffect(() => {
             </p>
           </div>
         </div>
-
         {/* Comment Section */}
         {/* Comment Section */}
         <div className="w-[90%] sm:w-[80%] md:w-[70%] mx-auto mt-4 sm:mt-6">
@@ -300,8 +336,7 @@ useEffect(() => {
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <LazyLoadImage
                 src={
-                  localStorage.getItem("profile_picture") ||
-                  dummyProfilePicture
+                  localStorage.getItem("profile_picture") || dummyProfilePicture
                 }
                 alt="User"
                 className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
@@ -327,7 +362,6 @@ useEffect(() => {
                   Comment
                 </button>
               </div>
-
             </div>
           </div>
         </div>
@@ -361,7 +395,6 @@ useEffect(() => {
             </div>
           </div>
         )}
-
       </div>
     </>
   );
