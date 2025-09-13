@@ -216,7 +216,7 @@ export default function SellerDashboard() {
         {/* LEFT column stacks: TrueProfile -> Certification -> BestPractices -> Directory */}
         <div className="col-span-12 lg:col-span-8 space-y-5">
           <TrueProfileCard
-            avatarUrl="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=facearea&facepad=3&crop=faces"
+            avatarUrl={userProfilePicture}
             completion={user?.profile_progress || 100}
             onUpdateProfile={() => navigate(`/dashboard/user-profile/${Id}`)}
             onOpen={() => console.log("Open True Profile")}
@@ -252,8 +252,8 @@ export default function SellerDashboard() {
             resonating={resonating || 0}
             resonators={reasonators || 0}
             onViewProfile={() => console.log("View profile")}
-            onSearch={(q) => console.log("Search:", q)}
-            onOpen={() => console.log("Open Social")}
+            onSearch={() => navigate("/dashboard/feed")}
+            onOpen={() => navigate("/dashboard/Profile")}
             adventureTitle="Your Next Social Life Adventure"
             adventureText="What would your younger self admire about your life now? Any standout achievements or experiences?"
             onStartPosting={() => navigate("/dashboard/feed")}

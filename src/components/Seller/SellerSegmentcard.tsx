@@ -718,7 +718,7 @@ export function SocialStackCard({
   resonating = 100,
   resonators = 1000,
   //onViewProfile,
-  onSearch,
+  // onSearch,
   onOpen,
 
   // adventure
@@ -1152,11 +1152,14 @@ export function SocialStackCard({
       <HeaderDivider />
 
       {/* Search */}
-      <div className="mt-2 flex items-center gap-2 rounded-full border border-[#E4E7EC] bg-white px-3">
+      <div className="mt-2 flex items-center gap-2 rounded-full border border-[#E4E7EC] bg-white px-3"
+      onClick={()=>navigate("/dashboard/feed")}
+      >
         <input
           className="h-10 w-full outline-none text-sm"
           placeholder="Search…"
-          onChange={(e) => onSearch?.(e.target.value)}
+          // onChange={(e) => onSearch?.(e.target.value)}
+          // onClick={(e) => e.stopPropagation()}
         />
         <SearchIcon className="h-4 w-4 text-[#667085]" />
       </div>
