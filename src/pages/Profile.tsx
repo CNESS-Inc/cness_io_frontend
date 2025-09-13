@@ -212,12 +212,10 @@ export default function Profile() {
   //const handleAddCollection = () => setBoards(demoBoards);
   const navigate = useNavigate();
   const [selectedPost, setSelectedPost] = useState<MyPostProps | null>(null);
-  console.log("🚀 ~ Profile ~ selectedPost:", selectedPost)
   const [openFollowing, setOpenFollowing] = useState(false);
   const [openFollowers, setopenfollowers] = useState(false);
 
   const [userPosts, setUserPosts] = useState<MyPostProps[]>([]);
-  console.log('userPosts', userPosts);
   const [followingUsers, setFollowingUsers] = useState<FollowedUser[]>([]);
   const [followerUsers, setFollowerUsers] = useState<FollowerUser[]>([]);
 
