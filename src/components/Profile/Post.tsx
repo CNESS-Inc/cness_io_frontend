@@ -382,7 +382,7 @@ export default function PostCard({
               <img
                 src={avatar ? avatar : "/profile.png"}
                 alt={name}
-                className="w-11 h-11 rounded-full object-cover"
+                className="w-[63px] h-[63px] rounded-full object-cover"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.src = "/profile.png";
@@ -392,8 +392,8 @@ export default function PostCard({
             </span>
 
             <div>
-              <div className="font-medium text-gray-900">{name}</div>
-              <div className="text-xs text-gray-500">{time}</div>
+              <div className="font-medium text-[#000] text-[16px]">{name}</div>
+              <div className="text-xs text-[#606060]">{time}</div>
             </div>
           </div>
 
@@ -405,7 +405,7 @@ export default function PostCard({
           )}
         </div>
 
-        <p className="text-gray-800 text-sm md:text-base mb-2 md:mb-3">
+        <p className="text-gray-800 text-sm md:text-base mb-2 md:mb-3 mt-4">
           {expandedPosts[id] || content?.length <= CONTENT_LIMIT
             ? content
             : `${content?.substring(0, CONTENT_LIMIT)}...`}
@@ -460,16 +460,20 @@ export default function PostCard({
           <button
             onClick={() => handleLike(id)}
             disabled={isLoading}
-            className={`flex items-center justify-center gap-2 rounded-2xl border border-gray-200 py-3 font-opensans font-semibold text-[14px] leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 ${
+            className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 ${
               isLoading ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
             <ThumbsUp
               className="w-4 h-4"
               fill={isLike ? "#7077FE" : "none"} // <-- condition here
-              stroke={isLike ? "#7077FE" : "#7077FE"} // keeps border visible
+              stroke={isLike ? "#7077FE" : "#000"} // keeps border visible
             />
-            <span>Like</span>
+            <span className={`${
+                isLike ? "#7077FE" : "text-black"
+              }`}
+              >
+              Appreciate</span>
           </button>
 
           <button
@@ -477,17 +481,17 @@ export default function PostCard({
               setSelectedPostId(id);
               setShowCommentBox(true);
             }}
-            className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white py-3 font-opensans font-semibold text-[14px] leading-[150%] text-[#7077FE] hover:bg-gray-50"
+            className={`flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  font-semibold text-sm md:text-base  hover:bg-gray-50 `}
           >
-            <MessageSquare className="w-4 h-4 text-[#7077FE]" />
-            <span>Comment</span>
+            <MessageSquare className="w-5 h-5 md:w-6 md:h-6 filter transiton-all" />
+            <span>Reflections</span>
           </button>
           <div className="relative">
             <button
               onClick={() => toggleMenu(id)}
-              className="flex items-center w-full justify-center gap-2 rounded-2xl border border-gray-200 bg-white py-3 font-opensans font-semibold text-[14px] leading-[150%] text-[#7077FE] hover:bg-gray-50"
+              className={`flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 text-black` }
             >
-              <Share2 className="w-4 h-4 text-[#7077FE]" />
+              <Share2 className="w-5 h-5 md:w-6 md:h-6" />
               <span>Share</span>
             </button>
             {openMenuPostId === id && (
