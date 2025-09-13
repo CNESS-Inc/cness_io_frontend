@@ -361,6 +361,10 @@ const UserProfilePage = () => {
     workExperiences: {
       company: string;
       position: string;
+ roles_responsibilities?: string; 
+  work_city?: string;                   
+  work_state?: string;                  
+  work_country?: string;            
       start_date: string;
       end_date?: string;
     }[];
@@ -839,6 +843,10 @@ const UserProfilePage = () => {
               {
                 company: "",
                 position: "",
+                roles_responsibilities:"",
+                work_city:"",
+                work_state:"",
+                work_country:"",
                 start_date: "",
                 end_date: "",
               },
@@ -2517,6 +2525,113 @@ const UserProfilePage = () => {
                                     </p>
                                   )}
                               </div>
+
+{/* Roles & Responsibilities */}
+<div>
+  <label className="block text-sm font-medium text-gray-800 mb-2">
+    Roles & Responsibilities <span className="text-red-500">*</span>
+  </label>
+  <textarea
+    {...workExperienceForm.register(`workExperiences.${index}.roles_responsibilities`)}
+    rows={5}
+    placeholder="Describe your key roles and responsibilities"
+    className={`w-full px-4 py-2 border bg-white ${
+      workExperienceForm.formState.errors?.workExperiences?.[index]?.roles_responsibilities
+        ? "border-red-500"
+        : "border-gray-300"
+    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+      workExperienceForm.formState.errors?.workExperiences?.[index]?.roles_responsibilities
+        ? "focus:ring-red-500"
+        : "focus:ring-purple-500"
+    }`}
+  />
+  {workExperienceForm.formState.errors?.workExperiences?.[index]?.roles_responsibilities && (
+    <p className="text-sm text-red-500 mt-1">
+      {
+        workExperienceForm.formState.errors.workExperiences[index]?.roles_responsibilities
+          ?.message
+      }
+    </p>
+  )}
+</div>
+
+
+
+{/* Country */}
+              <div className="w-full">
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Country <span className="text-red-500">*</span>
+  </label>
+  <Select
+    options={Country?.map((country: any) => ({
+      value: country.name,
+      label: country.name,
+    })) || []}
+    value={
+    workExperienceForm.watch(`workExperiences.${index}.work_country`)
+      ? {
+          value: workExperienceForm.watch(`workExperiences.${index}.work_country`),
+          label: workExperienceForm.watch(`workExperiences.${index}.work_country`),
+        }
+      : null
+  }
+  onChange={(selectedOption) => {
+    workExperienceForm.setValue(
+      `workExperiences.${index}.work_country`,
+      selectedOption?.value || ""
+    );
+  }}
+  onBlur={() => workExperienceForm.trigger(`workExperiences.${index}.work_country`)}
+  styles={customSelectStyles}
+  placeholder="Select your country"
+  isSearchable
+  classNamePrefix="react-select"
+/>
+</div>
+
+                          {/* State */}
+                          <div className="w-full relative">
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    State <span className="text-red-500">*</span>
+  </label>
+  <Select
+    options={states?.map((state: any) => ({
+      value: state.name,
+      label: state.name,
+    })) || []}
+    value={
+    workExperienceForm.watch(`workExperiences.${index}.work_state`)
+      ? {
+          value: workExperienceForm.watch(`workExperiences.${index}.work_state`),
+          label: workExperienceForm.watch(`workExperiences.${index}.work_state`),
+        }
+      : null
+  }
+  onChange={(selectedOption) => {
+    workExperienceForm.setValue(
+      `workExperiences.${index}.work_state`,
+      selectedOption?.value || ""
+    );
+  }}
+  onBlur={() => workExperienceForm.trigger(`workExperiences.${index}.work_state`)}
+  styles={customSelectStyles}
+  placeholder="Select your state"
+  isSearchable
+  classNamePrefix="react-select"
+/>
+</div>
+                          {/* City */}
+                          <div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
+  <input
+    type="text"
+    {...workExperienceForm.register(`workExperiences.${index}.work_city`)}
+    placeholder="Enter city"
+    className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+  />
+</div>
+
+                         
 
                               {/* Start Date */}
                               <div>

@@ -48,7 +48,7 @@ import ManageBestPractices from "../pages/ManageBestPractices";
 import SingleBP from "../pages/SingleBP";
 import TermsAndConditions from "../pages/TermsAndConditions";
 import PrivacyPolicy from "../pages/Privacypolicy";
-import DashboardUserProfile from "../pages/DashboardUserProfile";
+//import DashboardUserProfile from "../pages/DashboardUserProfile";
 import CommunityGuidelines from "../pages/CommunityGuidelines";
 import { StoriesApp } from "../components/Social/Story/StoryApp";
 import Trendingpost from "../pages/TrendingPost";
@@ -64,7 +64,7 @@ import EcoSystem from "../pages/EcoSystem";
 import Premium from "../pages/Premium";
 import WhyCness from "../pages/WhyCness";
 //import SellerDashboard from "../pages/SellerDashboard";
-
+import UserPublicProfile from "../pages/UserPublicProfile";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -230,7 +230,8 @@ export const router = createBrowserRouter([
           },
           {
             path: "userprofile/:id",
-            element: <DashboardUserProfile />,
+            //element: <DashboardUserProfile />,
+            element:<UserPublicProfile />,
           },
           {
             path: "digital_products",
