@@ -67,7 +67,7 @@ const CommentCard = ({ comment, depth = 0, fetchComments }: any) => {
         }
         alt={comment?.profile?.first_name}
         className="w-12 h-12 rounded-full object-cover mr-4"
-        effect="blur"
+        // effect="blur"
         onError={(e) => {
           const target = e.target as HTMLImageElement;
           target.src = "/profile.png";
