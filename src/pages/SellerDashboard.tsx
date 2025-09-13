@@ -252,8 +252,8 @@ export default function SellerDashboard() {
             resonating={resonating || 0}
             resonators={reasonators || 0}
             onViewProfile={() => console.log("View profile")}
-            onSearch={(q) => console.log("Search:", q)}
-            onOpen={() => console.log("Open Social")}
+            onSearch={() => navigate("/dashboard/feed")}
+            onOpen={() => navigate("/dashboard/Profile")}
             adventureTitle="Your Next Social Life Adventure"
             adventureText="What would your younger self admire about your life now? Any standout achievements or experiences?"
             onStartPosting={() => navigate("/dashboard/feed")}
