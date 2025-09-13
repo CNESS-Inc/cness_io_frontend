@@ -39,6 +39,7 @@ const SingleBP = () => {
   const [_followed, setFollowed] = useState(false);
   const [_localLikeCount, setLocalLikeCount] = useState<number>(0);
   const [isLiked, setIsLiked] = useState(false);
+   const [isFollowing, setIsFollowing] = useState<boolean>(false);
   //const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
 
   const handleCommentChange = (event: any) => {
@@ -78,9 +79,9 @@ const SingleBP = () => {
   const fetchSinglePost = async (id: any) => {
     try {
       const res = await GetSingleBestPractice(id);
-      console.log("🚀 ~ fetchSinglePost ~ res:", res);
       setCommentCount(res.data?.data?.comments_count);
       setIs_saved(res.data?.data?.is_saved);
+      setIsFollowing(res.data?.data?.is_bp_following);
       setSinglePost(res?.data?.data);
       setMedia(res?.data?.data?.file);
       setLocalLikeCount(res?.data?.data?.likes_count);
@@ -288,7 +289,7 @@ useEffect(() => {
             )}
           </button>
           <div>
-            {!isFollowed ? (
+            {!isFollowing ? (
               <button
                 className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap"
                 onClick={fetchFollowedPost}
