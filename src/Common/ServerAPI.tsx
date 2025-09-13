@@ -165,6 +165,7 @@ export const EndPoint = {
   connection: "/friend",
   user_connection: "/friend/get-friend-status",
   connection_request: "/friend/request",
+  suggestions: "/friend/suggestions",
   delete_friend: "/friend/delete/friend",
   friend_request_accept: "/friend/request/accept",
   friend_request_reject: "/friend/request/reject",
@@ -173,6 +174,7 @@ export const EndPoint = {
   googleLogin: "/auth/google-login",
   all_bestPractices: "/best-practice/all",
   bp: "/best-practice",
+  bp_recommended: "/best-practice/recommended",
   save_bestPractices: "/best-practice/get/save/best-practice",
   mine_bestPractices: "/best-practice/get-by-user-id",
   add_bestpractices: "/best-practice",
@@ -659,6 +661,9 @@ export const DeleteBestPractices = (id: number): ApiResponse => {
 export const GetBestPracticesById = (id: number): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.bp}/get/${id}`);
 };
+export const GetRecommendedBestPractices = (): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.bp_recommended}`);
+};
 export const UpdateBestPractice = (payload: {
   id: string;
   profession: string;
@@ -1125,6 +1130,10 @@ export const UnFriend = (formattedData: any) => {
 export const GetFriendRequest = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection_request);
+};
+export const GetFriendSuggestions = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.suggestions);
 };
 export const AcceptFriendRequest = (formattedData: any) => {
   return executeAPI(
