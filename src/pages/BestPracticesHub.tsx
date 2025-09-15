@@ -94,7 +94,6 @@ export default function BestPracticesHub() {
   const [selectedDomainText, setSelectedDomainText] = useState("All Domains");
   const isMobile = useMediaQuery("(max-width: 640px)");
   const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
-  const [followedItems, setFollowedItems] = useState<Set<string>>(new Set());
   //const [badge, setBadge] = useState<any>([]);
   //const [selectedCert, setSelectedCert] = useState<string>("");
   //const [sort, setSort] = useState<"az" | "za">("az");
@@ -166,39 +165,29 @@ useEffect(() => {
   const toggleFollow = async (bpId: string) => {
     try {
       const payload = { bp_id: bpId };
-      await SendBpFollowRequest(payload);
+      const res = await SendBpFollowRequest(payload);
 
-      setFollowedItems((prev) => {
-        const updated = new Set(prev);
-        const isNowFollowing = !updated.has(bpId);
+      if (res?.success?.statusCode === 200) {
+        const isNowFollowing = res?.data?.data !== null;
 
-        if (isNowFollowing) {
-          updated.add(bpId);
-          showToast({
-            message: "Followed successfully - stay updated!",
-            type: "success",
-            duration: 2000,
-          });
-        } else {
-          updated.delete(bpId);
-          showToast({
-            message: "Following removed - no more updates from this practice.",
-            type: "error",
-            duration: 2000,
-          });
-        }
+        setBestPractices((prevPractices) =>
+          prevPractices.map((practice) =>
+            practice.id === bpId
+              ? { ...practice, is_bp_following: isNowFollowing }
+              : practice
+          )
+        );
 
-        return updated;
-      });
-
-
-      setBestPractices((prevPractices) =>
-        prevPractices.map((practice) =>
-          practice.id === bpId
-            ? { ...practice, is_bp_following: !practice.is_bp_following }
-            : practice
-        )
-      );
+        showToast({
+          message: isNowFollowing
+            ? "Followed successfully - stay updated!"
+            : "Unfollowed - no longer receiving updates.",
+          type: isNowFollowing ? "success" : "info",
+          duration: 2000,
+        });
+      } else {
+        console.warn("Unexpected status code:", res?.success?.statusCode);
+      }
     } catch (error) {
       showToast({
         message: "Failed to update follow. Please try again.",
@@ -869,7 +858,7 @@ useEffect(() => {
                           {company.title}
                         </h3>
                         <div>
-                          {!followedItems.has(company.id) ? (
+                          {!company.is_bp_following ? (
                             <button
                               className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap"
                               onClick={(e) => {
@@ -880,7 +869,13 @@ useEffect(() => {
                               + Follow
                             </button>
                           ) : (
-                            <button className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF] whitespace-nowrap">
+                            <button
+                              className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF] whitespace-nowrap"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleFollow(company.id);
+                              }}
+                            >
                               Following
                             </button>
                           )}
