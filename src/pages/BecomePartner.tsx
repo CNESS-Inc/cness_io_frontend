@@ -134,7 +134,7 @@ const BecomePartner = () => {
               "linear-gradient(128.73deg, #FFFFFF 27.75%, #FEDFDF 100.43%, #F1A5E5 101.52%)",
           }}
         >
-          <div className="flex flex-col lg:flex-row justify-between items-stretch gap-5 pb-10">
+          <div className="flex flex-col lg:flex-row justify-between items-stretch gap-5 py-10">
             <div className="w-full lg:w-1/3 py-[63px] px-[35px] gap-6 bg-white rounded-[40px]">
               <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[42px] lg:text-3xl xl:text-[42px] md:leading-[54px] lg:leading-[40px] xl:leading-[54px] text-wrap">
                 <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
@@ -163,11 +163,11 @@ const BecomePartner = () => {
                 </button>
               </div>
             </div>
-            <div className="w-full lg:w-2/3 rounded-[40px]">
+            <div className="w-full h-full lg:w-2/3 rounded-[40px]">
               <img
                 src={image}
                 alt="partner main poster"
-                className="w-full h-[427px] object-cover object-top pointer-events-none select-none rounded-[40px]"
+                className="w-full h-[427px] lg:h-full object-cover object-top pointer-events-none select-none rounded-[40px]"
                 aria-hidden="true"
               />
             </div>
