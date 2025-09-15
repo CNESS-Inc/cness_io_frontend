@@ -15,11 +15,11 @@ import "react-phone-input-2/lib/style.css";
 import { createMentor } from "../Common/ServerAPI";
 
 // Define types for the API response and form data
-interface ApiResponse {
-  success: boolean;
-  message?: string;
-  data?: any;
-}
+//interface ApiResponse {
+ // success: boolean;
+  //message?: string;
+  //data?: any;
+//}
 
 interface MentorFormData {
   first_name: string;
