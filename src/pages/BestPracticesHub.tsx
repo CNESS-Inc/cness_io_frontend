@@ -11,7 +11,6 @@ import {
   GetValidProfessionalDetails,
   GetInterestsDetails,
   SendBpFollowRequest,
-  GetFollowBestpractices,
 } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -58,6 +57,7 @@ type Company = {
   rating: number;
   isCertified?: boolean;
   save?: number;
+  is_bp_following?: boolean;
 };
 
 type PaginationData = {
@@ -116,20 +116,6 @@ export default function BestPracticesHub() {
     fetchSavedBestPractices();
   }, []);
 
-  useEffect(() => {
-    const fetchFollowedBestPractices = async () => {
-      try {
-        const res = await GetFollowBestpractices();
-        const followedIds =
-          res?.data?.data?.rows.map((item: any) => item.id) || [];
-        setFollowedItems(new Set(followedIds));
-      } catch (error) {
-        setSavedItems(new Set());
-      }
-    };
-    fetchFollowedBestPractices();
-  }, []);
-
   {
     /*const fetchBadge = async () => {
   try {
@@ -171,6 +157,51 @@ useEffect(() => {
     } catch (error) {
       showToast({
         message: "Failed to save. Please try again.",
+        type: "error",
+        duration: 2000,
+      });
+    }
+  };
+
+  const toggleFollow = async (bpId: string) => {
+    try {
+      const payload = { bp_id: bpId };
+      await SendBpFollowRequest(payload);
+
+      setFollowedItems((prev) => {
+        const updated = new Set(prev);
+        const isNowFollowing = !updated.has(bpId);
+
+        if (isNowFollowing) {
+          updated.add(bpId);
+          showToast({
+            message: "Followed successfully - stay updated!",
+            type: "success",
+            duration: 2000,
+          });
+        } else {
+          updated.delete(bpId);
+          showToast({
+            message: "Following removed - no more updates from this practice.",
+            type: "error",
+            duration: 2000,
+          });
+        }
+
+        return updated;
+      });
+
+
+      setBestPractices((prevPractices) =>
+        prevPractices.map((practice) =>
+          practice.id === bpId
+            ? { ...practice, is_bp_following: !practice.is_bp_following }
+            : practice
+        )
+      );
+    } catch (error) {
+      showToast({
+        message: "Failed to update follow. Please try again.",
         type: "error",
         duration: 2000,
       });
@@ -295,6 +326,7 @@ useEffect(() => {
             likesCount: practice.likes_count || 0,
             isLiked: practice.is_liked || false,
             commentsCount: practice.total_comment_count || 0,
+            is_bp_following: practice.is_bp_following || false,
           })
         );
         setBestPractices(transformedCompanies);
@@ -479,39 +511,6 @@ useEffect(() => {
         setTags([...tags, newTag]);
         setInputValue("");
       }
-    }
-  };
-
-  const toggleFollow = async (bpId: string) => {
-    try {
-      const payload = { bp_id: bpId };
-      await SendBpFollowRequest(payload);
-
-      setFollowedItems((prev) => {
-        const updated = new Set(prev);
-        if (updated.has(bpId)) {
-          updated.delete(bpId);
-          showToast({
-            message: "Following removed - no more updates from this practice.",
-            type: "error",
-            duration: 2000,
-          });
-        } else {
-          updated.add(bpId);
-          showToast({
-            message: "Followed successfully - stay updated!",
-            type: "success",
-            duration: 2000,
-          });
-        }
-        return updated;
-      });
-    } catch (error) {
-      showToast({
-        message: "Failed to update follow. Please try again.",
-        type: "error",
-        duration: 2000,
-      });
     }
   };
 

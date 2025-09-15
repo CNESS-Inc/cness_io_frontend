@@ -23,7 +23,6 @@ const dummyProfilePicture =
 
 const SingleBP = () => {
   const [isSaved, setIs_saved] = useState<boolean>(false);
-  const [isFollowed, setIs_followed] = useState<boolean>(false);
 
   useEffect(() => {
     // getUserPosts();
@@ -36,10 +35,9 @@ const SingleBP = () => {
   const [singlepost, setSinglePost] = useState<any>({});
   const [media, setMedia] = useState<string>("");
   const [_saved, setSaved] = useState(false);
-  const [_followed, setFollowed] = useState(false);
   const [_localLikeCount, setLocalLikeCount] = useState<number>(0);
   const [isLiked, setIsLiked] = useState(false);
-   const [isFollowing, setIsFollowing] = useState<boolean>(false);
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
   //const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
 
   const handleCommentChange = (event: any) => {
@@ -126,21 +124,18 @@ const SingleBP = () => {
     }
   };
 
-  const fetchFollowedPost = async () => {
+  const toggleFollowPost = async () => {
     try {
       const res = await SendBpFollowRequest({ bp_id: id });
 
       if (res?.success?.statusCode === 200) {
-        setIs_followed(true);
-        setFollowed(true);
-      } else if (res?.success) {
-        setIs_followed(false);
-        setFollowed(false);
+        const isNowFollowing = res?.data?.data !== null;
+        setIsFollowing(isNowFollowing);
+      } else {
+        console.warn("Unexpected status code:", res?.success?.statusCode);
       }
     } catch (error) {
       console.error("Error following/unfollowing:", error);
-      setIs_followed(false);
-      setFollowed(false);
     }
   };
 
@@ -292,14 +287,14 @@ useEffect(() => {
             {!isFollowing ? (
               <button
                 className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap"
-                onClick={fetchFollowedPost}
+                onClick={toggleFollowPost}
               >
                 + Follow
               </button>
             ) : (
               <button
                 className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF] whitespace-nowrap"
-                onClick={fetchFollowedPost}
+                onClick={toggleFollowPost}
               >
                 Following
               </button>
