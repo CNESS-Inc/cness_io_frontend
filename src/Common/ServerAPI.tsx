@@ -188,7 +188,6 @@ export const EndPoint = {
   bp_comment_reply: "/best-practice/comment/reply",
   singleBp: "/best-practice/get",
   followBp: "/best-practice/follow",
-  get_followbestpractices: "/best-practice/get/follow/best-practice",
   user_notification: "/notification",
   notification_count: "/notification/count",
   update_notification: "/notification/update-status",
@@ -750,15 +749,6 @@ export const GetSaveBestpractices = (): ApiResponse => {
     ServerAPI.APIMethod.GET,
     data,
     `${EndPoint.get_savebestpractices}`
-  );
-};
-
-export const GetFollowBestpractices = (): ApiResponse => {
-  const data = {};
-  return executeAPI(
-    ServerAPI.APIMethod.GET,
-    data,
-    `${EndPoint.get_followbestpractices}`
   );
 };
 
