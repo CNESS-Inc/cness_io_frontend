@@ -1,11 +1,4 @@
-import {
-  Check,
-  Eye,
-  GraduationCap,
-  Key,
-  Network,
-  Target,
-} from "lucide-react";
+import { Check, Eye, GraduationCap, Key, Network, Target } from "lucide-react";
 import { Card, CardContent } from "../components/ui/Card";
 import {
   CardDescription,
@@ -19,10 +12,51 @@ import { cn } from "../lib/utils";
 import { useState } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { createMentor } from "../Common/ServerAPI";
+
+// Define types for the API response and form data
+interface ApiResponse {
+  success: boolean;
+  message?: string;
+  data?: any;
+}
+
+interface MentorFormData {
+  first_name: string;
+  last_name: string;
+  phone_code: string;
+  phone_no: string;
+  email: string;
+  year_of_experience: number | "";
+  website: string;
+  bio: string;
+  motivation: string;
+  availability: string;
+}
 
 const BecomeMentor = () => {
-  const [currentStep, _setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(1);
   const [phone, setPhone] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+
+  // Form state
+  const [formData, setFormData] = useState<MentorFormData>({
+    first_name: "",
+    last_name: "",
+    phone_code: "",
+    phone_no: "",
+    email: "",
+    year_of_experience: "",
+    website: "",
+    bio: "",
+    motivation: "",
+    availability: "",
+  });
+
   const benefits = [
     {
       icon: Eye,
@@ -79,18 +113,99 @@ const BecomeMentor = () => {
     },
   ];
 
+  // Handle form input changes
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
+  };
+
+  // Handle number input changes specifically
+  const handleNumberInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { id, value } = e.target;
+    // Only allow numbers, empty string, or 0
+    if (value === "" || /^\d+$/.test(value)) {
+      setFormData((prev) => ({
+        ...prev,
+        [id]: value === "" ? "" : Number(value),
+      }));
+    }
+  };
+
+  const [countryCode, setCountryCode] = useState("");
+
+  // Handle phone input change
+  const handlePhoneChange = (value: string, country: any) => {
+    setPhone(value);
+    setCountryCode(country.dialCode);
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitMessage(null);
+
+    try {
+      // Extract just the national number (without country code)
+      const phoneNumber = phone.replace(countryCode, "").trim();
+
+      // Convert year_of_experience to number (default to 0 if empty)
+      const yearOfExperience = formData.year_of_experience === "" ? 0 : Number(formData.year_of_experience);
+
+      const submissionData = {
+        ...formData,
+        phone_code: Number(countryCode),
+        phone_no: Number(phoneNumber),
+        year_of_experience: yearOfExperience,
+      };
+
+      // Call the API
+      const response = await createMentor(submissionData);
+
+      if (response.success) {
+        // Reset form
+        setFormData({
+          first_name: "",
+          last_name: "",
+          phone_code: "",
+          phone_no: "",
+          email: "",
+          year_of_experience: "",
+          website: "",
+          bio: "",
+          motivation: "",
+          availability: "",
+        });
+        setPhone("");
+        setCountryCode("");
+        setCurrentStep(2);
+      } else {
+        setSubmitMessage({
+          type: "error",
+          text:
+            response.message ||
+            "There was an error submitting your application. Please try again.",
+        });
+      }
+    } catch (error) {
+      setSubmitMessage({
+        type: "error",
+        text: "There was an error submitting your application. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <>
-      {/* <div className="p-0">
-        <div className="rounded-xl border border-gray-200 bg-white p-0">
-          <Mentorform
-            // Use your actual Marketplace form’s public URL (formperma link)
-            src="https://forms.zohopublic.com/vijicn1/form/BecameanMentor/formperma/mwyGIJHdCeSv97Vv2SwTmygPofaQEi7OwYEyE3hLqSg"
-            title="Marketplace Submission"
-            minHeight={900}
-          />
-        </div>
-      </div> */}
       <div className="space-y-14">
         {/* Hero Section */}
         <section className="relative overflow-hidden  bg-[linear-gradient(128.73deg,_#FFFFFF_27.75%,_#FEDFDF_100.43%,_#F1A5E5_101.52%)]">
@@ -173,14 +288,13 @@ const BecomeMentor = () => {
               >
                 <CardHeader className="space-y-4 flex flex-col items-center">
                   <div className="w-[58px] h-[58px] rounded-[10px] p-3 flex items-center justify-center bg-[#6340FF1A] group-hover:bg-primary/20 transition-colors">
-                    {/* <benefit.icon className="w-6 h-6 text-primary" /> */}
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
                       strokeWidth={1.5}
                       stroke="#6340FF"
-                      className="w-8.5 h-8.5" // 34px = 8.5 * 4px (Tailwind uses 4px units)
+                      className="w-8.5 h-8.5"
                     >
                       <path
                         strokeLinecap="round"
@@ -231,9 +345,7 @@ const BecomeMentor = () => {
                         className={cn(
                           "flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 mt-0",
                           {
-                            // purple background for active + completed
                             "bg-[#6340FF] text-white": isActive || isCompleted,
-                            // gray for future steps
                             "bg-gray-200 text-gray-500":
                               !isActive && !isCompleted,
                           }
@@ -279,35 +391,41 @@ const BecomeMentor = () => {
 
             {/* Form - col-9 */}
             <div className="lg:col-span-9">
-              <Card className="flex opacity-100   shadow-none ">
+              <Card className="flex opacity-100 shadow-none">
                 <CardContent className="w-full pt-[30px] pr-[26px] pb-[30px] pl-[26px] gap-[30px] rounded-[25px] bg-[#F7F7F7]">
-                  <form className="space-y-6">
+                  <form className="space-y-6" onSubmit={handleSubmit}>
                     {/* Personal Information */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <label
-                          htmlFor="firstName"
+                          htmlFor="first_name"
                           className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
                         >
                           First Name
                         </label>
                         <Input
-                          id="firstName"
+                          id="first_name"
+                          value={formData.first_name}
+                          onChange={handleInputChange}
                           placeholder="Enter first name"
                           className="h-[53px] opacity-100 pr-[10px] pl-[10px] gap-[10px] rounded-[4px] bg-white border-2 border-[#EEEEEE] focus-visible:border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-transparent"
+                          required
                         />
                       </div>
                       <div className="space-y-2">
                         <label
-                          htmlFor="lastName"
+                          htmlFor="last_name"
                           className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
                         >
                           Last Name
                         </label>
                         <Input
-                          id="lastName"
+                          id="last_name"
+                          value={formData.last_name}
+                          onChange={handleInputChange}
                           className="h-[53px] opacity-100 pr-[10px] pl-[10px] gap-[10px] rounded-[4px] bg-white border-2 border-[#EEEEEE] focus-visible:ring-transparent"
                           placeholder="Enter last name"
+                          required
                         />
                       </div>
                     </div>
@@ -323,17 +441,17 @@ const BecomeMentor = () => {
                         <PhoneInput
                           country={"us"}
                           value={phone}
-                          onChange={(value) => setPhone(value)}
-                          containerClass="!w-full" // make wrapper full width
+                          onChange={handlePhoneChange}
+                          containerClass="!w-full"
                           inputClass="
-                          !w-full 
-                          !h-[53px] 
-                          !bg-white 
-                          !border-2 
-                          !border-[#EEEEEE] 
-                          !rounded-[4px] 
-                          pl-[60px]   // 👈 increase this to whatever you want (e.g. 60px, 64px)
-                        "
+        !w-full 
+        !h-[53px] 
+        !bg-white 
+        !border-2 
+        !border-[#EEEEEE] 
+        !rounded-[4px] 
+        pl-[60px]
+      "
                         />
                       </div>
                       <div className="space-y-2">
@@ -346,8 +464,11 @@ const BecomeMentor = () => {
                         <Input
                           id="email"
                           type="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
                           className="h-[53px] opacity-100 pr-[10px] pl-[10px] gap-[10px] rounded-[4px] bg-white border-2 border-[#EEEEEE] focus-visible:ring-transparent"
                           placeholder="Enter email address"
+                          required
                         />
                       </div>
                     </div>
@@ -355,16 +476,20 @@ const BecomeMentor = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <label
-                          htmlFor="experience"
+                          htmlFor="year_of_experience"
                           className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
                         >
                           Years of Experience
                         </label>
                         <Input
-                          id="experience"
-                          type="text"
+                          id="year_of_experience"
+                          type="number"
+                          min="0"
+                          value={formData.year_of_experience}
+                          onChange={handleNumberInputChange}
                           className="h-[53px] opacity-100 pr-[10px] pl-[10px] gap-[10px] rounded-[4px] bg-white border-2 border-[#EEEEEE] focus-visible:ring-transparent"
                           placeholder="Enter your years of experience"
+                          required
                         />
                       </div>
                       <div className="space-y-2">
@@ -376,6 +501,8 @@ const BecomeMentor = () => {
                         </label>
                         <Input
                           id="website"
+                          value={formData.website}
+                          onChange={handleInputChange}
                           placeholder="Enter your link"
                           className="h-[53px] opacity-100 pr-[10px] pl-[10px] gap-[10px] rounded-[4px] bg-white border-2 border-[#EEEEEE] focus-visible:ring-transparent"
                         />
@@ -392,8 +519,11 @@ const BecomeMentor = () => {
                         </label>
                         <textarea
                           id="bio"
+                          value={formData.bio}
+                          onChange={handleInputChange}
                           placeholder="Tell us about yourself..."
                           className="min-h-[100px] block w-full rounded-md px-3 py-2 bg-white border-2 border-[#EEEEEE] focus:outline-none focus:ring-0"
+                          required
                         />
                       </div>
 
@@ -406,8 +536,11 @@ const BecomeMentor = () => {
                         </label>
                         <textarea
                           id="motivation"
+                          value={formData.motivation}
+                          onChange={handleInputChange}
                           placeholder="Share your motivation..."
                           className="min-h-[100px] block w-full px-3 py-2 rounded-[4px] bg-white border-2 border-[#EEEEEE] focus:outline-none focus:ring-0"
+                          required
                         />
                       </div>
                     </div>
@@ -422,17 +555,35 @@ const BecomeMentor = () => {
                       <Input
                         id="availability"
                         type="text"
+                        value={formData.availability}
+                        onChange={handleInputChange}
                         className="h-[53px] opacity-100 pr-[10px] pl-[10px] gap-[10px] rounded-[4px] bg-white border-2 border-[#EEEEEE] focus-visible:ring-transparent"
                         placeholder="Select your Availability"
+                        required
                       />
                     </div>
+
+                    {/* Submission status message */}
+                    {submitMessage && (
+                      <div
+                        className={`p-3 rounded-md ${
+                          submitMessage.type === "success"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {submitMessage.text}
+                      </div>
+                    )}
+
                     <div className="flex justify-center">
                       <Button
                         variant="gradient-primary"
                         className="font-['Open_Sans',Helvetica] font-normal text-[16px] leading-none tracking-normal text-center w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                         type="submit"
+                        disabled={isSubmitting}
                       >
-                        Submit
+                        {isSubmitting ? "Submitting..." : "Submit"}
                       </Button>
                     </div>
                   </form>
