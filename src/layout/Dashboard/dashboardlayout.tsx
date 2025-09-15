@@ -70,7 +70,7 @@ const DashboardLayout = () => {
             }`}
           >
             {/* Main layout with optional FilterSidebar */}
-            <main className="flex-1 min-h-screen px-4 md:px-4 py-4 overflow-y-auto">
+            <main className="flex-1 min-h-screen px-4 md:px-4 py-4 pb-14 overflow-y-auto">
               <div className="flex min-h-screen mb-auto">
                 {isDashboardTechPage && (
                   <div className="w-[250px] shrink-0 border-r border-gray-200 mr-4">
@@ -82,7 +82,7 @@ const DashboardLayout = () => {
                     />
                   </div>
                 )}
-                <div className="flex-1 overflow-x-hidden">
+                <div className="flex-1 ">
                   <Outlet />
                 </div>
               </div>
