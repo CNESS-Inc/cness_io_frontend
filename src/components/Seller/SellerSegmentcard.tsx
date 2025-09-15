@@ -1152,8 +1152,9 @@ export function SocialStackCard({
       <HeaderDivider />
 
       {/* Search */}
-      <div className="mt-2 flex items-center gap-2 rounded-full border border-[#E4E7EC] bg-white px-3"
-      onClick={()=>navigate("/dashboard/feed")}
+      <div
+        className="mt-2 flex items-center gap-2 rounded-full border border-[#E4E7EC] bg-white px-3"
+        onClick={() => navigate("/dashboard/feed")}
       >
         <input
           className="h-10 w-full outline-none text-sm"
@@ -1370,7 +1371,12 @@ export function SocialStackCard({
           )}
         </div>
 
-        <PrimaryButton className="w-full rounded-3xl" onClick={()=>navigate("/dashboard/MyConnection")}>See More </PrimaryButton>
+        <PrimaryButton
+          className="w-full rounded-3xl"
+          onClick={() => navigate("/dashboard/MyConnection")}
+        >
+          See More{" "}
+        </PrimaryButton>
       </div>
     </Card>
   );
