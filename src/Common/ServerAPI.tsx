@@ -181,6 +181,7 @@ export const EndPoint = {
   like_bestpractices: "/best-practice/like",
   save_bestpractices: "/best-practice/save",
   get_savebestpractices: "/best-practice/get/save/best-practice",
+  //get_followbestpractices:"/best-practice/folow"
   create_bestpracticescomment: "/best-practice/comment",
   get_bestpracticescomment: "/best-practice/comment",
   bp_comment_like: "/best-practice/comment/like",
