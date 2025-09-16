@@ -911,7 +911,7 @@ export function SocialStackCard({
                 Account Reached
               </div>
               <div className="mt-2 text-[18px] font-semibold text-[#F07EFF]">
-                12,890
+              {Intl.NumberFormat().format(resonating)}
               </div>
             </div>
 
@@ -957,7 +957,7 @@ export function SocialStackCard({
                 Followers
               </div>
               <div className="mt-2 text-[18px] font-semibold text-[#8B7CFF]">
-                +256
+                +{Intl.NumberFormat().format(resonators)}
               </div>
             </div>
 

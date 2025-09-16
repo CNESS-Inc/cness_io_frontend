@@ -521,9 +521,11 @@ export default function SocialTopBar() {
         return {
           id: item.id,
           title:
-            item.content.length > 30
-              ? `${item.content.substring(0, 30)}...`
-              : item.content || "Untitled Post",
+          item.content
+          ? item.content.length > 30
+            ? `${item.content.substring(0, 30)}...`
+            : item.content
+          : "Untitled Post",
           description: `Posted by ${item.profile.first_name} ${item.profile.last_name}`,
           image_url: firstImageUrl,
           created_at: item.createdAt,

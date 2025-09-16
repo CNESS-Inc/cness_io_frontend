@@ -10,7 +10,7 @@ import {
   GetSaveBestpractices,
   GetValidProfessionalDetails,
   GetInterestsDetails,
-  SendBpFollowRequest,
+  // SendBpFollowRequest,
 } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -162,7 +162,7 @@ useEffect(() => {
     }
   };
 
-  const toggleFollow = async (bpId: string) => {
+  /*const toggleFollow = async (bpId: string) => {
     try {
       const payload = { bp_id: bpId };
       const res = await SendBpFollowRequest(payload);
@@ -195,7 +195,7 @@ useEffect(() => {
         duration: 2000,
       });
     }
-  };
+  };*/
 
   // Modal states
   const [newPractice, setNewPractice] = useState({
@@ -832,7 +832,7 @@ useEffect(() => {
                           <h3 className="text-base sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">
                             {company.title}
                           </h3>
-                          <div>
+                          {/*<div>
                             {!company.is_bp_following ? (
                               <button
                                 className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap"
@@ -854,7 +854,7 @@ useEffect(() => {
                                 Following
                               </button>
                             )}
-                          </div>
+                          </div>*/}
                         </div>
                         <p className="text-sm font-semibold text-gray-900">
                           Overview

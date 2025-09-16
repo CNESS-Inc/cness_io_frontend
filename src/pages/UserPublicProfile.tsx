@@ -1,6 +1,6 @@
 import { Button } from "@headlessui/react";
 import {UserRoundPlus,Share2,
-Link ,MapPin} from "lucide-react";
+Link ,MapPin, TrendingUp} from "lucide-react";
 import BestPracticeCard  from "../components/ui/BestPracticesCard";
 import insta from "../assets/instagram.svg";
 import facebook from "../assets/facebook.svg";
@@ -14,6 +14,7 @@ import {
 UnFriend,
   GetUserProfileDetails,
   SendConnectionRequest,
+  SendFollowRequest,
   //SendFollowRequest,
   //UnFriend,
 } from "../Common/ServerAPI";
@@ -25,13 +26,15 @@ import bcard1 from "../assets/Bcard1.png";
 import bcard2 from "../assets/Bcard2.png";
 import bcard3 from "../assets/Bcard3.png";
 import bcard4 from "../assets/Bcard4.png";
-import { normalizeFileUrl } from "../components/ui/Normalizefileurl";
+// import { normalizeFileUrl } from "../components/ui/Normalizefileurl";
 import inspiredbadge from "../assets/Inspired _ Badge.png";
-
+import SharePopup from "../components/Social/SharePopup";
+import { buildShareUrl } from "../lib/utils";
 
 
 export default function UserProfileView() {
-
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [showSharePopup, setShowSharePopup] = useState(false);
   const [userDetails, setUserDetails] = useState<any>();
  const [activeTab, setActiveTab] = useState("about");
        const { id } = useParams();
@@ -52,6 +55,27 @@ export default function UserProfileView() {
       .replace(/-+$/, "");
   };
 
+  const handleFollow = async (userId: string) => {
+    try {
+      const formattedData = {
+        following_id: userId,
+      };
+      await SendFollowRequest(formattedData);
+      setIsFollowing(!isFollowing);
+      showToast({
+        message: isFollowing ? "Stopped resonating" : "Started resonating!",
+        type: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error following user:", error);
+      showToast({
+        message: "Failed to update resonate status",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
 
   const fetchUserDetails = async () => {
     try {
@@ -306,11 +330,28 @@ export default function UserProfileView() {
 
       {/* Buttons */}
       <div className="mt-4 space-y-2">
-        <button className="w-full h-9 rounded-full 
-             bg-gradient-to-r from-[#7077FE] via-[#9747FF] to-[#F07EFF] 
-             font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
-             text-white align-middle">
-          + Resonate
+        <button 
+          onClick={() => handleFollow(userDetails?.user_id)}
+          disabled={userDetails?.user_id === loggedInUserID}
+          className={`w-full h-9 rounded-full font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
+                    flex items-center justify-center gap-2 transition-colors
+                    ${userDetails?.user_id === loggedInUserID
+                      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                      : isFollowing
+                        ? "bg-transparent text-[#7077FE] border border-[#7077FE] hover:text-[#7077FE]/80"
+                        : "bg-gradient-to-r from-[#7077FE] via-[#9747FF] to-[#F07EFF] text-white hover:opacity-90"
+                    }`}
+        >
+          {userDetails?.user_id === loggedInUserID ? (
+            "It's You"
+          ) : isFollowing ? (
+            <>
+              <TrendingUp className="w-4 h-4 text-[#7077FE]" />
+              Resonating
+            </>
+          ) : (
+            "+ Resonate"
+          )}
         </button>
       <button
   onClick={() => handleFriend(userDetails?.user_id)}
@@ -342,11 +383,21 @@ export default function UserProfileView() {
     : "Connect"}
 </button>
 
-        <button className="w-full h-9 rounded-full border border-[#ECEEF2] 
-             font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
-             text-[#0B3449] flex items-center justify-center gap-2">
-              <Share2 className="w-4 h-4" />
+        <button 
+          onClick={() => setShowSharePopup(!showSharePopup)}
+          className="w-full h-9 rounded-full border border-[#ECEEF2] 
+                    font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
+                    text-[#0B3449] flex items-center justify-center gap-2 relative">
+          <Share2 className="w-4 h-4" />
           Share
+          {showSharePopup && (
+            <SharePopup
+              isOpen={showSharePopup}
+              onClose={() => setShowSharePopup(false)}
+              url={buildShareUrl(`https://dev.cness.io/directory/user-profile/${userDetails?.user_id}`)}
+              position="top"
+            />
+          )}
         </button>
       </div>
     </div>
@@ -684,7 +735,7 @@ export default function UserProfileView() {
                 }
                 coverImage={
                     practice?.file
-                        ? normalizeFileUrl(practice.file)
+                        ? practice.file // normalizeFileUrl(practice.file)
                         : bcard1 || "https://cdn.cness.io/banner.webp"
                 }
                 title={practice?.title || practice?.profession_data?.title || "Untitled"}

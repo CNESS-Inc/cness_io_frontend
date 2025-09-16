@@ -266,10 +266,10 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
           {/* Post Content */}
           <div className="mt-3 md:mt-4">
             <p className="text-gray-800 text-sm md:text-base mb-2 md:mb-3">
-              {expandedPosts[item.id] || item.originalData.content.length <= CONTENT_LIMIT
+              {expandedPosts[item.id] || !item.originalData.content || item.originalData.content.length <= CONTENT_LIMIT
                 ? item.originalData.content
                 : `${item.originalData.content.substring(0, CONTENT_LIMIT)}...`}
-              {item.originalData.content.length > CONTENT_LIMIT && (
+              {item.originalData.content && item.originalData.content.length > CONTENT_LIMIT && (
                 <button
                   onClick={() => toggleExpand(item.id)}
                   className="text-blue-500 ml-1 text-xs md:text-sm font-medium hover:underline focus:outline-none"
