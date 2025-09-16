@@ -9,8 +9,9 @@ import {
   ThumbsUp,
   MessageSquare,
   TrendingUp,
-  MoreVertical,
+  MoreHorizontal,
   Bookmark,
+  Flag,
   Link as LinkIcon,
 } from "lucide-react";
 import Modal from "../../../components/ui/Modal";
@@ -1044,7 +1045,7 @@ export default function SocialFeed() {
                             <button
                               onClick={() => navigate("/log-in")}
                               disabled={connectingUsers[post.user_id] || false}
-                              className={`flex items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
+                              className={`flex w-[100px] justify-center items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors font-family-open-sans h-[35px]
                                 ${
                                 // getFriendStatus(post.user_id) === "connected"
                                 //   ? "bg-red-500 text-white hover:bg-red-600"
@@ -1054,6 +1055,11 @@ export default function SocialFeed() {
                                   : "bg-white text-black shadow-md"
                                 }`}
                             >
+                              <img
+                                src={iconMap["userplus"]}
+                                alt="userplus"
+                                className="w-4 h-4"
+                              />
                               {connectingUsers[post.user_id]
                                 ? "Loading..."
                                 : // : getFriendStatus(post.user_id) === "connected"
@@ -1065,7 +1071,7 @@ export default function SocialFeed() {
                             {/* Follow Button */}
                             <button
                               onClick={() => navigate("/log-in")}
-                              className={`flex items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
+                              className={`flex w-[100px] justify-center items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
                                 ${post.if_following
                                   ? "bg-transparent text-blue-500 hover:text-blue-600"
                                   : "bg-[#7C81FF] text-white hover:bg-indigo-600"
@@ -1081,13 +1087,13 @@ export default function SocialFeed() {
                             </button>
 
                             {/* Three Dots Menu */}
-                            {/* <div className="relative">
+                            <div className="relative">
                               <button
                                 onClick={() => toggleMenu(post.id, "options")}
-                                className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition-colors"
+                                className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-[8px] hover:bg-gray-100 transition-colors"
                                 title="More options"
                               >
-                                <MoreVertical className="w-5 h-5 text-gray-600" />
+                                <MoreHorizontal className="w-5 h-5 text-gray-600" />
                               </button>
 
                               {openMenu.postId === post.id &&
@@ -1138,7 +1144,7 @@ export default function SocialFeed() {
                                     </ul>
                                   </div>
                                 )}
-                            </div> */}
+                            </div>
                           </div>
                         )}
 
@@ -1148,10 +1154,10 @@ export default function SocialFeed() {
                             <div className="relative">
                               <button
                                 onClick={() => toggleMenu(post.id, "options")}
-                                className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition-colors"
+                                className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-[8px] hover:bg-gray-100 transition-colors"
                                 title="More options"
                               >
-                                <MoreVertical className="w-5 h-5 text-gray-600" />
+                                <MoreHorizontal className="w-5 h-5 text-gray-600" />
                               </button>
 
                               {openMenu.postId === post.id &&
@@ -1315,7 +1321,7 @@ export default function SocialFeed() {
                           <span className={`${
                               post.is_liked ? "#7077FE" : "text-black"
                             }`}
-                          > Affirmation Modal
+                          > Appreciate
                           </span>
                         </button>
                         <button
@@ -1338,7 +1344,7 @@ export default function SocialFeed() {
                               : "text-black"
                           }`}
                           >
-                            Reflections Thread
+                            Reflections
                           </span>
                         </button>
                         
@@ -1417,7 +1423,7 @@ export default function SocialFeed() {
                 )}
               </div>
             )}
-            <button className="mt-10 mb-10 w-[214px] h-[43px] bg-[#7C81FF] text-white rounded-[100px] mx-auto block" onClick={() => navigate("/log-in")}>Show more result</button>
+            <button className="mt-10 mb-10 w-[214px] h-[45px] bg-[#20B9EB] text-white rounded-[100px] mx-auto block" onClick={() => navigate("/log-in")}>Show more result</button>
           </div>
 
           {/* Right Sidebar Container */}

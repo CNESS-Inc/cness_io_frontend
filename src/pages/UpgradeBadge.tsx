@@ -34,7 +34,6 @@ const UpgradeBadge = () => {
   useEffect(() => {
     fetchDashboard();
   }, []);
-
   return (
     <>
       <section className="w-full px-2 sm:px-4 lg:px-0.5 pt-4 pb-10">
