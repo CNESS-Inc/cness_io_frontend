@@ -11,6 +11,9 @@ import {
   GetRecommendedBestPractices,
   GetValidProfessionalDetails,
 } from "../Common/ServerAPI";
+import aspired from "../assets/aspired.png";
+import inspired from "../assets/inspired.png";
+import leader from "../assets/leader.png";
 import {
   GreetingBar,
   TrueProfileCard,
@@ -23,6 +26,8 @@ import { useToast } from "../components/ui/Toast/ToastProvider";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/ui/Button";
 import Modal from "../components/ui/Modal";
+import marketplace from "../../src/assets/marketplace.png";
+import { HiOutlineLockClosed } from "react-icons/hi2";
 
 interface UserData {
   id: number;
@@ -339,6 +344,21 @@ export default function SellerDashboard() {
     }
   };
 
+  const badgeLevels = [
+    {
+      title: "Aspired",
+      image: aspired,
+    },
+    {
+      title: "Inspired",
+      image: inspired,
+    },
+    {
+      title: "Leader",
+      image: leader,
+    },
+  ];
+
   const userProfilePicture =
     localStorage.getItem("profile_picture") || "/profile.png";
   const Id = localStorage.getItem("Id") || "";
@@ -365,12 +385,79 @@ export default function SellerDashboard() {
             onOpen={() => console.log("Open True Profile")}
           />
 
-          <CertificationCard
-            progress={user?.assesment_progress || 100}
-            activeLevel="Inspired"
-            onContinue={() => navigate("/dashboard/assesment")}
-            onOpen={() => console.log("Open Certification")}
-          />
+          {user?.assesment_progress === 0 ? (
+            <div
+              className="w-full relative p-6 rounded-xl bg-white"
+              style={{ borderColor: "var(--Stroke, rgba(236, 238, 242, 1))" }}
+            >
+              <h6 className="font-['Poppins',Helvetica] font-medium text-[22px] sm:text-[28px] text-[#222224]">
+                Certification Makes It Official.
+              </h6>
+              <h5 className="pt-3 font-['Open_Sans',Helvetica] font-normal text-base sm:text-lg text-[#999999] leading-[32px]">
+                Get your conscious identity verified and unlock everything CNESS
+                has to offer.
+              </h5>
+              <div className="py-5">
+                <button
+                  className="flex items-center gap-3 bg-white text-black text-sm font-normal py-2 ps-3 pe-2 rounded-full"
+                  onClick={() => navigate("/dashboard/assesment")}
+                  style={{
+                    border: "1px solid var(--Stroke, rgba(236, 238, 242, 1))",
+                    boxShadow: "0px 1px 10px 0px rgba(0, 0, 0, 0.05)",
+                  }}
+                >
+                  <span className="font-['Open_Sans',Helvetica]">
+                    Start Certification Profile
+                  </span>
+                  <div className="w-7 h-7 bg-[#F07EFF] text-white rounded-full flex items-center justify-center">
+                    <HiOutlineLockClosed />
+                  </div>
+                </button>
+              </div>
+              <div
+                className="relative p-6 rounded-xl bg-white gap-6"
+                style={{
+                  background:
+                    "linear-gradient(90deg, rgba(163, 146, 242, 0.1) 0%, rgba(240, 126, 255, 0.1) 100%)",
+                  border: "1px solid var(--Stroke, rgba(236, 238, 242, 1))",
+                }}
+              >
+                <h6 className="font-['Open_Sans',Helvetica] font-normal text-base sm:text-lg text-[#222224]">
+                  Certification Levels
+                </h6>
+                <div className="grid sm:grid-cols-3 gap-[18px] w-full h-full pt-6">
+                  {badgeLevels.map((badge, index) => (
+                    <div
+                      key={index}
+                      className="w-full h-full bg-white px-6 py-[16px] rounded-[18px] flex flex-col justify-center items-center gap-3"
+                      style={{
+                        border:
+                          "1px solid var(--Stroke, rgba(236, 238, 242, 1))",
+                      }}
+                    >
+                      <div className="w-10 h-10">
+                        <img
+                          src={badge.image}
+                          alt="aspired image"
+                          className="w-full h-full"
+                        />
+                      </div>
+                      <h6 className="font-['Poppins',Helvetica] font-semibold text-base sm:text-lg text-[#222224]">
+                        {badge.title}
+                      </h6>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <CertificationCard
+              progress={user?.assesment_progress || 100}
+              activeLevel="Inspired"
+              onContinue={() => navigate("/dashboard/assesment")}
+              onOpen={() => console.log("Open Certification")}
+            />
+          )}
 
           <BestPracticesSection
             items={bestPractices}
@@ -379,10 +466,10 @@ export default function SellerDashboard() {
           />
 
           {/* ⬇️ Directory directly below Best Practices */}
-          <DirectorySection
+          {/* <DirectorySection
             items={directoryItems}
             onView={(item) => navigate(`/dashboard/userprofile/${item.id}`)}
-          />
+          /> */}
         </div>
 
         {/* RIGHT column: single long Social stack */}
@@ -404,6 +491,58 @@ export default function SellerDashboard() {
             suggested={suggestion}
             requested={friendRequests}
             onConnect={(f) => console.log("Connect:", f)}
+          />
+        </div>
+
+        <div className="col-span-12 lg:col-span-4">
+          <div className="w-full flex flex-col gap-3">
+            <div
+              className="w-full h-full relative py-8 px-[20px] rounded-xl bg-[#FAFAFA]"
+              style={{
+                border: "1px solid var(--Stroke, rgba(236, 238, 242, 1))",
+              }}
+            >
+              <img
+                src={marketplace}
+                alt="star bg"
+                className="w-full max-h-[324px] 2xl:max-h-none 2xl:h-auto pointer-events-none select-none z-0 rounded-xl"
+                aria-hidden="true"
+              />
+              <div className="pt-5">
+                <h6 className="font-['Poppins',Helvetica] text-xl md:text-2xl font-medium text-black">
+                  Marketplace
+                </h6>
+                <h5 className="pt-3 pe-5 font-['Open_Sans',Helvetica] font-normal text-sm text-[#898989]">
+                  Explore a wide range of conscious products crafted by verified
+                  creators who prioritize sustainability and ethical practices.
+                </h5>
+                <div className="pt-5">
+                  <button className="flex items-center gap-2 px-[18px] py-[12px] rounded-full bg-[rgba(112,119,254,0.1)] text-[#7077FE] text-sm font-normal">
+                    Coming Soon
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="col-span-12 lg:col-span-8">
+          <DirectorySection
+            items={directoryItems}
+            onView={(item) => navigate(`/dashboard/userprofile/${item.id}`)}
           />
         </div>
       </div>

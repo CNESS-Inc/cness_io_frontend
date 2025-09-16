@@ -165,7 +165,7 @@ export const EndPoint = {
   connection: "/friend",
   user_connection: "/friend/get-friend-status",
   connection_request: "/friend/request",
-  suggestions: "/friend/suggestions",
+  suggested_connection: "/friend/suggestions",
   delete_friend: "/friend/delete/friend",
   friend_request_accept: "/friend/request/accept",
   friend_request_reject: "/friend/request/reject",
@@ -1106,9 +1106,12 @@ export const GetFollowingFollowerUsers = () => {
     EndPoint.following_followers
   );
 };
-export const GetConnectionUser = () => {
+export const GetConnectionUser = ( search?: string) => {
   let data = {};
-  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection);
+  let params: { [key: string]: any } = {};
+  params["search"] = search;
+
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection,params);
 };
 export const SendConnectionRequest = (formattedData: any) => {
   return executeAPI(
@@ -1124,13 +1127,21 @@ export const UnFriend = (formattedData: any) => {
     EndPoint.delete_friend
   );
 };
-export const GetFriendRequest = () => {
+export const GetFriendRequest = (search?: string) => {
   let data = {};
-  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection_request);
+  let params: { [key: string]: any } = {};
+  params["search"] = search;
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection_request,params);
+};
+export const GetSuggestedFriend = (search?: string) => {
+  let data = {};
+  let params: { [key: string]: any } = {};
+  params["search"] = search;
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.suggested_connection,params);
 };
 export const GetFriendSuggestions = () => {
   let data = {};
-  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.suggestions);
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.suggested_connection);
 };
 export const AcceptFriendRequest = (formattedData: any) => {
   return executeAPI(
