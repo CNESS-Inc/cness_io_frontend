@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-// import DashboardSection from "../components/sections/DashboardSection";
 import { DashboardDetails } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import score from "../assets/score.svg";
 import badge from "../assets/badge.svg";
 import logo from "../assets/Inspired _ Badge.png";
+import bg from "../assets/certification_bg.png";
+import icon1 from "../assets/Frame 1.svg";
+import arrow from "../assets/arrow.svg";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
+import CertificationPlans from "../components/sections/Certification/CertificationPlans";
 
 const UpgradeBadge = () => {
   const [user, setUser] = useState<any | null>(null);
@@ -178,8 +181,72 @@ const UpgradeBadge = () => {
             </div>
           </div>
         </div>
+        <div className="relative my-5 flex flex-col items-center justify-center w-full h-full px-6 pt-6 pb-8 md:pb-12 rounded-xl">
+          <img
+            src={bg}
+            alt="gradient"
+            className="absolute top-0 left-0 w-full h-full object-cover rounded-xl"
+          />
+          <div className="relative flex flex-col items-center justify-center text-center gap-3 py-3 px-6">
+            <h1 className="font-['Poppins',Helvetica] font-semibold text-2xl text-wrap bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+              Unlock Your Full Potential
+            </h1>
+            <h5 className="font-['Open_Sans',Helvetica] text-sm font-normal text-[#7A7A7A] w-[64%]">
+              Advance through our certification levels to access exclusive
+              features, expand your network, and amplify your conscious impact.
+            </h5>
+          </div>
+          <div className="w-full relative">
+            <CertificationPlans />
+          </div>
+        </div>
+        <div className="my-5 bg-white flex flex-col w-full h-full px-[18px] pt-[18px] pb-6 rounded-xl">
+          <div className="flex flex-col gap-2">
+            <div className="flex justify-start items-center gap-2 border-b border-[#E9EDF0] pb-3">
+              <img src={icon1} alt="icon" className="w-[32px] h-[32px]" />
+              <h3 className="font-['Poppins',Helvetica] text-base font-medium text-[#081021]">
+                Certification Renewal and Reassessment Rules
+              </h3>
+            </div>
+            <div className="space-y-3">
+              <div className="pt-3 flex justify-start items-center gap-3">
+                <img src={arrow} alt="icon" className="w-4 h-4" />
+                <h3 className="font-['Open_Sans',Helvetica] text-sm font-normal text-[#222224]">
+                  Certification validity: 1 year.
+                </h3>
+              </div>
+
+              <div className="pt-3 flex justify-start items-center gap-3">
+                <img src={arrow} alt="icon" className="w-4 h-4" />
+                <h3 className="font-['Open_Sans',Helvetica] text-sm font-normal text-[#222224]">
+                  Organizations eligible for reassessment after 3 months if they
+                  seek a higher tier.
+                </h3>
+              </div>
+
+              <div className="pt-3 flex justify-start items-start gap-3">
+                <img src={arrow} alt="icon" className="w-4 h-4 mt-0.5" />
+                <div className="text-sm text-[#222224] font-['Open_Sans',Helvetica] font-normal space-y-1">
+                  <p>Renewal requires:</p>
+                  <ul className="list-disc list-inside pl-2 space-y-1">
+                    <li>LMS course completion.</li>
+                    <li>Proof of continuous improvement.</li>
+                    <li>Shortened reassessment form submission.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="pt-3 flex justify-start items-center gap-3">
+                <img src={arrow} alt="icon" className="w-4 h-4" />
+                <h3 className="font-['Open_Sans',Helvetica] text-sm font-normal text-[#222224]">
+                  Organizations eligible for reassessment after 3 months if they
+                  seek a higher tier.
+                </h3>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
-      {/* <DashboardSection /> */}
     </>
   );
 };

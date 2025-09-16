@@ -201,7 +201,7 @@ const BecomePartner = () => {
                 Being a Partner
               </span>
             </h1>
-            <div className="mx-auto mt-8 w-full flex flex-wrap justify-center items-stretch gap-6 md:gap-8">
+            <div className="mx-auto mt-8 w-full 2xl:w-7xl flex flex-wrap justify-center items-stretch gap-6 md:gap-8">
               {cards.map((c, i) => (
                 <div key={i} className="w-full sm:w-[300px] flex">
                   <Card title={c.title} body={c.body} />
