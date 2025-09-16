@@ -9,10 +9,10 @@ import {
   ThumbsUp,
   MessageSquare,
   TrendingUp,
-  // MoreVertical,
   Bookmark,
-  // Flag,
-  // Link as LinkIcon,
+  Flag,
+  Link as LinkIcon,
+  MoreHorizontal,
 } from "lucide-react";
 import Modal from "../components/ui/Modal";
 import TopicModal from "../components/Social/Topicmodel";
@@ -60,8 +60,8 @@ import FollowedUsersList from "./FollowedUsersList";
 import CollectionList from "./CollectionList";
 import Button from "../components/ui/Button";
 import SharePopup from "../components/Social/SharePopup";
-// import { buildShareUrl, copyPostLink } from "../lib/utils";
-import { buildShareUrl } from "../lib/utils";
+import { buildShareUrl, copyPostLink } from "../lib/utils";
+// import { buildShareUrl } from "../lib/utils";
 
 interface Post {
   id: string;
@@ -1022,12 +1022,12 @@ export default function SocialTopBar() {
   };
 
   // Function to open report modal
-  /*const openReportModal = (postId: string) => {
+  const openReportModal = (postId: string) => {
     setSelectedPostForReport(postId);
     setShowReportModal(true);
     // setOpenMenuPostId(null); // Close the three-dot menu
   };
-  */
+  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (!openMenu.postId || !openMenu.type) return;
@@ -1265,7 +1265,7 @@ export default function SocialTopBar() {
                   </div>
 
                   {/* Story Strip Wrapper */}
-                  <h4 className="font-medium">Inspiration Reels</h4>
+                  <h4 className="font-medium text-[16px]">Inspiration Reels</h4>
                   <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory mt-3 md:mt-4">
                     {/* Create Story Card */}
                     <div
@@ -1301,7 +1301,7 @@ export default function SocialTopBar() {
                           />
                         </div>
                       </div>
-                      <div className="absolute bottom-[14px] w-full text-center text-white text-xs md:text-[15px] font-medium z-20">
+                      <div className="absolute bottom-[20px] w-full text-center text-white text-xs md:text-[15px] font-normal z-20">
                         Create Story
                       </div>
                       <div className="w-full border-t-[5px] border-[#7C81FF] mt-4"></div>
@@ -1399,7 +1399,7 @@ export default function SocialTopBar() {
                             <button
                               onClick={() => handleConnect(post.user_id)}
                               disabled={connectingUsers[post.user_id] || false}
-                              className={`flex items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors font-family-open-sans h-[35px]
+                              className={`flex w-[100px] justify-center items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors font-family-open-sans h-[35px]
                                 ${
                                   // getFriendStatus(post.user_id) === "connected"
                                   //   ? "bg-red-500 text-white hover:bg-red-600"
@@ -1427,7 +1427,7 @@ export default function SocialTopBar() {
                             {/* Follow Button */}
                             <button
                               onClick={() => handleFollow(post.user_id)}
-                              className={`flex items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
+                              className={`flex w-[100px] justify-center items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
                                 ${
                                   post.if_following
                                     ? "bg-transparent text-[#7077FE] hover:text-[#7077FE]/80"
@@ -1445,14 +1445,14 @@ export default function SocialTopBar() {
                             </button>
 
                             {/* Three Dots Menu */}
-                            {/*
+                         
                             <div className="relative">
                               <button
                                 onClick={() => toggleMenu(post.id, "options")}
-                                className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition-colors"
+                                className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-[8px] hover:bg-gray-100 transition-colors"
                                 title="More options"
                               >
-                                <MoreVertical className="w-5 h-5 text-gray-600" />
+                                <MoreHorizontal className="w-5 h-5 text-gray-600" />
                               </button>
 
                               {openMenu.postId === post.id &&
@@ -1520,21 +1520,20 @@ export default function SocialTopBar() {
                                   </div>
                                 )}
                             </div>
-                            */}
                           </div>
                         )}
 
                         {post.user_id == loggedInUserID && (
                           <div className="flex gap-2">
                             {/* Three Dots Menu */}
-                            {/*
+                            
                             <div className="relative">
                               <button
                                 onClick={() => toggleMenu(post.id, "options")}
-                                className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition-colors"
+                                className="flex items-center border-[#ECEEF2] border shadow-sm justify-center w-8 h-8 rounded-[8px] hover:bg-gray-100 transition-colors"
                                 title="More options"
                               >
-                                <MoreVertical className="w-5 h-5 text-gray-600" />
+                                <MoreHorizontal className="w-5 h-5 text-gray-600" />
                               </button>
 
                               {openMenu.postId === post.id &&
@@ -1591,7 +1590,7 @@ export default function SocialTopBar() {
                                   </div>
                                 )}
                             </div>
-                            */}
+                            
                           </div>
                         )}
                       </div>
@@ -1703,7 +1702,7 @@ export default function SocialTopBar() {
                         )}
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4 mt-3 md:mt-5">
+                      <div className="border-t border-[#ECEEF2] pt-4 grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
                         <button
                           onClick={() => handleLike(post.id)}
                           disabled={isLoading}
@@ -1774,7 +1773,7 @@ export default function SocialTopBar() {
                             )}
                         </div>
 
-                        <button
+                        {/* <button
                           onClick={() => savePostToCollection(post.id)}
                           disabled={post.is_saved}
                           className={`flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 ${
@@ -1787,7 +1786,7 @@ export default function SocialTopBar() {
                             className="w-5 h-5 md:w-6 md:h-6"
                           />
                           {post.is_saved ? "Saved" : "Save"}
-                        </button>
+                        </button> */}
                       </div>
                     </div>
                   ))}

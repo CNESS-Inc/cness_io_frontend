@@ -514,7 +514,7 @@ const DashboardNavbar = ({
         />
       )}
       <nav
-        className={`absolute top-0 left-0 z-40 h-full w-64 bg-white border-r border-gray-200
+        className={`absolute top-0 left-0 z-40 h-fit pb-12 w-64 bg-white border-r border-gray-200
           transform transition-transform duration-300 ease-in-out
           ${isMobileNavOpen ? "translate-x-0" : "-translate-x-full"}
         `}
