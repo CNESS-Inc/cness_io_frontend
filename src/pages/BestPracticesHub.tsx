@@ -94,7 +94,6 @@ export default function BestPracticesHub() {
   const [selectedDomainText, setSelectedDomainText] = useState("All Domains");
   const isMobile = useMediaQuery("(max-width: 640px)");
   const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
-  const [followedItems, setFollowedItems] = useState<Set<string>>(new Set());
   //const [badge, setBadge] = useState<any>([]);
   //const [selectedCert, setSelectedCert] = useState<string>("");
   //const [sort, setSort] = useState<"az" | "za">("az");
@@ -166,39 +165,29 @@ useEffect(() => {
   const toggleFollow = async (bpId: string) => {
     try {
       const payload = { bp_id: bpId };
-      await SendBpFollowRequest(payload);
+      const res = await SendBpFollowRequest(payload);
 
-      setFollowedItems((prev) => {
-        const updated = new Set(prev);
-        const isNowFollowing = !updated.has(bpId);
+      if (res?.success?.statusCode === 200) {
+        const isNowFollowing = res?.data?.data !== null;
 
-        if (isNowFollowing) {
-          updated.add(bpId);
-          showToast({
-            message: "Followed successfully - stay updated!",
-            type: "success",
-            duration: 2000,
-          });
-        } else {
-          updated.delete(bpId);
-          showToast({
-            message: "Following removed - no more updates from this practice.",
-            type: "error",
-            duration: 2000,
-          });
-        }
+        setBestPractices((prevPractices) =>
+          prevPractices.map((practice) =>
+            practice.id === bpId
+              ? { ...practice, is_bp_following: isNowFollowing }
+              : practice
+          )
+        );
 
-        return updated;
-      });
-
-
-      setBestPractices((prevPractices) =>
-        prevPractices.map((practice) =>
-          practice.id === bpId
-            ? { ...practice, is_bp_following: !practice.is_bp_following }
-            : practice
-        )
-      );
+        showToast({
+          message: isNowFollowing
+            ? "Followed successfully - stay updated!"
+            : "Unfollowed - no longer receiving updates.",
+          type: isNowFollowing ? "success" : "info",
+          duration: 2000,
+        });
+      } else {
+        console.warn("Unexpected status code:", res?.success?.statusCode);
+      }
     } catch (error) {
       showToast({
         message: "Failed to update follow. Please try again.",
@@ -514,32 +503,6 @@ useEffect(() => {
     }
   };
 
-  // const handleFollow = async (userId: string) => {
-  //   try {
-  //     const payload = {
-  //       bp_id: userId,
-  //     };
-  //     const res = await SendBpFollowRequest(payload);
-  //     if (res?.success?.statusCode === 200) {
-  //       showToast({
-  //         message: "Following activated - never miss their updates!",
-  //         type: "success",
-  //         duration: 2000,
-  //       });
-  //       fetchBestPractices();
-  //     }
-  //     console.log("resfbhgh", res);
-  //     await fetchBestPractices();
-  //   } catch (error) {
-  //     showToast({
-  //         message: "Following removed - no more updates from them.",
-  //         type: "error",
-  //         duration: 2000,
-  //       });
-  //     console.error("Error fetching selection details:", error);
-  //   }
-  // };
-
   return (
     <>
       <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] mx-auto rounded-[12px] overflow-hidden">
@@ -801,7 +764,7 @@ useEffect(() => {
                 return (
                   <div
                     key={company.id}
-                    className="relative bg-white  cursor-pointer rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
+                    className="relative bg-white w-full h-full flex flex-col cursor-pointer rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
                     onClick={() =>
                       navigate(
                         `/dashboard/bestpractices/${company.id}/${slugify(
@@ -844,53 +807,60 @@ useEffect(() => {
                         </div>
                       </div>
                     </CardHeader>
-                    <div className="px-4 pt-4 pb-0 relative z-0">
-                      <div className="rounded-xl overflow-hidden mb-3">
-                        {company.file && (
-                          <img
-                            src={
-                              company.file &&
-                              company.file !== "http://localhost:5026/file/"
-                                ? company.file
-                                : iconMap["companycard1"]
-                            }
-                            alt={company.title}
-                            className="w-full h-40 sm:h-48 object-cover"
-                            onError={(e) => {
-                              // Fallback in case the image fails to load
-                              (e.target as HTMLImageElement).src =
-                                iconMap["companycard1"];
-                            }}
-                          />
-                        )}
-                      </div>
-                      <div className="w-full flex justify-between items-center gap-3">
-                        <h3 className="text-base sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">
-                          {company.title}
-                        </h3>
-                        <div>
-                          {!followedItems.has(company.id) ? (
-                            <button
-                              className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleFollow(company.id);
+                    <div className="h-full flex flex-col justify-between items-scretch px-4 pt-4 pb-0 relative z-0">
+                      <div className="">
+                        <div className="rounded-xl overflow-hidden mb-3">
+                          {company.file && (
+                            <img
+                              src={
+                                company.file &&
+                                company.file !== "http://localhost:5026/file/"
+                                  ? company.file
+                                  : iconMap["companycard1"]
+                              }
+                              alt={company.title}
+                              className="w-full h-40 sm:h-48 object-cover"
+                              onError={(e) => {
+                                // Fallback in case the image fails to load
+                                (e.target as HTMLImageElement).src =
+                                  iconMap["companycard1"];
                               }}
-                            >
-                              + Follow
-                            </button>
-                          ) : (
-                            <button className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF] whitespace-nowrap">
-                              Following
-                            </button>
+                            />
                           )}
                         </div>
-                      </div>
-                      <p className="text-sm font-semibold text-gray-900">
-                        Overview
-                      </p>
+                        <div className="w-full flex justify-between items-center gap-3">
+                          <h3 className="text-base sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">
+                            {company.title}
+                          </h3>
+                          <div>
+                            {!company.is_bp_following ? (
+                              <button
+                                className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleFollow(company.id);
+                                }}
+                              >
+                                + Follow
+                              </button>
+                            ) : (
+                              <button
+                                className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF] whitespace-nowrap"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleFollow(company.id);
+                                }}
+                              >
+                                Following
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <p className="text-sm font-semibold text-gray-900">
+                          Overview
+                        </p>
 
-                      {/* <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-3">
+                        {/* <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-3">
                         {truncateText(company.description, 100)}
                         {company.description.length > 50 && (
                           <span className="text-[#F07EFF] underline ml-1">
@@ -898,22 +868,23 @@ useEffect(() => {
                           </span>
                         )}
                       </p> */}
-                      <p className="text-sm text-gray-600 leading-snug break-words whitespace-pre-line">
-                        {expandedDescriptions[company.id]
-                          ? company.description
-                          : truncateText(company.description, 100)}
-                        {company.description.length > 100 && (
-                          <span
-                            className="text-purple-600 underline cursor-pointer ml-1"
-                            // onClick={(e) => toggleDescription(e, company.id)}
-                          >
-                            {expandedDescriptions[company.id]
-                              ? "Read Less"
-                              : "Read More"}
-                          </span>
-                        )}
-                      </p>
-                      <div className="flex items-center justify-between px-4 py-2 mt-2 text-xs sm:text-sm text-gray-600 ">
+                        <p className="text-sm text-gray-600 leading-snug break-words whitespace-pre-line">
+                          {expandedDescriptions[company.id]
+                            ? company.description
+                            : truncateText(company.description, 100)}
+                          {company.description.length > 100 && (
+                            <span
+                              className="text-purple-600 underline cursor-pointer ml-1"
+                              // onClick={(e) => toggleDescription(e, company.id)}
+                            >
+                              {expandedDescriptions[company.id]
+                                ? "Read Less"
+                                : "Read More"}
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                      <div className="flex items-end justify-between px-4 py-2 mt-2 text-xs sm:text-sm text-gray-600 ">
                         {/* Likes & Comments */}
                         <div className="flex items-center space-x-6 mb-2">
                           <span

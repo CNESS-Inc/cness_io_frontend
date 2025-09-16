@@ -421,7 +421,7 @@ export default function DashboardDirectory() {
               </div>
             ) : activeList.list.length > 0 ? (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-5 gap-x-4 gap-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
                   {activeList.list.map((company) => (
                     <CompanyCard
                       id={company.id}
@@ -466,7 +466,7 @@ export default function DashboardDirectory() {
                 </div>
               ) : popularCompanies.length > 0 ? (
                 <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-6 gap-x-4 gap-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
                     {sortByName(popularCompanies).map((company) => (
                       <CompanyCard
                         id={company.id}
@@ -510,7 +510,7 @@ export default function DashboardDirectory() {
                 </div>
               ) : aspiringCompanies.length > 0 ? (
                 <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-5 gap-x-4 gap-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
                     {sortByName(aspiringCompanies).map((company) => (
                       <CompanyCard
                         id={company.id}
@@ -552,7 +552,7 @@ export default function DashboardDirectory() {
                 </div>
               ) : inspiringCompanies.length > 0 ? (
                 <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-5 gap-x-4 gap-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
                     {sortByName(inspiringCompanies).map((company) => (
                       <CompanyCard
                         id={company.id}

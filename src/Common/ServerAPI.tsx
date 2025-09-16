@@ -214,6 +214,9 @@ export const EndPoint = {
   by_topic_post: "/user/posts/topic",
   get_all_topics: "/topics/get/all",
   add_partner_inquiry: "/partner-inquiry",
+
+
+  add_mentor: "/mentor",
 };
 
 // Messaging endpoints
@@ -1283,6 +1286,13 @@ export const createPartnerInquiry = (formData: any): ApiResponse => {
     ServerAPI.APIMethod.POST,
     formData,
     EndPoint.add_partner_inquiry
+  );
+};
+export const createMentor = (formData: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.add_mentor
   );
 };
 
