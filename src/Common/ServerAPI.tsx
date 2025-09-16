@@ -215,7 +215,6 @@ export const EndPoint = {
   get_all_topics: "/topics/get/all",
   add_partner_inquiry: "/partner-inquiry",
 
-
   add_mentor: "/mentor",
 };
 
@@ -665,7 +664,11 @@ export const GetBestPracticesById = (id: number): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.bp}/get/${id}`);
 };
 export const GetRecommendedBestPractices = (): ApiResponse => {
-  return executeAPI(ServerAPI.APIMethod.GET, null, `${EndPoint.bp_recommended}`);
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    `${EndPoint.bp_recommended}`
+  );
 };
 export const UpdateBestPractice = (payload: {
   id: string;
@@ -1289,11 +1292,7 @@ export const createPartnerInquiry = (formData: any): ApiResponse => {
   );
 };
 export const createMentor = (formData: any): ApiResponse => {
-  return executeAPI(
-    ServerAPI.APIMethod.POST,
-    formData,
-    EndPoint.add_mentor
-  );
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.add_mentor);
 };
 
 export const LogOut = () => {
@@ -1301,7 +1300,9 @@ export const LogOut = () => {
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.logout);
 };
 
-export const getFriendsForTagging = (params: FriendSuggestionData): ApiResponse => {
+export const getFriendsForTagging = (
+  params: FriendSuggestionData
+): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.GET,
     null,
