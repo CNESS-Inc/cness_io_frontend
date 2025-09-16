@@ -1,5 +1,4 @@
 import {
-  // BellIcon,
   SearchIcon,
   SettingsIcon,
   LogOutIcon,
@@ -11,20 +10,46 @@ import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import hambur from "../../assets/hambur.png";
-import { LogOut } from "../../Common/ServerAPI";
+import { GetUserNotification, LogOut } from "../../Common/ServerAPI";
 import { useToast } from "../../components/ui/Toast/ToastProvider";
+import { initSocket } from "../../Common/socket";
+
+// Define the notification interface
+interface Notification {
+  id: string;
+  notification_type: string;
+  is_read: boolean;
+  sender_id: string | null;
+  receiver_id: string;
+  title: string;
+  description: string;
+  createdAt: string;
+  redirection: string | null;
+  data_id: string | null;
+  sender_user: {
+    id: string;
+    role: string | null;
+    is_active: boolean;
+  } | null;
+  sender_profile: {
+    user_id: string;
+    first_name: string;
+    last_name: string;
+  } | null;
+}
 
 const DashboardHeader = ({ toggleMobileNav }: any) => {
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const notificationDropdownRef = useRef<HTMLDivElement>(null);
 
   // Add state for name values
   const [name, setName] = useState(localStorage.getItem("main_name") || "");
-
-const [notificationCount, setNotificationCount] = useState(
-  localStorage.getItem("notification_count") || "0"
-);
+  const [notificationCount, setNotificationCount] = useState(
+    localStorage.getItem("notification_count") || "0"
+  );
   const [margaretName, setMargaretName] = useState(
     localStorage.getItem("margaret_name") || ""
   );
@@ -32,9 +57,81 @@ const [notificationCount, setNotificationCount] = useState(
     localStorage.getItem("profile_picture") || ""
   );
   
+  // State for notifications from API
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  
   const { showToast } = useToast();
   
+  useEffect(() => {
+    const token = localStorage.getItem("jwt");
+    if (!token) return;
 
+    const socket = initSocket(token);
+
+    const handleConnect = () => {
+      console.log("✅ Connected to socket server");
+    };
+    
+    const handleError = (err: any) => {
+      console.error("❌ Connection failed:", err.message);
+    };
+    
+    const handleNotification = (data: {
+      redirection: any;
+      data_id: any;
+      id: string;
+      notification_type: string;
+      is_read: boolean;
+      sender_id: string | null;
+      createdAt: any;
+      receiver_id: string;
+      sender_profile: { user_id: string; first_name: string; last_name: string; } | null;
+      sender_user: { id: string; role: string | null; is_active: boolean; } | null; count: number; message: { title: string; description: string } 
+}) => {
+      
+      // Update notification count
+      setNotificationCount(data.count.toString());
+      localStorage.setItem("notification_count", data.count.toString());
+      
+      // Add new notification to the top of the list
+      if (data.message) {
+        const newNotification: Notification = {
+          id: data?.id,
+          notification_type: data?.notification_type,
+          is_read: data?.is_read,
+          sender_id: data?.sender_id,
+          receiver_id: data?.receiver_id,
+          title: data.message?.title,
+          description: data?.message?.description,
+          createdAt: data?.createdAt?.toISOString(),
+          sender_user: data?.sender_user,
+          sender_profile: data?.sender_profile,
+          redirection: data?.redirection,
+          data_id: data?.data_id,
+        };
+        
+        setNotifications((prev: Notification[]) => [newNotification, ...prev.slice(0, 9)]);
+        
+        // Show notification message as toast
+        showToast({
+          message: data.message.description,
+          title: data.message.title,
+          type: "notification",
+          duration: 5000,
+        });
+      }
+    };
+
+    socket.on("connect", handleConnect);
+    socket.on("connect_error", handleError);
+    socket.on("notificationCount", handleNotification);
+
+    return () => {
+      socket.off("connect", handleConnect);
+      socket.off("connect_error", handleError);
+      socket.off("notificationCount", handleNotification);
+    };
+  }, [showToast]);
 
   // Watch for localStorage changes
   useEffect(() => {
@@ -45,10 +142,7 @@ const [notificationCount, setNotificationCount] = useState(
       setNotificationCount(localStorage.getItem("notification_count") || "0");
     };
 
-    // Listen for storage events (changes from other tabs)
     window.addEventListener("storage", handleStorageChange);
-
-    // Also check for changes periodically (in case changes happen in the same tab)
     const interval = setInterval(handleStorageChange, 1000);
 
     return () => {
@@ -57,14 +151,17 @@ const [notificationCount, setNotificationCount] = useState(
     };
   }, []);
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
+        !dropdownRef.current.contains(event.target as Node) &&
+        notificationDropdownRef.current &&
+        !notificationDropdownRef.current.contains(event.target as Node)
       ) {
         setIsDropdownOpen(false);
+        setIsNotificationDropdownOpen(false);
       }
     };
 
@@ -105,6 +202,102 @@ const [notificationCount, setNotificationCount] = useState(
       });
     }
   };
+
+  const getNotification = async () => {
+    try {
+      const res = await GetUserNotification();
+      console.log("🚀 ~ getNotification ~ res:", res);
+      
+      if (res?.data?.data) {
+        // Get first 10 notifications from the API response
+        const firstTenNotifications = res.data.data.slice(0, 10);
+        setNotifications(firstTenNotifications);
+      }
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
+  const handleNotificationClick = () => {
+    setIsNotificationDropdownOpen(!isNotificationDropdownOpen);
+    // Mark all notifications as read when opening the dropdown
+    if (!isNotificationDropdownOpen) {
+      setNotifications((prev: Notification[]) => prev.map(notif => ({ ...notif, is_read: true })));
+      // setNotificationCount("0");
+    }
+  };
+
+  const handleViewAllNotifications = () => {
+    setIsNotificationDropdownOpen(false);
+    navigate("/dashboard/notification");
+  };
+
+  // Handle notification click and redirect based on redirection type
+  const handleNotificationItemClick = (notification: Notification) => {
+  setIsNotificationDropdownOpen(false);
+
+  // Mark notification as read
+  setNotifications(prev =>
+    prev.map(n =>
+      n.id === notification.id ? { ...n, is_read: true } : n
+    )
+  );
+
+  // Build query string
+  const query = `?openpost=true&dataset=${notification.data_id || ""}`;
+
+  // Handle redirection based on notification type
+  switch (notification.redirection) {
+    case "profile":
+      if (notification.data_id) {
+        navigate(`/dashboard/userprofile/${notification.data_id}`);
+      }
+      break;
+
+    case "post":
+      if (notification.data_id) {
+        navigate(`/dashboard/profile${query}`);
+      }
+      break;
+
+    default:
+      // For notifications without specific redirection or unknown types
+      navigate(`/dashboard/notification${query}`);
+      break;
+  }
+};
+
+
+  // Format the date to a more readable format
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    
+    // Convert both dates to timestamps (numbers) before subtraction
+    const diffInMs = now.getTime() - date.getTime();
+    const diffInMins = Math.floor(diffInMs / (1000 * 60));
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+    
+    if (diffInMins < 1) return "Just now";
+    if (diffInMins < 60) return `${diffInMins} min ago`;
+    if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+    if (diffInDays < 7) return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+    
+    return date.toLocaleDateString();
+  };
+
+  // Get sender name from notification
+  const getSenderName = (notification: Notification) => {
+    if (notification.sender_profile) {
+      return `${notification.sender_profile.first_name} ${notification.sender_profile.last_name}`;
+    }
+    return "System";
+  };
+
+  useEffect(() => {
+    getNotification();
+  }, []);
 
   return (
     <header className="w-full bg-white border-b border-[#0000001a] relative px-4 py-[18px] md:pl-[260px] flex items-center justify-between">
@@ -147,7 +340,7 @@ const [notificationCount, setNotificationCount] = useState(
             </span>
           </div>
 
-          {/* Logout Button */}
+          {/* Support Button */}
           <div className="relative group">
             <div
               onClick={() => navigate("/dashboard/support")}
@@ -161,15 +354,15 @@ const [notificationCount, setNotificationCount] = useState(
             </span>
           </div>
 
-          {/* Notification Button */}
-          <div className="relative group">
+          {/* Notification Button with Dropdown */}
+          <div className="relative group" ref={notificationDropdownRef}>
             <div
-              onClick={() => navigate("/dashboard/notification")}
+              onClick={handleNotificationClick}
               className="flex w-[32px] h-[32px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
             >
               <div className="relative">
                 <BellIcon className="w-[15px] h-[15px] text-[#897AFF]" />
-                {notificationCount != "0" && (
+                {notificationCount !== "0" && (
                   <div className="w-[12px] h-[12px] absolute -top-1 left-1 bg-[#60c750] rounded-full flex items-center justify-center">
                     <span className="font-['Poppins',Helvetica] font-normal text-white text-[7px]">
                       {notificationCount}
@@ -178,10 +371,47 @@ const [notificationCount, setNotificationCount] = useState(
                 )}
               </div>
             </div>
-            <span className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
-              Notifications
-              <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rotate-45"></span>
-            </span>
+            
+            {/* Notification Dropdown */}
+            {isNotificationDropdownOpen && (
+              <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+                <div className="px-4 py-2 border-b border-gray-100">
+                  <h3 className="font-semibold text-gray-800">Notifications</h3>
+                </div>
+                
+                <div className="max-h-60 overflow-y-auto">
+                  {notifications.length > 0 ? (
+                    notifications.slice(0, 5).map((notification: Notification) => (
+                      <div 
+                        key={notification.id} 
+                        className={`px-4 py-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${!notification.is_read ? 'bg-blue-50' : ''}`}
+                        onClick={() => handleNotificationItemClick(notification)}
+                      >
+                        <div className="flex justify-between items-start">
+                          <h4 className="font-medium text-sm text-gray-800">{notification.title}</h4>
+                          <span className="text-xs text-gray-500">{formatDate(notification.createdAt)}</span>
+                        </div>
+                        <p className="text-xs text-gray-600 mt-1">{notification.description}</p>
+                        {notification.sender_profile && (
+                          <p className="text-xs text-gray-500 mt-1">From: {getSenderName(notification)}</p>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="px-4 py-3 text-center text-gray-500">
+                      No notifications
+                    </div>
+                  )}
+                </div>
+                
+                <div 
+                  className="px-4 py-2 text-center border-t border-gray-100 hover:bg-gray-50 cursor-pointer"
+                  onClick={handleViewAllNotifications}
+                >
+                  <span className="text-sm text-[#897AFF] font-medium">View All Notifications</span>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Settings Button */}

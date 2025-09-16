@@ -1,14 +1,14 @@
-import Button from "../../ui/Button";
+//import Button from "../../ui/Button";
 import LottieOnView from "../../ui/LottieOnView";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
 
 
 
 
 export default function MobileSection() {
   const [animationData, setAnimationData] = useState<object | null>(null);
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   useEffect(() => {
       fetch("https://cnessioassets.project-69e.workers.dev/Purple-Circle-with-phone.json")
         .then((res) => res.json())
@@ -22,15 +22,16 @@ export default function MobileSection() {
         <div className="flex lg:flex-row flex-col lg:h-[400px]">
           <div className="lg:w-7/12 w-full flex items-center">
             <div className="lg:w-full w-full bg-white lg:p-8 md:p-8 p-4  rounded-[12px] flex items-start flex-col justify-center">
-              <h2 className="poppins lg:leading-16 md:leading-14 leading-9 pb-1 text-[32px] font-[600] bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
+              <h2 style={{ fontFamily: "Poppins, sans-serif" }}
+              className="poppins lg:leading-16 md:leading-14 leading-9 pb-1 text-[32px] font-[500] bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
                text-transparent bg-clip-text mb-3">A Conscious coach in your pocket</h2>
               <p className="openSans text-[#64748B] text-[18px] font-[400]">Meet Ariven AI — your consciousness companion. It reflects, prompts,<br /> and guides you to stay aligned with your values, choices, and<br /> evolution.</p>
-              <Button
+              {/*<Button
                 // variant="gradient-primary"
                 className="jakarta w-fit rounded-[100px] h-[38px] text-[16px]  font-[400] text-[#fff] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#F07EFF]  mt-6"
                 onClick={() => navigate("/comingSoon")}>
                 Coming Soon
-              </Button>
+              </Button>*/}
             </div>
           </div>
 

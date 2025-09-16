@@ -7,15 +7,17 @@ import {
   ChevronRight,
   Share2,
   ThumbsUp,
+  MessageSquare,
   TrendingUp,
-  MoreVertical,
   Bookmark,
   Flag,
   Link as LinkIcon,
+  MoreHorizontal,
 } from "lucide-react";
 import Modal from "../components/ui/Modal";
-
-import { MdContentCopy } from "react-icons/md";
+import TopicModal from "../components/Social/Topicmodel";
+import { iconMap } from "../assets/icons";
+// import { MdContentCopy } from "react-icons/md";
 
 import {
   AddPost,
@@ -30,35 +32,36 @@ import {
   UnFriend,
   SendFriendRequest,
   GetFriendStatus,
-  SavePost, 
+  SavePost,
   ReportPost,
+  getTopics,
+  UserSelectedTopic,
+  getUserSelectedTopic,
+  updateUserSelectedTopic,
 } from "../Common/ServerAPI";
 
 // images
 // import Announcement from "../assets/Announcement.png";
- import Collection from "../assets/Collection.png";
+import Collection from "../assets/Collection.png";
 // import Leaderboard from "../assets/Leaderboard.png";
-// import Mention from "../assets/Mention.png";
+import Mention from "../assets/Mention.png";
 import people from "../assets/people.png";
 import Trending from "../assets/Trending.png";
 import createstory from "../assets/createstory.jpg";
 import carosuel1 from "../assets/carosuel1.png";
-import like from "../assets/like.png";
-import comment from "../assets/comment.png";
-import comment1 from "../assets/comment1.png";
+// import like from "../assets/like.png";
+import like from "../assets/social_like.png";
+// import comment from "../assets/comment.png";
+// import comment1 from "../assets/comment1.png";
 import Image from "../components/ui/Image";
 import CommentBox from "./CommentBox";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import {
-  FacebookShareButton,
-  LinkedinShareButton,
-  TwitterShareButton,
-  WhatsappShareButton,
-} from "react-share";
-import { FaFacebook, FaLinkedin, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import FollowedUsersList from "./FollowedUsersList";
 import CollectionList from "./CollectionList";
 import Button from "../components/ui/Button";
+import SharePopup from "../components/Social/SharePopup";
+import { buildShareUrl, copyPostLink } from "../lib/utils";
+// import { buildShareUrl } from "../lib/utils";
 
 interface Post {
   id: string;
@@ -126,77 +129,6 @@ interface CollectionItem {
   };
 }
 
-// const curatedCards = [
-//   {
-//     id: 1,
-//     title: "Chasing Dreams",
-//     subtitle: "By The Dreamers",
-//     duration: "4.05 Min",
-//     image: chasing,
-//   },
-//   {
-//     id: 2,
-//     title: "Into the Wild",
-//     subtitle: "By Nature’s Voice",
-//     duration: "5.20 Min",
-//     image: Bcard1,
-//   },
-//   {
-//     id: 3,
-//     title: "Rise Up and Shine",
-//     subtitle: "By Selena",
-//     duration: "3.10 Min",
-//     image: Bcard2,
-//   },
-
-//   {
-//     id: 3,
-//     title: "Rise Up and Shine",
-//     subtitle: "By Selena",
-//     duration: "3.10 Min",
-//     image: Bcard3,
-//   },
-// ];
-
-// const storyList = [
-//   {
-//     id: "101",
-//     userIcon: "/avatars/liam.jpg",
-//     userName: "Liam Anderson",
-//     title: "Chasing Dreams",
-//     videoSrc: "/consciousness_social_media.mp4",
-//   },
-//   {
-//     id: "102",
-//     userIcon: "/avatars/noah.jpg",
-//     userName: "Noah Thompson",
-//     title: "Into the Clouds",
-//     videoSrc: "/test1.mp4",
-//   },
-//   {
-//     id: "103",
-//     userIcon: "/avatars/oliver.jpg",
-//     userName: "Oliver Bennett",
-//     title: "Zen & Peace",
-//     videoSrc: "/consciousness_social_media.mp4",
-//   },
-//   {
-//     id: "104",
-//     userIcon: "/avatars/lucas.jpg",
-//     userName: "Lucas Mitchell",
-//     title: "Walking Free",
-//     videoSrc: "/test1.mp4",
-//   },
-
-//   {
-//     id: "105",
-//     userIcon: "/avatars/lucas.jpg",
-//     userName: "Lucas Mitchell",
-//     title: "Walking Free",
-//     videoSrc: "/test1.mp4",
-//   },
-// ];
-
 interface PostCarouselProps {
   mediaItems: Array<{
     type: "image" | "video";
@@ -227,6 +159,12 @@ interface Story {
     is_liked: boolean;
   }[];
 }
+
+type Topic = {
+  id: string;
+  topic_name: string;
+  slug: string;
+};
 
 function PostCarousel({ mediaItems }: PostCarouselProps) {
   const [current, setCurrent] = useState(0);
@@ -265,9 +203,9 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
   };
 
   return (
-    <div className="relative w-full rounded-lg overflow-hidden">
+    <div className="relative w-full ">
       {/* Media Container */}
-      <div className="w-full aspect-video bg-black">
+      <div className="w-full aspect-video rounded-3xl  bg-black">
         {mediaItems.map((item, index) => (
           <div
             key={index}
@@ -279,14 +217,14 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
               <img
                 src={item.url}
                 alt={`Slide ${index}`}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-3xl"
               />
             ) : (
               <video
                 ref={(el) => {
                   videoRefs.current[index] = el;
                 }}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-3xl"
                 controls
                 muted
                 loop
@@ -305,15 +243,15 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
         <>
           <button
             onClick={handlePrev}
-            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 shadow-md w-8 h-8 rounded-full flex items-center justify-center z-10"
+            className="absolute -left-4 top-1/2 transform -translate-y-1/2 bg-white shadow-md w-[42px] h-[42px] rounded-full flex items-center justify-center z-10"
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={22} />
           </button>
           <button
             onClick={handleNext}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 shadow-md w-8 h-8 rounded-full flex items-center justify-center z-10"
+            className="absolute -right-4 top-1/2 transform -translate-y-1/2 bg-white shadow-md w-[42px] h-[42px] rounded-full flex items-center justify-center z-10"
           >
-            <ChevronRight size={20} />
+            <ChevronRight size={22} />
           </button>
         </>
       )}
@@ -357,7 +295,7 @@ export default function SocialTopBar() {
   );
   const [isUploading, setIsUploading] = useState(false);
   const [_apiStoryMessage, setApiStoryMessage] = useState<string | null>(null);
-  const [copy, setCopy] = useState<Boolean>(false);
+  // const [copy, setCopy] = useState<Boolean>(false);
 
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
@@ -376,51 +314,59 @@ export default function SocialTopBar() {
     postId: string | null;
     type: "options" | "share" | null;
   }>({ postId: null, type: null });
-  
+
   const [activeView, setActiveView] = useState<
     "posts" | "following" | "collection"
   >("posts");
   const [followedUsers, setFollowedUsers] = useState<FollowedUser[]>([]);
   const [collectionItems, setCollectionItems] = useState<CollectionItem[]>([]);
-  console.log("🚀 ~ SocialTopBar ~ collectionItems:", collectionItems);
+
   const [_isPostsLoading, setIsPostsLoading] = useState(false);
   const [isFollowingLoading, setIsFollowingLoading] = useState(false);
-  console.log("🚀 ~ SocialTopBar ~ isFollowingLoading:", isFollowingLoading);
+
   const [isCollectionLoading, setIsCollectionLoading] = useState(false);
   const [storiesData, setStoriesData] = useState<Story[]>([]);
   // const [addNewPost, setAddNewPost] = useState(false)
 
-  const [isAdult, setIsAdult] = useState<Boolean>(false)
-  const navigate = useNavigate(); 
+  const [userInfo, setUserInfo] = useState<any>();
+  const [isAdult, setIsAdult] = useState<Boolean>(false);
+  const navigate = useNavigate();
   const { showToast } = useToast();
 
-  const [friendRequests, setFriendRequests] = useState<{[key: string]: string}>({});
-  
-  const [connectingUsers, setConnectingUsers] = useState<{[key: string]: boolean}>({});
+  const [friendRequests, setFriendRequests] = useState<{
+    [key: string]: string;
+  }>({});
+
+  const [connectingUsers, setConnectingUsers] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   const [showReportModal, setShowReportModal] = useState(false);
-  const [selectedPostForReport, setSelectedPostForReport] = useState<string | null>(null);
+  const [selectedPostForReport, setSelectedPostForReport] = useState<
+    string | null
+  >(null);
   const [reportReason, setReportReason] = useState("");
   // const [isSavingPost, setIsSavingPost] = useState<string | null>(null);
   const [isReportingPost, setIsReportingPost] = useState<string | null>(null);
+  //const [showTopicModal, setShowTopicModal] = useState(false);
 
   const handleConnect = async (userId: string) => {
     try {
-      setConnectingUsers(prev => ({ ...prev, [userId]: true }));
-      
+      setConnectingUsers((prev) => ({ ...prev, [userId]: true }));
+
       // Check if already connected
-      if (friendRequests[userId] === 'connected') {
+      if (friendRequests[userId] === "connected") {
         // If connected, delete friend
         const formattedData = {
           friend_id: userId,
         };
-        
+
         const response = await UnFriend(formattedData);
-        
+
         if (response.success) {
-          setFriendRequests(prev => ({
+          setFriendRequests((prev) => ({
             ...prev,
-            [userId]: 'connect'
+            [userId]: "connect",
           }));
           showToast({
             message: "Friend removed successfully",
@@ -433,17 +379,18 @@ export default function SocialTopBar() {
         const formattedData = {
           friend_id: userId,
         };
-        
+
         const response = await SendFriendRequest(formattedData);
-        
+
         if (response.success) {
           // Immediately update the button state to "requested"
-          setFriendRequests(prev => ({
+          setFriendRequests((prev) => ({
             ...prev,
-            [userId]: 'requested'
+            [userId]: "requested",
           }));
           showToast({
-            message: response.success.message || "Friend request sent successfully",
+            message:
+              response.success.message || "Friend request sent successfully",
             type: "success",
             duration: 3000,
           });
@@ -457,13 +404,13 @@ export default function SocialTopBar() {
         duration: 3000,
       });
     } finally {
-      setConnectingUsers(prev => ({ ...prev, [userId]: false }));
+      setConnectingUsers((prev) => ({ ...prev, [userId]: false }));
     }
   };
-  
+
   // Function to get friend status
   const getFriendStatus = (userId: string) => {
-    return friendRequests[userId] || 'connect';
+    return friendRequests[userId] || "connect";
   };
 
   // Function to check if user is friend (you'll need to implement this based on your API)
@@ -471,54 +418,57 @@ export default function SocialTopBar() {
     try {
       const response = await GetFriendStatus(userId);
       if (response.success) {
-         // The API returns data.data.rows array with all friends
+        // The API returns data.data.rows array with all friends
         const friendsList = response.data.data.rows || [];
-        
+
         // Find if this specific user is in the friends list
-        const friendRecord = friendsList.find((friend: any) => 
-          friend.friend_id === userId || friend.user_id === userId
+        const friendRecord = friendsList.find(
+          (friend: any) =>
+            friend.friend_id === userId || friend.user_id === userId
         );
-        console.log("🚀 ~ checkFriendStatus ~ friendRecord:", friendRecord)
+        console.log("🚀 ~ checkFriendStatus ~ friendRecord:", friendRecord);
         if (friendRecord) {
           // Check the request_status from the database
           const status = friendRecord.request_status;
-          
-          if (status === 'ACCEPT') {
-            setFriendRequests(prev => ({
+
+          if (status === "ACCEPT") {
+            setFriendRequests((prev) => ({
               ...prev,
-              [userId]: 'connected'
+              [userId]: "connected",
             }));
-          } else if (status === 'PENDING') {
-            setFriendRequests(prev => ({
+          } else if (status === "PENDING") {
+            setFriendRequests((prev) => ({
               ...prev,
-              [userId]: 'requested'
+              [userId]: "requested",
             }));
-          } else if (status === 'REJECT') {
-            setFriendRequests(prev => ({
+          } else if (status === "REJECT") {
+            setFriendRequests((prev) => ({
               ...prev,
-              [userId]: 'connect'
+              [userId]: "connect",
             }));
           } else {
-            setFriendRequests(prev => ({
+            setFriendRequests((prev) => ({
               ...prev,
-              [userId]: 'connect'
+              [userId]: "connect",
             }));
           }
         } else {
           // No friend record found, set to connect
-          console.log("🚀 ~ checkFriendStatus ~ No friend record found, set to connect")
-          setFriendRequests(prev => ({
+          console.log(
+            "🚀 ~ checkFriendStatus ~ No friend record found, set to connect"
+          );
+          setFriendRequests((prev) => ({
             ...prev,
-            [userId]: 'connect'
+            [userId]: "connect",
           }));
         }
       }
     } catch (error) {
       console.error("Error checking friend status:", error);
       // Set default status if API fails
-      setFriendRequests(prev => ({
+      setFriendRequests((prev) => ({
         ...prev,
-        [userId]: 'connect'
+        [userId]: "connect",
       }));
     }
   };
@@ -571,9 +521,11 @@ export default function SocialTopBar() {
         return {
           id: item.id,
           title:
-            item.content.length > 30
-              ? `${item.content.substring(0, 30)}...`
-              : item.content || "Untitled Post",
+          item.content
+          ? item.content.length > 30
+            ? `${item.content.substring(0, 30)}...`
+            : item.content
+          : "Untitled Post",
           description: `Posted by ${item.profile.first_name} ${item.profile.last_name}`,
           image_url: firstImageUrl,
           created_at: item.createdAt,
@@ -595,7 +547,7 @@ export default function SocialTopBar() {
       setIsCollectionLoading(false);
     }
   };
-  
+
   const menuRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const containerRef = useRef<HTMLDivElement | null>(null);
   const loggedInUserID = localStorage.getItem("Id");
@@ -618,8 +570,6 @@ export default function SocialTopBar() {
       if (res?.data) {
         const newPosts = res?.data.data.rows || [];
         const totalPages = res?.data?.data?.count / 10 || 0;
-
-        console.log(page, "res?.data.data.rows");
 
         if (newPosts.length === 0) {
           setHasMore(false); // No more posts to load
@@ -654,8 +604,6 @@ export default function SocialTopBar() {
         const newPosts = res?.data.data.rows || [];
         const totalPages = res?.data?.data?.count / 10 || 0;
 
-        console.log(page, "res?.data.data.rows");
-
         if (newPosts.length === 0) {
           setHasMore(false); // No more posts to load
         } else {
@@ -682,10 +630,9 @@ export default function SocialTopBar() {
     fetchStory();
   }, []);
 
-
   useEffect(() => {
     if (userPosts.length > 0) {
-      userPosts.forEach(post => {
+      userPosts.forEach((post) => {
         if (post.user_id !== loggedInUserID) {
           checkFriendStatus(post.user_id);
         }
@@ -697,28 +644,13 @@ export default function SocialTopBar() {
   useEffect(() => {
     // Check friend status for all posts when component mounts
     if (userPosts.length > 0 && loggedInUserID) {
-      userPosts.forEach(post => {
+      userPosts.forEach((post) => {
         if (post.user_id !== loggedInUserID) {
           checkFriendStatus(post.user_id);
         }
       });
     }
   }, []); // Empty dependency array to run only on mount
-
-
-  // The issue is likely due to how setPage and getUserPosts interact.
-  // When setPage(1) is called, if page is already 1, React will not trigger the useEffect([page]) again.
-  // Also, getUserPosts uses the current value of 'page' (from closure), so calling getUserPosts() right after setPage(1) may not use the updated value.
-  // Solution: When addNewPost is true, reset posts and page, then fetch posts directly.
-
-  // useEffect(() => {
-  //   if (addNewPost) {
-
-  //   }
-  //   // eslint-disable-next-line
-  // }, [addNewPost]);
-
-  // Remove the second useEffect, as it can cause duplicate fetches or race conditions.
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -735,22 +667,19 @@ export default function SocialTopBar() {
     }
   };
 
-  // const handleRemoveMedia = () => {
-  //   setSelectedImages([]);
-  //   setSelectedVideo(null);
-  //   if (postVideoPreviewUrl) {
-  //     URL.revokeObjectURL(postVideoPreviewUrl);
-  //     setPostVideoPreviewUrl(null);
-  //   }
-  // };
   const handleRemoveImage = (index: number) => {
     setSelectedImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmitPost = async () => {
-    if (!postMessage && !selectedImages.length && !selectedVideo) {
+    if (
+      !postMessage &&
+      !selectedImages.length &&
+      !selectedVideo &&
+      !selectedTopic
+    ) {
       showToast({
-        message: "Please add a message or select media.",
+        message: "Please add a message, select media, or choose a topic.",
         type: "error",
         duration: 3000,
       });
@@ -759,6 +688,7 @@ export default function SocialTopBar() {
 
     const formData = new FormData();
     formData.append("content", postMessage);
+    formData.append("topic_id", selectedTopic);
 
     // Append all selected images
     selectedImages.forEach((image) => {
@@ -784,6 +714,7 @@ export default function SocialTopBar() {
         setShowPopup(false);
         // Reset form
         setPostMessage("");
+        setSelectedTopic("");
         setSelectedImages([]);
         setSelectedVideo(null);
         if (postVideoPreviewUrl) {
@@ -928,51 +859,20 @@ export default function SocialTopBar() {
     }
   };
 
-  // const handleSave = async (postId: string) => {
-  //   try {
-  //     setUserPosts((prevPosts) =>
-  //       prevPosts.map((post) =>
-  //         post.id === postId ? { ...post, is_saved: !post.is_saved } : post
-  //       )
-  //     );
-  //     // Add your API call to save/unsave the post here
-  //     // await savePostAPI(postId);
-  //   } catch (error) {
-  //     console.error("Error handling save:", error);
-  //   }
-  // };
-
-  // const isImageFile = (url: string) => {
-  //   return url.match(/\.(jpeg|jpg|gif|png|webp)$/i) !== null;
-  // };
-
   const isVideoFile = (url: string) => {
     return url.match(/\.(mp4|webm|ogg|mov)$/i) !== null;
   };
 
-  const myid = localStorage.getItem("Id");
-  const urldata = `https://dev.cness.io/directory/user-profile/${myid}`;
-
-  /*const handleClickOutside = (event: MouseEvent) => {
-    console.log('menuRef.current', menuRef.current);
-    if (openMenuPostId && menuRef.current[openMenuPostId] &&
-      !menuRef.current[openMenuPostId]!.contains(event.target as Node)) {
-    setOpenMenuPostId(null);
-  }
-  
-  };*/
-
   const handleClickOutside = (event: MouseEvent) => {
-    console.log('openMenu', openMenu);
     if (!openMenu.postId || !openMenu.type) return;
-  
+
     const key = `${openMenu.postId}-${openMenu.type}`;
     const currentMenu = menuRef.current[key];
-  
+
     if (currentMenu && !currentMenu.contains(event.target as Node)) {
       setOpenMenu({ postId: null, type: null });
     }
-  };  
+  };
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -981,9 +881,6 @@ export default function SocialTopBar() {
     };
   }, [openMenu]);
 
-  /*const toggleMenu = (postId: string) => {
-    setOpenMenuPostId((prev) => (prev === postId ? null : postId));
-  };*/
   const toggleMenu = (postId: string, type: "options" | "share") => {
     setOpenMenu((prev) => {
       if (prev.postId === postId && prev.type === type) {
@@ -993,7 +890,6 @@ export default function SocialTopBar() {
       }
     });
   };
-  
 
   const handleScroll = () => {
     const container = containerRef.current;
@@ -1018,6 +914,9 @@ export default function SocialTopBar() {
   const MeDetail = async () => {
     try {
       const response = await MeDetails();
+      if (response?.data?.data?.user) {
+        setUserInfo(response?.data?.data?.user);
+      }
       const dobString = response?.data?.data?.user?.dob;
       if (!dobString) {
         setIsAdult(false);
@@ -1055,35 +954,11 @@ export default function SocialTopBar() {
     MeDetail();
   }, []);
 
-
-  /* Report Modal and Save Post Modal and Copy Post Modal */
-  // Function to copy post link
-  const copyPostLink = async (postId: string) => {
-    toggleMenu(postId, "options");
-    const postUrl = `${window.location.origin}/post/${postId}`;
-    
-    try {
-      await navigator.clipboard.writeText(postUrl);
-      showToast({
-        type: "success",
-        message: "Post link copied to clipboard!",
-        duration: 2000,
-      });
-    } catch (error) {
-      showToast({
-        type: "error",
-        message: "Failed to copy link",
-        duration: 2000,
-      });
-    }
-  };
-
   // Function to save post to collection
   const savePostToCollection = async (postId: string) => {
-    
     try {
       const response = await SavePost(postId);
-      
+
       if (response.success) {
         showToast({
           type: "success",
@@ -1092,13 +967,13 @@ export default function SocialTopBar() {
         });
         //setIsSavingPost(postId);
         // Update the post's saved status in your posts array
-        setUserPosts(prevPosts => 
-          prevPosts.map(post => 
+        setUserPosts((prevPosts) =>
+          prevPosts.map((post) =>
             post.id === postId ? { ...post, is_saved: true } : post
           )
         );
       } else {
-        throw new Error('Failed to save post');
+        throw new Error("Failed to save post");
       }
     } catch (error) {
       showToast({
@@ -1106,7 +981,7 @@ export default function SocialTopBar() {
         message: "Failed to save post to collection",
         duration: 2000,
       });
-    } 
+    }
   };
 
   // Function to report post
@@ -1123,18 +998,19 @@ export default function SocialTopBar() {
     setIsReportingPost(selectedPostForReport);
     try {
       const response = await ReportPost(selectedPostForReport, reportReason);
-      
+
       if (response.success) {
         showToast({
           type: "success",
-          message: "Post reported successfully! Admin will review it soon and take action if needed.",
+          message:
+            "Post reported successfully! Admin will review it soon and take action if needed.",
           duration: 2000,
         });
         setShowReportModal(false);
         setSelectedPostForReport(null);
         setReportReason("");
       } else {
-        throw new Error('Failed to report post');
+        throw new Error("Failed to report post");
       }
     } catch (error) {
       showToast({
@@ -1153,41 +1029,168 @@ export default function SocialTopBar() {
     setShowReportModal(true);
     // setOpenMenuPostId(null); // Close the three-dot menu
   };
-
+  
   useEffect(() => {
-    /*const handleClickOutside = (event: MouseEvent) => {
-      if (openMenuPostId && menuRef.current[openMenuPostId] &&
-        !menuRef.current[openMenuPostId]!.contains(event.target as Node)) {
-        setOpenMenuPostId(null);
-      }
-    };*/
-
     const handleClickOutside = (event: MouseEvent) => {
       if (!openMenu.postId || !openMenu.type) return;
-    
+
       const key = `${openMenu.postId}-${openMenu.type}`;
       const currentMenu = menuRef.current[key];
-    
+
       if (currentMenu && !currentMenu.contains(event.target as Node)) {
         setOpenMenu({ postId: null, type: null });
       }
-    };  
-  
+    };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
+  const [selectedTopic, setSelectedTopic] = useState<string>(""); // dropdown state
+  const [topics, setTopics] = useState<Topic[]>([]); // list of topics
+  const [userSelectedTopics, setUserSelectedTopics] = useState<Topic[]>([]); // list of user selected topics
+  const [visibleTopic, setVisibleTopic] = useState(10);
+  const [showTopicModal, setShowTopicModal] = useState(false);
+
+  useEffect(() => {
+    fetchUserSelectedTopics();
+  }, []);
+
+  useEffect(() => {
+    fetchTopics();
+  }, []);
+
+  const fetchTopics = async () => {
+    try {
+      const response = await getTopics();
+      if (
+        response?.success?.statusCode === 200 &&
+        response?.data?.data?.length
+      ) {
+        setTopics(response?.data?.data);
+      } else {
+        console.warn("Error during fetch topics details", response);
+      }
+    } catch (error) {
+      console.error("Error fetching topic details:", error);
+      showToast({
+        message: "Failed to load Topics.",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  const fetchUserSelectedTopics = async () => {
+    if (!loggedInUserID) {
+      showToast({
+        message: "No user ID found.",
+        type: "error",
+        duration: 2000,
+      });
+      return;
+    }
+    try {
+      const response = await getUserSelectedTopic(loggedInUserID);
+      if (
+        response?.success?.statusCode === 200 &&
+        response?.data?.data?.length > 0
+      ) {
+        setUserSelectedTopics(response?.data?.data);
+      } else {
+        console.warn(
+          "Error during fetch user selected topics details",
+          response
+        );
+      }
+    } catch (error: any) {
+      console.error("Error fetching user selected topic details:", error);
+      if (error?.response?.status === 404) {
+        setShowTopicModal(true);
+      } else {
+        showToast({
+          message: "Failed to load User Selected Topics.",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    }
+  };
+
+  const handleTopicsSelected = async (ids: string[]) => {
+    if (!loggedInUserID) {
+      showToast({
+        message: "No user ID found.",
+        type: "error",
+        duration: 2000,
+      });
+      return;
+    }
+    try {
+      const payload = { topicIds: ids };
+
+      let response;
+
+      if (!userSelectedTopics || userSelectedTopics.length === 0) {
+        // call add selected topics
+        response = await UserSelectedTopic(loggedInUserID, payload);
+      } else {
+        // Already has topics → call UPDATE
+        response = await updateUserSelectedTopic(loggedInUserID, payload);
+      }
+
+      if (
+        response?.success?.statusCode === 200 ||
+        response?.success?.statusCode === 201
+      ) {
+        setShowTopicModal(false);
+        fetchUserSelectedTopics();
+      } else {
+        showToast({
+          message: response?.error?.message || "Error saving topics",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      console.error("Error saving topics:", error);
+      showToast({
+        message: "Something went wrong. Please try again.",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  const formatMessageTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+
+    if (diffInDays === 0) {
+      return "Today";
+    } else if (diffInDays === 1) {
+      return "Yesterday";
+    } else if (diffInDays < 7) {
+      return date.toLocaleDateString("en-US", { weekday: "long" });
+    } else {
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    }
+  };
+
   return (
     <>
       {isAdult ? (
         <div className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-2 px-2 md:px-2 lg:px-0 w-full">
           {/* Left Side: Post & Stories - Full width on mobile */}
-          <div
-            className="w-full lg:max-w-[70%] overflow-y-auto h-[calc(100vh-100px)]"
-            ref={containerRef}
-          >
+          <div className="w-full lg:max-w-[75%]" ref={containerRef}>
             {activeView === "posts" ? (
               <>
                 {/* {isPostsLoading ? (
@@ -1197,27 +1200,30 @@ export default function SocialTopBar() {
               ) : ( */}
                 <>
                   {/* Start a Post */}
-                  <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-4 md:p-6 rounded-xl mb-4 md:mb-5">
+                  <div className="bg-gradient-to-r from-[#7077fe36] to-[#f07eff21] p-4 md:p-10 rounded-xl mb-4 md:mb-5">
                     <div className="flex flex-col gap-2 md:gap-3">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-8">
                         <img
                           src={
                             localStorage.getItem("profile_picture") ||
                             createstory
                           }
                           alt="User"
-                          className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
+                          className="w-8 h-8 md:w-16 md:h-16 rounded-full object-cover"
                         />
                         <input
                           type="text"
-                          placeholder="Start a Post"
-                          className="flex-1 cursor-pointer px-3 py-1 md:px-4 md:py-2 rounded-full border border-gray-300 text-sm md:text-[16px] focus:outline-none bg-white"
+                          placeholder="Create a Conscious Act"
+                          className="flex-1 cursor-pointer px-3 py-1 md:px-4 md:py-2 rounded-full border border-[#CBD5E1] text-[16px] md:text-[16px] focus:outline-none bg-[#FAFAFA] placeholder:text-black h-[52px] open-sans"
                           onClick={() => openPostPopup()}
                           readOnly
                         />
                       </div>
                       <div className="flex justify-between md:justify-center md:gap-10 text-xs md:text-[15px] text-gray-700 mt-2 md:mt-3">
-                        <button className="flex items-center gap-1 md:gap-2" onClick={() => openPostPopup()}>
+                        <button
+                          className="flex items-center gap-1 md:gap-2"
+                          onClick={() => openPostPopup()}
+                        >
                           <Image
                             src="/youtube.png"
                             alt="youtube"
@@ -1229,7 +1235,10 @@ export default function SocialTopBar() {
                             Video
                           </span>
                         </button>
-                        <button className="flex items-center gap-1 md:gap-2" onClick={() => openPostPopup()}>
+                        <button
+                          className="flex items-center gap-1 md:gap-2"
+                          onClick={() => openPostPopup()}
+                        >
                           <Image
                             src="/picture.png"
                             alt="picture"
@@ -1258,7 +1267,8 @@ export default function SocialTopBar() {
                   </div>
 
                   {/* Story Strip Wrapper */}
-                  <div className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory mt-3 md:mt-4">
+                  <h4 className="font-medium text-[16px]">Inspiration Reels</h4>
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory mt-3 md:mt-4">
                     {/* Create Story Card */}
                     <div
                       onClick={() => openStoryPopup()}
@@ -1284,10 +1294,16 @@ export default function SocialTopBar() {
                           fill="#7C81FF"
                         />
                       </svg>
-                      <div className="absolute bottom-[46px] left-1/2 -translate-x-1/2 z-20 w-8 h-8 md:w-10 md:h-10 bg-white text-[#7C81FF] rounded-full flex items-center justify-center text-xl shadow-md leading-0">
-                        +
+                      <div className="absolute bottom-[46px] left-1/2 -translate-x-1/2 z-20">
+                        <div className="w-9 h-9 md:w-12 md:h-12 bg-white text-[#7C81FF] font-semibold rounded-full flex items-center justify-center text-xl border-5">
+                          <img
+                            src={iconMap["storyplus"]}
+                            alt="plus"
+                            className="w-4 h-4 transition duration-200 group-hover:brightness-0 group-hover:invert"
+                          />
+                        </div>
                       </div>
-                      <div className="absolute bottom-[14px] w-full text-center text-white text-xs md:text-[15px] font-medium z-20">
+                      <div className="absolute bottom-[20px] w-full text-center text-white text-xs md:text-[15px] font-normal z-20">
                         Create Story
                       </div>
                       <div className="w-full border-t-[5px] border-[#7C81FF] mt-4"></div>
@@ -1325,13 +1341,15 @@ export default function SocialTopBar() {
                       </div>
                     ))}
                   </div>
-                  <div className="w-full border-t-[1px] border-[#C8C8C8] mt-4 md:mt-6"></div>
 
                   {/* Posts Section */}
+                  <div className="mt-1 h-[56px] px-6 py-4 bg-[rgba(112,119,254,0.1)] text-[#7077FE] font-medium rounded-[8px] text-left w-full font-family-Poppins text-[16px]">
+                    Reflection Scroll
+                  </div>
                   {userPosts.map((post) => (
                     <div
                       key={post.id}
-                      className="bg-white rounded-xl shadow-md p-3 md:p-4 w-full mx-auto mt-4 md:mt-6"
+                      className="bg-white rounded-xl shadow-md p-3 md:p-4 w-full mx-auto mt-4 md:mt-5"
                     >
                       {/* Header */}
                       <div className="flex items-center justify-between gap-2">
@@ -1340,8 +1358,12 @@ export default function SocialTopBar() {
                             to={`/dashboard/userprofile/${post?.profile?.id}`}
                           >
                             <img
-                              src={post.profile.profile_picture ? post.profile.profile_picture : "/profile.png" }
-                              className="w-8 h-8 md:w-10 md:h-10 rounded-full"
+                              src={
+                                post.profile.profile_picture
+                                  ? post.profile.profile_picture
+                                  : "/profile.png"
+                              }
+                              className="w-8 h-8 md:w-[63px] md:h-[63px] rounded-full"
                               alt="User"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
@@ -1350,7 +1372,7 @@ export default function SocialTopBar() {
                             />
                           </Link>
                           <div>
-                            <p className="font-semibold text-sm md:text-base text-gray-800">
+                            <p className="font-semibold text-sm md:text-base text-black">
                               <Link
                                 to={`/dashboard/userprofile/${post?.profile?.id}`}
                               >
@@ -1358,7 +1380,7 @@ export default function SocialTopBar() {
                                 {post.profile.first_name}{" "}
                                 {post.profile.last_name}
                               </Link>
-                              <span className="text-gray-500 text-xs md:text-sm">
+                              <span className="text-[#999999] text-xs md:text-[12px] font-[400]">
                                 {" "}
                                 <Link
                                   to={`/dashboard/userprofile/${post?.profile?.id}`}
@@ -1368,112 +1390,210 @@ export default function SocialTopBar() {
                                 </Link>
                               </span>
                             </p>
-                            <p className="text-xs md:text-sm text-gray-400">
-                              {new Date(post.createdAt).toLocaleString()}
+                            <p className="text-xs md:text-[12px] text-[#606060]">
+                              {formatMessageTime(post.createdAt)}
                             </p>
                           </div>
                         </div>
                         {post.user_id !== loggedInUserID && (
-
                           <div className="flex gap-2">
                             {/* Connect Button */}
                             <button
                               onClick={() => handleConnect(post.user_id)}
                               disabled={connectingUsers[post.user_id] || false}
-                              className={`flex items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
-                                ${getFriendStatus(post.user_id) === 'connected'
-                                  ? "bg-red-500 text-white hover:bg-red-600"
-                                  : getFriendStatus(post.user_id) === 'requested'
-                                  ? "bg-gray-400 text-white cursor-not-allowed"
-                                  : "bg-white text-black shadow-md"
-                                }`
-                              }
+                              className={`flex w-[100px] justify-center items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors font-family-open-sans h-[35px]
+                                ${
+                                  // getFriendStatus(post.user_id) === "connected"
+                                  //   ? "bg-red-500 text-white hover:bg-red-600"
+                                  //   :
+                                  getFriendStatus(post.user_id) === "requested"
+                                    ? "bg-gray-400 text-white cursor-not-allowed"
+                                    : "bg-white text-black shadow-md"
+                                }`}
                             >
-                              {connectingUsers[post.user_id] ? (
-                                "Loading..."
-                              ) : getFriendStatus(post.user_id) === 'connected' ? (
-                                "Connected"
-                              ) : getFriendStatus(post.user_id) === 'requested' ? (
-                                "Requested"
-                              ) : (
-                                "Connect"
-                              )}
+                              <span className="flex items-center gap-1 text-[#0B3449]">
+                                <img
+                                  src={iconMap["userplus"]}
+                                  alt="userplus"
+                                  className="w-4 h-4"
+                                />
+                                {connectingUsers[post.user_id]
+                                  ? "Loading..."
+                                  : // : getFriendStatus(post.user_id) === "connected"
+                                  // ? "Connected"
+                                  getFriendStatus(post.user_id) === "requested"
+                                  ? "Requested"
+                                  : "Connect"}
+                              </span>
                             </button>
                             {/* Follow Button */}
                             <button
                               onClick={() => handleFollow(post.user_id)}
-                              className={`flex items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
-                                ${post.if_following
-                                  ? "bg-transparent text-blue-500 hover:text-blue-600"
-                                  : "bg-[#7C81FF] text-white hover:bg-indigo-600"}`
-                              }
+                              className={`flex w-[100px] justify-center items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
+                                ${
+                                  post.if_following
+                                    ? "bg-transparent text-[#7077FE] hover:text-[#7077FE]/80"
+                                    : "bg-[#7077FE] text-white hover:bg-indigo-600 h-[35px]"
+                                }`}
                             >
                               {post.if_following ? (
                                 <>
-                                  <TrendingUp className="w-5 h-5" /> Following
+                                  <TrendingUp className="w-5 h-5 text-[#7077FE]" />{" "}
+                                  Resonating
                                 </>
                               ) : (
-                                "+ Follow"
+                                "+ Resonate"
                               )}
                             </button>
 
                             {/* Three Dots Menu */}
+                         
                             <div className="relative">
                               <button
                                 onClick={() => toggleMenu(post.id, "options")}
-                                className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition-colors"
+                                className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-[8px] hover:bg-gray-100 transition-colors"
                                 title="More options"
                               >
-                                <MoreVertical className="w-5 h-5 text-gray-600" />
+                                <MoreHorizontal className="w-5 h-5 text-gray-600" />
                               </button>
-                              
-                              {openMenu.postId === post.id && openMenu.type === "options" && (
-                                <div
-                                  className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
-                                  ref={(el) => {
-                                    const key = `${post.id}-options`;
-                                    if (el) menuRef.current[key] = el;
-                                    else delete menuRef.current[key];
-                                  }}
-                                >
-                                  <ul className="space-y-1">
-                                    <li>
-                                      <button
-                                        onClick={() => {
-                                          copyPostLink(post.id)
-                                        }}
-                                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-                                      >
-                                        <LinkIcon className="w-4 h-4" />
-                                        Copy Post Link
-                                      </button>
-                                    </li>
-                                    <li>
-                                      <button
-                                        onClick={() => savePostToCollection(post.id)}
-                                        disabled={post.is_saved}
-                                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
-                                      >
-                                        <Bookmark className="w-4 h-4" />
-                                        {post.is_saved ? "Saved" : "Save Post"}
-                                      </button>
-                                    </li>
-                                    <li>
-                                      <button
-                                        onClick={() => openReportModal(post.id)}
-                                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                                      >
-                                        <Flag className="w-4 h-4" />
-                                        Report Post
-                                      </button>
-                                    </li>
-                                  </ul>
-                                </div>
-                              )}
-                            </div>
 
+                              {openMenu.postId === post.id &&
+                                openMenu.type === "options" && (
+                                  <div
+                                    className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                                    ref={(el) => {
+                                      const key = `${post.id}-options`;
+                                      if (el) menuRef.current[key] = el;
+                                      else delete menuRef.current[key];
+                                    }}
+                                  >
+                                    <ul className="space-y-1">
+                                      <li>
+                                        <button
+                                          onClick={() => {
+                                            copyPostLink(
+                                              `${window.location.origin}/post/${post.id}`,
+                                              (msg) =>
+                                                showToast({
+                                                  type: "success",
+                                                  message: msg,
+                                                  duration: 2000,
+                                                }),
+                                              (msg) =>
+                                                showToast({
+                                                  type: "error",
+                                                  message: msg,
+                                                  duration: 2000,
+                                                })
+                                            );
+                                          }}
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                        >
+                                          <LinkIcon className="w-4 h-4" />
+                                          Copy Post Link
+                                        </button>
+                                      </li>
+                                      <li>
+                                        <button
+                                          onClick={() =>
+                                            savePostToCollection(post.id)
+                                          }
+                                          disabled={post.is_saved}
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                        >
+                                          <Bookmark className="w-4 h-4" />
+                                          {post.is_saved
+                                            ? "Saved"
+                                            : "Save Post"}
+                                        </button>
+                                      </li>
+                                      <li>
+                                        <button
+                                          onClick={() =>
+                                            openReportModal(post.id)
+                                          }
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                        >
+                                          <Flag className="w-4 h-4" />
+                                          Report Post
+                                        </button>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                )}
+                            </div>
                           </div>
-                          
+                        )}
+
+                        {post.user_id == loggedInUserID && (
+                          <div className="flex gap-2">
+                            {/* Three Dots Menu */}
+                            
+                            <div className="relative">
+                              <button
+                                onClick={() => toggleMenu(post.id, "options")}
+                                className="flex items-center border-[#ECEEF2] border shadow-sm justify-center w-8 h-8 rounded-[8px] hover:bg-gray-100 transition-colors"
+                                title="More options"
+                              >
+                                <MoreHorizontal className="w-5 h-5 text-gray-600" />
+                              </button>
+
+                              {openMenu.postId === post.id &&
+                                openMenu.type === "options" && (
+                                  <div
+                                    className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                                    ref={(el) => {
+                                      const key = `${post.id}-options`;
+                                      if (el) menuRef.current[key] = el;
+                                      else delete menuRef.current[key];
+                                    }}
+                                  >
+                                    <ul className="space-y-1">
+                                      <li>
+                                        <button
+                                          onClick={() => {
+                                            copyPostLink(
+                                              `${window.location.origin}/post/${post.id}`,
+                                              (msg) =>
+                                                showToast({
+                                                  type: "success",
+                                                  message: msg,
+                                                  duration: 2000,
+                                                }),
+                                              (msg) =>
+                                                showToast({
+                                                  type: "error",
+                                                  message: msg,
+                                                  duration: 2000,
+                                                })
+                                            );
+                                          }}
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                        >
+                                          <LinkIcon className="w-4 h-4" />
+                                          Copy Post Link
+                                        </button>
+                                      </li>
+                                      <li>
+                                        <button
+                                          onClick={() =>
+                                            savePostToCollection(post.id)
+                                          }
+                                          disabled={post.is_saved}
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                        >
+                                          <Bookmark className="w-4 h-4" />
+                                          {post.is_saved
+                                            ? "Saved"
+                                            : "Save Post"}
+                                        </button>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                )}
+                            </div>
+                            
+                          </div>
                         )}
                       </div>
 
@@ -1501,7 +1621,7 @@ export default function SocialTopBar() {
 
                         {/* Dynamic Media Block */}
                         {post.file && (
-                          <div className="rounded-lg overflow-hidden">
+                          <div className="rounded-lg">
                             {(() => {
                               const urls = post.file
                                 .split(",")
@@ -1522,7 +1642,7 @@ export default function SocialTopBar() {
                               const item = mediaItems[0];
                               return item.type === "video" ? (
                                 <video
-                                  className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-lg"
+                                  className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl"
                                   controls
                                   muted
                                   autoPlay
@@ -1535,7 +1655,7 @@ export default function SocialTopBar() {
                                 <img
                                   src={item.url}
                                   alt="Post content"
-                                  className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-lg mb-2"
+                                  className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl mb-2"
                                   onError={(e) => {
                                     const target = e.target as HTMLImageElement;
                                     target.src = carosuel1;
@@ -1548,145 +1668,143 @@ export default function SocialTopBar() {
                       </div>
 
                       {/* Reactions and Action Buttons */}
-                      <div className="flex justify-start items-center mt-3 px-1 text-xs md:text-sm text-gray-600 gap-2">
-                        <div className="flex items-center gap-1 md:gap-2">
-                          <div className="flex items-center -space-x-2 md:-space-x-3">
+                      <div className="flex justify-between items-center mt-6 px-1 text-xs md:text-sm text-gray-600 gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1 md:gap-2">
+                            <div className="flex items-center -space-x-2 md:-space-x-3">
+                              <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                                <img
+                                  src={like}
+                                  alt="Like"
+                                  className="w-6 h-6 md:w-8 md:h-8"
+                                />
+                              </div>
+                              <span className="text-xs md:text-sm text-gray-500 pl-3 md:pl-5">
+                                {post.likes_count}
+                              </span>
+                            </div>
+                          </div>
+                          {/* <div className="flex items-center gap-2">
                             <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
                               <img
-                                src={like}
-                                alt="Like"
+                                src={comment}
+                                alt="Comment"
                                 className="w-6 h-6 md:w-8 md:h-8"
                               />
                             </div>
-                            {/* <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
-                      <img
-                        src={comment}
-                        alt="Comment"
-                        className="w-6 h-6 md:w-8 md:h-8"
-                      />
-                    </div> */}
-                            {/* <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
-                      <img
-                        src={repost}
-                        alt="Repost"
-                        className="w-6 h-6 md:w-8 md:h-8"
-                      />
-                    </div> */}
-                            <span className="text-xs md:text-sm text-gray-500 pl-3 md:pl-5">
-                              {post.likes_count}
+                            <span>{post.comments_count}</span>
+                          </div> */}
+                        </div>
+                        {post.comments_count > 0 && (
+                          <div>
+                            <span className="text-sm text-[#64748B]">
+                              {post.comments_count} Reflections
                             </span>
                           </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
-                            <img
-                              src={comment}
-                              alt="Comment"
-                              className="w-6 h-6 md:w-8 md:h-8"
-                            />
-                          </div>
-                          <span>{post.comments_count}</span>
-                          
-                        </div>
+                        )}
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
+                      <div className="border-t border-[#ECEEF2] pt-4 grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
                         <button
                           onClick={() => handleLike(post.id)}
                           disabled={isLoading}
-                          className={`flex items-center justify-center gap-2 rounded-2xl border border-gray-200 py-1 h-[45px] font-opensans font-semibold text-[14px] leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 shadow-sm ${
+                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 ${
                             isLoading ? "opacity-50 cursor-not-allowed" : ""
                           }`}
                         >
                           <ThumbsUp
                             className="w-5 h-5 md:w-6 md:h-6"
                             fill={post.is_liked ? "#7077FE" : "none"} // <-- condition here
-                            stroke={post.is_liked ? "#7077FE" : "#7077FE"} // keeps border visible
+                            stroke={post.is_liked ? "#7077FE" : "#000"} // keeps border visible
                           />
-                          <span>Like</span>
+                          <span
+                            className={`${
+                              post.is_liked ? "#7077FE" : "text-black"
+                            }`}
+                          >
+                            Appreciate
+                          </span>
                         </button>
                         <button
                           onClick={() => {
                             setSelectedPostId(post.id);
                             setShowCommentBox(true);
                           }}
-                          className="flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  border border-[#E5E7EB] rounded-xl text-[14px] md:text-base text-[#7077FE] hover:bg-gray-50 shadow-sm"
+                          className={`flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  font-semibold text-sm md:text-base  hover:bg-gray-50 ${
+                            selectedPostId === post.id
+                              ? "text-[#7077FE]"
+                              : "text-black"
+                          }`}
                         >
-                          <img
-                            src={comment1}
-                            className="w-5 h-5 md:w-6 md:h-6"
+                          <MessageSquare
+                            className="w-5 h-5 md:w-6 md:h-6 filter transiton-all"
+                            fill={
+                              selectedPostId === post.id ? "#7077FE" : "none"
+                            }
+                            stroke={
+                              selectedPostId === post.id ? "#7077FE" : "#000"
+                            }
                           />{" "}
-                          Comment
+                          <span
+                            className={`${
+                              selectedPostId === post.id
+                                ? "#7077FE"
+                                : "text-black"
+                            }`}
+                          >
+                            Reflections
+                          </span>
                         </button>
-                        {/* <button className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm">
-                  <img src={repost1} className="w-5 h-5 md:w-6 md:h-6" /> Repost
-                </button> */}
+
                         <div className="relative">
                           <button
                             onClick={() => toggleMenu(post.id, "share")}
-                            className="flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6   border border-[#E5E7EB] rounded-xl text-[14px] md:text-base text-[#7077FE] hover:bg-gray-50 shadow-sm"
+                            className={`flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 text-black`}
                           >
                             <Share2 className="w-5 h-5 md:w-6 md:h-6" />
-                            Share
+                            <span className="text-black">Share</span>
                           </button>
-                          {openMenu.postId === post.id && openMenu.type === "share" && (
-                            <div
-                              className="absolute top-10 left-0 bg-white shadow-lg rounded-lg p-3 z-10"
-                              ref={(el) => {
-                                const key = `${post.id}-share`;
-                                if (el) menuRef.current[key] = el;
-                                else delete menuRef.current[key];
-                              }}
-                            >
-                              <ul className="flex items-center gap-4">
-                                <li>
-                                  <FacebookShareButton url={urldata}>
-                                    <FaFacebook size={32} color="#4267B2" />
-                                  </FacebookShareButton>
-                                </li>
-                                <li>
-                                  <LinkedinShareButton url={urldata}>
-                                    <FaLinkedin size={32} color="#0077B5" />
-                                  </LinkedinShareButton>
-                                </li>
-                                <li>
-                                  <TwitterShareButton url={urldata}>
-                                    <FaTwitter size={32} color="#1DA1F2" />
-                                  </TwitterShareButton>
-                                </li>
-                                <li>
-                                  <WhatsappShareButton url={urldata}>
-                                    <FaWhatsapp size={32} color="#1DA1F2" />
-                                  </WhatsappShareButton>
-                                </li>
-                                <li>
-                                  <button
-                                    onClick={() => {
-                                      navigator.clipboard.writeText(urldata);
-                                      setCopy(true);
-                                      setTimeout(() => setCopy(false), 1500);
-                                    }}
-                                    className="flex items-center relative"
-                                    title="Copy link"
-                                  >
-                                    <MdContentCopy
-                                      size={30}
-                                      className="text-gray-600"
-                                    />
-                                    {copy && (
-                                      <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
-                                        Link Copied!
-                                      </div>
-                                    )}
-                                  </button>
-                                </li>
-                              </ul>
-                            </div>
-                          )}
+                          {openMenu.postId === post.id &&
+                            openMenu.type === "share" && (
+                              <SharePopup
+                                isOpen={true}
+                                onClose={() => toggleMenu(post.id, "share")}
+                                url={buildShareUrl()} // or pass your own URL if needed
+                                position="bottom"
+                              />
+                            )}
                         </div>
+
+                        {/* <button
+                          onClick={() => savePostToCollection(post.id)}
+                          disabled={post.is_saved}
+                          className={`flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 ${
+                            post.is_saved ? "text-[#7077FE]" : "text-[#000]"
+                          }`}
+                        >
+                          <Bookmark
+                            stroke={post.is_saved ? "#7077FE" : "#000"}
+                            fill={post.is_saved ? "#7077FE" : "#fff"}
+                            className="w-5 h-5 md:w-6 md:h-6"
+                          />
+                          {post.is_saved ? "Saved" : "Save"}
+                        </button> */}
                       </div>
                     </div>
                   ))}
+
+                  {/* Load More Button */}
+                  {hasMore && userPosts.length >= 10 && (
+                    <div className="flex justify-center mt-6">
+                      <button
+                        onClick={getUserPosts}
+                        disabled={isLoading}
+                        className="px-6 py-2 bg-[#7077FE] text-white rounded-full hover:bg-[#5b63e6] disabled:opacity-50"
+                      >
+                        {isLoading ? "Showing..." : "Show More Results"}
+                      </button>
+                    </div>
+                  )}
                 </>
                 {/* )} */}
               </>
@@ -1746,52 +1864,125 @@ export default function SocialTopBar() {
             )}
           </div>
 
-          {/* Right Side: Quick Actions - Full width on mobile, appears below */}
-          <div className="w-full lg:w-[100%] lg:max-w-[30%] h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm order-first lg:order-last mb-4 lg:mb-0">
-            <h3 className="text-gray-700 font-semibold text-base md:text-lg mb-3 md:mb-4">
-              Quick Actions
-            </h3>
-            <ul className="space-y-4 md:space-y-6 text-sm md:text-[15px] text-gray-700">
-              <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
-                <button
+          {/* Right Sidebar Container */}
+          <div className="w-full lg:w-[25%] flex flex-col gap-4">
+            {/* Quick Actions */}
+            <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
+              <h3 className="text-[#081021] font-semibold text-base md:text-[14px] mb-3 md:mb-4 px-4">
+                Quick Actions
+              </h3>
+              <div className="w-full border-t border-[#E1E1E1] my-4"></div>
+              <ul className="space-y-4 text-sm md:text-[14px] text-[#000000] ">
+                <li
                   onClick={() => navigate("/dashboard/trendingpost")}
-                  className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+                  className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-2 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"
                 >
-                  <img
-                    src={Trending}
-                    className="w-4 h-4 md:w-5 md:h-5"
-                    alt=""
-                  />
-                  Trending
-                </button>
-              </li>
-              {/*<li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
-              <img src={Mention} className="w-4 h-4 md:w-5 md:h-5" /> Mention &
-              tags
-            </li> */}
-              <li
-                className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
-                onClick={fetchCollectionItems}
-              >
-                <img src={Collection} className="w-4 h-4 md:w-5 md:h-5" /> My
-                Collection
-              </li>
-              <li
-                className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
-                onClick={fetchFollowedUsers}
-              >
-                <img src={people} className="w-4 h-4 md:w-5 md:h-5" /> People
-                you follow
-              </li>
-              {/* <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
-              <img src={Leaderboard} className="w-4 h-4 md:w-5 md:h-5" />{" "}
-              Leaderboard
-            </li>
-            <li className="flex items-center gap-2 hover:text-purple-700 cursor-pointer">
-              <img src={Announcement} className="w-4 h-4 md:w-5 md:h-5" />{" "}
-              Announcements
-            </li> */}
-            </ul>
+                  <img src={Trending} className="w-5 h-5" alt="" /> Trending
+                </li>
+                <li
+                  // onClick={() => navigate("/dashboard/trendingpost")}
+                  className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-2 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"
+                >
+                  <img src={Mention} className="w-5 h-5" alt="" /> Mention &
+                  tags
+                </li>
+                <li
+                  onClick={fetchCollectionItems}
+                  className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-2 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"
+                >
+                  <img src={Collection} className="w-5 h-5" alt="" /> My
+                  Collection
+                </li>
+                <li
+                  onClick={fetchFollowedUsers}
+                  className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-0 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"
+                >
+                  <img src={people} className="w-5 h-5" alt="" /> People you
+                  follow
+                </li>
+              </ul>
+            </div>
+
+            {/* User Selected Topics Below Quick Actions */}
+            {userSelectedTopics?.length > 0 && (
+              <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
+                <div className="flex items-center justify-between mb-3 md:mb-4 px-4">
+                  <h3 className="text-gray-700 font-semibold text-base md:text-lg">
+                    My Picks
+                  </h3>
+                  <button
+                    onClick={() => setShowTopicModal(true)}
+                    className="text-sm text-blue-500 hover:underline hover:text-blue-600 transition cursor-pointer"
+                  >
+                    Change
+                  </button>
+                </div>
+                <div className="w-full border-t border-[#C8C8C8] my-4"></div>
+                <ul className="space-y-3 text-sm md:text-[15px] text-gray-700 px-4">
+                  {userSelectedTopics?.map((topic) => (
+                    <button
+                      key={topic.id}
+                      onClick={() =>
+                        navigate(`/dashboard/${topic.slug}`, {
+                          state: {
+                            topics,
+                            userSelectedTopics,
+                          },
+                        })
+                      }
+                      className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+                    >
+                      <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                      {topic.topic_name}
+                    </button>
+                  ))}
+                  {userSelectedTopics?.length === 0 && (
+                    <button disabled className="text-gray-400 italic">
+                      No selected topics available
+                    </button>
+                  )}
+                </ul>
+              </div>
+            )}
+            {/* Topics BELOW User Selected Topics */}
+            <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
+              <h3 className="text-[#081021] font-semibold text-base md:text-[14px] mb-3 md:mb-4 px-4">
+                Explore Topics
+              </h3>
+              <div className="w-full border-t border-[#E1E1E1] my-4"></div>
+              <ul className="space-y-3 text-sm md:text-[15px] text-gray-700 px-4">
+                {topics?.slice(0, visibleTopic)?.map((topic) => (
+                  <button
+                    key={topic.id}
+                    onClick={() =>
+                      navigate(`/dashboard/${topic.slug}`, {
+                        state: {
+                          topics,
+                          userSelectedTopics,
+                        },
+                      })
+                    }
+                    className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+                  >
+                    <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                    {topic.topic_name}
+                  </button>
+                ))}
+                {visibleTopic < topics?.length && (
+                  <button
+                    onClick={() => setVisibleTopic((pre) => pre + 10)}
+                    className="text-sm text-blue-500 hover:underline hover:text-blue-600 transition cursor-pointer"
+                  >
+                    See more
+                  </button>
+                )}
+                {topics?.length === 0 && (
+                  <button disabled className="text-gray-400 italic">
+                    No topics available
+                  </button>
+                )}
+              </ul>
+            </div>
           </div>
 
           {/* Popup Modals (unchanged) */}
@@ -1808,15 +1999,39 @@ export default function SocialTopBar() {
                       className="object-contain"
                     />
                   </div>
-                  <h2 className="text-lg font-semibold mb-0 text-gray-800">
+                  <h2 className="text-lg font-semibold mb-0 text-[#897AFF]">
                     Create Post
                   </h2>
                   <button
                     onClick={() => setShowPopup(false)}
-                    className="text-black text-[26px] hover:text-black cursor-pointer"
+                    className="text-[#E1056D] text-[26px] hover:text-black cursor-pointer"
                   >
                     ×
                   </button>
+                </div>
+                <div className="mt-4 px-3 flex items-center gap-2 md:gap-3">
+                  <Link to={`/dashboard/userprofile/${userInfo?.id}`}>
+                    <img
+                      src={
+                        userInfo.profile_picture
+                          ? userInfo.profile_picture
+                          : "/profile.png"
+                      }
+                      className="w-8 h-8 md:w-10 md:h-10 rounded-full"
+                      alt="User"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/profile.png";
+                      }}
+                    />
+                  </Link>
+                  <div>
+                    <p className="font-semibold text-sm md:text-base text-black">
+                      <Link to={`/dashboard/userprofile/${userInfo?.id}`}>
+                        {userInfo.name}
+                      </Link>
+                    </p>
+                  </div>
                 </div>
 
                 {/* {apiMessage && (
@@ -1830,11 +2045,11 @@ export default function SocialTopBar() {
                   {apiMessage}
                 </div>
               )} */}
-                <div className="px-3 mt-5 pb-5">
+                <div className="px-3 mt-4 pb-5">
                   <textarea
                     rows={4}
                     className="w-full p-3 border border-[#ECEEF2] text-black placeholder:text-[#64748B] text-sm rounded-md resize-none mb-3 outline-none focus:border-[#897AFF1A]"
-                    placeholder="What's on your mind?"
+                    placeholder={`What's on your mind? ${userInfo.main_name}...`}
                     value={postMessage}
                     onChange={(e) => setPostMessage(e.target.value)}
                   />
@@ -1953,10 +2168,40 @@ export default function SocialTopBar() {
                       </button>
                     </div>
                   )}
-                  <div className="flex justify-between">
+
+                  <div className="flex justify-between items-center mt-3">
+                    <select
+                      id="topic-select"
+                      value={selectedTopic}
+                      onChange={(e) => setSelectedTopic(e.target.value)}
+                      className="w-80 mr-3 p-2 border border-[#ECEEF2] text-sm rounded-md outline-none focus:border-[#7077FE]"
+                    >
+                      <option value="" disabled>
+                        -- What’s this post about? --
+                      </option>
+                      {topics.length > 0 ? (
+                        topics.map((topic) => (
+                          <option key={topic.id} value={topic.id}>
+                            {topic.topic_name}
+                          </option>
+                        ))
+                      ) : (
+                        <option
+                          value=""
+                          disabled
+                          className="text-gray-400 italic"
+                        >
+                          No topics available
+                        </option>
+                      )}
+                      {topics.length > 0 && (
+                        <option value={999999}>Other</option>
+                      )}
+                    </select>
+
                     <button
                       onClick={handleSubmitPost}
-                      className="w-[93px] h-[36px] me-0 py-1 text-sm ms-auto rounded-[100px] bg-[#7077FE] text-white cursor-pointer"
+                      className="bg-[#7077FE] text-white px-6 py-2 rounded-full hover:bg-[#5b63e6]"
                     >
                       Post
                     </button>
@@ -2089,6 +2334,15 @@ export default function SocialTopBar() {
               }}
             />
           )}
+
+          {showTopicModal && (
+            <TopicModal
+              topics={topics} // ← correct prop name
+              userSelectedTopics={userSelectedTopics} // ← correct prop name
+              onSelect={handleTopicsSelected} // ← now defined
+              onClose={() => setShowTopicModal(false)}
+            />
+          )}
         </div>
       ) : (
         <>
@@ -2133,12 +2387,15 @@ export default function SocialTopBar() {
 
       {/* Report Post Modal */}
       <Modal isOpen={showReportModal} onClose={() => setShowReportModal(false)}>
-        <div className="p-6">
+        <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             Report Post
           </h3>
           <div className="mb-4">
-            <label htmlFor="reportReason" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="reportReason"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Reason why you report this post
             </label>
             <textarea
@@ -2159,10 +2416,15 @@ export default function SocialTopBar() {
             </button>
             <button
               onClick={reportPost}
-              disabled={isReportingPost === selectedPostForReport || !reportReason.trim()}
+              disabled={
+                isReportingPost === selectedPostForReport ||
+                !reportReason.trim()
+              }
               className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isReportingPost === selectedPostForReport ? "Submitting..." : "Submit Report"}
+              {isReportingPost === selectedPostForReport
+                ? "Submitting..."
+                : "Submit Report"}
             </button>
           </div>
         </div>

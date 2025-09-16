@@ -8,3 +8,20 @@ a {
 .border-story-color{
     border-color: linear-gradient(90deg, #6340FF, #D748EA) !important;
 }
+
+
+
+.flag-dropdown {
+  width: 59px !important;
+  border: 2px solid #EEEEEE !important;
+}
+.react-tel-input .selected-flag{
+  width: 100% !important;
+  background: #fff !important;
+  padding: 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+}
+.react-tel-input .form-control{
+  padding-left: 65px !important;
+}

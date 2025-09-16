@@ -6,6 +6,9 @@ import DashboardFilterSidebar from "./DashboardFilterSidebar"; // ✅ Adjust pat
 import hambur from "../../assets/hambur.png";
 import Footer from "../Footer/Footer";
 
+import { MessagingProvider } from "../../components/Messaging/MessagingContext";
+import PersistentMessagingWidget from "../../components/Messaging/PersistentMessagingWidget";
+
 const DashboardLayout = () => {
   const location = useLocation();
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -26,8 +29,8 @@ const DashboardLayout = () => {
     location.pathname === "/DashboardDirectory/dashboardtechnology";
 
   return (
-    <div className="bg-[#f9f9f9] flex flex-row justify-center w-full min-h-screen relative">
-      <div className="bg-[#f9f9f9] w-full flex flex-col">
+    <div className="bg-[#f9f9f9] flex flex-col justify-center w-full min-h-screen relative">
+      <div className="bg-[#f9f9f9] w-full flex flex-col relative">
         {/* Mobile Header */}
         {!isMobileNavOpen && (
           <div className="md:hidden">
@@ -67,7 +70,7 @@ const DashboardLayout = () => {
             }`}
           >
             {/* Main layout with optional FilterSidebar */}
-            <main className="flex-1 min-h-screen px-4 md:px-4 py-4 overflow-y-auto">
+            <main className="flex-1 min-h-screen px-4 md:px-4 py-4 pb-14 overflow-y-auto">
               <div className="flex min-h-screen mb-auto">
                 {isDashboardTechPage && (
                   <div className="w-[250px] shrink-0 border-r border-gray-200 mr-4">
@@ -79,18 +82,23 @@ const DashboardLayout = () => {
                     />
                   </div>
                 )}
-                <div className="flex-1 overflow-x-hidden">
+                <div className="flex-1 ">
                   <Outlet />
                 </div>
-              </div>
-              <div className="hidden md:block w-full">
-                <Footer />
               </div>
             </main>
           </div>
           
           
       </div>
+          <div className="w-full">
+            <MessagingProvider>
+              <PersistentMessagingWidget />
+            </MessagingProvider>
+            <div className="hidden md:block ">
+              <Footer />
+            </div>
+          </div>
 
       {/* Mobile Sidebar Backdrop and Slide-in */}
       {isMobileNavOpen && (

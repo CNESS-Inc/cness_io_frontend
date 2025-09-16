@@ -14,7 +14,7 @@ export default function Testimonialsection() {
       <div className="max-w-5xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <div className=" h-[506px] bg-[url('/testimonial_1.png')] rounded-[18.12px] bg-cover bg-center relative overflow-hidden">
-            <div className="absolute bottom-74 w-[55px] h-[55px] right-0 bg-white z-10 left-35 rounded-full flex justify-center items-center hidden md:flex">
+            <div className="absolute bottom-74 w-[55px] h-[55px] right-0 bg-white z-10 left-35 rounded-full  justify-center items-center hidden md:flex">
               <Image
                 src="/testimonial_user_1.png"
                 alt=""
@@ -39,7 +39,7 @@ export default function Testimonialsection() {
             </div>
           </div>
           <div className=" h-[506px] bg-[url('/testimonial_1.png')] rounded-[18.12px] bg-cover bg-center relative overflow-hidden">
-            <div className="absolute bottom-74 w-[55px] h-[55px] right-0 bg-white z-10 left-35 rounded-full flex justify-center items-center hidden md:flex">
+            <div className="absolute bottom-74 w-[55px] h-[55px] right-0 bg-white z-10 left-35 rounded-full  justify-center items-center hidden md:flex">
               <Image
                 src="/testimonial_user_1.png"
                 alt=""
@@ -65,7 +65,7 @@ export default function Testimonialsection() {
           </div>
           <div className=" h-[506px] bg-[url('/testimonial_1.png')] rounded-[18.12px] bg-cover bg-center relative overflow-hidden">
             <div className="h-[506px] bg-[url('/testimonial_1.png')] rounded-[18.12px] bg-cover bg-center relative overflow-hidden">
-              <div className="absolute bottom-74 w-[55px] h-[55px] right-0 bg-white z-10 left-35 rounded-full flex justify-center items-center hidden md:flex">
+              <div className="absolute bottom-74 w-[55px] h-[55px] right-0 bg-white z-10 left-35 rounded-full  justify-center items-center hidden md:flex">
                 <Image
                   src="/testimonial_user_1.png"
                   alt=""

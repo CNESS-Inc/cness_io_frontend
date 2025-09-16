@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate ,NavLink } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import { cn } from "../../lib/utils";
 import { useState } from "react";
@@ -7,11 +7,14 @@ import SignupForm from "./SignupForm";
 import LoginForm from "./LoginForm.tsx";
 
 const links = [
-  { name: "Why", href: "/why" },
-  // { name: "What", href: "/what" },
-  { name: "About", href: "/about" },
-  { name: "Directory", href: "/directory" },
+  { name: "Home", href: "/" },
+  { name: "Ecosystem", href: "/ecosystem" },
   { name: "Social", href: "/social" },
+  { name: "Certifications", href: "/certifications" },
+  { name: "Premium", href: "/premium" },
+   { name: "WhyCNESS", href: "/whycness" },
+    { name: "FAQs", href: "/faq" },
+  
 ];
 
 export default function NavLinks({ className }: { className?: string }) {
@@ -27,16 +30,17 @@ export default function NavLinks({ className }: { className?: string }) {
 
   const completed_step = localStorage.getItem("completed_step"); 
   const showDashboardButton = completed_step === "1" || completed_step === "2";
-  const personOrganization = localStorage.getItem("person_organization");
-  const showSocialLink = personOrganization === "1";
+  //const personOrganization = localStorage.getItem("person_organization");
+  //const showSocialLink = personOrganization === "1";
 
   // Filter links based on conditions
-  const filteredLinks = links.filter(link => {
-    if (link.name === "Social") {
-      return showSocialLink;
-    }
-    return true;
-  });
+  //const filteredLinks = links.filter(link => {
+    //if (link.name === "Social") {
+      //return showSocialLink;
+    //}
+    //return true;
+  //});
+  const filteredLinks = links;
 
   return (
     <>
@@ -47,12 +51,20 @@ export default function NavLinks({ className }: { className?: string }) {
         <ul className="flex space-x-8">
           {filteredLinks.map((link) => (
             <li key={link.name}>
-              <Link
-                to={link.href}
-                className="text-gray-700 hover:text-primary-600 transition-colors"
-              >
-                {link.name}
-              </Link>
+              <NavLink
+  to={link.href}
+  className={({ isActive }) =>
+     cn(
+      "font-['Open_Sans'] font-normal text-[16px] leading-[150%] tracking-normal transition-colors",
+      isActive
+        ? "text-[#F07EFF]" // active color
+        : "text-[#1A1A1A] hover:text-[#F07EFF]" // default + hover
+    )
+  }
+
+>
+  {link.name}
+</NavLink>
             </li>
           ))}
         </ul>
@@ -72,7 +84,7 @@ export default function NavLinks({ className }: { className?: string }) {
               variant="white-outline"   
               className="w-[104px] h-[39px] rounded-[100px] p-0
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
-    flex items-center justify-center"
+    flex items-center justify-center shadow-sm text-[#64748B]"
               onClick={openSignupModal}>
                 <span className="relative top-[0.5px]">Sign Up</span>
               </Button>
@@ -81,7 +93,7 @@ export default function NavLinks({ className }: { className?: string }) {
                 variant="gradient-primary"
                className="w-[104px] h-[39px] rounded-[100px] p-0
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
-    flex items-center justify-center"
+    flex items-center justify-center text-[#FFFFFF]"
                 onClick={openLoginModal}
               >
  <span className="relative top-[0.5px]">Login</span>

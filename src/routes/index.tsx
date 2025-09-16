@@ -4,18 +4,19 @@ import AppLayout from "../layout/AppLayout";
 import EmailVerify from "../components/ui/EmailVerify";
 import PaymentVerify from "../components/ui/PaymentVerify";
 import ResetPassword from "../components/ui/ResetPassword";
-import Why from "../pages/Why";
+//import Why from "../pages/Why";
 // import What from "../pages/What";
 import GenerateBadgeCode from "../pages/GenerateBadgeCode";
 import GenerateAffiliateCode from "../pages/GenerateAffiliateCode";
 import AssessmentQuestion from "../pages/AssessmentQuestion";
 import Setting from "../pages/Setting";
 //import What from "../pages/What";
+// import Social from "../pages/Social";
 import Social from "../pages/Social";
-import SinglePost from "../components/Social/SinglePost";
-import ReelsCard from "../components/Social/Reels/ReelsCard";
+// import SinglePost from "../components/Social/SinglePost";
+// import ReelsCard from "../components/Social/Reels/ReelsCard";
 import About from "../pages/About";
-import SocialLayout from "../layout/SocialLayout";
+// import SocialLayout from "../layout/SocialLayout";
 import UploadProof from "../pages/UploadProof";
 import LearningLab from "../pages/LearningLab";
 import UpgradeBadge from "../pages/UpgradeBadge";
@@ -27,7 +28,7 @@ import SearchListing from "../pages/SearchListing";
 import DigitalProducts from "../pages/DigitalProducts";
 // import Feed from "../pages/Feed";
 import SearchExplore from "../pages/SearchExplore";
-import BecomeMentor from "../pages/BecomeMentor";
+import BecomeMentor from "../pages/BecomeMentorNew";
 //import DashboardDirectoryPage from "../pages/DashboardDirectoryPage";
 import EditPublicListing from "../pages/EditPublicListing";
 import VisibilitySettings from "../pages/VisibilitySettings";
@@ -47,7 +48,7 @@ import ManageBestPractices from "../pages/ManageBestPractices";
 import SingleBP from "../pages/SingleBP";
 import TermsAndConditions from "../pages/TermsAndConditions";
 import PrivacyPolicy from "../pages/Privacypolicy";
-import DashboardUserProfile from "../pages/DashboardUserProfile";
+//import DashboardUserProfile from "../pages/DashboardUserProfile";
 import CommunityGuidelines from "../pages/CommunityGuidelines";
 import { StoriesApp } from "../components/Social/Story/StoryApp";
 import Trendingpost from "../pages/TrendingPost";
@@ -55,11 +56,21 @@ import Mycollectionview from "../pages/Mycollectionview";
 import TrendingAI from "../pages/TrendingAI";
 import BecomePartner from "../pages/BecomePartner";
 import Pricing from "../pages/Pricing";
+import TopicPost from "../pages/TopicPost";
+import CnessMarketplace from "../pages/CnessMarketplace";
+import Certifications from "../pages/Certifications";
+import Faqs from "../pages/Faqs";
+import EcoSystem from "../pages/EcoSystem";
+import Premium from "../pages/Premium";
+import WhyCness from "../pages/WhyCness";
+//import SellerDashboard from "../pages/SellerDashboard";
+import UserPublicProfile from "../pages/UserPublicProfile";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
 const DirectoryPage = lazy(() => import("../pages/DirectoryPage"));
-const Dashboard = lazy(() => import("../pages/Dashboard"));
+//const Dashboard = lazy(() => import("../pages/Dashboard"));
+const SellerDashboard = lazy(() => import("../pages/SellerDashboard"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 const ScoreResult = lazy(
   () => import("../components/sections/DashboardSection/ScoreResult")
@@ -91,10 +102,10 @@ export const router = createBrowserRouter([
         element: <HomePage />,
       },
 
-      {
-        path: "why",
-        element: <Why />,
-      },
+      //{
+      // // path: "why",
+       // element: <Why />,
+      //},
       // {
       //   path: "what",
       //   element: <What />,
@@ -102,7 +113,18 @@ export const router = createBrowserRouter([
       {
         path: "about",
         element: <About />,
-
+      },
+      {
+        path: "certifications",
+        element: <Certifications />,
+      },
+      {
+        path: "ecosystem",
+        element: <EcoSystem />,
+      },
+      {
+        path: "faq",
+        element: <Faqs />,
       },
       {
         path: "comingSoon",
@@ -110,12 +132,26 @@ export const router = createBrowserRouter([
       },
 
       {
+        path: "cness-marketplace",
+        element: <CnessMarketplace />,
+      },
+    {
+      path: "premium",
+      element: <Premium />,
+    },
+    {
+      path:"whycness",
+      element:<WhyCness />
+    },
+      {
+      
         path: "dashboard",
         element: <DashboardLayout />, // ✅ now it's wrapped!
         children: [
           {
             index: true,
-            element: <Dashboard />,
+            //element: <Dashboard />,
+            element: <SellerDashboard />,
           },
           {
             path: "score-result",
@@ -123,6 +159,10 @@ export const router = createBrowserRouter([
           },
           {
             path: "user-profile",
+            element: <UserProfilePage />,
+          },
+          {
+            path: "user-profile/:id",
             element: <UserProfilePage />,
           },
           {
@@ -139,9 +179,10 @@ export const router = createBrowserRouter([
           },
           {
             path: "setting",
-            element:
+            element: (
               // import.meta.env.VITE_ENV_STAGE === "test" ? (
               <Setting />
+            ),
             // ) : (
             //   <ComingSoon />
             // ),
@@ -186,11 +227,11 @@ export const router = createBrowserRouter([
           {
             path: "search-listing",
             element: <SearchListing />,
-
           },
           {
             path: "userprofile/:id",
-            element: <DashboardUserProfile />,
+            //element: <DashboardUserProfile />,
+            element:<UserPublicProfile />,
           },
           {
             path: "digital_products",
@@ -207,26 +248,25 @@ export const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                element:
-                  <Trendingpost />,
-
+                element: <Trendingpost />,
               },
               {
                 path: "trendingai",
-                element:
-                  <TrendingAI />,
-
-              }
-            ]
+                element: <TrendingAI />,
+              },
+            ],
           },
-
+          {
+            path: ":slug",
+            element: <TopicPost />,
+          },
 
           {
             path: "SearchExplore",
             element: <SearchExplore />,
           },
           {
-            path: "Become_mentor",
+            path: "become-mentor",
             element: <BecomeMentor />,
           },
           {
@@ -247,9 +287,10 @@ export const router = createBrowserRouter([
           },
           {
             path: "EditPublicListing",
-            element:
+            element: (
               // import.meta.env.VITE_ENV_STAGE === "test" ? (
               <EditPublicListing />
+            ),
             // ) : (
             //   <ComingSoon />
             // ),
@@ -279,20 +320,17 @@ export const router = createBrowserRouter([
             element: <CreatorGuideline />,
           },
           {
-            path: "Profile",
-            element:
-              <Profile />
-
+            path: "Profile/:id?",
+            element: <Profile />,
           },
+
           {
             path: "MyCollection/:id",
             element: <Mycollectionview />,
           },
           {
             path: "MyConnection",
-            element:
-              <MyConnection />,
-
+            element: <MyConnection />,
           },
           {
             path: "comingSoon",
@@ -334,10 +372,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element:
-          (
-            <DirectoryPage />
-          ), // ✅ now it's wrapped!
+        element: <DirectoryPage />, // ✅ now it's wrapped!
       },
 
       {
@@ -365,26 +400,24 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: 'story-design',
+    path: "story-design",
     children: [
       {
         index: true,
-        element:
-          (
-            <StoriesApp />
-          ), // ✅ now it's wrapped!
-      }
-    ]
+        element: <StoriesApp />, // ✅ now it's wrapped!
+      },
+    ],
   },
-  {
+  /*{
     path: "social",
     element: <SocialLayout />,
     children: [
       {
         index: true,
-        element:
+        element: (
           // import.meta.env.VITE_ENV_STAGE === "test" ? (
           <Social />
+        ),
         // ) : (
         //   <ComingSoon />
         // ),
@@ -399,6 +432,10 @@ export const router = createBrowserRouter([
         element: <ReelsCard />,
       },
     ],
+  },*/
+  {
+    path: "social",
+    element: <Social />,
   },
   {
     path: "/email-verify",
@@ -429,7 +466,7 @@ export const router = createBrowserRouter([
     element: <PrivacyPolicy />,
   },
   {
-    path: '/community-guidelines',
+    path: "/community-guidelines",
     element: <CommunityGuidelines />,
   },
 
@@ -437,9 +474,8 @@ export const router = createBrowserRouter([
     path: "/sign-up",
     element: <Signingup />,
   },
-{
-  path: "/pricing",
-  element:<Pricing />,
-}
-
+  {
+    path: "/pricing",
+    element: <Pricing />,
+  },
 ]);

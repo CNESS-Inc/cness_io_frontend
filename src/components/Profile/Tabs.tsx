@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+// import React, { useEffect, useState } from "react";
 // import { Search, ArrowLeft } from "lucide-react";
-import { ArrowLeft, Search } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 type ConnectionsCardProps = {
@@ -23,22 +23,22 @@ const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
   subtitle,
   tabs,
   label,
-  hashtags = [],
-  onSearch,
+  // hashtags = [],
+  // onSearch,
   onTabChange,
   activeTab,
   setActiveTab,
   getUserPosts,
-  selectedTopic,
-  onTopicChange
+  // selectedTopic,
+  // onTopicChange
 }) => {
   const navigate = useNavigate();
-  const [searchValue, setSearchValue] = useState(selectedTopic);
+  // const [searchValue, setSearchValue] = useState(selectedTopic);
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  /*const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
     onSearch?.(e.target.value);
-  };
+  };*/
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
@@ -47,24 +47,25 @@ const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
   };
 
    // Add this function to handle hashtag clicks
-const handleHashtagClick = (tag: string) => {
-  setSearchValue(tag);
-  onSearch?.(tag);
-  onTopicChange?.(tag); // Call the parent's topic change handler
-};
+  /*const handleHashtagClick = (tag: string) => {
+    setSearchValue(tag);
+    onSearch?.(tag);
+    onTopicChange?.(tag); // Call the parent's topic change handler
+  };
 
   useEffect(() => {
     setSearchValue(selectedTopic)
   }, [selectedTopic])
+  */
   
   return (
-    <div className="rounded-[12px] border border-gray-200 bg-white flex flex-col gap-4 p-4 sm:p-6 w-full">
+    <div className="rounded-[12px] rounded-bl-none border border-gray-200 bg-white flex flex-col gap-4 sm:pt-6 w-full">
       {/* Top Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:px-6">
         <div className="flex items-center gap-3">
           <div>
             <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
-            <p className="text-sm text-gray-500">{subtitle}</p>
+            <p className="text-sm text-gray-500 pt-2">{subtitle}</p>
           </div>
         </div>
         {label && (
@@ -82,8 +83,9 @@ const handleHashtagClick = (tag: string) => {
       </div>
 
       {/* Search + Hashtags */}
+      {/*
       <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
-        {/* Search Input */}
+        // Search Input
         <div className="flex items-center border border-gray-300 rounded-full px-3 py-2 w-full sm:w-80 bg-white">
           <span className="text-gray-500 text-sm mr-2">#</span>
           <input
@@ -95,7 +97,7 @@ const handleHashtagClick = (tag: string) => {
           />
           <Search className="w-4 h-4 text-gray-400" />
         </div>
-        {/* Hashtags */}
+        // Hashtags
         <div className="flex flex-wrap gap-3 text-sm text-teal-400">
           {hashtags.map((tag) => (
             <span
@@ -108,14 +110,14 @@ const handleHashtagClick = (tag: string) => {
           ))}
         </div>
       </div>
-
+      */}
       {/* Tabs */}
       <div className="flex flex-wrap border-t border-gray-200 pt-3 gap-3">
         {tabs.map((tab) => (
           <button
             key={tab}
             onClick={() => handleTabClick(tab)}
-            className={`relative transition-colors px-4 py-2 rounded-t-lg text-sm font-medium
+            className={`relative transition-colors px-10 py-5 rounded-t-lg text-sm font-medium
               ${activeTab === tab ? "text-purple-600" : "text-gray-700"}`}
           >
             {activeTab === tab && (

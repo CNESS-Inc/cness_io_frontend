@@ -38,7 +38,15 @@ import certify from './certify.svg';
 import directory from './directory.svg';
 import usericon from './Icon.svg';
 import mentor1 from './mentor1.png';
-
+import socialuser from './social_user.png';
+import socialhome from './social_home.png';
+import socialsearch from './social_search.png';
+import socialtrending from './social_trending.png';
+import leaderboard from './social_leaderboard.png';
+import socialannouncement from './social_announcement.png';
+import storyplus from './plus.png';
+import sociallike from './social_like.png';
+import userplus from './userplus.png';
 
 
 
@@ -81,6 +89,15 @@ community,
 directory,
 certify,
 usericon,
-mentor1
+mentor1,
+socialuser,
+socialhome,
+socialsearch,
+socialtrending,
+leaderboard,
+socialannouncement,
+storyplus,
+sociallike,
+userplus
 
 };

@@ -52,24 +52,35 @@ export default function Highlight() {
     },
   ];
 
- return (
-<section className="highlight-section lg:min-h-[560px] px-4 sm:px-6 lg:px-8 py-15 sm:py-12 lg:py-[80px] bg-[#FAFAFA] relative lg:bg-[url(https://res.cloudinary.com/diudvzdkb/image/upload/v1753780724/highlight-ellipse_hahibm.png)] bg-no-repeat lg:bg-[position:right_bottom_3rem] overflow-hidden">
+  return (
+    <section className="highlight-section lg:min-h-[560px] px-4 sm:px-6 lg:px-8 py-18 sm:py-12 lg:py-[80px] bg-[#FAFAFA] relative lg:bg-[url(https://res.cloudinary.com/diudvzdkb/image/upload/v1753780724/highlight-ellipse_hahibm.png)] bg-no-repeat lg:bg-[position:right_bottom_3rem] overflow-hidden">
       <div className="max-w-[1336px] mx-auto flex lg:flex-row flex-col">
         <div className="md:px-0 lg:px-0 lg:w-5/12 w-full">
           <div className="w-full">
-            <span className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-[500] px-4 py-1 rounded-[100px] mb-6 inline-block">
+            <span className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-[500] px-4 py-1 rounded-[100px] mb-6 inline-block 
+            rounded-tl-[100px] rounded-br-[100px] rounded-tr-[10px] rounded-bl-[10px] bg-white">
               Highlights
             </span>
-            <h3 className="poppins leading-9 text-[32px] font-[600] mb-2 lg:text-nowrap">
-              Your conscious identity, activated.
+            <h3 className="font-poppins font-medium
+    text-[32px] md:text-[42px]
+    leading-[54px] tracking-[-0.02em]
+    capitalize text-centerp">
+              Your conscious identity,
+              <br />
+               <span className="
+    bg-gradient-to-r from-[#D747EA] to-[#7741FB]
+    text-transparent bg-clip-text
+  ">
+               Activated.
+               </span>
             </h3>
             <p className="openSans text-[#64748B] text-[18px] font-[400] mb-6">
               CNESS helps you build visibility, earn credibility, and express your
-              <br /> purpose — socially, creatively, and professionally. Everything you
-              <br /> need to grow is here.
+              <br /> purpose — socially, creatively, and professionally.  Showcase your skills, share your story, connect with like-minded people, and unlock opportunities to grow with confidence and purpose.
+              
             </p>
             <Button className="jakarta w-fit rounded-[100px] h-[42px] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#F07EFF] self-stretch transition-colors duration-500 ease-in-out"
-            onClick={() => window.location.href = "/sign-up"}>
+              onClick={() => window.location.href = "/sign-up"}>
               See how it all works →
             </Button>
           </div>
@@ -101,17 +112,17 @@ export default function Highlight() {
                     />
 
                     <div className={`${isOpen ? '' : 'flex-1'}`}>
-                    {isOpen ? (
-  // Top-left when expanded
-  <span className="text-[#4B4B4B] text-[14px] font-[600] mb-2">
-    /0{index + 1}
-  </span>
-) : (
-  // Bottom-right when collapsed
-  <span className="absolute bottom-3 right-4 text-[#4B4B4B] text-[14px] font-[600]">
-    /0{index + 1}
-  </span>
-)}
+                      {isOpen ? (
+                        // Top-left when expanded
+                        <span className="text-[#4B4B4B] text-[14px] font-[600] mb-2">
+                          /0{index + 1}
+                        </span>
+                      ) : (
+                        // Bottom-right when collapsed
+                        <span className="absolute bottom-3 right-4 text-[#4B4B4B] text-[14px] font-[600]">
+                          /0{index + 1}
+                        </span>
+                      )}
 
                       {isOpen && (
                         <>
@@ -152,7 +163,7 @@ export default function Highlight() {
                     />
 
                     <div>
-                      <span className="text-[#4B4B4B] text-[18px] font-[600]">
+                      <span className="text-[#64748B] text-[18px] font-[400]">
                         /0{index + 1}
                       </span>
 

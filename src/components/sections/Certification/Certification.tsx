@@ -6,27 +6,31 @@ const Certification = () => {
   const [animationData, setAnimationData] = useState(null);
 
   useEffect(() => {
-    fetch("https://cnessioassets.project-69e.workers.dev/Card-bg.json")
+    
+    fetch("https://cnessioassets.project-69e.workers.dev/badgecard.json")
       .then((res) => res.json())
       .then((data) => setAnimationData(data))
       .catch((err) => console.error("Failed to load Lottie JSON:", err));
   }, []);
 
   return (
-    <div className='py-20 w-full bg-[#FAFAFA] px-6'>
+    <div className='py-20 w-full bg-[#FAFAFA] px-6 pb-28'>
       <div className='max-w-[1336px] w-full mx-auto flex lg:flex-row flex-col justify-between'>
         <div className='lg:w-[60%] w-full flex flex-col justify-center items-start'>
-          <h3 className='poppins leading-10 text-[32px] font-medium text-black'>
+
+          <h3 style={{ fontFamily: "Poppins, sans-serif" }}
+          className=' leading-10 text-[42px] font-medium text-black'>
             Certification Makes It Official.
           </h3>
           <p className='openSans text-[18px] font-Regular pt-[10px] mb-2'>
             Get your conscious identity verified and unlock everything CNESS has to offer.
           </p>
-          <span className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-[500] px-4 py-1 rounded-[100px] mb-6 inline-block mt-2 openSans">
+           <span className="badge text-[#F07EFF] border-[#F07EFF] mt-4 border text-[16px] font-[500] px-4 py-1 rounded-[100px] mb-6 inline-block 
+            rounded-tl-[10px] rounded-br-[10px] rounded-tr-[100px] rounded-bl-[100px] ">
             Benefits
           </span>
 
-          <div className='leading-9 pt-[20px] flex flex-col gap-4'>
+          <div className='leading-9 pt-[20px] flex flex-col gap-4 w-full'>
             {[
               "Unlock your True Profile with verified status",
               "Sell your services or digital tools in the Conscious Marketplace",
@@ -48,7 +52,7 @@ const Certification = () => {
             type="button"
             className='jakarta px-3 py-1 h-[42px] w-[127px] text-white bg-gradient-to-r from-[#7077FE] to-[#F07EFF] rounded-[50px] mt-8 cursor-pointer'
            onClick={() => window.location.href = "/sign-up"}>
-            Get Certified
+            Know More
           </button>
         </div>
 

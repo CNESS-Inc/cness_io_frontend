@@ -6,8 +6,12 @@ import {
   // PostCommentLike,
   // PostChildCommentLike,
   GetChildComments,
+  getFriendsForTagging,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
+import { useMention } from "../hooks/useMention";
+import FriendSuggestion from "../components/ui/FriendSuggestion";
+import TextWithMentions from "../components/ui/TextWithMentions";
 
 interface Comment {
   child_comment_count: number;
@@ -69,6 +73,108 @@ const CommentBox = ({
   const [loadingReplies, setLoadingReplies] = useState<Record<string, boolean>>(
     {}
   );
+  const [commentMentions, setCommentMentions] = useState<any[]>([]);
+  const [replyMentions, setReplyMentions] = useState<Record<string, any[]>>({});
+  const [replySuggestions, setReplySuggestions] = useState<any[]>([]);
+  const [showReplySuggestions, setShowReplySuggestions] = useState(false);
+  const [selectedReplyMentionIndex, setSelectedReplyMentionIndex] = useState(0);
+
+  // Mention functionality for comments
+  const {
+    showSuggestions: showCommentSuggestions,
+    suggestions: commentSuggestions,
+    selectedMentionIndex: selectedCommentMentionIndex,
+    textareaRef: commentTextareaRef,
+    handleTextChange: handleCommentTextChange,
+    handleKeyDown: handleCommentKeyDown,
+    selectMention: selectCommentMention,
+    updateSuggestions: updateCommentSuggestions,
+  } = useMention({
+    onMentionSelect: (user) => {
+      console.log("Comment mention selected:", user);
+    },
+    onTextChange: (text, mentions) => {
+      setCommentText(text);
+      setCommentMentions(mentions);
+    },
+  });
+
+  // Fetch friend suggestions
+  const fetchFriendSuggestions = async (search: string) => {
+    try {
+      const response = await getFriendsForTagging({ search, limit: 10 });
+      if (response?.data?.data) {
+        updateCommentSuggestions(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching friend suggestions:", error);
+    }
+  };
+
+  // Handle reply mentions
+  const handleReplyMentionChange = (commentId: string, text: string, mentions: any[]) => {
+    setReplyText(text);
+    setReplyMentions(prev => ({
+      ...prev,
+      [commentId]: mentions
+    }));
+  };
+
+  // Fetch friend suggestions for replies
+  const fetchReplyFriendSuggestions = async (search: string) => {
+    try {
+      const response = await getFriendsForTagging({ search, limit: 10 });
+      if (response?.data?.data) {
+        setReplySuggestions(response.data.data);
+        setShowReplySuggestions(true);
+        setSelectedReplyMentionIndex(0);
+      }
+    } catch (error) {
+      console.error("Error fetching friend suggestions for reply:", error);
+    }
+  };
+
+  // Handle reply mention selection
+  const selectReplyMention = (user: any) => {
+    const currentCommentId = showReply; // The currently open reply
+    if (!currentCommentId) return;
+
+    const textarea = document.querySelector(`textarea[data-comment-id="${currentCommentId}"]`) as HTMLTextAreaElement;
+    if (!textarea) return;
+
+    const cursorPos = textarea.selectionStart;
+    const textBeforeCursor = textarea.value.substring(0, cursorPos);
+    const textAfterCursor = textarea.value.substring(cursorPos);
+    
+    // Find the last @ symbol before cursor
+    const lastAtIndex = textBeforeCursor.lastIndexOf('@');
+    const textBeforeAt = textBeforeCursor.substring(0, lastAtIndex);
+    const newText = textBeforeAt + `@${user.username} ` + textAfterCursor;
+    
+    // Update the textarea value
+    textarea.value = newText;
+    
+    // Set cursor position after the mention
+    const newCursorPos = textBeforeAt.length + user.username.length + 2;
+    textarea.setSelectionRange(newCursorPos, newCursorPos);
+    
+    // Update state
+    setShowReplySuggestions(false);
+    setSelectedReplyMentionIndex(0);
+    
+    // Add to mentions if not already present
+    const currentMentions = replyMentions[currentCommentId] || [];
+    if (!currentMentions.find(m => m.id === user.id)) {
+      const newMentions = [...currentMentions, user];
+      setReplyMentions(prev => ({
+        ...prev,
+        [currentCommentId]: newMentions
+      }));
+    }
+    
+    // Update reply text
+    setReplyText(newText);
+  };
 
   const fetchComments = async () => {
     setIsLoading(true);
@@ -88,6 +194,23 @@ const CommentBox = ({
     }
   }, [postId]);
 
+  // Close reply suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showReplySuggestions) {
+        const target = event.target as HTMLElement;
+        if (!target.closest('.reply-suggestion-container')) {
+          setShowReplySuggestions(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showReplySuggestions]);
+
   const handleSubmitComment = async () => {
     if (!commentText.trim()) return;
 
@@ -95,6 +218,7 @@ const CommentBox = ({
       const formattedData = {
         text: commentText,
         post_id: postId,
+        mentioned_user_ids: commentMentions.map(mention => mention.id),
       };
 
       const response = await PostComments(formattedData);
@@ -139,6 +263,7 @@ const CommentBox = ({
         setComments((prev) => [newComment, ...prev]);
       }
       setCommentText("");
+      setCommentMentions([]);
 
       // Call the onCommentAdded callback if it exists
       if (onCommentAdded) {
@@ -162,6 +287,7 @@ const CommentBox = ({
         text: replyText,
         comment_id: commentId,
         post_id: postId,
+        mentioned_user_ids: replyMentions[commentId]?.map(mention => mention.id) || [],
       };
 
       const response = await PostChildComments(formattedData);
@@ -172,6 +298,7 @@ const CommentBox = ({
             if (comment.id === commentId) {
               return {
                 ...comment,
+                child_comment_count: response.data.data.child_comment_count || comment.child_comment_count + 1,
                 replies: [
                   { ...response.data.data, is_liked: false, likes_count: 0 },
                   ...(comment.replies || []),
@@ -200,6 +327,7 @@ const CommentBox = ({
             if (comment.id === commentId) {
               return {
                 ...comment,
+                child_comment_count: (comment.child_comment_count || 0) + 1,
                 replies: [newReply, ...(comment.replies || [])],
               };
             }
@@ -209,6 +337,11 @@ const CommentBox = ({
       }
 
       setReplyText("");
+      setReplyMentions(prev => ({
+        ...prev,
+        [commentId]: []
+      }));
+      setShowReplySuggestions(false);
       setShowReply(null);
 
       // Call the onCommentAdded callback if it exists
@@ -370,7 +503,7 @@ const CommentBox = ({
 
       <div
         ref={commentBoxRef}
-        className={`relative w-full max-w-xl bg-white  shadow-xl px-[24px] transition-all duration-300 transform ${
+        className={`relative w-full max-w-xl bg-white  shadow-xl px-[16px] transition-all duration-300 transform ${
           isClosing ? "translate-y-full" : "translate-y-0"
         }`}
         style={{
@@ -382,8 +515,8 @@ const CommentBox = ({
           <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
         </div> */}
 
-        <div className="flex justify-between items-center p-4 border-b border-[#ECEEF2] sticky top-0 bg-white z-10">
-          <h3 className="font-semibold text-lg">Reflection Threads</h3>
+        <div className="flex justify-between items-center p-3 border-b border-[#ECEEF2] sticky top-0 bg-white z-10">
+          <h3 className="font-semibold text-[16px]">Reflection</h3>
           <button
             onClick={handleClose}
             className="
@@ -433,32 +566,33 @@ const CommentBox = ({
               <p>Be the first to comment</p>
             </div>
           ) : (
-            <div className="space-y-4 py-2">
+            <div className="space-y-4 py-2 pt-4 pb-12">
               {comments.map((comment) => (
                 <div key={comment.id} className="flex flex-col">
                   {/* Main Comment */}
                   <div className="flex gap-3 py-2">
-                    <img
-                      src={
-                        comment.profile.profile_picture
-                          ? comment.profile.profile_picture
-                          : "/profile.png"
-                      }
-                      alt={`${comment.profile.first_name} ${comment.profile.last_name}`}
-                      className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "/profile.png";
-                      }}
-                    />
+                    
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between">
-                        <div className="flex items-baseline gap-2">
-                          <span className="font-semibold">
+                        <div className="flex items-center gap-2 mb-[10px]">
+                          <img
+                            src={
+                              comment.profile.profile_picture
+                                ? comment.profile.profile_picture
+                                : "/profile.png"
+                            }
+                            alt={`${comment.profile.first_name} ${comment.profile.last_name}`}
+                            className="w-[36px] h-[36px] rounded-full object-cover flex-shrink-0"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = "/profile.png";
+                            }}
+                          />
+                          <span className="font-semibold text-[#081021] text-[14px]">
                             {comment.profile.first_name}{" "}
                             {comment.profile.last_name}
                           </span>
-                          <span className="text-xs text-gray-500">
+                          <span className="text-[12px] text-[#64748B]">
                             {formatTimeAgo(comment.createdAt)}
                           </span>
                         </div>
@@ -469,14 +603,14 @@ const CommentBox = ({
                                 showReply === comment.id ? null : comment.id
                               )
                             }
-                            className="hover:underline text-[#7077FE]"
+                            className="hover:underline text-[#7077FE] text-[12px]"
                           >
                             Reply
                           </button>
                         </div>
                       </div>
                       <p className="mt-1 break-words bg-[#F7F7F7] rounded-[8px] py-[14px] pl-[24px]">
-                        {comment.text}
+                        <TextWithMentions text={comment.text} />
                       </p>
                       <div className="flex items-center text-xs text-gray-500 mt-1 gap-2">
                         {/* <button
@@ -499,7 +633,7 @@ const CommentBox = ({
                         </button> */}
                         {comment.child_comment_count > 0 && (
                           <button
-                            className="hover:underline flex items-center"
+                            className="hover:underline flex items-center pl-[52px] mt-2"
                             onClick={() => fetchGetChildComments(comment.id)}
                             disabled={loadingReplies[comment.id]}
                           >
@@ -528,17 +662,70 @@ const CommentBox = ({
                           target.src = "/profile.png";
                         }}
                       />
-                      <div className="flex-1 flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="Add a reflection..."
-                          className="flex-1 rounded-full px-4 py-2 focus:outline-none bg-gray-100 border-none text-sm"
+                      <div className="flex-1 flex gap-2 relative">
+                        <textarea
+                          data-comment-id={comment.id}
+                          placeholder="Add a reflection... (use @ to mention friends)"
+                          className="flex-1 rounded-full px-4 py-2 focus:outline-none bg-gray-100 border-none text-sm resize-none"
                           value={replyText}
-                          onChange={(e) => setReplyText(e.target.value)}
+                          onChange={(e) => {
+                            setReplyText(e.target.value);
+                            handleReplyMentionChange(comment.id, e.target.value, replyMentions[comment.id] || []);
+                            // Fetch suggestions when user types @
+                            if (e.target.value.includes('@')) {
+                              const mentionText = e.target.value.match(/@(\w*)$/)?.[1] || '';
+                              if (mentionText) {
+                                fetchReplyFriendSuggestions(mentionText);
+                              }
+                            } else {
+                              setShowReplySuggestions(false);
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (!showReplySuggestions) return;
+                            
+                            switch (e.key) {
+                              case 'ArrowDown':
+                                e.preventDefault();
+                                setSelectedReplyMentionIndex(prev => 
+                                  prev < replySuggestions.length - 1 ? prev + 1 : 0
+                                );
+                                break;
+                              case 'ArrowUp':
+                                e.preventDefault();
+                                setSelectedReplyMentionIndex(prev => 
+                                  prev > 0 ? prev - 1 : replySuggestions.length - 1
+                                );
+                                break;
+                              case 'Enter':
+                                e.preventDefault();
+                                if (replySuggestions[selectedReplyMentionIndex]) {
+                                  selectReplyMention(replySuggestions[selectedReplyMentionIndex]);
+                                }
+                                break;
+                              case 'Escape':
+                                setShowReplySuggestions(false);
+                                break;
+                            }
+                          }}
                           onKeyPress={(e) =>
-                            e.key === "Enter" && handleReplySubmit(comment.id)
+                            e.key === "Enter" && !e.shiftKey && !showReplySuggestions && handleReplySubmit(comment.id)
                           }
+                          rows={1}
+                          style={{ minHeight: '32px', maxHeight: '80px' }}
                         />
+                        
+                        {/* Reply Friend Suggestions */}
+                        {showReplySuggestions && replySuggestions.length > 0 && showReply === comment.id && (
+                          <div className="reply-suggestion-container">
+                            <FriendSuggestion
+                              suggestions={replySuggestions}
+                              selectedIndex={selectedReplyMentionIndex}
+                              onSelect={selectReplyMention}
+                              position={{ top: -200, left: 0 }}
+                            />
+                          </div>
+                        )}
                         <button
                           className={`px-3 py-1 rounded-full text-sm ${
                             replyText
@@ -557,13 +744,13 @@ const CommentBox = ({
                   {expandedComments[comment.id] &&
                     comment.replies &&
                     comment.replies.length > 0 && (
-                      <div className="ml-12 space-y-3 border-l-2 border-gray-200 pl-3">
+                      <div className="ml-12 space-y-3 border-0 border-gray-200 pl-3">
                         {comment.replies.map((reply) => (
                           <div key={reply.id} className="flex gap-3 pt-2">
                             <img
                               src={reply.profile.profile_picture}
                               alt={`${reply.profile.first_name} ${reply.profile.last_name}`}
-                              className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                              className="w-[27px] h-[27px] rounded-full object-cover flex-shrink-0"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 target.src = "/profile.png";
@@ -579,7 +766,7 @@ const CommentBox = ({
                                   {formatTimeAgo(reply.createdAt)}
                                 </span> */}
                               <p className="text-sm break-words">
-                                {reply.text}
+                                <TextWithMentions text={reply.text} />
                               </p>
                               </div>
                               {/* <div className="flex items-center text-xs text-gray-500 mt-1 gap-2">
@@ -618,7 +805,7 @@ const CommentBox = ({
 
         <div className="p-4 border-t sticky bottom-0 border-[#ECEEF2] bg-white">
           <div className="flex items-center gap-2">
-            <img
+            {/* <img
               src={profilePicture}
               alt="Your profile"
               className="w-10 h-10 rounded-full object-cover flex-shrink-0"
@@ -626,15 +813,39 @@ const CommentBox = ({
                 const target = e.target as HTMLImageElement;
                 target.src = "/profile.png";
               }}
-            />
-            <input
-              type="text"
-              placeholder="Add a reflection..."
-              className="flex-1 rounded-full px-4 py-2 focus:outline-none bg-gray-100 border-none"
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleSubmitComment()}
-            />
+            /> */}
+            <div className="flex-1 relative">
+              <textarea
+                ref={commentTextareaRef}
+                placeholder="Add a reflection... (use @ to mention friends)"
+                className="w-full rounded-full px-4 py-2 focus:outline-none bg-gray-100 border-none resize-none"
+                value={commentText}
+                onChange={(e) => {
+                  handleCommentTextChange(e.target.value);
+                  // Fetch suggestions when user types @
+                  if (e.target.value.includes('@')) {
+                    const mentionText = e.target.value.match(/@(\w*)$/)?.[1] || '';
+                    if (mentionText) {
+                      fetchFriendSuggestions(mentionText);
+                    }
+                  }
+                }}
+                onKeyDown={handleCommentKeyDown}
+                onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && handleSubmitComment()}
+                rows={1}
+                style={{ minHeight: '40px', maxHeight: '120px' }}
+              />
+              
+              {/* Friend Suggestions */}
+              {showCommentSuggestions && commentSuggestions.length > 0 && (
+                <FriendSuggestion
+                  suggestions={commentSuggestions}
+                  selectedIndex={selectedCommentMentionIndex}
+                  onSelect={selectCommentMention}
+                  position={{ top: -200, left: 0 }}
+                />
+              )}
+            </div>
             <button
               className={`px-4 py-2 rounded-full font-medium ${
                 commentText
