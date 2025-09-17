@@ -189,6 +189,7 @@ export const EndPoint = {
   bp_comment_reply: "/best-practice/comment/reply",
   singleBp: "/best-practice/get",
   followBp: "/best-practice/follow",
+  getFollowBp: "/best-practice/get/follow",
   user_notification: "/notification",
   notification_count: "/notification/count",
   update_notification: "/notification/update-status",
@@ -794,6 +795,15 @@ export const SendBpFollowRequest = (payload: any) => {
   return executeAPI(ServerAPI.APIMethod.POST, payload, EndPoint.followBp);
 };
 
+export const GetFollowBestpractices = (): ApiResponse => {
+  const data = {};
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.getFollowBp}`
+  );
+};
+
 export const GetUserNotification = (): ApiResponse => {
   const data = {};
   return executeAPI(
@@ -827,6 +837,10 @@ export const MarkNotificationAsRead = (
 export const GetProfileDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.profile);
+};
+export const GetProfileDetailsById = (id: any): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.profile}/${id}`);
 };
 export const GetOrganiZationProfileDetails = (): ApiResponse => {
   const data = {};
