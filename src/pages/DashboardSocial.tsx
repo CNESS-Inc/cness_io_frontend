@@ -24,7 +24,7 @@ import {
   AddStory,
   GetFollowingUser,
   GetStory,
-  GetUserPost,
+  GetSavedPosts,
   MeDetails,
   PostsDetails,
   PostsLike,
@@ -507,7 +507,7 @@ export default function SocialTopBar() {
     setIsCollectionLoading(true);
     setActiveView("collection");
     try {
-      const res = await GetUserPost();
+      const res = await GetSavedPosts();
 
       // Transform the API response to match CollectionItem interface
       const transformedItems = res.data.data.rows.map((item: any) => {

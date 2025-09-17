@@ -150,6 +150,7 @@ export const EndPoint = {
   single_post: "/user/posts/get",
   user_post: "/user/posts",
   save_post: "/user/posts/save",
+  get_save_posts: "/user/posts/get/save/posts",
   report_post: "/user/posts/report",
   story: "/story",
   get_front_all_story: "/story/get/front/all",
@@ -1230,6 +1231,11 @@ export const SavePost = (postId: string) => {
     { post_id: postId },
     EndPoint.save_post
   );
+};
+
+export const GetSavedPosts = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.get_save_posts);
 };
 
 export const ReportPost = (postId: string, reason: string) => {
