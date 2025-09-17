@@ -21,9 +21,11 @@ import Button from "../components/ui/Button";
 
 const Managebestpractices = () => {
   const [activeTab, setActiveTab] = useState<"saved" | "mine">("saved");
+  const [inputValue, setInputValue] = useState("");
+  const [editInputValue, setEditInputValue] = useState(""); // Separate input for edit modal
 
   const [activeStatusTab, setActiveStatusTab] = useState<0 | 1 | 2>(0); // 0: Pending, 1: Approved, 2: Rejected
-  
+
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState({
     save: false,
@@ -45,7 +47,6 @@ const Managebestpractices = () => {
   const [activeModal, setActiveModal] = useState<"bestpractices" | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentPractice, setCurrentPractice] = useState<any>(null);
-  console.log("🚀 ~ Managebestpractices ~ currentPractice:", currentPractice);
   const [isEditMode, setIsEditMode] = useState(false);
   const [profession, setProfession] = useState<any[]>([]);
 
@@ -54,6 +55,9 @@ const Managebestpractices = () => {
   const [expandedDescriptions, setExpandedDescriptions] = useState<
     Record<string, boolean>
   >({});
+  const [tags, setTags] = useState<string[]>([]);
+  const [createTags, setCreateTags] = useState<string[]>([]); // Separate tags for create modal
+
 
   const truncateText = (text: string, maxLength: number): string => {
     if (!text) return "";
@@ -221,7 +225,6 @@ const Managebestpractices = () => {
     (practice) => practice.status === activeStatusTab
   );
 
-
   const handleDeleteBestPractice = async (id: any) => {
     try {
       await DeleteBestPractices(id);
@@ -243,6 +246,8 @@ const Managebestpractices = () => {
       const response = await GetBestPracticesById(id);
       if (response?.data?.data) {
         setCurrentPractice(response.data.data);
+        setTags(response.data.data.tags || []);
+        setEditInputValue(""); // Reset edit input value
         setIsEditMode(true);
         setActiveModal("bestpractices");
       }
@@ -270,12 +275,14 @@ const Managebestpractices = () => {
           profession: currentPractice.profession,
           title: currentPractice.title,
           description: currentPractice.description,
-          status: 0
+          status: 0,
+          tags: tags
         };
 
         await UpdateBestPractice(payload);
         showToast({
-          message: "Best practice updated successfully and please wait until admin reviews it!",
+          message:
+            "Best practice updated successfully and please wait until admin reviews it!",
           type: "success",
           duration: 3000,
         });
@@ -300,8 +307,9 @@ const Managebestpractices = () => {
 
   const closeModal = () => {
     setActiveModal(null);
+    setTags([]);
+    setEditInputValue("");
   };
-
 
   // Function to open create modal
   const openCreateModal = () => {
@@ -312,6 +320,8 @@ const Managebestpractices = () => {
       profession: "",
       file: null,
     });
+    setCreateTags([]);
+    setInputValue("");
   };
 
   // Function to close create modal
@@ -323,6 +333,8 @@ const Managebestpractices = () => {
       profession: "",
       file: null,
     });
+    setCreateTags([]);
+    setInputValue("");
   };
 
   // Function to handle input changes for create form
@@ -358,6 +370,8 @@ const Managebestpractices = () => {
       formData.append("title", newPractice.title);
       formData.append("description", newPractice.description);
       formData.append("profession", newPractice.profession);
+      formData.append("tags", JSON.stringify(createTags)); // Add tags to form data
+      
       if (newPractice.file) {
         formData.append("file", newPractice.file);
       }
@@ -365,7 +379,8 @@ const Managebestpractices = () => {
       await CreateBestPractice(formData);
 
       showToast({
-        message: "Best practices has been created and please wait until admin reviews it!",
+        message:
+          "Best practices has been created and please wait until admin reviews it!",
         type: "success",
         duration: 5000,
       });
@@ -384,6 +399,39 @@ const Managebestpractices = () => {
       });
     } finally {
       setIsCreateSubmitting(false);
+    }
+  };
+
+  const removeTag = (index: number, isCreateModal: boolean = false) => {
+    if (isCreateModal) {
+      const newTags = [...createTags];
+      newTags.splice(index, 1);
+      setCreateTags(newTags);
+    } else {
+      const newTags = [...tags];
+      newTags.splice(index, 1);
+      setTags(newTags);
+    }
+  };
+
+  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, isCreateModal: boolean = false) => {
+    const value = isCreateModal ? inputValue : editInputValue;
+    
+    if (e.key === "Enter" && value.trim()) {
+      e.preventDefault();
+      const newTag = value.trim();
+      
+      if (isCreateModal) {
+        if (!createTags.includes(newTag)) {
+          setCreateTags([...createTags, newTag]);
+          setInputValue("");
+        }
+      } else {
+        if (!tags.includes(newTag)) {
+          setTags([...tags, newTag]);
+          setEditInputValue("");
+        }
+      }
     }
   };
 
@@ -420,7 +468,7 @@ const Managebestpractices = () => {
             <h3 className="font-[Poppins] font-medium text-[18px] leading-[150%] tracking-normal mb-4">
               View My Best Practices
             </h3>
-            
+
             {/* Status Tabs */}
             <div className="flex border-b border-gray-100">
               <button
@@ -441,10 +489,10 @@ const Managebestpractices = () => {
                       text-center
                       focus:outline-none
                       border ${
-                  activeStatusTab === 0
-                    ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
-                    : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
-                }`}
+                        activeStatusTab === 0
+                          ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
+                          : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
+                      }`}
                 onClick={() => setActiveStatusTab(0)}
               >
                 Pending
@@ -467,10 +515,10 @@ const Managebestpractices = () => {
                       text-center
                       focus:outline-none
                       border ms-2 ${
-                  activeStatusTab === 1
-                    ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
-                    : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
-                }`}
+                        activeStatusTab === 1
+                          ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
+                          : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
+                      }`}
                 onClick={() => setActiveStatusTab(1)}
               >
                 Approved
@@ -494,10 +542,10 @@ const Managebestpractices = () => {
                       focus:outline-none
                       border
                       ms-2 ${
-                  activeStatusTab === 2
-                    ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
-                    : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
-                }`}
+                        activeStatusTab === 2
+                          ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
+                          : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
+                      }`}
                 onClick={() => setActiveStatusTab(2)}
               >
                 Rejected
@@ -517,58 +565,58 @@ const Managebestpractices = () => {
                       className="relative bg-white cursor-pointer rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
                     >
                       {/* Edit and Delete buttons (absolute positioned in top-right) */}
-                      { company.status !== 2 && ( 
-                      <div className="absolute top-2 right-2 z-10 flex gap-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEditBestPractice(company.id);
-                          }}
-                          className="p-1 bg-white rounded-full shadow-md hover:bg-gray-100"
-                          title="Edit"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5 text-gray-600"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
+                      {company.status !== 2 && (
+                        <div className="absolute top-2 right-2 z-10 flex gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditBestPractice(company.id);
+                            }}
+                            className="p-1 bg-white rounded-full shadow-md hover:bg-gray-100"
+                            title="Edit"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                            />
-                          </svg>
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setDeleteConfirmation({
-                              isOpen: true,
-                              practiceId: company.id,
-                            });
-                          }}
-                          className="p-1 bg-white rounded-full shadow-md hover:bg-gray-100"
-                          title="Delete"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5 text-red-600"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5 text-gray-600"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDeleteConfirmation({
+                                isOpen: true,
+                                practiceId: company.id,
+                              });
+                            }}
+                            className="p-1 bg-white rounded-full shadow-md hover:bg-gray-100"
+                            title="Delete"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                          </svg>
-                        </button>
-                      </div>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5 text-red-600"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                              />
+                            </svg>
+                          </button>
+                        </div>
                       )}
                       {/* Card content */}
                       <div
@@ -641,14 +689,6 @@ const Managebestpractices = () => {
                             Overview
                           </p>
 
-                          {/* <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-3">
-                        {truncateText(company.description, 100)}
-                        {company.description.length > 50 && (
-                          <span className="text-[#F07EFF] underline ml-1">
-                            Read More
-                          </span>
-                        )}
-                      </p> */}
                           <p className="text-sm text-gray-600 mb-2 leading-snug break-words whitespace-pre-line">
                             {expandedDescriptions[company.id]
                               ? company.description
@@ -683,7 +723,6 @@ const Managebestpractices = () => {
                     "There is no best practice data in Rejected list."}
                 </p>
                 <button
-                  // onClick={() => navigate("/dashboard/bestpractices")}
                   onClick={openCreateModal}
                   className="px-4 py-2 bg-[#F07EFF] text-white rounded-md hover:bg-[#E06EE5] transition-colors"
                 >
@@ -707,8 +746,6 @@ const Managebestpractices = () => {
             ) : saveBestPractices.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
                 {saveBestPractices?.map((company) => {
-                  //const isSaved = savedItems.has(company.id); // ✅ declare inside
-
                   return (
                     <div
                       key={company.id}
@@ -721,7 +758,7 @@ const Managebestpractices = () => {
                           {
                             state: {
                               likesCount: company.likesCount,
-                              isLiked: company.isLiked, // ensure this is coming from backend
+                              isLiked: company.isLiked,
                             },
                           }
                         )
@@ -740,7 +777,6 @@ const Managebestpractices = () => {
                             alt={company.user.username}
                             className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover mr-2 sm:mr-3"
                             onError={(e) => {
-                              // Fallback if the image fails to load
                               const target = e.target as HTMLImageElement;
                               target.src = "/profile.png";
                             }}
@@ -768,7 +804,6 @@ const Managebestpractices = () => {
                               alt={company.title}
                               className="w-full h-40 sm:h-48 object-cover"
                               onError={(e) => {
-                                // Fallback in case the image fails to load
                                 (e.target as HTMLImageElement).src =
                                   iconMap["companycard1"];
                               }}
@@ -782,14 +817,6 @@ const Managebestpractices = () => {
                           Overview
                         </p>
 
-                        {/* <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-3">
-                        {truncateText(company.description, 100)}
-                        {company.description.length > 50 && (
-                          <span className="text-[#F07EFF] underline ml-1">
-                            Read More
-                          </span>
-                        )}
-                      </p> */}
                         <p className="text-sm text-gray-600 mb-2 leading-snug break-words whitespace-pre-line">
                           {expandedDescriptions[company.id]
                             ? company.description
@@ -823,7 +850,10 @@ const Managebestpractices = () => {
       <Modal isOpen={createModalActive} onClose={closeCreateModal}>
         <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
           <h2 className="text-xl font-bold mb-4">Create New Best Practice</h2>
-          <form onSubmit={handleCreateSubmit} className="space-y-3 sm:space-y-4">
+          <form
+            onSubmit={handleCreateSubmit}
+            className="space-y-3 sm:space-y-4"
+          >
             <div>
               <label
                 htmlFor="create-title"
@@ -884,6 +914,44 @@ const Managebestpractices = () => {
               </select>
             </div>
 
+            {/* Tags Input for Create Modal */}
+            <div>
+              <label
+                htmlFor="create-tags"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Tags
+              </label>
+              <div className="w-full border border-gray-300 bg-white rounded-xl px-3 py-2">
+                <div className="flex flex-wrap gap-2 mb-1">
+                  {createTags.map((tag, idx) => (
+                    <span
+                      key={idx}
+                      className="flex items-center bg-[#f3f1ff] text-[#6269FF] px-3 py-1 rounded-full text-[14px]"
+                    >
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => removeTag(idx, true)}
+                        className="ml-1 text-[#6269FF] hover:text-red-500 font-bold"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  id="create-tags"
+                  className="w-full text-sm bg-white focus:outline-none placeholder-gray-400"
+                  placeholder="Add tags (e.g. therapy, online, free-consult)"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={(e) => handleTagKeyDown(e, true)}
+                />
+              </div>
+            </div>
+
             <div>
               <label
                 htmlFor="create-file"
@@ -929,6 +997,7 @@ const Managebestpractices = () => {
           </form>
         </div>
       </Modal>
+
 
       <Modal isOpen={activeModal === "bestpractices"} onClose={closeModal}>
         <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
@@ -1011,6 +1080,40 @@ const Managebestpractices = () => {
               </select>
             </div>
 
+            <label
+              htmlFor="interest"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Tags
+            </label>
+            <div className="w-full border border-gray-300 bg-white rounded-xl px-3 py-2">
+              <div className="flex flex-wrap gap-2 mb-1">
+                {tags.map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className="flex items-center bg-[#f3f1ff] text-[#6269FF] px-3 py-1 rounded-full text-[14px]"
+                  >
+                    {tag}
+                    <button
+                    type="button"
+                      onClick={() => removeTag(idx)}
+                      className="ml-1 text-[#6269FF] hover:text-red-500 font-bold"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <input
+                type="text"
+                className="w-full text-sm bg-white focus:outline-none placeholder-gray-400"
+                placeholder="Add tags (e.g. therapy, online, free-consult)"
+                value={editInputValue}
+                onChange={(e) => setEditInputValue(e.target.value)}
+                onKeyDown={(e)=>handleTagKeyDown(e, false)}
+              />
+            </div>
+
             <div>
               <label
                 htmlFor="file"
@@ -1035,11 +1138,13 @@ const Managebestpractices = () => {
               />
               {isEditMode && currentPractice?.file && (
                 <div className="mt-2">
-                  <p className="text-sm text-gray-600">
-                    Current file:{" "}
-                    {typeof currentPractice.file === "string"
-                      ? currentPractice.file.split("/").pop()
-                      : currentPractice.file.name}
+                  <p className="text-sm text-gray-600 break-all">
+                    Current file:
+                    <span className="block">
+                      {typeof currentPractice.file === "string"
+                        ? currentPractice.file.split("/").pop()
+                        : currentPractice.file.name}
+                    </span>
                   </p>
                 </div>
               )}
