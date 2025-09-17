@@ -380,7 +380,7 @@ const DashboardNavbar = ({
           {isProfileOpen && (
             <div className="flex flex-col gap-1 mt-3 pl-8">
               <NavLink
-                to={`/dashboard/user-profile/${loggedInUserID}`}
+                to={`/dashboard/userprofile/${loggedInUserID}`}
                 end
                 className={({ isActive }) =>
                   `px-3 py-3 rounded-lg w-full transition whitespace-nowrap ${
@@ -388,7 +388,7 @@ const DashboardNavbar = ({
                   }`
                 }
               >
-                My Profile
+                My True Profile
               </NavLink>
               <NavLink
                 to="/dashboard/user-profile"
