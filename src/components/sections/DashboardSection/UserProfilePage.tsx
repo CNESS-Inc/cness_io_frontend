@@ -748,6 +748,7 @@ const UserProfilePage = () => {
     try {
       const response = await GetProfileDetails();
       setProfileData(response.data.data);
+      console.log('response.data.data', response.data.data);
 
       if (response.data.data) {
         // Basic Info
