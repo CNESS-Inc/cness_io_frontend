@@ -1,9 +1,7 @@
 import {
-  Check,
   Eye,
   GraduationCap,
   Key,
-  Lightbulb,
   Network,
   Target,
 } from "lucide-react";
