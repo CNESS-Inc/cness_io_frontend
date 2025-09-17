@@ -1,4 +1,12 @@
-import { Check, Eye, GraduationCap, Key, Network, Target } from "lucide-react";
+import {
+  Check,
+  Eye,
+  GraduationCap,
+  Key,
+  Lightbulb,
+  Network,
+  Target,
+} from "lucide-react";
 import { Card, CardContent } from "../components/ui/Card";
 import {
   CardDescription,
@@ -6,19 +14,22 @@ import {
   CardTitle,
 } from "../components/ui/DashboardCard";
 import Button from "../components/ui/Button";
-import mentor_banner from "../../public/mentor_banner.png";
+import mentor_banner from "../../public/mentor_banner.jpg";
+import who_become from "../../public/who_become.jpg";
+import bulb from "../../src/assets/bulb.png";
+import applicationform from "../../public/applicationform.jpg";
 import { Input } from "../components/ui/input";
-import { cn } from "../lib/utils";
 import { useState } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { createMentor } from "../Common/ServerAPI";
+import clsx from "clsx";
 
 // Define types for the API response and form data
 //interface ApiResponse {
- // success: boolean;
-  //message?: string;
-  //data?: any;
+// success: boolean;
+//message?: string;
+//data?: any;
 //}
 
 interface MentorFormData {
@@ -62,31 +73,51 @@ const BecomeMentor = () => {
       icon: Eye,
       title: "Visibility & Recognition",
       description:
-        "Showcase your expertise to a professional network and build your professional credibility.",
+        "Gain credibility with a featured profile that highlights your expertise and impact.",
     },
     {
       icon: Network,
       title: "Expand Your Network",
       description:
-        "Connect with like-minded professionals, leaders, and organizations.",
+        "Build meaningful connections with conscious leaders, professionals, and organizations across the globe.",
     },
     {
       icon: Target,
-      title: "Impact & Legacy",
+      title: "Create Legacy ",
       description:
-        "Make a meaningful difference by sharing your expertise and helping others grow.",
+        "Leave a lasting imprint by guiding others toward values-based success.",
     },
     {
       icon: GraduationCap,
       title: "Continuous Learning",
       description:
-        "Gain fresh perspectives while mentoring and keep up with industry trends.",
+        "Stay ahead through the fresh ideas and perspectives shared by those you mentor.",
     },
     {
       icon: Key,
       title: "Exclusive Access",
       description:
-        "Early access to CNESS events, resources, and premier opportunities.",
+        "Unlock early access to CNESS events, programs, and collaborations.",
+    },
+  ];
+  const role = [
+    {
+      icon: Eye,
+      title: "Guide Certification Applicants",
+      description:
+        "Help individuals interpret their assessments, strengthen their submissions, and navigate the certification process with confidence.",
+    },
+    {
+      icon: Network,
+      title: "Deliver Transformative Learning",
+      description:
+        "Conduct CNESS-approved workshops, training sessions, and knowledge-sharing circles that bring conscious principles to life.",
+    },
+    {
+      icon: Target,
+      title: "Strengthen the Network",
+      description:
+        "Actively contribute to the ecosystem by sharing best practices, referring new mentors and partners, and modeling the DoCM principles with integrity.",
     },
   ];
 
@@ -94,22 +125,27 @@ const BecomeMentor = () => {
     {
       step: 1,
       title: "Apply",
-      description: "Fill out the mentor application form.",
+      description: "Apply online through the CNESS platform.",
     },
     {
       step: 2,
       title: "Review",
-      description: "Our team evaluates your expertise and profile.",
+      description: "Undergo a profile review to align values and expertise.",
     },
     {
       step: 3,
       title: "Onboarding",
-      description: "Once approved, you'll get access to your mentor dashboard.",
+      description: "Complete Mentor Training and Evaluation.",
     },
     {
       step: 4,
       title: "Grow Together",
-      description: "Fill out the mentor application form.",
+      description: "Receive your Certified Mentor Badge.",
+    },
+    {
+      step: 5,
+      title: "Grow Together",
+      description: "Access the Mentor Dashboard and begin guiding others.",
     },
   ];
 
@@ -125,9 +161,7 @@ const BecomeMentor = () => {
   };
 
   // Handle number input changes specifically
-  const handleNumberInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     // Only allow numbers, empty string, or 0
     if (value === "" || /^\d+$/.test(value)) {
@@ -157,7 +191,10 @@ const BecomeMentor = () => {
       const phoneNumber = phone.replace(countryCode, "").trim();
 
       // Convert year_of_experience to number (default to 0 if empty)
-      const yearOfExperience = formData.year_of_experience === "" ? 0 : Number(formData.year_of_experience);
+      const yearOfExperience =
+        formData.year_of_experience === ""
+          ? 0
+          : Number(formData.year_of_experience);
 
       const submissionData = {
         ...formData,
@@ -213,16 +250,16 @@ const BecomeMentor = () => {
             <div className="lg:col-span-4 space-y-6">
               <div className="space-y-4">
                 <h1 className="font-['Poppins',Helvetica] text-[42px] font-medium tracking-[-0.02em] leading-[54px] align-middle">
-                  Become a <br />
+                  Lead the Next <br />
+                  Wave of <br />
                   <span className="font-bold bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
-                    Mentor
+                    Conscious Leaders
                   </span>{" "}
-                  <br />
-                  with CNESS
                 </h1>
                 <p className="font-['Open_Sans',Helvetica] font-normal text-[16px] leading-[24.4px] tracking-normal uppercase text-[#64748B]">
-                  Share your knowledge, inspire <br /> growth, and make an
-                  impact.
+                  Become a CNESS Mentor and turn your wisdom into a force for
+                  transformation.Guide professionals, empower learners, and
+                  shape the future of conscious leadership.
                 </p>
               </div>
               <Button
@@ -230,7 +267,7 @@ const BecomeMentor = () => {
                 className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                 type="submit"
               >
-                Apply as Mentor
+                Apply to Become a Mentor
               </Button>
             </div>
 
@@ -245,25 +282,24 @@ const BecomeMentor = () => {
         </section>
 
         {/* What is Mentor Section */}
-        <section className="space-y-8">
+        <section className="space-y-8 py-[60px] bg-[#fff]">
           <div className="text-center space-y-2">
             <h2 className="font-['Poppins',Helvetica] font-medium text-[32px] leading-[54px] tracking-[-0.02em] text-center">
-              What is{" "}
+              Why Become a{" "}
               <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
-                Mentor?
+                CNESS Mentor
               </span>
             </h2>
+
             <div className="max-w-4xl mx-auto">
               <p className="font-['Open_Sans',Helvetica] font-normal text-[16px] leading-[24.38px] tracking-normal text-center text-[#64748B]">
-                Mentor by CNESS is a platform that connects mentors with
-                purpose-driven learners, creating opportunities to share
-                knowledge, experience, and guidance. As a mentor, you not only
-                inspire growth in others but also strengthen your own learning
-                journey. The program allows you to gain visibility, expand your
-                network, and build lasting impact within the community. By
-                mentoring, you contribute to shaping a conscious ecosystem where
-                wisdom and collaboration drive progress. Together, we create
-                meaningful change and a future built on purpose.
+                A mentor is more than a guide — they are the torchbearers of
+                conscious growth. CNESS Mentors are certified professionals who
+                extend their values, insights, and expertise to help others
+                succeed in their journey of certification and beyond. As a
+                Mentor, you not only support individuals in achieving their
+                goals but also contribute to a global movement where ethics,
+                responsibility, and purpose define success.
               </p>
             </div>
           </div>
@@ -273,44 +309,37 @@ const BecomeMentor = () => {
         <section className="space-y-12 bg-[#F5F7F9] px-6 sm:px-10 md:px-16 lg:px-22">
           <div className="text-center space-y-4">
             <h2 className="font-['Poppins',Helvetica] font-medium text-2xl sm:text-3xl lg:text-[32px] leading-snug sm:leading-[40px] lg:leading-[54px] tracking-[-0.02em]">
-              Benefits of{" "}
+              Your Role as a{" "}
               <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
-                Being a Mentor
+                CNESS Mentor
               </span>
             </h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {benefits.map((benefit, index) => (
+            {role.map((role, index) => (
               <Card
                 key={index}
-                className="group rounded-[20px] border border-[#DFDFDF] p-5 bg-white"
+                className="bg-white rounded-[32px] p-[30px] shadow-none"
               >
-                <CardHeader className="space-y-4 flex flex-col items-center">
-                  <div className="w-[58px] h-[58px] rounded-[10px] p-3 flex items-center justify-center bg-[#6340FF1A] group-hover:bg-primary/20 transition-colors">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="#6340FF"
-                      className="w-8.5 h-8.5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z"
-                      />
-                    </svg>
+                <CardHeader className="p-0 flex flex-row items-center justify-between mb-[25px]">
+                  <div className="font-['Poppins',Helvetica] font-medium text-[18px] leading-[24px] tracking-[-0.03em] align-middle text-[#B6B6B6]">
+                    {String(index + 1).padStart(3, "0")}
                   </div>
+
+                  <img
+                src={bulb}
+                alt="Professional mentor in modern office environment"
+                className="w-[34px] h-[34px]"
+              />
                 </CardHeader>
 
                 <CardContent>
-                  <CardTitle className="font-['Poppins',Helvetica] mb-[9px] font-medium text-[18px] leading-[24px] tracking-[-0.02em] align-middle text-[#222224] text-center">
-                    {benefit.title}
+                  <CardTitle className="font-['Poppins',Helvetica] mb-[9px] font-medium text-[20px] leading-[24px] tracking-[-0.02em] align-middle text-[#222224]">
+                    {role.title}
                   </CardTitle>
-                  <CardDescription className="font-['Open_Sans',Helvetica] font-normal text-[14px] leading-[24.4px] tracking-normal text-center align-middle text-[#64748B]">
-                    {benefit.description}
+                  <CardDescription className="font-['Open_Sans',Helvetica] font-normal text-[16px] leading-[24.4px] tracking-normal align-middle text-[#64748B]">
+                    {role.description}
                   </CardDescription>
                 </CardContent>
               </Card>
@@ -318,8 +347,181 @@ const BecomeMentor = () => {
           </div>
         </section>
 
+        {/* Benefits Section */}
+        <section className="space-y-12 bg-[#fff] px-6 sm:px-10 md:px-16 lg:px-22 py-[86px]">
+          <div className="text-center space-y-4">
+            <h2 className="font-['Poppins',Helvetica] font-medium text-2xl sm:text-3xl lg:text-[32px] leading-snug sm:leading-[40px] lg:leading-[54px] tracking-[-0.02em]">
+              Why You'll Love Being a{" "}
+              <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                Mentor
+              </span>
+            </h2>
+          </div>
+
+          {/* Grid container */}
+          <div className="flex flex-col items-center">
+            {/* First row with 3 benefits */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 w-full max-w-5xl">
+              {benefits.slice(0, 3).map((benefit, index) => (
+                <Card
+                  key={index}
+                  className="group rounded-[20px] border border-[#DFDFDF] p-5 bg-white"
+                >
+                  <CardHeader className="space-y-4 flex flex-col items-center">
+                    <div className="w-[58px] h-[58px] rounded-[10px] p-3 flex items-center justify-center bg-[#6340FF1A] group-hover:bg-primary/20 transition-colors">
+                      <benefit.icon className="w-8 h-8 text-[#6340FF]" />
+                    </div>
+                  </CardHeader>
+
+                  <CardContent>
+                    <CardTitle className="font-['Poppins',Helvetica] mb-[9px] font-medium text-[18px] leading-[24px] tracking-[-0.02em] align-middle text-[#222224] text-center">
+                      {benefit.title}
+                    </CardTitle>
+                    <CardDescription className="font-['Open_Sans',Helvetica] font-normal text-[14px] leading-[24.4px] tracking-normal text-center align-middle text-[#64748B]">
+                      {benefit.description}
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Second row with 2 centered benefits */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
+              {benefits.slice(3, 5).map((benefit, index) => (
+                <Card
+                  key={index + 3}
+                  className="group rounded-[20px] border border-[#DFDFDF] p-5 bg-white"
+                >
+                  <CardHeader className="space-y-4 flex flex-col items-center">
+                    <div className="w-[58px] h-[58px] rounded-[10px] p-3 flex items-center justify-center bg-[#6340FF1A] group-hover:bg-primary/20 transition-colors">
+                      <benefit.icon className="w-8 h-8 text-[#6340FF]" />
+                    </div>
+                  </CardHeader>
+
+                  <CardContent>
+                    <CardTitle className="font-['Poppins',Helvetica] mb-[9px] font-medium text-[18px] leading-[24px] tracking-[-0.02em] align-middle text-[#222224] text-center">
+                      {benefit.title}
+                    </CardTitle>
+                    <CardDescription className="font-['Open_Sans',Helvetica] font-normal text-[14px] leading-[24.4px] tracking-normal text-center align-middle text-[#64748B]">
+                      {benefit.description}
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="relative overflow-hidden  bg-[#F5F7F9]">
+          <div className="grid lg:grid-cols-12 gap-8 items-center p-8 lg:p-12">
+            <div className="lg:col-span-8 space-y-6">
+              <div className="space-y-4">
+                <h1 className="font-['Poppins',Helvetica] text-[42px] font-medium tracking-[-0.02em] leading-[54px] align-middle">
+                  Who can become a{" "}
+                  <span className="font-bold bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                    Mentor?
+                  </span>
+                </h1>
+                <ul className="list-disc pl-5">
+                  <li className="font-['Open_Sans',Helvetica] font-normal text-[16px] leading-[30.4px] tracking-[0px] text-[#64748B]">
+                    Hold at least an Aspiring CNESS Certification (Inspired and
+                    Luminary Mentors are highly valued).
+                  </li>
+                  <li className="font-['Open_Sans',Helvetica] font-normal text-[16px] leading-[30.4px] tracking-[0px] text-[#64748B]">
+                    Complete Mentor Training and earn your Certified Mentor
+                    Badge.
+                  </li>
+                  <li className="font-['Open_Sans',Helvetica] font-normal text-[16px] leading-[30.4px] tracking-[0px] text-[#64748B]">
+                    Uphold CNESS’s eight-pillar framework for conscious growth
+                    and leadership.
+                  </li>
+                </ul>
+              </div>
+              <Button
+                variant="gradient-primary"
+                className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
+                type="submit"
+              >
+                Apply to Become a Mentor
+              </Button>
+            </div>
+
+            <div className="lg:col-span-4 relative">
+              <img
+                src={who_become}
+                alt="Professional mentor in modern office environment"
+                className="rounded-[30px] shadow-2xl w-full h-auto object-cover"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-white px-6 sm:px-10 md:px-16 lg:px-22 py-[60px] mb-0">
+          <div className="text-center mb-10">
+            <h2 className="font-['Poppins',Helvetica] font-medium text-2xl sm:text-3xl lg:text-[32px] leading-snug sm:leading-[40px] lg:leading-[54px] tracking-[-0.02em]">
+              Your Path to Becoming a{" "}
+              <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                Mentor
+              </span>
+            </h2>
+          </div>
+
+          <div className="relative flex justify-between">
+            {/* grey background line */}
+            {/* grey background line */}
+            <div
+              className="absolute top-5 left-[calc(theme(spacing.5))] right-[calc(theme(spacing.5))] h-1 bg-[#6340FF]"
+              style={{
+                // start at center of first circle, end at center of last circle:
+                left: "calc(5.25rem)", // 1.25rem = h-10/2 = center of circle
+                right: "calc(5.25rem)",
+              }}
+            />
+
+            {/* active progress line */}
+            <div
+              className="absolute top-5 h-1 bg-[#6340FF]"
+              style={{
+                left: "calc(1.25rem)", // start at center of first circle
+                width:
+                  steps.length > 1
+                    ? `calc((( ${
+                        ((currentStep - 1) / (steps.length - 1)) * 100
+                      }% ) - 1.25rem))`
+                    : "0%",
+              }}
+            />
+
+            {steps.map((step, index) => {
+              const stepNumber = index + 1;
+
+              return (
+                <div key={index} className="flex flex-col items-center flex-1">
+                  {/* Circle */}
+                  <div
+                    className={clsx(
+                      "z-10 flex h-10 w-10 items-center justify-center rounded-full bg-[#6340FF] text-white transition-colors"
+                    )}
+                  >
+                    {stepNumber}
+                  </div>
+
+                  {/* Title */}
+                  {/* <h3 className="mt-4 text-center font-['Poppins',Helvetica] text-sm font-semibold text-gray-800">
+                    {step.title}
+                  </h3> */}
+                  {/* Description */}
+                  <p className="mt-[21px] text-center font-['Open_Sans',Helvetica] text-xs text-gray-500 max-w-[150px]">
+                    {step.description}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
         {/* Application Form Section */}
-        <section className="space-y-10 bg-white py-10">
+        <section className="space-y-10 bg-[#F5F7F9] py-10">
           <div className="text-center space-y-4">
             <h2 className="font-['Poppins',Helvetica] font-medium text-[32px] leading-[54px] tracking-[-0.02em] align-middle">
               <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
@@ -331,62 +533,11 @@ const BecomeMentor = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 p-4">
             {/* Steps - col-3 */}
             <div className="lg:col-span-3 space-y-6">
-              {steps.map((step, index) => {
-                const stepNumber = index + 1;
-                const isActive = currentStep === stepNumber;
-                const isCompleted = currentStep > stepNumber;
-                const isLast = index === steps.length - 1;
-
-                return (
-                  <div key={index} className="relative flex items-start mb-0">
-                    {/* Step Circle + Line */}
-                    <div className="flex flex-col items-center">
-                      <div
-                        className={cn(
-                          "flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 mt-0",
-                          {
-                            "bg-[#6340FF] text-white": isActive || isCompleted,
-                            "bg-gray-200 text-gray-500":
-                              !isActive && !isCompleted,
-                          }
-                        )}
-                      >
-                        {isActive || isCompleted ? (
-                          <Check className="h-5 w-5" />
-                        ) : (
-                          <span className="text-sm font-medium">
-                            {stepNumber}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* vertical line */}
-                      {!isLast && (
-                        <div
-                          className={cn("h-16 w-0.5", {
-                            "bg-[#6340FF]": isActive || isCompleted,
-                            "bg-gray-200": !isActive && !isCompleted,
-                          })}
-                        />
-                      )}
-                    </div>
-
-                    {/* Step Content */}
-                    <div className="ml-4 flex-1">
-                      <h3
-                        className={cn(
-                          "font-['Poppins',Helvetica] text-lg font-semibold transition-colors duration-300 text-[#6340FF]"
-                        )}
-                      >
-                        {step.title}
-                      </h3>
-                      <p className="font-['Open_Sans',Helvetica] mt-1 text-sm text-gray-500">
-                        {step.description}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
+              <img
+                src={applicationform}
+                alt="Professional mentor in modern office environment"
+                className="rounded-[30px] shadow-2xl w-full h-full object-cover"
+              />
             </div>
 
             {/* Form - col-9 */}
