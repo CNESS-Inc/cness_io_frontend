@@ -922,7 +922,7 @@ const Managebestpractices = () => {
               >
                 Tags
               </label>
-              <div className="w-full border border-gray-300 bg-white rounded-xl px-3 py-2">
+              <div className="w-full border border-gray-300 bg-white rounded-md px-3 py-2">
                 <div className="flex flex-wrap gap-2 mb-1">
                   {createTags.map((tag, idx) => (
                     <span
@@ -1086,7 +1086,7 @@ const Managebestpractices = () => {
             >
               Tags
             </label>
-            <div className="w-full border border-gray-300 bg-white rounded-xl px-3 py-2">
+            <div className="w-full border border-gray-300 bg-white rounded-md px-3 py-2">
               <div className="flex flex-wrap gap-2 mb-1">
                 {tags.map((tag, idx) => (
                   <span
