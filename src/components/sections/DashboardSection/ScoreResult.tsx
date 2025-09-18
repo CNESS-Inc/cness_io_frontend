@@ -165,7 +165,6 @@ const ScoreResult = () => {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const { showToast } = useToast();
   const [scoreData, setScoreData] = useState<any>(null);
-  console.log("🚀 ~ ScoreResult ~ scoreData:", scoreData);
   const [loading, setLoading] = useState(true);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [copy, setCopy] = useState<Boolean>(false)
@@ -706,11 +705,16 @@ const ScoreResult = () => {
                       <img
                         src={
                           scoreData.badge.level === "Aspiring"
-                            ? indv_aspiring
-                            : scoreData.badge.level === "Inspired"
-                              ? indv_inspried
-                              : indv_leader
+                            ? 'https://cdn.cness.io/inspired.webp'
+                            : 'https://cdn.cness.io/aspiring.webp'
                         }
+                        // src={
+                        //   scoreData.badge.level === "Aspiring"
+                        //     ? indv_aspiring
+                        //     : scoreData.badge.level === "Inspired"
+                        //       ? indv_inspried
+                        //       : indv_leader
+                        // }
                         alt={`${scoreData.badge.level} Badge`}
                         className="h-[87px] w-auto object-contain"
                       />

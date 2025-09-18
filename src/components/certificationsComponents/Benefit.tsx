@@ -65,8 +65,8 @@ export default function Benefit() {
         <div className="w-full">
           <span
             style={{ fontFamily: "Poppins, sans-serif" }}
-            className="badge text-[#D748EA] border border-[#F07EFF] text-xs font-medium px-4 py-1 rounded-[100px] inline-block 
-            rounded-tl-[100px] rounded-br-[100px] rounded-tr-[10px] rounded-bl-[10px] bg-transperant"
+            className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-[500] px-4 py-1 rounded-[100px] inline-block 
+               rounded-tl-[100px] rounded-br-[100px] rounded-tr-[10px] rounded-bl-[10px] bg-transperant"
           >
             Why it matters
           </span>
@@ -93,7 +93,7 @@ export default function Benefit() {
           {benefits.map((item, idx) => (
             <div
               key={idx}
-              className="flex items-center gap-2 rounded-full border border-[#CBD5E1] bg-white px-5 py-2 transition cursor-pointer"
+              className="flex items-center gap-2 rounded-full border border-[#CBD5E1] bg-white px-5 py-2 transition"
             >
               <img src={item.icon} alt={item.label} className="w-6 h-6" />
               <span className="font-normal text-base text-[#64748B] font-['Open Sans'] openSans">
@@ -119,7 +119,7 @@ export default function Benefit() {
                 >
                   {item.title}
                 </h3>
-                <p className="openSans font-['Open Sans'] font-normal text-sm lg:text-base text-[#64748B] mt-1">
+                <p className="openSans font-['Open Sans'] font-light text-sm lg:text-base text-[#64748B] mt-1">
                   {item.desc}
                 </p>
               </div>
