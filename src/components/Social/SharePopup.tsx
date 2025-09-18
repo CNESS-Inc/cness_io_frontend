@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   FacebookShareButton,
   LinkedinShareButton,
@@ -26,9 +26,36 @@ const SharePopup: React.FC<SharePopupProps> = ({
   position = "bottom",
   className = "",
 }) => {
-  const shareUrl = url || `https://dev.cness.io/directory/user-profile/${localStorage.getItem("Id")}`;
+  const [visible, setVisible] = useState(isOpen);
+  const popupRef = useRef<HTMLDivElement>(null);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setVisible(isOpen);
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!visible) return;
+
+    const handleClick = (e: MouseEvent) => {
+      if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
+        setVisible(false); // close on outside click
+      }
+    };
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setVisible(false); // close on ESC
+    };
+
+    document.addEventListener("mousedown", handleClick);
+    document.addEventListener("keydown", handleEsc);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleEsc);
+    };
+  }, [visible]);
+
+  if (!visible) return null;
+
+  const shareUrl = url || `https://dev.cness.io/directory/user-profile/${localStorage.getItem("Id")}`;
 
   const getPositionClasses = () => {
     switch (position) {
@@ -47,6 +74,7 @@ const SharePopup: React.FC<SharePopupProps> = ({
 
   return (
     <div
+      ref={popupRef}
       className={`absolute ${getPositionClasses()} bg-white shadow-lg rounded-lg p-3 z-10 ${className}`}
     >
       <ul className="flex items-center gap-4">
