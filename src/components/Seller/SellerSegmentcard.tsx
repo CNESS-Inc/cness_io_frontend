@@ -566,41 +566,95 @@ export function BestPracticesSection({
         </div>
       </div>
       <HeaderDivider />
-
-      {/* Subheader + arrows (desktop arrows only) */}
-      <div className="mt-3 flex items-center justify-between">
-        <div className="font-opensans text-[14px] leading-[100%] text-[#222224]">
-          Recommended
+      {items.length > 0 ? (
+      <>
+        {/* Subheader + arrows (desktop arrows only) */}
+        <div className="mt-3 flex items-center justify-between">
+          <div className="font-opensans text-[14px] leading-[100%] text-[#222224]">
+            Recommended
+          </div>
+          <div className="hidden sm:flex items-center gap-2">
+            <CircleIconBtn ariaLabel="Previous" onClick={prev}>
+              <ArrowLeft className="h-4 w-4" />
+            </CircleIconBtn>
+            <CircleIconBtn ariaLabel="Next" onClick={next}>
+              <ArrowRight className="h-4 w-4" />
+            </CircleIconBtn>
+          </div>
         </div>
-        <div className="hidden sm:flex items-center gap-2">
-          <CircleIconBtn ariaLabel="Previous" onClick={prev}>
-            <ArrowLeft className="h-4 w-4" />
-          </CircleIconBtn>
-          <CircleIconBtn ariaLabel="Next" onClick={next}>
-            <ArrowRight className="h-4 w-4" />
-          </CircleIconBtn>
+
+        {/* --- MOBILE list (horizontal scroll, snap) --- */}
+        <div className="relative sm:hidden mt-3">
+          {/* Fade edges to hint scroll */}
+          <div className="pointer-events-none absolute left-0 top-0 h-full w-6 bg-gradient-to-r from-white to-transparent" />
+          <div className="pointer-events-none absolute right-0 top-0 h-full w-6 bg-gradient-to-l from-white to-transparent" />
+
+          {/* Scrollable row */}
+          <div
+            ref={listRef}
+            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2
+                      [-ms-overflow-style:none] [scrollbar-width:none]
+                      [&::-webkit-scrollbar]:hidden"
+          >
+            {items.map((bp) => (
+              <div
+                key={bp.id}
+                className="snap-start flex-shrink-0 w-[332px] h-[317px] rounded-[12px] border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3"
+              >
+                {/* Image */}
+                <div className="h-[135px] rounded-[8px] overflow-hidden">
+                  <img
+                    src={bp.image}
+                    alt={bp.title}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+
+                {/* Content */}
+                <div className="flex flex-col flex-1">
+                  <div className="font-poppins font-medium text-[16px] leading-[120%] text-[#0F1728]">
+                    {bp.title}
+                  </div>
+                  <p className="mt-3 font-opensans text-[14px] leading-[150%] text-[#667085] line-clamp-2">
+                    {bp.description}
+                  </p>
+                  <button
+                    className="mt-auto w-full h-[37px] rounded-full bg-[#7077FE] px-3 py-2
+                              font-opensans text-[14px] font-semibold text-white
+                              shadow hover:bg-[#5A61E8] transition"
+                    onClick={() => onFollow?.(bp)}
+                  >
+                    Follow
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Tiny overlay arrows for mobile (optional) */}
+          <button
+            onClick={() => scrollByCard(-1)}
+            className="absolute left-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/90 border border-[#E4E7EC] shadow-sm flex items-center justify-center"
+            aria-label="Scroll left"
+          >
+            <ArrowLeft className="h-4 w-4 text-[#7A7F8C]" />
+          </button>
+          <button
+            onClick={() => scrollByCard(1)}
+            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/90 border border-[#E4E7EC] shadow-sm flex items-center justify-center"
+            aria-label="Scroll right"
+          >
+            <ArrowRight className="h-4 w-4 text-[#7A7F8C]" />
+          </button>
         </div>
-      </div>
 
-      {/* --- MOBILE list (horizontal scroll, snap) --- */}
-      <div className="relative sm:hidden mt-3">
-        {/* Fade edges to hint scroll */}
-        <div className="pointer-events-none absolute left-0 top-0 h-full w-6 bg-gradient-to-r from-white to-transparent" />
-        <div className="pointer-events-none absolute right-0 top-0 h-full w-6 bg-gradient-to-l from-white to-transparent" />
-
-        {/* Scrollable row */}
-        <div
-          ref={listRef}
-          className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2
-                     [-ms-overflow-style:none] [scrollbar-width:none]
-                     [&::-webkit-scrollbar]:hidden"
-        >
-          {items.map((bp) => (
+        {/* --- DESKTOP list (keep your 2-up pager) --- */}
+        <div className="mt-3 hidden sm:flex gap-4">
+          {visible.map((bp) => (
             <div
               key={bp.id}
-              className="snap-start flex-shrink-0 w-[332px] h-[317px] rounded-[12px] border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3"
+              className="flex-shrink-0 w-[332px] h-[317px] rounded-[12px] border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3"
             >
-              {/* Image */}
               <div className="h-[135px] rounded-[8px] overflow-hidden">
                 <img
                   src={bp.image}
@@ -609,18 +663,17 @@ export function BestPracticesSection({
                 />
               </div>
 
-              {/* Content */}
               <div className="flex flex-col flex-1">
                 <div className="font-poppins font-medium text-[16px] leading-[120%] text-[#0F1728]">
                   {bp.title}
                 </div>
-                <p className="mt-3 font-opensans text-[14px] leading-[150%] text-[#667085] line-clamp-2">
+                <p className="mt-3 font-opensans text-[16px] leading-[150%] text-[#667085] line-clamp-2">
                   {bp.description}
                 </p>
                 <button
                   className="mt-auto w-full h-[37px] rounded-full bg-[#7077FE] px-3 py-2
-                             font-opensans text-[14px] font-semibold text-white
-                             shadow hover:bg-[#5A61E8] transition"
+                            font-opensans text-[14px] font-semibold text-white
+                            shadow hover:bg-[#5A61E8] transition"
                   onClick={() => onFollow?.(bp)}
                 >
                   Follow
@@ -630,81 +683,56 @@ export function BestPracticesSection({
           ))}
         </div>
 
-        {/* Tiny overlay arrows for mobile (optional) */}
-        <button
-          onClick={() => scrollByCard(-1)}
-          className="absolute left-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/90 border border-[#E4E7EC] shadow-sm flex items-center justify-center"
-          aria-label="Scroll left"
-        >
-          <ArrowLeft className="h-4 w-4 text-[#7A7F8C]" />
-        </button>
-        <button
-          onClick={() => scrollByCard(1)}
-          className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/90 border border-[#E4E7EC] shadow-sm flex items-center justify-center"
-          aria-label="Scroll right"
-        >
-          <ArrowRight className="h-4 w-4 text-[#7A7F8C]" />
-        </button>
-      </div>
+        {/* Dots: mobile shows one dot per card; desktop shows one per page */}
+        {/* Mobile dots */}
+        <div className="mt-4 flex justify-center gap-1 sm:hidden">
+          {items.map((_, i) => (
+            <span
+              key={i}
+              className={`h-1.5 w-1.5 rounded-full ${
+                i === mobileIndex ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
+              }`}
+            />
+          ))}
+        </div>
 
-      {/* --- DESKTOP list (keep your 2-up pager) --- */}
-      <div className="mt-3 hidden sm:flex gap-4">
-        {visible.map((bp) => (
-          <div
-            key={bp.id}
-            className="flex-shrink-0 w-[332px] h-[317px] rounded-[12px] border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3"
-          >
-            <div className="h-[135px] rounded-[8px] overflow-hidden">
-              <img
-                src={bp.image}
-                alt={bp.title}
-                className="h-full w-full object-cover"
-              />
-            </div>
-
-            <div className="flex flex-col flex-1">
-              <div className="font-poppins font-medium text-[16px] leading-[120%] text-[#0F1728]">
-                {bp.title}
-              </div>
-              <p className="mt-3 font-opensans text-[16px] leading-[150%] text-[#667085] line-clamp-2">
-                {bp.description}
-              </p>
-              <button
-                className="mt-auto w-full h-[37px] rounded-full bg-[#7077FE] px-3 py-2
-                           font-opensans text-[14px] font-semibold text-white
-                           shadow hover:bg-[#5A61E8] transition"
-                onClick={() => onFollow?.(bp)}
+        {/* Desktop dots */}
+        <div className="mt-4 hidden sm:flex justify-center gap-1">
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <span
+              key={i}
+              className={`h-1.5 w-1.5 rounded-full ${
+                i === page ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
+              }`}
+            />
+          ))}
+        </div>
+      </>
+      ) : (
+        <>
+          <div className="text-center text-sm text-[#667085] py-4">
+            <div className="py-8">
+              <svg
+                className="w-20 h-20 text-purple-500 mx-auto mb-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                Follow
-              </button>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                />
+              </svg>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-3">
+                No data available!
+              </h2>
             </div>
           </div>
-        ))}
-      </div>
-
-      {/* Dots: mobile shows one dot per card; desktop shows one per page */}
-      {/* Mobile dots */}
-      <div className="mt-4 flex justify-center gap-1 sm:hidden">
-        {items.map((_, i) => (
-          <span
-            key={i}
-            className={`h-1.5 w-1.5 rounded-full ${
-              i === mobileIndex ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
-            }`}
-          />
-        ))}
-      </div>
-      {/* Desktop dots */}
-      <div className="mt-4 hidden sm:flex justify-center gap-1">
-        {Array.from({ length: totalPages }).map((_, i) => (
-          <span
-            key={i}
-            className={`h-1.5 w-1.5 rounded-full ${
-              i === page ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
-            }`}
-          />
-        ))}
-      </div>
+        </>
+      )}
     </Card>
   );
 }
@@ -1024,8 +1052,8 @@ export function SocialStackCard({
                   />
                   <div className="min-w-0">
                     <div className="truncate text-[14px] font-semibold text-[#0F1728]">
-                      {item.sender_profile.first_name}{" "}
-                      {item.sender_profile.last_name}
+                      {/*{item.sender_profile.first_name}{" "}
+                      {item.sender_profile.last_name}*/}
                     </div>
                     <div className="truncate text-[14px] text-[#98A2B3]">
                       {item.description}

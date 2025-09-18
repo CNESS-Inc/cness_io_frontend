@@ -189,7 +189,7 @@ export const EndPoint = {
   bp_comment_reply: "/best-practice/comment/reply",
   singleBp: "/best-practice/get",
   followBp: "/best-practice/follow",
-  getFollowBp: "/best-practice/get/follow",
+  getFollowBp: "/best-practice/get-follow",
   user_notification: "/notification",
   notification_count: "/notification/count",
   update_notification: "/notification/update-status",

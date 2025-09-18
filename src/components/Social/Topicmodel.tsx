@@ -53,10 +53,15 @@ export default function TopicModal({
         <h2 className="text-xl font-semibold text-center mb-3 text-purple-700">
           Choose Your Conscious Topics
         </h2>
+        { topics.length > 0 ? (
         <p className="text-gray-600 text-center mb-6">
           What’s on your mind? Pick topics to share and explore.
         </p>
-
+        ) : (
+          <p className="text-gray-600 text-center mb-6">
+            No topics available!
+          </p>
+        )}
         <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto">
           {topics.map((topic) => (
             <button
