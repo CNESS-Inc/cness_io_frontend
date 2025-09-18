@@ -22,9 +22,6 @@ import {
   FaWhatsapp,
 } from "react-icons/fa";
 import badgeicon from "../../../assets/badgeicon.svg";
-import indv_aspiring from "../../../assets/indv_aspiring.svg";
-import indv_inspried from "../../../assets/indv_inspired.svg";
-import indv_leader from "../../../assets/indv_leader.svg";
 import { MdContentCopy } from "react-icons/md";
 
 // import { BiShare } from "react-icons/bi";
