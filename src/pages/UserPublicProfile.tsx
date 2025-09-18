@@ -31,6 +31,8 @@ import bcard4 from "../assets/Bcard4.png";
 import inspiredbadge from "../assets/Inspired _ Badge.png";
 import { FaLocationDot } from "react-icons/fa6";
 import { normalizeFileUrl } from "../components/ui/Normalizefileurl";
+import SharePopup from "../components/Social/SharePopup";
+import { buildShareUrl } from "../lib/utils";
 
 export default function UserProfileView() {
   const [userDetails, setUserDetails] = useState<any>();
@@ -41,8 +43,13 @@ export default function UserProfileView() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
-  //const navigate = useNavigate();
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const handleShareToggle = () => setIsShareOpen((prev) => !prev);
+  const handleShareClose = () => setIsShareOpen(false);
   const loggedInUserID = localStorage.getItem("Id");
+  const isOwnProfile =
+    (id && String(id) === String(loggedInUserID)) ||
+    (userDetails?.user_id && String(userDetails.user_id) === String(loggedInUserID));
 
   const slugify = (str: string) => {
     return str
@@ -207,9 +214,9 @@ export default function UserProfileView() {
   }
 
   return (
-    <div className="relative w-full max-w-[2000px] mx-auto px-3 mt-4">
+    <div className="relative mx-auto w-full mx-auto px-3 mt-4">
       {/* Banner */}
-      <div className="w-full h-[200px] md:h-[250px] rounded-[8px] overflow-hidden">
+      <div className="w-full h-[180px] sm:h-[220px] md:h-[260px] lg:h-[300px] xl:h-[320px] rounded-[8px]">
         <img
           src={
             userDetails?.profile_banner || "https://cdn.cness.io/banner.webp"
@@ -220,14 +227,14 @@ export default function UserProfileView() {
       </div>
 
       {/* White Card (equal width to banner) */}
-      <div className="relative w-full bg-white rounded-t-[12px] shadow border border-[#ECEEF2] -mt-[2px] px-6 pt-[35px]">
+      <div className="relative w-full bg-white rounded-t-[12px] shadow border border-[#ECEEF2] -mt-[2px] px-3 sm:px-4 md:px-6 lg:px-8 xl:px-10 pt-[24px] md:pt-[30px] xl:pt-[35px]">
         {/* Profile Image (overlapping left) */}
-        <div className="absolute -top-[80px] left-1 md:-top-[120px] md:left-[10px]">
-          <div className="w-[150px] h-[150px] md:w-[250px] md:h-[250px] rounded-[10px] border-[6px] border-white object-cover shadow">
+        <div className="absolute -top-[70px] left-2 sm:-top-[90px] sm:left-3 md:-top-[110px] md:left-[10px] lg:-top-[120px] lg:left-[12px]">
+          <div className="rounded-[10px] p-[6px] border-white object-cover shadow w-[110px] h-[110px] sm:w-[140px] sm:h-[140px] md:w-[190px] md:h-[190px] lg:w-[250px] lg:h-[250px]">
             <img
               src={
                 userDetails?.profile_picture &&
-                userDetails?.profile_picture !== "http://localhost:5026/file/"
+                  userDetails?.profile_picture !== "http://localhost:5026/file/"
                   ? userDetails?.profile_picture
                   : "/profile.png"
               }
@@ -243,18 +250,17 @@ export default function UserProfileView() {
         </div>
 
         {/* Tabs - inside white card */}
-        <div className="relative flex flex-col md:flex-row justify-center items-center gap-4 md:gap-6 mt-4 md:-mt-2">
+        <div className="relative flex flex-col md:flex-row justify-center items-center gap-3 sm:gap-4 md:gap-6 mt-3 md:mt-2">
           {/* Tabs */}
           <div>
             {/* Tabs */}
             <div className="flex justify-center gap-6 -mt-2">
               <Button
                 onClick={() => setActiveTab("about")}
-                className={`relative py-3 font-['Open_Sans'] text-[14px] leading-[100%] ${
-                  activeTab === "about"
-                    ? "font-bold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent"
-                    : "font-normal text-[#64748B]"
-                }`}
+                className={`relative py-3 font-['Open_Sans'] text-[14px] leading-[100%] ${activeTab === "about"
+                  ? "font-bold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent"
+                  : "font-normal text-[#64748B]"
+                  }`}
               >
                 About Me
                 {activeTab === "about" && (
@@ -264,11 +270,10 @@ export default function UserProfileView() {
 
               <Button
                 onClick={() => setActiveTab("best")}
-                className={`relative py-3 font-['Open_Sans'] text-[14px] leading-[100%] ${
-                  activeTab === "best"
-                    ? "font-bold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent"
-                    : "font-normal text-[#64748B]"
-                }`}
+                className={`relative py-3 font-['Open_Sans'] text-[14px] leading-[100%] ${activeTab === "best"
+                  ? "font-bold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent"
+                  : "font-normal text-[#64748B]"
+                  }`}
               >
                 My Best Practices
                 {activeTab === "best" && (
@@ -287,7 +292,7 @@ export default function UserProfileView() {
           {/* LEFT column */}
           <div className="col-span-12 lg:col-span-3 mt-[60px] w-full lg:w-[250px] lg:-ml-3">
             {/* Profile Section */}
-            <div className=" border-b border-[#E5E5E5] p-4 overflow-hidden">
+            <div className=" border-b border-[#E5E5E5] p-4">
               <h2 className="font-['Poppins'] font-semibold text-[24px] leading-[21px] text-[#000000]">
                 {userDetails?.first_name} {userDetails?.last_name}
               </h2>
@@ -336,52 +341,62 @@ export default function UserProfileView() {
 
               {/* Buttons */}
               <div className="mt-4 space-y-2">
-                <button
-                  className="w-full h-9 rounded-full 
-             bg-gradient-to-r from-[#7077FE] via-[#9747FF] to-[#F07EFF] 
-             font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
-             text-white align-middle"
-                >
-                  + Resonate
-                </button>
-                <button
-                  onClick={() => handleFriend(userDetails?.user_id)}
-                  disabled={userDetails?.user_id === loggedInUserID} // 👈 disable on own profile
-                  className={`w-full h-9 rounded-full border border-[#ECEEF2] 
+                {!isOwnProfile && (
+                  <button
+                    className="w-full h-9 rounded-full 
+                bg-gradient-to-r from-[#7077FE] via-[#9747FF] to-[#F07EFF] 
+                font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
+                text-white align-middle"
+                  >
+                    + Resonate
+                  </button>
+                )}
+                {!isOwnProfile && (
+                  <button
+                    onClick={() => handleFriend(userDetails?.user_id)}
+                    disabled={userDetails?.user_id === loggedInUserID} // 👈 disable on own profile
+                    className={`w-full h-9 rounded-full border border-[#ECEEF2] 
              font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
              flex items-center justify-center gap-2
-             ${
-               userDetails?.user_id === loggedInUserID
-                 ? "bg-gray-200 text-gray-500 cursor-not-allowed" // 👈 styling when disabled
-                 : userDetails?.if_friend &&
-                   userDetails?.friend_request_status === "ACCEPT"
-                 ? "bg-green-100 text-green-700"
-                 : !userDetails?.if_friend &&
-                   userDetails?.friend_request_status === "PENDING"
-                 ? "bg-yellow-100 text-yellow-700"
-                 : "bg-[#FFFFFF] text-[#0B3449] hover:bg-indigo-600"
-             }`}
-                >
-                  <UserRoundPlus className="w-4 h-4" />
-                  {userDetails?.user_id === loggedInUserID
-                    ? "It's You" // 👈 label when disabled
-                    : userDetails?.if_friend &&
-                      userDetails?.friend_request_status === "ACCEPT"
-                    ? "Connected"
-                    : !userDetails?.if_friend &&
-                      userDetails?.friend_request_status === "PENDING"
-                    ? "Requested..."
-                    : "Connect"}
-                </button>
+             ${userDetails?.user_id === loggedInUserID
+                        ? "bg-gray-200 text-gray-500 cursor-not-allowed" // 👈 styling when disabled
+                        : userDetails?.if_friend &&
+                          userDetails?.friend_request_status === "ACCEPT"
+                          ? "bg-green-100 text-green-700"
+                          : !userDetails?.if_friend &&
+                            userDetails?.friend_request_status === "PENDING"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-[#FFFFFF] text-[#0B3449] hover:bg-indigo-600"
+                      }`}
+                  >
+                    <UserRoundPlus className="w-4 h-4" />
+                    {userDetails?.if_friend && userDetails?.friend_request_status === "ACCEPT"
+                      ? "Connected"
+                      : !userDetails?.if_friend && userDetails?.friend_request_status === "PENDING"
+                        ? "Requested..."
+                        : "Connect"}
+                  </button>
+                )}
 
-                <button
-                  className="w-full h-9 rounded-full border border-[#ECEEF2] 
+                <div className="relative">
+                  <button
+                    onClick={handleShareToggle}
+                    className="w-full h-9 rounded-full border border-[#ECEEF2] 
              font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
              text-[#0B3449] flex items-center justify-center gap-2"
-                >
-                  <Share2 className="w-4 h-4" />
-                  Share
-                </button>
+                  >
+                    <Share2 className="w-4 h-4" />
+                    Share
+                  </button>
+                  {isShareOpen && (
+                    <SharePopup
+                      isOpen={true}
+                      onClose={handleShareClose}
+                      url={buildShareUrl()}   // 👈 pass dynamic or static url
+                      position="bottom"
+                    />
+                  )}
+                </div>
               </div>
             </div>
 
@@ -397,10 +412,10 @@ export default function UserProfileView() {
                     userDetails?.level?.level === "Aspiring"
                       ? "https://cdn.cness.io/aspiring.webp"
                       : userDetails?.level?.level === "Inspired"
-                      ? "https://cdn.cness.io/inspired.webp"
-                      : userDetails?.level?.level === "Leader"
-                      ? "https://cdn.cness.io/leader1.webp"
-                      : inspiredbadge // fallback if null or undefined
+                        ? "https://cdn.cness.io/inspired.webp"
+                        : userDetails?.level?.level === "Leader"
+                          ? "https://cdn.cness.io/leader1.webp"
+                          : inspiredbadge // fallback if null or undefined
                   }
                   alt={`${userDetails?.level?.level || "CNESS"} Badge`}
                   className="w-12 h-12"
@@ -734,8 +749,7 @@ export default function UserProfileView() {
                                   )
                                 ) {
                                   navigate(
-                                    `/dashboard/bestpractices/${
-                                      practice.id
+                                    `/dashboard/bestpractices/${practice.id
                                     }/${slugify(practice.title)}`,
                                     {
                                       state: {
@@ -749,9 +763,8 @@ export default function UserProfileView() {
                             >
                               <BestPracticeCard
                                 name={
-                                  `${practice?.profile?.first_name || ""} ${
-                                    practice?.profile?.last_name || ""
-                                  }`.trim() || "CNESS User"
+                                  `${practice?.profile?.first_name || ""} ${practice?.profile?.last_name || ""
+                                    }`.trim() || "CNESS User"
                                 }
                                 username={practice?.user?.username || "user"}
                                 profileImage={
@@ -763,7 +776,7 @@ export default function UserProfileView() {
                                   practice?.file
                                     ? normalizeFileUrl(practice.file)
                                     : bcard1 ||
-                                      "https://cdn.cness.io/banner.webp"
+                                    "https://cdn.cness.io/banner.webp"
                                 }
                                 title={
                                   practice?.title ||
@@ -771,9 +784,8 @@ export default function UserProfileView() {
                                   "Untitled"
                                 }
                                 description={practice?.description || ""}
-                                link={`/dashboard/bestpractices/${
-                                  practice.id
-                                }/${slugify(practice.title)}`}
+                                link={`/dashboard/bestpractices/${practice.id
+                                  }/${slugify(practice.title)}`}
                               />
                             </div>
                           );
@@ -810,8 +822,7 @@ export default function UserProfileView() {
                                   )
                                 ) {
                                   navigate(
-                                    `/dashboard/bestpractices/${
-                                      practice.id
+                                    `/dashboard/bestpractices/${practice.id
                                     }/${slugify(practice.title)}`,
                                     {
                                       state: {
@@ -825,9 +836,8 @@ export default function UserProfileView() {
                             >
                               <BestPracticeCard
                                 name={
-                                  `${practice?.profile?.first_name || ""} ${
-                                    practice?.profile?.last_name || ""
-                                  }`.trim() || "CNESS User"
+                                  `${practice?.profile?.first_name || ""} ${practice?.profile?.last_name || ""
+                                    }`.trim() || "CNESS User"
                                 }
                                 username={practice?.user?.username || "user"}
                                 profileImage={
@@ -839,7 +849,7 @@ export default function UserProfileView() {
                                   practice?.file
                                     ? normalizeFileUrl(practice.file)
                                     : bcard1 ||
-                                      "https://cdn.cness.io/banner.webp"
+                                    "https://cdn.cness.io/banner.webp"
                                 }
                                 title={
                                   practice?.title ||
@@ -847,9 +857,8 @@ export default function UserProfileView() {
                                   "Untitled"
                                 }
                                 description={practice?.description || ""}
-                                link={`/dashboard/bestpractices/${
-                                  practice.id
-                                }/${slugify(practice.title)}`}
+                                link={`/dashboard/bestpractices/${practice.id
+                                  }/${slugify(practice.title)}`}
                               />
                             </div>
                           );
