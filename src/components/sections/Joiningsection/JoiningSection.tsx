@@ -1,10 +1,15 @@
 import Button from "../../ui/Button";
 import joinImage from "../../../assets/join-team.png";
+import SignupModel from "../../OnBoarding/Signup";
+//import { useNavigate } from "react-router-dom";
+import {  useState } from "react";
 
 export default function JoiningSection()
   { 
-    const loggedIn = localStorage.getItem("jwt") !== null;
-    const redirectPath = loggedIn ? "/dashboard" : "/sign-up";
+    //const loggedIn = localStorage.getItem("jwt") !== null;
+    //const redirectPath = loggedIn ? "/dashboard" : "/sign-up";
+      const [openSignup, setOpenSignup] = useState(false);
+    //const navigate = useNavigate();
   return (
     <section className="flex flex-col items-center relative w-full ">
       <div className="relative w-full  lg:h-[350px] md:h-[350px] h-[420px] overflow-hidden rounded-xl">
@@ -34,15 +39,19 @@ export default function JoiningSection()
              <br />
              Wholeness to Recognition
             </h2>
-            <p className="text-center w-full font-['Open Sans'] font-400 text-[16px] leading-[24.38px] tracking-[0px]">Join a movement that sees you, supports you, and helps your conscious work shine.</p>
+            <p className="text-center w-full font-['Open Sans'] font-400 text-[16px] leading-[24.38px] text-[#494949] tracking-[0px]">Join a movement that sees you, supports you, and helps your conscious work shine.</p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-[15px] w-full joining-btn ">
            
             <Button
                variant="gradient-primary"
-              className="jakarta font-normal w-fit rounded-[100px] h-[42px] py-1 px-8 self-stretch text-[14px]  "
-              onClick={() => window.location.href = redirectPath}>
+              className="font-['Open_Sans'] font-semibold
+    w-fit rounded-[100px] h-[42px]
+    py-1 px-8 self-stretch
+    text-[16px] leading-[100%] tracking-[0]
+    text-center "
+              onClick={()  => setOpenSignup(true)}>
               Create Your Profile
             </Button>
 
@@ -61,6 +70,9 @@ export default function JoiningSection()
           </div>
         </div>
       </div>
+      
+              {/* Signup Popup Modal */}
+              <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
     </section>
   );
 }

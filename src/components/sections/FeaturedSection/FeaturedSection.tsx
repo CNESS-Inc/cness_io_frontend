@@ -141,11 +141,11 @@ export default function FeaturedSection() {
             (step >= 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8")
           }
         >
-          <h5 className="poppins text-[18px] font-semibold mb-2">Go live. Share your voice. Be seen by the conscious world.</h5>
-          <p className="openSans text-[16px] font-regular text-[#64748B]">
-            Host live talks. Stream music. Share reflections. Submit your content to be<br />
-            featured on CNESS TV — our curated stream of purpose-led creators, artists,<br />
-            and changemakers.
+          <h5 className="poppins font-[500] text-[18px] font-semibold mb-2">Go live. Share your voice. Be seen by the conscious world.</h5>
+          <p className="openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]">
+            Host Live Talks. Stream Music. Share Reflections. Submit Your Content <br />
+            To Be Featured On AriOme — Our Curated Stream Of Purpose-Led <br />
+            Creators, Artists, And Changemakers.
           </p>
           {/*<Button
             className="jakarta w-fit rounded-[100px] h-[38px] text-[16px] font-[400] text-[#fff] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#9747FF] mt-6"

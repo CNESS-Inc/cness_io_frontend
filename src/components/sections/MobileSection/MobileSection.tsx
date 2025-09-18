@@ -25,7 +25,7 @@ export default function MobileSection() {
               <h2 style={{ fontFamily: "Poppins, sans-serif" }}
               className="poppins lg:leading-16 md:leading-14 leading-9 pb-1 text-[32px] font-[500] bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
                text-transparent bg-clip-text mb-3">A Conscious coach in your pocket</h2>
-              <p className="openSans text-[#64748B] text-[18px] font-[400]">Meet Ariven AI — your consciousness companion. It reflects, prompts,<br /> and guides you to stay aligned with your values, choices, and<br /> evolution.</p>
+              <p className="openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]">Meet Ariven AI — your consciousness companion. It reflects, prompts, and <br />  guides you to stay aligned with your values, choices, and evolution.</p>
               {/*<Button
                 // variant="gradient-primary"
                 className="jakarta w-fit rounded-[100px] h-[38px] text-[16px]  font-[400] text-[#fff] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#F07EFF]  mt-6"

@@ -101,14 +101,14 @@ export default function AwarenessSection() {
               <p
                 className="
                   mx-auto mt-3 md:mt-3
-                  text-[#898989] text-[18px] leading-[27px] font-normal
+openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]
                   w-full md:max-w-[707px]
                 "
               >
-                Explore a wide range of conscious products crafted by verified
-                creators who
+                Explore A Wide Range Of Conscious Products Crafted By Verified
+                Creators Who
                 <br />
-                prioritize sustainability and ethical practices.
+                Prioritize Sustainability And Ethical Practices.
               </p>
             </div>
 
@@ -179,29 +179,30 @@ export default function AwarenessSection() {
             </Swiper>
 
             <div className="flex lg:flex-row md:flex-row flex-col max-w-[550px] w-full mx-auto mt-0">
-              <p className="lg:w-8/12 md:w-5/12 w-full text-[#898989] text-[18px] font-regular">
-                Showcase your products in our conscious
+              <p className="lg:w-8/12 md:w-5/12 w-full openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]">
+                Showcase Your Products In Our Conscious
                 <br />
-                marketplace, connect with the right
+                Marketplace, Connect With The Right
                 <br />
-                audience, and grow your business in a
+                Audience, And Grow Your Business In A
                 <br />
-                purpose-driven ecosystem.
+                Purpose-Driven Ecosystem.
               </p>
-              <div className="flex lg:justify-end justify-start md:gap-6 gap-2 lg:w-4/12 md:w-7/12 w-full lg:-mt-0 md:mt-0 mt-4">
+              <div className="flex lg:justify-end justify-start md:gap-6 gap-2 lg:w-4/13 md:w-7/12 w-full lg:mt-7 md:mt-0 mt-5 mb-4">
                 <Button
                   variant="gradient-primary"
                   className="
                     inline-flex items-center justify-center
                     rounded-[100px]
-                    w-full md:w-[157px] h-[43px]
+                    w-full md:w-[160px] h-[43px]
                     px-0 gap-[12.19px]
-                    font-['Open Sans'] font-normal
+                    font-['Open Sans'] font-semibold font-[600]
                     text-[16px] leading-[100%] tracking-[0]
                     text-white
                   "
-                  onClick={() => navigate("/cness-marketplace")}
-                >
+                  onClick={() => {navigate("/cness-marketplace")
+                   window.scrollTo({ top: 0, behavior: "instant" }); }}
+            >
                   Become a Seller
                 </Button>
               </div>
@@ -220,7 +221,7 @@ export default function AwarenessSection() {
           Connect with the trustworthy. Work with the <br />
           Reliable. Grow with the Dependable.
         </h3>
-        <p className="openSans mt-2 lg:text-[18px] md:text-[16px] text-[14px] font-[400] text-[#494949] text-center">
+        <p className="openSans mt-2 lg:text-[16px] md:text-[16px] text-[16px] font-[300] text-[#494949] leading-[24px] text-center">
           On CNESS, every profile, product, and organization is aligned with
           values you can count on.
         </p>
