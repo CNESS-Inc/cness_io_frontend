@@ -69,7 +69,7 @@ export default function CertificationLevel() {
             </span>
             Level
           </h3>
-          <p className="openSans font-['Open Sans'] lg:text-lg md:text-[16px] text-[12px] text-[#64748B] lg:mb-10 md:mb-12 my-4 max-w-4xl mx-auto transition-all duration-1000 ease-in-out">
+          <p className="openSans font-['Open Sans'] lg:text-lg md:text-[16px] text-[12px] font-light text-[#64748B] lg:mb-10 md:mb-12 my-4 max-w-4xl mx-auto transition-all duration-1000 ease-in-out">
             Everyone starts somewhere. We recognise progress at every stage of
             your journey
           </p>
@@ -119,7 +119,7 @@ export default function CertificationLevel() {
                 >
                   {level.title}
                 </h3>
-                <p className="font-['Open Sans'] openSans text-[#64748B] text-sm xl:text-base font-normal w-full xl:max-w-xl mx-auto">
+                <p className="font-['Open Sans'] openSans text-[#64748B] text-sm xl:text-base font-light w-full xl:max-w-xl mx-auto">
                   {level.description}
                 </p>
               </div>

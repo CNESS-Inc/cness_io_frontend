@@ -19,10 +19,6 @@ const navigate = useNavigate();
     return () => t.forEach(clearTimeout);
   }, []);
 
-  
-
-  
-
   return (
     <section className="relative bg-white overflow-hidden flex flex-col">
       {/* gradient blobs */}
@@ -49,8 +45,8 @@ const navigate = useNavigate();
     step >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
           }`}
         >
-          Build your conscious identity. Connect with purpose-led peers. Share your knowledge. Learn, grow, and thrive – all
-          in one place.
+          Build your conscious identity. Connect with purpose-led peers. Share
+          your knowledge. Learn, grow, and thrive – all in one place.
         </p>
 
         <div
@@ -92,8 +88,8 @@ const navigate = useNavigate();
           </div>
 
           {/* floating pills only on large screens to avoid crowding mobile */}
-             {/* ⬇️ Paste the pills overlay block here ⬇️ */}
-       {/* Pills overlay: inside the SAME relative/aspect box 
+          {/* ⬇️ Paste the pills overlay block here ⬇️ */}
+          {/* Pills overlay: inside the SAME relative/aspect box 
     <div className="absolute inset-0 hidden lg:block pointer-events-none z-10">
       {[
         // row 1
@@ -132,15 +128,11 @@ const navigate = useNavigate();
           </div>
         );
       })}*/}
-    </div>
-  </div>
+        </div>
+      </div>
 
-            
-       
-
-        {/* Signup Popup Modal */}
-        <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
-    
+      {/* Signup Popup Modal */}
+      <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
     </section>
   );
 }
