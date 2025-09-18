@@ -252,10 +252,10 @@ export default function UserProfileView() {
         />
       </div>
 
-      <div className="w-full flex justify-between gap-[24px] bg-white">
-        <div className="relative w-full lg:w-[25%] ms-5">
+      <div className="w-full flex flex-col lg:flex-row justify-between gap-[24px] bg-white">
+        <div className="relative w-full lg:w-[35%] xl:w-[25%] ms-5">
           <div className="w-full -mt-[70px] sm:-mt-[90px] md:-mt-[110px] lg:-mt-[120px]">
-            <div className="rounded-[10px] p-[6px] bg-white object-cover shadow w-full h-[110px] sm:h-[140px] md:h-[190px] lg:h-[250px] 2xl:h-[320px]">
+            <div className="rounded-[10px] p-[6px] bg-white object-cover shadow w-[150px] lg:w-full h-[110px] sm:h-[140px] md:h-[190px] lg:h-[250px] 2xl:h-[320px]">
               <img
                 src={
                   userDetails?.profile_picture &&
@@ -272,7 +272,7 @@ export default function UserProfileView() {
                 }}
               ></img>
             </div>
-            <div className="w-full px-3 py-[10px] mt-5">
+            <div className="w-full px-3 py-[10px] mt-5 pe-14 lg:pe-0">
               <h2 className="font-['Poppins'] font-semibold text-[24px] leading-[21px] text-[#000000]">
                 {userDetails?.first_name} {userDetails?.last_name}
               </h2>
@@ -381,6 +381,7 @@ export default function UserProfileView() {
                   )}
                 </div>
               </div>
+              
               {/* Achievements */}
               {displayLevels.length > 0 && (
                 <div className="border-b border-[#E5E5E5] pt-10 pb-10">
@@ -519,7 +520,7 @@ export default function UserProfileView() {
             </div>
           </div>
         </div>
-        <div className="w-full lg:w-[75%]">
+        <div className="w-full lg:w-[65%] xl:w-[75%]">
           <div className="relative flex flex-col md:flex-row justify-center items-center gap-3 sm:gap-4 md:gap-6 pt-3 md:pt-5 me-6 border-b border-[#ECEEF2]">
             <div className="flex justify-center gap-6 -mt-2">
               <Button
@@ -680,12 +681,12 @@ export default function UserProfileView() {
             {/* Best Practices Tab */}
             {activeTab === "best" &&
               userDetails?.best_practices_questions?.length > 0 && (
-                <div className="pb-6 border-b border-[#ECEEF2]">
+                <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
                   <h3 className="font-['Poppins'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-[#000000] mb-6">
                     Best Practices Aligned CNESS
                   </h3>
 
-                  <div className="pt-4 grid gap-4 md:gap-5 justify-start lg:grid-cols-2 xl:grid-cols-3">
+                  <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3">
                     {userDetails.best_practices_questions.map(
                       (section: any, index: number) => {
                         const allQuestions = section.sub_sections?.flatMap(
@@ -733,13 +734,13 @@ export default function UserProfileView() {
             {/* Best Practices profession */}
             {activeTab === "best" &&
               userDetails?.public_best_practices?.length > 0 && (
-                <div className="pb-6 border-b border-[#ECEEF2]">
+                <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
                   <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
                     Best Practices Aligned Professions
                   </h3>
 
                   {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4"> */}
-                  <div className="pt-4 grid gap-4 md:gap-5 justify-start lg:grid-cols-2 xl:grid-cols-3">
+                  <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3">
                     {userDetails?.public_best_practices?.map(
                       (practice: any) => {
                         return (
@@ -802,13 +803,13 @@ export default function UserProfileView() {
               )}
 
             {activeTab === "best" && followBP?.length > 0 && (
-              <div className="pb-6 border-b border-[#ECEEF2]">
+              <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
                 <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
                   Best Practices Aligned Follow
                 </h3>
 
                 {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4"> */}
-                <div className="pt-4 grid gap-4 md:gap-5 justify-start lg:grid-cols-2 xl:grid-cols-3">
+                <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3">
                   {followBP?.map((practice: any) => {
                     return (
                       <div
@@ -869,7 +870,7 @@ export default function UserProfileView() {
 
           {/* Member Since */}
           <div
-            className="pl-6 font-['Open_Sans'] font-semibold text-[16px] leading-[20px] 
+            className="pl-6 pb-12 font-['Open_Sans'] font-semibold text-[16px] leading-[20px] 
              tracking-[0px] text-[#000000]"
           >
             <p>

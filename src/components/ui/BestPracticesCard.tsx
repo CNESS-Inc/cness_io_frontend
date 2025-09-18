@@ -47,7 +47,7 @@ export default function BestPracticeCard({
       </div>
 
       {/* Cover Image (keeps proportion, fits different widths) */}
-      <div className="w-full overflow-hidden rounded-[8px] h-[150px] 2xl:h-[200px] bg-gray-100">
+      <div className="w-full overflow-hidden rounded-[8px] h-[250px] xl:h-[150px] 2xl:h-[200px] bg-gray-100">
         <img
           src={coverImage || "/placeholder.png"}
           alt={title}
