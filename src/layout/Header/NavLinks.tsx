@@ -5,6 +5,8 @@ import { useState } from "react";
 import Modal from "../../components/ui/Modal";
 import SignupForm from "./SignupForm";
 import LoginForm from "./LoginForm.tsx";
+import SignupModel from "../../components/OnBoarding/Signup.tsx";
+
 
 const links = [
   { name: "Home", href: "/" },
@@ -23,8 +25,9 @@ export default function NavLinks({ className }: { className?: string }) {
   );
 
   const navigate = useNavigate()
+  const [openSignup, setOpenSignup] = useState(false);
 
-  const openSignupModal = () => navigate("/sign-up");
+ // const openSignupModal = () => navigate("/sign-up");
   const openLoginModal = () => navigate("/log-in");
   const closeModal = () => setActiveModal(null);
 
@@ -85,9 +88,9 @@ export default function NavLinks({ className }: { className?: string }) {
               className="w-[104px] h-[39px] rounded-[100px] p-0
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
     flex items-center justify-center shadow-sm text-[#64748B]"
-              onClick={openSignupModal}>
+              onClick={() => setOpenSignup(true)}>
                 <span className="relative top-[0.5px]">Sign Up</span>
-              </Button>
+             </Button>
               
               <Button
                 variant="gradient-primary"
@@ -116,6 +119,9 @@ export default function NavLinks({ className }: { className?: string }) {
           onSwitchToSignup={() => setActiveModal("signup")}
         />
       </Modal>
+
+              <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
+      
     </>
   );
 }

@@ -1,5 +1,5 @@
 // PopupOnboardingModal.tsx
-import React, { useEffect } from "react";
+import React, { useEffect ,Fragment } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { Transition } from "@headlessui/react";
@@ -43,11 +43,11 @@ export default function PopupOnboardingModal({
   if (!open) return null;
 
   return createPortal(
-    <Transition show={open} as={React.Fragment}>
-  <div className="fixed inset-0 z-[100]">
-    {/* Overlay */}
-    <Transition
-          as={React.Fragment}
+   <Transition appear show={open} as={Fragment}>
+      <div className="fixed inset-0 z-[100]">
+        {/* Overlay */}
+        <Transition.Child
+          as={Fragment}
           enter="ease-out duration-300"
           enterFrom="opacity-0"
           enterTo="opacity-100"
@@ -55,35 +55,35 @@ export default function PopupOnboardingModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-    <div
-      className="absolute inset-0 bg-black/50"
-      onClick={() => closeOnOverlay && onClose()}
-      aria-hidden
-    />
-    </Transition>
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => closeOnOverlay && onClose()}
+            aria-hidden
+          />
+        </Transition.Child>
     {/* Center container */}
     <div className="absolute inset-0 grid place-items-center p-4">
       {/* Modal frame matches: 1020w x 730h, gap 10, radius 32, padding 30 */}
-      <Transition
-            as={React.Fragment}
-            enter="ease-out duration-300"
+     <Transition.Child
+            as={Fragment}
+            enter="transform ease-out duration-500"
             enterFrom="translate-y-full opacity-0"
             enterTo="translate-y-0 opacity-100"
-            leave="ease-in duration-200"
+            leave="transform ease-in duration-400"
             leaveFrom="translate-y-0 opacity-100"
             leaveTo="translate-y-full opacity-0"
           >
-      <div
-        role="dialog"
-        aria-modal="true"
-        className="
-         relative grid grid-cols-1 md:grid-cols-[475px_475px]
-    w-full max-w-[1020px] h-auto md:min-h-[850px]
-    rounded-[32px] p-[20px] md:p-[30px]
-    shadow-2xl bg-white
-        "
-      >
-        
+            <div
+              role="dialog"
+              aria-modal="true"
+              className="
+                relative grid grid-cols-1 md:grid-cols-[475px_475px]
+                w-full max-w-[1020px] h-auto md:min-h-[850px]
+                rounded-[32px] p-[20px] md:p-[30px]
+                shadow-2xl bg-white
+                will-change-transform [backface-visibility:hidden]
+              "
+            >
 
         {/* Left pane: 475x670, padding: 60px (pt/pb 86px), radius 32 */}
         <div
@@ -135,7 +135,7 @@ export default function PopupOnboardingModal({
           {children}
         </div>
       </div>
-      </Transition>
+        </Transition.Child>
     </div>
   </div>,
   </Transition>,

@@ -9,14 +9,17 @@ export default function MarketplaceHero() {
     >
       {/* Text container */}
       <div className="mx-auto max-w-[1100px] px-6 text-center">
-        <h2 className="font-['Poppins'] font-medium text-[42px] leading-[100%] tracking-[-0.02em] bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text">
-          CNESS Marketplace
+        <h2 
+        style={{ fontFamily: "Poppins, sans-serif" }}
+          className="font-medium text-[clamp(28px,5vw,42px)] leading-[100%] tracking-[-0.02em] bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
+          >
+            CNESS Marketplace
         </h2>
-        <p className="mt-3 font-['Open Sans'] font-normal text-[16px] leading-[22px] text-[#64748B]">
+        <p className="mt-3 openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]">
           CNESS Marketplace is a digital hub for conscious creators to share
           music, podcasts, courses, eBooks, art,
           <br /> and videos. Every offering is rooted in authenticity and
-          purpose—helping you discover and support
+          purpose — helping you discover and support
           <br />
           creations that inspire growth and positive impact.
         </p>

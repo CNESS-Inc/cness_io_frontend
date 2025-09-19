@@ -10,8 +10,12 @@ import GetInTouch from "../components/sections/GetInTouch";
 import Subscribe from "../components/sections/Subscribe";
 import Footer from "../layout/Footer/Footer";
 import SectionFaq from "../components/faqs/SectionFaq";
+import {  useState } from "react";
+import SignupModel from "../components/OnBoarding/Signup";
 
 export default function EcoSystem() {
+      const [openSignup, setOpenSignup] = useState(false);
+
   const faqs = [
     {
       question: "Who can apply?",
@@ -75,7 +79,7 @@ export default function EcoSystem() {
                   Start your journey from Loneliness to <br /> Wholeness to
                   Recognition.
                 </h2>
-                <p className="text-center w-full font-['Open Sans'] text-[#494949] font-400 text-[16px] leading-[24.38px] tracking-[0px]">
+                <p className="text-center w-full font-['Open Sans'] text-[#494949] font-300 text-[16px] leading-[24.38px] tracking-[0px]">
                   Join a movement that sees you, supports you, and helps your
                   conscious work shine.
                 </p>
@@ -85,13 +89,16 @@ export default function EcoSystem() {
                 <Button
                   variant="gradient-primary"
                   className="jakarta font-normal w-fit rounded-[100px] h-[42px] py-1 px-8 self-stretch text-[14px] "
-                  onClick={() => (window.location.href = "/sign-up")}
+                            onClick={() => setOpenSignup(true)}
+
                 >
                   Create Your Profile
                 </Button>
               </div>
             </div>
           </div>
+          {/* Signup Popup Modal */}
+                        <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
         </section>
       </LazySection>
       <LazySection effect="fade-up" delay={0.2}>
