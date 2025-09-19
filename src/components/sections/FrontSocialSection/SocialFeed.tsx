@@ -18,8 +18,7 @@ import Modal from "../../../components/ui/Modal";
 import { iconMap } from "../../../assets/icons";
 
 import SignupModel from "../../OnBoarding/Signup";
-
-
+import { CiCircleRemove } from "react-icons/ci";
 import {
   AddStory,
   GetStory,
@@ -29,9 +28,8 @@ import {
   ReportPost,
   getAllTopics,
   GetPostsDetails,
-  GetAllStory
+  GetAllStory,
 } from "../../../Common/ServerAPI";
-
 
 import createstory from "../../../assets/createstory.jpg";
 import carosuel1 from "../../../assets/carosuel1.png";
@@ -43,7 +41,6 @@ import FollowedUsersList from "../../../pages/FollowedUsersList";
 import CollectionList from "../../../pages/CollectionList";
 import SharePopup from "../../../components/Social/SharePopup";
 import { buildShareUrl } from "../../../lib/utils";
-
 
 interface Post {
   id: string;
@@ -111,8 +108,6 @@ interface CollectionItem {
   };
 }
 
-
-
 interface PostCarouselProps {
   mediaItems: Array<{
     type: "image" | "video";
@@ -143,7 +138,6 @@ interface Story {
     is_liked: boolean;
   }[];
 }
-
 
 type Topic = {
   id: string;
@@ -194,8 +188,9 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
         {mediaItems.map((item, index) => (
           <div
             key={index}
-            className={`w-full h-full transition-opacity duration-500 ${index === current ? "block" : "hidden"
-              }`}
+            className={`w-full h-full transition-opacity duration-500 ${
+              index === current ? "block" : "hidden"
+            }`}
           >
             {item.type === "image" ? (
               <img
@@ -247,8 +242,9 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
             <button
               key={idx}
               onClick={() => setCurrent(idx)}
-              className={`w-2 h-2 rounded-full transition-colors ${idx === current ? "bg-indigo-500" : "bg-gray-300"
-                }`}
+              className={`w-2 h-2 rounded-full transition-colors ${
+                idx === current ? "bg-indigo-500" : "bg-gray-300"
+              }`}
             ></button>
           ))}
         </div>
@@ -256,7 +252,6 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
     </div>
   );
 }
-
 
 export default function SocialFeed() {
   const [showPopup, setShowPopup] = useState(false);
@@ -280,9 +275,7 @@ export default function SocialFeed() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [expandedPosts] = useState<Record<string, boolean>>(
-    {}
-  );
+  const [expandedPosts] = useState<Record<string, boolean>>({});
   const [postVideoPreviewUrl, setPostVideoPreviewUrl] = useState<string | null>(
     null
   );
@@ -292,15 +285,13 @@ export default function SocialFeed() {
     type: "options" | "share" | null;
   }>({ postId: null, type: null });
 
-  const [activeView] = useState<
-    "posts" | "following" | "collection"
-  >("posts");
+  const [activeView] = useState<"posts" | "following" | "collection">("posts");
   const [followedUsers, setFollowedUsers] = useState<FollowedUser[]>([]);
   const [collectionItems] = useState<CollectionItem[]>([]);
-  
+
   const [_isPostsLoading, setIsPostsLoading] = useState(false);
   const [isFollowingLoading] = useState(false);
- 
+
   const [isCollectionLoading] = useState(false);
   const [storiesData, setStoriesData] = useState<Story[]>([]);
   // const [addNewPost, setAddNewPost] = useState(false)
@@ -398,41 +389,41 @@ export default function SocialFeed() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const loggedInUserID = localStorage.getItem("Id");
   const CONTENT_LIMIT = 150;
-  
+
   useEffect(() => {
     // Reset wheel count on component mount (fresh start)
-    sessionStorage.removeItem('wheelCount');
-    sessionStorage.removeItem('signupShown');
+    sessionStorage.removeItem("wheelCount");
+    sessionStorage.removeItem("signupShown");
     console.log("Reset wheel count and signup status");
-    
+
     let scrollCount = 0;
     let lastScrollTime = 0;
     const SCROLL_THRESHOLD = 200; // Minimum time between scrolls in ms
-    
+
     const checkAndShowSignup = () => {
       // Check if signup has already been shown in this session
-      const hasShownSignup = sessionStorage.getItem('signupShown') === 'true';
-      
+      const hasShownSignup = sessionStorage.getItem("signupShown") === "true";
+
       if (hasShownSignup) {
         console.log("Signup already shown, ignoring");
         return false; // Don't do anything if already shown
       }
-      
+
       console.log("Showing signup popup");
       setOpenSignup(true);
-      sessionStorage.setItem('signupShown', 'true');
+      sessionStorage.setItem("signupShown", "true");
       return true;
     };
-    
+
     const handleWheel = () => {
       const now = Date.now();
-      
+
       // Only count if enough time has passed since last scroll
       if (now - lastScrollTime > SCROLL_THRESHOLD) {
         scrollCount += 1;
         lastScrollTime = now;
         console.log("Wheel scroll count:", scrollCount);
-        
+
         if (scrollCount >= 4) {
           console.log("Showing signup popup after 4 wheel scrolls");
           checkAndShowSignup();
@@ -444,13 +435,15 @@ export default function SocialFeed() {
 
     const handleScroll = () => {
       // Calculate scroll percentage
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
-      const scrollPercentage = (scrollTop / (documentHeight - windowHeight)) * 100;
-      
+      const scrollPercentage =
+        (scrollTop / (documentHeight - windowHeight)) * 100;
+
       console.log("Scroll position:", Math.round(scrollPercentage) + "%");
-      
+
       // Show signup when user reaches 30% of scrollable content
       if (scrollPercentage >= 30) {
         console.log("Reached 30% scroll position, showing signup popup");
@@ -474,18 +467,15 @@ export default function SocialFeed() {
     setIsLoading(true);
     setIsPostsLoading(true);
     try {
-        // Call the API to get the posts for the current page
-        let res;
-        if(loggedInUserID)
-        {
-            res = await PostsDetails(page);
-        }
-        else
-        {
-            res = await GetPostsDetails(page);
-        }
+      // Call the API to get the posts for the current page
+      let res;
+      if (loggedInUserID) {
+        res = await PostsDetails(page);
+      } else {
+        res = await GetPostsDetails(page);
+      }
 
-        if (res?.data) {
+      if (res?.data) {
         const newPosts = res?.data.data.rows || [];
         const totalPages = res?.data?.data?.count / 10 || 0;
 
@@ -510,31 +500,28 @@ export default function SocialFeed() {
     }
   };
 
-  
   useEffect(() => {
-    if(loggedInUserID){
-        navigate("/dashboard/feed");
-    }else{
-
-        getUserPosts();
-        fetchStory();
-        fetchTopics();
-        setTimeout(() => {
-            setOpenSignup(true);
-        }, 60000);
+    if (loggedInUserID) {
+      navigate("/dashboard/feed");
+    } else {
+      getUserPosts();
+      fetchStory();
+      fetchTopics();
+      setTimeout(() => {
+        setOpenSignup(true);
+      }, 60000);
     }
-    
   }, []);
 
   useEffect(() => {
-    if(loggedInUserID){
-        if (userPosts.length > 0) {
+    if (loggedInUserID) {
+      if (userPosts.length > 0) {
         userPosts.forEach((post) => {
-            if (post.user_id !== loggedInUserID) {
+          if (post.user_id !== loggedInUserID) {
             checkFriendStatus(post.user_id);
-            }
+          }
         });
-        }
+      }
     }
   }, [userPosts, loggedInUserID]);
 
@@ -542,7 +529,6 @@ export default function SocialFeed() {
   useEffect(() => {
     // Check friend status for all posts when component mounts
     if (userPosts.length > 0 && loggedInUserID) {
-       
       userPosts.forEach((post) => {
         if (post.user_id !== loggedInUserID) {
           checkFriendStatus(post.user_id);
@@ -550,8 +536,6 @@ export default function SocialFeed() {
       });
     }
   }, []); // Empty dependency array to run only on mount
-
-
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -570,7 +554,6 @@ export default function SocialFeed() {
   const handleRemoveImage = (index: number) => {
     setSelectedImages((prev) => prev.filter((_, i) => i !== index));
   };
-
 
   const handleStoryVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -643,21 +626,17 @@ export default function SocialFeed() {
   const fetchStory = async () => {
     try {
       let res;
-      if(loggedInUserID)
-      {
-          res = await await GetStory();
+      if (loggedInUserID) {
+        res = await await GetStory();
+      } else {
+        res = await GetAllStory();
       }
-      else
-      {
-          res = await GetAllStory();;
-      }
-      
+
       setStoriesData(res?.data?.data || []);
     } catch (error) {
       console.error("Error fetching stories:", error);
     }
   };
-
 
   const isVideoFile = (url: string) => {
     return url.match(/\.(mp4|webm|ogg|mov)$/i) !== null;
@@ -697,11 +676,8 @@ export default function SocialFeed() {
 
     const { scrollTop, scrollHeight, clientHeight } = container;
 
-    
     if (scrollTop + clientHeight >= scrollHeight - 10) {
-        
-      getUserPosts(); 
-       
+      getUserPosts();
     }
   };
 
@@ -715,8 +691,8 @@ export default function SocialFeed() {
 
   //@ts-ignore
   useEffect(() => {
-   const container = containerRef.current;
-   
+    const container = containerRef.current;
+
     if (container) {
       container.addEventListener("scroll", handleScroll);
     }
@@ -753,16 +729,15 @@ export default function SocialFeed() {
 
   useEffect(() => {
     const fetchInitialData = async () => {
-        setIsPostsLoading(true);
-        setIsPostsLoading(false);
+      setIsPostsLoading(true);
+      setIsPostsLoading(false);
     };
-    
-    if(loggedInUserID){
-        fetchInitialData();
-        MeDetail();
+
+    if (loggedInUserID) {
+      fetchInitialData();
+      MeDetail();
     }
   }, []);
-
 
   // Function to report post
   const reportPost = async () => {
@@ -802,7 +777,6 @@ export default function SocialFeed() {
       setIsReportingPost(null);
     }
   };
-
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -848,445 +822,440 @@ export default function SocialFeed() {
 
   return (
     <>
+      <div className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-2 px-2 md:px-2 lg:px-0 w-full">
+        {/* Left Side: Post & Stories - Full width on mobile */}
+        <div className="w-full lg:max-w-[70%]" ref={containerRef}>
+          {activeView === "posts" ? (
+            <>
+              {/* Start a Post */}
+              <div className="bg-gradient-to-r from-[#7077fe36] to-[#f07eff21] p-4 md:p-6 rounded-xl mb-4 md:mb-5">
+                <div className="flex flex-col gap-2 md:gap-3">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={
+                        localStorage.getItem("profile_picture") || createstory
+                      }
+                      alt="User"
+                      className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Create a Conscious Act"
+                      className="flex-1 cursor-pointer px-3 py-1 md:px-4 md:py-2 rounded-full border border-gray-300 text-sm md:text-[16px] focus:outline-none bg-white"
+                      onClick={() => setOpenSignup(true)}
+                      readOnly
+                    />
+                  </div>
+                  <div className="flex justify-between md:justify-center md:gap-10 text-xs md:text-[15px] text-gray-700 mt-2 md:mt-3">
+                    <button
+                      className="flex items-center gap-1 md:gap-2"
+                      onClick={() => setOpenSignup(true)}
+                    >
+                      <Image
+                        src="/youtube.png"
+                        alt="youtube"
+                        width={20}
+                        height={14}
+                        className="object-contain rounded-0 w-5 md:w-6"
+                      />
+                      <span className="text-black text-xs md:text-sm">
+                        Video
+                      </span>
+                    </button>
+                    <button
+                      className="flex items-center gap-1 md:gap-2"
+                      onClick={() => setOpenSignup(true)}
+                    >
+                      <Image
+                        src="/picture.png"
+                        alt="picture"
+                        width={20}
+                        height={16}
+                        className="object-contain rounded-0 w-5 md:w-6"
+                      />
+                      <span className="text-black text-xs md:text-sm">
+                        Photo
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
 
-        <div className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-2 px-2 md:px-2 lg:px-0 w-full">
-          {/* Left Side: Post & Stories - Full width on mobile */}
-          <div
-            className="w-full lg:max-w-[70%]"
-            ref={containerRef}
-          >
-            {activeView === "posts" ? (
-              
-                <>
-                  {/* Start a Post */}
-                  <div className="bg-gradient-to-r from-[#7077fe36] to-[#f07eff21] p-4 md:p-6 rounded-xl mb-4 md:mb-5">
-                    <div className="flex flex-col gap-2 md:gap-3">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={
-                            localStorage.getItem("profile_picture") ||
-                            createstory
-                          }
-                          alt="User"
-                          className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
-                        />
-                        <input
-                          type="text"
-                          placeholder="Start a Post"
-                          className="flex-1 cursor-pointer px-3 py-1 md:px-4 md:py-2 rounded-full border border-gray-300 text-sm md:text-[16px] focus:outline-none bg-white"
-                          onClick={() => navigate("/log-in")}
-                          readOnly
-                        />
-                      </div>
-                      <div className="flex justify-between md:justify-center md:gap-10 text-xs md:text-[15px] text-gray-700 mt-2 md:mt-3">
-                        <button
-                          className="flex items-center gap-1 md:gap-2"
-                          onClick={() => navigate("/log-in")}
-                        >
-                          <Image
-                            src="/youtube.png"
-                            alt="youtube"
-                            width={20}
-                            height={14}
-                            className="object-contain rounded-0 w-5 md:w-6"
-                          />
-                          <span className="text-black text-xs md:text-sm">
-                            Video
-                          </span>
-                        </button>
-                        <button
-                          className="flex items-center gap-1 md:gap-2"
-                          onClick={() => navigate("/log-in")}
-                        >
-                          <Image
-                            src="/picture.png"
-                            alt="picture"
-                            width={20}
-                            height={16}
-                            className="object-contain rounded-0 w-5 md:w-6"
-                          />
-                          <span className="text-black text-xs md:text-sm">
-                            Photo
-                          </span>
-                        </button>
-                        
-                      </div>
+              {/* Story Strip Wrapper */}
+              <h4 className="font-medium">Reflections</h4>
+              <div className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory mt-3 md:mt-4">
+                {/* Create Story Card */}
+                <div
+                  onClick={() => setOpenSignup(true)}
+                  className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-[12px] overflow-hidden relative cursor-pointer shrink-0 snap-start"
+                >
+                  <img
+                    src={createstory}
+                    alt="Create Story Background"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "/profile.png";
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                  <svg
+                    viewBox="0 0 162 70"
+                    preserveAspectRatio="none"
+                    className="absolute bottom-0 left-0 w-full h-[70px] z-10"
+                  >
+                    <path
+                      d="M0,0 H61 C65,0 81,22 81,22 C81,22 97,0 101,0 H162 V70 H0 Z"
+                      fill="#7C81FF"
+                    />
+                  </svg>
+                  <div className="absolute bottom-[46px] left-1/2 -translate-x-1/2 z-20">
+                    <div className="w-9 h-9 md:w-12 md:h-12 bg-white text-[#7C81FF] font-semibold rounded-full flex items-center justify-center text-xl  border-5">
+                      <img
+                        src={iconMap["storyplus"]}
+                        alt="storyplus"
+                        className="w-4 h-4 transition duration-200 group-hover:brightness-0 group-hover:invert"
+                      />
                     </div>
                   </div>
+                  <div className="absolute bottom-[14px] w-full text-center text-white text-xs md:text-[15px] font-medium z-20">
+                    Create Story
+                  </div>
+                  <div className="w-full border-t-[5px] border-[#7C81FF] mt-4"></div>
+                </div>
 
-                  {/* Story Strip Wrapper */}
-                  <h4 className="font-medium">Reflections</h4>
-                  <div className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory mt-3 md:mt-4">
-                    {/* Create Story Card */}
-                    <div
-                      onClick={() => navigate("/log-in")}
-                      className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-[12px] overflow-hidden relative cursor-pointer shrink-0 snap-start"
-                    >
+                {storiesData.map((story) => (
+                  <div
+                    key={story.id}
+                    className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-[12px] overflow-hidden relative mohan"
+                    onClick={() => setOpenSignup(true)}
+                  >
+                    <StoryCard
+                      id={story.id}
+                      userIcon={story.profile.profile_picture}
+                      userName={`${story.profile.first_name} ${story.profile.last_name}`}
+                      title={story.stories[0].description || "Untitled Story"}
+                      videoSrc={story.stories[0].video_file}
+                    />
+
+                    <div className="absolute bottom-2 left-2 flex items-center gap-2 z-20 text-white">
                       <img
-                        src={createstory}
-                        alt="Create Story Background"
-                        className="w-full h-full object-cover"
+                        src={story.profile.profile_picture}
+                        alt={`${story.profile.first_name} ${story.profile.last_name}`}
+                        className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover border border-white"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.src = "/profile.png";
                         }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                      <svg
-                        viewBox="0 0 162 70"
-                        preserveAspectRatio="none"
-                        className="absolute bottom-0 left-0 w-full h-[70px] z-10"
-                      >
-                        <path
-                          d="M0,0 H61 C65,0 81,22 81,22 C81,22 97,0 101,0 H162 V70 H0 Z"
-                          fill="#7C81FF"
-                        />
-                      </svg>
-                      <div className="absolute bottom-[46px] left-1/2 -translate-x-1/2 z-20">
-                        <div className="w-9 h-9 md:w-12 md:h-12 bg-white text-[#7C81FF] font-semibold rounded-full flex items-center justify-center text-xl  border-5">
-                          <img src={iconMap["storyplus"]} alt="storyplus" className="w-4 h-4 transition duration-200 group-hover:brightness-0 group-hover:invert" />
-                        </div>
-                      </div>
-                      <div className="absolute bottom-[14px] w-full text-center text-white text-xs md:text-[15px] font-medium z-20">
-                        Create Story
-                      </div>
-                      <div className="w-full border-t-[5px] border-[#7C81FF] mt-4"></div>
+                      <span className="text-xs md:text-[13px] font-medium drop-shadow-sm">
+                        {story.username}
+                      </span>
                     </div>
-
-                    {storiesData.map((story) => (
-                      <div
-                        key={story.id}
-                        className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-[12px] overflow-hidden relative mohan"
-                        onClick={() => navigate("/log-in")}
-                      >
-                        <StoryCard
-                          id={story.id}
-                          userIcon={story.profile.profile_picture}
-                          userName={`${story.profile.first_name} ${story.profile.last_name}`}
-                          title={
-                            story.stories[0].description || "Untitled Story"
-                          }
-                          videoSrc={story.stories[0].video_file}
-                        />
-
-                        <div className="absolute bottom-2 left-2 flex items-center gap-2 z-20 text-white">
-                          <img
-                            src={story.profile.profile_picture}
-                            alt={`${story.profile.first_name} ${story.profile.last_name}`}
-                            className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover border border-white"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.src = "/profile.png";
-                            }}
-                          />
-                          <span className="text-xs md:text-[13px] font-medium drop-shadow-sm">
-                            {story.username}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
                   </div>
-                  <div className="w-full border-t-[1px] border-[#C8C8C8] mt-4 md:mt-6"></div>
+                ))}
+              </div>
+              <div className="w-full border-t-[1px] border-[#C8C8C8] mt-4 md:mt-6"></div>
 
-                  {/* Posts Section */}
-                 
-                  {userPosts.map((post) => (
-                    <div
-                      key={post.id}
-                      className="bg-white rounded-xl shadow-md p-3 md:p-4 w-full mx-auto mt-4 md:mt-5"
-                    >
-                      {/* Header */}
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2 md:gap-3">
+              {/* Posts Section */}
+
+              {userPosts.map((post) => (
+                <div
+                  key={post.id}
+                  className="bg-white rounded-xl shadow-md p-3 md:p-4 w-full mx-auto mt-4 md:mt-5"
+                >
+                  {/* Header */}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 md:gap-3">
+                      <Link to={`/dashboard/userprofile/${post?.profile?.id}`}>
+                        <img
+                          src={
+                            post.profile.profile_picture
+                              ? post.profile.profile_picture
+                              : "/profile.png"
+                          }
+                          className="w-8 h-8 md:w-[63px] md:h-[63px] rounded-full"
+                          alt="User"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = "/profile.png";
+                          }}
+                        />
+                      </Link>
+                      <div>
+                        <p className="font-semibold text-sm md:text-base text-gray-800">
                           <Link
                             to={`/dashboard/userprofile/${post?.profile?.id}`}
                           >
+                            {" "}
+                            {post.profile.first_name} {post.profile.last_name}
+                          </Link>
+                          <span className="text-gray-500 text-xs md:text-sm">
+                            {" "}
+                            <Link
+                              to={`/dashboard/userprofile/${post?.profile?.id}`}
+                            >
+                              {" "}
+                              @{post.user.username}
+                            </Link>
+                          </span>
+                        </p>
+                        <p className="text-xs md:text-sm text-gray-400">
+                          {new Date(post.createdAt).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                    {post.user_id !== loggedInUserID && (
+                      <div className="flex gap-2">
+                        {/* Connect Button */}
+                        <button
+                          onClick={() => setOpenSignup(true)}
+                          disabled={connectingUsers[post.user_id] || false}
+                          className={`flex w-[100px] justify-center items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors font-family-open-sans h-[35px]
+                                ${
+                                  // getFriendStatus(post.user_id) === "connected"
+                                  //   ? "bg-red-500 text-white hover:bg-red-600"
+                                  //   :
+                                  getFriendStatus(post.user_id) === "requested"
+                                    ? "bg-gray-400 text-white cursor-not-allowed"
+                                    : "bg-white text-black shadow-md"
+                                }`}
+                        >
+                          <img
+                            src={iconMap["userplus"]}
+                            alt="userplus"
+                            className="w-4 h-4"
+                          />
+                          {connectingUsers[post.user_id]
+                            ? "Loading..."
+                            : // : getFriendStatus(post.user_id) === "connected"
+                            // ? "Connected"
+                            getFriendStatus(post.user_id) === "requested"
+                            ? "Requested"
+                            : "Connect"}
+                        </button>
+                        {/* Follow Button */}
+                        <button
+                          onClick={() => setOpenSignup(true)}
+                          className={`flex w-[100px] justify-center items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
+                                ${
+                                  post.if_following
+                                    ? "bg-transparent text-blue-500 hover:text-blue-600"
+                                    : "bg-[#7C81FF] text-white hover:bg-indigo-600"
+                                }`}
+                        >
+                          {post.if_following ? (
+                            <>
+                              <TrendingUp className="w-5 h-5" /> Resonating
+                            </>
+                          ) : (
+                            "+ Resonate"
+                          )}
+                        </button>
+
+                        {/* Three Dots Menu */}
+                        <div className="relative">
+                          <button
+                            onClick={() => toggleMenu(post.id, "options")}
+                            className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-[8px] hover:bg-gray-100 transition-colors"
+                            title="More options"
+                          >
+                            <MoreHorizontal className="w-5 h-5 text-gray-600" />
+                          </button>
+
+                          {openMenu.postId === post.id &&
+                            openMenu.type === "options" && (
+                              <div
+                                className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                                ref={(el) => {
+                                  const key = `${post.id}-options`;
+                                  if (el) menuRef.current[key] = el;
+                                  else delete menuRef.current[key];
+                                }}
+                              >
+                                <ul className="space-y-1">
+                                  <li>
+                                    <button
+                                      onClick={() => setOpenSignup(true)}
+                                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                    >
+                                      <LinkIcon className="w-4 h-4" />
+                                      Copy Act Link
+                                    </button>
+                                  </li>
+                                  <li>
+                                    <button
+                                      onClick={() => setOpenSignup(true)}
+                                      disabled={post.is_saved}
+                                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                    >
+                                      <Bookmark className="w-4 h-4" />
+                                      {post.is_saved ? "Saved" : "Save Act"}
+                                    </button>
+                                  </li>
+                                  <li>
+                                    <button
+                                      onClick={() => setOpenSignup(true)}
+                                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                    >
+                                      <Flag className="w-4 h-4" />
+                                      Report Act
+                                    </button>
+                                  </li>
+                                  {getFriendStatus(post.user_id) ===
+                                    "connected" && (
+                                    <li>
+                                      <button
+                                        onClick={() => setOpenSignup(true)}
+                                        disabled={post.is_saved}
+                                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                      >
+                                        <CiCircleRemove className="w-4 h-4 text-black" />
+                                        Remove Connection
+                                      </button>
+                                    </li>
+                                  )}
+                                </ul>
+                              </div>
+                            )}
+                        </div>
+                      </div>
+                    )}
+
+                    {post.user_id == loggedInUserID && (
+                      <div className="flex gap-2">
+                        {/* Three Dots Menu */}
+                        <div className="relative">
+                          <button
+                            onClick={() => toggleMenu(post.id, "options")}
+                            className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-[8px] hover:bg-gray-100 transition-colors"
+                            title="More options"
+                          >
+                            <MoreHorizontal className="w-5 h-5 text-gray-600" />
+                          </button>
+
+                          {openMenu.postId === post.id &&
+                            openMenu.type === "options" && (
+                              <div
+                                className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                                ref={(el) => {
+                                  const key = `${post.id}-options`;
+                                  if (el) menuRef.current[key] = el;
+                                  else delete menuRef.current[key];
+                                }}
+                              >
+                                <ul className="space-y-1">
+                                  <li>
+                                    <button
+                                      onClick={() => setOpenSignup(true)}
+                                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                    >
+                                      <LinkIcon className="w-4 h-4" />
+                                      Copy Post Link
+                                    </button>
+                                  </li>
+                                  <li>
+                                    <button
+                                      onClick={() => setOpenSignup(true)}
+                                      disabled={post.is_saved}
+                                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                    >
+                                      <Bookmark className="w-4 h-4" />
+                                      {post.is_saved ? "Saved" : "Save Post"}
+                                    </button>
+                                  </li>
+                                </ul>
+                              </div>
+                            )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Post Content */}
+                  <div className="mt-3 md:mt-4">
+                    <p className="text-gray-800 text-sm md:text-base mb-2 md:mb-3">
+                      {expandedPosts[post.id] ||
+                      post?.content?.length <= CONTENT_LIMIT
+                        ? post.content
+                        : `${post?.content?.substring(0, CONTENT_LIMIT)}...`}
+                      {post?.content?.length > CONTENT_LIMIT && (
+                        <button
+                          onClick={() => setOpenSignup(true)}
+                          className="text-blue-500 ml-1 text-xs md:text-sm font-medium hover:underline focus:outline-none"
+                        >
+                          {expandedPosts[post.id] ? "Show less" : "Read more"}
+                        </button>
+                      )}
+                    </p>
+
+                    {/* Dynamic Media Block */}
+                    {post.file && (
+                      <div className="rounded-lg">
+                        {(() => {
+                          const urls = post.file
+                            .split(",")
+                            .map((url) => url.trim());
+                          const mediaItems = urls.map((url) => ({
+                            url,
+                            type: (isVideoFile(url) ? "video" : "image") as
+                              | "video"
+                              | "image",
+                          }));
+
+                          // Use PostCarousel if there are multiple items (images or videos)
+                          if (mediaItems.length > 1) {
+                            return <PostCarousel mediaItems={mediaItems} />;
+                          }
+
+                          // Single item rendering
+                          const item = mediaItems[0];
+                          return item.type === "video" ? (
+                            <video
+                              className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl"
+                              controls
+                              muted
+                              autoPlay
+                              loop
+                            >
+                              <source src={item.url} type="video/mp4" />
+                              Your browser does not support the video tag.
+                            </video>
+                          ) : (
                             <img
-                              src={
-                                post.profile.profile_picture
-                                  ? post.profile.profile_picture
-                                  : "/profile.png"
-                              }
-                              className="w-8 h-8 md:w-[63px] md:h-[63px] rounded-full"
-                              alt="User"
+                              src={item.url}
+                              alt="Post content"
+                              className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl mb-2"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
-                                target.src = "/profile.png";
+                                target.src = carosuel1;
                               }}
                             />
-                          </Link>
-                          <div>
-                            <p className="font-semibold text-sm md:text-base text-gray-800">
-                              <Link
-                                to={`/dashboard/userprofile/${post?.profile?.id}`}
-                              >
-                                {" "}
-                                {post.profile.first_name}{" "}
-                                {post.profile.last_name}
-                              </Link>
-                              <span className="text-gray-500 text-xs md:text-sm">
-                                {" "}
-                                <Link
-                                  to={`/dashboard/userprofile/${post?.profile?.id}`}
-                                >
-                                  {" "}
-                                  @{post.user.username}
-                                </Link>
-                              </span>
-                            </p>
-                            <p className="text-xs md:text-sm text-gray-400">
-                              {new Date(post.createdAt).toLocaleString()}
-                            </p>
+                          );
+                        })()}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Reactions and Action Buttons */}
+                  <div className="flex justify-between items-center mt-3 px-1 text-xs md:text-sm text-gray-600 gap-2">
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 md:gap-2">
+                        <div className="flex items-center -space-x-2 md:-space-x-3">
+                          <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                            <img
+                              src={iconMap["sociallike"]}
+                              alt="Home Icon"
+                              className="w-8 h-8 transition duration-200 group-hover:brightness-0 group-hover:invert"
+                            />
                           </div>
+
+                          <span className="text-[14px] text-[#64748B] pl-3 md:pl-5">
+                            {post.likes_count}
+                          </span>
                         </div>
-                        {post.user_id !== loggedInUserID && (
-                          <div className="flex gap-2">
-                            {/* Connect Button */}
-                            <button
-                              onClick={() => navigate("/log-in")}
-                              disabled={connectingUsers[post.user_id] || false}
-                              className={`flex w-[100px] justify-center items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors font-family-open-sans h-[35px]
-                                ${
-                                // getFriendStatus(post.user_id) === "connected"
-                                //   ? "bg-red-500 text-white hover:bg-red-600"
-                                //   :
-                                getFriendStatus(post.user_id) === "requested"
-                                  ? "bg-gray-400 text-white cursor-not-allowed"
-                                  : "bg-white text-black shadow-md"
-                                }`}
-                            >
-                              <img
-                                src={iconMap["userplus"]}
-                                alt="userplus"
-                                className="w-4 h-4"
-                              />
-                              {connectingUsers[post.user_id]
-                                ? "Loading..."
-                                : // : getFriendStatus(post.user_id) === "connected"
-                                // ? "Connected"
-                                getFriendStatus(post.user_id) === "requested"
-                                  ? "Requested"
-                                  : "Connect"}
-                            </button>
-                            {/* Follow Button */}
-                            <button
-                              onClick={() => navigate("/log-in")}
-                              className={`flex w-[100px] justify-center items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
-                                ${post.if_following
-                                  ? "bg-transparent text-blue-500 hover:text-blue-600"
-                                  : "bg-[#7C81FF] text-white hover:bg-indigo-600"
-                                }`}
-                            >
-                              {post.if_following ? (
-                                <>
-                                  <TrendingUp className="w-5 h-5" /> Following
-                                </>
-                              ) : (
-                                "+ Follow"
-                              )}
-                            </button>
-
-                            {/* Three Dots Menu */}
-                            <div className="relative">
-                              <button
-                                onClick={() => toggleMenu(post.id, "options")}
-                                className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-[8px] hover:bg-gray-100 transition-colors"
-                                title="More options"
-                              >
-                                <MoreHorizontal className="w-5 h-5 text-gray-600" />
-                              </button>
-
-                              {openMenu.postId === post.id &&
-                                openMenu.type === "options" && (
-                                  <div
-                                    className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
-                                    ref={(el) => {
-                                      const key = `${post.id}-options`;
-                                      if (el) menuRef.current[key] = el;
-                                      else delete menuRef.current[key];
-                                    }}
-                                  >
-                                    <ul className="space-y-1">
-                                      <li>
-                                        <button
-                                          onClick={() => navigate("/log-in") }
-                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-                                        >
-                                          <LinkIcon className="w-4 h-4" />
-                                          Copy Post Link
-                                        </button>
-                                      </li>
-                                      <li>
-                                        <button
-                                          onClick={() =>
-                                            navigate("/log-in")
-                                          }
-                                          disabled={post.is_saved}
-                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
-                                        >
-                                          <Bookmark className="w-4 h-4" />
-                                          {post.is_saved
-                                            ? "Saved"
-                                            : "Save Post"}
-                                        </button>
-                                      </li>
-                                      <li>
-                                        <button
-                                          onClick={() =>
-                                            navigate("/log-in")
-                                          }
-                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                                        >
-                                          <Flag className="w-4 h-4" />
-                                          Report Post
-                                        </button>
-                                      </li>
-                                    </ul>
-                                  </div>
-                                )}
-                            </div>
-                          </div>
-                        )}
-
-                        {post.user_id == loggedInUserID && (
-                          <div className="flex gap-2">
-                            {/* Three Dots Menu */}
-                            <div className="relative">
-                              <button
-                                onClick={() => toggleMenu(post.id, "options")}
-                                className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-[8px] hover:bg-gray-100 transition-colors"
-                                title="More options"
-                              >
-                                <MoreHorizontal className="w-5 h-5 text-gray-600" />
-                              </button>
-
-                              {openMenu.postId === post.id &&
-                                openMenu.type === "options" && (
-                                  <div
-                                    className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
-                                    ref={(el) => {
-                                      const key = `${post.id}-options`;
-                                      if (el) menuRef.current[key] = el;
-                                      else delete menuRef.current[key];
-                                    }}
-                                  >
-                                    <ul className="space-y-1">
-                                      <li>
-                                        <button
-                                          onClick={() => navigate("/log-in") }
-                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-                                        >
-                                          <LinkIcon className="w-4 h-4" />
-                                          Copy Post Link
-                                        </button>
-                                      </li>
-                                      <li>
-                                        <button
-                                          onClick={() =>
-                                            navigate("/log-in")
-                                          }
-                                          disabled={post.is_saved}
-                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
-                                        >
-                                          <Bookmark className="w-4 h-4" />
-                                          {post.is_saved
-                                            ? "Saved"
-                                            : "Save Post"}
-                                        </button>
-                                      </li>
-                                    </ul>
-                                  </div>
-                                )}
-                            </div>
-                          </div>
-                        )}
                       </div>
-
-                      {/* Post Content */}
-                      <div className="mt-3 md:mt-4">
-                        <p className="text-gray-800 text-sm md:text-base mb-2 md:mb-3">
-                          {expandedPosts[post.id] ||
-                            post?.content?.length <= CONTENT_LIMIT
-                            ? post.content
-                            : `${post?.content?.substring(
-                              0,
-                              CONTENT_LIMIT
-                            )}...`}
-                          {post?.content?.length > CONTENT_LIMIT && (
-                            <button
-                              onClick={() => navigate("/log-in") }
-                              className="text-blue-500 ml-1 text-xs md:text-sm font-medium hover:underline focus:outline-none"
-                            >
-                              {expandedPosts[post.id]
-                                ? "Show less"
-                                : "Read more"}
-                            </button>
-                          )}
-                        </p>
-
-                        {/* Dynamic Media Block */}
-                        {post.file && (
-                          <div className="rounded-lg">
-                            {(() => {
-                              const urls = post.file
-                                .split(",")
-                                .map((url) => url.trim());
-                              const mediaItems = urls.map((url) => ({
-                                url,
-                                type: (isVideoFile(url) ? "video" : "image") as
-                                  | "video"
-                                  | "image",
-                              }));
-
-                              // Use PostCarousel if there are multiple items (images or videos)
-                              if (mediaItems.length > 1) {
-                                return <PostCarousel mediaItems={mediaItems} />;
-                              }
-
-                              // Single item rendering
-                              const item = mediaItems[0];
-                              return item.type === "video" ? (
-                                <video
-                                  className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl"
-                                  controls
-                                  muted
-                                  autoPlay
-                                  loop
-                                >
-                                  <source src={item.url} type="video/mp4" />
-                                  Your browser does not support the video tag.
-                                </video>
-                              ) : (
-                                <img
-                                  src={item.url}
-                                  alt="Post content"
-                                  className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl mb-2"
-                                  onError={(e) => {
-                                    const target = e.target as HTMLImageElement;
-                                    target.src = carosuel1;
-                                  }}
-                                />
-                              );
-                            })()}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Reactions and Action Buttons */}
-                      <div className="flex justify-between items-center mt-3 px-1 text-xs md:text-sm text-gray-600 gap-2">
-                        <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1 md:gap-2">
-                            <div className="flex items-center -space-x-2 md:-space-x-3">
-                              <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
-                                <img src={iconMap["sociallike"]} alt="Home Icon" className="w-8 h-8 transition duration-200 group-hover:brightness-0 group-hover:invert" />
-                              </div>
-                              
-                              <span className="text-[14px] text-[#64748B] pl-3 md:pl-5">
-                                {post.likes_count}
-                              </span>
-                            </div>
-                          </div>
-                          {/* <div className="flex items-center gap-2">
+                      {/* <div className="flex items-center gap-2">
                             <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
                               <img
                                 src={comment}
@@ -1296,213 +1265,223 @@ export default function SocialFeed() {
                             </div>
                             <span>{post.comments_count}</span>
                           </div> */}
-                        </div>
-                        {post.comments_count > 0 && (
-                          <div>
-                            <span className="text-sm text-[#64748B]">
-                              {post.comments_count} Reflections Thread
-                            </span>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
-                        <button
-                          onClick={() => navigate("/log-in")}
-                          disabled={isLoading}
-                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 ${isLoading ? "opacity-50 cursor-not-allowed" : ""
-                            }`}
-                        >
-                          <ThumbsUp
-                            className="w-5 h-5 md:w-6 md:h-6"
-                            fill={post.is_liked ? "#7077FE" : "none"} // <-- condition here
-                            stroke={post.is_liked ? "#7077FE" : "#000"} // keeps border visible
-                          />
-                          <span className={`${
-                              post.is_liked ? "#7077FE" : "text-black"
-                            }`}
-                          > Appreciate
-                          </span>
-                        </button>
-                        <button
-                          onClick={() => navigate("/log-in") }
-                          className="flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  font-semibold text-sm md:text-base  hover:bg-gray-50"
-                        >
-                        <MessageSquare
-                          className="w-5 h-5 md:w-6 md:h-6 filter transiton-all"
-                          fill={
-                            selectedPostId === post.id ? "#7077FE" : "none"
-                          }
-                          stroke={
-                            selectedPostId === post.id ? "#7077FE" : "#000"
-                          }
-                        />{" "}
-                          <span 
-                          className={`${
-                            selectedPostId === post.id
-                              ? "#7077FE"
-                              : "text-black"
-                          }`}
-                          >
-                            Reflections
-                          </span>
-                        </button>
-                        
-                        <div className="relative">
-                          <button
-                            onClick={() => navigate("/log-in")}
-                            className="flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 text-black"
-                          >
-                            <Share2 className="w-5 h-5 md:w-6 md:h-6" />
-                            <span className="text-black">Share</span>
-                          </button>
-                          {openMenu.postId === post.id && openMenu.type === "share" && (
-                            <SharePopup
-                              isOpen={true}
-                              onClose={() => navigate("/log-in") }
-                              url={buildShareUrl()} // or pass your own URL if needed
-                              position="bottom"
-                            />
-                          )}
-                        </div>
-                      </div>
                     </div>
-                  ))}
-                </>
-            ) : activeView === "following" ? (
-              <div className="bg-white rounded-xl shadow-md p-4 mt-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-800">
-                    People You Follow
-                  </h3>
-                  <button
-                    onClick={() => navigate("/log-in") }
-                    className="text-sm text-[#7C81FF] hover:underline"
-                  >
-                    Back to Posts
-                  </button>
-                </div>
-                {isFollowingLoading ? (
-                  <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+                    {post.comments_count > 0 && (
+                      <div>
+                        <span className="text-sm text-[#64748B]">
+                          {post.comments_count} Reflections Thread
+                        </span>
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <FollowedUsersList
-                    users={followedUsers}
-                    onFollowToggle={(userId) => {
-                      setFollowedUsers((prev) =>
-                        prev.map((user) =>
-                          user.id === userId
-                            ? { ...user, is_following: !user.is_following }
-                            : user
-                        )
-                      );
+
+                  <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5 border-t border-[#ECEEF2] py-4">
+                    <button
+                      onClick={() => setOpenSignup(true)}
+                      disabled={isLoading}
+                      className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-normal text-sm md:text-base leading-[150%] rounded-md bg-white text-[#7077FE] hover:bg-gray-50 ${
+                        isLoading ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
+                    >
+                      <ThumbsUp
+                        className="w-5 h-5 md:w-6 md:h-6"
+                        fill={post.is_liked ? "#7077FE" : "none"} // <-- condition here
+                        stroke={post.is_liked ? "#7077FE" : "#000"} // keeps border visible
+                      />
+                      <span
+                        className={`${
+                          post.is_liked ? "#7077FE" : "text-black"
+                        }`}
+                      >
+                        {" "}
+                        Appreciate
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => setOpenSignup(true)}
+                      className="flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  font-normal text-sm md:text-base rounded-md hover:bg-gray-50"
+                    >
+                      <MessageSquare
+                        className="w-5 h-5 md:w-6 md:h-6 filter transiton-all"
+                        fill={selectedPostId === post.id ? "#7077FE" : "none"}
+                        stroke={selectedPostId === post.id ? "#7077FE" : "#000"}
+                      />{" "}
+                      <span
+                        className={`${
+                          selectedPostId === post.id ? "#7077FE" : "text-black"
+                        }`}
+                      >
+                        Reflections
+                      </span>
+                    </button>
+
+                    <div className="relative">
+                      <button
+                        onClick={() => setOpenSignup(true)}
+                        className="flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-normal text-sm md:text-base rounded-md hover:bg-gray-50 text-black"
+                      >
+                        <Share2 className="w-5 h-5 md:w-6 md:h-6" />
+                        <span className="text-black">Share</span>
+                      </button>
+                      {openMenu.postId === post.id &&
+                        openMenu.type === "share" && (
+                          <SharePopup
+                            isOpen={true}
+                            onClose={() => navigate("/log-in")}
+                            url={buildShareUrl()} // or pass your own URL if needed
+                            position="bottom"
+                          />
+                        )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </>
+          ) : activeView === "following" ? (
+            <div className="bg-white rounded-xl shadow-md p-4 mt-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">
+                  People You Follow
+                </h3>
+                <button
+                  onClick={() => setOpenSignup(true)}
+                  className="text-sm text-[#7C81FF] hover:underline"
+                >
+                  Back to Posts
+                </button>
+              </div>
+              {isFollowingLoading ? (
+                <div className="flex justify-center items-center h-64">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+                </div>
+              ) : (
+                <FollowedUsersList
+                  users={followedUsers}
+                  onFollowToggle={(userId) => {
+                    setFollowedUsers((prev) =>
+                      prev.map((user) =>
+                        user.id === userId
+                          ? { ...user, is_following: !user.is_following }
+                          : user
+                      )
+                    );
+                  }}
+                />
+              )}
+            </div>
+          ) : (
+            <div className="bg-white rounded-xl shadow-md p-4 mt-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">
+                  My Collection
+                </h3>
+                <button
+                  onClick={() => setOpenSignup(true)}
+                  className="text-sm text-[#7C81FF] hover:underline"
+                >
+                  Back to Posts
+                </button>
+              </div>
+              {isCollectionLoading ? (
+                <div className="flex justify-center items-center h-64">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+                </div>
+              ) : (
+                <CollectionList items={collectionItems} />
+              )}
+            </div>
+          )}
+          <button
+            className="mt-10 mb-10 w-[214px] h-[45px] bg-[#20B9EB] text-white rounded-[100px] mx-auto block"
+           onClick={() => setOpenSignup(true)}
+          >
+            Show more result
+          </button>
+        </div>
+
+        {/* Right Sidebar Container */}
+        <div className="w-full lg:w-[30%] flex flex-col gap-4">
+          {/* Quick Actions */}
+          <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
+            <h3 className="text-black flex items-center gap-2 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
+              <img
+                src={iconMap["socialtrending"]}
+                alt="Home Icon"
+                className="w-7 h-7 transition duration-200 group-hover:brightness-0 group-hover:invert"
+              />{" "}
+              Trending Topics
+            </h3>
+            <div className="w-full border-t border-[#C8C8C8] my-4"></div>
+            <ul className="space-y-4 text-sm md:text-[15px] text-gray-700 px-4">
+              {/* Replace with actual trending topics */}
+              {topics.map((topic, index) => (
+                <li
+                  key={index}
+                 onClick={() => setOpenSignup(true)}
+                  className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+                >
+                  {index + 1}. #{topic.topic_name}
+                </li>
+              ))}
+              {topics?.length === 0 && (
+                <button disabled className="text-gray-400 italic">
+                  No Trending topics available
+                </button>
+              )}
+            </ul>
+          </div>
+        </div>
+
+        {/* Popup Modals (unchanged) */}
+        {showPopup && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-[18px] w-full max-w-md mx-4 shadow-lg relative">
+              <div className="flex px-5 py-3 bg-[#897AFF1A] justify-between items-center">
+                <div className="w-fit h-fit">
+                  <Image
+                    src="/popup-plus-icon.png"
+                    alt="plus-icon"
+                    width={36}
+                    height={36}
+                    className="object-contain"
+                  />
+                </div>
+                <h2 className="text-lg font-semibold mb-0 text-[#897AFF]">
+                  Create Post
+                </h2>
+                <button
+                  onClick={() => setShowPopup(false)}
+                  className="text-[#E1056D] text-[26px] hover:text-black cursor-pointer"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="mt-4 px-3 flex items-center gap-2 md:gap-3">
+                <Link to={`/dashboard/userprofile/${userInfo?.id}`}>
+                  <img
+                    src={
+                      userInfo.profile_picture
+                        ? userInfo.profile_picture
+                        : "/profile.png"
+                    }
+                    className="w-8 h-8 md:w-10 md:h-10 rounded-full"
+                    alt="User"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "/profile.png";
                     }}
                   />
-                )}
+                </Link>
+                <div>
+                  <p className="font-semibold text-sm md:text-base text-black">
+                    <Link to={`/dashboard/userprofile/${userInfo?.id}`}>
+                      {userInfo.name}
+                    </Link>
+                  </p>
+                </div>
               </div>
-            ) : (
-              <div className="bg-white rounded-xl shadow-md p-4 mt-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-800">
-                    My Collection
-                  </h3>
-                  <button
-                    onClick={() => navigate("/log-in") }
-                    className="text-sm text-[#7C81FF] hover:underline"
-                  >
-                    Back to Posts
-                  </button>
-                </div>
-                {isCollectionLoading ? (
-                  <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
-                  </div>
-                ) : (
-                  <CollectionList items={collectionItems} />
-                )}
-              </div>
-            )}
-            <button className="mt-10 mb-10 w-[214px] h-[45px] bg-[#20B9EB] text-white rounded-[100px] mx-auto block" onClick={() => navigate("/log-in")}>Show more result</button>
-          </div>
 
-          {/* Right Sidebar Container */}
-          <div className="w-full lg:w-[30%] flex flex-col gap-4">
-            {/* Quick Actions */}
-            <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
-              <h3 className="text-black flex items-center gap-2 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
-                <img src={iconMap["socialtrending"]} alt="Home Icon" className="w-7 h-7 transition duration-200 group-hover:brightness-0 group-hover:invert" /> Trending Topics
-              </h3>
-              <div className="w-full border-t border-[#C8C8C8] my-4"></div>
-              <ul className="space-y-4 text-sm md:text-[15px] text-gray-700 px-4">
-                { /* Replace with actual trending topics */}
-                { topics.map((topic, index) => (
-                  <li
-                    key={index}   
-                    onClick={() => navigate("/log-in") }
-                    className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
-                  >
-                    {index + 1}. #{topic.topic_name}
-                  </li>
-                )) }
-                
-              </ul>
-            </div>
-
-            
-
-          </div>
-
-          {/* Popup Modals (unchanged) */}
-          {showPopup && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-[18px] w-full max-w-md mx-4 shadow-lg relative">
-                <div className="flex px-5 py-3 bg-[#897AFF1A] justify-between items-center">
-                  <div className="w-fit h-fit">
-                    <Image
-                      src="/popup-plus-icon.png"
-                      alt="plus-icon"
-                      width={36}
-                      height={36}
-                      className="object-contain"
-                    />
-                  </div>
-                  <h2 className="text-lg font-semibold mb-0 text-[#897AFF]">
-                    Create Post
-                  </h2>
-                  <button
-                    onClick={() => setShowPopup(false)}
-                    className="text-[#E1056D] text-[26px] hover:text-black cursor-pointer"
-                  >
-                    ×
-                  </button>
-                </div>
-                <div className="mt-4 px-3 flex items-center gap-2 md:gap-3">
-                  <Link to={`/dashboard/userprofile/${userInfo?.id}`}>
-                    <img
-                      src={
-                        userInfo.profile_picture
-                          ? userInfo.profile_picture
-                          : "/profile.png"
-                      }
-                      className="w-8 h-8 md:w-10 md:h-10 rounded-full"
-                      alt="User"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "/profile.png";
-                      }}
-                    />
-                  </Link>
-                  <div>
-                    <p className="font-semibold text-sm md:text-base text-black">
-                      <Link to={`/dashboard/userprofile/${userInfo?.id}`}>
-                        {userInfo.name}
-                      </Link>
-                    </p>
-                  </div>
-                </div>
-
-                {/* {apiMessage && (
+              {/* {apiMessage && (
                 <div
                   className={`poppins text-center mb-4 ${
                     apiMessage.includes("verification")
@@ -1513,72 +1492,72 @@ export default function SocialFeed() {
                   {apiMessage}
                 </div>
               )} */}
-                <div className="px-3 mt-4 pb-5">
-                  <textarea
-                    rows={4}
-                    className="w-full p-3 border border-[#ECEEF2] text-black placeholder:text-[#64748B] text-sm rounded-md resize-none mb-3 outline-none focus:border-[#897AFF1A]"
-                    placeholder={`What's on your mind? ${userInfo.main_name}...`}
-                    value={postMessage}
-                    onChange={(e) => setPostMessage(e.target.value)}
-                  />
+              <div className="px-3 mt-4 pb-5">
+                <textarea
+                  rows={4}
+                  className="w-full p-3 border border-[#ECEEF2] text-black placeholder:text-[#64748B] text-sm rounded-md resize-none mb-3 outline-none focus:border-[#897AFF1A]"
+                  placeholder={`What's on your mind? ${userInfo.main_name}...`}
+                  value={postMessage}
+                  onChange={(e) => setPostMessage(e.target.value)}
+                />
 
-                  <div className="space-y-3 mb-4 flex rounded-[8px] border border-[#F07EFF1A]  justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
-                    <p className="mb-0 text-sm font-semibold">
-                      Add to your post :
-                    </p>
-                    <div className="flex justify-end gap-4 w-6/12">
-                      <div>
-                        <label
-                          className="flex gap-2 items-center text-sm font-medium text-gray-700 mb-1"
-                          htmlFor="video-upload"
-                        >
-                          <Image
-                            src="/youtube.png"
-                            alt="youtube"
-                            width={24}
-                            height={16}
-                            className="object-contain rounded-0 cursor-pointer"
-                          />
-                          <span className="text-black text-sm cursor-pointer">
-                            Video
-                          </span>
-                        </label>
-                        <input
-                          type="file"
-                          accept="video/*"
-                          id="video-upload"
-                          className="w-full hidden cursor-pointer"
-                          onChange={handleVideoChange}
+                <div className="space-y-3 mb-4 flex rounded-[8px] border border-[#F07EFF1A]  justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
+                  <p className="mb-0 text-sm font-semibold">
+                    Add to your post :
+                  </p>
+                  <div className="flex justify-end gap-4 w-6/12">
+                    <div>
+                      <label
+                        className="flex gap-2 items-center text-sm font-medium text-gray-700 mb-1"
+                        htmlFor="video-upload"
+                      >
+                        <Image
+                          src="/youtube.png"
+                          alt="youtube"
+                          width={24}
+                          height={16}
+                          className="object-contain rounded-0 cursor-pointer"
                         />
-                      </div>
+                        <span className="text-black text-sm cursor-pointer">
+                          Video
+                        </span>
+                      </label>
+                      <input
+                        type="file"
+                        accept="video/*"
+                        id="video-upload"
+                        className="w-full hidden cursor-pointer"
+                        onChange={handleVideoChange}
+                      />
+                    </div>
 
-                      <div>
-                        <label
-                          className="flex gap-2 items-center text-sm font-medium text-gray-700 mb-1 "
-                          htmlFor="photo-upload"
-                        >
-                          <Image
-                            src="/picture.png"
-                            alt="picture"
-                            width={22}
-                            height={20}
-                            className="object-contain rounded-0 cursor-pointer"
-                          />
-                          <span className="text-black text-sm cursor-pointer">
-                            Photo
-                          </span>
-                        </label>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          id="photo-upload"
-                          className="w-full hidden cursor-pointer"
-                          multiple
-                          onChange={handleImageChange}
+                    <div>
+                      <label
+                        className="flex gap-2 items-center text-sm font-medium text-gray-700 mb-1 "
+                        htmlFor="photo-upload"
+                      >
+                        <Image
+                          src="/picture.png"
+                          alt="picture"
+                          width={22}
+                          height={20}
+                          className="object-contain rounded-0 cursor-pointer"
                         />
+                        <span className="text-black text-sm cursor-pointer">
+                          Photo
+                        </span>
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        id="photo-upload"
+                        className="w-full hidden cursor-pointer"
+                        multiple
+                        onChange={handleImageChange}
+                      />
 
-                        {/* Show preview below input */}
-                        {/* <div className="grid grid-cols-2 gap-4 mt-4">
+                      {/* Show preview below input */}
+                      {/* <div className="grid grid-cols-2 gap-4 mt-4">
                         {selectedImages.map((file, index) => (
                           <Image
                             key={index}
@@ -1590,116 +1569,114 @@ export default function SocialFeed() {
                           />
                         ))}
                       </div> */}
-                      </div>
                     </div>
                   </div>
-                  {/* Image Previews */}
-                  {selectedImages.length > 0 && (
-                    <div className="mb-4">
-                      <div className="grid grid-cols-2 gap-2">
-                        {selectedImages.map((file, index) => (
-                          <div key={index} className="relative">
-                            <img
-                              src={URL.createObjectURL(file)}
-                              alt={`Preview ${index}`}
-                              className="w-full h-32 object-cover rounded-lg"
-                            />
-                            <button
-                              onClick={() => handleRemoveImage(index)}
-                              className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
+                </div>
+                {/* Image Previews */}
+                {selectedImages.length > 0 && (
+                  <div className="mb-4">
+                    <div className="grid grid-cols-2 gap-2">
+                      {selectedImages.map((file, index) => (
+                        <div key={index} className="relative">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={`Preview ${index}`}
+                            className="w-full h-32 object-cover rounded-lg"
+                          />
+                          <button
+                            onClick={() => handleRemoveImage(index)}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
                     </div>
-                  )}
+                  </div>
+                )}
 
-                  {/* Video Preview */}
-                  {postVideoPreviewUrl && (
-                    <div className="mb-4 relative">
-                      <video
-                        controls
-                        className="w-full max-h-[300px] rounded-lg object-cover"
-                        src={postVideoPreviewUrl}
-                      />
-                      <button
-                        onClick={() => navigate("/log-in") }
-                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  )}
-
-                  <div className="flex justify-between items-center mt-3">
-                    <select
-                      id="topic-select"
-                      value={selectedTopic}
-                      onChange={(e) => setSelectedTopic(e.target.value)}
-                      className="w-80 mr-3 p-2 border border-[#ECEEF2] text-sm rounded-md outline-none focus:border-[#7077FE]"
-                    >
-                      <option value="" disabled>
-                        -- What’s this post about? --
-                      </option>
-                      {topics.length > 0 ? (
-                        topics.map((topic) => (
-                          <option key={topic.id} value={topic.id}>
-                            {topic.topic_name}
-                          </option>
-                        ))
-                      ) : (
-                        <option
-                          value=""
-                          disabled
-                          className="text-gray-400 italic"
-                        >
-                          No topics available
-                        </option>
-                      )}
-                      {topics.length > 0 && (
-                        <option value={999999}>Other</option>
-                      )}
-                    </select>
-
+                {/* Video Preview */}
+                {postVideoPreviewUrl && (
+                  <div className="mb-4 relative">
+                    <video
+                      controls
+                      className="w-full max-h-[300px] rounded-lg object-cover"
+                      src={postVideoPreviewUrl}
+                    />
                     <button
-                      onClick={() => navigate("/log-in") }
-                      className="bg-[#7077FE] text-white px-6 py-2 rounded-full hover:bg-[#5b63e6]"
+                     onClick={() => setOpenSignup(true)}
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center"
                     >
-                      Post
+                      ×
                     </button>
                   </div>
+                )}
+
+                <div className="flex justify-between items-center mt-3">
+                  <select
+                    id="topic-select"
+                    value={selectedTopic}
+                    onChange={(e) => setSelectedTopic(e.target.value)}
+                    className="w-80 mr-3 p-2 border border-[#ECEEF2] text-sm rounded-md outline-none focus:border-[#7077FE]"
+                  >
+                    <option value="" disabled>
+                      -- What’s this post about? --
+                    </option>
+                    {topics.length > 0 ? (
+                      topics.map((topic) => (
+                        <option key={topic.id} value={topic.id}>
+                          {topic.topic_name}
+                        </option>
+                      ))
+                    ) : (
+                      <option
+                        value=""
+                        disabled
+                        className="text-gray-400 italic"
+                      >
+                        No topics available
+                      </option>
+                    )}
+                    {topics.length > 0 && <option value={999999}>Other</option>}
+                  </select>
+
+                  <button
+                   onClick={() => setOpenSignup(true)}
+                    className="bg-[#7077FE] text-white px-6 py-2 rounded-full hover:bg-[#5b63e6]"
+                  >
+                    Post
+                  </button>
                 </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {showStoryPopup && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-[18px] w-full max-w-md mx-4 shadow-lg relative">
-                <div className="flex px-5 py-3 bg-[#897AFF1A] justify-between items-center">
-                  <div className="w-fit h-fit">
-                    <Image
-                      src="/popup-plus-icon.png"
-                      alt="plus-icon"
-                      width={36}
-                      height={36}
-                      className="object-contain"
-                    />
-                  </div>
-                  <h2 className="text-lg font-semibold mb-0 text-gray-800">
-                    Upload Story
-                  </h2>
-                  <button
-                    onClick={() => navigate("/log-in")}
-                    className="text-black text-[26px] hover:text-black cursor-pointer"
-                  >
-                    ×
-                  </button>
+        {showStoryPopup && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-[18px] w-full max-w-md mx-4 shadow-lg relative">
+              <div className="flex px-5 py-3 bg-[#897AFF1A] justify-between items-center">
+                <div className="w-fit h-fit">
+                  <Image
+                    src="/popup-plus-icon.png"
+                    alt="plus-icon"
+                    width={36}
+                    height={36}
+                    className="object-contain"
+                  />
                 </div>
+                <h2 className="text-lg font-semibold mb-0 text-gray-800">
+                  Upload Story
+                </h2>
+                <button
+                 onClick={() => setOpenSignup(true)}
+                  className="text-black text-[26px] hover:text-black cursor-pointer"
+                >
+                  ×
+                </button>
+              </div>
 
-                {/* {apiStoryMessage && (
+              {/* {apiStoryMessage && (
                 <div
                   className={`poppins text-center mb-4 ${
                     apiStoryMessage.includes("verification")
@@ -1710,99 +1687,93 @@ export default function SocialFeed() {
                   {apiStoryMessage}
                 </div>
               )} */}
-                <div className="px-3 mt-5 pb-5">
-                  <textarea
-                    rows={4}
-                    className="w-full p-3 border border-[#ECEEF2] text-black placeholder:text-[#64748B] text-sm rounded-md resize-none mb-3 outline-none focus:border-[#897AFF1A]"
-                    placeholder="Write anything about your story"
-                    value={storyMessage}
-                    onChange={(e) => setStoryMessage(e.target.value)}
-                  />
+              <div className="px-3 mt-5 pb-5">
+                <textarea
+                  rows={4}
+                  className="w-full p-3 border border-[#ECEEF2] text-black placeholder:text-[#64748B] text-sm rounded-md resize-none mb-3 outline-none focus:border-[#897AFF1A]"
+                  placeholder="Write anything about your story"
+                  value={storyMessage}
+                  onChange={(e) => setStoryMessage(e.target.value)}
+                />
 
-                  {/* Video Upload Section */}
-                  <div className="space-y-3 mb-4 flex rounded-[8px] border border-[#F07EFF1A] justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
-                    <div className="flex justify-center gap-4 w-full">
-                      <div>
-                        <label className="flex flex-col items-center justify-center gap-2 cursor-pointer">
-                          <Image
-                            src="/youtube.png"
-                            alt="youtube"
-                            width={24}
-                            height={16}
-                            className="object-contain rounded-0"
-                          />
-                          <span className="text-black text-sm">
-                            Select Video
-                          </span>
-                          <input
-                            type="file"
-                            accept="video/*"
-                            id="video-upload-story"
-                            className="hidden"
-                            onChange={handleStoryVideoChange}
-                          />
-                        </label>
-                      </div>
+                {/* Video Upload Section */}
+                <div className="space-y-3 mb-4 flex rounded-[8px] border border-[#F07EFF1A] justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
+                  <div className="flex justify-center gap-4 w-full">
+                    <div>
+                      <label className="flex flex-col items-center justify-center gap-2 cursor-pointer">
+                        <Image
+                          src="/youtube.png"
+                          alt="youtube"
+                          width={24}
+                          height={16}
+                          className="object-contain rounded-0"
+                        />
+                        <span className="text-black text-sm">Select Video</span>
+                        <input
+                          type="file"
+                          accept="video/*"
+                          id="video-upload-story"
+                          className="hidden"
+                          onChange={handleStoryVideoChange}
+                        />
+                      </label>
                     </div>
                   </div>
+                </div>
 
-                  {/* Video Preview */}
-                  {videoPreviewUrl && (
-                    <div className="mb-4 relative">
-                      <video
-                        controls
-                        className="w-full max-h-[300px] rounded-lg object-cover"
-                        src={videoPreviewUrl}
-                      />
-                      <button
-                        onClick={handleRemoveStoryVideo}
-                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center"
-                      >
-                        ×
-                      </button>
-                      <div className="text-xs text-gray-500 mt-1">
-                        Video preview - {selectedStoryVideo?.name}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex justify-between">
+                {/* Video Preview */}
+                {videoPreviewUrl && (
+                  <div className="mb-4 relative">
+                    <video
+                      controls
+                      className="w-full max-h-[300px] rounded-lg object-cover"
+                      src={videoPreviewUrl}
+                    />
                     <button
-                      onClick={handleSubmitStory}
-                      className="w-full py-2 text-sm rounded-[100px] bg-[#7077FE] text-white disabled:bg-gray-400"
-                      disabled={!selectedStoryVideo || isUploading}
+                      onClick={handleRemoveStoryVideo}
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center"
                     >
-                      {isUploading ? (
-                        <div className="flex items-center justify-center gap-2">
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          Uploading...
-                        </div>
-                      ) : (
-                        "Post Story"
-                      )}
+                      ×
                     </button>
+                    <div className="text-xs text-gray-500 mt-1">
+                      Video preview - {selectedStoryVideo?.name}
+                    </div>
                   </div>
+                )}
+
+                <div className="flex justify-between">
+                  <button
+                    onClick={handleSubmitStory}
+                    className="w-full py-2 text-sm rounded-[100px] bg-[#7077FE] text-white disabled:bg-gray-400"
+                    disabled={!selectedStoryVideo || isUploading}
+                  >
+                    {isUploading ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Uploading...
+                      </div>
+                    ) : (
+                      "Post Story"
+                    )}
+                  </button>
                 </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {showCommentBox && selectedPostId && (
-            <CommentBox
-              setUserPosts={setUserPosts}
-              userPosts={userPosts}
-              postId={selectedPostId}
-              onClose={() => {
-                setShowCommentBox(false);
-                setSelectedPostId(null);
-              }}
-            />
-          )}
-
-          
-        </div>
-
-     
+        {showCommentBox && selectedPostId && (
+          <CommentBox
+            setUserPosts={setUserPosts}
+            userPosts={userPosts}
+            postId={selectedPostId}
+            onClose={() => {
+              setShowCommentBox(false);
+              setSelectedPostId(null);
+            }}
+          />
+        )}
+      </div>
 
       {/* Report Post Modal */}
       <Modal isOpen={showReportModal} onClose={() => setShowReportModal(false)}>

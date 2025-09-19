@@ -38,18 +38,15 @@ import certify from './certify.svg';
 import directory from './directory.svg';
 import usericon from './Icon.svg';
 import mentor1 from './mentor1.png';
-import socialuser from './social_user.png';
-import socialhome from './social_home.png';
-import socialsearch from './social_search.png';
-import socialtrending from './social_trending.png';
+import socialuser from './signup.svg';
+import socialhome from './home.svg';
+import socialsearch from './search.svg';
+import socialtrending from './trending.svg';
 import leaderboard from './social_leaderboard.png';
 import socialannouncement from './social_announcement.png';
 import storyplus from './plus.png';
 import sociallike from './social_like.png';
 import userplus from './userplus.png';
-
-
-
 
 export const iconMap: Record<string, string> = {
   leftimg:leftimage,

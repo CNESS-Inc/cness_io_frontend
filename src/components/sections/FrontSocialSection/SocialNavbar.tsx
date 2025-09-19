@@ -6,11 +6,10 @@ import {
 } from "lucide-react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { iconMap } from "../../../assets/icons";
-
+import SignupModel from "../../OnBoarding/Signup";
 
 const SocialNavbar = ({
   isMobileNavOpen,
-  
 }: // currentPath,
 {
   isMobileNavOpen: boolean;
@@ -26,46 +25,64 @@ const SocialNavbar = ({
   const [openDropdown, setOpenDropdown] = useState<{ [key: string]: boolean }>(
     {}
   );
- 
+  const [activeButton, setActiveButton] = useState<string | null>(null);
+  const [openSignup, setOpenSignup] = useState(false);
+
   const mainNavItems = [
     {
       id: "Login_Sign_up",
-      icon: <img src={iconMap["socialuser"]} alt="Home Icon" className="w-5 h-5 transition duration-200 group-hover:brightness-0 group-hover:invert" />,
+      icon: (
+        <img
+          src={iconMap["socialuser"]}
+          alt="Home Icon"
+          className="w-5 h-5 transition duration-200 group-hover:brightness-0 group-hover:invert"
+        />
+      ),
       label: "Login / Sing up",
       active: true,
-      path: "/log-in",
+      onClick: () => setOpenSignup(true),
     },
     {
       id: "Home",
       icon: (
-        <img src={iconMap["socialhome"]} alt="Home Icon" className="w-5 h-5 transition duration-200 group-hover:brightness-0 group-hover:invert" />
+        <img
+          src={iconMap["socialhome"]}
+          alt="Home Icon"
+          className="w-5 h-5 transition duration-200 group-hover:brightness-0 group-hover:invert"
+        />
       ),
       label: "Home",
-      active: true,
+      active: false,
       path: "/",
     },
     {
       id: "Search",
       icon: (
-        <img src={iconMap["socialsearch"]} alt="Home Icon" className="w-5 h-5 transition duration-200 group-hover:brightness-0 group-hover:invert" />
+        <img
+          src={iconMap["socialsearch"]}
+          alt="Home Icon"
+          className="w-5 h-5 transition duration-200 group-hover:brightness-0 group-hover:invert"
+        />
       ),
       label: "Search",
-      active: true,
-      path: "/log-in",
+      active: false,
+      onClick: () => setOpenSignup(true),
     },
     {
       id: "Trending",
       icon: (
-        <img src={iconMap["socialtrending"]} alt="Home Icon" className="w-5 h-5 transition duration-200 group-hover:brightness-0 group-hover:invert" />
+        <img
+          src={iconMap["socialtrending"]}
+          alt="Home Icon"
+          className="w-5 h-5 transition duration-200 group-hover:brightness-0 group-hover:invert"
+        />
       ),
       label: "Trending",
-      active: true,
-      path: "/log-in",
+      active: false,
+      onClick: () => setOpenSignup(true),
     },
-    
   ];
 
-  
   // NavItem component with profile dropdown support
   const NavItem = ({ item }: any) => {
     const location = useLocation();
@@ -222,7 +239,7 @@ const SocialNavbar = ({
 
           {isDropdownOpen && (
             <div className="flex flex-col gap-1 mt-3 pl-8">
-              {item.children.map((child: any, idx: number) => (
+              {item.children.map((child: any, idx: number) =>
                 child.path ? (
                   <NavLink
                     key={idx}
@@ -245,10 +262,47 @@ const SocialNavbar = ({
                     {child.label}
                   </NavLink>
                 )
-              ))}
+              )}
             </div>
           )}
         </div>
+      );
+    }
+
+    if (item.id === "Login_Sign_up") {
+      return (
+        <button
+          className={`
+          flex items-center gap-3 px-3 py-4 w-full rounded-[100px] cursor-pointer
+          font-poppins font-normal text-[14px] leading-[20px]
+          bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white
+          transition duration-200 ease-in-out
+        `}
+          onClick={() => {
+            item.onClick();
+          }}
+        >
+          <div className="inline-flex items-start gap-2.5">{item.icon}</div>
+          <div className="whitespace-nowrap">{item.label}</div>
+        </button>
+      );
+    }
+
+    if (item.onClick) {
+      const isActive = activeButton === item.id;
+      return (
+        <button
+          onClick={() => {
+            setActiveButton(item.id);
+            item.onClick();
+          }}
+          className={`group  ${baseClasses} ${
+            isActive ? activeMainClasses : inactiveMainClasses
+          }`}
+        >
+          {item.icon}
+          <span>{item.label}</span>
+        </button>
       );
     }
 
@@ -258,7 +312,9 @@ const SocialNavbar = ({
         end={item.path === "/dashboard"}
         onClick={handleClick}
         className={({ isActive }) =>
-          `group  ${baseClasses} ${isActive ? activeMainClasses : inactiveMainClasses}`
+          `group  ${baseClasses} ${
+            isActive ? activeMainClasses : inactiveMainClasses
+          }`
         }
       >
         <div className="flex items-start gap-3 w-full relative">{content}</div>
@@ -288,7 +344,6 @@ const SocialNavbar = ({
         `}
       >
         <div className="flex flex-col w-full font-poppins leading-[20px] h-full">
-
           <div className="flex flex-col justify-between items-start space-y-3 px-3 w-full h-full">
             {mainNavItems.map((item, index) => (
               <NavItem
@@ -301,6 +356,7 @@ const SocialNavbar = ({
           </div>
         </div>
       </nav>
+      <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
     </>
   );
 };
