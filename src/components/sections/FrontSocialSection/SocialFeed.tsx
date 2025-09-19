@@ -824,7 +824,7 @@ export default function SocialFeed() {
     <>
       <div className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-2 px-2 md:px-2 lg:px-0 w-full">
         {/* Left Side: Post & Stories - Full width on mobile */}
-        <div className="w-full lg:max-w-[70%]" ref={containerRef}>
+        <div className="w-full lg:max-w-[75%]" ref={containerRef}>
           {activeView === "posts" ? (
             <>
               {/* Start a Post */}
@@ -1400,7 +1400,7 @@ export default function SocialFeed() {
         </div>
 
         {/* Right Sidebar Container */}
-        <div className="w-full lg:w-[30%] flex flex-col gap-4">
+        <div className="w-full lg:w-[25%] flex flex-col gap-4">
           {/* Quick Actions */}
           <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
             <h3 className="text-black flex items-center gap-2 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
