@@ -232,12 +232,13 @@ const UserProfilePage = () => {
             /^[a-zA-Z0-9\s.,!?@#$%^&*()_+-=<>;:'"\/\\[\]{}|`~]+$/,
             "Quote contains invalid characters"
           ),
-        vision: yup
-          .string()
-          .matches(
-            /^[a-zA-Z0-9\s.,!?@#$%^&*()_+-=<>;:'"\/\\[\]{}|`~]+$/,
-            "Vision statement contains invalid characters"
-          ),
+        // vision: yup
+        //   .string()
+        //   .matches(
+        //     /^[a-zA-Z0-9\s.,!?@#$%^&*()_+-=<>;:'"\/\\[\]{}|`~]+$/,
+        //     "Vision statement contains invalid characters"
+        //   ),
+        vision: yup.string().optional(),
         professions: yup.array().min(1, "At least one profession is required"),
         interests: yup.array().min(1, "At least one interest is required"),
         identify_uploaded: yup.mixed().nullable(),
@@ -1346,18 +1347,18 @@ const UserProfilePage = () => {
                                 value: prof.id,
                                 label: prof.title,
                               }))}
-  value={basicInfoForm.watch("professions")?.map((profId: any) => {
-  if (profId === "other") {
-    // use custom_profession text if available, else fallback to "Other"
-    const customLabel = basicInfoForm.watch("custom_profession") || "Other";
-    return { value: "other", label: customLabel };
-  }
+                                value={basicInfoForm.watch("professions")?.map((profId: any) => {
+                                if (profId === "other") {
+                                  // use custom_profession text if available, else fallback to "Other"
+                                  const customLabel = basicInfoForm.watch("custom_profession") || "Other";
+                                  return { value: "other", label: customLabel };
+                                }
 
-  return {
-    value: profId,
-    label: professional?.find((p: any) => p.id === profId)?.title || "",
-  };
-})}
+                                return {
+                                  value: profId,
+                                  label: professional?.find((p: any) => p.id === profId)?.title || "",
+                                };
+                              })}
                               onChange={(selectedOptions) => {
                                 basicInfoForm.setValue(
                                   "professions",
@@ -1557,6 +1558,12 @@ const UserProfilePage = () => {
                               onBlur={() => basicInfoForm.trigger("gender")}
                               isSearchable={false}
                             />
+                            {basicInfoForm.formState.errors.gender && (
+                              <p className="text-sm text-red-500 mt-1">
+                                {basicInfoForm.formState.errors.gender.message ||
+                                  "This field is required"}
+                              </p>
+                            )}
                           </div>
                           {/* Date of Birth */}
                           <div>
@@ -1646,19 +1653,23 @@ const UserProfilePage = () => {
                               rows={4}
                               {...basicInfoForm.register("vision")}
                               placeholder="What is your conscious vision?"
-                              className={`w-full px-4 py-2  border bg-white ${basicInfoForm.formState.errors.vision
-                                ? "border-red-500"
-                                : "border-gray-300"
-                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.vision
-                                  ? "focus:ring-red-500"
-                                  : "focus:ring-purple-500"
-                                }`}
+                              className={`w-full px-4 py-2  border bg-white 
+                                rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 border-gray-300 focus:ring-purple-500
+                                `}
+                                // ${basicInfoForm.formState.errors.vision
+                                // ? "border-red-500"
+                                // : "border-gray-300"
+                                // } 
+                                // ${basicInfoForm.formState.errors.vision
+                                //   ? "focus:ring-red-500"
+                                //   : "focus:ring-purple-500"
+                                // }
                             />
-                            {basicInfoForm.formState.errors.vision && (
+                            {/* {basicInfoForm.formState.errors.vision && (
                               <p className="text-sm text-red-500 mt-1">
                                 {basicInfoForm.formState.errors.vision.message}
                               </p>
-                            )}
+                            )} */}
                           </div>
 
                           <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
