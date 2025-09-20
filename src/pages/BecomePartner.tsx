@@ -17,19 +17,19 @@ import clsx from "clsx";
 
 const features = [
   {
-    id: "001",
+    id: "01",
     title: "Guide Organizational Transformation",
     description:
       "Help companies implement the CNESS framework and measure their conscious impact.",
   },
   {
-    id: "002",
+    id: "02",
     title: "Deliver Programs & Training",
     description:
       "Conduct certified workshops, leadership initiatives, and culture-shaping programs within organizations.",
   },
   {
-    id: "003",
+    id: "03",
     title: "Co-Create the Future",
     description:
       "Collaborate with Mentors, share best practices, and contribute to scaling conscious business worldwide.",
@@ -69,26 +69,32 @@ const steps = [
     step: 1,
     title: "Apply",
     description: "Submit your application online.",
+    width: "w-[50%]",
   },
   {
     step: 2,
     title: "Review",
     description: "Undergo a profile and credentials review.",
+    width: "w-[70%]",
   },
   {
     step: 3,
     title: "Onboarding",
     description: "Complete Partner Training and evaluation.",
+    width: "w-[75%]",
   },
   {
     step: 4,
     title: "Grow Together",
     description: "Receive your Certified Partner Badge.",
+    width: "w-[60%]",
   },
   {
     step: 5,
     title: "Grow Together",
-    description: "Gain dashboard access to manage collaborations, programs, and clients.",
+    description:
+      "Gain dashboard access to manage collaborations, programs, and clients.",
+    width: "w-[90%]",
   },
 ];
 
@@ -122,7 +128,10 @@ const BecomePartner = () => {
     areas_of_collabration: "",
     status: "pending",
   });
-
+  const [submitMessage, setSubmitMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange: React.ChangeEventHandler<
@@ -146,6 +155,7 @@ const BecomePartner = () => {
 
     try {
       setIsSubmitting(true);
+      setSubmitMessage(null);
       const res = await createPartnerInquiry(data);
 
       if (res?.success?.statusCode === 200) {
@@ -169,6 +179,13 @@ const BecomePartner = () => {
           status: "pending",
         });
         setCurrentStep(2);
+      } else {
+        setSubmitMessage({
+          type: "error",
+          text:
+            res.message ||
+            "There was an error submitting your application. Please try again.",
+        });
       }
     } catch (err: any) {
       console.error("Submit failed", err);
@@ -189,23 +206,23 @@ const BecomePartner = () => {
 
   return (
     <>
-      <div className="p-0">
+      <div className="m-0 p-0">
         <div
-          className="px-5 py-[10px]"
+          className="py-[33px] px-10"
           style={{
             background:
               "linear-gradient(128.73deg, #FFFFFF 27.75%, #FEDFDF 100.43%, #F1A5E5 101.52%)",
           }}
         >
-          <div className="flex flex-col lg:flex-row justify-between items-stretch gap-5 py-10">
-            <div className="w-full lg:w-1/3 py-[63px] px-[35px] gap-6 bg-white rounded-[40px]">
+          <div className="flex flex-col lg:flex-row justify-between items-stretch gap-5">
+            <div className="w-full lg:w-1/3 py-[30px] px-[26px] gap-6 bg-white rounded-[40px]">
               <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[42px] lg:text-3xl xl:text-[42px] md:leading-[54px] lg:leading-[40px] xl:leading-[54px] text-wrap">
                 <span className="text-[#1A1A1A]">Grow With Purpose. </span>
                 <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent block">
                   Partner With CNESS.
                 </span>
               </h1>
-              <h5 className="py-3 font-['Open_Sans',Helvetica] text-base font-normal text-[#64748B] leading-[24px]">
+              <h5 className="py-3 font-['Open_Sans',Helvetica] text-base font-light text-[#64748B] leading-[24px]">
                 Join hands with us to embed conscious practices in organizations
                 and communities. As a CNESS Partner, you gain visibility,
                 credibility, and the chance to co-create global impact.
@@ -228,7 +245,7 @@ const BecomePartner = () => {
                 </button>
               </div>
             </div>
-            <div className="w-full h-full lg:w-2/3 rounded-[40px]">
+            <div className="w-full lg:w-2/3 rounded-[40px]">
               <img
                 src={image}
                 alt="partner main poster"
@@ -238,14 +255,15 @@ const BecomePartner = () => {
             </div>
           </div>
         </div>
-        <div className="py-12 flex flex-col justify-center items-center mx-auto">
+
+        <div className="py-12 flex flex-col justify-center items-center mx-auto bg-white">
           <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px]">
             <span className="text-black">Why Become a </span>
             <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
               CNESS Partner
             </span>
           </h1>
-          <h5 className="py-3 px-5 sm:px-10 md:px-20 font-['Open_Sans',Helvetica] font-normal text-base text-center text-[#64748B] leading-[24px]">
+          <h5 className="py-3 px-5 sm:px-10 md:px-20 font-['Open_Sans',Helvetica] font-light text-base text-center text-[#64748B] leading-[24px]">
             CNESS Partners are consultancies, agencies, and specialists who
             extend the power of the CNESS framework into organizations. From HR
             and DEI firms to ESG consultants and leadership coaches, Partners
@@ -257,19 +275,14 @@ const BecomePartner = () => {
           </h5>
         </div>
 
-        <div className="w-full flex mx-auto flex-col justify-center items-center bg-[#F5F7F9] pt-10 pb-[86px] px-[30px]">
-          <div className="w-full text-center">
-            <h3
-              style={{ fontFamily: "Poppins, sans-serif" }}
-              className="font-poppins font-medium text-[32px] md:text-[42px] leading-[54px] tracking-[-0.02em] capitalize text-centerp"
-            >
-              What does a
-              <span className="bg-gradient-to-r from-[#D747EA] to-[#7741FB] text-transparent bg-clip-text">
-                Partner do?
-              </span>
-            </h3>
-          </div>
-          <div className="w-full pt-8">
+        <div className="w-full flex mx-auto flex-col justify-center items-center bg-[#F5F7F9] pt-10 pb-[86px] px-14">
+          <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px]">
+            <span className="text-black">What does a </span>
+            <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+              Partner do?
+            </span>
+          </h1>
+          <div className="w-full pt-10">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[40px]">
               {features.map((item) => (
                 <div
@@ -283,19 +296,19 @@ const BecomePartner = () => {
 
                   {/* Number */}
                   <span className="font-['Poppins',Helvetica] block text-lg text-[#B6B6B6] font-medium">
-                    /{item.id}
+                    {item.id}
                   </span>
 
                   {/* Title */}
                   <h3
                     style={{ fontFamily: "Poppins, sans-serif" }}
-                    className="text-xl font-medium text-black"
+                    className="pt-5 text-xl font-medium text-black"
                   >
                     {item.title}
                   </h3>
 
                   {/* Description */}
-                  <p className="openSans font-['Open Sans'] text-base font-normal text-[#64748B] leading-relaxed">
+                  <p className="openSans font-['Open Sans'] text-base font-light text-[#64748B] leading-relaxed lg:pe-5">
                     {item.description}
                   </p>
                 </div>
@@ -328,7 +341,7 @@ const BecomePartner = () => {
               <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px] text-center">
                 <span className="text-black">Who can become a </span>
                 <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
-                  Partner
+                  Partner?
                 </span>
               </h1>
 
@@ -400,7 +413,12 @@ const BecomePartner = () => {
                   >
                     {stepNumber}
                   </div>
-                  <p className="mt-[21px] text-center font-['Open_Sans',Helvetica] text-xs text-gray-500 max-w-[150px]">
+                  <p
+                    className={clsx(
+                      "mt-[21px] text-center font-['Open_Sans',Helvetica] text-sm font-normal text-gray-500",
+                      step.width
+                    )}
+                  >
                     {step.description}
                   </p>
                 </div>
@@ -409,7 +427,10 @@ const BecomePartner = () => {
           </div>
         </section>
 
-        <div id="apply_partner" className="w-full bg-[#F5F7F9] py-10 px-5 lg:px-10">
+        <div
+          id="apply_partner"
+          className="w-full bg-[#F5F7F9] py-10 px-5 lg:px-10"
+        >
           <h1 className="pb-10 font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px] text-center">
             <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
               Application Form
@@ -524,6 +545,18 @@ const BecomePartner = () => {
                   </Field>
                 </div>
 
+                {submitMessage && (
+                  <div
+                    className={`p-3 rounded-md ${
+                      submitMessage.type === "success"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {submitMessage.text}
+                  </div>
+                )}
+
                 <div className="mt-8 flex justify-center">
                   <button
                     type="submit"
@@ -573,7 +606,7 @@ function Card({
       <h3 className="text-lg font-medium text-[#222224] leading-[24px]">
         {title}
       </h3>
-      <p className="mt-2 text-center text-sm font-normal leading-[24px] text-[#64748B]">
+      <p className="mt-2 text-center text-base font-light leading-[24px] text-[#64748B]">
         {body}
       </p>
     </div>
@@ -643,7 +676,7 @@ function TextArea({
       onChange={onChange}
       rows={4}
       placeholder={placeholder}
-      className="h-full w-full resize-none rounded-sm bg-white p-[10px] text-[14px] outline-none"
+      className="h-full w-full resize-none rounded-sm border-2 border-[#EEEEEE] bg-white p-[10px] text-[14px] outline-none focus:border-[#C9C9FF] placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-[20px]"
     />
   );
 }
