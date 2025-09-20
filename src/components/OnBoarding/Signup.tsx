@@ -374,6 +374,7 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
                   </span>
                   <input
                     type="text"
+                    name='referralCode'
                     placeholder="Enter your referral code"
                     value={registerForm.referralCode}
                     onChange={handleRegisterChange}

@@ -1,4 +1,4 @@
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import SignupAnimation from "../components/ui/SignupAnimation"; // adjust path
 import { RegisterDetails, GoogleLoginDetails } from "../Common/ServerAPI";
 import Modal from "../components/ui/Modal";
@@ -40,8 +40,8 @@ interface FormErrors {
 
 export default function Signingup() {
   const params = new URLSearchParams(window.location.search);
-  const referralCode = params.get('referral_code');
-
+  const referralCodeFromURL = params.get("referral_code");
+  const [recaptchaTouched, setRecaptchaTouched] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiMessage, setApiMessage] = useState<string | null>(null);
@@ -52,7 +52,7 @@ export default function Signingup() {
     email: "",
     password: "",
     confirmPassword: "",
-    referralCode: referralCode
+    referralCode: "",
   });
 
   const [emailFocused, setEmailFocused] = useState(false);
@@ -65,6 +65,15 @@ export default function Signingup() {
 
   // Add your site key (replace with your actual key)
   const RECAPTCHA_SITE_KEY = "6LcmM3YrAAAAAIoMONSmkAGazWwUXdCE6fzI473L";
+
+  useEffect(() => {
+    if (referralCodeFromURL) {
+      setFormValues((prev) => ({
+        ...prev,
+        referralCode: referralCodeFromURL,
+      }));
+    }
+  }, [referralCodeFromURL]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -149,6 +158,12 @@ export default function Signingup() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!recaptchaValue) {
+      setRecaptchaTouched(true);
+      return;
+    }
+
     setIsSubmitting(true);
     setApiMessage(null);
 
@@ -162,7 +177,7 @@ export default function Signingup() {
       email: form.email.value.trim(),
       password: form.password.value.trim(),
       confirmPassword: form.confirmPassword.value.trim(),
-      referralCode: form.referralCode.value.trim()
+      referralCode: form.referralCode.value.trim(),
     };
 
     if (!validateForm(formData)) {
@@ -283,14 +298,16 @@ export default function Signingup() {
           <div className="absolute top-[100px] sm:top-[140px] md:top-[180px] left-0 right-0 flex justify-center z-10 px-4">
             <div className="w-full max-w-[600px] bg-white rounded-2xl shadow-xl px-4 sm:px-10 py-8 sm:py-12 space-y-10">
               <h2 className="font-poppins font-semibold text-[28px] leading-[32px] tracking-[-0.02em] text-[gray-900]">
-                Sign up</h2>
+                Sign up
+              </h2>
 
               {apiMessage && (
                 <div
-                  className={`poppins text-center mb-4 ${apiMessage.includes("verification")
-                    ? "text-green-500"
-                    : "text-red-500"
-                    }`}
+                  className={`poppins text-center mb-4 ${
+                    apiMessage.includes("verification")
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }`}
                 >
                   {apiMessage}
                 </div>
@@ -342,8 +359,9 @@ export default function Signingup() {
                     onChange={handleInputChange}
                     onFocus={() => setIsUsernameFocused(true)}
                     onBlur={() => setIsUsernameFocused(false)}
-                    className={`w-full px-3 py-2 rounded-[12px] border ${errors.username ? "border-red-500" : "border-[#CBD5E1]"
-                      } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                    className={`w-full px-3 py-2 rounded-[12px] border ${
+                      errors.username ? "border-red-500" : "border-[#CBD5E1]"
+                    } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                   />
 
                   {/* Tooltip on focus/hover */}
@@ -376,13 +394,15 @@ export default function Signingup() {
                     onChange={handleInputChange}
                     onFocus={() => setEmailFocused(true)}
                     onBlur={() => setEmailFocused(false)}
-                    className={`w-full px-3 py-2 rounded-[12px] border ${errors.email ? "border-red-500" : "border-[#CBD5E1]"
-                      } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                    className={`w-full px-3 py-2 rounded-[12px] border ${
+                      errors.email ? "border-red-500" : "border-[#CBD5E1]"
+                    } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                   />
 
                   <FiMail
-                    className={`absolute right-3 top-9 text-gray-400 transition-opacity duration-300 ${emailFocused ? "opacity-100" : "opacity-0"
-                      }`}
+                    className={`absolute right-3 top-9 text-gray-400 transition-opacity duration-300 ${
+                      emailFocused ? "opacity-100" : "opacity-0"
+                    }`}
                     size={18}
                   />
                   {errors.email && (
@@ -402,8 +422,9 @@ export default function Signingup() {
                       placeholder="Enter Your Password"
                       value={formValues.password}
                       onChange={handleInputChange}
-                      className={`w-full px-3 pr-10 py-2 rounded-[12px] border ${errors.password ? "border-red-500" : "border-[#CBD5E1]"
-                        } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                      className={`w-full px-3 pr-10 py-2 rounded-[12px] border ${
+                        errors.password ? "border-red-500" : "border-[#CBD5E1]"
+                      } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                     />
                     <div
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
@@ -440,10 +461,11 @@ export default function Signingup() {
                       placeholder="Confirm Your Password"
                       value={formValues.confirmPassword}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 rounded-[12px] border ${errors.confirmPassword
-                        ? "border-red-500"
-                        : "border-[#CBD5E1]"
-                        } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                      className={`w-full px-3 py-2 rounded-[12px] border ${
+                        errors.confirmPassword
+                          ? "border-red-500"
+                          : "border-[#CBD5E1]"
+                      } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                     />
                     <div
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
@@ -476,7 +498,7 @@ export default function Signingup() {
                       id="referralCode"
                       name="referralCode"
                       placeholder="Enter referral code"
-                      value={formValues?.referralCode || ''}
+                      value={formValues?.referralCode}
                       onFocus={() => setreferralCodeFocused(true)}
                       onChange={handleInputChange}
                       className={`w-full px-3 py-2 rounded-[12px] border border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
@@ -492,15 +514,19 @@ export default function Signingup() {
 
                 {/* Divider with "Or sign up with" */}
                 <div className="relative my-6"></div>
-                <div className="my-4 flex justify-center">
+                <div className="my-4 flex flex-col items-center justify-center">
                   <ReCAPTCHA
                     ref={recaptchaRef}
                     sitekey={RECAPTCHA_SITE_KEY}
-                    onChange={handleCaptchaChange}
+                    onChange={(value) => {
+                      handleCaptchaChange(value);
+                      setRecaptchaTouched(false);
+                    }}
                   />
-                  {errors.recaptcha && (
+                  {(errors.recaptcha ||
+                    (recaptchaTouched && !recaptchaValue)) && (
                     <p className="mt-1 text-sm text-red-600">
-                      {errors.recaptcha}
+                      Please complete reCAPTCHA
                     </p>
                   )}
                 </div>
@@ -532,7 +558,7 @@ export default function Signingup() {
                     type="submit"
                     variant="gradient-primary"
                     className="w-full flex justify-center rounded-[100px] py-3 px-10 self-stretch transition-colors duration-500 ease-in-out"
-                    disabled={isSubmitting || !recaptchaValue}
+                    disabled={isSubmitting}
                   >
                     {isSubmitting ? "sign up..." : "Sign Up"}
                   </Button>
@@ -561,10 +587,11 @@ export default function Signingup() {
           </div>
           {apiMessage && (
             <div
-              className={`openSans text-center p-4 ${apiMessage.includes("verification")
-                ? "text-green-500"
-                : "text-red-500"
-                }`}
+              className={`openSans text-center p-4 ${
+                apiMessage.includes("verification")
+                  ? "text-green-500"
+                  : "text-red-500"
+              }`}
             >
               {apiMessage}
             </div>
@@ -590,8 +617,8 @@ export async function registerUser({
   email,
   password,
   referralCode,
-  // recaptcha,
-}: {
+}: // recaptcha,
+{
   username: string;
   email: string;
   password: string;
