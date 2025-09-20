@@ -201,7 +201,6 @@ const BecomeMentor = () => {
         // Reset form
         setFormData({
           first_name: "",
-          last_name: "",
           phone_code: "",
           phone_no: "",
           email: "",
@@ -564,7 +563,7 @@ const BecomeMentor = () => {
 
                   <Field label="Experience">
                     <Input
-                      value={formData.year_of_experience}
+                      value={formData.year_of_experience.toString()}
                       onChange={handleNumberInputChange}
                       placeholder="Enter your years of experience"
                       required

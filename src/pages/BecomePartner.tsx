@@ -545,6 +545,18 @@ const BecomePartner = () => {
                   </Field>
                 </div>
 
+                {submitMessage && (
+                  <div
+                    className={`p-3 rounded-md ${
+                      submitMessage.type === "success"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {submitMessage.text}
+                  </div>
+                )}
+
                 <div className="mt-8 flex justify-center">
                   <button
                     type="submit"
