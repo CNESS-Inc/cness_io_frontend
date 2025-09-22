@@ -1086,11 +1086,10 @@ export default function SocialFeed() {
                                   <li>
                                     <button
                                       onClick={() => setOpenSignup(true)}
-                                      disabled={post.is_saved}
                                       className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
                                     >
                                       <Bookmark className="w-4 h-4" />
-                                      {post.is_saved ? "Saved" : "Save Act"}
+                                      {post.is_saved ? "Unsave" : "Save Act"}
                                     </button>
                                   </li>
                                   <li>
@@ -1107,7 +1106,6 @@ export default function SocialFeed() {
                                     <li>
                                       <button
                                         onClick={() => setOpenSignup(true)}
-                                        disabled={post.is_saved}
                                         className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
                                       >
                                         <CiCircleRemove className="w-4 h-4 text-black" />
@@ -1157,11 +1155,10 @@ export default function SocialFeed() {
                                   <li>
                                     <button
                                       onClick={() => setOpenSignup(true)}
-                                      disabled={post.is_saved}
                                       className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
                                     >
                                       <Bookmark className="w-4 h-4" />
-                                      {post.is_saved ? "Saved" : "Save Post"}
+                                      {post.is_saved ? "Unsave" : "Save Post"}
                                     </button>
                                   </li>
                                 </ul>

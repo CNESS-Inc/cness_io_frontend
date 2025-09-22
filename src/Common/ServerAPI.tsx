@@ -150,6 +150,7 @@ export const EndPoint = {
   single_post: "/user/posts/get",
   user_post: "/user/posts",
   save_post: "/user/posts/save",
+  unsave_post: "/user/posts/unsave",
   get_save_posts: "/user/posts/get/save/posts",
   report_post: "/user/posts/report",
   story: "/story",
@@ -1244,6 +1245,14 @@ export const SavePost = (postId: string) => {
     ServerAPI.APIMethod.POST,
     { post_id: postId },
     EndPoint.save_post
+  );
+};
+
+export const UnsavePost = (postId: string) => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    { post_id: postId },
+    EndPoint.unsave_post
   );
 };
 
