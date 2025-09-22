@@ -46,7 +46,7 @@ import Collection from "../assets/Collection.png";
 // import Leaderboard from "../assets/Leaderboard.png";
 import Mention from "../assets/Mention.png";
 import people from "../assets/people.png";
-import Trending from "../assets/Trending.png";
+import Trending from "../assets/trending.svg";
 import createstory from "../assets/createstory.jpg";
 import carosuel1 from "../assets/carosuel1.png";
 // import like from "../assets/like.png";

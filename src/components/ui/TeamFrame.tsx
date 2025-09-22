@@ -1,7 +1,7 @@
 
 
 "use client";
-import insta from "../../assets/instagram.png"
+import insta from "../../assets/instagram-1.svg"
 
 type Socials = Partial<{
   linkedin: string;

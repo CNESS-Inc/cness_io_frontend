@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CircleCheckBig } from "lucide-react";
 import LazySection from "../components/ui/LazySection";
-
+import bg from "../assets/Frame why cness.png";
 import Header from "../layout/Header/Header";
 import Footer from "../layout/Footer/Footer";
 import Button from "../components/ui/Button";
@@ -197,77 +197,75 @@ export default function WhyCness() {
 
       <LazySection effect="fade-up" delay={0.2}>
         <section className="w-full bg-white py-12 md:py-20 px-10 md:px-[86px]">
-          <div className="mx-auto bg-[#F5F7F9] rounded-[24px] md:rounded-[32px] px-6 sm:px-10 md:px-12 lg:px-[40px]">
-            <div className="mx-auto w-full max-w-[1180px]">
-              <div className="grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] items-center gap-8">
-                {/* Left copy */}
-                <div className="text-center lg:text-left py-8 sm:py-12 md:py-[50px]">
-                  <h2 className="font-poppins font-medium text-[32px] md:text-[42px] leading-[1.3] tracking-[-0.02em] text-[#000]">
-                    What Makes Us{" "}
-                    <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
-                      Different
-                    </span>
-                  </h2>
-                  <p className="mt-4 font-['Open_Sans'] text-[15px] md:text-[16px] leading-relaxed text-[#64748B]">
-                    CNESS is a purpose-driven super app that unites
-                    certifications, learning, marketplace, communities, OTT, and
-                    social in one seamless ecosystem
-                  </p>
+          <div className="w-full 2xl:w-[1300px] mx-auto bg-[#F5F7F9] rounded-[24px] md:rounded-[32px] px-6 sm:px-10 md:px-12 xl:px-[120px]">
+            <div className="grid xl:grid-cols-2 gap-2 w-full items-center">
+              {/* Left copy */}
+              <div className="text-center xl:text-left py-8 sm:py-12 md:py-[50px]">
+                <h2 className="font-poppins font-medium text-[32px] md:text-[42px] leading-[1.3] tracking-[-0.02em] text-[#000]">
+                  What Makes Us{" "}
+                  <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                    Different
+                  </span>
+                </h2>
+                <p className="mt-4 font-['Open_Sans'] text-[15px] md:text-[16px] leading-relaxed text-[#64748B] max-w-[500px] mx-auto xl:mx-0">
+                  CNESS is a purpose-driven super app that unites
+                  certifications, learning, marketplace, communities, OTT, and
+                  social in one seamless ecosystem
+                </p>
 
-                  <ul className="mt-8 space-y-5 text-left">
-                    {[
-                      {
-                        title: "First-Of-Its-Kind Consciousness Graph",
-                        desc: "Mapping verified values across people and companies.",
-                      },
-                      {
-                        title: "Creator & Org Flywheel",
-                        desc: "Unlocks user-led growth and deep engagement.",
-                      },
-                      {
-                        title: "Layered Platform",
-                        desc: "Integrates identity, learning, commerce, and content seamlessly.",
-                      },
-                      {
-                        title: "High-Margin Monetization",
-                        desc: "Blends SaaS, subscriptions, and digital commerce.",
-                      },
-                      {
-                        title: "Strong Cultural Relevance",
-                        desc: "Taps into the global demand for authenticity, wellbeing, and trust.",
-                      },
-                    ].map((item, i) => (
-                      <li key={i} className="flex items-start gap-3">
-                        <CircleCheckBig className="mt-1 text-[#6340FF] w-5 h-5" />
-                        <div>
-                          <h3 className="font-['Open_Sans'] font-semibold text-[16px] text-black">
-                            {item.title}
-                          </h3>
-                          <p className="font-['Open_Sans'] text-[14px] leading-[20px] text-[#64748B] mt-1">
-                            {item.desc}
-                          </p>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                <ul className="mt-8 space-y-5 text-left max-w-[500px] mx-auto xl:mx-0">
+                  {[
+                    {
+                      title: "First-Of-Its-Kind Consciousness Graph",
+                      desc: "Mapping verified values across people and companies.",
+                    },
+                    {
+                      title: "Creator & Org Flywheel",
+                      desc: "Unlocks user-led growth and deep engagement.",
+                    },
+                    {
+                      title: "Layered Platform",
+                      desc: "Integrates identity, learning, commerce, and content seamlessly.",
+                    },
+                    {
+                      title: "High-Margin Monetization",
+                      desc: "Blends SaaS, subscriptions, and digital commerce.",
+                    },
+                    {
+                      title: "Strong Cultural Relevance",
+                      desc: "Taps into the global demand for authenticity, wellbeing, and trust.",
+                    },
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <CircleCheckBig className="mt-1 text-[#6340FF] w-5 h-5 shrink-0" />
+                      <div>
+                        <h3 className="font-['Open_Sans'] font-semibold text-[16px] text-black">
+                          {item.title}
+                        </h3>
+                        <p className="font-['Open_Sans'] text-[14px] leading-[20px] text-[#64748B] mt-1">
+                          {item.desc}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-                {/* Right image + popup */}
-                <div className="relative flex items-center justify-center lg:justify-start">
-                  <img
-                    src="https://cdn.cness.io/ahsgdj.png"
-                    alt="Seller"
-                    className="w-full max-w-[760px] md:max-w-[860px] lg:max-w-[900px] xl:max-w-[980px] h-auto"
-                  />
-                  <img
+              {/* Right image + popup */}
+              <div className="flex justify-center xl:justify-end">
+                <img
+                  src={bg}
+                  alt="Seller"
+                  className="w-full max-w-[400px] md:max-w-[480px] xl:max-w-[500px] h-auto object-contain"
+                />
+                {/* <img
                     src="https://cdn.cness.io/Group.webp"
                     alt="Feature popups"
                     className="pointer-events-none absolute z-10 h-auto
                        w-[120px] sm:w-[150px] md:w-[160px]
                        left-[52%] top-[46%] sm:left-[50%] sm:top-[45%] md:left-[49%] md:top-[44%]
                        -translate-x-1/2 -translate-y-1/2 drop-shadow-xl"
-                  />
-                </div>
+                  /> */}
               </div>
             </div>
           </div>
@@ -276,51 +274,50 @@ export default function WhyCness() {
 
       <LazySection effect="fade-up" delay={0.2}>
         <section
-          className="relative w-full h-auto lg:h-[719px] overflow-hidden"
+          className="relative w-full h-[350px] sm:h-[400px] md:h-[500px] lg:h-[719px] overflow-hidden py-10 lg:py-[86px]"
           style={{
             background:
               "linear-gradient(180deg, #F8F6FF 0%, #FFFFFF 35%, #FFFFFF 65%, #F8F6FF 100%)",
           }}
         >
-          <div className="w-full px-6 md:px-10 lg:px-16 pt-10 lg:pt-20">
-            <h2 className="font-['Poppins'] font-medium text-[32px] md:text-[42px] leading-[1.3] tracking-[-0.02em] text-[#111]">
+          <div className="w-full">
+            <h2 className="font-['Poppins'] font-medium text-[32px] md:text-[42px] leading-[1.3] tracking-[-0.02em] text-[#111] px-6 md:px-10 lg:px-16">
               Our{" "}
               <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                 Road ahead
               </span>
             </h2>
+            <div className="absolute bottom-0 lg:mb-[86px] w-full h-full lg:h-[493px]">
+              <img
+                src="https://cdn.cness.io/road.webp"
+                alt="CNESS roadmap"
+                className="w-full h-full pointer-events-none select-none object-contain"
+              />
+            </div>
           </div>
-
-          <img
-            src="https://cdn.cness.io/road.webp"
-            alt="CNESS roadmap"
-            className="pointer-events-none select-none absolute inset-x-0 bottom-0 mx-auto w-full max-w-[1900px]
-               h-[420px] md:h-[520px] lg:h-[600px] object-contain object-bottom"
-          />
         </section>
       </LazySection>
 
       <LazySection effect="fade-up" delay={0.2}>
-        <section className="w-full bg-white py-10 md:py-14 lg:py-16 lg:h-[868px] overflow-hidden">
-          {/* Heading */}
-          <div className="mx-auto max-w-[1100px] px-6 text-center">
-            <h2 className="font-['Poppins'] font-medium text-[36px] md:text-[42px] leading-[54px] tracking-[-0.02em] text-[#111111]">
+        <section className="w-full max-w-7xl flex mx-auto flex-col justify-center items-center py-16 px-4">
+          <div className="w-full text-center">
+            <h3
+              style={{ fontFamily: "Poppins, sans-serif" }}
+              className="font-poppins font-medium text-[32px] md:text-[42px] leading-[54px] tracking-[-0.02em] capitalize text-centerp"
+            >
               What{" "}
-              <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#D747EA] to-[#7741FB] text-transparent bg-clip-text">
                 We Offer
               </span>
-            </h2>
-            <p className="mt-3 font-['Open_Sans'] text-[14px] md:text-[15px] leading-[22px] text-[#738091]">
+            </h3>
+            <p className="font-['Open Sans'] openSans pt-2 text-center w-full font-['Open Sans'] text-[#64748B] font-400 text-[16px] leading-[24.38px] tracking-[0px]">
               CNESS is a super app that brings together tools for professional
-              growth and
-              <br />
+              growth and <br />
               personal connection in one ecosystem.
             </p>
           </div>
-
-          {/* Cards */}
-          <div className="mx-auto mt-10 max-w-[1440px] px-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[50px]">
+          <div className="w-full pt-16 pb-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
                 {
                   n: "001",
@@ -365,29 +362,28 @@ export default function WhyCness() {
               ].map((item) => (
                 <div
                   key={item.n}
-                  className="min-w-0 rounded-[32px] border border-[#ECEEF2] bg-[#FAFAFA] w-[298px] h-[235px] p-[30px]"
+                  className="relative rounded-4xl bg-[#FAFAFA] hover:shadow-md transition p-6"
                 >
-                  {/* top row: number + pin */}
-                  <div className="flex items-center justify-between">
-                    <span className="font-['Open_Sans'] text-[14px] font-semibold tracking-[0.08em] text-[#A3A9B5]">
-                      {item.n}
-                    </span>
-                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white shadow-sm border border-[#EAEAF5]">
-                      <img
-                        src={bulb}
-                        alt="icon"
-                        className="w-[12px] h-[12px]"
-                      />
-                    </span>
+                  {/* Top right icon */}
+                  <div className="absolute top-4 right-4 w-10 h-10">
+                    <img src={bulb} alt="bulb" />
                   </div>
 
-                  {/* title */}
-                  <h3 className="mt-6 font-['Poppins'] text-[24px] leading-[26px] font-medium text-[#000000]">
+                  {/* Number */}
+                  <span className="openSans font-['Open Sans'] block text-lg text-[#4B4B4B] font-normal mb-2">
+                    {item.n}
+                  </span>
+
+                  {/* Title */}
+                  <h3
+                    style={{ fontFamily: "Poppins, sans-serif" }}
+                    className="text-2xl font-medium text-black"
+                  >
                     {item.title}
                   </h3>
 
-                  {/* description */}
-                  <p className="mt-2 font-['Open_Sans'] text-[16px] leading-[24px] text-[#64748B]">
+                  {/* Description */}
+                  <p className="openSans font-['Open Sans'] mt-2 text-base font-normal text-[#64748B] leading-relaxed">
                     {item.desc}
                   </p>
                 </div>

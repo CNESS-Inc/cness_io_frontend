@@ -1,27 +1,18 @@
-import {
-  Eye,
-  GraduationCap,
-  Key,
-  Network,
-  Target,
-} from "lucide-react";
-import { Card, CardContent } from "../components/ui/Card";
-import {
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/DashboardCard";
-import Button from "../components/ui/Button";
+import { Eye, Network, Target } from "lucide-react";
 import mentor_banner from "../../public/mentor_banner.jpg";
 import who_become from "../../public/who_become.jpg";
 import bulb from "../../src/assets/bulb.png";
 import applicationform from "../../public/applicationform.jpg";
-import { Input } from "../components/ui/input";
 import { useState } from "react";
-import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { createMentor } from "../Common/ServerAPI";
 import clsx from "clsx";
+import mentor1 from "../assets/mentor1.svg";
+import mentor2 from "../assets/mentor2.svg";
+import mentor3 from "../assets/mentor3.svg";
+import mentor4 from "../assets/mentor4.svg";
+import mentor5 from "../assets/mentor5.svg";
+import { PhoneInput } from "react-international-phone";
 
 // Define types for the API response and form data
 //interface ApiResponse {
@@ -32,7 +23,6 @@ import clsx from "clsx";
 
 interface MentorFormData {
   first_name: string;
-  last_name: string;
   phone_code: string;
   phone_no: string;
   email: string;
@@ -55,7 +45,6 @@ const BecomeMentor = () => {
   // Form state
   const [formData, setFormData] = useState<MentorFormData>({
     first_name: "",
-    last_name: "",
     phone_code: "",
     phone_no: "",
     email: "",
@@ -68,50 +57,49 @@ const BecomeMentor = () => {
 
   const benefits = [
     {
-      icon: Eye,
+      icon: mentor1,
       title: "Visibility & Recognition",
-      description:
-        "Gain credibility with a featured profile that highlights your expertise and impact.",
+      body: "Gain credibility with a featured profile that highlights your expertise and impact.",
     },
     {
-      icon: Network,
+      icon: mentor2,
       title: "Expand Your Network",
-      description:
-        "Build meaningful connections with conscious leaders, professionals, and organizations across the globe.",
+      body: "Build meaningful connections with conscious leaders, professionals, and organizations across the globe.",
     },
     {
-      icon: Target,
+      icon: mentor3,
       title: "Create Legacy ",
-      description:
-        "Leave a lasting imprint by guiding others toward values-based success.",
+      body: "Leave a lasting imprint by guiding others toward values-based success.",
     },
     {
-      icon: GraduationCap,
+      icon: mentor4,
       title: "Continuous Learning",
-      description:
-        "Stay ahead through the fresh ideas and perspectives shared by those you mentor.",
+      body: "Stay ahead through the fresh ideas and perspectives shared by those you mentor.",
     },
     {
-      icon: Key,
+      icon: mentor5,
       title: "Exclusive Access",
-      description:
-        "Unlock early access to CNESS events, programs, and collaborations.",
+      body: "Unlock early access to CNESS events, programs, and collaborations.",
     },
   ];
+
   const role = [
     {
+      id: "01",
       icon: Eye,
       title: "Guide Certification Applicants",
       description:
         "Help individuals interpret their assessments, strengthen their submissions, and navigate the certification process with confidence.",
     },
     {
+      id: "02",
       icon: Network,
       title: "Deliver Transformative Learning",
       description:
         "Conduct CNESS-approved workshops, training sessions, and knowledge-sharing circles that bring conscious principles to life.",
     },
     {
+      id: "03",
       icon: Target,
       title: "Strengthen the Network",
       description:
@@ -124,26 +112,31 @@ const BecomeMentor = () => {
       step: 1,
       title: "Apply",
       description: "Apply online through the CNESS platform.",
+      width: "w-[60%]",
     },
     {
       step: 2,
       title: "Review",
       description: "Undergo a profile review to align values and expertise.",
+      width: "w-[70%]",
     },
     {
       step: 3,
       title: "Onboarding",
       description: "Complete Mentor Training and Evaluation.",
+      width: "w-[75%]",
     },
     {
       step: 4,
       title: "Grow Together",
       description: "Receive your Certified Mentor Badge.",
+      width: "w-[60%]",
     },
     {
       step: 5,
       title: "Grow Together",
       description: "Access the Mentor Dashboard and begin guiding others.",
+      width: "w-[90%]",
     },
   ];
 
@@ -208,7 +201,6 @@ const BecomeMentor = () => {
         // Reset form
         setFormData({
           first_name: "",
-          last_name: "",
           phone_code: "",
           phone_no: "",
           email: "",
@@ -241,9 +233,62 @@ const BecomeMentor = () => {
 
   return (
     <>
-      <div className="space-y-14">
+      <div className="">
         {/* Hero Section */}
-        <section className="relative overflow-hidden  bg-[linear-gradient(128.73deg,_#FFFFFF_27.75%,_#FEDFDF_100.43%,_#F1A5E5_101.52%)]">
+        <div
+          className="py-[33px] px-10"
+          style={{
+            background:
+              "linear-gradient(128.73deg, #FFFFFF 27.75%, #FEDFDF 100.43%, #F1A5E5 101.52%)",
+          }}
+        >
+          <div className="flex flex-col lg:flex-row justify-between items-stretch gap-5">
+            <div className="w-full lg:w-1/3 py-[30px] px-[26px] gap-6 bg-white rounded-[40px]">
+              <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[42px] lg:text-3xl xl:text-[42px] md:leading-[54px] lg:leading-[40px] xl:leading-[54px] text-wrap">
+                <span className="text-[#1A1A1A]">
+                  Lead the Next
+                  <br /> Wave of{" "}
+                </span>
+                <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent block">
+                  Conscious
+                  <br /> Leaders
+                </span>
+              </h1>
+              <h5 className="py-3 font-['Open_Sans',Helvetica] text-base font-light text-[#64748B] leading-[24px]">
+                Become a CNESS Mentor and turn your wisdom into a force for
+                transformation.Guide professionals, empower learners, and shape
+                the future of conscious leadership.
+              </h5>
+              <div className="pt-6">
+                <button
+                  className="py-4 px-5 font-['Open_Sans',Helvetica] text-black font-medium text-sm text-white rounded-full"
+                  onClick={() => {
+                    const element = document.getElementById("apply_partner");
+                    if (element) {
+                      element.scrollIntoView({ behavior: "smooth" });
+                    }
+                  }}
+                  style={{
+                    background:
+                      "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
+                  }}
+                >
+                  Apply to Become a Partner
+                </button>
+              </div>
+            </div>
+            <div className="w-full lg:w-2/3 rounded-[40px]">
+              <img
+                src={mentor_banner}
+                alt="partner main poster"
+                className="w-full h-[427px] lg:h-full object-cover object-top pointer-events-none select-none rounded-[40px]"
+                aria-hidden="true"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* <section className="relative overflow-hidden  bg-[linear-gradient(128.73deg,_#FFFFFF_27.75%,_#FEDFDF_100.43%,_#F1A5E5_101.52%)]">
           <div className="grid lg:grid-cols-12 gap-8 items-center p-8 lg:p-12">
             <div className="lg:col-span-4 space-y-6">
               <div className="space-y-4">
@@ -277,182 +322,124 @@ const BecomeMentor = () => {
               />
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* What is Mentor Section */}
-        <section className="space-y-8 py-[60px] bg-[#fff]">
-          <div className="text-center space-y-2">
-            <h2 className="font-['Poppins',Helvetica] font-medium text-[32px] leading-[54px] tracking-[-0.02em] text-center">
-              Why Become a{" "}
-              <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
-                CNESS Mentor
-              </span>
-            </h2>
-
-            <div className="max-w-4xl mx-auto">
-              <p className="font-['Open_Sans',Helvetica] font-normal text-[16px] leading-[24.38px] tracking-normal text-center text-[#64748B]">
-                A mentor is more than a guide — they are the torchbearers of
-                conscious growth. CNESS Mentors are certified professionals who
-                extend their values, insights, and expertise to help others
-                succeed in their journey of certification and beyond. As a
-                Mentor, you not only support individuals in achieving their
-                goals but also contribute to a global movement where ethics,
-                responsibility, and purpose define success.
-              </p>
-            </div>
-          </div>
-        </section>
+        <div className="py-12 flex flex-col justify-center items-center mx-auto bg-white">
+          <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px]">
+            <span className="text-black">Why Become a </span>
+            <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+              CNESS Mentor
+            </span>
+          </h1>
+          <h5 className="py-3 px-5 sm:px-10 md:px-20 font-['Open_Sans',Helvetica] font-light text-base text-center text-[#64748B] leading-[24px]">
+            A mentor is more than a guide — they are the torchbearers of
+            conscious growth. CNESS Mentors are certified professionals who
+            extend their values, insights, and expertise to help others succeed
+            in their journey of certification and beyond. As a Mentor, you not
+            only support individuals in achieving their goals but also
+            contribute to a global movement where ethics, responsibility, and
+            purpose define success.
+          </h5>
+        </div>
 
         {/* Benefits Section */}
-        <section className="space-y-12 bg-[#F5F7F9] px-6 sm:px-10 md:px-16 lg:px-22">
-          <div className="text-center space-y-4">
-            <h2 className="font-['Poppins',Helvetica] font-medium text-2xl sm:text-3xl lg:text-[32px] leading-snug sm:leading-[40px] lg:leading-[54px] tracking-[-0.02em]">
-              Your Role as a{" "}
-              <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
-                CNESS Mentor
-              </span>
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {role.map((role, index) => (
-              <Card
-                key={index}
-                className="bg-white rounded-[32px] p-[30px] shadow-none"
-              >
-                <CardHeader className="p-0 flex flex-row items-center justify-between mb-[25px]">
-                  <div className="font-['Poppins',Helvetica] font-medium text-[18px] leading-[24px] tracking-[-0.03em] align-middle text-[#B6B6B6]">
-                    {String(index + 1).padStart(3, "0")}
+        <div className="w-full flex mx-auto flex-col justify-center items-center bg-[#F5F7F9] pt-10 pb-[86px] px-14">
+          <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px]">
+            <span className="text-black">What does a </span>
+            <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+              Partner do?
+            </span>
+          </h1>
+          <div className="w-full pt-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[40px]">
+              {role.map((item) => (
+                <div
+                  key={item.id}
+                  className="relative flex flex-col rounded-4xl bg-white hover:shadow-md transition p-[30px] gap-3"
+                >
+                  {/* Top right icon */}
+                  <div className="absolute top-4 right-4 w-[34px] h-[34px]">
+                    <img src={bulb} alt="bulb" />
                   </div>
 
-                  <img
-                src={bulb}
-                alt="Professional mentor in modern office environment"
-                className="w-[34px] h-[34px]"
-              />
-                </CardHeader>
+                  {/* Number */}
+                  <span className="font-['Poppins',Helvetica] block text-lg text-[#B6B6B6] font-medium">
+                    {item.id}
+                  </span>
 
-                <CardContent>
-                  <CardTitle className="font-['Poppins',Helvetica] mb-[9px] font-medium text-[20px] leading-[24px] tracking-[-0.02em] align-middle text-[#222224]">
-                    {role.title}
-                  </CardTitle>
-                  <CardDescription className="font-['Open_Sans',Helvetica] font-normal text-[16px] leading-[24.4px] tracking-normal align-middle text-[#64748B]">
-                    {role.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            ))}
+                  {/* Title */}
+                  <h3
+                    style={{ fontFamily: "Poppins, sans-serif" }}
+                    className="pt-5 text-xl font-medium text-black"
+                  >
+                    {item.title}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="openSans font-['Open Sans'] text-base font-light text-[#64748B] leading-relaxed lg:pe-5">
+                    {item.description}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
-        </section>
+        </div>
 
         {/* Benefits Section */}
-        <section className="space-y-12 bg-[#fff] px-6 sm:px-10 md:px-16 lg:px-22 py-[86px]">
-          <div className="text-center space-y-4">
-            <h2 className="font-['Poppins',Helvetica] font-medium text-2xl sm:text-3xl lg:text-[32px] leading-snug sm:leading-[40px] lg:leading-[54px] tracking-[-0.02em]">
-              Why You'll Love Being a{" "}
+        <div className="flex justify-center items-center mx-auto w-full bg-white">
+          <div className="mx-auto w-full px-[20px] md:px-[60px] py-[86px]">
+            <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px] text-center">
+              <span className="text-black">Why You’ll Love Being a </span>
               <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                 Mentor
               </span>
-            </h2>
-          </div>
-
-          {/* Grid container */}
-          <div className="flex flex-col items-center">
-            {/* First row with 3 benefits */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 w-full max-w-5xl">
-              {benefits.slice(0, 3).map((benefit, index) => (
-                <Card
-                  key={index}
-                  className="group rounded-[20px] border border-[#DFDFDF] p-5 bg-white"
-                >
-                  <CardHeader className="space-y-4 flex flex-col items-center">
-                    <div className="w-[58px] h-[58px] rounded-[10px] p-3 flex items-center justify-center bg-[#6340FF1A] group-hover:bg-primary/20 transition-colors">
-                      <benefit.icon className="w-8 h-8 text-[#6340FF]" />
-                    </div>
-                  </CardHeader>
-
-                  <CardContent>
-                    <CardTitle className="font-['Poppins',Helvetica] mb-[9px] font-medium text-[18px] leading-[24px] tracking-[-0.02em] align-middle text-[#222224] text-center">
-                      {benefit.title}
-                    </CardTitle>
-                    <CardDescription className="font-['Open_Sans',Helvetica] font-normal text-[14px] leading-[24.4px] tracking-normal text-center align-middle text-[#64748B]">
-                      {benefit.description}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {/* Second row with 2 centered benefits */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
-              {benefits.slice(3, 5).map((benefit, index) => (
-                <Card
-                  key={index + 3}
-                  className="group rounded-[20px] border border-[#DFDFDF] p-5 bg-white"
-                >
-                  <CardHeader className="space-y-4 flex flex-col items-center">
-                    <div className="w-[58px] h-[58px] rounded-[10px] p-3 flex items-center justify-center bg-[#6340FF1A] group-hover:bg-primary/20 transition-colors">
-                      <benefit.icon className="w-8 h-8 text-[#6340FF]" />
-                    </div>
-                  </CardHeader>
-
-                  <CardContent>
-                    <CardTitle className="font-['Poppins',Helvetica] mb-[9px] font-medium text-[18px] leading-[24px] tracking-[-0.02em] align-middle text-[#222224] text-center">
-                      {benefit.title}
-                    </CardTitle>
-                    <CardDescription className="font-['Open_Sans',Helvetica] font-normal text-[14px] leading-[24.4px] tracking-normal text-center align-middle text-[#64748B]">
-                      {benefit.description}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
+            </h1>
+            <div className="mx-auto mt-8 w-full 2xl:w-7xl flex flex-wrap justify-center items-stretch gap-6 md:gap-8">
+              {benefits.map((c, i) => (
+                <div key={i} className="w-full sm:w-[300px] flex">
+                  <BenefitCard title={c.title} body={c.body} icon={c.icon} />
+                </div>
               ))}
             </div>
           </div>
-        </section>
+        </div>
 
-        <section className="relative overflow-hidden  bg-[#F5F7F9]">
-          <div className="grid lg:grid-cols-12 gap-8 items-center p-8 lg:p-12">
-            <div className="lg:col-span-8 space-y-6">
-              <div className="space-y-4">
-                <h1 className="font-['Poppins',Helvetica] text-[42px] font-medium tracking-[-0.02em] leading-[54px] align-middle">
-                  Who can become a{" "}
-                  <span className="font-bold bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
-                    Mentor?
-                  </span>
-                </h1>
-                <ul className="list-disc pl-5">
-                  <li className="font-['Open_Sans',Helvetica] font-normal text-[16px] leading-[30.4px] tracking-[0px] text-[#64748B]">
-                    Hold at least an Aspiring CNESS Certification (Inspired and
-                    Luminary Mentors are highly valued).
-                  </li>
-                  <li className="font-['Open_Sans',Helvetica] font-normal text-[16px] leading-[30.4px] tracking-[0px] text-[#64748B]">
-                    Complete Mentor Training and earn your Certified Mentor
-                    Badge.
-                  </li>
-                  <li className="font-['Open_Sans',Helvetica] font-normal text-[16px] leading-[30.4px] tracking-[0px] text-[#64748B]">
-                    Uphold CNESS’s eight-pillar framework for conscious growth
-                    and leadership.
-                  </li>
-                </ul>
-              </div>
-              <Button
-                variant="gradient-primary"
-                className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
-                type="submit"
-              >
-                Apply to Become a Mentor
-              </Button>
+        <div className="w-full bg-[#F5F7F9] py-[86px] px-20 md:px-20">
+          <div className="mx-auto flex flex-col lg:flex-row justify-between items-center gap-10">
+            <div className="w-full lg:w-3/5 flex flex-col justify-start items-start text-start">
+              <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px] text-center">
+                <span className="text-black">Who can become a </span>
+                <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                  Mentor?
+                </span>
+              </h1>
+
+              <ul className="mt-6 list-disc pl-5 text-[#64748B] text-base font-normal leading-[32px] space-y-1">
+                <li>
+                  Hold at least an Aspiring CNESS Certification (Inspired and
+                  Luminary Mentors are highly valued).
+                </li>
+                <li>
+                  {" "}
+                  Complete Mentor Training and earn your Certified Mentor Badge.
+                </li>
+                <li>
+                  Uphold CNESS’s eight-pillar framework for conscious growth and
+                  leadership.
+                </li>
+              </ul>
             </div>
 
-            <div className="lg:col-span-4 relative">
+            <div className="w-full lg:w-2/5 rounded-[20px] overflow-hidden">
               <img
                 src={who_become}
-                alt="Professional mentor in modern office environment"
-                className="rounded-[30px] shadow-2xl w-full h-auto object-cover"
+                alt="Handshake"
+                className="w-full h-auto object-cover"
               />
             </div>
           </div>
-        </section>
+        </div>
 
         <section className="bg-white px-6 sm:px-10 md:px-16 lg:px-22 py-[60px] mb-0">
           <div className="text-center mb-10">
@@ -465,22 +452,18 @@ const BecomeMentor = () => {
           </div>
 
           <div className="relative flex justify-between">
-            {/* grey background line */}
-            {/* grey background line */}
             <div
               className="absolute top-5 left-[calc(theme(spacing.5))] right-[calc(theme(spacing.5))] h-1 bg-[#6340FF]"
               style={{
-                // start at center of first circle, end at center of last circle:
-                left: "calc(5.25rem)", // 1.25rem = h-10/2 = center of circle
+                left: "calc(5.25rem)",
                 right: "calc(5.25rem)",
               }}
             />
 
-            {/* active progress line */}
             <div
               className="absolute top-5 h-1 bg-[#6340FF]"
               style={{
-                left: "calc(1.25rem)", // start at center of first circle
+                left: "calc(1.25rem)",
                 width:
                   steps.length > 1
                     ? `calc((( ${
@@ -503,13 +486,12 @@ const BecomeMentor = () => {
                   >
                     {stepNumber}
                   </div>
-
-                  {/* Title */}
-                  {/* <h3 className="mt-4 text-center font-['Poppins',Helvetica] text-sm font-semibold text-gray-800">
-                    {step.title}
-                  </h3> */}
-                  {/* Description */}
-                  <p className="mt-[21px] text-center font-['Open_Sans',Helvetica] text-xs text-gray-500 max-w-[150px]">
+                  <p
+                    className={clsx(
+                      "mt-[21px] text-center font-['Open_Sans',Helvetica] text-sm font-normal text-gray-500",
+                      step.width
+                    )}
+                  >
                     {step.description}
                   </p>
                 </div>
@@ -519,231 +501,277 @@ const BecomeMentor = () => {
         </section>
 
         {/* Application Form Section */}
-        <section className="space-y-10 bg-[#F5F7F9] py-10">
-          <div className="text-center space-y-4">
-            <h2 className="font-['Poppins',Helvetica] font-medium text-[32px] leading-[54px] tracking-[-0.02em] align-middle">
-              <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
-                Application Form
-              </span>
-            </h2>
-          </div>
+        <div
+          id="apply_partner"
+          className="w-full bg-[#F5F7F9] py-10 px-5 lg:px-10"
+        >
+          <h1 className="pb-10 font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px] text-center">
+            <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+              Application Form
+            </span>
+          </h1>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 p-4">
-            {/* Steps - col-3 */}
-            <div className="lg:col-span-3 space-y-6">
+          <div className="grid xl:grid-cols-[275px_1fr] gap-10 items-stretch">
+            <div className="hidden xl:flex rounded-[20px] overflow-hidden">
               <img
                 src={applicationform}
-                alt="Professional mentor in modern office environment"
-                className="rounded-[30px] shadow-2xl w-full h-full object-cover"
+                alt="Handshake"
+                className="h-full w-full object-cover"
               />
             </div>
 
-            {/* Form - col-9 */}
-            <div className="lg:col-span-9">
-              <Card className="flex opacity-100 shadow-none">
-                <CardContent className="w-full pt-[30px] pr-[26px] pb-[30px] pl-[26px] gap-[30px] rounded-[25px] bg-[#F7F7F7]">
-                  <form className="space-y-6" onSubmit={handleSubmit}>
-                    {/* Personal Information */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="first_name"
-                          className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
-                        >
-                          First Name
-                        </label>
-                        <Input
-                          id="first_name"
-                          value={formData.first_name}
-                          onChange={handleInputChange}
-                          placeholder="Enter first name"
-                          className="h-[53px] opacity-100 pr-[10px] pl-[10px] gap-[10px] rounded-[4px] bg-white border-2 border-[#EEEEEE] focus-visible:border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-transparent"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="last_name"
-                          className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
-                        >
-                          Last Name
-                        </label>
-                        <Input
-                          id="last_name"
-                          value={formData.last_name}
-                          onChange={handleInputChange}
-                          className="h-[53px] opacity-100 pr-[10px] pl-[10px] gap-[10px] rounded-[4px] bg-white border-2 border-[#EEEEEE] focus-visible:ring-transparent"
-                          placeholder="Enter last name"
-                          required
-                        />
-                      </div>
-                    </div>
+            <div className="rounded-[25px] bg-white p-[20px] lg:p-[30px] flex flex-col">
+              <form
+                className="w-full flex flex-col flex-1"
+                onSubmit={handleSubmit}
+              >
+                <div className="mx-auto w-full max-w-[760px] 2xl:max-w-none grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 items-start">
+                  <Field label="Name">
+                    <Input
+                      value={formData.first_name}
+                      onChange={handleInputChange}
+                      placeholder="Enter your name"
+                      required
+                    />
+                  </Field>
+                  <Field label="Email Address">
+                    <Input
+                      type="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      placeholder="Enter your mail ID"
+                      required
+                    />
+                  </Field>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="phone"
-                          className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
-                        >
-                          Phone Number
-                        </label>
-                        <PhoneInput
-                          country={"us"}
-                          value={phone}
-                          onChange={handlePhoneChange}
-                          containerClass="!w-full"
-                          inputClass="
-        !w-full 
-        !h-[53px] 
-        !bg-white 
-        !border-2 
-        !border-[#EEEEEE] 
-        !rounded-[4px] 
-        pl-[60px]
-      "
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="email"
-                          className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
-                        >
-                          Email Address
-                        </label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          className="h-[53px] opacity-100 pr-[10px] pl-[10px] gap-[10px] rounded-[4px] bg-white border-2 border-[#EEEEEE] focus-visible:ring-transparent"
-                          placeholder="Enter email address"
-                          required
-                        />
-                      </div>
-                    </div>
+                  <Field label="Phone Number">
+                    <PhoneInputField
+                      value={phone}
+                      onChange={handlePhoneChange}
+                      defaultCountry="us"
+                      placeholder="Enter your phone number"
+                    />
+                  </Field>
+                  <Field label="Country & Time Zone">
+                    <Input
+                      value={formData.first_name}
+                      onChange={handleInputChange}
+                      placeholder="Select your country & Time zone"
+                      required
+                    />
+                  </Field>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="year_of_experience"
-                          className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
-                        >
-                          Years of Experience
-                        </label>
-                        <Input
-                          id="year_of_experience"
-                          type="number"
-                          min="0"
-                          value={formData.year_of_experience}
-                          onChange={handleNumberInputChange}
-                          className="h-[53px] opacity-100 pr-[10px] pl-[10px] gap-[10px] rounded-[4px] bg-white border-2 border-[#EEEEEE] focus-visible:ring-transparent"
-                          placeholder="Enter your years of experience"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="website"
-                          className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
-                        >
-                          Website / Social Media Link (if any)
-                        </label>
-                        <Input
-                          id="website"
-                          value={formData.website}
-                          onChange={handleInputChange}
-                          placeholder="Enter your link"
-                          className="h-[53px] opacity-100 pr-[10px] pl-[10px] gap-[10px] rounded-[4px] bg-white border-2 border-[#EEEEEE] focus-visible:ring-transparent"
-                        />
-                      </div>
-                    </div>
+                  <Field label="Experience">
+                    <Input
+                      value={formData.year_of_experience.toString()}
+                      onChange={handleNumberInputChange}
+                      placeholder="Enter your years of experience"
+                      required
+                    />
+                  </Field>
+                  <Field label="Website / Social Media Link (if any)">
+                    <Input
+                      value={formData.website}
+                      onChange={handleInputChange}
+                      placeholder="Enter your link"
+                    />
+                  </Field>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="bio"
-                          className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
-                        >
-                          Short Bio
-                        </label>
-                        <textarea
-                          id="bio"
-                          value={formData.bio}
-                          onChange={handleInputChange}
-                          placeholder="Tell us about yourself..."
-                          className="min-h-[100px] block w-full rounded-md px-3 py-2 bg-white border-2 border-[#EEEEEE] focus:outline-none focus:ring-0"
-                          required
-                        />
-                      </div>
+                  <Field label="Profile summary">
+                    <TextArea
+                      value={formData.bio}
+                      onChange={handleInputChange}
+                      placeholder="Add Notes..."
+                    />
+                  </Field>
+                  <Field label="Why do you want to become a mentor?">
+                    <TextArea
+                      value={formData.motivation}
+                      onChange={handleInputChange}
+                      placeholder="Add Notes..."
+                    />
+                  </Field>
 
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="motivation"
-                          className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
-                        >
-                          Why do you want to become a mentor?
-                        </label>
-                        <textarea
-                          id="motivation"
-                          value={formData.motivation}
-                          onChange={handleInputChange}
-                          placeholder="Share your motivation..."
-                          className="min-h-[100px] block w-full px-3 py-2 rounded-[4px] bg-white border-2 border-[#EEEEEE] focus:outline-none focus:ring-0"
-                          required
-                        />
-                      </div>
-                    </div>
+                  <Field label="Areas & availability)">
+                    <Input
+                      type="text"
+                      value={formData.availability}
+                      onChange={handleInputChange}
+                      placeholder="Select your Availability"
+                      required
+                    />
+                  </Field>
+                </div>
 
-                    <div className="space-y-2">
-                      <label
-                        htmlFor="availability"
-                        className="font-['Inter',Helvetica] font-normal text-[15px] leading-none tracking-normal text-black"
-                      >
-                        Availability (Hours per month you can commit)
-                      </label>
-                      <Input
-                        id="availability"
-                        type="text"
-                        value={formData.availability}
-                        onChange={handleInputChange}
-                        className="h-[53px] opacity-100 pr-[10px] pl-[10px] gap-[10px] rounded-[4px] bg-white border-2 border-[#EEEEEE] focus-visible:ring-transparent"
-                        placeholder="Select your Availability"
-                        required
-                      />
-                    </div>
+                {submitMessage && (
+                  <div
+                    className={`p-3 rounded-md ${
+                      submitMessage.type === "success"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {submitMessage.text}
+                  </div>
+                )}
 
-                    {/* Submission status message */}
-                    {submitMessage && (
-                      <div
-                        className={`p-3 rounded-md ${
-                          submitMessage.type === "success"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {submitMessage.text}
-                      </div>
-                    )}
-
-                    <div className="flex justify-center">
-                      <Button
-                        variant="gradient-primary"
-                        className="font-['Open_Sans',Helvetica] font-normal text-[16px] leading-none tracking-normal text-center w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
-                        type="submit"
-                        disabled={isSubmitting}
-                      >
-                        {isSubmitting ? "Submitting..." : "Submit"}
-                      </Button>
-                    </div>
-                  </form>
-                </CardContent>
-              </Card>
+                <div className="mt-8 flex justify-center">
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="rounded-full px-[20px] py-[10px] text-base font-normal text-white disabled:opacity-60"
+                    style={{
+                      background:
+                        "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
+                    }}
+                  >
+                    {isSubmitting ? "Submitting…" : "Submit"}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
-        </section>
+        </div>
       </div>
     </>
   );
 };
+
+function BenefitCard({
+  title,
+  body,
+  icon,
+}: {
+  title: string;
+  body: string;
+  icon: string;
+}) {
+  return (
+    <div className="w-full h-full rounded-[20px] border border-[#DFDFDF] bg-[#FAFAFA] p-5 flex flex-col justify-center items-center">
+      <div className="mb-4 grid h-[58px] w-[58px] place-items-center rounded-[10px] bg-[#6340FF]/10 p-3">
+        <img src={icon} className="w-[34px] h-[34px]" />
+      </div>
+
+      <h3 className="text-lg font-medium text-[#222224] leading-[24px]">
+        {title}
+      </h3>
+      <p className="mt-2 text-center text-base font-light leading-[24px] text-[#64748B]">
+        {body}
+      </p>
+    </div>
+  );
+}
+
+function Field({
+  label,
+  children,
+  full,
+}: {
+  label: string;
+  children: React.ReactNode;
+  full?: boolean;
+}) {
+  return (
+    <label className={`flex flex-col gap-[5px] ${full ? "md:col-span-2" : ""}`}>
+      <span className="text-[15px] text-black font-normal">{label}</span>
+      {children}
+    </label>
+  );
+}
+
+function Input({
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+  required = false,
+}: {
+  value: string;
+  onChange: React.ChangeEventHandler<HTMLInputElement>;
+  placeholder?: string;
+  type?: React.HTMLInputTypeAttribute;
+  required?: boolean;
+}) {
+  return (
+    <input
+      value={value}
+      onChange={onChange}
+      type={type}
+      placeholder={placeholder}
+      required={required}
+      className="w-full h-full rounded-sm border-2 border-[#EEEEEE] bg-white pt-[15px] px-[12px] pb-[17px] text-[14px] outline-none focus:border-[#C9C9FF] placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-[20px]"
+    />
+  );
+}
+
+function TextArea({
+  value,
+  onChange,
+  placeholder,
+}: {
+  value: string;
+  onChange: React.ChangeEventHandler<HTMLTextAreaElement>;
+  placeholder?: string;
+}) {
+  return (
+    <textarea
+      value={value}
+      onChange={onChange}
+      rows={4}
+      placeholder={placeholder}
+      className="h-full w-full resize-none rounded-sm border-2 border-[#EEEEEE] bg-white p-[10px] text-[14px] outline-none focus:border-[#C9C9FF] placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-[20px]"
+    />
+  );
+}
+
+function PhoneInputField({
+  value,
+  onChange,
+  defaultCountry = "us",
+  placeholder = "Enter your phone number",
+}: {
+  value: string;
+  onChange: (value: string, country: any) => void;
+  defaultCountry?: string;
+  placeholder?: string;
+}) {
+  return (
+    <div className="relative">
+      <input type="hidden" value={value} />
+
+      <PhoneInput
+        value={value}
+        onChange={onChange}
+        defaultCountry={defaultCountry as any}
+        forceDialCode={true}
+        required
+        inputProps={{
+          name: "phone",
+          required: true,
+          placeholder: placeholder,
+        }}
+        className="
+          h-full rounded-sm border-2 border-[#EEEEEE] bg-white
+          pt-[7px] pb-[8px] text-[14px] outline-none
+          focus-within:border-[#C9C9FF]
+        "
+        inputClassName="
+          flex-1 !border-0 outline-none !p-0 !m-0
+          placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs"
+        countrySelectorStyleProps={{
+          buttonClassName: `
+              !bg-transparent !border-0 !shadow-none !rounded-none
+              !px-2 flex items-center
+              border-r border-[#EEEEEE]
+            `,
+          dropdownStyleProps: {
+            className: "!z-[9999]",
+          },
+          dropdownArrowClassName: "hidden",
+        }}
+      />
+    </div>
+  );
+}
 
 export default BecomeMentor;
