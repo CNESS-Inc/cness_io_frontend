@@ -173,6 +173,7 @@ export const EndPoint = {
   follow: "/user/follow",
   vote: "/poll/vote",
   googleLogin: "/auth/google-login",
+  resendMail: "/auth/resend-verification",
   all_bestPractices: "/best-practice/all",
   bp: "/best-practice",
   bp_recommended: "/best-practice/recommended",
@@ -240,6 +241,11 @@ export const SendMessage = (formData: FormData) => {
 export const GoogleLoginDetails = async (googleToken: string): ApiResponse => {
   const data = { token: googleToken };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.googleLogin);
+};
+
+export const ResendVerificationMail = async (mail: string): ApiResponse => {
+  const data = { email: mail };
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.resendMail);
 };
 
 export const LoginDetails = async (formData: LoginFormData): ApiResponse => {
