@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "./Button";
 import { ForgotPasswordDetailsSubmit } from "../../Common/ServerAPI";
@@ -25,11 +25,6 @@ const ResetPassword = () => {
     confirm_password: "",
   });
   const { showToast } = useToast();
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
 
   const [touched, setTouched] = useState({
     new_password: false,
