@@ -244,13 +244,15 @@ export default function Login() {
     }
 
     if (rules.minLength && value.length < rules.minLength) {
-      return `${name.replace("_", " ")} must be at least ${rules.minLength
-        } characters`;
+      return `${name.replace("_", " ")} must be at least ${
+        rules.minLength
+      } characters`;
     }
 
     if (rules.maxLength && value.length > rules.maxLength) {
-      return `${name.replace("_", " ")} must be less than ${rules.maxLength
-        } characters`;
+      return `${name.replace("_", " ")} must be less than ${
+        rules.maxLength
+      } characters`;
     }
 
     if (rules.pattern && !rules.pattern.test(value)) {
@@ -458,7 +460,10 @@ export default function Login() {
         setIsSubmitting(false);
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);
-        console.log("🚀 ~ handleSubmit ~ response?.data?.data?.jwt:", response?.data?.data?.jwt)
+        console.log(
+          "🚀 ~ handleSubmit ~ response?.data?.data?.jwt:",
+          response?.data?.data?.jwt
+        );
         localStorage.setItem(
           "is_disqualify",
           response?.data?.data?.user?.is_disqualify
@@ -484,7 +489,10 @@ export default function Login() {
         );
         const myReferralCode = response?.data?.data?.user.my_referral_code;
         if (myReferralCode) {
-          localStorage.setItem("referral_code", response?.data?.data?.user.my_referral_code);
+          localStorage.setItem(
+            "referral_code",
+            response?.data?.data?.user.my_referral_code
+          );
         }
         const completionStatus =
           response.data.data.user.person_organization_complete;
@@ -754,6 +762,27 @@ export default function Login() {
       return;
     }
 
+    const notAlignedCount = organizationForm.question.filter(
+      (q) => q.answer === "Not Aligned"
+    ).length;
+
+    if (notAlignedCount >= 4) {
+      localStorage.setItem("is_disqualify", "true");
+      showToast({
+        type: "error",
+        message:
+          "You are not eligible for the Aspiring Badge; Please try again after 1 day.",
+        duration: 2000,
+      });
+      setActiveModal(null);
+      setIsSubmitting(false);
+      setTimeout(() => {
+        setActiveModal(null);
+        navigate("/dashboard/user-profile");
+      }, 2000);
+      return;
+    }
+
     try {
       const res = await submitOrganizationDetails(organizationForm);
       localStorage.setItem("person_organization", "2");
@@ -855,15 +884,36 @@ export default function Login() {
       return;
     }
 
+    const notAlignedCount = organizationForm.question.filter(
+      (q) => q.answer === "Not Aligned"
+    ).length;
+
+    if (notAlignedCount >= 4) {
+      localStorage.setItem("is_disqualify", "true");
+      showToast({
+        type: "error",
+        message:
+          "You are not eligible for the Aspiring Badge; Please try again after 1 day.",
+        duration: 2000,
+      });
+      setActiveModal(null);
+      setIsSubmitting(false);
+      setTimeout(() => {
+        setActiveModal(null);
+        navigate("/dashboard/user-profile");
+      }, 2000);
+      return;
+    }
+
     try {
       const payload = {
         ...personForm,
         // Include custom_profession in the payload if "other" is selected
         professions: personForm.professions.includes("other")
           ? [
-            ...personForm.professions.filter((p) => p !== "other"),
-            personForm.custom_profession,
-          ]
+              ...personForm.professions.filter((p) => p !== "other"),
+              personForm.custom_profession,
+            ]
           : personForm.professions,
       };
 
@@ -1229,16 +1279,15 @@ export default function Login() {
               </Link>
             </div>
           </div>
-
         </div>
 
         {/* Sign In Form */}
         <div className="min-h-[700px] ">
           <div className="absolute top-[80px] sm:top-[120px] md:top-[160px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
             <div className="w-[576px] h-[750px] sm:h-[650px] bg-white rounded-[24px] shadow-xl border border-gray-200 px-[42px] py-[52px] flex flex-col gap-8">
-
               <h2 className="font-poppins font-semibold text-[28px] leading-[32px] tracking-[-0.02em] text-gray-900">
-                Sign in to your account<br />
+                Sign in to your account
+                <br />
                 <span className="font-publicSans font-normal text-[15px] leading-[20px] tracking-[-0.005em] text-[#281D1B]">
                   Please enter your login details to access your account
                 </span>
@@ -1246,10 +1295,11 @@ export default function Login() {
 
               {apiMessage && (
                 <div
-                  className={`text-center mb-4 ${apiMessage.includes("Successfully")
-                    ? "text-green-500"
-                    : "text-red-500"
-                    }`}
+                  className={`text-center mb-4 ${
+                    apiMessage.includes("Successfully")
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }`}
                 >
                   {apiMessage}
                 </div>
@@ -1280,7 +1330,9 @@ export default function Login() {
                       <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                      <span className="bg-white px-3 font-publicSans font-normal text-[15px] leading-[20px] text-[#281D1B]">Or sign in with</span>
+                      <span className="bg-white px-3 font-publicSans font-normal text-[15px] leading-[20px] text-[#281D1B]">
+                        Or sign in with
+                      </span>
                     </div>
                   </div>
 
@@ -1299,13 +1351,17 @@ export default function Login() {
                       placeholder="Enter your email"
                       onFocus={() => setEmailFocused(true)}
                       onBlur={() => setEmailFocused(false)}
-                      className={`w-full px-3 py-2 rounded-[12px] border ${loginErrors.email ? "border-red-500" : "border-[#CBD5E1]"
-                        } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                      className={`w-full px-3 py-2 rounded-[12px] border ${
+                        loginErrors.email
+                          ? "border-red-500"
+                          : "border-[#CBD5E1]"
+                      } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                     />
 
                     <FiMail
-                      className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-opacity duration-300 ${emailFocused ? "opacity-100" : "opacity-0"
-                        }`}
+                      className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-opacity duration-300 ${
+                        emailFocused ? "opacity-100" : "opacity-0"
+                      }`}
                       size={18}
                     />
                   </div>
@@ -1330,10 +1386,11 @@ export default function Login() {
                       name="password"
                       required
                       placeholder="Enter your Password"
-                      className={`w-full px-3 py-2 rounded-[12px] border ${loginErrors.password
-                        ? "border-red-500"
-                        : "border-[#CBD5E1]"
-                        } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                      className={`w-full px-3 py-2 rounded-[12px] border ${
+                        loginErrors.password
+                          ? "border-red-500"
+                          : "border-[#CBD5E1]"
+                      } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                     />
 
                     <div
@@ -1356,7 +1413,10 @@ export default function Login() {
 
                 <div className="flex items-center justify-between text-sm">
                   <label className="flex items-center gap-2">
-                    <input type="checkbox" className="rounded border-gray-300" />
+                    <input
+                      type="checkbox"
+                      className="rounded border-gray-300"
+                    />
                     <span className="text-gray-600">
                       Remember me on this device
                     </span>
@@ -1571,10 +1631,11 @@ export default function Login() {
                         name="organization_name"
                         value={organizationForm.organization_name}
                         onChange={handleOrganizationFormChange}
-                        className={`w-full px-3 py-2 border ${organizationErrors.organization_name
-                          ? "border-red-500"
-                          : "border-gray-300"
-                          } rounded-md`}
+                        className={`w-full px-3 py-2 border ${
+                          organizationErrors.organization_name
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        } rounded-md`}
                         placeholder="Enter organization name"
                       />
                       {organizationErrors.organization_name && (
@@ -1593,10 +1654,11 @@ export default function Login() {
                         name="domain"
                         value={organizationForm.domain}
                         onChange={handleOrganizationFormChange}
-                        className={`w-full px-3 py-2 border ${organizationErrors.domain
-                          ? "border-red-500"
-                          : "border-gray-300"
-                          } rounded-md`}
+                        className={`w-full px-3 py-2 border ${
+                          organizationErrors.domain
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        } rounded-md`}
                       >
                         <option value="">Select domain</option>
                         {domains?.map((domain: any) => (
@@ -1624,10 +1686,11 @@ export default function Login() {
                           name="custom_domain"
                           value={organizationForm.custom_domain || ""}
                           onChange={handleOrganizationFormChange}
-                          className={`w-full px-3 py-2 border ${organizationErrors.custom_domain
-                            ? "border-red-500"
-                            : "border-gray-300"
-                            } rounded-md`}
+                          className={`w-full px-3 py-2 border ${
+                            organizationErrors.custom_domain
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          } rounded-md`}
                           placeholder="Enter your domain name"
                         />
                         {organizationErrors.custom_domain && (
@@ -1766,10 +1829,11 @@ export default function Login() {
                                 name={`question_${question.id}`}
                                 value={existingAnswer}
                                 onChange={handleOrganizationFormChange}
-                                className={`w-full px-3 py-2 border ${organizationErrors[`question_${question.id}`]
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                                  } rounded-md`}
+                                className={`w-full px-3 py-2 border ${
+                                  organizationErrors[`question_${question.id}`]
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-md`}
                                 placeholder={`Enter your answer`}
                                 rows={3}
                               />
@@ -1780,7 +1844,7 @@ export default function Login() {
                                 <p className="mt-1 text-sm text-red-600">
                                   {
                                     organizationErrors[
-                                    `question_${question.id}`
+                                      `question_${question.id}`
                                     ]
                                   }
                                 </p>
@@ -1974,14 +2038,9 @@ export default function Login() {
                         className={`w-[440px] h-[41px]
     rounded-[12px]
     border-[0.82px]
-    p-[12px] mt-2 ${personErrors.first_name
-                            ? "border-red-500"
-                            : "border-gray-300"
-                          } rounded-md`
-
-                        }
-
-
+    p-[12px] mt-2 ${
+      personErrors.first_name ? "border-red-500" : "border-gray-300"
+    } rounded-md`}
                       />
                       {personErrors.first_name && (
                         <p className="mt-1 text-sm text-red-600">
@@ -2003,10 +2062,9 @@ export default function Login() {
                         className={`w-[440px] h-[41px]
     rounded-[12px]
     border-[0.82px]
-    p-[12px] mt-2 ${personErrors.last_name
-                            ? "border-red-500"
-                            : "border-gray-300"
-                          } rounded-md`}
+    p-[12px] mt-2 ${
+      personErrors.last_name ? "border-red-500" : "border-gray-300"
+    } rounded-md`}
                         placeholder="Enter your last name"
                       />
                       {personErrors.last_name && (
@@ -2066,27 +2124,30 @@ export default function Login() {
                       <label className="block openSans text-base font-medium text-gray-800 mb-1">
                         Professions
                         <span className="text-red-500">*</span>
-
                       </label>
                       <div className="mt-4">
                         <Select
                           isMulti
                           options={[
-                            ...profession?.map((professionItem: Profession) => ({
-                              value: professionItem.id,
-                              label: professionItem.title,
-                            })),
+                            ...profession?.map(
+                              (professionItem: Profession) => ({
+                                value: professionItem.id,
+                                label: professionItem.title,
+                              })
+                            ),
                             { value: "other", label: "Other (please specify)" },
                           ]}
                           value={
-                            personForm.professions?.map((professionId: any) => ({
-                              value: professionId,
-                              label:
-                                profession?.find(
-                                  (p: any) => p.id === professionId
-                                )?.title ||
-                                (professionId === "other" ? "Other" : ""),
-                            })) || []
+                            personForm.professions?.map(
+                              (professionId: any) => ({
+                                value: professionId,
+                                label:
+                                  profession?.find(
+                                    (p: any) => p.id === professionId
+                                  )?.title ||
+                                  (professionId === "other" ? "Other" : ""),
+                              })
+                            ) || []
                           }
                           onChange={(selectedOptions) => {
                             const selectedValues = selectedOptions?.map(
@@ -2111,7 +2172,6 @@ export default function Login() {
                           {personErrors.professions}
                         </p>
                       )}
-
                     </div>
                     {/* Add this after the Select component */}
                     {personForm.professions?.includes("other") && (
@@ -2149,9 +2209,8 @@ export default function Login() {
 
                         return (
                           <div key={question.id} className="mb-4">
-
                             <label
-                              style={{ lineHeight: '1.8' }}
+                              style={{ lineHeight: "1.8" }}
                               className="block openSans text-base font-medium text-gray-800 mb-3 mt-4"
                             >
                               {question.question}
@@ -2187,10 +2246,11 @@ export default function Login() {
                                 name={`question_${question.id}`}
                                 value={existingAnswer}
                                 onChange={handlePersonFormChange}
-                                className={`w-full px-3 py-2 border ${personErrors[`question_${question.id}`]
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                                  } rounded-md`}
+                                className={`w-full px-3 py-2 border ${
+                                  personErrors[`question_${question.id}`]
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-md`}
                                 placeholder={`Enter your answer`}
                                 rows={3}
                               />
@@ -2269,7 +2329,8 @@ export default function Login() {
                         variant="gradient-primary"
                         className="w-[104px] h-[39px] rounded-[100px] p-0
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
-    flex items-center justify-center"                      >
+    flex items-center justify-center"
+                      >
                         Next
                       </Button>
                     </>
@@ -2579,10 +2640,11 @@ export default function Login() {
           </h2>
           {apiMessage && (
             <div
-              className={`text-center mb-4 ${apiMessage.includes("A Forgot Password Email Has Been Sent")
-                ? "text-green-500"
-                : "text-red-500"
-                }`}
+              className={`text-center mb-4 ${
+                apiMessage.includes("A Forgot Password Email Has Been Sent")
+                  ? "text-green-500"
+                  : "text-red-500"
+              }`}
             >
               {apiMessage}
             </div>
@@ -2601,10 +2663,11 @@ export default function Login() {
                 name="email"
                 required
                 placeholder="Enter your email"
-                className={`w-full px-3 py-2 rounded-[12px] border ${resetPasswordErrors.email
-                  ? "border-red-500"
-                  : "border-[#CBD5E1]"
-                  } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                className={`w-full px-3 py-2 rounded-[12px] border ${
+                  resetPasswordErrors.email
+                    ? "border-red-500"
+                    : "border-[#CBD5E1]"
+                } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
               />
               {resetPasswordErrors.email && (
                 <p className="mt-1 text-sm text-red-600">
@@ -2652,10 +2715,11 @@ export default function Login() {
           </div>
           {apiMessage && (
             <div
-              className={`openSans text-center p-4 ${apiMessage.includes("A Forgot Password Email Has Been Sent")
-                ? "text-green-500"
-                : "text-red-500"
-                }`}
+              className={`openSans text-center p-4 ${
+                apiMessage.includes("A Forgot Password Email Has Been Sent")
+                  ? "text-green-500"
+                  : "text-red-500"
+              }`}
             >
               {apiMessage}
             </div>
