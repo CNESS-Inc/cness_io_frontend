@@ -62,7 +62,9 @@ export default function Highlight() {
             rounded-tl-[100px] rounded-br-[100px] rounded-tr-[10px] rounded-bl-[10px] bg-white">
               Highlights
             </span>
-            <h3 className="font-poppins font-medium
+            <h3 
+             style={{ fontFamily: "Poppins, sans-serif" }}
+            className="font-medium
     text-[32px] md:text-[42px]
     leading-[54px] tracking-[-0.02em]
     capitalize text-centerp">

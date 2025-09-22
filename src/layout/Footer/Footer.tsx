@@ -54,11 +54,11 @@ const Footer = () => {
               <div className="w-fit space-y-3 md:space-y-4 ">
                 <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#6F74DD] poppins">Quick Links</h4>
                 <ul className="space-y-1 md:space-y-2">
-                  <li><Link to="/" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Ecosystem</Link></li>
-                  <li><a href="/about" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">Social</a></li>
-                   <li><a href="/directory" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">Certification</a></li>
-                  <li><a href="/sign-up" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">Premimum</a></li>
-                  <li><Link to="/comingsoon" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">Why CNESS</Link></li>
+                  <li><Link to="/ecosystem" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Ecosystem</Link></li>
+                  <li><Link to="/social" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Social</Link></li>
+                   <li><Link to="/certifications" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Certification</Link></li>
+                  <li><Link to="/premium" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Premium</Link></li>
+                  <li><Link to="/whycness" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Why CNESS</Link></li>
                 </ul>
               </div>
 

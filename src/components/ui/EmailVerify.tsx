@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+//import {  useNavigate } from "react-router-dom";
+
 import { GetEmailVerify } from "../../Common/ServerAPI";
 import Button from "./Button";
 import { useToast } from "./Toast/ToastProvider";
+import Login from "../OnBoarding/Login";
+
 
 interface EmailVerifyData {
   token: string;
@@ -11,6 +15,7 @@ interface EmailVerifyData {
 const EmailVerify = () => {
   const location = useLocation();
   const [loginShow, setLoginShow] = useState(false);
+   const [openLogin, setOpenLogin] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const { showToast } = useToast()
@@ -53,12 +58,13 @@ const EmailVerify = () => {
     verify();
   }, []);
 
-  const navigate = useNavigate();
-  const handleLoginClick = () => {
-    navigate("/log-in");
-  };
+  //const navigate = useNavigate();
+  //const handleLoginClick = () => {
+    //navigate("/log-in");
+ // };
 
   return (
+    <>
     <div className="flex items-center justify-center h-screen">
       <div className="text-center">
         {error ? (
@@ -74,7 +80,7 @@ const EmailVerify = () => {
               <Button
                 className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-3 sm:py-[16px] px-6 sm:px-[24px] rounded-full text-sm sm:text-base w-full sm:w-auto text-center mt-3"
                 withGradientOverlay
-                onClick={handleLoginClick}
+                onClick={() => setOpenLogin(true)} 
               >
                 Login
               </Button>
@@ -83,6 +89,8 @@ const EmailVerify = () => {
         )}
       </div>
     </div>
+  <Login open={openLogin} onClose={() => setOpenLogin(false)} />
+  </>
   );
 };
 
