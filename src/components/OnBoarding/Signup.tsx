@@ -7,11 +7,13 @@ import { useToast } from "../../components/ui/Toast/ToastProvider";
 import { useGoogleLogin } from "@react-oauth/google";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Link } from "react-router-dom";
+import Loginmodule from "../OnBoarding/Login";
 import { registerUser } from "../../pages/Signingup";
 import {
   GoogleLoginDetails,
   ResendVerificationMail,
 } from "../../Common/ServerAPI";
+//import { Button } from "@headlessui/react";
 
 interface FormErrors {
   username?: string;
@@ -50,6 +52,7 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
   const [recaptchaValue, setRecaptchaValue] = useState<string | null>(null);
   const [recaptchaTouched, setRecaptchaTouched] = useState(false);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
+  const [openLogin, setOpenLogin] = useState(false);
 
   const RECAPTCHA_SITE_KEY = "6LcmM3YrAAAAAIoMONSmkAGazWwUXdCE6fzI473L";
 
@@ -614,6 +617,7 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
           </Link>
         </p>
       </div>
+      <Loginmodule open={openLogin} onClose={() => setOpenLogin(false)} />
     </PopupOnboardingModal>
   );
 }

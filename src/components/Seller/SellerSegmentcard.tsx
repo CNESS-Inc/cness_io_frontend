@@ -84,6 +84,17 @@ function Progress({ value }: { value: number }) {
   );
 }
 
+function MobileBreakTitle({ text, afterWords = 3 }: { text: string; afterWords?: number }) {
+  const words = (text ?? "").trim().split(/\s+/);
+  return (
+    <>
+      {words.slice(0, afterWords).join(" ")}
+      <br /> {/* always visible */}
+      {" "}{words.slice(afterWords).join(" ")}
+    </>
+  );
+}
+
 /* Small round nav arrow at top-right of each card */
 //function NavArrow({
 // onClick,
@@ -330,7 +341,8 @@ export function CertificationCard({
         {/* Inner gradient card (responsive min-height) */}
         <div
           className="relative min-h-[220px] sm:min-h-[250px] rounded-[22px] border border-[#EFE8FF] bg-gradient-to-r from-[#F6F2FF] via-[#FAF0FF] to-[#FFF1F8] p-4 sm:p-6 overflow-hidden"
-          onMouseEnter={() => setPaused(true)}
+
+           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
           {/* Slide 1: Levels */}
@@ -723,7 +735,7 @@ export function SocialStackCard({
 
   // adventure
   adventureTitle = "Your Next Social Life Adventure",
-  adventureText = "What would your younger self admire about your life now? Any standout achievements or experiences?",
+  adventureText = "What would your younger self admire about your life now?\nAny standout achievements or experiences?",
   onStartPosting,
   onViewFeed,
 
@@ -777,48 +789,61 @@ export function SocialStackCard({
     secondaryLabel?: string;
   };
 
-  function MarqueeColumn({
-    images,
-    side, // "left" | "right"
-    reverse = false, // right side uses reverse for downwards scroll
-  }: {
-    images: string[];
-    side: "left" | "right";
-    reverse?: boolean;
-  }) {
-    // duplicate list for seamless loop
-    const list = [...images, ...images];
-    const sideClass = side === "left" ? "-left-3" : "-right-3";
-    const fadeSide = side === "left" ? "right-0" : "left-0";
-    const fadeDir = side === "left" ? "bg-gradient-to-r" : "bg-gradient-to-l";
+function MarqueeColumn({
+  images,
+  side,                 // "left" | "right"
+  reverse = false,
+  asStatic = false,     // ← when true, rail is not absolute (used on mobile)
+}: {
+  images: string[];
+  side: "left" | "right";
+  reverse?: boolean;
+  asStatic?: boolean;
+}) {
+  const list = [...images, ...images];
 
-    return (
-      <div
-        aria-hidden
-        className={`absolute inset-y-0 ${sideClass} w-12 overflow-hidden pointer-events-none hidden sm:block`}
-      >
+  const Rail = (
+    <div
+      className={`flex flex-col gap-[3px] ${
+        reverse ? "marquee-ping-reverse" : "marquee-ping"
+      }`}
+    >
+      {list.map((src, i) => (
         <div
-          className={`flex flex-col gap-2 ${
-            reverse ? "marquee-ping-reverse" : "marquee-ping"
-          }`}
+          key={`${src}-${i}`}
+          className="w-9 h-[46px] md:w-[43px] md:h-[56px] p-[2px] rounded-[4px] bg-white/95 shadow"
         >
-          {list.map((src, i) => (
-            <img
-              key={`${src}-${i}`}
-              src={src}
-              className="h-10 w-10 rounded-lg object-cover border border-white/60 shadow"
-            />
-          ))}
+          <img
+            src={src}
+            alt=""
+            className="w-full h-full rounded-[2px] object-cover"
+          />
         </div>
+      ))}
+    </div>
+  );
 
-        {/* soft edge fade so images blend into the card */}
-        <div
-          className={`pointer-events-none absolute ${fadeSide} top-0 bottom-0 w-2 ${fadeDir} from-[#FCFCFF]/0 via-[#FCFCFF]/20 to-transparent`}
-        />
+  if (asStatic) {
+    // Used inside the mobile grid (not absolutely positioned)
+    return (
+      <div className="h-full w-10 md:w-[54px] overflow-hidden pointer-events-none">
+        {Rail}
       </div>
     );
   }
 
+  // Overlay rails for sm+
+  const sideCls = side === "left" ? "left-2 md:left-3" : "right-2 md:right-3";
+  return (
+    <div
+      aria-hidden
+      className={`hidden sm:block absolute ${sideCls} top-2 md:top-4 bottom-2 md:bottom-4
+                  w-10 md:w-[50px] overflow-hidden pointer-events-none z-0`}
+    >
+      {Rail}
+    </div>
+  );
+}
   /* ===== 3-slide carousel for the Adventure section ===== */
   function AdventureSlides({
     slides,
@@ -864,7 +889,7 @@ export function SocialStackCard({
       src ? (
         <img
           src={src}
-          className={`absolute h-8 w-8 object-contain drop-shadow-md ${className}`}
+className={`absolute z-0 pointer-events-none h-8 w-8 object-contain drop-shadow-md ${className}`}
         />
       ) : null;
 
@@ -905,7 +930,7 @@ export function SocialStackCard({
         {/* white stat card */}
         <div className="mt-2 rounded-2xl border border-[#EEF0F5] bg-white p-5 shadow-sm">
           {/* Account Reached */}
-          <div className="flex items-start justify-between gap-6">
+          <div className="flex flex-col sm:flex-row items-start justify-between gap-6">
             <div>
               <div className="font-poppins font-semibold text-[20px] leading-[32.3px] tracking-[0.15px] text-center text-[#0F1728]">
                 Account Reached
@@ -916,8 +941,7 @@ export function SocialStackCard({
             </div>
 
             {/* dot chart (pink) */}
-            {/* dot chart (pink - horizontal with peak) */}
-            <div className="flex flex-row items-end gap-1">
+            <div className="flex flex-row items-end gap-1 mt-2 sm:mt-0">
               {/* Column 1 (4 dots) */}
               <div className="flex flex-col gap-1 justify-end">
                 {Array.from({ length: 4 }).map((_, i) => (
@@ -951,7 +975,7 @@ export function SocialStackCard({
           <div className="my-4 border-t border-[#E9EDF3]" />
 
           {/* Followers */}
-          <div className="flex items-start justify-between gap-6">
+          <div className="flex flex-col sm:flex-row items-start justify-between gap-6">
             <div>
               <div className="font-poppins font-semibold text-[20px] leading-[32.3px] tracking-[0.15px] text-center text-[#0F1728]">
                 Followers
@@ -962,7 +986,7 @@ export function SocialStackCard({
             </div>
 
             {/* dot chart (purple) */}
-            <div className="flex flex-row items-end gap-1">
+            <div className="flex flex-row items-end gap-1 mt-2 sm:mt-0">
               {/* Column 1 (4 dots) */}
               <div className="flex flex-col gap-1 justify-end">
                 {Array.from({ length: 4 }).map((_, i) => (
@@ -996,7 +1020,6 @@ export function SocialStackCard({
       </div>
     );
     const NotificationsCard = ({ notifications }: { notifications: any[] }) => {
-      console.log("🚀 ~ NotificationsCard ~ notifications:", notifications);
       return (
         <div className="row-start-1 relative z-10 place-self-center w-full max-w-[620px]">
           {/* header */}
@@ -1018,7 +1041,7 @@ export function SocialStackCard({
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <img
-                    src={`https://i.pravatar.cc/56?u=${item.sender_id}`} // avatar placeholder based on sender_id
+                    src={`https://i.pravatar.cc/56?u=${item.sender_id}`}
                     className="h-11 w-11 rounded-full object-cover"
                     alt=""
                   />
@@ -1051,54 +1074,88 @@ export function SocialStackCard({
     };
 
     /* ---------- render ---------- */
+const edgePad = idx === 0 ? "px-3 sm:px-14 md:px-16" : "";
     return (
       <>
         <div
-          className="relative h-[360px] rounded-[12px] border border-[#ECEEF2] px-[12px] py-[18px] overflow-hidden"
-          onMouseEnter={() => setPaused(true)}
+ className="relative -mx-2 sm:-mx-3 md:-mx-4
+             h-auto min-h-[320px] sm:h-[360px]
+             rounded-[12px] border border-[#ECEEF2]
+             px-[12px] py-[18px]
+             overflow-hidden flex flex-col justify-center shadow-[0_4px_10px_0_rgba(0,0,0,0.04)]"
+                       onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
-          {/* side marquees & static reaction bubbles only on slide 1 */}
+          {/* side marquees & static reaction bubbles only on slide 1, hide on mobile */}
           {idx === 0 && (
             <>
-              <MarqueeColumn side="left" images={leftImages} />
-              <MarqueeColumn side="right" images={rightImages} reverse />
-              <ReactionBubble
-                src={reactions?.topRight}
-                className="right-3 top-3"
-              />
-              <ReactionBubble
-                src={reactions?.bottomLeft}
-                className="left-3 bottom-6"
-              />
+              <div className="hidden sm:block">
+                <MarqueeColumn side="left" images={leftImages} />
+                <MarqueeColumn side="right" images={rightImages} reverse />
+                <ReactionBubble
+                  src={reactions?.topRight}
+                  className="right-12 top-6 md:right-12 md:top-6"
+                />
+                <ReactionBubble
+                  src={reactions?.bottomLeft}
+                  className="left-12 bottom-6 md:left-12 md:bottom-6"
+                />
+              </div>
             </>
           )}
 
           {/* content */}
-          {idx === 0 ? (
-            <div className="relative z-10 h-full grid place-items-center text-center">
-              <div>
-                <h4 className="font-poppins font-semibold text-[20px] leading-[32.3px] tracking-[0.15px] text-center text-[#0F1728]">
-                  {s.title}
+<div className={`relative z-10 h-full flex flex-col justify-center ${edgePad}`}>
+              {idx === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full w-full px-2 sm:px-0">
+                <h4 className="font-poppins font-semibold text-[#0F1728] text-center text-[20px] leading-[28px] break-words">
+                  <MobileBreakTitle text={s.title} afterWords={3} />
                 </h4>
-                <p className="mt-2 max-w-[32rem] mx-auto text-[14px] leading-[100%] text-[#667085]  font-[400] text-center font-['Open_Sans']">
-                  {s.text}
-                </p>
-                <div className="mt-4 flex items-center justify-center gap-3">
-                  <PrimaryButton onClick={onPrimary}>
-                    {s.primaryLabel ?? "Start Posting"}
-                  </PrimaryButton>
-                  <OutlinePill onClick={onSecondary}>
-                    {s.secondaryLabel ?? "View Feed"}
-                  </OutlinePill>
+               <p
+  className="mt-2 text-[#667085] text-[12px] sm:text-[12px] md:text-[13px]
+                  leading-[150%] font-[400] font-['Open_Sans']
+                  text-center whitespace-normal break-words
+                  max-w-[28ch] sm:max-w-[34ch] mx-auto"
+>
+  {s.text}
+</p>
+<div className="mt-4 grid grid-cols-2 gap-2
+  w-full max-w-[320px] sm:max-w-[360px] mx-auto
+  place-items-center">
+
+                    <PrimaryButton
+ className="
+    w-[100px] min-w-[100px] h-[33px]
+    rounded-[100px]
+    px-[12px] pr-[8px]
+    whitespace-nowrap shrink-0
+    !justify-center     /* use !justify-between if you add an icon */
+    text-[12px] mr-2   
+  "  onClick={onPrimary}
+>
+  {s.primaryLabel ?? "Start Posting"}
+</PrimaryButton>
+                  <OutlinePill
+   className="
+    w-[100px] min-w-[100px] h-[33px]
+    rounded-[100px]
+    px-[12px] pr-[8px]
+    whitespace-nowrap shrink-0
+    !justify-center
+    text-[12px]
+  "
+  onClick={onSecondary}
+>
+  {s.secondaryLabel ?? "View Feed"}
+</OutlinePill>
                 </div>
               </div>
-            </div>
-          ) : idx === 1 ? (
-            <InsightsCard />
-          ) : (
-            <NotificationsCard notifications={notifications} />
-          )}
+            ) : idx === 1 ? (
+              <InsightsCard />
+            ) : (
+              <NotificationsCard notifications={notifications} />
+            )}
+          </div>
 
           {/* marquee animations */}
           <style>{`
@@ -1166,7 +1223,8 @@ export function SocialStackCard({
       </div>
 
       {/* ===== Section 1: Profile preview ===== */}
-      <div className=" mt-4 h-[290px] rounded-xl border border-[#ECEEF2] p-3 flex flex-col gap-3">
+          <div className=" mt-4 h-[290px] rounded-xl border border-[#ECEEF2] p-3 flex flex-col gap-3 shadow-[0_4px_10px_0_rgba(0,0,0,0.04)]">
+
         {/* Cover */}
         <img
           src={coverUrl}
@@ -1229,7 +1287,7 @@ export function SocialStackCard({
       </div>
 
       {/* section divider */}
-      <div className="my-4 border-t border-[#ECEEF2]" />
+<div className="my-4 border-t border-[#ECEEF2]" />
 
       {/* ===== Section 2: Your Next Social Life Adventure ===== */}
       <AdventureSlides
@@ -1278,13 +1336,13 @@ export function SocialStackCard({
       />
 
       {/* section divider */}
-      <div className="my-4 border-t border-[#ECEEF2]" />
-
+<div className="my-4 border-t border-[#ECEEF2]" />
       {/* ===== Section 3: Friends ===== */}
       <div
         className="h-[393px] rounded-[12px] border border-[#ECEEF2] 
-             px-[12px] py-[18px] flex flex-col gap-[18px]"
+             px-[12px] py-[18px] flex flex-col gap-[18px] shadow-[0_4px_10px_0_rgba(0,0,0,0.04)] "
       >
+      
         {/* Header */}
         <div className="flex items-center gap-2">
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#FFF4E5]">

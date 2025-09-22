@@ -5,29 +5,73 @@ interface ModalProps {
   onClose: () => void;
   children: React.ReactNode;
   position?: "center" | "bottom"; // Add position prop
+ 
+    modalKey?: string;
+    completionStatus?: number; // 👈 add optional prop
+  completedStep?: number;    // 👈 add optional prop
 }
+let activeModalKey: string | null = null;
 
 export default function Modal({
   isOpen,
   onClose,
   children,
   position = "center",
+   
+  modalKey,
+  completionStatus,
+  completedStep,
+
 }: ModalProps) {
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
+
+   const resolvedCompletionStatus =
+    completionStatus ?? Number(localStorage.getItem("person_organization") || "0");
+  const resolvedCompletedStep =
+    completedStep ?? Number(localStorage.getItem("completed_step") || "0");
+if (
+    isOpen &&
+    modalKey === "person" &&
+    resolvedCompletionStatus > 0 &&
+    resolvedCompletedStep > 0
+  ) {
+    // optional: actively close parent state instead of just not rendering
+    // setTimeout(onClose, 0);
+    return null;
+  }
+
+  if (!isOpen) return null;
+  
+useEffect(() => {
+    if (isOpen && modalKey) {
+
+      
+      // close any previous modal
+      if (activeModalKey && activeModalKey !== modalKey) {
+        // auto-close previous modal
+        document.dispatchEvent(new CustomEvent("closeModal", { detail: activeModalKey }));
+      }
+      activeModalKey = modalKey;
     }
 
     return () => {
-      document.body.style.overflow = "auto";
+      if (activeModalKey === modalKey) {
+        activeModalKey = null;
+      }
     };
-  }, [isOpen]);
+  }, [isOpen, modalKey]);
+
+  useEffect(() => {
+    const handler = (e: any) => {
+      if (e.detail === modalKey) {
+        onClose();
+      }
+    };
+    document.addEventListener("closeModal", handler);
+    return () => document.removeEventListener("closeModal", handler);
+  }, [modalKey, onClose]);
 
   if (!isOpen) return null;
 
-  // Determine positioning classes based on position prop
   const positionClasses = {
     center: "items-center justify-center",
     bottom: "items-end justify-center",
@@ -39,7 +83,7 @@ export default function Modal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+    <div className="fixed inset-0 overflow-y-auto z-[2000]" >
       <div
         className={`flex min-h-screen p-4 sm:p-6 ${positionClasses[position]}`}
       >
