@@ -8,12 +8,13 @@ import { useToast } from "../../components/ui/Toast/ToastProvider";
 import { useGoogleLogin } from "@react-oauth/google";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Link } from "react-router-dom";
-
+import Loginmodule from "../OnBoarding/Login";
 import { registerUser } from "../../pages/Signingup";
 
 import {
   GoogleLoginDetails,
 } from "../../Common/ServerAPI";
+//import { Button } from "@headlessui/react";
 
 interface FormErrors {
   username?: string;
@@ -44,6 +45,7 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const [formssubmitted, setFormSubmitted] = useState(false);
   const [useremail, setUseremail] = useState("");
+  const [openLogin, setOpenLogin] = useState(false);
 
   const RECAPTCHA_SITE_KEY = "6LcmM3YrAAAAAIoMONSmkAGazWwUXdCE6fzI473L";
 
@@ -422,10 +424,14 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
 
           <p className={`mt-4 text-center text-[13px] text-gray-600 ${formssubmitted ? 'hidden' : ''}`}>
             Already have an account?{" "}
-            <Link to="/log-in" className="text-purple-600 hover:underline font-medium">
-              Login
-            </Link>
-          </p>
+            <button
+              type="button"
+              className="text-purple-600 hover:underline font-medium ml-2"
+              onClick={() => setOpenLogin(true)}
+            >
+              Log in
+            </button>
+            </p>
           
 
           <div className={`w-full h-full flex flex-col justify-center items-center ${formssubmitted ? 'block' : 'hidden'}`}>
@@ -446,7 +452,10 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
           </p>
           </div>
          
-        
+                  <Loginmodule open={openLogin} onClose={() => setOpenLogin(false)} />
+  
     </PopupOnboardingModal>
+
+
   );
 }
