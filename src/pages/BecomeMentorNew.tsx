@@ -32,7 +32,6 @@ interface MentorFormData {
   bio: string;
   motivation: string;
   availability: string;
-  country_timezone: string;
 }
 
 const BecomeMentor = () => {
@@ -56,7 +55,6 @@ const BecomeMentor = () => {
     bio: "",
     motivation: "",
     availability: "",
-    country_timezone: "",
   });
   const [_fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
@@ -202,10 +200,10 @@ const BecomeMentor = () => {
     }));
 
     // Validate field in real-time
-    const error = validateField(id, value);
+    const error = validateField(name, value);
     setFieldErrors((prev) => ({
       ...prev,
-      [id]: error,
+      [name]: error,
     }));
   };
 
@@ -360,7 +358,6 @@ const BecomeMentor = () => {
           bio: "",
           motivation: "",
           availability: "",
-          country_timezone: "",
         });
         setPhone("");
         setCountryCode("");
