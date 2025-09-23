@@ -21,7 +21,10 @@ import friendsicon from "../../assets/friendsicon.svg";
 import socialicon from "../../assets/socialprofileicon.svg";
 import postinsight from "../../assets/post-insights-badge.svg";
 import { useNavigate } from "react-router-dom";
-import { GetUserNotification } from "../../Common/ServerAPI";
+import {
+  GetUserNotification,
+  SendBpFollowRequest,
+} from "../../Common/ServerAPI";
 //import like from "../../assets/likes.svg";
 //import heart from "../../assets/heart.svg";
 
@@ -84,13 +87,18 @@ function Progress({ value }: { value: number }) {
   );
 }
 
-function MobileBreakTitle({ text, afterWords = 3 }: { text: string; afterWords?: number }) {
+function MobileBreakTitle({
+  text,
+  afterWords = 3,
+}: {
+  text: string;
+  afterWords?: number;
+}) {
   const words = (text ?? "").trim().split(/\s+/);
   return (
     <>
       {words.slice(0, afterWords).join(" ")}
-      <br /> {/* always visible */}
-      {" "}{words.slice(afterWords).join(" ")}
+      <br /> {/* always visible */} {words.slice(afterWords).join(" ")}
     </>
   );
 }
@@ -341,8 +349,7 @@ export function CertificationCard({
         {/* Inner gradient card (responsive min-height) */}
         <div
           className="relative min-h-[220px] sm:min-h-[250px] rounded-[22px] border border-[#EFE8FF] bg-gradient-to-r from-[#F6F2FF] via-[#FAF0FF] to-[#FFF1F8] p-4 sm:p-6 overflow-hidden"
-
-           onMouseEnter={() => setPaused(true)}
+          onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
           {/* Slide 1: Levels */}
@@ -484,12 +491,17 @@ export function CertificationCard({
 /* ===========================================================
    4) BEST PRACTICES (left column, below Certification)
    =========================================================== */
-type BestPractice = {
-  id: string | number;
-  image: string;
+interface BestPracticeItem {
+  id: string; 
   title: string;
   description: string;
-};
+  image: string;
+  if_following: boolean;
+  followers_count: number;
+  likes_count: number;
+  comments_count: number;
+  is_saved: boolean;
+}
 
 function CircleIconBtn({
   onClick,
@@ -514,12 +526,12 @@ function CircleIconBtn({
 export function BestPracticesSection({
   items,
   onAdd,
-  onFollow,
+  setBestPractices,
   title = "Best Practices",
 }: {
-  items: BestPractice[];
+  items: BestPracticeItem[];
   onAdd?: () => void;
-  onFollow?: (bp: BestPractice) => void;
+  setBestPractices: React.Dispatch<React.SetStateAction<BestPracticeItem[]>>;
   title?: string;
 }) {
   // Desktop: simple 2-up pager
@@ -556,6 +568,26 @@ export function BestPracticesSection({
     el.addEventListener("scroll", onScroll, { passive: true });
     return () => el.removeEventListener("scroll", onScroll);
   }, [items.length]);
+
+  const toggleFollowPost = async (bpId: any) => {
+    try {
+      const res = await SendBpFollowRequest({ bp_id: bpId });
+
+      if (res?.success?.statusCode === 200) {
+        const isNowFollowing = res?.data?.data !== null;
+
+        setBestPractices((prev) =>
+          prev.map((item) =>
+            item.id === bpId ? { ...item, if_following: isNowFollowing } : item
+          )
+        );
+      } else {
+        console.warn("Unexpected status code:", res?.success?.statusCode);
+      }
+    } catch (error) {
+      console.error("Error following/unfollowing:", error);
+    }
+  };
 
   return (
     <Card className="p-4 md:p-5">
@@ -595,7 +627,7 @@ export function BestPracticesSection({
       </div>
 
       {/* --- MOBILE list (horizontal scroll, snap) --- */}
-      <div className="relative sm:hidden mt-3">
+      <div className="relative sm:hidden mt-3 w-full">
         {/* Fade edges to hint scroll */}
         <div className="pointer-events-none absolute left-0 top-0 h-full w-6 bg-gradient-to-r from-white to-transparent" />
         <div className="pointer-events-none absolute right-0 top-0 h-full w-6 bg-gradient-to-l from-white to-transparent" />
@@ -629,14 +661,25 @@ export function BestPracticesSection({
                 <p className="mt-3 font-opensans text-[14px] leading-[150%] text-[#667085] line-clamp-2">
                   {bp.description}
                 </p>
-                <button
-                  className="mt-auto w-full h-[37px] rounded-full bg-[#7077FE] px-3 py-2
+                {bp.if_following ? (
+                  <button
+                    className="mt-auto w-full h-[37px] rounded-full bg-[#F396FF] px-3 py-2
+                             font-opensans text-[14px] font-semibold text-white
+                             shadow transition"
+                    onClick={() => toggleFollowPost(bp.id)}
+                  >
+                    Following
+                  </button>
+                ) : (
+                  <button
+                    className="mt-auto w-full h-[37px] rounded-full bg-[#7077FE] px-3 py-2
                              font-opensans text-[14px] font-semibold text-white
                              shadow hover:bg-[#5A61E8] transition"
-                  onClick={() => onFollow?.(bp)}
-                >
-                  Follow
-                </button>
+                    onClick={() => toggleFollowPost(bp.id)}
+                  >
+                    Follow
+                  </button>
+                )}
               </div>
             </div>
           ))}
@@ -681,14 +724,25 @@ export function BestPracticesSection({
               <p className="mt-3 font-opensans text-[16px] leading-[150%] text-[#667085] line-clamp-2">
                 {bp.description}
               </p>
-              <button
-                className="mt-auto w-full h-[37px] rounded-full bg-[#7077FE] px-3 py-2
-                           font-opensans text-[14px] font-semibold text-white
-                           shadow hover:bg-[#5A61E8] transition"
-                onClick={() => onFollow?.(bp)}
-              >
-                Follow
-              </button>
+              {bp.if_following ? (
+                <button
+                  className="mt-auto w-full h-[37px] rounded-full bg-[#F396FF] px-3 py-2
+                             font-opensans text-[14px] font-semibold text-white
+                             shadow transition"
+                  onClick={() => toggleFollowPost(bp.id)}
+                >
+                  Following
+                </button>
+              ) : (
+                <button
+                  className="mt-auto w-full h-[37px] rounded-full bg-[#7077FE] px-3 py-2
+                             font-opensans text-[14px] font-semibold text-white
+                             shadow hover:bg-[#5A61E8] transition"
+                  onClick={() => toggleFollowPost(bp.id)}
+                >
+                  Follow
+                </button>
+              )}
             </div>
           </div>
         ))}
@@ -789,61 +843,61 @@ export function SocialStackCard({
     secondaryLabel?: string;
   };
 
-function MarqueeColumn({
-  images,
-  side,                 // "left" | "right"
-  reverse = false,
-  asStatic = false,     // ← when true, rail is not absolute (used on mobile)
-}: {
-  images: string[];
-  side: "left" | "right";
-  reverse?: boolean;
-  asStatic?: boolean;
-}) {
-  const list = [...images, ...images];
+  function MarqueeColumn({
+    images,
+    side, // "left" | "right"
+    reverse = false,
+    asStatic = false, // ← when true, rail is not absolute (used on mobile)
+  }: {
+    images: string[];
+    side: "left" | "right";
+    reverse?: boolean;
+    asStatic?: boolean;
+  }) {
+    const list = [...images, ...images];
 
-  const Rail = (
-    <div
-      className={`flex flex-col gap-[3px] ${
-        reverse ? "marquee-ping-reverse" : "marquee-ping"
-      }`}
-    >
-      {list.map((src, i) => (
-        <div
-          key={`${src}-${i}`}
-          className="w-9 h-[46px] md:w-[43px] md:h-[56px] p-[2px] rounded-[4px] bg-white/95 shadow"
-        >
-          <img
-            src={src}
-            alt=""
-            className="w-full h-full rounded-[2px] object-cover"
-          />
+    const Rail = (
+      <div
+        className={`flex flex-col gap-[3px] ${
+          reverse ? "marquee-ping-reverse" : "marquee-ping"
+        }`}
+      >
+        {list.map((src, i) => (
+          <div
+            key={`${src}-${i}`}
+            className="w-9 h-[46px] md:w-[43px] md:h-[56px] p-[2px] rounded-[4px] bg-white/95 shadow"
+          >
+            <img
+              src={src}
+              alt=""
+              className="w-full h-full rounded-[2px] object-cover"
+            />
+          </div>
+        ))}
+      </div>
+    );
+
+    if (asStatic) {
+      // Used inside the mobile grid (not absolutely positioned)
+      return (
+        <div className="h-full w-10 md:w-[54px] overflow-hidden pointer-events-none">
+          {Rail}
         </div>
-      ))}
-    </div>
-  );
+      );
+    }
 
-  if (asStatic) {
-    // Used inside the mobile grid (not absolutely positioned)
+    // Overlay rails for sm+
+    const sideCls = side === "left" ? "left-2 md:left-3" : "right-2 md:right-3";
     return (
-      <div className="h-full w-10 md:w-[54px] overflow-hidden pointer-events-none">
+      <div
+        aria-hidden
+        className={`hidden sm:block absolute ${sideCls} top-2 md:top-4 bottom-2 md:bottom-4
+                  w-10 md:w-[50px] overflow-hidden pointer-events-none z-0`}
+      >
         {Rail}
       </div>
     );
   }
-
-  // Overlay rails for sm+
-  const sideCls = side === "left" ? "left-2 md:left-3" : "right-2 md:right-3";
-  return (
-    <div
-      aria-hidden
-      className={`hidden sm:block absolute ${sideCls} top-2 md:top-4 bottom-2 md:bottom-4
-                  w-10 md:w-[50px] overflow-hidden pointer-events-none z-0`}
-    >
-      {Rail}
-    </div>
-  );
-}
   /* ===== 3-slide carousel for the Adventure section ===== */
   function AdventureSlides({
     slides,
@@ -889,7 +943,7 @@ function MarqueeColumn({
       src ? (
         <img
           src={src}
-className={`absolute z-0 pointer-events-none h-8 w-8 object-contain drop-shadow-md ${className}`}
+          className={`absolute z-0 pointer-events-none h-8 w-8 object-contain drop-shadow-md ${className}`}
         />
       ) : null;
 
@@ -936,7 +990,7 @@ className={`absolute z-0 pointer-events-none h-8 w-8 object-contain drop-shadow-
                 Account Reached
               </div>
               <div className="mt-2 text-[18px] font-semibold text-[#F07EFF]">
-              {Intl.NumberFormat().format(resonating)}
+                {Intl.NumberFormat().format(resonating)}
               </div>
             </div>
 
@@ -1074,16 +1128,16 @@ className={`absolute z-0 pointer-events-none h-8 w-8 object-contain drop-shadow-
     };
 
     /* ---------- render ---------- */
-const edgePad = idx === 0 ? "px-3 sm:px-14 md:px-16" : "";
+    const edgePad = idx === 0 ? "px-3 sm:px-14 md:px-16" : "";
     return (
       <>
         <div
- className="relative -mx-2 sm:-mx-3 md:-mx-4
+          className="relative -mx-2 sm:-mx-3 md:-mx-4
              h-auto min-h-[320px] sm:h-[360px]
              rounded-[12px] border border-[#ECEEF2]
              px-[12px] py-[18px]
              overflow-hidden flex flex-col justify-center shadow-[0_4px_10px_0_rgba(0,0,0,0.04)]"
-                       onMouseEnter={() => setPaused(true)}
+          onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
           {/* side marquees & static reaction bubbles only on slide 1, hide on mobile */}
@@ -1105,38 +1159,42 @@ const edgePad = idx === 0 ? "px-3 sm:px-14 md:px-16" : "";
           )}
 
           {/* content */}
-<div className={`relative z-10 h-full flex flex-col justify-center ${edgePad}`}>
-              {idx === 0 ? (
+          <div
+            className={`relative z-10 h-full flex flex-col justify-center ${edgePad}`}
+          >
+            {idx === 0 ? (
               <div className="flex flex-col items-center justify-center h-full w-full px-2 sm:px-0">
                 <h4 className="font-poppins font-semibold text-[#0F1728] text-center text-[20px] leading-[28px] break-words">
                   <MobileBreakTitle text={s.title} afterWords={3} />
                 </h4>
-               <p
-  className="mt-2 text-[#667085] text-[12px] sm:text-[12px] md:text-[13px]
+                <p
+                  className="mt-2 text-[#667085] text-[12px] sm:text-[12px] md:text-[13px]
                   leading-[150%] font-[400] font-['Open_Sans']
                   text-center whitespace-normal break-words
                   max-w-[28ch] sm:max-w-[34ch] mx-auto"
->
-  {s.text}
-</p>
-<div className="mt-4 grid grid-cols-2 gap-2
+                >
+                  {s.text}
+                </p>
+                <div
+                  className="mt-4 grid grid-cols-2 gap-2
   w-full max-w-[320px] sm:max-w-[360px] mx-auto
-  place-items-center">
-
-                    <PrimaryButton
- className="
+  place-items-center"
+                >
+                  <PrimaryButton
+                    className="
     w-[100px] min-w-[100px] h-[33px]
     rounded-[100px]
     px-[12px] pr-[8px]
     whitespace-nowrap shrink-0
     !justify-center     /* use !justify-between if you add an icon */
     text-[12px] mr-2   
-  "  onClick={onPrimary}
->
-  {s.primaryLabel ?? "Start Posting"}
-</PrimaryButton>
+  "
+                    onClick={onPrimary}
+                  >
+                    {s.primaryLabel ?? "Start Posting"}
+                  </PrimaryButton>
                   <OutlinePill
-   className="
+                    className="
     w-[100px] min-w-[100px] h-[33px]
     rounded-[100px]
     px-[12px] pr-[8px]
@@ -1144,10 +1202,10 @@ const edgePad = idx === 0 ? "px-3 sm:px-14 md:px-16" : "";
     !justify-center
     text-[12px]
   "
-  onClick={onSecondary}
->
-  {s.secondaryLabel ?? "View Feed"}
-</OutlinePill>
+                    onClick={onSecondary}
+                  >
+                    {s.secondaryLabel ?? "View Feed"}
+                  </OutlinePill>
                 </div>
               </div>
             ) : idx === 1 ? (
@@ -1223,8 +1281,7 @@ const edgePad = idx === 0 ? "px-3 sm:px-14 md:px-16" : "";
       </div>
 
       {/* ===== Section 1: Profile preview ===== */}
-          <div className=" mt-4 h-[290px] rounded-xl border border-[#ECEEF2] p-3 flex flex-col gap-3 shadow-[0_4px_10px_0_rgba(0,0,0,0.04)]">
-
+      <div className=" mt-4 h-[290px] rounded-xl border border-[#ECEEF2] p-3 flex flex-col gap-3 shadow-[0_4px_10px_0_rgba(0,0,0,0.04)]">
         {/* Cover */}
         <img
           src={coverUrl}
@@ -1287,7 +1344,7 @@ const edgePad = idx === 0 ? "px-3 sm:px-14 md:px-16" : "";
       </div>
 
       {/* section divider */}
-<div className="my-4 border-t border-[#ECEEF2]" />
+      <div className="my-4 border-t border-[#ECEEF2]" />
 
       {/* ===== Section 2: Your Next Social Life Adventure ===== */}
       <AdventureSlides
@@ -1336,13 +1393,12 @@ const edgePad = idx === 0 ? "px-3 sm:px-14 md:px-16" : "";
       />
 
       {/* section divider */}
-<div className="my-4 border-t border-[#ECEEF2]" />
+      <div className="my-4 border-t border-[#ECEEF2]" />
       {/* ===== Section 3: Friends ===== */}
       <div
         className="h-[393px] rounded-[12px] border border-[#ECEEF2] 
              px-[12px] py-[18px] flex flex-col gap-[18px] shadow-[0_4px_10px_0_rgba(0,0,0,0.04)] "
       >
-      
         {/* Header */}
         <div className="flex items-center gap-2">
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#FFF4E5]">
