@@ -273,7 +273,7 @@ const BecomeMentor = () => {
                       "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
                   }}
                 >
-                  Apply to Become a Partner
+                  Apply to Become a Mentor
                 </button>
               </div>
             </div>
@@ -346,9 +346,9 @@ const BecomeMentor = () => {
         {/* Benefits Section */}
         <div className="w-full flex mx-auto flex-col justify-center items-center bg-[#F5F7F9] pt-10 pb-[86px] px-14">
           <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px]">
-            <span className="text-black">What does a </span>
+            <span className="text-black">Your Role as a </span>
             <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
-              Partner do?
+             CNESS Mentor
             </span>
           </h1>
           <div className="w-full pt-10">
