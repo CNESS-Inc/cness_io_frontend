@@ -68,7 +68,7 @@ export default function Benefit() {
             className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-[500] px-4 py-1 rounded-[100px] inline-block 
                rounded-tl-[100px] rounded-br-[100px] rounded-tr-[10px] rounded-bl-[10px] bg-transperant"
           >
-            Why it matters
+            Why it Matters
           </span>
           <h3
             style={{ fontFamily: "Poppins, sans-serif" }}
