@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { StorySidebar } from "./StorySidebar";
 import { StoryViewer } from "./StoryViewer";
 import { GetStory, LikeStory } from "../../../Common/ServerAPI";
@@ -19,6 +20,7 @@ interface StoryUser {
 interface Story {
   is_liked: unknown;
   id: string;
+  userId?: string; // Add userId for sharing
   user: StoryUser;
   hasNewStory: boolean;
   isViewed: boolean;
@@ -26,10 +28,15 @@ interface Story {
 }
 
 export function StoriesApp() {
+  const [searchParams] = useSearchParams();
   const [activeStoryId, setActiveStoryId] = useState<any>(null);
   const [stories, setStories] = useState<Story[]>([]);
   console.log("🚀 ~ StoriesApp ~ stories:", stories)
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Get URL parameters
+  const selectedUserId = searchParams.get('user');
+  const selectedStoryId = searchParams.get('story');
 
   const currentStoryIndex = stories.findIndex(
     (story) => story.id === activeStoryId
@@ -51,26 +58,29 @@ export function StoriesApp() {
 
   const transformApiDataToStories = (apiData: any[]): Story[] => {
     return apiData.map((story) => {
-      // Get initials from first name and last name
-      const firstNameInitial = story.profile.first_name?.[0] || "";
-      const lastNameInitial = story.profile.last_name?.[0] || "";
+      // Get initials from first name and last name with proper null checks
+      const firstName = story.storyuser?.profile?.first_name || '';
+      const lastName = story.storyuser?.profile?.last_name || '';
+      const firstNameInitial = firstName?.[0] || "";
+      const lastNameInitial = lastName?.[0] || "";
       const initials = `${firstNameInitial}${lastNameInitial}`.toUpperCase();
 
       return {
-        id: story.id,
-        is_liked:story.is_liked,
+        id: story.id, // Now using the actual story ID
+        userId: story.user_id, // Add userId for sharing
+        is_liked: story.is_liked || false,
         user: {
-          name: `${story.profile.first_name} ${story.profile.last_name}`,
-          avatar: story.profile.profile_picture,
-          initials,
+          name: `${firstName} ${lastName}`.trim() || 'Unknown User',
+          avatar: story.storyuser?.profile?.profile_picture || '',
+          initials: initials || 'U',
         },
-        hasNewStory: !story.is_liked, // Assuming if not liked, it's a new story
-        isViewed: story.is_liked, // Assuming if liked, it's viewed
+        hasNewStory: !story.is_viewed, // Use is_viewed instead of is_liked
+        isViewed: story.is_viewed || false,
         content: [
           {
-            id: `${story.id}`,
+            id: story.id,
             type: "video", // Assuming all are videos from the API
-            url: story.video_file,
+            url: story.video_file || '',
             duration: 5000, // Default duration, you might want to calculate this
           },
         ],
@@ -82,21 +92,69 @@ export function StoriesApp() {
     try {
       setIsLoading(true);
       const res = await GetStory();
-      const transformedStories = transformApiDataToStories(res.data.data);
-      setStories(transformedStories);
-      if (transformedStories.length > 0) {
-        setActiveStoryId(transformedStories[0].id);
+      console.log('res--->', res.data.data);
+      
+      // Add null checks for API response
+      if (res?.data?.data && Array.isArray(res.data.data)) {
+        let filteredStories = res.data.data;
+        
+        // If a specific user is selected, filter stories for that user only
+        if (selectedUserId) {
+          filteredStories = res.data.data.filter((story: any) => story.user_id === selectedUserId);
+          console.log(`Filtered stories for user ${selectedUserId}:`, filteredStories);
+        } else {
+          // Group stories by user and get the most recent story per user (for general view)
+          filteredStories = groupStoriesByUser(res.data.data);
+        }
+        
+        const transformedStories = transformApiDataToStories(filteredStories);
+        setStories(transformedStories);
+        
+        // Set active story
+        if (transformedStories.length > 0) {
+          if (selectedStoryId) {
+            // If specific story is selected, use that
+            setActiveStoryId(selectedStoryId);
+          } else {
+            // Otherwise, use the first story
+            setActiveStoryId(transformedStories[0].id);
+          }
+        }
+      } else {
+        console.warn("Invalid API response structure:", res);
+        setStories([]);
       }
     } catch (error) {
       console.error("Error fetching stories:", error);
+      setStories([]);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Function to group stories by user and return the most recent story per user
+  const groupStoriesByUser = (stories: any[]) => {
+    const userStoryMap = new Map();
+    
+    stories.forEach(story => {
+      const userId = story.user_id;
+      const existingStory = userStoryMap.get(userId);
+      
+      // If no story exists for this user, or if current story is more recent
+      if (!existingStory || new Date(story.createdAt) > new Date(existingStory.createdAt)) {
+        userStoryMap.set(userId, story);
+      }
+    });
+    
+    // Convert map values to array and sort by creation date (most recent first)
+    return Array.from(userStoryMap.values()).sort((a, b) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  };
+
   useEffect(() => {
     GetStoryData();
-  }, []);
+  }, [selectedUserId, selectedStoryId]);
 
   const handleLikeClick = async (story: any) => {
     try {
@@ -107,6 +165,7 @@ export function StoriesApp() {
           s.id === story.id
             ? {
                 ...s,
+                is_liked: !s.is_liked,
                 isViewed: true,
                 hasNewStory: false,
               }
@@ -116,6 +175,12 @@ export function StoriesApp() {
     } catch (error) {
       console.error("Error submitting like:", error);
     }
+  };
+
+  const handleStoryChange = () => {
+    // This will be called when story changes in StoryViewer
+    // Any additional logic can be added here if needed
+    console.log("Story changed in StoryViewer");
   };
 
 
@@ -130,11 +195,17 @@ export function StoriesApp() {
   if (!stories.length) {
     return (
       <div className="h-screen bg-background flex justify-center items-center">
-        No stories available
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-foreground mb-2">
+            {selectedUserId ? "No stories available from this user" : "No stories available"}
+          </h2>
+          <p className="text-muted-foreground">
+            {selectedUserId ? "This user hasn't posted any stories yet." : "Check back later for new stories!"}
+          </p>
+        </div>
       </div>
     );
   }
-
   return (
     <div className="h-screen bg-background flex">
       <StorySidebar
@@ -157,6 +228,9 @@ export function StoriesApp() {
           timeAgo="1 hour ago" // You might want to calculate this from createdAt
           hasNext={currentStoryIndex < stories.length - 1}
           onLike={() => handleLikeClick(currentStory)}
+          storyId={currentStory.id}
+          userId={currentStory.userId}
+          onStoryChange={handleStoryChange}
         />
       )}
     </div>
