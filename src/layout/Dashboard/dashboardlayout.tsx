@@ -4,7 +4,7 @@ import DashboardHeader from "./DashboardHeader";
 import DashboardNavbar from "./DashboardNavbar";
 import DashboardFilterSidebar from "./DashboardFilterSidebar"; // ✅ Adjust path as needed
 import hambur from "../../assets/hambur.png";
-import Footer from "../Footer/Footer";
+import DashboardFooter from "../Footer/DashboardFooter";
 
 import { MessagingProvider } from "../../components/Messaging/MessagingContext";
 import PersistentMessagingWidget from "../../components/Messaging/PersistentMessagingWidget";
@@ -99,14 +99,17 @@ const DashboardLayout = () => {
           </main>
         </div>
       </div>
-      <div className="w-full">
-        <MessagingProvider>
-          <PersistentMessagingWidget />
-        </MessagingProvider>
-        <div className="hidden md:block ">
-          <Footer />
-        </div>
-      </div>
+<div 
+className={`transition-all duration-300 ${
+    isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
+  }`}
+>  <MessagingProvider>
+    <PersistentMessagingWidget />
+  </MessagingProvider>
+
+
+<DashboardFooter />
+</div>
 
       {/* Mobile Sidebar Backdrop and Slide-in */}
       {isMobileNavOpen && (
