@@ -19,7 +19,7 @@ export default function Subscribe() {
               Subscribers
             </span>
           </h2>
-          <p className="openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]">Stay updated with our newsletter</p>
+          <p className="openSans font-[300] text-[20px] leading-[24px] tracking-[0px] text-[#64748B]">Stay updated with our newsletter</p>
         </div>
 
         {/* Right form */}

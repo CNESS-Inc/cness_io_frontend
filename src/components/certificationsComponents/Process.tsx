@@ -44,8 +44,8 @@ export default function Process() {
         <div className="w-full flex flex-col items-center justify-center md:justify-start md:items-start text-center md:text-left">
           <span
             style={{ fontFamily: "Poppins, sans-serif" }}
-            className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-[500] px-4 py-1 rounded-[100px] inline-block 
-               rounded-tl-[100px] rounded-br-[100px] rounded-tr-[10px] rounded-bl-[10px] bg-white"
+            className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-[500] px-4 py-1 rounded-[100px] mb-6 inline-block 
+            rounded-tl-[100px] rounded-br-[100px] rounded-tr-[10px] rounded-bl-[10px] bg-white"
           >
             How It Works
           </span>
