@@ -150,6 +150,7 @@ export const EndPoint = {
   single_post: "/user/posts/get",
   user_post: "/user/posts",
   save_post: "/user/posts/save",
+  unsave_post: "/user/posts/unsave",
   get_save_posts: "/user/posts/get/save/posts",
   report_post: "/user/posts/report",
   story: "/story",
@@ -173,6 +174,7 @@ export const EndPoint = {
   follow: "/user/follow",
   vote: "/poll/vote",
   googleLogin: "/auth/google-login",
+  resendMail: "/auth/resend-verification",
   all_bestPractices: "/best-practice/all",
   bp: "/best-practice",
   bp_recommended: "/best-practice/recommended",
@@ -189,6 +191,7 @@ export const EndPoint = {
   bp_comment_reply: "/best-practice/comment/reply",
   singleBp: "/best-practice/get",
   followBp: "/best-practice/follow",
+  getFollowBp: "/best-practice/get-by-follow",
   user_notification: "/notification",
   notification_count: "/notification/count",
   update_notification: "/notification/update-status",
@@ -239,6 +242,11 @@ export const SendMessage = (formData: FormData) => {
 export const GoogleLoginDetails = async (googleToken: string): ApiResponse => {
   const data = { token: googleToken };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.googleLogin);
+};
+
+export const ResendVerificationMail = async (mail: string): ApiResponse => {
+  const data = { email: mail };
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.resendMail);
 };
 
 export const LoginDetails = async (formData: LoginFormData): ApiResponse => {
@@ -794,6 +802,15 @@ export const SendBpFollowRequest = (payload: any) => {
   return executeAPI(ServerAPI.APIMethod.POST, payload, EndPoint.followBp);
 };
 
+export const GetFollowBestpractices = (): ApiResponse => {
+  const data = {};
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.getFollowBp}`
+  );
+};
+
 export const GetUserNotification = (): ApiResponse => {
   const data = {};
   return executeAPI(
@@ -827,6 +844,10 @@ export const MarkNotificationAsRead = (
 export const GetProfileDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.profile);
+};
+export const GetProfileDetailsById = (id: any): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.profile}/${id}`);
 };
 export const GetOrganiZationProfileDetails = (): ApiResponse => {
   const data = {};
@@ -1230,6 +1251,14 @@ export const SavePost = (postId: string) => {
     ServerAPI.APIMethod.POST,
     { post_id: postId },
     EndPoint.save_post
+  );
+};
+
+export const UnsavePost = (postId: string) => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    { post_id: postId },
+    EndPoint.unsave_post
   );
 };
 

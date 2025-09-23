@@ -11,6 +11,7 @@ interface StoryCardProps {
   title: string;
   videoSrc: string;
   id: string;
+  userId?: string; // Add user ID for navigation
 }
 
 const StoryCard: React.FC<StoryCardProps> = ({
@@ -18,13 +19,17 @@ const StoryCard: React.FC<StoryCardProps> = ({
   userName,
   title,
   videoSrc,
-  // id,
+  id,
+  userId,
 }) => {
   const navigate = useNavigate();
 
   const handleReel = () => {
-    navigate(`/story-design`);
-    // navigate(`/social/reel/${id}`);
+    if (userId) {
+      navigate(`/story-design?user=${userId}&story=${id}`);
+    } else {
+      navigate(`/story-design`);
+    }
   };
   return (
     <div onClick={() => handleReel()}>

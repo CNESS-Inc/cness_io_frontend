@@ -40,9 +40,10 @@ export default function SectionFaq({ faqs }: CertificationFaqProps) {
             >
               FAQs
             </h1>
-            <p className="openSans font-['Open Sans'] text-base text-[#64748B] pt-4 md:pt-2">
+            <p className="openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] pt-4 md:pt-2">
               Have questions? We’ve got you covered. Explore our FAQs to find
-              quick answers about certifications, benefits, levels, and the
+              quick answers 
+              <br />about certifications, benefits, levels, and the
               process to get started.
             </p>
             <div className="pt-4 md:pt-2 mb-4 md:mb-6">

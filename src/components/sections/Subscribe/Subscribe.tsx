@@ -14,12 +14,12 @@ export default function Subscribe() {
       text-gray-900
     "
           >
-            Join <span className="text-[#7B3AED]">2,000+</span>{" "}
+            <span className="text-[#000000]">Join  2,000+</span>{" "}
             <span className="bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">
               Subscribers
             </span>
           </h2>
-          <p className="text-gray-600 mt-1">Stay updated with our newsletter</p>
+          <p className="openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]">Stay updated with our newsletter</p>
         </div>
 
         {/* Right form */}
@@ -60,8 +60,8 @@ export default function Subscribe() {
 
           {/* Privacy note below */}
           <p
-            style={{ fontFamily: "Inter, sans-serif" }}
-            className="text-gray-500 text-xs md:text-sm mt-2 text-left"
+           
+            className="openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] md:text-sm mt-2 text-left"
           >
             We care about your data in our{" "}
             <a

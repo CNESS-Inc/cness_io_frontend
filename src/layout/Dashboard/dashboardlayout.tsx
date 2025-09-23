@@ -4,7 +4,7 @@ import DashboardHeader from "./DashboardHeader";
 import DashboardNavbar from "./DashboardNavbar";
 import DashboardFilterSidebar from "./DashboardFilterSidebar"; // ✅ Adjust path as needed
 import hambur from "../../assets/hambur.png";
-import Footer from "../Footer/Footer";
+import DashboardFooter from "../Footer/DashboardFooter";
 
 import { MessagingProvider } from "../../components/Messaging/MessagingContext";
 import PersistentMessagingWidget from "../../components/Messaging/PersistentMessagingWidget";
@@ -14,6 +14,12 @@ const DashboardLayout = () => {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [selectedDomain, setSelectedDomain] = useState<string>("");
   const [sort, setSort] = useState<"az" | "za">("az");
+
+  const noPaddingRoutes = [
+    "/dashboard/Become_partner",
+    "/dashboard/become-mentor",
+  ];
+  const hasNoPadding = noPaddingRoutes.includes(location.pathname);
 
   const toggleMobileNav = () => {
     setIsMobileNavOpen((prev) => !prev);
@@ -53,52 +59,57 @@ const DashboardLayout = () => {
         </div>
 
         {/* Sidebar */}
-          <DashboardNavbar
-            isMobileNavOpen={isMobileNavOpen}
-            toggleMobileNav={toggleMobileNav}
-            currentPath={location.pathname}
-            selectedDomain={selectedDomain}
-            setSelectedDomain={setSelectedDomain}
-            sort={sort}
-            setSort={setSort}
-          />
+        <DashboardNavbar
+          isMobileNavOpen={isMobileNavOpen}
+          toggleMobileNav={toggleMobileNav}
+          currentPath={location.pathname}
+          selectedDomain={selectedDomain}
+          setSelectedDomain={setSelectedDomain}
+          sort={sort}
+          setSort={setSort}
+        />
 
-          {/* Main content area */}
-          <div
-            className={`flex-1 flex flex-col transition-all duration-300 ${
-              isMobileNavOpen ? "md:ml-[260px]" : "md:ml-0"
+        {/* Main content area */}
+        <div
+          className={`flex-1 flex flex-col transition-all duration-300 ${
+            isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
+          }`}
+        >
+          {/* Main layout with optional FilterSidebar */}
+          <main
+            className={`flex-1 min-h-screen overflow-y-auto ${
+              hasNoPadding ? "" : "px-4 py-4 pb-14"
             }`}
           >
-            {/* Main layout with optional FilterSidebar */}
-            <main className="flex-1 min-h-screen px-4 md:px-4 py-4 pb-14 overflow-y-auto">
-              <div className="flex min-h-screen mb-auto">
-                {isDashboardTechPage && (
-                  <div className="w-[250px] shrink-0 border-r border-gray-200 mr-4">
-                    <DashboardFilterSidebar
-                      selectedDomain={selectedDomain}
-                      setSelectedDomain={setSelectedDomain}
-                      sort={sort}
-                      setSort={setSort}
-                    />
-                  </div>
-                )}
-                <div className="flex-1 ">
-                  <Outlet />
+            <div className="flex min-h-screen mb-auto">
+              {isDashboardTechPage && (
+                <div className="w-[250px] shrink-0 border-r border-gray-200 mr-4">
+                  <DashboardFilterSidebar
+                    selectedDomain={selectedDomain}
+                    setSelectedDomain={setSelectedDomain}
+                    sort={sort}
+                    setSort={setSort}
+                  />
                 </div>
+              )}
+              <div className="flex-1 ">
+                <Outlet />
               </div>
-            </main>
-          </div>
-          
-          
-      </div>
-          <div className="w-full">
-            <MessagingProvider>
-              <PersistentMessagingWidget />
-            </MessagingProvider>
-            <div className="hidden md:block ">
-              <Footer />
             </div>
-          </div>
+          </main>
+        </div>
+      </div>
+<div 
+className={`transition-all duration-300 ${
+    isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
+  }`}
+>  <MessagingProvider>
+    <PersistentMessagingWidget />
+  </MessagingProvider>
+
+
+<DashboardFooter />
+</div>
 
       {/* Mobile Sidebar Backdrop and Slide-in */}
       {isMobileNavOpen && (

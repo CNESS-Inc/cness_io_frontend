@@ -3,10 +3,12 @@ import Button from "../../ui/Button";
 // import Image from "../../ui/Image";
 import OptimizeImage from "../../ui/OptimizeImage";
 import LottieOnView from "../../ui/LottieOnView";
+import SignupModel from "../../OnBoarding/Signup";
 
 export default function SocialMedia() {
   const [notificationLottie, setNotificationLottie] = useState(null);
   const [socialIconsLottie, setSocialIconsLottie] = useState(null);
+  const [openSignup, setOpenSignup] = useState(false);
 
   useEffect(() => {
     fetch("https://cnessioassets.project-69e.workers.dev/not-out.json")
@@ -28,21 +30,21 @@ export default function SocialMedia() {
          
             <h2 
              style={{ fontFamily: "Poppins, sans-serif" }}
-            className=" lg:leading-16 md:leading-14 leading-12 text-[42px] font-[500]">
+            className=" leading-[54px] text-[42px] font-[500] mt-3">
               <span className="bg-linear-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">
                 Social Media
               </span>, Reimagined for Conscious Expression
             </h2>
           </div>
           <div className="lg:w-6/12 md:w-6/12 w-full">
-            <p className="openSans text-[#64748B] text-[16px] font-[400] capitalize">
+            <p className="openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] capitalize">
               Share reflections, life moments, and conscious thoughts.<br />
-              React, repost, and respond to what moves you. CNESS is where like-<br />
-              hearted creators, thinkers, and changemakers meet — not to<br />
-              impress, but to express.
+              React, repost, and respond to what moves you. CNESS is where like-hearted<br />
+              creators, thinkers, and changemakers meet — not to impress, but to express.
+              
             </p>
             <Button className="jakarta w-fit rounded-[100px] h-[38px] text-[16px] font-[400] text-[#fff] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#F07EFF] mt-6"
-             onClick={() => window.location.href = "/sign-up"}>
+             onClick={() => setOpenSignup(true)}>
               Join the Conscious Conversation
             </Button>
           </div>
@@ -75,6 +77,8 @@ export default function SocialMedia() {
           )}
         </div>
       </div>
+                    <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
+      
     </section>
   );
 }

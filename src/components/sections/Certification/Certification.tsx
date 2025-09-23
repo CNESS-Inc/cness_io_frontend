@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import LottieOnView from "../../ui/LottieOnView";
+import { useNavigate } from "react-router-dom";
 
 const Certification = () => {
   const [animationData, setAnimationData] = useState(null);
+const navigate = useNavigate();
 
   useEffect(() => {
     
@@ -25,7 +27,7 @@ const Certification = () => {
           <p className='openSans text-[18px] font-Regular pt-[10px] mb-2'>
             Get your conscious identity verified and unlock everything CNESS has to offer.
           </p>
-           <span className="badge text-[#F07EFF] border-[#F07EFF] mt-4 border text-[16px] font-[500] px-4 py-1 rounded-[100px] mb-6 inline-block 
+           <span className="badge text-[#F07EFF] border-[#F07EFF] mt-4 border text-[16px] font-[500] px-4 py-1 rounded-[100px] mb-2 inline-block 
             rounded-tl-[10px] rounded-br-[10px] rounded-tr-[100px] rounded-bl-[100px] ">
             Benefits
           </span>
@@ -50,10 +52,15 @@ const Certification = () => {
 
           <button
             type="button"
-            className='jakarta px-3 py-1 h-[42px] w-[127px] text-white bg-gradient-to-r from-[#7077FE] to-[#F07EFF] rounded-[50px] mt-8 cursor-pointer'
-           onClick={() => window.location.href = "/sign-up"}>
-            Know More
-          </button>
+            className='open sans px-3 py-1 h-[42px] w-[127px] text-white bg-gradient-to-r from-[#7077FE] to-[#F07EFF] rounded-[50px] mt-8 cursor-pointer'
+            onClick={() => {
+    navigate("/certifications");
+    // Reset scroll
+    window.scrollTo({ top: 0, behavior: "instant" }); // or "smooth"
+  }}
+>
+  Know More
+</button>
         </div>
 
         <div className='certificate-animation md:h-[100%] rounded-2xl lg:w-[40%] w-full lg:mt-0 mt-15'>

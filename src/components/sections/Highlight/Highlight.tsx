@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import Button from "../../ui/Button";
 import Image from "../../ui/Image";
+import Dummyvideo from "../../ui/Dummyvideo";
 
 export default function Highlight() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
-
+ const [open, setOpen] = useState(false);
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
     checkMobile();
@@ -61,7 +62,9 @@ export default function Highlight() {
             rounded-tl-[100px] rounded-br-[100px] rounded-tr-[10px] rounded-bl-[10px] bg-white">
               Highlights
             </span>
-            <h3 className="font-poppins font-medium
+            <h3 
+             style={{ fontFamily: "Poppins, sans-serif" }}
+            className="font-medium
     text-[32px] md:text-[42px]
     leading-[54px] tracking-[-0.02em]
     capitalize text-centerp">
@@ -74,13 +77,13 @@ export default function Highlight() {
                Activated.
                </span>
             </h3>
-            <p className="openSans text-[#64748B] text-[18px] font-[400] mb-6">
-              CNESS helps you build visibility, earn credibility, and express your
-              <br /> purpose — socially, creatively, and professionally.  Showcase your skills, share your story, connect with like-minded people, and unlock opportunities to grow with confidence and purpose.
+            <p className="openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] mb-6">
+              CNESS helps you build visibility, earn credibility, and express your purpose — 
+              <br /> socially, creatively, and professionally.  Showcase your skills, share your story, connect with like-minded people, and unlock opportunities to grow with confidence and purpose.
               
             </p>
             <Button className="jakarta w-fit rounded-[100px] h-[42px] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#F07EFF] self-stretch transition-colors duration-500 ease-in-out"
-              onClick={() => window.location.href = "/sign-up"}>
+              onClick={() => setOpen(true)}>
               See how it all works →
             </Button>
           </div>
@@ -182,6 +185,7 @@ export default function Highlight() {
           </div>
         </div>
       </div>
+      <Dummyvideo open={open} onClose={() => setOpen(false)} />
     </section>
   );
 }

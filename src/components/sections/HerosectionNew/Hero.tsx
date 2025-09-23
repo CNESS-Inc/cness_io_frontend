@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 import Button from "../../ui/Button";
 //import { MessageCircle, ShoppingBag, BookOpen, Compass,  } from "lucide-react";
 import SignupModel from "../../OnBoarding/Signup";
+import { useNavigate } from "react-router-dom";
 
 export default function HeroSection() {
   const [step, setStep] = useState(0);
   const [openSignup, setOpenSignup] = useState(false);
-
+const navigate = useNavigate();
   useEffect(() => {
     const t: number[] = [];
     t.push(window.setTimeout(() => setStep(1), 300));
@@ -17,10 +18,6 @@ export default function HeroSection() {
     t.push(window.setTimeout(() => setStep(5), 1200));
     return () => t.forEach(clearTimeout);
   }, []);
-
-  
-
-  
 
   return (
     <section className="relative bg-white overflow-hidden flex flex-col">
@@ -44,12 +41,12 @@ export default function HeroSection() {
         </h1>
 
         <p
-          className={`openSans text-[16px] leading-[24px] tracking-[0px] text-[#64748B] text-center max-w-[62ch] mt-4 sm:mt-6 lg:mt-6 transition-all duration-1000 ease-in-out ${
-            step >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          className={`openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] text-center max-w-[62ch] mt-4 sm:mt-6 lg:mt-6 transition-all duration-1000 ease-in-out  ${
+    step >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
           }`}
         >
-          Build your conscious identity. Connect with purpose-led peers. Share your knowledge. Learn, grow, and thrive – all
-          in one place.
+          Build your conscious identity. Connect with purpose-led peers. Share
+          your knowledge. Learn, grow, and thrive – all in one place.
         </p>
 
         <div
@@ -70,7 +67,7 @@ export default function HeroSection() {
               variant="white-outline"
               className="w-full sm:w-auto hero-section-btn py-2 px-4 text-[14px] sm:py-3 sm:px-8 sm:text-base font-['Plus Jakarta Sans'] font-medium leading-[100%] tracking-[0px] text-center border border-[#E2E8F0] shadow-[0_1px_2px_rgba(0,0,0,0.1)]"
               size="md"
-              onClick={() => (window.location.href = "/sign-up")}
+              onClick={() => navigate("/ecosystem")}
             >
               Discover CNESS
             </Button>
@@ -91,8 +88,8 @@ export default function HeroSection() {
           </div>
 
           {/* floating pills only on large screens to avoid crowding mobile */}
-             {/* ⬇️ Paste the pills overlay block here ⬇️ */}
-       {/* Pills overlay: inside the SAME relative/aspect box 
+          {/* ⬇️ Paste the pills overlay block here ⬇️ */}
+          {/* Pills overlay: inside the SAME relative/aspect box 
     <div className="absolute inset-0 hidden lg:block pointer-events-none z-10">
       {[
         // row 1
@@ -131,15 +128,11 @@ export default function HeroSection() {
           </div>
         );
       })}*/}
-    </div>
-  </div>
+        </div>
+      </div>
 
-            
-       
-
-        {/* Signup Popup Modal */}
-        <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
-    
+      {/* Signup Popup Modal */}
+      <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
     </section>
   );
 }

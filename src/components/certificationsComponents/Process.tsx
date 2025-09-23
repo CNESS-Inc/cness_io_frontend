@@ -1,11 +1,15 @@
+import { useState } from "react";
 import frame from "../../assets/frame.png";
 import step1 from "../../assets/step1.svg";
 import step2 from "../../assets/step2.svg";
 import step3 from "../../assets/step3.svg";
 import step4 from "../../assets/step4.svg";
 import Button from "../ui/Button";
+import SignupModel from "../OnBoarding/Signup";
 
 export default function Process() {
+    const [openSignup, setOpenSignup] = useState(false);
+  
   const steps = [
     {
       step: "STEP–01",
@@ -51,7 +55,7 @@ export default function Process() {
           >
             Our Certification Process
           </h1>
-          <p className="openSans font-['Open Sans'] text-base text-[#64748B] mt-2">
+          <p className="openSans font-['Open Sans'] text-base text-[#64748B] font-light mt-2">
             We’ve made the path to certification clear and straightforward — so
             you can focus on learning, growing, and getting recognized without
             complications.
@@ -60,7 +64,7 @@ export default function Process() {
             <Button
               variant="gradient-primary"
               className="font-['Plus Jakarta Sans'] rounded-full py-2 px-4 sm:py-3 sm:px-8 text-sm sm:text-base font-normal"
-              onClick={() => (window.location.href = "/sign-up")}
+              onClick={() => setOpenSignup(true)}
               style={{
                 fontFamily: "Plus Jakarta Sans",
               }}
@@ -119,7 +123,7 @@ export default function Process() {
                 >
                   {step.title}
                 </h2>
-                <p className="openSans font-['Open Sans'] text-sm lg:text-base font-normal text-[#64748B] mt-1">
+                <p className="openSans font-['Open Sans'] text-sm lg:text-base font-light text-[#64748B] mt-1">
                   {step.desc}
                 </p>
               </div>
@@ -127,6 +131,7 @@ export default function Process() {
           </div>
         </div>
       </div>
+      <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
     </div>
   );
 }

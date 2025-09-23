@@ -22,10 +22,8 @@ import {
   FaWhatsapp,
 } from "react-icons/fa";
 import badgeicon from "../../../assets/badgeicon.svg";
-import indv_aspiring from "../../../assets/indv_aspiring.svg";
-import indv_inspried from "../../../assets/indv_inspired.svg";
-import indv_leader from "../../../assets/indv_leader.svg";
 import { MdContentCopy } from "react-icons/md";
+import certifications from "../../../assets/certifications.svg";
 
 // import { BiShare } from "react-icons/bi";
 
@@ -165,7 +163,6 @@ const ScoreResult = () => {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const { showToast } = useToast();
   const [scoreData, setScoreData] = useState<any>(null);
-  console.log("🚀 ~ ScoreResult ~ scoreData:", scoreData);
   const [loading, setLoading] = useState(true);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [copy, setCopy] = useState<Boolean>(false)
@@ -673,7 +670,7 @@ const ScoreResult = () => {
                         d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"
                       />
                     </svg>
-                    <p className="text-sm text-gray-700 font-medium">
+                    <p className="text-[16px] font-medium text-[#222224]">
                       Badge Locked
                     </p>
                   </div>
@@ -693,9 +690,7 @@ const ScoreResult = () => {
                       Badge
                     </span>
                   </div>
-                  <div className="text-xl text-[#999] leading-none cursor-pointer">
-                    ⋯
-                  </div>
+                 
                 </div>
 
                 <hr className="border-t border-[#dadce0] mb-2" />
@@ -706,11 +701,16 @@ const ScoreResult = () => {
                       <img
                         src={
                           scoreData.badge.level === "Aspiring"
-                            ? indv_aspiring
-                            : scoreData.badge.level === "Inspired"
-                              ? indv_inspried
-                              : indv_leader
+                            ? 'https://cdn.cness.io/inspired.webp'
+                            : 'https://cdn.cness.io/aspiring.webp'
                         }
+                        // src={
+                        //   scoreData.badge.level === "Aspiring"
+                        //     ? indv_aspiring
+                        //     : scoreData.badge.level === "Inspired"
+                        //       ? indv_inspried
+                        //       : indv_leader
+                        // }
                         alt={`${scoreData.badge.level} Badge`}
                         className="h-[87px] w-auto object-contain"
                       />
@@ -740,7 +740,7 @@ const ScoreResult = () => {
                         d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"
                       />
                     </svg>
-                    <p className="text-sm text-gray-700 font-medium">
+                    <p className="text-[16px] font-medium text-[#222224]">
                       Certification Level Locked
                     </p>
                   </div>
@@ -748,14 +748,14 @@ const ScoreResult = () => {
 
                 {/* Original content */}
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="w-7 h-7 bg-[#e2f2ff] rounded-full flex items-center justify-center">
+                  <div className=" flex items-center justify-center">
                     <img
-                      src="../public/Vector.png"
+                      src={certifications}
                       alt="icon"
-                      className="w-[12px] h-[12px]"
+                      className="w-[30px] h-[30px]"
                     />
                   </div>
-                  <span className="text-[16px] font-semibold text-[#222224]">
+                  <span className="text-[16px] font-medium text-[#222224]">
                     Certification Level
                   </span>
                 </div>
@@ -773,9 +773,9 @@ const ScoreResult = () => {
                 </div>
               </div>
             </div>
-            <hr className="border-t border-gray-200 mb-2 mt-0" />
+             {/*<hr className="border-t border-gray-200 mb-2 mt-0" />
 
-            {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2 mt-0">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2 mt-0">
               <div className="w-full h-[151px] bg-white rounded-[12px] border border-[#eceef2] p-[12px] flex flex-col justify-between shadow-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -852,14 +852,14 @@ const ScoreResult = () => {
             {scoreData.is_assessment_submited ? (
               <>
                 {/* Section Header: Score Breakdown */}
-                <div className="flex items-center gap-2 mt-1 mb-2">
+                <div className="flex items-center gap-2 mt-3 mb-3">
                   <img
                     src={framescr}
                     alt="Score Breakdown Icon"
                     className="w-8 h-8"
                   />
                   {scoreData.cis_result.length > 0 ? (
-                    <span className="text-[16px] font-semibold text-[#222224]">
+                    <span className="text-[16px] font-medium text-[#222224]">
                       Score Breakdown
                     </span>
                   ) : (
@@ -869,7 +869,7 @@ const ScoreResult = () => {
                     </span>
                   )}
                 </div>
-                <hr className="border-t border-gray-200 mb-2" />
+            
 
                 {/* <div className="w-full px-0 md:px-0">
               <div className="w-full overflow-x-auto no-scrollbar">
@@ -970,7 +970,7 @@ const ScoreResult = () => {
                               className="bg-white rounded-[12px] p-3 sm:p-4 w-full lg:max-w-[258px] min-h-[303px] flex flex-col justify-between text-center border border-[#ECEEF2]"
                             >
                               <div>
-                                <h3 className="text-[13px] sm:text-[14px] font-semibold text-gray-800">
+                                <h3 className="text-[16px] font-medium text-[#222224]">
                                   {section.section_name}
                                 </h3>
                                 <hr className="border-t border-gray-200 my-2" />

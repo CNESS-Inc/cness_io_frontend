@@ -27,7 +27,6 @@ export default function BestPracticeCard({
         pt-3 pr-3 pb-6 pl-3
         gap-2.5
         shadow-sm hover:shadow-md transition-shadow
-        min-h-[359px]
       "
     >
       {/* Header - Profile */}
@@ -48,16 +47,18 @@ export default function BestPracticeCard({
       </div>
 
       {/* Cover Image (keeps proportion, fits different widths) */}
-     <div className="w-full overflow-hidden rounded-[8px] aspect-[16/9] bg-gray-100">
-  <img
-    src={coverImage || "/placeholder.png"}
-    alt={title}
-    className="w-full h-full object-cover"
-    loading="lazy"
-    referrerPolicy="no-referrer"
-    onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/placeholder.png"; }}
-  />
-</div>
+      <div className="w-full overflow-hidden rounded-[8px] h-[250px] xl:h-[150px] 2xl:h-[200px] bg-gray-100">
+        <img
+          src={coverImage || "/placeholder.png"}
+          alt={title}
+          className="w-full h-full object-cover"
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).src = "/placeholder.png";
+          }}
+        />
+      </div>
 
       {/* Content */}
       <div className="flex flex-col mt-1 sm:mt-2">
@@ -66,14 +67,14 @@ export default function BestPracticeCard({
         </h4>
 
         {/* Clamp to keep row heights tidy; remove if you want full text */}
-<p className="mt-1 text-[12px] sm:text-[13px] text-[#475467] leading-[18px] sm:leading-[20px] line-clamp-1">
+        <p className="mt-1 text-[12px] sm:text-[13px] text-[#475467] leading-[18px] sm:leading-[20px] line-clamp-1">
           {description}
         </p>
 
         {link && (
           <a
             href={link}
-    className="mt-2 inline-flex items-center text-[12px] sm:text-[13px] font-semibold text-[#D748EA] hover:underline self-start"
+            className="mt-2 inline-flex items-center text-[12px] sm:text-[13px] font-semibold text-[#D748EA] hover:underline self-start"
           >
             Read More
           </a>

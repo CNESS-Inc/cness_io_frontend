@@ -1,10 +1,12 @@
-import { Link, useNavigate ,NavLink } from "react-router-dom";
+import { Link ,NavLink } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import { cn } from "../../lib/utils";
 import { useState } from "react";
-import Modal from "../../components/ui/Modal";
-import SignupForm from "./SignupForm";
-import LoginForm from "./LoginForm.tsx";
+//import Modal from "../../components/ui/Modal";
+//import SignupForm from "./SignupForm";
+//import LoginForm from "./LoginForm.tsx";
+import SignupModel from "../../components/OnBoarding/Signup.tsx";
+import LoginModel from "../../components/OnBoarding/Login.tsx"
 
 const links = [
   { name: "Home", href: "/" },
@@ -18,15 +20,16 @@ const links = [
 ];
 
 export default function NavLinks({ className }: { className?: string }) {
-  const [activeModal, setActiveModal] = useState<"signup" | "login" | null>(
-    null
-  );
+  //const [activeModal, setActiveModal] = useState<"signup" | "login" | null>(
+   // null
+ // );
 
-  const navigate = useNavigate()
-
-  const openSignupModal = () => navigate("/sign-up");
-  const openLoginModal = () => navigate("/log-in");
-  const closeModal = () => setActiveModal(null);
+  //const navigate = useNavigate()
+  const [openSignup, setOpenSignup] = useState(false);
+const [openLogin,setOpenLogin] = useState(false);
+ // const openSignupModal = () => navigate("/sign-up");
+  //const openLoginModal = () => navigate("/log-in");
+ // const closeModal = () => setActiveModal(null);
 
   const completed_step = localStorage.getItem("completed_step"); 
   const showDashboardButton = completed_step === "1" || completed_step === "2";
@@ -85,17 +88,17 @@ export default function NavLinks({ className }: { className?: string }) {
               className="w-[104px] h-[39px] rounded-[100px] p-0
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
     flex items-center justify-center shadow-sm text-[#64748B]"
-              onClick={openSignupModal}>
+              onClick={() => setOpenSignup(true)}>
                 <span className="relative top-[0.5px]">Sign Up</span>
-              </Button>
+             </Button>
               
               <Button
                 variant="gradient-primary"
                className="w-[104px] h-[39px] rounded-[100px] p-0
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
     flex items-center justify-center text-[#FFFFFF]"
-                onClick={openLoginModal}
-              >
+                onClick={() => setOpenLogin(true)}>
+              
  <span className="relative top-[0.5px]">Login</span>
                </Button>
             </>
@@ -103,19 +106,22 @@ export default function NavLinks({ className }: { className?: string }) {
         </div>
       </nav>
 
-      <Modal isOpen={activeModal === "signup"} onClose={closeModal}>
+      {/*<Modal isOpen={activeModal === "signup"} onClose={closeModal}>
         <SignupForm
           onSuccess={closeModal}
           onSwitchToLogin={() => setActiveModal("login")}
         />
-      </Modal>
+      </Modal>*/}
 
-      <Modal isOpen={activeModal === "login"} onClose={closeModal}>
+      {/*<Modal isOpen={activeModal === "login"} onClose={closeModal}>
         <LoginForm
           onSuccess={closeModal}
           onSwitchToSignup={() => setActiveModal("signup")}
         />
-      </Modal>
+      </Modal>*/}
+
+              <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
+      <LoginModel open={openLogin} onClose={()=>setOpenLogin(false)} />
     </>
   );
 }

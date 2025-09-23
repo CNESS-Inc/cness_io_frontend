@@ -6,8 +6,13 @@ import frame4 from "../../assets/eco-frame-3.png";
 import frame5 from "../../assets/eco-frame-4.png";
 import texture from "../../assets/eco-texture.png";
 import ellipse from "../../assets/Ellipse eco.png";
+import {  useState } from "react";
+
+import SignupModel from "../OnBoarding/Signup";
 
 export default function EcoHero() {
+    const [openSignup, setOpenSignup] = useState(false);
+  
   return (
     <section
       className="relative w-full pb-20"
@@ -34,12 +39,12 @@ export default function EcoHero() {
       <div className="flex flex-col items-center text-center z-10 pt-20 pb-16 px-4">
         <h1
           style={{ fontFamily: "Poppins, sans-serif" }}
-          className="font-medium text-[42px] md:text-[42px] leading-[115%] tracking-[0.03rem] text-center antialiased bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
+          className="font-medium text-[clamp(28px,5vw,42px)] leading-[115%] tracking-[-0.02em] bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
         >
           Our Ecosystem
         </h1>
 
-        <p className="openSans lg:text-lg md:text-[16px] text-[12px] text-[#64748B] pt-4 pb-7 max-w-4xl mx-auto transition-all duration-1000 ease-in-out">
+        <p className="openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] pt-4 pb-7 max-w-4xl mx-auto transition-all duration-1000 ease-in-out">
           Revolutionizing digital experiences with integrated solutions for
           individuals,
           <br /> organizations, and enterprises across all platforms.
@@ -48,11 +53,12 @@ export default function EcoHero() {
         <div className="flex justify-center items-center">
           <Button
             variant="gradient-primary"
-            className="w-full sm:w-fit rounded-[100px] hero-section-btn py-2 px-4 text-[14px] sm:py-3 sm:px-8 sm:text-base font-normal leading-[100%] text-center"
-            onClick={() => (window.location.href = "/sign-up")}
-            style={{
+              style={{
               fontFamily: "Plus Jakarta Sans",
             }}
+            className="w-full sm:w-fit rounded-[100px] hero-section-btn py-2 px-4 text-[14px] sm:py-3 sm:px-8 sm:text-base font-normal leading-[100%] text-center"
+           onClick={() => setOpenSignup(true)}
+          
           >
             Explore
           </Button>
@@ -103,6 +109,9 @@ export default function EcoHero() {
           />
         </div>
       </div>
+           {/* Signup Popup Modal */}
+              <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
+          
     </section>
   );
 }

@@ -3,7 +3,7 @@ import LeftSocial from "../components/sections/FrontSocialSection/SocialNavbar.t
 import { useLocation } from "react-router-dom";
 import Header from "../layout/Header/Header.tsx";
 import Footer from "../layout/Footer/Footer.tsx";
-import SocialFeed from "../components/sections/FrontSocialSection/SocialFeed.tsx"; 
+import SocialFeed from "../components/sections/FrontSocialSection/SocialFeed.tsx";
 
 const Social = () => {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -12,10 +12,10 @@ const Social = () => {
   const location = useLocation();
 
   useEffect(() => {
-      if (window.innerWidth >= 768) {
-        setIsMobileNavOpen(true);
-      }
-    }, []);
+    if (window.innerWidth >= 768) {
+      setIsMobileNavOpen(true);
+    }
+  }, []);
 
   return (
     <>
@@ -23,7 +23,7 @@ const Social = () => {
 
       <div className="flex flex-col w-full bg-[#F7F7F7] gap-4 p-4 md:flex-row h-full">
         {/* First Part (1/3 width on medium screens and above) */}
-        <div className="w-full md:w-1/4 bg-white rounded-[12px] h-[300px]">
+        <div className="w-full md:w-[20%] bg-white rounded-[12px] h-[300px]">
           <LeftSocial
             isMobileNavOpen={isMobileNavOpen}
             currentPath={location.pathname}
@@ -33,8 +33,9 @@ const Social = () => {
             setSort={setSort}
           />
         </div>
-    
-        <SocialFeed />
+        <div className="w-full md:w-[80%] h-full">
+          <SocialFeed />
+        </div>
       </div>
 
       <Footer />

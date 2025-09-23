@@ -88,7 +88,7 @@ const PublicCompanyProfile = lazy(
 const Login = lazy(() => import("../pages/Login"));
 
 const Signingup = lazy(() => import("../pages/Signingup"));
-const UserProfileView = lazy(() => import("../pages/UserProfileView"));
+// const UserProfileView = lazy(() => import("../pages/UserProfileView"));
 const TechnologyAndAIPage = lazy(() => import("../pages/TechnologyandAI"));
 
 export const router = createBrowserRouter([
@@ -163,7 +163,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "user-profile/:id",
-            element: <UserProfilePage />,
+            element: <UserPublicProfile />,
           },
           {
             path: "company-profile",
@@ -382,7 +382,7 @@ export const router = createBrowserRouter([
 
       {
         path: "user-profile/:id",
-        element: <UserProfileView />,
+        element: <UserPublicProfile />,
       },
       {
         path: "technology-ai",

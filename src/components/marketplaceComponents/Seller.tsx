@@ -2,18 +2,18 @@ import { CircleCheckBig } from "lucide-react";
 
 export default function SellerSection() {
   return (
-    <section className="w-full bg-white px-20 py-[86px]">
+<section className="w-full bg-white px-6 sm:px-10 lg:px-20 py-10 sm:py-14 lg:py-[86px]">
       {/* Container */}
       <div className="max-w-[1500px] mx-auto bg-[#F5F7F9] rounded-[24px] md:rounded-[32px] px-6 sm:px-10 md:px-16 lg:px-[120px] py-8 sm:py-12 md:py-[50px] flex flex-col lg:flex-row gap-10 lg:gap-[30px]">
         
         {/* Left content (Image) */}
-        <div className="flex-1 flex items-center justify-center">
-          <img
-            src="https://cdn.cness.io/women.webp"
-            alt="Seller"
-            className="w-full max-w-[400px] lg:max-w-full h-auto rounded-xl"
-          />
-        </div>
+       <div className="flex-1 flex items-center justify-center">
+ <img
+  src="https://cdn.cness.io/women.webp"
+  alt="Seller"
+  className="w-full max-w-[800px] lg:max-w-[1000px] object-contain scale-130"
+/>
+</div>
 
         {/* Right content */}
         <div className="flex-1 flex flex-col justify-center text-center lg:text-left">
@@ -24,7 +24,7 @@ export default function SellerSection() {
             </span>
           </h2>
 
-          <p className="mt-4 font-['Open_Sans'] text-sm sm:text-base md:text-[16px] font-normal leading-relaxed text-[#64748B]">
+          <p className="mt-4 openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]">
             At CNESS Marketplace, we empower creators to grow their
             presence, reach conscious audiences, and turn their digital
             products into meaningful opportunities.
@@ -60,7 +60,7 @@ export default function SellerSection() {
                   <h3 className="font-['Open_Sans'] text-sm sm:text-base md:text-[16px] font-semibold capitalize text-black">
                     {item.title}
                   </h3>
-                  <p className="font-['Open_Sans'] text-xs sm:text-sm md:text-[12px] font-normal leading-[19px] text-[#64748B] mt-1">
+<p className="font-openSans text-[13px] sm:text-[14px] md:text-[15px] font-normal leading-[20px] text-[#64748B] mt-1">
                     {item.desc}
                   </p>
                 </div>
