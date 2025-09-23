@@ -56,7 +56,7 @@ const BecomeMentor = () => {
     availability: "",
     country_timezone: "",
   });
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [_fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const validateField = (field: string, value: string): string => {
     switch (field) {
