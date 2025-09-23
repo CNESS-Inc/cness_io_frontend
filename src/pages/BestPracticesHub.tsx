@@ -547,7 +547,7 @@ useEffect(() => {
                   }}
                 >
                   <select
-                    className="bg-[#7077FE] rounded-full text-white font-semibold px-3 py-2 pr-6 appearance-none focus:outline-none cursor-pointer text-[12px] w-full"
+                    className="bg-[#7077FE] rounded-full text-white font-semibold px-3 py-2 pr-6 appearance-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-[#7077FE] cursor-pointer text-[12px] w-full transition-all duration-200"
                     value={selectedFilter.id}
                     onChange={handleFilterChange}
                   >

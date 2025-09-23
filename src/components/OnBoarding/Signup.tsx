@@ -371,7 +371,7 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
       >
         {/* Username */}
         <label className="block">
-          <span className="block mb-1 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
+          <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
             Username
           </span>
           <input
@@ -398,7 +398,7 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
         </label>
         {/* Email */}
         <label className="block">
-          <span className="block mb-1 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
+          <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
             Email
           </span>
           <input
@@ -430,7 +430,7 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
         {/* Passwords */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <label className="block">
-            <span className="block mb-1 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
+            <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
               Password
             </span>
             <input
@@ -460,7 +460,7 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
           </label>
 
           <label className="block">
-            <span className="block mb-1 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
+            <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
               Re-type Password
             </span>
             <input
@@ -507,7 +507,7 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
           {/* Referral Code */}
           <div className="mb-0 w-[100%]">
             <label className="block">
-              <span className="block mb-1 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
+              <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
                 Referral code (optional)
               </span>
               <input

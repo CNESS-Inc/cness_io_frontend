@@ -70,7 +70,7 @@ export default function GetInTouch()
             >
               <img src={call} alt="Call" className="w-8 h-8 md:w-10 md:h-10" />
               <div>
-                <p className="text-gray-500">Call Us</p>
+                <p className="text-gray-500 text-left">Call Us</p>
                 <p
                   style={{ fontFamily: "Inter, sans-serif" }}
                   className="text-[18px] md:text-[20px] font-semibold leading-[1]"
@@ -90,7 +90,7 @@ export default function GetInTouch()
             >
               <img src={atsymbol} alt="Email" className="w-8 h-8 md:w-10 md:h-10" />
               <div>
-                <p className="text-gray-500">Mail Us</p>
+                <p className="text-gray-500 text-left">Mail Us</p>
                 <p
                   style={{ fontFamily: "Inter, sans-serif" }}
                   className="text-[18px] md:text-[20px] font-semibold leading-[1]"

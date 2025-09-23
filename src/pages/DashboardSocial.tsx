@@ -33,6 +33,7 @@ import {
   SendFriendRequest,
   GetFriendStatus,
   SavePost,
+  UnsavePost,
   ReportPost,
   getTopics,
   UserSelectedTopic,
@@ -138,26 +139,27 @@ interface PostCarouselProps {
 
 interface Story {
   id: string;
-  role: string | null;
-  username: string;
-  profile: {
-    user_id: string;
-    first_name: string;
-    last_name: string;
-    profile_picture: string;
-  };
-  stories: {
+  user_id: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  video_file: string;
+  likes_count: number;
+  comments_count: number;
+  is_viewed: boolean;
+  is_liked: boolean;
+  totalStoriesCount?: number; // Number of total stories by this user
+  storyuser: {
     id: string;
-    user_id: string;
-    description: string;
-    file: string;
-    createdAt: string;
-    updatedAt: string;
-    video_file: string;
-    likes_count: number;
-    comments_count: number;
-    is_liked: boolean;
-  }[];
+    role: string;
+    username: string;
+    profile: {
+      user_id: string;
+      first_name: string;
+      last_name: string;
+      profile_picture: string;
+    };
+  };
 }
 
 type Topic = {
@@ -654,12 +656,42 @@ export default function SocialTopBar() {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
+    
+    // Validate file types
+    const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    const invalidFiles = files.filter(file => !allowedImageTypes.includes(file.type));
+    
+    if (invalidFiles.length > 0) {
+      showToast({
+        message: "Only JPG, JPEG, PNG, and WEBP image files are allowed.",
+        type: "error",
+        duration: 3000,
+      });
+      // Clear the file input so the same file can be selected again
+      e.target.value = '';
+      return;
+    }
+    
     setSelectedImages((prev) => [...prev, ...files]); // Append new images to existing ones
   };
 
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file type
+      const allowedVideoTypes = ['video/mp4'];
+      
+      if (!allowedVideoTypes.includes(file.type)) {
+        showToast({
+          message: "Only MP4 video files are allowed.",
+          type: "error",
+          duration: 3000,
+        });
+        // Clear the file input so the same file can be selected again
+        e.target.value = '';
+        return;
+      }
+      
       setSelectedVideo(file);
       // Create preview URL
       const videoUrl = URL.createObjectURL(file);
@@ -672,14 +704,41 @@ export default function SocialTopBar() {
   };
 
   const handleSubmitPost = async () => {
-    if (
-      !postMessage &&
-      !selectedImages.length &&
-      !selectedVideo &&
-      !selectedTopic
-    ) {
+    // Check if message is required and validate character limits
+    if (!postMessage || postMessage.trim().length < 1) {
       showToast({
-        message: "Please add a message, select media, or choose a topic.",
+        message: "Message is required and must contain at least one character.",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    if (postMessage.length > 2000) {
+      showToast({
+        message: "Message must not exceed 2000 characters.",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Validate image file types
+    const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    const invalidImages = selectedImages.filter(file => !allowedImageTypes.includes(file.type));
+    if (invalidImages.length > 0) {
+      showToast({
+        message: "Only JPG, JPEG, PNG, and WEBP image files are allowed.",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Validate video file type
+    if (selectedVideo && !['video/mp4'].includes(selectedVideo.type)) {
+      showToast({
+        message: "Only MP4 video files are allowed.",
         type: "error",
         duration: 3000,
       });
@@ -735,6 +794,20 @@ export default function SocialTopBar() {
   const handleStoryVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file type
+      const allowedVideoTypes = ['video/mp4'];
+      
+      if (!allowedVideoTypes.includes(file.type)) {
+        showToast({
+          message: "Only MP4 video files are allowed.",
+          type: "error",
+          duration: 3000,
+        });
+        // Clear the file input so the same file can be selected again
+        e.target.value = '';
+        return;
+      }
+      
       setSelectedStoryVideo(file);
 
       // Create preview URL
@@ -761,6 +834,12 @@ export default function SocialTopBar() {
     setApiStoryMessage(null);
     if (!selectedStoryVideo) {
       setApiStoryMessage("Please select a video.");
+      return;
+    }
+
+    // Validate video file type
+    if (!['video/mp4'].includes(selectedStoryVideo.type)) {
+      setApiStoryMessage("Only MP4 video files are allowed.");
       return;
     }
 
@@ -803,10 +882,46 @@ export default function SocialTopBar() {
   const fetchStory = async () => {
     try {
       const res = await GetStory();
-      setStoriesData(res?.data?.data || []);
+      // Add validation for API response structure
+      if (res?.data?.data && Array.isArray(res.data.data)) {
+        // Group stories by user and get the most recent story per user
+        const groupedStories = groupStoriesByUser(res.data.data);
+        setStoriesData(groupedStories);
+      } else {
+        console.warn("Invalid stories API response structure:", res);
+        setStoriesData([]);
+      }
     } catch (error) {
       console.error("Error fetching stories:", error);
+      setStoriesData([]);
     }
+  };
+
+  // Function to group stories by user and return the most recent story per user
+  const groupStoriesByUser = (stories: any[]) => {
+    const userStoryMap = new Map();
+    const userStoryCounts = new Map();
+    
+    stories.forEach(story => {
+      const userId = story.user_id;
+      const existingStory = userStoryMap.get(userId);
+      
+      // Count total stories per user
+      userStoryCounts.set(userId, (userStoryCounts.get(userId) || 0) + 1);
+      
+      // If no story exists for this user, or if current story is more recent
+      if (!existingStory || new Date(story.createdAt) > new Date(existingStory.createdAt)) {
+        userStoryMap.set(userId, {
+          ...story,
+          totalStoriesCount: userStoryCounts.get(userId)
+        });
+      }
+    });
+    
+    // Convert map values to array and sort by creation date (most recent first)
+    return Array.from(userStoryMap.values()).sort((a, b) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
   };
 
   const openPostPopup = () => {
@@ -954,31 +1069,39 @@ export default function SocialTopBar() {
     MeDetail();
   }, []);
 
-  // Function to save post to collection
+  // Function to save/unsave post to collection
   const savePostToCollection = async (postId: string) => {
     try {
-      const response = await SavePost(postId);
+      const currentPost = userPosts.find(post => post.id === postId);
+      const isCurrentlySaved = currentPost?.is_saved || false;
+      
+      // Use appropriate API based on current state
+      const response = isCurrentlySaved 
+        ? await UnsavePost(postId) 
+        : await SavePost(postId);
 
       if (response.success) {
         showToast({
           type: "success",
-          message: "Post saved to collection successfully!",
+          message: isCurrentlySaved 
+            ? "Post removed from collection!" 
+            : "Post saved to collection successfully!",
           duration: 2000,
         });
-        //setIsSavingPost(postId);
+        
         // Update the post's saved status in your posts array
         setUserPosts((prevPosts) =>
           prevPosts.map((post) =>
-            post.id === postId ? { ...post, is_saved: true } : post
+            post.id === postId ? { ...post, is_saved: !isCurrentlySaved } : post
           )
         );
       } else {
-        throw new Error("Failed to save post");
+        throw new Error("Failed to save/unsave post");
       }
     } catch (error) {
       showToast({
         type: "error",
-        message: "Failed to save post to collection",
+        message: "Failed to save/unsave post to collection",
         duration: 2000,
       });
     }
@@ -1316,26 +1439,33 @@ export default function SocialTopBar() {
                       >
                         <StoryCard
                           id={story.id}
-                          userIcon={story.profile.profile_picture}
-                          userName={`${story.profile.first_name} ${story.profile.last_name}`}
-                          title={
-                            story.stories[0].description || "Untitled Story"
-                          }
-                          videoSrc={story.stories[0].video_file}
+                          userId={story.user_id}
+                          userIcon={story.storyuser?.profile?.profile_picture || ''}
+                          userName={`${story.storyuser?.profile?.first_name || ''} ${story.storyuser?.profile?.last_name || ''}`.trim() || 'Unknown User'}
+                          title={story.description || "Untitled Story"}
+                          videoSrc={story.video_file || ''}
                         />
 
                         <div className="absolute bottom-2 left-2 flex items-center gap-2 z-20 text-white">
-                          <img
-                            src={story.profile.profile_picture}
-                            alt={`${story.profile.first_name} ${story.profile.last_name}`}
-                            className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover border border-white"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.src = "/profile.png";
-                            }}
-                          />
+                          <div className="relative">
+                            <img
+                              src={story.storyuser?.profile?.profile_picture || ''}
+                              alt={`${story.storyuser?.profile?.first_name || ''} ${story.storyuser?.profile?.last_name || ''}`.trim() || 'Unknown User'}
+                              className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover border border-white"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = "/profile.png";
+                              }}
+                            />
+                            {/* Show story count badge if user has multiple stories */}
+                            {story.totalStoriesCount && story.totalStoriesCount > 1 && (
+                              <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
+                                {story.totalStoriesCount}
+                              </div>
+                            )}
+                          </div>
                           <span className="text-xs md:text-[13px] font-medium drop-shadow-sm">
-                            {story.username}
+                            {story.storyuser?.username || 'Unknown User'}
                           </span>
                         </div>
                       </div>
@@ -1498,12 +1628,11 @@ export default function SocialTopBar() {
                                           onClick={() =>
                                             savePostToCollection(post.id)
                                           }
-                                          disabled={post.is_saved}
                                           className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
                                         >
                                           <Bookmark className="w-4 h-4" />
                                           {post.is_saved
-                                            ? "Saved"
+                                            ? "Unsave"
                                             : "Save Post"}
                                         </button>
                                       </li>
@@ -1579,12 +1708,11 @@ export default function SocialTopBar() {
                                           onClick={() =>
                                             savePostToCollection(post.id)
                                           }
-                                          disabled={post.is_saved}
                                           className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
                                         >
                                           <Bookmark className="w-4 h-4" />
                                           {post.is_saved
-                                            ? "Saved"
+                                            ? "Unsave"
                                             : "Save Post"}
                                         </button>
                                       </li>
@@ -1777,7 +1905,6 @@ export default function SocialTopBar() {
 
                         {/* <button
                           onClick={() => savePostToCollection(post.id)}
-                          disabled={post.is_saved}
                           className={`flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 ${
                             post.is_saved ? "text-[#7077FE]" : "text-[#000]"
                           }`}
@@ -1787,7 +1914,7 @@ export default function SocialTopBar() {
                             fill={post.is_saved ? "#7077FE" : "#fff"}
                             className="w-5 h-5 md:w-6 md:h-6"
                           />
-                          {post.is_saved ? "Saved" : "Save"}
+                          {post.is_saved ? "Unsave" : "Save"}
                         </button> */}
                       </div>
                     </div>
@@ -2077,7 +2204,7 @@ export default function SocialTopBar() {
                         </label>
                         <input
                           type="file"
-                          accept="video/*"
+                          accept="video/mp4"
                           id="video-upload"
                           className="w-full hidden cursor-pointer"
                           onChange={handleVideoChange}
@@ -2102,7 +2229,7 @@ export default function SocialTopBar() {
                         </label>
                         <input
                           type="file"
-                          accept="image/*"
+                          accept="image/jpeg,image/jpg,image/png,image/webp"
                           id="photo-upload"
                           className="w-full hidden cursor-pointer"
                           multiple
@@ -2272,7 +2399,7 @@ export default function SocialTopBar() {
                           </span>
                           <input
                             type="file"
-                            accept="video/*"
+                            accept="video/mp4"
                             id="video-upload-story"
                             className="hidden"
                             onChange={handleStoryVideoChange}

@@ -32,6 +32,7 @@ interface MentorFormData {
   bio: string;
   motivation: string;
   availability: string;
+  country_timezone: string;
 }
 
 const BecomeMentor = () => {
@@ -55,7 +56,55 @@ const BecomeMentor = () => {
     bio: "",
     motivation: "",
     availability: "",
+    country_timezone: "",
   });
+  const [_fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const validateField = (field: string, value: string): string => {
+    switch (field) {
+      case "email":
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value))
+          return "Please enter a valid email address";
+        break;
+
+      case "name":
+        if (value.trim().length < 2)
+          return "Name should be at least 2 characters long";
+        break;
+
+      case "year_of_experience":
+        const experience = Number(value);
+        if (isNaN(experience) || experience < 0 || experience > 60)
+          return "Please enter a valid years of experience (0-60)";
+        break;
+
+      case "website":
+        if (value && value.trim() !== "") {
+          try {
+            new URL(value.startsWith("http") ? value : `https://${value}`);
+          } catch {
+            return "Please enter a valid website URL";
+          }
+        }
+        break;
+
+      case "bio":
+        if (value.trim().length < 50)
+          return "Profile summary should be at least 50 characters long";
+        if (value.trim().length > 1000)
+          return "Profile summary should not exceed 1000 characters";
+        break;
+
+      case "motivation":
+        if (value.trim().length < 50)
+          return "Please provide a more detailed motivation (at least 50 characters)";
+        if (value.trim().length > 1000)
+          return "Motivation should not exceed 1000 characters";
+        break;
+    }
+    return "";
+  };
 
   const benefits = [
     {
@@ -151,6 +200,13 @@ const BecomeMentor = () => {
       ...prev,
       [name]: value,
     }));
+
+    // Validate field in real-time
+    const error = validateField(id, value);
+    setFieldErrors((prev) => ({
+      ...prev,
+      [id]: error,
+    }));
   };
 
   // Handle number input changes specifically
@@ -174,14 +230,106 @@ const BecomeMentor = () => {
   };
 
   // Handle form submission
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitMessage(null);
 
+    // Validation function
+    const validateForm = (): string | null => {
+      // Required field validation
+      const requiredFields: Array<keyof MentorFormData> = [
+        "name",
+        "email",
+        "year_of_experience",
+        "bio",
+        "motivation",
+        "availability",
+        "country_timezone", // Add this
+      ];
+
+      for (const field of requiredFields) {
+        if (!formData[field] || formData[field].toString().trim() === "") {
+          return `Please fill in the ${field.replace("_", " ")} field`;
+        }
+      }
+
+      // Phone validation
+      if (!phone || phone.trim() === "") {
+        return "Please enter your phone number";
+      }
+
+      if (phone.replace(/\D/g, "").length < 5) {
+        return "Please enter a valid phone number";
+      }
+
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        return "Please enter a valid email address";
+      }
+
+      // Name validation
+      if (formData.name.trim().length < 2) {
+        return "Name should be at least 2 characters long";
+      }
+
+      // Experience validation
+      if (formData.year_of_experience !== "") {
+        const experience = Number(formData.year_of_experience);
+        if (isNaN(experience) || experience < 0 || experience > 100) {
+          return "Please enter a valid years of experience (0-100)";
+        }
+      }
+
+      // Website validation (if provided)
+      if (formData.website && formData.website.trim() !== "") {
+        try {
+          new URL(
+            formData.website.startsWith("http")
+              ? formData.website
+              : `https://${formData.website}`
+          );
+        } catch {
+          return "Please enter a valid website URL";
+        }
+      }
+
+      // Bio and motivation length validation
+      if (formData.bio.trim().length < 50) {
+        return "Profile summary should be at least 50 characters long";
+      }
+
+      if (formData.motivation.trim().length < 50) {
+        return "Please provide a more detailed motivation (at least 50 characters)";
+      }
+
+      if (formData.bio.trim().length > 1000) {
+        return "Profile summary should not exceed 1000 characters";
+      }
+
+      if (formData.motivation.trim().length > 1000) {
+        return "Motivation should not exceed 1000 characters";
+      }
+
+      return null;
+    };
+
+    // Perform validation
+    const validationError = validateForm();
+    if (validationError) {
+      setSubmitMessage({
+        type: "error",
+        text: validationError,
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       // Extract just the national number (without country code)
-      const phoneNumber = phone.replace(countryCode, "").trim();
+      const phoneNumber = phone.replace(`+${countryCode}`, "").trim();
 
       // Convert year_of_experience to number (default to 0 if empty)
       const yearOfExperience =
@@ -212,10 +360,15 @@ const BecomeMentor = () => {
           bio: "",
           motivation: "",
           availability: "",
+          country_timezone: "",
         });
         setPhone("");
         setCountryCode("");
         setCurrentStep(2);
+        setSubmitMessage({
+          type: "success",
+          text: "Application submitted successfully! We will get back to you soon.",
+        });
       } else {
         setSubmitMessage({
           type: "error",
@@ -276,7 +429,7 @@ const BecomeMentor = () => {
                       "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
                   }}
                 >
-                  Apply to Become a Partner
+                  Apply to Become a Mentor
                 </button>
               </div>
             </div>
@@ -349,9 +502,9 @@ const BecomeMentor = () => {
         {/* Benefits Section */}
         <div className="w-full flex mx-auto flex-col justify-center items-center bg-[#F5F7F9] pt-10 pb-[86px] px-14">
           <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px]">
-            <span className="text-black">What does a </span>
+            <span className="text-black">Your Role as a </span>
             <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
-              Partner do?
+              CNESS Mentor
             </span>
           </h1>
           <div className="w-full pt-10">
@@ -603,7 +756,7 @@ const BecomeMentor = () => {
                     />
                   </Field>
 
-                  <Field label="Areas & availability)">
+                  <Field label="Areas & availability">
                     <Input
                       name="availability"
                       type="text"
@@ -617,7 +770,7 @@ const BecomeMentor = () => {
 
                 {submitMessage && (
                   <div
-                    className={`p-3 rounded-md ${
+                    className={`p-3 rounded-md mt-5 ${
                       submitMessage.type === "success"
                         ? "bg-green-100 text-green-800"
                         : "bg-red-100 text-red-800"
@@ -719,6 +872,7 @@ function Input({
   );
 }
 
+// Similarly update TextArea component:
 function TextArea({
   name,
   value,
