@@ -6,6 +6,7 @@ import Like from "../../../assets/story-like.png";
 import comment from "../../../assets/story-comment.png";
 import share from "../../../assets/story-share.png";
 import ReelComment from "../Reels/ReelComment";
+import SharePopup from "../SharePopup";
 
 interface StoryContent {
   id: string;
@@ -27,6 +28,9 @@ interface StoryViewerProps {
   is_liked: any;
   allStories: { content: StoryContent[] }[];
   currentStoryIndex: number;
+  storyId?: string;
+  userId?: string;
+  onStoryChange?: () => void; // Callback when story changes
 }
 
 export function StoryViewer({
@@ -42,6 +46,9 @@ export function StoryViewer({
   timeAgo,
   onLike,
   is_liked,
+  storyId,
+  userId,
+  onStoryChange,
 }: StoryViewerProps) {
   console.log("🚀 ~ StoryViewer ~ hasPrevious:", hasPrevious);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -49,9 +56,9 @@ export function StoryViewer({
   const [message, setMessage] = useState("");
   const [isPaused, setIsPaused] = useState(false);
   const [selectedReelId, setSelectedReelId] = useState<string | null>(null);
+  const [showSharePopup, setShowSharePopup] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [liked, setLiked] = useState(false);
-
   const currentStory = stories[currentIndex];
   const duration = currentStory?.duration || 5000;
 
@@ -151,6 +158,18 @@ export function StoryViewer({
     }
   }, [isPaused, selectedReelId, currentStory]);
 
+  // Close comment box when story changes
+  useEffect(() => {
+    if (selectedReelId) {
+      setSelectedReelId(null);
+      setIsPaused(false);
+    }
+    // Call the callback to notify parent component
+    if (onStoryChange) {
+      onStoryChange();
+    }
+  }, [currentStory?.id, onStoryChange]); // Close comments when current story changes
+
   const handlePrevStory = () => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
@@ -193,6 +212,7 @@ export function StoryViewer({
   const handleCommentClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsPaused(true);
+    console.log('currentStory.id', currentStory);
     setSelectedReelId(currentStory.id);
   };
 
@@ -205,6 +225,17 @@ export function StoryViewer({
   const handleCloseComments = () => {
     setSelectedReelId(null);
     setIsPaused(false);
+  };
+
+  const handleShare = () => {
+    setShowSharePopup(!showSharePopup);
+  };
+
+  const buildStoryShareUrl = () => {
+    if (storyId && userId) {
+      return `https://dev.cness.io/story-design?user=${userId}&story=${storyId}`;
+    }
+    return `https://dev.cness.io/story-design`;
   };
 
   if (!currentStory) return null;
@@ -430,13 +461,26 @@ export function StoryViewer({
           >
             <img src={comment} className="w-4 h-4" alt="Comment" />
           </Button>
-          <Button
-            size="sm"
-            className="rounded-full bg-[#6ACFAD] text-black border-1 border-white hover:bg-white/90 w-8 h-8 p-0"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <img src={share} className="w-4 h-4" alt="Share" />
-          </Button>
+          <div className="relative">
+            <Button
+              size="sm"
+              className="rounded-full bg-[#6ACFAD] text-black border-1 border-white hover:bg-white/90 w-8 h-8 p-0"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleShare();
+              }}
+            >
+              <img src={share} className="w-4 h-4" alt="Share" />
+            </Button>
+            {showSharePopup && (
+              <SharePopup
+                isOpen={showSharePopup}
+                onClose={() => setShowSharePopup(false)}
+                url={buildStoryShareUrl()}
+                position="bottom"
+              />
+            )}
+          </div>
         </div>
       </div>
 

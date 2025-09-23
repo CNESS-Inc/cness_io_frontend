@@ -1,6 +1,6 @@
 import { cn } from "../../../lib/utils";
 import { IoCloseOutline } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Image from "../../ui/Image";
 import logoImg from "../../../../public/cnesslogo.png";
 
@@ -26,6 +26,12 @@ export function StorySidebar({
   activeStoryId,
   onStorySelect,
 }: StorySidebarProps) {
+  const navigate = useNavigate();
+
+  const handleClose = () => {
+    navigate('/social');
+  };
+
   return (
     <div className="w-[465px] bg-card border-r border-border h-screen overflow-y-auto">
       <div className="">
@@ -45,7 +51,10 @@ export function StorySidebar({
             </div>
 
             <div className="button">
-              <button className="w-[35px] h-[35px] rounded-[7px] border-[1px] border-strock border-[#ECEEF2] flex justify-center items-center">
+              <button 
+                onClick={handleClose}
+                className="w-[35px] h-[35px] rounded-[7px] border-[1px] border-strock border-[#ECEEF2] flex justify-center items-center hover:bg-gray-50 transition-colors"
+              >
                 <IoCloseOutline className="text-[#E1056D]" />
               </button>
             </div>
