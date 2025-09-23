@@ -548,7 +548,7 @@ useEffect(() => {
                   }}
                 >
                   <select
-                    className="bg-[#7077FE] rounded-full text-white font-semibold px-3 py-2 pr-6 appearance-none focus:outline-none cursor-pointer text-[12px] w-full"
+                    className="bg-[#7077FE] rounded-full text-white font-semibold px-3 py-2 pr-6 appearance-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-[#7077FE] cursor-pointer text-[12px] w-full transition-all duration-200"
                     value={selectedFilter.id}
                     onChange={handleFilterChange}
                   >
@@ -1086,199 +1086,211 @@ useEffect(() => {
         </div>
       </section>
 
-      {activeModal === "bestpractices" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={closeModal}
-          ></div>
-          <div className="relative z-10 w-full max-w-3xl bg-white rounded-[25px] shadow-lg px-[45px] py-[30px] max-h-[95vh] overflow-y-auto scrollbar-hide">
-            {/* Close Button */}
-            <div className="relative">
-              <button
-                onClick={closeModal}
-                className="absolute top-1/2 right-0 -translate-y-1/2 text-2xl text-[#9EA8B6] hover:text-gray-800"
-              >
-                ✕
-              </button>
-              <h2 className="text-2xl font-medium text-[32px] text-center mb-6">
-                Create New Best Practice
-              </h2>
-            </div>
+{activeModal === "bestpractices" && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+      onClick={closeModal}
+    ></div>
+    <div className="relative z-10 w-full max-w-3xl bg-white rounded-[25px] shadow-lg px-[45px] py-[30px] max-h-[95vh] overflow-y-auto scrollbar-hide">
+      {/* Close Button */}
+      <div className="relative">
+        <button
+          onClick={closeModal}
+          className="absolute top-1/2 right-0 -translate-y-1/2 text-2xl text-[#9EA8B6] hover:text-gray-800"
+        >
+          ✕
+        </button>
+        <h2 className="text-2xl font-medium text-[32px] text-center mb-6">
+          Create New Best Practice
+        </h2>
+      </div>
 
-            {/* Upload Section */}
-            <div className="mt-2 text-center py-6 px-4 rounded-[26px] border-2 border-[#CBD0DC] border-dashed flex flex-col items-center justify-center cursor-pointer mb-6">
-              <div className="pb-4 flex flex-col items-center">
-                <img src={cloud} alt="Upload" className="w-12" />
-                <h4 className="pt-2 text-base font-medium text-[#292D32]">
-                  Choose your image
-                </h4>
-                <h4 className="pt-2 font-normal text-sm text-[#A9ACB4]">
-                  JPEG, PNG formats, up to 2MB
-                </h4>
-              </div>
+      {/* Upload Section */}
+      <div className="mt-2 text-center py-6 px-4 rounded-[26px] border-2 border-[#CBD0DC] border-dashed flex flex-col items-center justify-center cursor-pointer mb-6">
+        <div className="pb-4 flex flex-col items-center">
+          <img src={cloud} alt="Upload" className="w-12" />
+          <h4 className="pt-2 text-base font-medium text-[#292D32]">
+            Choose your image
+          </h4>
+          <h4 className="pt-2 font-normal text-sm text-[#A9ACB4]">
+            JPEG, PNG formats, up to 2MB
+          </h4>
+        </div>
 
-              <div className="">
-                <input
-                  type="file"
-                  id="uploadFile1"
-                  className="hidden"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                />
-                <label
-                  htmlFor="uploadFile1"
-                  className="block px-[33px] py-4 rounded-full text-[#54575C] text-base tracking-wider font-medium border border-[#CBD0DC] outline-none cursor-pointer"
-                >
-                  Browse Files
-                </label>
-                {newPractice.file && (
-                  <p className="mt-2 text-sm text-gray-700">
-                    Selected: {newPractice.file.name}
-                  </p>
-                )}
-              </div>
-            </div>
+        <div className="">
+          <input
+            type="file"
+            id="uploadFile1"
+            className="hidden"
+            accept="image/*"
+            onChange={handleFileChange}
+          />
+          <label
+            htmlFor="uploadFile1"
+            className="block px-[33px] py-4 rounded-full text-[#54575C] text-base tracking-wider font-medium border border-[#CBD0DC] outline-none cursor-pointer"
+          >
+            Browse Files
+          </label>
+          {newPractice.file && (
+            <p className="mt-2 text-sm text-gray-700">
+              Selected: {newPractice.file.name}
+            </p>
+          )}
+        </div>
+      </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="block text-[15px] font-normal text-black">
-                    Title of Best Practice*
-                  </label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={newPractice.title}
-                    onChange={handleInputChange}
-                    placeholder="Enter Title"
-                    className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm placeholder:text-[#6E7179] placeholder:text-xs placeholder:font-normal"
-                    required
-                  />
-                </div>
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-[5px]">
+            <label className="block text-[15px] font-normal text-black">
+              Title of Best Practice*
+            </label>
+            <input
+              type="text"
+              name="title"
+              value={newPractice.title}
+              onChange={handleInputChange}
+              placeholder="Enter Title"
+              className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm placeholder:text-[#6E7179] placeholder:text-xs placeholder:font-normal"
+              required
+            />
+          </div>
 
-                <div className="flex flex-col gap-[5px]">
-                  <label className="block text-[15px] font-normal text-black">
-                    Category*
-                  </label>
-                  <select
-                    name="interest"
-                    value={newPractice.interest}
-                    onChange={handleInputChange}
-                    className={`w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none 
-               focus:ring-2 focus:ring-indigo-500 text-sm font-normal
-               ${newPractice.interest ? "text-black" : "text-[#6E7179]"}`}
-                    required
-                  >
-                    <option value="">Select your Category</option>
-                    {interest.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="block text-[15px] font-normal text-black">
-                    Profession*
-                  </label>
-                  <select
-                    name="profession"
-                    value={newPractice.profession}
-                    onChange={handleInputChange}
-                    className={`w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none 
-               focus:ring-2 focus:ring-indigo-500 text-sm font-normal
-               ${newPractice.profession ? "text-black" : "text-[#6E7179]"}`}
-                    required
-                  >
-                    <option value="">Select your Profession</option>
-                    {profession.map((prof) => (
-                      <option key={prof.id} value={prof.id}>
-                        {prof.title}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex flex-col gap-[5px]">
-                  <label className="block text-[15px] font-normal text-black">
-                    Tags
-                  </label>
-                  <div className="w-full border border-gray-300 bg-white px-3 py-2">
-                    <div className="flex flex-wrap gap-2 mb-1">
-                      {tags.map((tag, idx) => (
-                        <span
-                          key={idx}
-                          className="flex items-center bg-[#f3f1ff] text-[#6269FF] px-3 py-1 rounded-full text-[13px]"
-                        >
-                          {tag}
-                          <button
-                            type="button"
-                            onClick={() => removeTag(idx)}
-                            className="ml-1 text-[#6269FF] hover:text-red-500 font-bold"
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                    <input
-                      type="text"
-                      className="w-full text-sm bg-white focus:outline-none placeholder-gray-400"
-                      placeholder="Add tags (e.g. therapy, online, free-consult)"
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                      onKeyDown={handleTagKeyDown}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-[5px]">
-                <label className="block text-[15px] font-normal text-black">
-                  Objective / Purpose
-                </label>
-                <textarea
-                  name="objective"
-                  rows={3}
-                  onChange={handleInputChange}
-                  className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm placeholder:text-[#6E7179] placeholder:text-xs placeholder:font-normal"
-                  placeholder="Add Notes..."
-                ></textarea>
-              </div>
-
-              <div className="flex flex-col gap-[5px]">
-                <label className="block text-[15px] font-normal text-black">
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  rows={3}
-                  value={newPractice.description}
-                  onChange={handleInputChange}
-                  className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm placeholder:text-[#6E7179] placeholder:text-xs placeholder:font-normal"
-                  placeholder="Add Notes..."
-                ></textarea>
-              </div>
-
-              <div className="flex justify-center pt-4">
-                <Button
-                  type="submit"
-                  variant="gradient-primary"
-                  className="w-[104px] h-[39px] rounded-[100px] p-0 font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none flex items-center justify-center"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Submitting..." : "Submit"}
-                </Button>
-              </div>
-            </form>
+          <div className="flex flex-col gap-[5px]">
+            <label className="block text-[15px] font-normal text-black">
+              Category*
+            </label>
+            <select
+              name="interest"
+              value={newPractice.interest}
+              onChange={handleInputChange}
+              className={`w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none 
+         focus:ring-2 focus:ring-indigo-500 text-sm font-normal
+         ${newPractice.interest ? "text-black" : "text-[#6E7179]"}`}
+              required
+            >
+              <option value="">Select your Category</option>
+              {interest.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
-      )}
+
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-[5px]">
+            <label className="block text-[15px] font-normal text-black">
+              Profession*
+            </label>
+            <select
+              name="profession"
+              value={newPractice.profession}
+              onChange={handleInputChange}
+              className={`w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none 
+         focus:ring-2 focus:ring-indigo-500 text-sm font-normal
+         ${newPractice.profession ? "text-black" : "text-[#6E7179]"}`}
+              required
+            >
+              <option value="">Select your Profession</option>
+              {profession.map((prof) => (
+                <option key={prof.id} value={prof.id}>
+                  {prof.title}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-[5px]">
+            <label className="block text-[15px] font-normal text-black">
+              Tags
+            </label>
+            <div className="w-full border border-gray-300 bg-white px-3 py-2">
+              <div className="flex flex-wrap gap-2 mb-1">
+                {tags.map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className="flex items-center bg-[#f3f1ff] text-[#6269FF] px-3 py-1 rounded-full text-[13px]"
+                  >
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => removeTag(idx)}
+                      className="ml-1 text-[#6269FF] hover:text-red-500 font-bold"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <input
+                type="text"
+                className="w-full text-sm bg-white focus:outline-none placeholder-gray-400"
+                placeholder="Add tags (e.g. therapy, online, free-consult)"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleTagKeyDown}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-[5px]">
+          <label className="block text-[15px] font-normal text-black">
+            Objective / Purpose
+          </label>
+          <textarea
+            name="objective"
+            rows={3}
+            onChange={handleInputChange}
+            className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm placeholder:text-[#6E7179] placeholder:text-xs placeholder:font-normal"
+            placeholder="Add Notes..."
+          ></textarea>
+        </div>
+
+        <div className="flex flex-col gap-[5px]">
+          <label className="block text-[15px] font-normal text-black">
+            Description
+          </label>
+          <textarea
+            name="description"
+            rows={3}
+            value={newPractice.description}
+            onChange={handleInputChange}
+            className={`w-full px-[10px] py-3 border rounded-[4px] focus:outline-none focus:ring-2 text-sm placeholder:text-[#6E7179] placeholder:text-xs placeholder:font-normal
+              ${newPractice.description.length > 5000 
+                ? "border-red-500 focus:ring-red-500" 
+                : "border-[#CBD0DC] focus:ring-indigo-500"
+              }`}
+            placeholder="Add Notes..."
+            maxLength={5000}
+          ></textarea>
+          {/* Character count and validation message */}
+          <div className={`text-xs mt-1 ${newPractice.description.length > 5000 ? "text-red-500" : "text-gray-500"}`}>
+            {newPractice.description.length}/5000 characters
+            {newPractice.description.length > 5000 && (
+              <span className="ml-2 font-medium">Maximum character limit exceeded</span>
+            )}
+          </div>
+        </div>
+
+        <div className="flex justify-center pt-4">
+          <Button
+            type="submit"
+            variant="gradient-primary"
+            className="w-[104px] h-[39px] rounded-[100px] p-0 font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none flex items-center justify-center"
+            disabled={isSubmitting || newPractice.description.length > 5000}
+          >
+            {isSubmitting ? "Submitting..." : "Submit"}
+          </Button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
     </>
   );
 }
