@@ -22,8 +22,6 @@ import PopupOnboardingModal from "../ui/OnBoardingModel";
 import { Check } from "lucide-react";
 import SignupModel from "../OnBoarding/Signup";
 
-
-
 import { FiMail, FiEye, FiEyeOff } from "react-icons/fi"; // add if not already
 
 import Select from "react-select";
@@ -142,20 +140,17 @@ interface ValidationRules {
 
 type Props = { open: boolean; onClose: () => void };
 
-
 export default function Login({ open = true, onClose = () => {} }: Props) {
-  if (!open) return null;
-
   const navigate = useNavigate();
   const [, setAuthenticated] = useState<boolean>(
     localStorage.getItem("authenticated") === "true"
   );
-    const [openSignup, setOpenSignup] = useState(false);
+  const [openSignup, setOpenSignup] = useState(false);
   const [orgFormStep, setOrgFormStep] = useState(1); // 1 = Basic Info, 2 = Questions
   const [personFormStep, setPersonFormStep] = useState(1);
   console.log("🚀 ~ Login ~ personFormStep:", personFormStep);
-const closeByKey = (key: typeof activeModal) =>
-  setActiveModal(curr => (curr === key ? null : curr));
+  const closeByKey = (key: typeof activeModal) =>
+    setActiveModal((curr) => (curr === key ? null : curr));
 
   const [activeModal, setActiveModal] = useState<
     | "type"
@@ -165,6 +160,7 @@ const closeByKey = (key: typeof activeModal) =>
     | "organizationPricing"
     | "forgotpassword"
     | "success"
+    | "disqualify"
     | null
   >(null);
   const [organizationForm, setOrganizationForm] = useState<OrganizationForm>({
@@ -256,13 +252,15 @@ const closeByKey = (key: typeof activeModal) =>
     }
 
     if (rules.minLength && value.length < rules.minLength) {
-      return `${name.replace("_", " ")} must be at least ${rules.minLength
-        } characters`;
+      return `${name.replace("_", " ")} must be at least ${
+        rules.minLength
+      } characters`;
     }
 
     if (rules.maxLength && value.length > rules.maxLength) {
-      return `${name.replace("_", " ")} must be less than ${rules.maxLength
-        } characters`;
+      return `${name.replace("_", " ")} must be less than ${
+        rules.maxLength
+      } characters`;
     }
 
     if (rules.pattern && !rules.pattern.test(value)) {
@@ -470,7 +468,10 @@ const closeByKey = (key: typeof activeModal) =>
         setIsSubmitting(false);
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);
-        console.log("🚀 ~ handleSubmit ~ response?.data?.data?.jwt:", response?.data?.data?.jwt)
+        console.log(
+          "🚀 ~ handleSubmit ~ response?.data?.data?.jwt:",
+          response?.data?.data?.jwt
+        );
         localStorage.setItem(
           "is_disqualify",
           response?.data?.data?.user?.is_disqualify
@@ -496,7 +497,10 @@ const closeByKey = (key: typeof activeModal) =>
         );
         const myReferralCode = response?.data?.data?.user.my_referral_code;
         if (myReferralCode) {
-          localStorage.setItem("referral_code", response?.data?.data?.user.my_referral_code);
+          localStorage.setItem(
+            "referral_code",
+            response?.data?.data?.user.my_referral_code
+          );
         }
         const completionStatus =
           response.data.data.user.person_organization_complete;
@@ -873,9 +877,9 @@ const closeByKey = (key: typeof activeModal) =>
         // Include custom_profession in the payload if "other" is selected
         professions: personForm.professions.includes("other")
           ? [
-            ...personForm.professions.filter((p) => p !== "other"),
-            personForm.custom_profession,
-          ]
+              ...personForm.professions.filter((p) => p !== "other"),
+              personForm.custom_profession,
+            ]
           : personForm.professions,
       };
 
@@ -936,7 +940,7 @@ const closeByKey = (key: typeof activeModal) =>
         setPersonPricing(updatedPlans);
         setActiveModal("personPricing");
       } else if (res.success.statusCode === 201) {
-        navigate("/dashboard");
+        setActiveModal("disqualify");
         const response = await MeDetails();
         localStorage.setItem(
           "profile_picture",
@@ -949,6 +953,10 @@ const closeByKey = (key: typeof activeModal) =>
           response?.data?.data?.user.margaret_name
         );
         localStorage.setItem("is_disqualify", "true");
+        setTimeout(() => {
+          setActiveModal(null);
+          navigate("/dashboard");
+        }, 2000);
       }
     } catch (error) {
       console.error("Error submitting organization form:", error);
@@ -1071,7 +1079,6 @@ const closeByKey = (key: typeof activeModal) =>
   const onForgotPassword = () => {
     setApiMessage("");
     setActiveModal("forgotpassword");
-   
   };
 
   const handleforgot = async (e: FormEvent<HTMLFormElement>) => {
@@ -1215,161 +1222,161 @@ const closeByKey = (key: typeof activeModal) =>
     },
   });
 
+  if (!open) return null;
+
   return (
     <>
-     <PopupOnboardingModal open={open} onClose={onClose}>
-
+      <PopupOnboardingModal open={open} onClose={onClose}>
         {/* Sign In Form */}
 
-            <div className="mx-auto w-full max-w-[460px] mt-15">
-        <h1 className="text-center font-[Poppins] font-medium text-[32px] leading-[100%] tracking-[-0.03em] text-gray-900">
-          Sign in to your account
-        </h1>
+        <div className="mx-auto w-full max-w-[460px] mt-15">
+          <h1 className="text-center font-[Poppins] font-medium text-[32px] leading-[100%] tracking-[-0.03em] text-gray-900">
+            Sign in to your account
+          </h1>
 
-        <ul className="mt-4 flex justify-center items-center gap-6 text-sm text-gray-600">
-          <li className="flex items-center gap-2 font-['Open_Sans'] text-[14px] leading-[100%] text-gray-700">
-            <Check className="h-6 w-6 stroke-[3px] text-green-500" />
-            Securely access your dashboard anytime, anywhere.
-          </li>
-        </ul>
+          <ul className="mt-4 flex justify-center items-center gap-6 text-sm text-gray-600">
+            <li className="flex items-center gap-2 font-['Open_Sans'] text-[14px] leading-[100%] text-gray-700">
+              <Check className="h-6 w-6 stroke-[3px] text-green-500" />
+              Securely access your dashboard anytime, anywhere.
+            </li>
+          </ul>
 
-              {apiMessage && (
-                <div
-                  className={`text-center mb-4 ${apiMessage.includes("Successfully")
-                    ? "text-green-500"
-                    : "text-red-500"
-                    }`}
-                >
-                  {apiMessage}
-                </div>
+          {apiMessage && (
+            <div
+              className={`text-center mb-4 ${
+                apiMessage.includes("Successfully")
+                  ? "text-green-500"
+                  : "text-red-500"
+              }`}
+            >
+              {apiMessage}
+            </div>
+          )}
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div className="mb-4 relative">
+              {/* Google Sign-In Button */}
+              <button
+                type="button"
+                onClick={() => login()}
+                className="mt-6 w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-800 shadow-sm hover:bg-gray-50"
+              >
+                <span className="inline-flex items-center gap-3 font-inter font-medium text-[14px] leading-[20px] text-gray-900">
+                  <img
+                    src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                    alt="Google"
+                    className="w-5 h-5"
+                  />
+                  Sign in with Google
+                </span>
+              </button>
+
+              {/* Divider with "Or sign in with" */}
+              {/* Divider */}
+              <div className="my-6 flex items-center gap-5 text-[14px] font-['Open_Sans'] text-gray-500">
+                <div className="h-px w-full bg-gray-200" />
+                <span className="whitespace-nowrap">Or sign in with</span>
+                <div className="h-px w-full bg-gray-200" />
+              </div>
+
+              <label
+                htmlFor="password"
+                className="block font-poppins font-medium text-[12px] text-[#000000] mb-1"
+              >
+                Email
+              </label>
+              <div className="relative">
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  placeholder="Enter your email"
+                  onFocus={() => setEmailFocused(true)}
+                  onBlur={() => setEmailFocused(false)}
+                  className={`w-full h-[53px] px-[10px] rounded-[2px] border-2 ${
+                    loginErrors.email ? "border-red-500" : "border-[#CBD5E1]"
+                  } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                />
+
+                <FiMail
+                  className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-opacity duration-300 ${
+                    emailFocused ? "opacity-100" : "opacity-0"
+                  }`}
+                  size={18}
+                />
+              </div>
+              {loginErrors.email && (
+                <p className="mt-1 text-sm text-red-600">{loginErrors.email}</p>
               )}
-              <form className="space-y-4" onSubmit={handleSubmit}>
-                <div className="mb-4 relative">
-                  {/* Google Sign-In Button */}
-                    <button
-                      type="button"
-                      onClick={() => login()}
-          className="mt-6 w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-800 shadow-sm hover:bg-gray-50"
-                    >
-                                <span className="inline-flex items-center gap-3 font-inter font-medium text-[14px] leading-[20px] text-gray-900">
+            </div>
 
-                      <img
-              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                        alt="Google"
-                        className="w-5 h-5"
-                      />
-                        Sign in with Google
-                      </span>
-                    </button>
-                
+            <label
+              htmlFor="password"
+              className="block font-poppins font-medium text-[12px] text-[#000000] mb-1"
+            >
+              Password
+            </label>
+            <div className="relative">
+              <input
+                type={showLoginPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                required
+                placeholder="Enter your Password"
+                className={`w-full h-[53px] px-[10px] rounded-[4px] border-2 ${
+                  loginErrors.password ? "border-red-500" : "border-[#CBD5E1]"
+                } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+              />
 
-                  {/* Divider with "Or sign in with" */}
-                  {/* Divider */}
-        <div className="my-6 flex items-center gap-5 text-[14px] font-['Open_Sans'] text-gray-500">
-          <div className="h-px w-full bg-gray-200" />
-          <span className="whitespace-nowrap">Or sign in with</span>
-          <div className="h-px w-full bg-gray-200" />
-        </div>
+              <div
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                onClick={() => setShowLoginPassword(!showLoginPassword)}
+              >
+                {showLoginPassword ? (
+                  <FiEyeOff size={18} />
+                ) : (
+                  <FiEye size={18} />
+                )}
+              </div>
+            </div>
+            {loginErrors.password && (
+              <p className="mt-1 text-sm text-red-600">
+                {loginErrors.password}
+              </p>
+            )}
 
-
-             <label
-  htmlFor="password"
-  className="block font-poppins font-medium text-[12px] text-[#000000] mb-1"
->
-                    Email
-                 
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      required
-                      placeholder="Enter your email"
-                      onFocus={() => setEmailFocused(true)}
-                      onBlur={() => setEmailFocused(false)}
-                      className={`w-full h-[53px] px-[10px] rounded-[2px] border-2 ${loginErrors.email ? "border-red-500" : "border-[#CBD5E1]"
-                        } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
-                    />  
-
-                    <FiMail
-                      className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-opacity duration-300 ${emailFocused ? "opacity-100" : "opacity-0"
-                        }`}
-                      size={18}
-                    />
-                  </div>
-                  {loginErrors.email && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {loginErrors.email}
-                    </p>
-                  )}
-                </div>
-
-             <label
-  htmlFor="password"
-  className="block font-poppins font-medium text-[12px] text-[#000000] mb-1"
->
-                    Password
-                  
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showLoginPassword ? "text" : "password"}
-                      id="password"
-                      name="password"
-                      required
-                      placeholder="Enter your Password"
-                      className={`w-full h-[53px] px-[10px] rounded-[4px] border-2 ${loginErrors.password
-                        ? "border-red-500" : "border-[#CBD5E1]"
-                        } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
-                    />
-
-                    <div
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-                      onClick={() => setShowLoginPassword(!showLoginPassword)}
-                    >
-                      {showLoginPassword ? (
-                        <FiEyeOff size={18} />
-                      ) : (
-                        <FiEye size={18} />
-                      )}
-                    </div>
-                  </div>
-                  {loginErrors.password && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {loginErrors.password}
-                    </p>
-                  )}
-             
-
-          <div className="flex items-center justify-between text-[13px]">
-            <label className="inline-flex items-center gap-2 select-none">
-              <input type="checkbox" className="accent-[#6750A4] w-4 h-4" defaultChecked />
-                    <span className="font-poppins font-normal text-[12px] leading-[100%] tracking-[0px] text-[#64748B]">
-                      Remember me on this device
-                    </span>
-                  </label>
-                  <a
-  href="#"
-  onClick={(e) => {
-    e.preventDefault();
-    onForgotPassword();
-  }}
-  className="font-openSans font-semibold
+            <div className="flex items-center justify-between text-[13px]">
+              <label className="inline-flex items-center gap-2 select-none">
+                <input
+                  type="checkbox"
+                  className="accent-[#6750A4] w-4 h-4"
+                  defaultChecked
+                />
+                <span className="font-poppins font-normal text-[12px] leading-[100%] tracking-[0px] text-[#64748B]">
+                  Remember me on this device
+                </span>
+              </label>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onForgotPassword();
+                }}
+                className="font-openSans font-semibold
     text-[12px] leading-[24.4px] tracking-[0px]
     text-right align-middle
     bg-gradient-to-r from-[#7077FE] to-[#F07EFF]
     bg-clip-text text-transparent
     hover:underline"
->
-  Reset password
-</a>
-                </div>
+              >
+                Reset password
+              </a>
+            </div>
 
-                <Button
-                  type="submit"
-                  variant="gradient-primary"
-            className="mt-1 w-[415px] h-[42px] 
+            <Button
+              type="submit"
+              variant="gradient-primary"
+              className="mt-1 w-[415px] h-[42px] 
     rounded-[81.26px]
     bg-gradient-to-r from-indigo-500 to-fuchsia-500
     px-[19.5px] py-[16px]
@@ -1379,12 +1386,12 @@ const closeByKey = (key: typeof activeModal) =>
     text-[14px] leading-[100%] tracking-[0px]
     flex items-center justify-center
     shadow-md hover:opacity-95"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Sign up..." : "Sign up"}
-                </Button>
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Sign up..." : "Sign up"}
+            </Button>
 
-                {/* Google & Facebook Icons 
+            {/* Google & Facebook Icons 
               <div className="flex justify-center gap-4 mt-2">
                 <button
                   type="button"
@@ -1412,26 +1419,26 @@ const closeByKey = (key: typeof activeModal) =>
                 </button>
               </div>
 */}
-        <p className="mt-4 text-center font-poppins font-normal text-[13px] leading-[100%] tracking-[0px] text-[#64748B]">
-                  New to Cness?{" "}
-                  <button
-  type="button"
-  onClick={() => setOpenSignup(true)}
-  className="font-poppins font-semibold text-[13px] leading-[100%] tracking-[0px] text-[#D748EA] underline underline-offset-[2px] decoration-solid hover:opacity-80"
->
-  Create account
-</button>
-                </p>
-              </form>
-            </div>
-      
-      
-        
-    </PopupOnboardingModal>
-     
+            <p className="mt-4 text-center font-poppins font-normal text-[13px] leading-[100%] tracking-[0px] text-[#64748B]">
+              New to Cness?{" "}
+              <button
+                type="button"
+                onClick={() => setOpenSignup(true)}
+                className="font-poppins font-semibold text-[13px] leading-[100%] tracking-[0px] text-[#D748EA] underline underline-offset-[2px] decoration-solid hover:opacity-80"
+              >
+                Create account
+              </button>
+            </p>
+          </form>
+        </div>
+      </PopupOnboardingModal>
 
       {/* Type Selection Modal - only shows when activeModal is "type" */}
-<Modal isOpen={activeModal === "type"} onClose={closeModal} modalKey="type">
+      <Modal
+        isOpen={activeModal === "type"}
+        onClose={closeModal}
+        modalKey="type"
+      >
         <div className=" p-6 rounded-lg z-10 relative">
           <h2 className="text-2xl font-bold text-gray-800 mb-3">
             Select Account Type
@@ -1463,8 +1470,11 @@ const closeByKey = (key: typeof activeModal) =>
       </Modal>
 
       {/* Organization Form Modal - only shows when activeModal is "organization" */}
-<Modal isOpen={activeModal === "organization"}  onClose={() => closeByKey("organization")}
-  modalKey="organization">
+      <Modal
+        isOpen={activeModal === "organization"}
+        onClose={() => closeByKey("organization")}
+        modalKey="organization"
+      >
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           {" "}
           {/* Ensures center + padding on small screens */}
@@ -1580,10 +1590,11 @@ const closeByKey = (key: typeof activeModal) =>
                         name="organization_name"
                         value={organizationForm.organization_name}
                         onChange={handleOrganizationFormChange}
-                        className={`w-full px-3 py-2 border ${organizationErrors.organization_name
-                          ? "border-red-500"
-                          : "border-gray-300"
-                          } rounded-md`}
+                        className={`w-full px-3 py-2 border ${
+                          organizationErrors.organization_name
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        } rounded-md`}
                         placeholder="Enter organization name"
                       />
                       {organizationErrors.organization_name && (
@@ -1602,10 +1613,11 @@ const closeByKey = (key: typeof activeModal) =>
                         name="domain"
                         value={organizationForm.domain}
                         onChange={handleOrganizationFormChange}
-                        className={`w-full px-3 py-2 border ${organizationErrors.domain
-                          ? "border-red-500"
-                          : "border-gray-300"
-                          } rounded-md`}
+                        className={`w-full px-3 py-2 border ${
+                          organizationErrors.domain
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        } rounded-md`}
                       >
                         <option value="">Select domain</option>
                         {domains?.map((domain: any) => (
@@ -1633,10 +1645,11 @@ const closeByKey = (key: typeof activeModal) =>
                           name="custom_domain"
                           value={organizationForm.custom_domain || ""}
                           onChange={handleOrganizationFormChange}
-                          className={`w-full px-3 py-2 border ${organizationErrors.custom_domain
-                            ? "border-red-500"
-                            : "border-gray-300"
-                            } rounded-md`}
+                          className={`w-full px-3 py-2 border ${
+                            organizationErrors.custom_domain
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          } rounded-md`}
                           placeholder="Enter your domain name"
                         />
                         {organizationErrors.custom_domain && (
@@ -1775,10 +1788,11 @@ const closeByKey = (key: typeof activeModal) =>
                                 name={`question_${question.id}`}
                                 value={existingAnswer}
                                 onChange={handleOrganizationFormChange}
-                                className={`w-full px-3 py-2 border ${organizationErrors[`question_${question.id}`]
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                                  } rounded-md`}
+                                className={`w-full px-3 py-2 border ${
+                                  organizationErrors[`question_${question.id}`]
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-md`}
                                 placeholder={`Enter your answer`}
                                 rows={3}
                               />
@@ -1789,7 +1803,7 @@ const closeByKey = (key: typeof activeModal) =>
                                 <p className="mt-1 text-sm text-red-600">
                                   {
                                     organizationErrors[
-                                    `question_${question.id}`
+                                      `question_${question.id}`
                                     ]
                                   }
                                 </p>
@@ -1926,8 +1940,11 @@ const closeByKey = (key: typeof activeModal) =>
         </div>
       </Modal>
 
-<Modal isOpen={activeModal === "person"} onClose={() => closeByKey("person")}
-  modalKey="person">
+      <Modal
+        isOpen={activeModal === "person"}
+        onClose={() => closeByKey("person")}
+        modalKey="person"
+      >
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
@@ -1984,14 +2001,9 @@ const closeByKey = (key: typeof activeModal) =>
                         className={`w-[440px] h-[41px]
     rounded-[12px]
     border-[0.82px]
-    p-[12px] mt-2 ${personErrors.first_name
-                            ? "border-red-500"
-                            : "border-gray-300"
-                          } rounded-md`
-
-                        }
-
-
+    p-[12px] mt-2 ${
+      personErrors.first_name ? "border-red-500" : "border-gray-300"
+    } rounded-md`}
                       />
                       {personErrors.first_name && (
                         <p className="mt-1 text-sm text-red-600">
@@ -2013,10 +2025,9 @@ const closeByKey = (key: typeof activeModal) =>
                         className={`w-[440px] h-[41px]
     rounded-[12px]
     border-[0.82px]
-    p-[12px] mt-2 ${personErrors.last_name
-                            ? "border-red-500"
-                            : "border-gray-300"
-                          } rounded-md`}
+    p-[12px] mt-2 ${
+      personErrors.last_name ? "border-red-500" : "border-gray-300"
+    } rounded-md`}
                         placeholder="Enter your last name"
                       />
                       {personErrors.last_name && (
@@ -2076,27 +2087,30 @@ const closeByKey = (key: typeof activeModal) =>
                       <label className="block openSans text-base font-medium text-gray-800 mb-1">
                         Professions
                         <span className="text-red-500">*</span>
-
                       </label>
                       <div className="mt-4">
                         <Select
                           isMulti
                           options={[
-                            ...profession?.map((professionItem: Profession) => ({
-                              value: professionItem.id,
-                              label: professionItem.title,
-                            })),
+                            ...profession?.map(
+                              (professionItem: Profession) => ({
+                                value: professionItem.id,
+                                label: professionItem.title,
+                              })
+                            ),
                             { value: "other", label: "Other (please specify)" },
                           ]}
                           value={
-                            personForm.professions?.map((professionId: any) => ({
-                              value: professionId,
-                              label:
-                                profession?.find(
-                                  (p: any) => p.id === professionId
-                                )?.title ||
-                                (professionId === "other" ? "Other" : ""),
-                            })) || []
+                            personForm.professions?.map(
+                              (professionId: any) => ({
+                                value: professionId,
+                                label:
+                                  profession?.find(
+                                    (p: any) => p.id === professionId
+                                  )?.title ||
+                                  (professionId === "other" ? "Other" : ""),
+                              })
+                            ) || []
                           }
                           onChange={(selectedOptions) => {
                             const selectedValues = selectedOptions?.map(
@@ -2121,7 +2135,6 @@ const closeByKey = (key: typeof activeModal) =>
                           {personErrors.professions}
                         </p>
                       )}
-
                     </div>
                     {/* Add this after the Select component */}
                     {personForm.professions?.includes("other") && (
@@ -2159,9 +2172,8 @@ const closeByKey = (key: typeof activeModal) =>
 
                         return (
                           <div key={question.id} className="mb-4">
-
                             <label
-                              style={{ lineHeight: '1.8' }}
+                              style={{ lineHeight: "1.8" }}
                               className="block openSans text-base font-medium text-gray-800 mb-3 mt-4"
                             >
                               {question.question}
@@ -2197,10 +2209,11 @@ const closeByKey = (key: typeof activeModal) =>
                                 name={`question_${question.id}`}
                                 value={existingAnswer}
                                 onChange={handlePersonFormChange}
-                                className={`w-full px-3 py-2 border ${personErrors[`question_${question.id}`]
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                                  } rounded-md`}
+                                className={`w-full px-3 py-2 border ${
+                                  personErrors[`question_${question.id}`]
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-md`}
                                 placeholder={`Enter your answer`}
                                 rows={3}
                               />
@@ -2279,7 +2292,8 @@ const closeByKey = (key: typeof activeModal) =>
                         variant="gradient-primary"
                         className="w-[104px] h-[39px] rounded-[100px] p-0
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
-    flex items-center justify-center"                      >
+    flex items-center justify-center"
+                      >
                         Next
                       </Button>
                     </>
@@ -2291,8 +2305,11 @@ const closeByKey = (key: typeof activeModal) =>
         </div>
       </Modal>
 
-<Modal isOpen={activeModal === "personPricing"} onClose={() => closeByKey("personPricing")}
-  modalKey="personPricing">
+      <Modal
+        isOpen={activeModal === "personPricing"}
+        onClose={() => closeByKey("personPricing")}
+        modalKey="personPricing"
+      >
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
@@ -2406,9 +2423,11 @@ const closeByKey = (key: typeof activeModal) =>
         </div>
       </Modal>
 
-     <Modal isOpen={activeModal === "organizationPricing"} onClose={() => closeByKey("organizationPricing")}
-  modalKey="organizationPricing">
-
+      <Modal
+        isOpen={activeModal === "organizationPricing"}
+        onClose={() => closeByKey("organizationPricing")}
+        modalKey="organizationPricing"
+      >
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
@@ -2582,17 +2601,22 @@ const closeByKey = (key: typeof activeModal) =>
         </div>
       </Modal>
 
-<Modal isOpen={activeModal === "forgotpassword"} onClose={closeModal} modalKey="forgotpassword">
+      <Modal
+        isOpen={activeModal === "forgotpassword"}
+        onClose={closeModal}
+        modalKey="forgotpassword"
+      >
         <div className=" p-6 rounded-lg w-full mx-auto z-10 relative">
           <h2 className="text-xl poppins font-bold mb-4 text-center">
             Forgot Password
           </h2>
           {apiMessage && (
             <div
-              className={`text-center mb-4 ${apiMessage.includes("A Forgot Password Email Has Been Sent")
-                ? "text-green-500"
-                : "text-red-500"
-                }`}
+              className={`text-center mb-4 ${
+                apiMessage.includes("A Forgot Password Email Has Been Sent")
+                  ? "text-green-500"
+                  : "text-red-500"
+              }`}
             >
               {apiMessage}
             </div>
@@ -2611,10 +2635,11 @@ const closeByKey = (key: typeof activeModal) =>
                 name="email"
                 required
                 placeholder="Enter your email"
-                className={`w-full px-3 py-2 rounded-[12px] border ${resetPasswordErrors.email
-                  ? "border-red-500"
-                  : "border-[#CBD5E1]"
-                  } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                className={`w-full px-3 py-2 rounded-[12px] border ${
+                  resetPasswordErrors.email
+                    ? "border-red-500"
+                    : "border-[#CBD5E1]"
+                } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
               />
               {resetPasswordErrors.email && (
                 <p className="mt-1 text-sm text-red-600">
@@ -2643,7 +2668,11 @@ const closeByKey = (key: typeof activeModal) =>
         </div>
       </Modal>
 
-<Modal isOpen={activeModal === "success"} onClose={closeModal} modalKey="success">
+      <Modal
+        isOpen={activeModal === "success"}
+        onClose={closeModal}
+        modalKey="success"
+      >
         <div className="text-center p-6 max-w-md">
           <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] ">
             <svg
@@ -2662,10 +2691,11 @@ const closeByKey = (key: typeof activeModal) =>
           </div>
           {apiMessage && (
             <div
-              className={`openSans text-center p-4 ${apiMessage.includes("A Forgot Password Email Has Been Sent")
-                ? "text-green-500"
-                : "text-red-500"
-                }`}
+              className={`openSans text-center p-4 ${
+                apiMessage.includes("A Forgot Password Email Has Been Sent")
+                  ? "text-green-500"
+                  : "text-red-500"
+              }`}
             >
               {apiMessage}
             </div>
@@ -2681,9 +2711,44 @@ const closeByKey = (key: typeof activeModal) =>
           </div>
         </div>
       </Modal>
- 
-            <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
-      
+
+      <Modal isOpen={activeModal === "disqualify"} onClose={closeModal}>
+        <div className="text-center p-6 max-w-md">
+          <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] mb-4">
+            <svg
+              className="h-10 w-10 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </div>
+          <div className="openSans text-center p-4 text-red-500">
+            You are not eligible for the Aspiring Badge, Please try again after
+            1 day.
+          </div>
+          <div className="mt-6">
+            <Button
+              onClick={() => {
+                closeModal();
+                navigate("/dashboard");
+              }}
+              variant="gradient-primary"
+              className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+            >
+              Got it!
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
     </>
   );
 }

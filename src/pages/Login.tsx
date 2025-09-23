@@ -153,6 +153,7 @@ export default function Login() {
     | "organizationPricing"
     | "forgotpassword"
     | "success"
+    | "disqualify"
     | null
   >(null);
   const [organizationForm, setOrganizationForm] = useState<OrganizationForm>({
@@ -762,27 +763,6 @@ export default function Login() {
       return;
     }
 
-    const notAlignedCount = organizationForm.question.filter(
-      (q) => q.answer === "Not Aligned"
-    ).length;
-
-    if (notAlignedCount >= 4) {
-      localStorage.setItem("is_disqualify", "true");
-      showToast({
-        type: "error",
-        message:
-          "You are not eligible for the Aspiring Badge; Please try again after 1 day.",
-        duration: 2000,
-      });
-      setActiveModal(null);
-      setIsSubmitting(false);
-      setTimeout(() => {
-        setActiveModal(null);
-        navigate("/dashboard/user-profile");
-      }, 2000);
-      return;
-    }
-
     try {
       const res = await submitOrganizationDetails(organizationForm);
       localStorage.setItem("person_organization", "2");
@@ -884,27 +864,6 @@ export default function Login() {
       return;
     }
 
-    const notAlignedCount = organizationForm.question.filter(
-      (q) => q.answer === "Not Aligned"
-    ).length;
-
-    if (notAlignedCount >= 4) {
-      localStorage.setItem("is_disqualify", "true");
-      showToast({
-        type: "error",
-        message:
-          "You are not eligible for the Aspiring Badge; Please try again after 1 day.",
-        duration: 2000,
-      });
-      setActiveModal(null);
-      setIsSubmitting(false);
-      setTimeout(() => {
-        setActiveModal(null);
-        navigate("/dashboard/user-profile");
-      }, 2000);
-      return;
-    }
-
     try {
       const payload = {
         ...personForm,
@@ -974,7 +933,7 @@ export default function Login() {
         setPersonPricing(updatedPlans);
         setActiveModal("personPricing");
       } else if (res.success.statusCode === 201) {
-        navigate("/dashboard");
+        setActiveModal("disqualify");
         const response = await MeDetails();
         localStorage.setItem(
           "profile_picture",
@@ -987,6 +946,10 @@ export default function Login() {
           response?.data?.data?.user.margaret_name
         );
         localStorage.setItem("is_disqualify", "true");
+        setTimeout(() => {
+          setActiveModal(null);
+          navigate("/dashboard");
+        }, 2000);
       }
     } catch (error) {
       console.error("Error submitting organization form:", error);
@@ -2727,6 +2690,42 @@ export default function Login() {
           <div className="mt-6">
             <Button
               onClick={closeModal}
+              variant="gradient-primary"
+              className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+            >
+              Got it!
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={activeModal === "disqualify"} onClose={closeModal}>
+        <div className="text-center p-6 max-w-md">
+          <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] mb-4">
+            <svg
+              className="h-10 w-10 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </div>
+          <div className="openSans text-center p-4 text-red-500">
+            You are not eligible for the Aspiring Badge, Please try again after
+            1 day.
+          </div>
+          <div className="mt-6">
+            <Button
+              onClick={() => {
+                closeModal();
+                navigate("/dashboard");
+              }}
               variant="gradient-primary"
               className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
             >
