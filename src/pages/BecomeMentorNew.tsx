@@ -23,9 +23,10 @@ import { PhoneInput } from "react-international-phone";
 
 interface MentorFormData {
   name: string;
+  email: string;
   phone_code: string;
   phone_no: string;
-  email: string;
+  country_timezone: string;
   year_of_experience: number | "";
   website: string;
   bio: string;
@@ -46,9 +47,10 @@ const BecomeMentor = () => {
   // Form state
   const [formData, setFormData] = useState<MentorFormData>({
     name: "",
+    email: "",
     phone_code: "",
     phone_no: "",
-    email: "",
+    country_timezone: "",
     year_of_experience: "",
     website: "",
     bio: "",
@@ -193,10 +195,10 @@ const BecomeMentor = () => {
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { id, value } = e.target;
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [id]: value,
+      [name]: value,
     }));
 
     // Validate field in real-time
@@ -209,12 +211,12 @@ const BecomeMentor = () => {
 
   // Handle number input changes specifically
   const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
+    const { name, value } = e.target;
     // Only allow numbers, empty string, or 0
     if (value === "" || /^\d+$/.test(value)) {
       setFormData((prev) => ({
         ...prev,
-        [id]: value === "" ? "" : Number(value),
+        [name]: value === "" ? "" : Number(value),
       }));
     }
   };
@@ -225,16 +227,6 @@ const BecomeMentor = () => {
   const handlePhoneChange = (value: string, country: any) => {
     setPhone(value);
     setCountryCode(country.country.dialCode);
-
-    // Validate phone
-    const phoneError =
-      value.replace(/\D/g, "").length < 5
-        ? "Please enter a valid phone number"
-        : "";
-    setFieldErrors((prev) => ({
-      ...prev,
-      phone: phoneError,
-    }));
   };
 
   // Handle form submission
@@ -359,9 +351,10 @@ const BecomeMentor = () => {
         // Reset form
         setFormData({
           name: "",
+          email: "",
           phone_code: "",
           phone_no: "",
-          email: "",
+          country_timezone: "",
           year_of_experience: "",
           website: "",
           bio: "",
@@ -691,7 +684,7 @@ const BecomeMentor = () => {
                 <div className="mx-auto w-full max-w-[760px] 2xl:max-w-none grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 items-start">
                   <Field label="Name">
                     <Input
-                      id="name" // Add this
+                      name="name"
                       value={formData.name}
                       onChange={handleInputChange}
                       placeholder="Enter your name"
@@ -700,7 +693,7 @@ const BecomeMentor = () => {
                   </Field>
                   <Field label="Email Address">
                     <Input
-                      id="email" // Add this
+                      name="email"
                       type="email"
                       value={formData.email}
                       onChange={handleInputChange}
@@ -711,6 +704,7 @@ const BecomeMentor = () => {
 
                   <Field label="Phone Number">
                     <PhoneInputField
+                      name="phone"
                       value={phone}
                       onChange={handlePhoneChange}
                       defaultCountry="us"
@@ -719,7 +713,7 @@ const BecomeMentor = () => {
                   </Field>
                   <Field label="Country & Time Zone">
                     <Input
-                      id="country_timezone" // This should probably be availability or create a new field
+                      name="country_timezone"
                       value={formData.country_timezone}
                       onChange={handleInputChange}
                       placeholder="Select your country & Time zone"
@@ -729,7 +723,7 @@ const BecomeMentor = () => {
 
                   <Field label="Experience">
                     <Input
-                      id="year_of_experience" // Add this
+                      name="year_of_experience"
                       value={formData.year_of_experience.toString()}
                       onChange={handleNumberInputChange}
                       placeholder="Enter your years of experience"
@@ -738,7 +732,7 @@ const BecomeMentor = () => {
                   </Field>
                   <Field label="Website / Social Media Link (if any)">
                     <Input
-                      id="website" // Add this
+                      name="website"
                       value={formData.website}
                       onChange={handleInputChange}
                       placeholder="Enter your link"
@@ -747,7 +741,7 @@ const BecomeMentor = () => {
 
                   <Field label="Profile summary">
                     <TextArea
-                      id="bio" // Add this
+                      name="bio"
                       value={formData.bio}
                       onChange={handleInputChange}
                       placeholder="Add Notes..."
@@ -755,7 +749,7 @@ const BecomeMentor = () => {
                   </Field>
                   <Field label="Why do you want to become a mentor?">
                     <TextArea
-                      id="motivation" // Add this
+                      name="motivation"
                       value={formData.motivation}
                       onChange={handleInputChange}
                       placeholder="Add Notes..."
@@ -764,7 +758,7 @@ const BecomeMentor = () => {
 
                   <Field label="Areas & availability">
                     <Input
-                      id="availability" // Add this
+                      name="availability"
                       type="text"
                       value={formData.availability}
                       onChange={handleInputChange}
@@ -851,14 +845,14 @@ function Field({
 }
 
 function Input({
-  id, // Add this
+  name,
   value,
   onChange,
   placeholder,
   type = "text",
   required = false,
 }: {
-  id?: string; // Add this
+  name: string;
   value: string;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
   placeholder?: string;
@@ -867,7 +861,7 @@ function Input({
 }) {
   return (
     <input
-      id={id} // Add this
+      name={name}
       value={value}
       onChange={onChange}
       type={type}
@@ -880,19 +874,19 @@ function Input({
 
 // Similarly update TextArea component:
 function TextArea({
-  id, // Add this
+  name,
   value,
   onChange,
   placeholder,
 }: {
-  id?: string; // Add this
+  name: string;
   value: string;
   onChange: React.ChangeEventHandler<HTMLTextAreaElement>;
   placeholder?: string;
 }) {
   return (
     <textarea
-      id={id} // Add this
+      name={name}
       value={value}
       onChange={onChange}
       rows={4}
@@ -903,11 +897,13 @@ function TextArea({
 }
 
 function PhoneInputField({
+  name,
   value,
   onChange,
   defaultCountry = "us",
   placeholder = "Enter your phone number",
 }: {
+  name: string;
   value: string;
   onChange: (value: string, country: any) => void;
   defaultCountry?: string;
@@ -918,6 +914,7 @@ function PhoneInputField({
       <input type="hidden" value={value} />
 
       <PhoneInput
+        name={name}
         value={value}
         onChange={onChange}
         defaultCountry={defaultCountry as any}

@@ -55,7 +55,7 @@ const rightCards = [
     caption: { before: "", highlight: "It’s The Antidote To Noisy Social Media", after: "A Space That Inspires Meaningful Digital Interaction." },
   },
   {
-    title: "Ariome",
+    title: "Ariome Ariome Ariome",
     subtitle: "Conscious Betterment App",
     list: [
       "Guided Growth Journeys: Multi-Day Themed Programs",
@@ -126,7 +126,7 @@ export default function EcoSystemApp() {
                 onClick={() => makeActive(i)}
                 onKeyDown={(e) => onKeyActivate(e, i)}
                 className={`relative overflow-hidden rounded-4xl p-[30px] w-full shadow-sm transition-all duration-700 
-                            cursor-pointer outline-none ${activeCard === i ? "ring-2 ring-[#7b5bff]/50" : "ring-0"}`}
+                            cursor-pointer outline-none flex-1 h-full ${activeCard === i ? "ring-2 ring-[#7b5bff]/50" : "ring-0"}`}
                 style={{ backgroundColor: "white", boxShadow: "0px 4px 20px 0px rgba(0, 0, 0, 0.05)" }}
               >
                 <div
@@ -176,7 +176,7 @@ export default function EcoSystemApp() {
                 onClick={() => makeActive(i)}
                 onKeyDown={(e) => onKeyActivate(e, i)}
                 className={`relative overflow-hidden rounded-4xl p-[30px] w-full shadow-sm transition-all duration-700 
-                            cursor-pointer outline-none ${activeCard === i ? "ring-2 ring-[#7b5bff]/50" : "ring-0"}`}
+                            cursor-pointer outline-none flex-1 h-full ${activeCard === i ? "ring-2 ring-[#7b5bff]/50" : "ring-0"}`}
                 style={{ backgroundColor: "white", boxShadow: "0px 4px 20px 0px rgba(0, 0, 0, 0.05)" }}
               >
                 <div
