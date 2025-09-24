@@ -594,7 +594,7 @@ const BecomeMentor = () => {
           </div>
         </div>
 
-        <section className="bg-white px-6 sm:px-10 md:px-16 lg:px-22 py-[60px] mb-0">
+        <section className="hidden sm:flex flex-col bg-white px-6 sm:px-10 md:px-16 lg:px-22 py-[60px] mb-0">
           <div className="text-center mb-10">
             <h2 className="font-['Poppins',Helvetica] font-medium text-2xl sm:text-3xl lg:text-[32px] leading-snug sm:leading-[40px] lg:leading-[54px] tracking-[-0.02em]">
               Your Path to Becoming a{" "}
@@ -656,7 +656,7 @@ const BecomeMentor = () => {
         {/* Application Form Section */}
         <div
           id="apply_partner"
-          className="w-full bg-[#F5F7F9] py-10 px-5 lg:px-10"
+          className="w-full bg-[#F5F7F9] pb-10 sm:py-10 px-5 lg:px-10"
         >
           <h1 className="pb-10 font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px] text-center">
             <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
