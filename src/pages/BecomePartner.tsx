@@ -492,7 +492,7 @@ const BecomePartner = () => {
         <div className="w-full bg-[#F5F7F9] py-[86px] px-20 md:px-20">
           <div className="mx-auto flex flex-col lg:flex-row justify-between items-center gap-10">
             <div className="w-full lg:w-3/5 flex flex-col justify-start items-start text-start">
-              <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px] text-center">
+              <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px] text-center">
                 <span className="text-black">Who can become a </span>
                 <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                   Partner?
