@@ -302,7 +302,7 @@ export default function DashboardDirectory() {
           className="absolute bottom-[0px] left-0 w-full object-cover z-0 pointer-events-none"
         />
 
-        <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 py-8 md:py-20 max-w-4xl mx-auto">
+        <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 py-8 md:py-20 max-w-4xl mx-auto mt-20">
           <h1 className="text-center font-poppins font-semibold mb-6 text-[32px] leading-[100%] tracking-[0px] bg-gradient-to-b from-[#4E4E4E] to-[#232323] bg-clip-text text-transparent">
             Conscious Search Stops here.
           </h1>
@@ -372,7 +372,7 @@ export default function DashboardDirectory() {
                 onKeyDown={handleKeyPress}
               />
               <button
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE] cursor-pointer"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#7077FE] cursor-pointer"
                 onClick={handleSearch}
               >
                 🔍
@@ -392,7 +392,7 @@ export default function DashboardDirectory() {
         </div>
       </section>
 
-      <section className="py-6 px-1 bg-[#f9f9f9] border-t border-gray-100">
+      <section className="py-6 px-1 bg-[#f9f9f9] border-t border-gray-100 ">
         <div className="w-full mx-auto flex items-center">
           <h2 className="text-xl font-semibold">{
             selected === "popular" ? "Leader Board" :
@@ -457,7 +457,7 @@ export default function DashboardDirectory() {
         </section>
       ) : (
         <>
-          <section className="py-12 px-1 bg-[#f9f9f9] border-t border-gray-100">
+          <section className="py-12 px-1 bg-[#f9f9f9] border-t border-gray-100 pt-2">
             <div className="w-full mx-auto">
               <h3 className="text-lg font-semibold mb-4">Popular People</h3>
               {isLoading.popular ? (

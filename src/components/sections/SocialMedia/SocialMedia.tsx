@@ -37,13 +37,16 @@ export default function SocialMedia() {
             </h2>
           </div>
           <div className="lg:w-6/12 md:w-6/12 w-full">
-            <p className="openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] capitalize">
+            <p className="openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] ">
               Share reflections, life moments, and conscious thoughts.<br />
               React, repost, and respond to what moves you. CNESS is where like-hearted<br />
               creators, thinkers, and changemakers meet — not to impress, but to express.
               
             </p>
-            <Button className="jakarta w-fit rounded-[100px] h-[38px] text-[16px] font-[400] text-[#fff] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#F07EFF] mt-6"
+            <Button className="w-fit h-[38px] rounded-[100px] 
+             py-1 px-6 mt-6 
+             text-[16px] font-['Open_Sans'] font-medium font-[500] leading-[100%] tracking-[0px] text-center text-white
+             bg-gradient-to-r from-[#7077FE] to-[#F07EFF]"
              onClick={() => setOpenSignup(true)}>
               Join the Conscious Conversation
             </Button>

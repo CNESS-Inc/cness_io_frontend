@@ -517,7 +517,7 @@ useEffect(() => {
         />
 
         {/* Foreground Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center max-w-4xl mx-auto h-full px-4 text-center">
+        <div className="relative z-10 flex flex-col items-center justify-center max-w-4xl mx-auto h-full px-4 text-center mt-20">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-6 sm:mb-10 mt-0 sm:-mt-35">
             Find Your Conscious Best Practices here.
           </h1>
@@ -602,7 +602,7 @@ useEffect(() => {
                 onKeyDown={handleKeyPress}
               />
               <button
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE]"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#7077FE]"
                 onClick={handleSearch}
               >
                 🔍
@@ -928,6 +928,8 @@ useEffect(() => {
                             toggleSave(company.id);
                           }}
                         >
+                          <div className="flex items-center gap-2 cursor-pointer">
+
                           <Bookmark
                             className="w-5 h-5 transition-all duration-200"
                             fill={
@@ -937,6 +939,10 @@ useEffect(() => {
                               savedItems.has(company.id) ? "#72DBF2" : "#4338CA"
                             } // yellow or indigo
                           />
+                          <span className="text-sm font-normal text-gray-700">
+    {savedItems.has(company.id) ? "Saved" : "Save"}
+  </span>
+                        </div>
                         </div>
                       </div>
                     </div>

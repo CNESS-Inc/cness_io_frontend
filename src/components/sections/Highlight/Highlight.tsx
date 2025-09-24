@@ -82,7 +82,10 @@ export default function Highlight() {
               <br /> socially, creatively, and professionally.  Showcase your skills, share your story, connect with like-minded people, and unlock opportunities to grow with confidence and purpose.
               
             </p>
-            <Button className="jakarta w-fit rounded-[100px] h-[42px] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#F07EFF] self-stretch transition-colors duration-500 ease-in-out"
+            <Button className="font-['Open_Sans'] font-medium  text-[16px] leading-[100%] tracking-[0px] text-center 
+             w-fit h-[42px] py-1 px-6 rounded-[100px] 
+             bg-gradient-to-r from-[#7077FE] to-[#F07EFF] 
+             self-stretch transition-colors duration-500 ease-in-out"
               onClick={() => setOpen(true)}>
               See how it all works →
             </Button>

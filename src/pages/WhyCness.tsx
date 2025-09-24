@@ -97,7 +97,7 @@ export default function WhyCness() {
               variant="gradient-primary"
               size="md"
               onClick={scrollToGetInTouch}
-              className="mt-6 font-['Plus Jakarta Sans'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-center"
+              className="mt-6 font-['Plus Jakarta Sans'] font-medium text-[16px] leading-[100%] tracking-[0px] text-center"
             >
               Contact Us
             </Button>
@@ -156,7 +156,7 @@ export default function WhyCness() {
                 <a
                   onClick={() => setOpenSignup(true)}
                   className="inline-flex items-center justify-center rounded-full px-5 py-3 text-[16px]
-                     font-['Plus Jakarta Sans'] font-semibold text-white shadow-md hover:shadow-lg
+                     font-['Plus Jakarta Sans'] font-medium text-white shadow-md hover:shadow-lg
                      bg-gradient-to-r from-[#7077FE] to-[#F07EFF]"
                 >
                   Join the Journey
@@ -482,7 +482,7 @@ export default function WhyCness() {
               <div className="flex items-center justify-center w-full joining-btn ">
                 <Button
                   variant="gradient-primary"
-                  className="jakarta font-normal w-fit rounded-[100px] h-[42px] py-1 px-8 self-stretch text-[14px] "
+                  className="jakarta font-medium w-fit rounded-[100px] h-[42px] py-1 px-8 self-stretch text-[16px] "
                   onClick={() => setOpenSignup(true)}
                 >
                   Join Us

@@ -97,7 +97,10 @@ export default function Certifications() {
               <div className="flex items-center justify-center w-full joining-btn ">
                 <Button
                   variant="gradient-primary"
-                  className="jakarta font-normal w-fit rounded-[100px] h-[42px] py-1 px-8 self-stretch text-[14px] "
+                  className="w-fit h-[42px] rounded-[100px] 
+             py-1 px-8 self-stretch 
+             text-[16px] font-['Open_Sans'] font-medium
+             leading-[100%] tracking-[0px] text-center"
                   onClick={() => (window.location.href = "/sign-up")}
                 >
                   Join Us

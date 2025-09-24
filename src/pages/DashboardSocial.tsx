@@ -43,15 +43,15 @@ import {
 
 // images
 // import Announcement from "../assets/Announcement.png";
-import Collection from "../assets/Collection.png";
+import Collection from "../assets/collectionicon.svg";
 // import Leaderboard from "../assets/Leaderboard.png";
-import Mention from "../assets/Mention.png";
-import people from "../assets/people.png";
+import Mention from "../assets/mentionicon.svg";
+import people from "../assets/peopleicon.svg";
 import Trending from "../assets/trending.svg";
 import createstory from "../assets/createstory.jpg";
 import carosuel1 from "../assets/carosuel1.png";
 // import like from "../assets/like.png";
-import like from "../assets/social_like.png";
+import like from "../assets/sociallike.svg";
 // import comment from "../assets/comment.png";
 // import comment1 from "../assets/comment1.png";
 import Image from "../components/ui/Image";
@@ -1620,7 +1620,7 @@ export default function SocialTopBar() {
                                           className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
                                         >
                                           <LinkIcon className="w-4 h-4" />
-                                          Copy Post Link
+                                          Copy Post Act
                                         </button>
                                       </li>
                                       <li>
@@ -1633,7 +1633,7 @@ export default function SocialTopBar() {
                                           <Bookmark className="w-4 h-4" />
                                           {post.is_saved
                                             ? "Unsave"
-                                            : "Save Post"}
+                                            : "Save Act"}
                                         </button>
                                       </li>
                                       <li>
@@ -1644,7 +1644,7 @@ export default function SocialTopBar() {
                                           className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
                                         >
                                           <Flag className="w-4 h-4" />
-                                          Report Post
+                                          Report Act
                                         </button>
                                       </li>
                                     </ul>
@@ -2117,14 +2117,14 @@ export default function SocialTopBar() {
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
               <div className="bg-white rounded-[18px] w-full max-w-md mx-4 shadow-lg relative">
                 <div className="flex px-5 py-3 bg-[#897AFF1A] justify-between items-center">
-                  <div className="w-fit h-fit">
-                    <Image
+                <div className="w-fit h-fit">
+                      {/*<Image
                       src="/popup-plus-icon.png"
                       alt="plus-icon"
                       width={36}
                       height={36}
                       className="object-contain"
-                    />
+                    />*/}
                   </div>
                   <h2 className="text-lg font-semibold mb-0 text-[#897AFF]">
                     Create Post
