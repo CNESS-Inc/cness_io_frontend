@@ -32,7 +32,7 @@ const navigate = useNavigate();
             Benefits
           </span>
 
-          <div className='leading-9 pt-[20px] flex flex-col gap-4 w-full'>
+          <div className='lg:leading-9 md:leading-9 leading-[24px] pt-[20px] flex flex-col gap-4 w-full'>
             {[
               "Unlock your True Profile with verified status",
               "Sell your services or digital tools in the Conscious Marketplace",
@@ -52,7 +52,7 @@ const navigate = useNavigate();
 
           <button
             type="button"
-            className='open sans px-3 py-1 h-[42px] w-[127px] text-white bg-gradient-to-r from-[#7077FE] to-[#F07EFF] rounded-[50px] mt-8 cursor-pointer'
+            className='open sans px-3 py-1 h-[42px] lg:w-[127px] md:w-[127px] w-full text-white bg-gradient-to-r from-[#7077FE] to-[#F07EFF] rounded-[50px] mt-8 cursor-pointer'
             onClick={() => {
     navigate("/certifications");
     // Reset scroll

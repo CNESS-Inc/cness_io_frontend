@@ -78,10 +78,10 @@ export default function PopupOnboardingModal({
               aria-modal="true"
               className="
                 relative grid grid-cols-1 md:grid-cols-[475px_475px]
-                w-full max-w-[1020px] h-auto md:min-h-[850px]
+                w-full max-w-[1020px] w-full h-[620px] md:min-h-[850px]
                 rounded-[32px] p-[20px] md:p-[30px]
                 shadow-2xl bg-white
-                will-change-transform [backface-visibility:hidden]
+                will-change-transform [backface-visibility:hidden] overflow-y-auto
               "
             >
 
@@ -90,7 +90,7 @@ export default function PopupOnboardingModal({
           className="
             relative overflow-hidden rounded-[32px]
             w-[475px] h-[800px]
-            px-[60px] pt-[86px] pb-[86px]
+            px-[60px] pt-[86px] pb-[86px] lg:block md:block hidden
           "
         >
           <img
@@ -117,8 +117,8 @@ export default function PopupOnboardingModal({
         <div
           className="
             relative rounded-[32px] bg-white
-            w-[475px] h-[670px]
-            px-[30px] py-[30px]
+            lg:w-[475px] md:w-[475px] w-full lg:h-[670px] md:h-[670px] h-full
+            lg:px-[30px] md:px-[15px] py-[30px]
             
           "
         >

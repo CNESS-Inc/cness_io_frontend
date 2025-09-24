@@ -413,7 +413,7 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
               validateForm(registerForm);
             }}
             className="
-                  w-[415px] h-[45px]
+                  lg:w-[415px] w-full h-[45px]
                   rounded-[4px] border-2 border-gray-200
                   px-[10px]  /* pr + pl = 10px */
                   outline-none
@@ -429,7 +429,7 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
 
         {/* Passwords */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <label className="block">
+          <label className="block w-full">
             <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
               Password
             </span>
@@ -445,7 +445,7 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
                 validateForm(registerForm);
               }}
               className="
-                    w-[195.5px] h-[45px]
+                    lg:w-[195.5px] w-full h-[45px]
                     rounded-[4px] border-2 border-gray-200
                     px-[10px]
                     outline-none
@@ -459,7 +459,7 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
             )}
           </label>
 
-          <label className="block">
+          <label className="block w-full">
             <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
               Re-type Password
             </span>
@@ -475,7 +475,7 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
                 validateForm(registerForm);
               }}
               className="
-                    w-[195.5px] h-[45px]
+                    lg:w-[195.5px] w-full h-[45px]
                     rounded-[4px] border-2 border-gray-200
                     px-[10px]
                     outline-none

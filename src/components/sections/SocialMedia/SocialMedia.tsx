@@ -30,7 +30,7 @@ export default function SocialMedia() {
          
             <h2 
              style={{ fontFamily: "Poppins, sans-serif" }}
-            className=" leading-[54px] text-[42px] font-[500] mt-3">
+            className=" lg:leading-[54px] md:leading-[54px] leading-[40px] lg:text-[42px] md:text-[42px] text-[32px] font-[500] mt-3">
               <span className="bg-linear-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">
                 Social Media
               </span>, Reimagined for Conscious Expression
@@ -38,12 +38,12 @@ export default function SocialMedia() {
           </div>
           <div className="lg:w-6/12 md:w-6/12 w-full">
             <p className="openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] capitalize">
-              Share reflections, life moments, and conscious thoughts.<br />
-              React, repost, and respond to what moves you. CNESS is where like-hearted<br />
+              Share reflections, life moments, and conscious thoughts.<br className="lg:block md:block hidden" />
+              React, repost, and respond to what moves you. CNESS is where like-hearted<br className="lg:block md:block hidden" />
               creators, thinkers, and changemakers meet — not to impress, but to express.
               
             </p>
-            <Button className="jakarta w-fit rounded-[100px] h-[38px] text-[16px] font-[400] text-[#fff] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#F07EFF] mt-6"
+            <Button className="jakarta w-fit rounded-[100px] h-[38px] text-[16px] font-[400] text-[#fff] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#F07EFF] mt-6 lg:mx-0 md:mx-0 mx-auto"
              onClick={() => setOpenSignup(true)}>
               Join the Conscious Conversation
             </Button>

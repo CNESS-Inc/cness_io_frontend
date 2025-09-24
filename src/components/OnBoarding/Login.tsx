@@ -1229,15 +1229,15 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
       <PopupOnboardingModal open={open} onClose={onClose}>
         {/* Sign In Form */}
 
-        <div className="mx-auto w-full max-w-[460px] mt-15">
-          <h1 className="text-center font-[Poppins] font-medium text-[32px] leading-[100%] tracking-[-0.03em] text-gray-900">
+        <div className="mx-auto w-full max-w-[460px] lg:mt-15 md:mt-15 mt-6">
+          <h1 className="text-center font-[Poppins] font-medium lg:text-[32px] md:text-[32px] text-[28px] leading-[100%] tracking-[-0.03em] text-gray-900">
             Sign in to your account
           </h1>
 
           <ul className="mt-4 flex justify-center items-center gap-6 text-sm text-gray-600">
             <li className="flex items-center gap-2 font-['Open_Sans'] text-[14px] leading-[100%] text-gray-700">
               <Check className="h-6 w-6 stroke-[3px] text-green-500" />
-              Securely access your dashboard anytime, anywhere.
+             <span className="text-center"> Securely access your dashboard anytime, anywhere.</span>
             </li>
           </ul>
 
@@ -1376,7 +1376,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
             <Button
               type="submit"
               variant="gradient-primary"
-              className="mt-1 w-[415px] h-[42px] 
+              className="mt-1 lg:w-[415px] md:w-[415px] w-full h-[42px] 
     rounded-[81.26px]
     bg-gradient-to-r from-indigo-500 to-fuchsia-500
     px-[19.5px] py-[16px]
