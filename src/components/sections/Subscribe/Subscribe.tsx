@@ -25,7 +25,7 @@ export default function Subscribe() {
         {/* Right form */}
         <form className="w-full max-w-xl">
           {/* Input + Button in one row */}
-          <div className="flex flex-row items-center gap-5">
+          <div className="flex flex-row flex-wrap items-center gap-5">
             <input
               id="email"
               type="email"
@@ -45,7 +45,7 @@ export default function Subscribe() {
               variant="gradient-primary"
               type="submit"
               className="
-                w-[118px] h-[44px]   /* match input height */
+                lg:w-[118px] md:w-[118px] w-full h-[44px]   /* match input height */
                 rounded-[81px]
                 flex items-center justify-center
                 text-white text-[14px] font-medium
@@ -61,7 +61,7 @@ export default function Subscribe() {
           {/* Privacy note below */}
           <p
            
-            className="openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] md:text-sm mt-2 text-left"
+            className="openSans font-[300] text-[14px] leading-[24px] tracking-[0px] text-[#64748B] md:text-sm mt-2 lg:text-left md:text-left text-center"
           >
             We care about your data in our{" "}
             <a

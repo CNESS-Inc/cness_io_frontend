@@ -30,7 +30,8 @@ const cards = [
 
 const rightCards = [
   {
-    title: "CNESS Web (Individual)",
+    title: "CNESS Web ",
+    info: "(Individual)",
     subtitle: "Empowering Conscious Creators",
     list: [
       "Validate Their Conscious Identity",
@@ -47,7 +48,8 @@ const rightCards = [
     },
   },
   {
-    title: "CNESS Web (Organizations)",
+    title: "CNESS Web ",
+    info: "(Organizations)",
     subtitle: "Trust, Transformation & Training",
     list: [
       "3-Level Certification: With Transparent Criteria And Public Visibility",
@@ -64,7 +66,8 @@ const rightCards = [
     },
   },
   {
-    title: "CNESS (Mobile App)",
+    title: "CNESS",
+    info: "(Mobile App)",
     subtitle: "Ecosystem — in your pocket.",
     list: [
       "Conscious Profile: A Digital Reflection Of One’s Values And Intent",
@@ -190,22 +193,20 @@ export default function EcoSystemApp() {
                   }}
                 />
                 <div className="relative z-10">
-                  <h3
-                    style={{ fontFamily: "Poppins, sans-serif" }}
-                    className={`font-medium text-2xl ${
-                      activeCard === i ? "text-white" : "text-black"
-                    }`}
-                  >
-                    {cards[i].title}
-                  </h3>
-                  <span
-                    style={{ fontFamily: "Poppins, sans-serif" }}
-                    className={`text-sm font-semibold ${
-                      activeCard === i ? "text-white" : "text-[#6F41FD]"
-                    }`}
-                  >
-                    {cards[i].subtitle}
-                  </span>
+
+                  <div className="lg:block md:block flex align-center gap-2">
+                    <h3 style={{ fontFamily: "Poppins, sans-serif" }} className={`font-medium text-2xl ${activeCard === i ? "text-white" : "text-black"}`}>
+                      {cards[i].title}
+                    </h3>
+                    <span
+                      style={{ fontFamily: "Poppins, sans-serif" }}
+                      className={`text-sm lg:mt-0 md:mt-0 mt-2  font-semibold ${activeCard === i ? "text-white" : "text-[#6F41FD]"}`}
+                    >
+                      {cards[i].subtitle}
+                    </span>
+                  </div>
+                  
+
                   <p
                     className={`mt-2 text-base font-light font-['Open Sans'] openSans ${
                       activeCard === i ? "text-white" : "text-[#64748B]"
@@ -289,9 +290,10 @@ export default function EcoSystemApp() {
               <h3 className="font-poppins text-2xl font-light leading-[54px] tracking-[-0.02em] capitalize">
                 <span
                   style={{ fontFamily: "Poppins, sans-serif" }}
-                  className="bg-gradient-to-r from-[#D747EA] to-[#7741FB] text-transparent text-[42px] font-medium bg-clip-text"
+                  className="bg-gradient-to-r from-[#D747EA] to-[#7741FB] text-transparent text-[42px] font-medium bg-clip-text flex lg:flex-row md:flex-row flex-col"
                 >
-                  {rightCards[activeCard].title}
+                  <span>{rightCards[activeCard].title}</span>
+                  <span>{rightCards[activeCard].info}</span>
                 </span>
               </h3>
               <h3
