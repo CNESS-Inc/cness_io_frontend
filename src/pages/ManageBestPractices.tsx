@@ -9,6 +9,7 @@ import {
   GetValidProfessionalDetails,
   UpdateBestPractice,
   CreateBestPractice,
+  GetInterestsDetails,
 } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
 import {
@@ -18,6 +19,7 @@ import {
 } from "../components/ui/DashboardCard";
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
+import AddBestPracticeModal from "../components/sections/bestPractiseHub/AddBestPractiseModal";
 
 const Managebestpractices = () => {
   const [activeTab, setActiveTab] = useState<"saved" | "mine">("saved");
@@ -49,6 +51,7 @@ const Managebestpractices = () => {
   const [currentPractice, setCurrentPractice] = useState<any>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [profession, setProfession] = useState<any[]>([]);
+  const [interest, setInterestData] = useState<any[]>([]);
 
   const { showToast } = useToast();
 
@@ -57,7 +60,6 @@ const Managebestpractices = () => {
   >({});
   const [tags, setTags] = useState<string[]>([]);
   const [createTags, setCreateTags] = useState<string[]>([]); // Separate tags for create modal
-
 
   const truncateText = (text: string, maxLength: number): string => {
     if (!text) return "";
@@ -88,6 +90,7 @@ const Managebestpractices = () => {
     title: "",
     description: "",
     profession: "",
+    interest: "",
     file: null as File | null,
   });
   const [isCreateSubmitting, setIsCreateSubmitting] = useState(false);
@@ -214,8 +217,23 @@ const Managebestpractices = () => {
     }
   };
 
+  const fetchIntrusts = async () => {
+    try {
+      const res = await GetInterestsDetails();
+      setInterestData(res?.data?.data);
+    } catch (error: any) {
+      console.error("Error fetching Intrusts:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
   useEffect(() => {
     fetchProfession();
+    fetchIntrusts();
     fetchBestPractices();
     fetchMineBestPractices();
   }, []);
@@ -276,7 +294,7 @@ const Managebestpractices = () => {
           title: currentPractice.title,
           description: currentPractice.description,
           status: 0,
-          tags: tags
+          tags: tags,
         };
 
         await UpdateBestPractice(payload);
@@ -318,6 +336,7 @@ const Managebestpractices = () => {
       title: "",
       description: "",
       profession: "",
+      interest: "",
       file: null,
     });
     setCreateTags([]);
@@ -331,6 +350,7 @@ const Managebestpractices = () => {
       title: "",
       description: "",
       profession: "",
+      interest: "",
       file: null,
     });
     setCreateTags([]);
@@ -370,8 +390,9 @@ const Managebestpractices = () => {
       formData.append("title", newPractice.title);
       formData.append("description", newPractice.description);
       formData.append("profession", newPractice.profession);
+      formData.append("interest", newPractice.interest);
       formData.append("tags", JSON.stringify(createTags)); // Add tags to form data
-      
+
       if (newPractice.file) {
         formData.append("file", newPractice.file);
       }
@@ -414,13 +435,16 @@ const Managebestpractices = () => {
     }
   };
 
-  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, isCreateModal: boolean = false) => {
+  const handleTagKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    isCreateModal: boolean = false
+  ) => {
     const value = isCreateModal ? inputValue : editInputValue;
-    
+
     if (e.key === "Enter" && value.trim()) {
       e.preventDefault();
       const newTag = value.trim();
-      
+
       if (isCreateModal) {
         if (!createTags.includes(newTag)) {
           setCreateTags([...createTags, newTag]);
@@ -847,7 +871,7 @@ const Managebestpractices = () => {
       </div>
 
       {/* Create Best Practice Modal */}
-      <Modal isOpen={createModalActive} onClose={closeCreateModal}>
+      {/* <Modal isOpen={createModalActive} onClose={closeCreateModal}>
         <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
           <h2 className="text-xl font-bold mb-4">Create New Best Practice</h2>
           <form
@@ -914,7 +938,6 @@ const Managebestpractices = () => {
               </select>
             </div>
 
-            {/* Tags Input for Create Modal */}
             <div>
               <label
                 htmlFor="create-tags"
@@ -996,8 +1019,23 @@ const Managebestpractices = () => {
             </div>
           </form>
         </div>
-      </Modal>
-
+      </Modal> */}
+      <AddBestPracticeModal
+        open={createModalActive}
+        onClose={closeCreateModal}
+        newPractice={newPractice}
+        profession={profession}
+        interest={interest}
+        tags={tags}
+        inputValue={inputValue}
+        setInputValue={setInputValue}
+        removeTag={removeTag}
+        handleTagKeyDown={handleTagKeyDown}
+        handleInputChange={handleCreateInputChange}
+        handleFileChange={handleCreateFileChange}
+        handleSubmit={handleCreateSubmit}
+        isSubmitting={isCreateSubmitting}
+      />
 
       <Modal isOpen={activeModal === "bestpractices"} onClose={closeModal}>
         <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
@@ -1095,7 +1133,7 @@ const Managebestpractices = () => {
                   >
                     {tag}
                     <button
-                    type="button"
+                      type="button"
                       onClick={() => removeTag(idx)}
                       className="ml-1 text-[#6269FF] hover:text-red-500 font-bold"
                     >
@@ -1110,7 +1148,7 @@ const Managebestpractices = () => {
                 placeholder="Add tags (e.g. therapy, online, free-consult)"
                 value={editInputValue}
                 onChange={(e) => setEditInputValue(e.target.value)}
-                onKeyDown={(e)=>handleTagKeyDown(e, false)}
+                onKeyDown={(e) => handleTagKeyDown(e, false)}
               />
             </div>
 

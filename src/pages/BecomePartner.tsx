@@ -711,7 +711,7 @@ const BecomePartner = () => {
                   <Field label="Organization Size (No. of employees / scale)">
                     <Input
                       name="organization_size"
-                      placeholder="Select your Availability"
+                      placeholder="Number of employees"
                       value={data.organization_size}
                       onChange={handleChange}
                       error={
