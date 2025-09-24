@@ -40,7 +40,10 @@ const DashboardLayout = () => {
         {/* Mobile Header */}
         {!isMobileNavOpen && (
           <div className="md:hidden">
-            <DashboardHeader toggleMobileNav={toggleMobileNav} />
+            <DashboardHeader
+              toggleMobileNav={toggleMobileNav}
+              isMobileNavOpen={isMobileNavOpen}
+            />
           </div>
         )}
 
@@ -54,8 +57,15 @@ const DashboardLayout = () => {
           </button>
         )}
         {/* Desktop Header */}
-        <div className="hidden md:block w-full">
-          <DashboardHeader toggleMobileNav={toggleMobileNav} />
+        <div
+          className={`hidden md:block transition-all duration-300 ${
+            isMobileNavOpen ? "md:ml-[240px]" : "md:ml-0"
+          }`}
+        >
+          <DashboardHeader
+            toggleMobileNav={toggleMobileNav}
+            isMobileNavOpen={isMobileNavOpen}
+          />
         </div>
 
         {/* Sidebar */}
@@ -99,17 +109,17 @@ const DashboardLayout = () => {
           </main>
         </div>
       </div>
-<div 
-className={`transition-all duration-300 ${
-    isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
-  }`}
->  <MessagingProvider>
-    <PersistentMessagingWidget />
-  </MessagingProvider>
-
-
-<DashboardFooter />
-</div>
+      <div
+        className={`transition-all duration-300 ${
+          isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
+        }`}
+      >
+        {" "}
+        <MessagingProvider>
+          <PersistentMessagingWidget />
+        </MessagingProvider>
+        <DashboardFooter />
+      </div>
 
       {/* Mobile Sidebar Backdrop and Slide-in */}
       {isMobileNavOpen && (

@@ -40,7 +40,7 @@ export default function SectionFaq({ faqs }: CertificationFaqProps) {
             >
               FAQs
             </h1>
-            <p className="openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] pt-4 md:pt-2">
+            <p className="openSans font-light text-[16px] leading-[24px] tracking-[0px] text-[#64748B] pt-4 md:pt-2">
               Have questions? We’ve got you covered. Explore our FAQs to find
               quick answers 
               <br />about certifications, benefits, levels, and the
@@ -83,7 +83,7 @@ export default function SectionFaq({ faqs }: CertificationFaqProps) {
                       isOpen ? "max-h-40 py-2" : "max-h-0 py-0"
                     }`}
                   >
-                    <p className="openSans font-['Open Sans'] text-base text-[#64748B] font-normal">
+                    <p className="openSans font-['Open Sans'] text-base text-[#64748B] font-light">
                       {faq.answer}
                     </p>
                   </div>
