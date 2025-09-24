@@ -610,7 +610,7 @@ const CommentBox = ({
                         </div>
                       </div>
                       <p className="mt-1 break-words bg-[#F7F7F7] rounded-[8px] py-[14px] pl-[24px]">
-                        <TextWithMentions text={comment.text} />
+                        <TextWithMentions text={comment.text} commentId={comment.id} />
                       </p>
                       <div className="flex items-center text-xs text-gray-500 mt-1 gap-2">
                         {/* <button
@@ -766,7 +766,7 @@ const CommentBox = ({
                                   {formatTimeAgo(reply.createdAt)}
                                 </span> */}
                               <p className="text-sm break-words">
-                                <TextWithMentions text={reply.text} />
+                                <TextWithMentions text={reply.text} commentId={comment.id} />
                               </p>
                               </div>
                               {/* <div className="flex items-center text-xs text-gray-500 mt-1 gap-2">

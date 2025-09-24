@@ -352,6 +352,8 @@ export default function SocialTopBar() {
   const [isReportingPost, setIsReportingPost] = useState<string | null>(null);
   //const [showTopicModal, setShowTopicModal] = useState(false);
 
+  const maxChars = 2000;
+
   const handleConnect = async (userId: string) => {
     try {
       setConnectingUsers((prev) => ({ ...prev, [userId]: true }));
@@ -2178,8 +2180,16 @@ export default function SocialTopBar() {
                     className="w-full p-3 border border-[#ECEEF2] text-black placeholder:text-[#64748B] text-sm rounded-md resize-none mb-3 outline-none focus:border-[#897AFF1A]"
                     placeholder={`What's on your mind? ${userInfo.main_name}...`}
                     value={postMessage}
-                    onChange={(e) => setPostMessage(e.target.value)}
+                    onChange={(e) => {
+                      if (e.target.value.length <= maxChars) {
+                        setPostMessage(e.target.value);
+                      }
+                    }}
                   />
+                  <div className="flex justify-end text-xs text-gray-500">
+                    {postMessage.length}/{maxChars}
+                  </div>
+
 
                   <div className="space-y-3 mb-4 flex rounded-[8px] border border-[#F07EFF1A]  justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
                     <p className="mb-0 text-sm font-semibold">
