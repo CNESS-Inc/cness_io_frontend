@@ -77,7 +77,7 @@ export default function AwarenessSection() {
       {/* --- Second (Main) Section --- */}
       <motion.div
         key="second-load"
-        className="second-load h-[900px] flex flex-col items-center space-y-8 lg:py-24 py-15 px-4 bg-[#F7F7F7]"
+        className="second-load lg:h-[900px] flex flex-col items-center space-y-8 lg:py-24 py-15 px-4 bg-[#F7F7F7]"
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 40 }}
@@ -198,7 +198,7 @@ openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]
                     px-0 gap-[12.19px]
                     font-['Open Sans'] font-medium 
                     text-[16px] leading-[100%] tracking-[0]
-                    text-white
+                    text-white 
                   "
                   onClick={() => {navigate("/cness-marketplace")
                    window.scrollTo({ top: 0, behavior: "instant" }); }}

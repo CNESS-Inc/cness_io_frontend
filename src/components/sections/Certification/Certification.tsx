@@ -33,7 +33,7 @@ const navigate = useNavigate();
             Benefits
           </span>
 
-          <div className='leading-9 pt-[20px] flex flex-col gap-4 w-full'>
+          <div className='lg:leading-9 md:leading-9 leading-[24px] pt-[20px] flex flex-col gap-4 w-full'>
             {[
               "Unlock your True Profile with verified status",
               "Sell your services or digital tools in the Conscious Marketplace",

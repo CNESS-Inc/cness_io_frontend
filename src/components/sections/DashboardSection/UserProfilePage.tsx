@@ -3114,7 +3114,7 @@ const UserProfilePage = () => {
                             </Button>
                             <Button
                               variant="gradient-primary"
-                              className="font-['Plus Jakarta Sans'] text-[14px] not-last:w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
+                              className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                               type="submit"
                               disabled={isSubmitting.public}
                             >

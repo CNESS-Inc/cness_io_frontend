@@ -1,72 +1,76 @@
 import { CircleCheckBig } from "lucide-react";
+import woman from "../../assets/woman.png";
 
 export default function SellerSection() {
   return (
-<section className="w-full bg-white px-6 sm:px-10 lg:px-20 py-10 sm:py-14 lg:py-[86px]">
-      {/* Container */}
-      <div className="max-w-[1500px] mx-auto bg-[#F5F7F9] rounded-[24px] md:rounded-[32px] px-6 sm:px-10 md:px-16 lg:px-[120px] py-8 sm:py-12 md:py-[50px] flex flex-col lg:flex-row gap-10 lg:gap-[30px]">
-        
-        {/* Left content (Image) */}
-       <div className="flex-1 flex items-center justify-center">
- <img
-  src="https://cdn.cness.io/women.webp"
-  alt="Seller"
-  className="w-full max-w-[800px] lg:max-w-[1000px] object-contain scale-130"
-/>
-</div>
+    <section className="w-full bg-white py-12 md:py-20 px-10 md:px-[86px]">
+      <div className="w-full 2xl:w-[1300px] mx-auto bg-[#F5F7F9] rounded-[24px] md:rounded-[32px] px-6 sm:px-10 md:px-12 xl:px-[120px]">
+        <div className="grid xl:grid-cols-2 gap-[30px] w-full items-center">
+          {/* Left copy */}
+          <div className="flex justify-center xl:justify-end">
+            <img
+              src={woman}
+              alt="woman icon"
+              className="w-full max-w-[400px] md:max-w-[480px] xl:max-w-[500px] h-auto object-contain"
+            />
+            {/* <img
+            src="https://cdn.cness.io/women.webp"
+            alt="Seller"
+            className="w-full max-w-[800px] lg:max-w-[1000px] object-contain scale-130"
+          /> */}
+          </div>
 
-        {/* Right content */}
-        <div className="flex-1 flex flex-col justify-center text-center lg:text-left">
-          <h2 className="font-poppins font-medium text-2xl sm:text-3xl md:text-[42px] leading-snug md:leading-[54px] tracking-[-0.02em] text-gray-900">
-            What you Gain as a{" "}
-            <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
-              Seller
-            </span>
-          </h2>
+          {/* right copy  */}
+          <div className="text-center xl:text-left py-8 sm:py-12 md:py-[50px]">
+            <h2 className="font-poppins font-medium text-[32px] md:text-[42px] leading-[1.3] tracking-[-0.02em] text-[#000]">
+              What you Gain as a{" "}
+              <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                Seller
+              </span>
+            </h2>
+            <p className="mt-4 font-['Open_Sans'] text-[15px] md:text-[16px] font-light leading-relaxed text-[#64748B] max-w-[500px] mx-auto xl:mx-0">
+              At CNESS Marketplace, we empower creators to grow their presence,
+              reach conscious audiences, and turn their digital products into
+              meaningful opportunities.
+            </p>
 
-          <p className="mt-4 openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]">
-            At CNESS Marketplace, we empower creators to grow their
-            presence, reach conscious audiences, and turn their digital
-            products into meaningful opportunities.
-          </p>
-
-          {/* Feature list */}
-          <ul className="mt-8 space-y-5">
-            {[
-              {
-                title: "Global Reach",
-                desc: "Showcase your digital products to a conscious, worldwide audience.",
-              },
-              {
-                title: "Purpose-Driven Platform",
-                desc: "Sell in a marketplace that values authenticity and impact.",
-              },
-              {
-                title: "Easy Setup",
-                desc: "List and manage your creations with a simple, seamless process.",
-              },
-              {
-                title: "Grow Your Brand",
-                desc: "Build credibility and visibility within the CNESS ecosystem.",
-              },
-              {
-                title: "Earn & Empower",
-                desc: "Generate income while making a meaningful difference.",
-              },
-            ].map((item, i) => (
-              <li key={i} className="flex items-start gap-3 text-left">
-                <CircleCheckBig className="flex-shrink-0 mt-1 text-[#6340FF] w-5 h-5" />
-                <div>
-                  <h3 className="font-['Open_Sans'] text-sm sm:text-base md:text-[16px] font-semibold capitalize text-black">
-                    {item.title}
-                  </h3>
-<p className="font-openSans text-[13px] sm:text-[14px] md:text-[15px] font-normal leading-[20px] text-[#64748B] mt-1">
-                    {item.desc}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
+            <ul className="mt-8 space-y-5 text-left max-w-[500px] mx-auto xl:mx-0">
+              {[
+                {
+                  title: "Global Reach",
+                  desc: "Showcase your digital products to a conscious, worldwide audience.",
+                },
+                {
+                  title: "Purpose-Driven Platform",
+                  desc: "Sell in a marketplace that values authenticity and impact.",
+                },
+                {
+                  title: "Easy Setup",
+                  desc: "List and manage your creations with a simple, seamless process.",
+                },
+                {
+                  title: "Grow Your Brand",
+                  desc: "Build credibility and visibility within the CNESS ecosystem.",
+                },
+                {
+                  title: "Earn & Empower",
+                  desc: "Generate income while making a meaningful difference.",
+                },
+              ].map((item, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <CircleCheckBig className="mt-1 text-[#6340FF] w-5 h-5 shrink-0" />
+                  <div>
+                    <h3 className="font-['Open_Sans'] font-semibold text-[16px] text-black">
+                      {item.title}
+                    </h3>
+                    <p className="font-['Open_Sans'] text-[14px] leading-[20px] text-[#64748B] font-light mt-1">
+                      {item.desc}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </section>

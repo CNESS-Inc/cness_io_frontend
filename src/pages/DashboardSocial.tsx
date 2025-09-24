@@ -352,6 +352,8 @@ export default function SocialTopBar() {
   const [isReportingPost, setIsReportingPost] = useState<string | null>(null);
   //const [showTopicModal, setShowTopicModal] = useState(false);
 
+  const maxChars = 2000;
+
   const handleConnect = async (userId: string) => {
     try {
       setConnectingUsers((prev) => ({ ...prev, [userId]: true }));
@@ -522,12 +524,11 @@ export default function SocialTopBar() {
 
         return {
           id: item.id,
-          title:
-          item.content
-          ? item.content.length > 30
-            ? `${item.content.substring(0, 30)}...`
-            : item.content
-          : "Untitled Post",
+          title: item.content
+            ? item.content.length > 30
+              ? `${item.content.substring(0, 30)}...`
+              : item.content
+            : "Untitled Post",
           description: `Posted by ${item.profile.first_name} ${item.profile.last_name}`,
           image_url: firstImageUrl,
           created_at: item.createdAt,
@@ -656,11 +657,18 @@ export default function SocialTopBar() {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    
+
     // Validate file types
-    const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-    const invalidFiles = files.filter(file => !allowedImageTypes.includes(file.type));
-    
+    const allowedImageTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/webp",
+    ];
+    const invalidFiles = files.filter(
+      (file) => !allowedImageTypes.includes(file.type)
+    );
+
     if (invalidFiles.length > 0) {
       showToast({
         message: "Only JPG, JPEG, PNG, and WEBP image files are allowed.",
@@ -668,10 +676,10 @@ export default function SocialTopBar() {
         duration: 3000,
       });
       // Clear the file input so the same file can be selected again
-      e.target.value = '';
+      e.target.value = "";
       return;
     }
-    
+
     setSelectedImages((prev) => [...prev, ...files]); // Append new images to existing ones
   };
 
@@ -679,8 +687,8 @@ export default function SocialTopBar() {
     const file = e.target.files?.[0];
     if (file) {
       // Validate file type
-      const allowedVideoTypes = ['video/mp4'];
-      
+      const allowedVideoTypes = ["video/mp4"];
+
       if (!allowedVideoTypes.includes(file.type)) {
         showToast({
           message: "Only MP4 video files are allowed.",
@@ -688,10 +696,10 @@ export default function SocialTopBar() {
           duration: 3000,
         });
         // Clear the file input so the same file can be selected again
-        e.target.value = '';
+        e.target.value = "";
         return;
       }
-      
+
       setSelectedVideo(file);
       // Create preview URL
       const videoUrl = URL.createObjectURL(file);
@@ -724,8 +732,15 @@ export default function SocialTopBar() {
     }
 
     // Validate image file types
-    const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-    const invalidImages = selectedImages.filter(file => !allowedImageTypes.includes(file.type));
+    const allowedImageTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/webp",
+    ];
+    const invalidImages = selectedImages.filter(
+      (file) => !allowedImageTypes.includes(file.type)
+    );
     if (invalidImages.length > 0) {
       showToast({
         message: "Only JPG, JPEG, PNG, and WEBP image files are allowed.",
@@ -736,7 +751,7 @@ export default function SocialTopBar() {
     }
 
     // Validate video file type
-    if (selectedVideo && !['video/mp4'].includes(selectedVideo.type)) {
+    if (selectedVideo && !["video/mp4"].includes(selectedVideo.type)) {
       showToast({
         message: "Only MP4 video files are allowed.",
         type: "error",
@@ -795,8 +810,8 @@ export default function SocialTopBar() {
     const file = e.target.files?.[0];
     if (file) {
       // Validate file type
-      const allowedVideoTypes = ['video/mp4'];
-      
+      const allowedVideoTypes = ["video/mp4"];
+
       if (!allowedVideoTypes.includes(file.type)) {
         showToast({
           message: "Only MP4 video files are allowed.",
@@ -804,10 +819,10 @@ export default function SocialTopBar() {
           duration: 3000,
         });
         // Clear the file input so the same file can be selected again
-        e.target.value = '';
+        e.target.value = "";
         return;
       }
-      
+
       setSelectedStoryVideo(file);
 
       // Create preview URL
@@ -838,7 +853,7 @@ export default function SocialTopBar() {
     }
 
     // Validate video file type
-    if (!['video/mp4'].includes(selectedStoryVideo.type)) {
+    if (!["video/mp4"].includes(selectedStoryVideo.type)) {
       setApiStoryMessage("Only MP4 video files are allowed.");
       return;
     }
@@ -901,26 +916,30 @@ export default function SocialTopBar() {
   const groupStoriesByUser = (stories: any[]) => {
     const userStoryMap = new Map();
     const userStoryCounts = new Map();
-    
-    stories.forEach(story => {
+
+    stories.forEach((story) => {
       const userId = story.user_id;
       const existingStory = userStoryMap.get(userId);
-      
+
       // Count total stories per user
       userStoryCounts.set(userId, (userStoryCounts.get(userId) || 0) + 1);
-      
+
       // If no story exists for this user, or if current story is more recent
-      if (!existingStory || new Date(story.createdAt) > new Date(existingStory.createdAt)) {
+      if (
+        !existingStory ||
+        new Date(story.createdAt) > new Date(existingStory.createdAt)
+      ) {
         userStoryMap.set(userId, {
           ...story,
-          totalStoriesCount: userStoryCounts.get(userId)
+          totalStoriesCount: userStoryCounts.get(userId),
         });
       }
     });
-    
+
     // Convert map values to array and sort by creation date (most recent first)
-    return Array.from(userStoryMap.values()).sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    return Array.from(userStoryMap.values()).sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
   };
 
@@ -1072,23 +1091,23 @@ export default function SocialTopBar() {
   // Function to save/unsave post to collection
   const savePostToCollection = async (postId: string) => {
     try {
-      const currentPost = userPosts.find(post => post.id === postId);
+      const currentPost = userPosts.find((post) => post.id === postId);
       const isCurrentlySaved = currentPost?.is_saved || false;
-      
+
       // Use appropriate API based on current state
-      const response = isCurrentlySaved 
-        ? await UnsavePost(postId) 
+      const response = isCurrentlySaved
+        ? await UnsavePost(postId)
         : await SavePost(postId);
 
       if (response.success) {
         showToast({
           type: "success",
-          message: isCurrentlySaved 
-            ? "Post removed from collection!" 
+          message: isCurrentlySaved
+            ? "Post removed from collection!"
             : "Post saved to collection successfully!",
           duration: 2000,
         });
-        
+
         // Update the post's saved status in your posts array
         setUserPosts((prevPosts) =>
           prevPosts.map((post) =>
@@ -1152,7 +1171,7 @@ export default function SocialTopBar() {
     setShowReportModal(true);
     // setOpenMenuPostId(null); // Close the three-dot menu
   };
-  
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (!openMenu.postId || !openMenu.type) return;
@@ -1440,17 +1459,31 @@ export default function SocialTopBar() {
                         <StoryCard
                           id={story.id}
                           userId={story.user_id}
-                          userIcon={story.storyuser?.profile?.profile_picture || ''}
-                          userName={`${story.storyuser?.profile?.first_name || ''} ${story.storyuser?.profile?.last_name || ''}`.trim() || 'Unknown User'}
+                          userIcon={
+                            story.storyuser?.profile?.profile_picture || ""
+                          }
+                          userName={
+                            `${story.storyuser?.profile?.first_name || ""} ${
+                              story.storyuser?.profile?.last_name || ""
+                            }`.trim() || "Unknown User"
+                          }
                           title={story.description || "Untitled Story"}
-                          videoSrc={story.video_file || ''}
+                          videoSrc={story.video_file || ""}
                         />
 
                         <div className="absolute bottom-2 left-2 flex items-center gap-2 z-20 text-white">
                           <div className="relative">
                             <img
-                              src={story.storyuser?.profile?.profile_picture || ''}
-                              alt={`${story.storyuser?.profile?.first_name || ''} ${story.storyuser?.profile?.last_name || ''}`.trim() || 'Unknown User'}
+                              src={
+                                story.storyuser?.profile?.profile_picture || ""
+                              }
+                              alt={
+                                `${
+                                  story.storyuser?.profile?.first_name || ""
+                                } ${
+                                  story.storyuser?.profile?.last_name || ""
+                                }`.trim() || "Unknown User"
+                              }
                               className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover border border-white"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
@@ -1458,14 +1491,15 @@ export default function SocialTopBar() {
                               }}
                             />
                             {/* Show story count badge if user has multiple stories */}
-                            {story.totalStoriesCount && story.totalStoriesCount > 1 && (
-                              <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
-                                {story.totalStoriesCount}
-                              </div>
-                            )}
+                            {story.totalStoriesCount &&
+                              story.totalStoriesCount > 1 && (
+                                <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
+                                  {story.totalStoriesCount}
+                                </div>
+                              )}
                           </div>
                           <span className="text-xs md:text-[13px] font-medium drop-shadow-sm">
-                            {story.storyuser?.username || 'Unknown User'}
+                            {story.storyuser?.username || "Unknown User"}
                           </span>
                         </div>
                       </div>
@@ -1531,7 +1565,7 @@ export default function SocialTopBar() {
                             <button
                               onClick={() => handleConnect(post.user_id)}
                               disabled={connectingUsers[post.user_id] || false}
-                              className={`flex w-[100px] justify-center items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors font-family-open-sans h-[35px]
+                              className={`hidden sm:flex w-[100px] justify-center items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors font-family-open-sans h-[35px]
                                 ${
                                   // getFriendStatus(post.user_id) === "connected"
                                   //   ? "bg-red-500 text-white hover:bg-red-600"
@@ -1577,7 +1611,7 @@ export default function SocialTopBar() {
                             </button>
 
                             {/* Three Dots Menu */}
-                         
+
                             <div className="relative">
                               <button
                                 onClick={() => toggleMenu(post.id, "options")}
@@ -1598,6 +1632,31 @@ export default function SocialTopBar() {
                                     }}
                                   >
                                     <ul className="space-y-1">
+                                      <li className="sm:hidden">
+                                        <button
+                                          onClick={() =>
+                                            handleConnect(post.user_id)
+                                          }
+                                          disabled={
+                                            connectingUsers[post.user_id] ||
+                                            false
+                                          }
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
+                                            <img
+                                              src={iconMap["userplus"]}
+                                              alt="userplus"
+                                              className="w-4 h-4"
+                                            />
+                                            {connectingUsers[post.user_id]
+                                              ? "Loading..."
+                                              : getFriendStatus(
+                                                  post.user_id
+
+                                                ) === "requested"
+                                              ? "Requested"
+                                              : "Connect"}
+                                        </button>
+                                      </li>
                                       <li>
                                         <button
                                           onClick={() => {
@@ -1657,7 +1716,7 @@ export default function SocialTopBar() {
                         {post.user_id == loggedInUserID && (
                           <div className="flex gap-2">
                             {/* Three Dots Menu */}
-                            
+
                             <div className="relative">
                               <button
                                 onClick={() => toggleMenu(post.id, "options")}
@@ -1720,7 +1779,6 @@ export default function SocialTopBar() {
                                   </div>
                                 )}
                             </div>
-                            
                           </div>
                         )}
                       </div>
@@ -2178,8 +2236,16 @@ export default function SocialTopBar() {
                     className="w-full p-3 border border-[#ECEEF2] text-black placeholder:text-[#64748B] text-sm rounded-md resize-none mb-3 outline-none focus:border-[#897AFF1A]"
                     placeholder={`What's on your mind? ${userInfo.main_name}...`}
                     value={postMessage}
-                    onChange={(e) => setPostMessage(e.target.value)}
+                    onChange={(e) => {
+                      if (e.target.value.length <= maxChars) {
+                        setPostMessage(e.target.value);
+                      }
+                    }}
                   />
+                  <div className="flex justify-end text-xs text-gray-500">
+                    {postMessage.length}/{maxChars}
+                  </div>
+
 
                   <div className="space-y-3 mb-4 flex rounded-[8px] border border-[#F07EFF1A]  justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
                     <p className="mb-0 text-sm font-semibold">

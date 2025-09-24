@@ -30,7 +30,7 @@ export default function SocialMedia() {
          
             <h2 
              style={{ fontFamily: "Poppins, sans-serif" }}
-            className=" leading-[54px] text-[42px] font-[500] mt-3">
+            className=" lg:leading-[54px] md:leading-[54px] leading-[40px] lg:text-[42px] md:text-[42px] text-[32px] font-[500] mt-3">
               <span className="bg-linear-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">
                 Social Media
               </span>, Reimagined for Conscious Expression

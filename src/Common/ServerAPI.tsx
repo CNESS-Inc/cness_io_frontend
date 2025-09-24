@@ -1,4 +1,5 @@
 import axios, { type AxiosResponse } from "axios";
+// import { Server } from "lucide-react";
 // Define types for your API
 type ApiMethod = "GET" | "POST" | "PUT" | "DELETE";
 type LoginFormData = {
@@ -153,6 +154,7 @@ export const EndPoint = {
   unsave_post: "/user/posts/unsave",
   get_save_posts: "/user/posts/get/save/posts",
   report_post: "/user/posts/report",
+  mention_user_profile: "/user/post/comments/getuserprofile",
   story: "/story",
   get_front_all_story: "/story/get/front/all",
   story_like: "/story/like",
@@ -1052,6 +1054,10 @@ export const GetSinglePost = (id: any) => {
     `${EndPoint.single_post}/${id}`
   );
 };
+export const getMentionUserProfile = (id: any) => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.mention_user_profile}?comment_id=${id}`);
+}
 export const GetStory = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.story);
@@ -1383,7 +1389,7 @@ export const executeAPI = async <T = any,>(
       }),
     });
 
-    const access_token = response.headers["access_token"];
+     const access_token = response.headers["access_token"];
 
     if (access_token != "not-provide") {
       console.log("access token response check sets", true);

@@ -663,7 +663,10 @@
   }
 
   .animation-container {
-    height: 500px;
+    height: 330px;
+  }
+  .community-header {
+      margin-bottom: 0;
   }
 
   .main-image-container.step-2 {

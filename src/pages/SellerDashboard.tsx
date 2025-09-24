@@ -24,10 +24,9 @@ import {
 } from "../components/Seller/SellerSegmentcard";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { useNavigate } from "react-router-dom";
-import Button from "../components/ui/Button";
-import Modal from "../components/ui/Modal";
 import marketplace from "../../src/assets/marketplace.png";
 import { HiOutlineLockClosed } from "react-icons/hi2";
+import AddBestPracticeModal from "../components/sections/bestPractiseHub/AddBestPractiseModal";
 
 interface UserData {
   id: number;
@@ -87,6 +86,18 @@ export default function SellerDashboard() {
 
   const hasFetched = useRef(false);
 
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setNewPractice((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   const fetchDashboard = async () => {
     try {
       const response: ApiResponse<UserData> = await DashboardDetails();
@@ -120,6 +131,7 @@ export default function SellerDashboard() {
             image:
               item.file ||
               "https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=1200&auto=format&fit=crop", // fallback image
+            if_following: item.if_following,
           })
         );
 
@@ -462,7 +474,7 @@ export default function SellerDashboard() {
           <BestPracticesSection
             items={bestPractices}
             onAdd={openModal}
-            onFollow={(bp) => console.log("Follow:", bp)}
+            setBestPractices={setBestPractices}
           />
 
           {/* ⬇️ Directory directly below Best Practices */}
@@ -547,215 +559,22 @@ export default function SellerDashboard() {
         </div>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={closeModal}>
-        <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
-          <h2 className="text-xl font-bold mb-4 font-['Poppins'] leading-normal">
-            Add Best Practice
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-            <div>
-              <label
-                htmlFor="title"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Title*
-              </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={newPractice.title}
-                onChange={(e) =>
-                  setNewPractice((p) => ({ ...p, title: e.target.value }))
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
-                required
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="description"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Description*
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                value={newPractice.description}
-                onChange={(e) =>
-                  setNewPractice((p) => ({ ...p, description: e.target.value }))
-                }
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
-                required
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="profession"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Profession
-              </label>
-              <select
-                id="profession"
-                name="profession"
-                value={newPractice.profession}
-                onChange={(e) =>
-                  setNewPractice((p) => ({ ...p, profession: e.target.value }))
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
-                // required
-              >
-                <option value="">Select a profession</option>
-                {professions.map((prof) => (
-                  <option key={prof.id} value={prof.id}>
-                    {prof.title}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label
-                htmlFor="interest"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Interest
-              </label>
-              <select
-                id="interest"
-                name="interest"
-                value={newPractice.interest}
-                onChange={(e) =>
-                  setNewPractice((p) => ({ ...p, interest: e.target.value }))
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
-                // required
-              >
-                <option value="">Select a interest</option>
-                {interests.map((it) => (
-                  <option key={it.id} value={it.id}>
-                    {it.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <label
-              htmlFor="interest"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Tags
-            </label>
-            <div className="w-full border border-gray-300 bg-white rounded-xl px-3 py-2">
-              <div className="flex flex-wrap gap-2 mb-1">
-                {tags.map((tag, idx) => (
-                  <span
-                    key={idx}
-                    className="flex items-center bg-[#f3f1ff] text-[#6269FF] px-3 py-1 rounded-full text-[14px]"
-                  >
-                    {tag}
-                    <button
-                      onClick={() => removeTag(idx)}
-                      className="ml-1 text-[#6269FF] hover:text-red-500 font-bold"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-              </div>
-              <input
-                type="text"
-                className="w-full text-sm bg-white focus:outline-none placeholder-gray-400"
-                placeholder="Add tags (e.g. therapy, online, free-consult)"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={handleTagKeyDown}
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="file"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                File *
-              </label>
-              {/* <input
-                      type="file"
-                      id="file"
-                      name="file"
-                      onChange={handleFileChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
-                      accept="image/*, .pdf, .doc, .docx"
-                    /> */}
-
-              <div className="relative w-full">
-                <input
-                  type="file"
-                  id="file"
-                  name="file"
-                  accept="image/*, .pdf, .doc, .docx"
-                  onChange={handleFileChange}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                  style={{ cursor: "pointer" }}
-                />
-                <div className="flex items-center w-full h-[45px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm text-gray-800 focus-within:ring-2 focus-within:ring-purple-500">
-                  <button
-                    type="button"
-                    tabIndex={-1}
-                    className="mr-3 px-5 py-2 bg-[#7077FE] text-white rounded-full text-sm font-medium hover:bg-[#5a60d6] transition"
-                    style={{ minWidth: 0 }}
-                    onClick={() => {
-                      // trigger file input click
-                      const input = document.querySelector(
-                        'input[type="file"][name="featuredImage"]'
-                      ) as HTMLInputElement | null;
-                      if (input) input.click();
-                    }}
-                  >
-                    Choose File
-                  </button>
-                  <span className="flex-1 truncate text-gray-500">
-                    {newPractice?.file ? (
-                      newPractice?.file?.name
-                    ) : (
-                      <span className="text-gray-400">No file chosen</span>
-                    )}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-row justify-center gap-2 pt-4 flex-wrap">
-              <Button
-                type="button"
-                onClick={closeModal}
-                variant="white-outline"
-                className="w-[104px] h-[39px] rounded-[100px] p-0
-          font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
-          flex items-center justify-center"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="gradient-primary"
-                className="w-[104px] h-[39px] rounded-[100px] p-0
-          font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
-          flex items-center justify-center"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Submitting..." : "Submit"}
-              </Button>
-            </div>
-          </form>
-        </div>
-      </Modal>
+      <AddBestPracticeModal
+        open={isModalOpen}
+        onClose={closeModal}
+        newPractice={newPractice}
+        profession={professions}
+        interest={interests}
+        tags={tags}
+        inputValue={inputValue}
+        setInputValue={setInputValue}
+        removeTag={removeTag}
+        handleTagKeyDown={handleTagKeyDown}
+        handleInputChange={handleInputChange}
+        handleFileChange={handleFileChange}
+        handleSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 }

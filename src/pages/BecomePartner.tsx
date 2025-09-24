@@ -128,43 +128,181 @@ const BecomePartner = () => {
     areas_of_collabration: "",
     status: "pending",
   });
+
+  // Add these states
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
   const [submitMessage, setSubmitMessage] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const getFieldError = (fieldName: string, value: string): string | null => {
+    const validations: { [key: string]: (val: string) => string | null } = {
+      organization_name: (val) =>
+        val.trim().length < 2 ? "Must be at least 2 characters" : null,
+      contact_person_name: (val) =>
+        val.trim().length < 2 ? "Must be at least 2 characters" : null,
+      email: (val) =>
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? "Invalid email format" : null,
+      phone_number: (val) =>
+        val.replace(/\D/g, "").length < 7 ? "At least 7 digits required" : null,
+      industry_sector: (val) =>
+        val.trim().length < 2 ? "Must be at least 2 characters" : null,
+      website_link: (val) => {
+        if (val.trim() === "") return null; // Optional field
+        return !/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(
+          val
+        )
+          ? "Please enter a valid website URL"
+          : null;
+      },
+      about: (val) => {
+        if (val.trim().length < 50) return "At least 50 characters required";
+        if (val.trim().length > 2000) return "Maximum 2000 characters allowed";
+        return null;
+      },
+      reason_to_partner: (val) =>
+        val.trim().length < 20 ? "At least 20 characters required" : null,
+      organization_size: (val) =>
+        val.trim().length < 1 ? "Please specify your organization size" : null,
+      areas_of_collabration: (val) =>
+        val.trim().length < 2 ? "Please specify areas of collaboration" : null,
+    };
+
+    return validations[fieldName]?.(value) || null;
+  };
+
   const handleChange: React.ChangeEventHandler<
     HTMLInputElement | HTMLTextAreaElement
   > = (e) => {
     const { name, value } = e.target;
     setData((d) => ({ ...d, [name]: value }));
+
+    // Clear error for this field when user starts typing (only if we've attempted submit)
+    if (hasAttemptedSubmit && fieldErrors[name]) {
+      setFieldErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+
+    if (submitMessage) {
+      setSubmitMessage(null);
+    }
+  };
+
+  const handlePhoneChange = (val: string) => {
+    setData((d) => ({ ...d, phone_number: val }));
+
+    // Clear phone error when user starts typing (only if we've attempted submit)
+    if (hasAttemptedSubmit && fieldErrors.phone_number) {
+      setFieldErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.phone_number;
+        return newErrors;
+      });
+    }
+  };
+
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
+
+    const fieldsToValidate: (keyof PartnerPayload)[] = [
+      "organization_name",
+      "contact_person_name",
+      "email",
+      "phone_number",
+      "industry_sector",
+      "about",
+      "reason_to_partner",
+      "organization_size",
+      "areas_of_collabration",
+    ];
+
+    fieldsToValidate.forEach((field) => {
+      const error = getFieldError(field, data[field] as string);
+      if (error) {
+        errors[field] = error;
+      }
+    });
+
+    // Validate website link if provided
+    if (data.website_link.trim() !== "") {
+      const websiteError = getFieldError("website_link", data.website_link);
+      if (websiteError) {
+        errors.website_link = websiteError;
+      }
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!data.phone_number || data.phone_number.replace(/\D/g, "").length < 7) {
+    // Mark that user has attempted to submit
+    setHasAttemptedSubmit(true);
+
+    // Clear previous messages
+    setSubmitMessage(null);
+
+    // Validate form
+    if (!validateForm()) {
       showToast({
-        message: "Please enter a valid phone number with at least 7 digits.",
+        message: "Please fix the errors in the form before submitting.",
         type: "error",
-        duration: 1500,
+        duration: 2000,
       });
+
+      // Scroll to the first error
+      setTimeout(() => {
+        const firstErrorField = Object.keys(fieldErrors)[0];
+        if (firstErrorField) {
+          const element = document.querySelector(`[name="${firstErrorField}"]`);
+          if (element) {
+            element.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+            (element as HTMLElement).focus();
+          }
+        }
+      }, 100);
+
       return;
     }
 
     try {
       setIsSubmitting(true);
-      setSubmitMessage(null);
-      const res = await createPartnerInquiry(data);
+
+      // Trim all string values before submission
+      const trimmedData = {
+        ...data,
+        organization_name: data.organization_name.trim(),
+        contact_person_name: data.contact_person_name.trim(),
+        email: data.email.trim(),
+        industry_sector: data.industry_sector.trim(),
+        website_link: data.website_link.trim(),
+        about: data.about.trim(),
+        reason_to_partner: data.reason_to_partner.trim(),
+        organization_size: data.organization_size.trim(),
+        areas_of_collabration: data.areas_of_collabration.trim(),
+      };
+
+      const res = await createPartnerInquiry(trimmedData);
 
       if (res?.success?.statusCode === 200) {
         showToast({
-          message: "Your partnership request has been submitted successfully.",
+          message: "Your partnership request has been submitted successfully!",
           type: "success",
-          duration: 2000,
+          duration: 3000,
         });
 
+        // Reset form and errors
         setData({
           organization_name: "",
           contact_person_name: "",
@@ -178,13 +316,20 @@ const BecomePartner = () => {
           areas_of_collabration: "",
           status: "pending",
         });
+        setFieldErrors({});
         setCurrentStep(2);
       } else {
+        const errorMessage =
+          res?.message ||
+          "There was an error submitting your application. Please try again.";
         setSubmitMessage({
           type: "error",
-          text:
-            res.message ||
-            "There was an error submitting your application. Please try again.",
+          text: errorMessage,
+        });
+        showToast({
+          message: errorMessage,
+          type: "error",
+          duration: 2500,
         });
       }
     } catch (err: any) {
@@ -194,14 +339,23 @@ const BecomePartner = () => {
         err?.response?.data?.message ||
         err?.message ||
         "We encountered an unexpected error. Please try again.";
+
       showToast({
         message: `Submission failed: ${errorMsg}`,
         type: "error",
-        duration: 2500,
+        duration: 3000,
+      });
+
+      setSubmitMessage({
+        type: "error",
+        text: errorMsg,
       });
     } finally {
       setIsSubmitting(false);
     }
+  };
+  const shouldShowError = (fieldName: string) => {
+    return hasAttemptedSubmit && fieldErrors[fieldName];
   };
 
   return (
@@ -257,13 +411,13 @@ const BecomePartner = () => {
         </div>
 
         <div className="py-12 flex flex-col justify-center items-center mx-auto bg-white">
-          <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px]">
+           <h1 className="text-center font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px]">
             <span className="text-black">Why Become a </span>
             <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
               CNESS Partner
             </span>
           </h1>
-          <h5 className="py-3 px-5 sm:px-10 md:px-20 font-['Open_Sans',Helvetica] font-light text-base text-center text-[#64748B] leading-[24px]">
+           <h5 className="py-3 px-5 sm:px-10 md:px-20 font-['Open_Sans',Helvetica] font-light text-base text-center text-[#64748B] leading-[24px]">
             CNESS Partners are consultancies, agencies, and specialists who
             extend the power of the CNESS framework into organizations. From HR
             and DEI firms to ESG consultants and leadership coaches, Partners
@@ -275,8 +429,8 @@ const BecomePartner = () => {
           </h5>
         </div>
 
-        <div className="w-full flex mx-auto flex-col justify-center items-center bg-[#F5F7F9] pt-10 pb-[86px] px-14">
-          <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px]">
+        <div className="w-full flex mx-auto flex-col justify-center items-center bg-[#F5F7F9] pt-10 pb-[86px] px-5 sm:px-14">
+           <h1 className="font-['Poppins',Helvetica] text-center font-medium text-2xl md:text-[32px] sm:leading-[54px]">
             <span className="text-black">What does a </span>
             <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
               Partner do?
@@ -318,8 +472,8 @@ const BecomePartner = () => {
         </div>
 
         <div className="flex justify-center items-center mx-auto w-full bg-white">
-          <div className="mx-auto w-full px-[20px] md:px-[60px] py-[86px]">
-            <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px] text-center">
+          <div className="mx-auto w-full px-[20px] md:px-[60px] pb-[60px] pt-[50px] sm:py-[86px]">
+            <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px] text-center">
               <span className="text-black">Why It Pays to </span>
               <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                 Partner
@@ -335,17 +489,17 @@ const BecomePartner = () => {
           </div>
         </div>
 
-        <div className="w-full bg-[#F5F7F9] py-[86px] px-20 md:px-20">
+        <div className="w-full bg-[#F5F7F9] py-[50px] sm:py-[86px] px-10 sm:px-20">
           <div className="mx-auto flex flex-col lg:flex-row justify-between items-center gap-10">
             <div className="w-full lg:w-3/5 flex flex-col justify-start items-start text-start">
-              <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px] text-center">
+              <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px] text-center">
                 <span className="text-black">Who can become a </span>
                 <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                   Partner?
                 </span>
               </h1>
 
-              <ul className="mt-6 list-disc pl-5 text-[#64748B] text-base font-normal leading-[32px] space-y-1">
+              <ul className="mt-6 list-disc pl-5 text-[#64748B] text-base font-light leading-[32px] space-y-1">
                 <li>
                   Organizations with strong consulting or training backgrounds
                   (HR, DEI, ESG, leadership, or culture development).
@@ -368,7 +522,7 @@ const BecomePartner = () => {
           </div>
         </div>
 
-        <section className="bg-white px-6 sm:px-10 md:px-16 lg:px-22 py-[60px] mb-0">
+        <section className="hidden sm:flex flex-col bg-white px-6 sm:px-10 md:px-16 lg:px-22 py-[60px] mb-0">
           <div className="text-center mb-10">
             <h2 className="font-['Poppins',Helvetica] font-medium text-2xl sm:text-3xl lg:text-[32px] leading-snug sm:leading-[40px] lg:leading-[54px] tracking-[-0.02em]">
               Your Path to Becoming a{" "}
@@ -429,7 +583,7 @@ const BecomePartner = () => {
 
         <div
           id="apply_partner"
-          className="w-full bg-[#F5F7F9] py-10 px-5 lg:px-10"
+          className="w-full bg-[#F5F7F9] pb-10 sm:py-10 px-5 lg:px-10"
         >
           <h1 className="pb-10 font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px] text-center">
             <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
@@ -455,10 +609,14 @@ const BecomePartner = () => {
                   <Field label="Organization Name">
                     <Input
                       name="organization_name"
-                      placeholder="Enter your name"
+                      placeholder="Enter organization name"
                       value={data.organization_name}
                       onChange={handleChange}
-                      required
+                      error={
+                        shouldShowError("organization_name")
+                          ? fieldErrors.organization_name
+                          : null
+                      }
                     />
                   </Field>
                   <Field label="Contact Person Name">
@@ -467,19 +625,25 @@ const BecomePartner = () => {
                       placeholder="Enter your name"
                       value={data.contact_person_name}
                       onChange={handleChange}
-                      required
+                      error={
+                        shouldShowError("contact_person_name")
+                          ? fieldErrors.contact_person_name
+                          : null
+                      }
                     />
                   </Field>
-
                   <Field label="Phone Number">
                     <PhoneInputField
                       name="phone_number"
                       value={data.phone_number}
-                      onChange={(val) =>
-                        setData((d) => ({ ...d, phone_number: val }))
-                      }
+                      onChange={handlePhoneChange}
                       defaultCountry="us"
                       placeholder="Enter your phone number"
+                      error={
+                        shouldShowError("phone_number")
+                          ? fieldErrors.phone_number
+                          : null
+                      }
                     />
                   </Field>
                   <Field label="Email Address">
@@ -489,16 +653,22 @@ const BecomePartner = () => {
                       onChange={handleChange}
                       placeholder="Mail ID"
                       type="email"
-                      required
+                      error={
+                        shouldShowError("email") ? fieldErrors.email : null
+                      }
                     />
                   </Field>
-
                   <Field label="Industry / Sector">
                     <Input
                       name="industry_sector"
                       placeholder="Enter your years of experience"
                       value={data.industry_sector}
                       onChange={handleChange}
+                      error={
+                        shouldShowError("industry_sector")
+                          ? fieldErrors.industry_sector
+                          : null
+                      }
                     />
                   </Field>
                   <Field label="Website / Social Media Link (if any)">
@@ -507,15 +677,22 @@ const BecomePartner = () => {
                       placeholder="Enter your link"
                       value={data.website_link}
                       onChange={handleChange}
+                      error={
+                        shouldShowError("website_link")
+                          ? fieldErrors.website_link
+                          : null
+                      }
                     />
                   </Field>
-
                   <Field label="Brief About Your Organization (150–200 words)">
                     <TextArea
                       name="about"
                       placeholder="Add Notes..."
                       value={data.about}
                       onChange={handleChange}
+                      error={
+                        shouldShowError("about") ? fieldErrors.about : null
+                      }
                     />
                   </Field>
                   <Field label="Why do you want to partner with CNESS?">
@@ -524,15 +701,24 @@ const BecomePartner = () => {
                       placeholder="Add Notes..."
                       value={data.reason_to_partner}
                       onChange={handleChange}
+                      error={
+                        shouldShowError("reason_to_partner")
+                          ? fieldErrors.reason_to_partner
+                          : null
+                      }
                     />
                   </Field>
-
                   <Field label="Organization Size (No. of employees / scale)">
                     <Input
                       name="organization_size"
                       placeholder="Select your Availability"
                       value={data.organization_size}
                       onChange={handleChange}
+                      error={
+                        shouldShowError("organization_size")
+                          ? fieldErrors.organization_size
+                          : null
+                      }
                     />
                   </Field>
                   <Field label="Areas of Collaboration (e.g., Events, Tech, etc.)">
@@ -541,6 +727,11 @@ const BecomePartner = () => {
                       placeholder="Select your Availability"
                       value={data.areas_of_collabration}
                       onChange={handleChange}
+                      error={
+                        shouldShowError("areas_of_collabration")
+                          ? fieldErrors.areas_of_collabration
+                          : null
+                      }
                     />
                   </Field>
                 </div>
@@ -637,6 +828,7 @@ function Input({
   placeholder,
   type = "text",
   required = false,
+  error,
 }: {
   name: string;
   value: string;
@@ -644,17 +836,25 @@ function Input({
   placeholder?: string;
   type?: React.HTMLInputTypeAttribute;
   required?: boolean;
+  error?: string | null;
 }) {
   return (
-    <input
-      name={name}
-      value={value}
-      onChange={onChange}
-      type={type}
-      placeholder={placeholder}
-      required={required}
-      className="w-full h-full rounded-sm border-2 border-[#EEEEEE] bg-white pt-[15px] px-[12px] pb-[17px] text-[14px] outline-none focus:border-[#C9C9FF] placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-[20px]"
-    />
+    <div className="w-full">
+      <input
+        name={name}
+        value={value}
+        onChange={onChange}
+        type={type}
+        placeholder={placeholder}
+        required={required}
+        className={`w-full h-full rounded-sm border-2 bg-white pt-[15px] px-[12px] pb-[17px] text-[14px] outline-none placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-[20px] ${
+          error ? "border-red-500" : "border-[#EEEEEE] focus:border-[#C9C9FF]"
+        }`}
+      />
+      {error && (
+        <span className="text-red-500 text-xs mt-1 block">{error}</span>
+      )}
+    </div>
   );
 }
 
@@ -663,21 +863,30 @@ function TextArea({
   value,
   onChange,
   placeholder,
+  error,
 }: {
   name: string;
   value: string;
   onChange: React.ChangeEventHandler<HTMLTextAreaElement>;
   placeholder?: string;
+  error?: string | null;
 }) {
   return (
-    <textarea
-      name={name}
-      value={value}
-      onChange={onChange}
-      rows={4}
-      placeholder={placeholder}
-      className="h-full w-full resize-none rounded-sm border-2 border-[#EEEEEE] bg-white p-[10px] text-[14px] outline-none focus:border-[#C9C9FF] placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-[20px]"
-    />
+    <div className="w-full">
+      <textarea
+        name={name}
+        value={value}
+        onChange={onChange}
+        rows={4}
+        placeholder={placeholder}
+        className={`h-full w-full resize-none rounded-sm border-2 bg-white p-[10px] text-[14px] outline-none placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-[20px] ${
+          error ? "border-red-500" : "border-[#EEEEEE] focus:border-[#C9C9FF]"
+        }`}
+      />
+      {error && (
+        <span className="text-red-500 text-xs mt-1 block">{error}</span>
+      )}
+    </div>
   );
 }
 
@@ -687,44 +896,53 @@ function PhoneInputField({
   onChange,
   defaultCountry = "us",
   placeholder = "Enter your phone number",
+  error,
 }: {
   name?: string;
   value: string;
   onChange: (val: string) => void;
   defaultCountry?: string;
   placeholder?: string;
+  error?: string | null;
 }) {
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <input type="hidden" name={name} value={value} />
 
-      <PhoneInput
-        value={value}
-        onChange={onChange}
-        defaultCountry={defaultCountry as any}
-        forceDialCode
-        placeholder={placeholder}
-        required
-        className="
-          h-full rounded-sm border-2 border-[#EEEEEE] bg-white
-          pt-[7px] pb-[8px] text-[14px] outline-none
-          focus-within:border-[#C9C9FF]
-        "
-        inputClassName="
-          flex-1 !border-0 outline-none !p-0 !m-0
-          placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs"
-        countrySelectorStyleProps={{
-          buttonClassName: `
-              !bg-transparent !border-0 !shadow-none !rounded-none
-              !px-2 flex items-center
-              border-r border-[#EEEEEE]
-            `,
-          dropdownStyleProps: {
-            className: "!z-[9999]",
-          },
-          dropdownArrowClassName: "hidden",
-        }}
-      />
+      <div
+        className={`${
+          error ? "border-red-500" : "border-[#EEEEEE]"
+        } border-2 rounded-sm`}
+      >
+        <PhoneInput
+          value={value}
+          onChange={onChange}
+          defaultCountry={defaultCountry as any}
+          forceDialCode
+          placeholder={placeholder}
+          required
+          className="
+            h-full bg-white pt-[7px] pb-[8px] text-[14px] outline-none
+          "
+          inputClassName="
+            flex-1 !border-0 outline-none !p-0 !m-0
+            placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs"
+          countrySelectorStyleProps={{
+            buttonClassName: `
+                !bg-transparent !border-0 !shadow-none !rounded-none
+                !px-2 flex items-center
+                border-r border-[#EEEEEE]
+              `,
+            dropdownStyleProps: {
+              className: "!z-[9999]",
+            },
+            dropdownArrowClassName: "hidden",
+          }}
+        />
+      </div>
+      {error && (
+        <span className="text-red-500 text-xs mt-1 block">{error}</span>
+      )}
     </div>
   );
 }
