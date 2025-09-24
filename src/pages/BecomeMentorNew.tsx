@@ -479,7 +479,7 @@ const BecomeMentor = () => {
 
         {/* What is Mentor Section */}
         <div className="py-12 flex flex-col justify-center items-center mx-auto bg-white">
-          <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px]">
+          <h1 className="text-center font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px]">
             <span className="text-black">Why Become a </span>
             <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
               CNESS Mentor
@@ -497,7 +497,7 @@ const BecomeMentor = () => {
         </div>
 
         {/* Benefits Section */}
-        <div className="w-full flex mx-auto flex-col justify-center items-center bg-[#F5F7F9] pt-10 pb-[86px] px-14">
+        <div className="w-full flex mx-auto flex-col justify-center items-center bg-[#F5F7F9] pt-10 pb-[86px] px-5 sm:px-14">
           <h1 className="font-['Poppins',Helvetica] text-center font-medium text-2xl md:text-[32px] sm:leading-[54px]">
             <span className="text-black">Your Role as a </span>
             <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
@@ -541,8 +541,8 @@ const BecomeMentor = () => {
 
         {/* Benefits Section */}
         <div className="flex justify-center items-center mx-auto w-full bg-white">
-          <div className="mx-auto w-full px-[20px] md:px-[60px] py-[86px]">
-            <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px] text-center">
+          <div className="mx-auto w-full px-[20px] md:px-[60px] pb-[60px] pt-[50px] sm:py-[86px]">
+            <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px] text-center">
               <span className="text-black">Why You’ll Love Being a </span>
               <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                 Mentor
@@ -558,17 +558,17 @@ const BecomeMentor = () => {
           </div>
         </div>
 
-        <div className="w-full bg-[#F5F7F9] py-[86px] px-20 md:px-20">
+        <div className="w-full bg-[#F5F7F9] py-[50px] sm:py-[86px] px-10 sm:px-20">
           <div className="mx-auto flex flex-col lg:flex-row justify-between items-center gap-10">
             <div className="w-full lg:w-3/5 flex flex-col justify-start items-start text-start">
-              <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px] text-center">
+              <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px] text-center">
                 <span className="text-black">Who can become a </span>
                 <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                   Mentor?
                 </span>
               </h1>
 
-              <ul className="mt-6 list-disc pl-5 text-[#64748B] text-base font-normal leading-[32px] space-y-1">
+              <ul className="mt-6 list-disc pl-5 text-[#64748B] text-base font-light leading-[32px] space-y-1">
                 <li>
                   Hold at least an Aspiring CNESS Certification (Inspired and
                   Luminary Mentors are highly valued).
