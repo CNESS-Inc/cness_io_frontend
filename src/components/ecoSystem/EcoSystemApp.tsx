@@ -4,10 +4,28 @@ import ellipse2 from "../../assets/Ellipse 2.svg";
 import ellipse3 from "../../assets/Ellipse 3.svg";
 
 const cards = [
-  { id: 1, title: "CNESS Web", subtitle: "(Individual)", content: "Your Personal Hub To Learn, Certified, And Grow Visibility." },
-  { id: 2, title: "CNESS Web", subtitle: "(Business)", content: "For Training, Certification, And Conscious Growth." },
-  { id: 3, title: "CNESS Application", content: "The Entire CNESS Ecosystem In Your Pocket." },
-  { id: 4, title: "AriOme Application", content: "Day-To-Day Growth, Mental Alignment." },
+  {
+    id: 1,
+    title: "CNESS Web",
+    subtitle: "(Individual)",
+    content: "Your Personal Hub To Learn, Certified, And Grow Visibility.",
+  },
+  {
+    id: 2,
+    title: "CNESS Web",
+    subtitle: "(Business)",
+    content: "For Training, Certification, And Conscious Growth.",
+  },
+  {
+    id: 3,
+    title: "CNESS Application",
+    content: "The Entire CNESS Ecosystem In Your Pocket.",
+  },
+  {
+    id: 4,
+    title: "AriOme Application",
+    content: "Day-To-Day Growth, Mental Alignment.",
+  },
 ];
 
 const rightCards = [
@@ -41,7 +59,11 @@ const rightCards = [
       "Custom Consulting: For Deep Enterprise Alignment Programs",
     ],
     button: "Join now",
-    caption: { before: "", highlight: "Built For The Next Decade Of Business.", after: "" },
+    caption: {
+      before: "",
+      highlight: "Built For The Next Decade Of Business.",
+      after: "",
+    },
   },
   {
     title: "CNESS",
@@ -55,10 +77,14 @@ const rightCards = [
       "Marketplace: Seamless Exploration And Purchase Of Conscious Content And Services",
     ],
     button: "Download",
-    caption: { before: "", highlight: "It’s The Antidote To Noisy Social Media", after: "A Space That Inspires Meaningful Digital Interaction." },
+    caption: {
+      before: "",
+      highlight: "It’s The Antidote To Noisy Social Media",
+      after: "A Space That Inspires Meaningful Digital Interaction.",
+    },
   },
   {
-    title: "Ariome Ariome Ariome",
+    title: "Ariome",
     subtitle: "Conscious Betterment App",
     list: [
       "Guided Growth Journeys: Multi-Day Themed Programs",
@@ -68,18 +94,23 @@ const rightCards = [
       "Mood Tracking & Personalized Suggestions",
     ],
     button: "Download",
-    caption: { before: "An App That Supports Individuals In Their Day-To-Day", highlight: "Growth, Reflection, And Mental Alignment.", after: "" },
+    caption: {
+      before: "An App That Supports Individuals In Their Day-To-Day",
+      highlight: "Growth, Reflection, And Mental Alignment.",
+      after: "",
+    },
   },
 ];
 
 export default function EcoSystemApp() {
   const [activeCard, setActiveCard] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
+  const isSmallScreen = window.innerWidth < 640; 
 
   // autoplay through cards until user interacts
   useEffect(() => {
     if (!autoPlay) return;
-    const order = [0, 2, 3, 1]; // 1,3,4,2 visual order
+   const order = isSmallScreen ? [0, 1, 2, 3] : [0, 2, 3, 1]; // 1,3,4,2 visual order
     // start from current index inside order
     let step = Math.max(0, order.indexOf(activeCard));
     const id = setInterval(() => {
@@ -87,7 +118,7 @@ export default function EcoSystemApp() {
       setActiveCard(order[step]);
     }, 2000);
     return () => clearInterval(id);
-  }, [autoPlay, activeCard]);
+  }, [autoPlay, activeCard, isSmallScreen]);
 
   const makeActive = (i: number) => {
     setActiveCard(i);
@@ -104,7 +135,9 @@ export default function EcoSystemApp() {
   return (
     <div
       className="flex items-start w-full pt-20 md:pt-42 pb-20 xl:py-32 px-5"
-      style={{ background: "linear-gradient(180deg, #FAFAFA 0%, #F6F5FA 100%)" }}
+      style={{
+        background: "linear-gradient(180deg, #FAFAFA 0%, #F6F5FA 100%)",
+      }}
     >
       <div className="w-full max-w-7xl flex mx-auto grid grid-cols-1 xl:grid-cols-2 gap-[60px] justify-center items-center">
         {/* left card  */}
@@ -114,9 +147,21 @@ export default function EcoSystemApp() {
              pointer-events-none select-none w-full h-full"
             aria-hidden="true"
           >
-            <img src={ellipse1} alt="" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[645px]" />
-            <img src={ellipse2} alt="" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[480px]" />
-            <img src={ellipse3} alt="" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[341px]" />
+            <img
+              src={ellipse1}
+              alt=""
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[645px]"
+            />
+            <img
+              src={ellipse2}
+              alt=""
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[480px]"
+            />
+            <img
+              src={ellipse3}
+              alt=""
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[341px]"
+            />
           </div>
 
           <div className="flex flex-col gap-[30px] w-full">
@@ -129,17 +174,26 @@ export default function EcoSystemApp() {
                 onClick={() => makeActive(i)}
                 onKeyDown={(e) => onKeyActivate(e, i)}
                 className={`relative overflow-hidden rounded-4xl p-[30px] w-full shadow-sm transition-all duration-700 
-                            cursor-pointer outline-none flex-1 h-full ${activeCard === i ? "ring-2 ring-[#7b5bff]/50" : "ring-0"}`}
-                style={{ backgroundColor: "white", boxShadow: "0px 4px 20px 0px rgba(0, 0, 0, 0.05)" }}
+                            cursor-pointer outline-none flex-1 h-full ${
+                              activeCard === i
+                                ? "ring-2 ring-[#7b5bff]/50"
+                                : "ring-0"
+                            }`}
+                style={{
+                  backgroundColor: "white",
+                  boxShadow: "0px 4px 20px 0px rgba(0, 0, 0, 0.05)",
+                }}
               >
                 <div
                   className="absolute inset-0 z-0 transition-opacity duration-700 ease-in-out rounded-4xl"
                   style={{
-                    background: "linear-gradient(226.31deg, #674EFF 13.47%, #AE5DF1 56.9%, #F38EEC 86.53%)",
+                    background:
+                      "linear-gradient(226.31deg, #674EFF 13.47%, #AE5DF1 56.9%, #F38EEC 86.53%)",
                     opacity: activeCard === i ? 1 : 0,
                   }}
                 />
                 <div className="relative z-10">
+
                   <div className="lg:block md:block flex align-center gap-2">
                     <h3 style={{ fontFamily: "Poppins, sans-serif" }} className={`font-medium text-2xl ${activeCard === i ? "text-white" : "text-black"}`}>
                       {cards[i].title}
@@ -152,8 +206,9 @@ export default function EcoSystemApp() {
                     </span>
                   </div>
                   
+
                   <p
-                    className={`mt-2 text-base font-normal font-['Open Sans'] openSans ${
+                    className={`mt-2 text-base font-light font-['Open Sans'] openSans ${
                       activeCard === i ? "text-white" : "text-[#64748B]"
                     }`}
                   >
@@ -164,14 +219,20 @@ export default function EcoSystemApp() {
             ))}
             <div
               className="invisible sm:visible hidden sm:flex rounded-4xl p-8 w-full"
-              style={{ background: "linear-gradient(180deg, #FFFFFF 0%, rgba(246, 245, 250, 0.5) 100%)" }}
+              style={{
+                background:
+                  "linear-gradient(180deg, #FFFFFF 0%, rgba(246, 245, 250, 0.5) 100%)",
+              }}
             />
           </div>
 
           <div className="flex flex-col gap-[30px] w-full">
             <div
               className="invisible sm:visible hidden sm:flex rounded-4xl p-8 w-full"
-              style={{ background: "linear-gradient(180deg, rgba(250, 250, 250, 0.5) 0%, #FFFFFF 100%)" }}
+              style={{
+                background:
+                  "linear-gradient(180deg, rgba(250, 250, 250, 0.5) 0%, #FFFFFF 100%)",
+              }}
             />
             {[2, 3].map((i) => (
               <div
@@ -182,22 +243,35 @@ export default function EcoSystemApp() {
                 onClick={() => makeActive(i)}
                 onKeyDown={(e) => onKeyActivate(e, i)}
                 className={`relative overflow-hidden rounded-4xl p-[30px] w-full shadow-sm transition-all duration-700 
-                            cursor-pointer outline-none flex-1 h-full ${activeCard === i ? "ring-2 ring-[#7b5bff]/50" : "ring-0"}`}
-                style={{ backgroundColor: "white", boxShadow: "0px 4px 20px 0px rgba(0, 0, 0, 0.05)" }}
+                            cursor-pointer outline-none flex-1 h-full ${
+                              activeCard === i
+                                ? "ring-2 ring-[#7b5bff]/50"
+                                : "ring-0"
+                            }`}
+                style={{
+                  backgroundColor: "white",
+                  boxShadow: "0px 4px 20px 0px rgba(0, 0, 0, 0.05)",
+                }}
               >
                 <div
                   className="absolute inset-0 z-0 transition-opacity duration-700 ease-in-out rounded-4xl"
                   style={{
-                    background: "linear-gradient(226.31deg, #674EFF 13.47%, #AE5DF1 56.9%, #F38EEC 86.53%)",
+                    background:
+                      "linear-gradient(226.31deg, #674EFF 13.47%, #AE5DF1 56.9%, #F38EEC 86.53%)",
                     opacity: activeCard === i ? 1 : 0,
                   }}
                 />
                 <div className="relative z-10">
-                  <h3 style={{ fontFamily: "Poppins, sans-serif" }} className={`font-medium text-2xl ${activeCard === i ? "text-white" : "text-black"}`}>
+                  <h3
+                    style={{ fontFamily: "Poppins, sans-serif" }}
+                    className={`font-medium text-2xl ${
+                      activeCard === i ? "text-white" : "text-black"
+                    }`}
+                  >
                     {cards[i].title}
                   </h3>
                   <p
-                    className={`mt-2 text-base font-normal openSans font-['Open Sans'] ${
+                    className={`mt-2 text-base font-light openSans font-['Open Sans'] openSans ${
                       activeCard === i ? "text-white" : "text-[#64748B]"
                     }`}
                   >
@@ -211,7 +285,7 @@ export default function EcoSystemApp() {
 
         {/* right card  */}
         <div className="w-full md:pt-24 xl:pt-0 flex flex-col justify-center mx-auto gap-4">
-          <div className="flex flex-col mx-auto">
+          <div className="flex flex-col mx-auto xl:mx-0">
             <div className="w-full">
               <h3 className="font-poppins text-2xl font-light leading-[54px] tracking-[-0.02em] capitalize">
                 <span
@@ -232,7 +306,10 @@ export default function EcoSystemApp() {
 
             <ul className="flex flex-col gap-3 py-8">
               {rightCards[activeCard].list.map((item, idx) => (
-                <li key={idx} className="text-[#64748B] font-normal text-base leading-6 font-['Open Sans'] openSans">
+                <li
+                  key={idx}
+                  className="text-[#64748B] font-light text-base leading-6 font-['Open Sans'] openSans"
+                >
                   • {item}
                 </li>
               ))}
@@ -248,9 +325,11 @@ export default function EcoSystemApp() {
               >
                 {rightCards[activeCard].button}
               </button>*/}
-              <p className="flex flex-col text-[#64748B] text-base font-normal font-['Open Sans'] openSans">
+              <p className="flex flex-col text-[#64748B] text-base font-light font-['Open Sans'] openSans">
                 {rightCards[activeCard].caption.before}
-                <span className="text-black">{rightCards[activeCard].caption.highlight}</span>
+                <span className="text-black font-normal">
+                  {rightCards[activeCard].caption.highlight}
+                </span>
                 {rightCards[activeCard].caption.after}
               </p>
             </div>
