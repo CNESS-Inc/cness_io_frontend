@@ -3,9 +3,10 @@ import woman from "../../assets/woman.png";
 
 export default function SellerSection() {
   return (
-    <section className="w-full bg-white py-12 md:py-20 px-10 md:px-[86px]">
-      <div className="w-full 2xl:w-[1300px] mx-auto bg-[#F5F7F9] rounded-[24px] md:rounded-[32px] px-6 sm:px-10 md:px-12 xl:px-[120px]">
-        <div className="grid xl:grid-cols-2 gap-[30px] w-full items-center">
+    <section className="w-full mx-auto bg-white py-12 md:py-20 px-10 md:px-[86px] xl:px-[60px] 2xl:px-[86px]">
+      <div className="w-full 2xl:w-[1300px] mx-auto bg-[#F5F7F9] rounded-[24px] md:rounded-[32px] px-6 sm:px-10 md:px-12 2xl:px-[120px]">
+       <div className="mx-auto flex xl:flex-nowrap flex-wrap justify-center items-stretch gap-[30px] w-full">
+
           {/* Left copy */}
           <div className="flex justify-center xl:justify-end">
             <img

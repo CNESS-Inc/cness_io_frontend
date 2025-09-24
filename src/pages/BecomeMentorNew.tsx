@@ -3,7 +3,7 @@ import mentor_banner from "../../public/mentor_banner.jpg";
 import who_become from "../../public/who_become.jpg";
 import bulb from "../../src/assets/bulb.png";
 import applicationform from "../../public/applicationform.jpg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "react-phone-input-2/lib/style.css";
 import { createMentor } from "../Common/ServerAPI";
 import clsx from "clsx";
@@ -13,6 +13,7 @@ import mentor3 from "../assets/mentor3.svg";
 import mentor4 from "../assets/mentor4.svg";
 import mentor5 from "../assets/mentor5.svg";
 import { PhoneInput } from "react-international-phone";
+import TimezoneSelect from "react-timezone-select";
 
 // Define types for the API response and form data
 //interface ApiResponse {
@@ -42,6 +43,7 @@ const BecomeMentor = () => {
     type: "success" | "error";
     text: string;
   } | null>(null);
+  const [timezone, setTimezone] = useState<any | string>("");
 
   // Form state
   const [formData, setFormData] = useState<MentorFormData>({
@@ -49,7 +51,7 @@ const BecomeMentor = () => {
     email: "",
     phone_code: "",
     phone_no: "",
-    country_timezone: "",
+    country_timezone: timezone?.value,
     year_of_experience: "",
     website: "",
     bio: "",
@@ -189,9 +191,17 @@ const BecomeMentor = () => {
     },
   ];
 
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      country_timezone:
+        typeof timezone === "string" ? timezone : timezone.value,
+    }));
+  }, [timezone]);
+
   // Handle form input changes
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -208,16 +218,16 @@ const BecomeMentor = () => {
   };
 
   // Handle number input changes specifically
-  const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    // Only allow numbers, empty string, or 0
-    if (value === "" || /^\d+$/.test(value)) {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value === "" ? "" : Number(value),
-      }));
-    }
-  };
+  // const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { name, value } = e.target;
+  //   // Only allow numbers, empty string, or 0
+  //   if (value === "" || /^\d+$/.test(value)) {
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       [name]: value === "" ? "" : Number(value),
+  //     }));
+  //   }
+  // };
 
   const [countryCode, setCountryCode] = useState("");
 
@@ -709,23 +719,36 @@ const BecomeMentor = () => {
                     />
                   </Field>
                   <Field label="Country & Time Zone">
-                    <Input
-                      name="country_timezone"
-                      value={formData.country_timezone}
-                      onChange={handleInputChange}
-                      placeholder="Select your country & Time zone"
-                      required
-                    />
+                    <div className="w-full h-full rounded-sm border-2 border-[#EEEEEE] bg-white pt-[9px] pb-[9px] px-1 text-[14px] outline-none focus-within:border-[#C9C9FF]">
+                      <TimezoneSelect
+                        value={timezone}
+                        onChange={setTimezone}
+                        styles={customSelectStyles}
+                        className="react-select-container"
+                        classNamePrefix="react-select"
+                      />
+                    </div>
                   </Field>
 
                   <Field label="Experience">
-                    <Input
+                    <select
                       name="year_of_experience"
                       value={formData.year_of_experience.toString()}
-                      onChange={handleNumberInputChange}
-                      placeholder="Enter your years of experience"
-                      required
-                    />
+                      onChange={handleInputChange}
+                      className={`w-full py-[15px] px-[12px] border border-[#CBD0DC] rounded-sm border-2 border-[#EEEEEE] bg-white text-[14px] outline-none focus:border-[#C9C9FF] placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-[20px] ${formData.year_of_experience ? "text-black" : "text-[#6E7179]"}`}
+                    >
+                      <option value="" disabled>
+                        Select your years of experience
+                      </option>
+                      {[...Array(31).keys()].map((year) => (
+                        <option key={year} value={year}>
+                          {year} {year === 1 ? "year" : "years"}
+                        </option>
+                      ))}
+                      <option value='more'>
+                          More than 31
+                        </option>
+                    </select>
                   </Field>
                   <Field label="Website / Social Media Link (if any)">
                     <Input
@@ -945,5 +968,38 @@ function PhoneInputField({
     </div>
   );
 }
+
+const customSelectStyles = {
+  control: (provided: any) => ({
+    ...provided,
+    border: "none",
+    boxShadow: "none",
+    padding: 0,
+    minHeight: "auto",
+    backgroundColor: "transparent",
+  }),
+  placeholder: (provided: any) => ({
+    ...provided,
+    color: "#6E7179",
+    fontSize: "12px",
+    fontWeight: "400",
+  }),
+  singleValue: (provided: any) => ({
+    ...provided,
+    fontSize: "14px",
+  }),
+  dropdownIndicator: (provided: any) => ({
+    ...provided,
+    padding: "0 8px",
+  }),
+  indicatorsContainer: (provided: any) => ({
+    ...provided,
+    height: "auto",
+  }),
+  menu: (provided: any) => ({
+    ...provided,
+    zIndex: 9999,
+  }),
+};
 
 export default BecomeMentor;
