@@ -46,7 +46,7 @@ export default function JoiningSection()
            
             <Button
                variant="gradient-primary"
-              className="font-['Open_Sans'] font-semibold
+              className="font-['Open_Sans'] font-medium 
     w-fit rounded-[100px] h-[42px]
     py-1 px-8 self-stretch
     text-[16px] leading-[100%] tracking-[0]

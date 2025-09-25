@@ -50,6 +50,26 @@ const levels = [
   },
 ];
 
+const fmtOpts: Intl.DateTimeFormatOptions = { month: "short", year: "numeric" }; // "Jan 2025"
+
+const formatDateSafe = (value?: string | Date | null, opts = fmtOpts) => {
+  if (!value) return "";
+  const d = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+  return new Intl.DateTimeFormat(undefined, opts).format(d);
+};
+
+export const formatRange = (
+  start?: string | Date | null,
+  end?: string | Date | null,
+  isCurrent?: boolean,
+  opts = fmtOpts
+) => {
+  const s = formatDateSafe(start, opts);
+  const e = isCurrent ? "Present" : formatDateSafe(end, opts);
+  return [s, e].filter(Boolean).join(" – ");
+};
+
 export default function UserProfileView() {
   const [userDetails, setUserDetails] = useState<any>();
   const [publicUserDetails, setPublicUserDetails] = useState<any>();
@@ -521,7 +541,9 @@ export default function UserProfileView() {
           </div>
         </div>
         <div className="w-full lg:w-[65%] xl:w-[75%]">
-          <div className="relative flex flex-col md:flex-row justify-center items-center gap-3 sm:gap-4 md:gap-6 pt-3 md:pt-5 me-6 border-b border-[#ECEEF2]">
+<div className="px-6 relative flex flex-col md:flex-row justify-center items-center gap-3 sm:gap-4 md:gap-6 pt-3 md:pt-5">
+  <span className="absolute bottom-0 right-0 h-px bg-[#ECEEF2]
+                   left-6 md:left-6" />
             <div className="flex justify-center gap-6 -mt-2">
               <Button
                 onClick={() => setActiveTab("about")}
@@ -556,7 +578,8 @@ export default function UserProfileView() {
             {activeTab === "about" && (
               <>
                 {/* Bio */}
-                <div className="pb-6 border-b border-[#ECEEF2]">
+                
+                <div className="pb-5 border-b border-[#ECEEF2]">
                   <h3
                     className="flex items-center gap-2 font-['Poppins'] font-semibold text-[16px] leading-[100%] tracking-[0px] 
              text-[#000000]"
@@ -585,13 +608,13 @@ export default function UserProfileView() {
                     </span>{" "}
                     Education
                   </h3>
-                  <ul className="mt-3 space-y-4">
+                  <ul className="mt-2 space-y-4">
                     {userDetails?.education?.map((edu: any) => (
                       <li key={edu.id}>
                         {/* Degree */}
                         <p
                           className="font-['Open_Sans'] font-semibold text-[16px] leading-[20px] 
-                   tracking-[0px] text-[#000000]"
+                   tracking-[0px] text-[#000000] mt-2 "
                         >
                           {edu.degree}
                         </p>
@@ -599,18 +622,17 @@ export default function UserProfileView() {
                         {/* Institution */}
                         <p
                           className="font-['Open_Sans'] font-normal text-[14px] leading-[21px] 
-                   tracking-[0px] text-[#64748B]"
+                   tracking-[0px] text-[#64748B] mt-2"
                         >
                           {edu.institution}
                         </p>
 
                         {/* Date range */}
-                        {(edu.start_date || edu.end_date) && (
-                          <span className="text-xs text-gray-400 mt-1 block">
-                            {edu.start_date} –{" "}
-                            {edu.currently_studying ? "Present" : edu.end_date}
-                          </span>
-                        )}
+                      {(edu.start_date || edu.end_date || edu.currently_studying) && (
+  <span className="text-xs text-gray-400 mt-1 block">
+    {formatRange(edu.start_date, edu.end_date, edu.currently_studying)}
+  </span>
+)}
                       </li>
                     ))}
                   </ul>
@@ -625,7 +647,7 @@ export default function UserProfileView() {
                     Work Experience
                   </h3>
 
-                  <div className="mt-3 space-y-5">
+                  <div className="mt-2 space-y-5">
                     {userDetails?.work_experience?.map((job: any) => (
                       <div key={job.id}>
                         {/* Position + Company */}
@@ -634,7 +656,7 @@ export default function UserProfileView() {
                         </p>
 
                         {/* Location + Dates */}
-                        <p className="font-['Open_Sans'] font-normal text-[14px] leading-[21px] tracking-[0px] text-[#64748B]">
+                        <p className="font-['Open_Sans'] font-normal text-[14px] leading-[21px] tracking-[0px] text-[#64748B] mt-2">
                           <span className="flex items-center gap-1 text-[#64748B] text-sm">
                             <FaLocationDot
                               className="w-3 h-3"
@@ -647,8 +669,11 @@ export default function UserProfileView() {
 
                             <br />
                           </span>
-                          {job.start_date} –{" "}
-                          {job.currently_working ? "Present" : job.end_date}
+                         {(job.start_date || job.end_date || job.currently_working) && (
+  <span className="text-xs text-gray-400 mt-1 block">
+    {formatRange(job.start_date, job.end_date, job.currently_working)}
+  </span>
+)}
                         </p>
 
                         {/* Responsibilities (if array) */}
@@ -870,7 +895,7 @@ export default function UserProfileView() {
 
           {/* Member Since */}
           <div
-            className="pl-6 pb-12 font-['Open_Sans'] font-semibold text-[16px] leading-[20px] 
+            className="pl-6 pb-12 font-['Open_Sans'] font-semibold text-[12px] leading-[20px] 
              tracking-[0px] text-[#000000]"
           >
             <p>
@@ -885,7 +910,7 @@ export default function UserProfileView() {
             </p>
             <a
               href="#"
-              className="font-['Open_Sans'] font-normal text-[14px] leading-[21px] 
+              className="font-['Open_Sans'] font-normal text-[12px] leading-[21px] 
              tracking-[0px] text-[#64748B] underline"
             >
               Report

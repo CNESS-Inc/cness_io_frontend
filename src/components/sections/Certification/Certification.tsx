@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import LottieOnView from "../../ui/LottieOnView";
 import { useNavigate } from "react-router-dom";
+import Button from "../../ui/Button";
 
 const Certification = () => {
   const [animationData, setAnimationData] = useState(null);
@@ -50,9 +51,12 @@ const navigate = useNavigate();
             ))}
           </div>
 
-          <button
-            type="button"
-            className='open sans px-3 py-1 h-[42px] lg:w-[127px] md:w-[127px] w-full text-white bg-gradient-to-r from-[#7077FE] to-[#F07EFF] rounded-[50px] mt-8 cursor-pointer'
+        <Button
+               variant="gradient-primary"
+            className="w-fit h-[42px] rounded-[100px] 
+             px-6 py-1 mt-8 cursor-pointer
+             text-[16px] font-['Open_Sans'] font-semibold 
+             leading-[100%] tracking-[0px] text-center text-white"
             onClick={() => {
     navigate("/certifications");
     // Reset scroll
@@ -60,7 +64,7 @@ const navigate = useNavigate();
   }}
 >
   Know More
-</button>
+</Button>
         </div>
 
         <div className='certificate-animation md:h-[100%] rounded-2xl lg:w-[40%] w-full lg:mt-0 mt-15'>

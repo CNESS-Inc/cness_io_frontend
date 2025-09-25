@@ -578,12 +578,13 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
         }`}
       >
         Already have an account?{" "}
-        <Link
-          to="/log-in"
+        <button
+          type="button"
+          onClick={() => setOpenLogin(true)}
           className="text-purple-600 hover:underline font-medium"
         >
           Login
-        </Link>
+        </button>
       </p>
 
       <div

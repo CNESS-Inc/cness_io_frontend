@@ -67,9 +67,9 @@ export default function CertificationsHero() {
                 className="
                 w-full sm:w-fit
                 rounded-[100px] hero-section-btn
-                py-2 px-4 text-[14px]
+                py-2 px-4 text-[16px]
                 sm:py-3 sm:px-8 sm:text-base
-                font-['Plus Jakarta Sans'] font-semibold leading-[100%] text-center
+                font-['Plus Jakarta Sans'] font-medium leading-[100%] text-center
                
               "
                 style={{

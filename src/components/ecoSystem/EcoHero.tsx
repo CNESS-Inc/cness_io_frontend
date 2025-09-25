@@ -56,7 +56,7 @@ export default function EcoHero() {
               style={{
               fontFamily: "Plus Jakarta Sans",
             }}
-            className="w-full sm:w-fit rounded-[100px] hero-section-btn py-2 px-4 text-[14px] sm:py-3 sm:px-8 sm:text-base font-normal leading-[100%] text-center"
+            className="w-full sm:w-fit rounded-[100px] hero-section-btn py-2 px-4 text-[16px] sm:py-3 sm:px-8 sm:text-base font-medium leading-[100%] text-center"
            onClick={() => setOpenSignup(true)}
           
           >
