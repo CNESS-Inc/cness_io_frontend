@@ -1319,13 +1319,21 @@ export default function SocialTopBar() {
     } else if (diffInDays < 7) {
       return date.toLocaleDateString("en-US", { weekday: "long" });
     } else {
-      return date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      });
+      // Manually format: 01 Sep 2025, 11.52 AM
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = date.toLocaleString("en-US", { month: "short" });
+      const year = date.getFullYear();
+
+      let hours = date.getHours();
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      const ampm = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12 || 12;
+
+      return `${day} ${month} ${year}, ${hours}.${minutes} ${ampm}`;
     }
   };
+
+
 
   return (
     <>
@@ -1544,7 +1552,7 @@ export default function SocialTopBar() {
                                 {post.profile.first_name}{" "}
                                 {post.profile.last_name}
                               </Link>
-                              <span className="text-[#999999] text-xs md:text-[12px] font-[400]">
+                              <span className="text-[#999999] text-xs md:text-[12px] font-[300]">
                                 {" "}
                                 <Link
                                   to={`/dashboard/userprofile/${post?.profile?.id}`}

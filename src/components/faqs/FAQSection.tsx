@@ -80,7 +80,7 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
                   : "max-h-0 opacity-0 py-0"
               }`}
             >
-              <p>{faq.answer}</p>
+              <p className="font-[300]">{faq.answer}</p>
             </div>
           </div>
         );

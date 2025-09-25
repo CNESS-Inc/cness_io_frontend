@@ -1388,7 +1388,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
     shadow-md hover:opacity-95"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Sign up..." : "Sign up"}
+              {isSubmitting ? "Sign In..." : "Sign In"}
             </Button>
 
             {/* Google & Facebook Icons 

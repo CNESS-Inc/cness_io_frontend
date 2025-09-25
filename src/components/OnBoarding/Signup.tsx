@@ -568,7 +568,7 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
           className="mt-0 w-full rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-6 py-0 h-[42px] text-white text-[14px] shadow-md hover:opacity-95"
           disabled={registerLoading || !recaptchaValue}
         >
-          {registerLoading ? "Signing Up..." : "Sign Up"}
+          {registerLoading ? "Signing In..." : "Sign In"}
         </button>
       </form>
 

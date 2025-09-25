@@ -84,7 +84,7 @@ export default function WhyCness() {
             </h1>
 
             <p
-              className={`openSans md:text-base font-light text-[#64748B] mt-6 max-w-4xl mx-auto transition-all duration-1000 ease-in-out font-['Open Sans']`}
+              className={`openSans md:text-base font-[300] text-[#64748B] mt-6 max-w-4xl mx-auto transition-all duration-1000 ease-in-out font-['Open Sans']`}
             >
               We’re building more than a platform—we’re shaping an ecosystem.
               From certifications and learning tools
@@ -147,7 +147,7 @@ export default function WhyCness() {
 
               {/* Right: copy + CTA */}
               <div className="flex flex-col items-start gap-6">
-                <p className="max-w-[620px] font-['Open Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#64748B]">
+                <p className="max-w-[620px] font-['Open Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#64748B] font-[300]">
                   We Built Our Super App To Unite Learning, Certifications,
                   Communities, And Marketplaces In One Ecosystem—Helping People
                   And Businesses Grow, Connect, And Thrive With Purpose.
@@ -170,7 +170,7 @@ export default function WhyCness() {
                 <h4 className="font-['Poppins'] font-medium text-[20px] md:text-[24px] leading-[1.2] text-[#111827]">
                   Mission
                 </h4>
-                <p className="font-['Open Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#64748B]">
+                <p className="font-['Open Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#64748B] font-[300]">
                   We Built Our Super App To Unite Learning, Certifications,
                   Communities, And Marketplaces In One Ecosystem—Helping People
                   And Businesses Grow, Connect, And Thrive With Purpose.
@@ -181,7 +181,7 @@ export default function WhyCness() {
                 <h4 className="font-['Poppins'] font-medium text-[20px] md:text-[24px] leading-[1.2] text-[#111827]">
                   Vision
                 </h4>
-                <p className="font-['Open Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#64748B]">
+                <p className="font-['Open Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#64748B] font-[300]">
                   To Be The World’s Most Trusted Ecosystem, Where Learning,
                   Business, And Community Come Together Seamlessly, Creating A
                   Future Where Opportunities Are Accessible To Everyone.
@@ -207,7 +207,7 @@ export default function WhyCness() {
                     Different
                   </span>
                 </h2>
-                <p className="mt-4 font-['Open_Sans'] text-[15px] md:text-[16px] leading-relaxed text-[#64748B] max-w-[500px] mx-auto xl:mx-0">
+                <p className="mt-4 font-['Open_Sans'] text-[15px] md:text-[16px] leading-relaxed text-[#64748B] max-w-[500px] mx-auto xl:mx-0 font-[300]">
                   CNESS is a purpose-driven super app that unites
                   certifications, learning, marketplace, communities, OTT, and
                   social in one seamless ecosystem
@@ -242,7 +242,7 @@ export default function WhyCness() {
                         <h3 className="font-['Open_Sans'] font-semibold text-[16px] text-black">
                           {item.title}
                         </h3>
-                        <p className="font-['Open_Sans'] text-[14px] leading-[20px] text-[#64748B] mt-1">
+                        <p className="font-['Open_Sans'] text-[14px] leading-[20px] text-[#64748B] mt-1 font-[300]">
                           {item.desc}
                         </p>
                       </div>
@@ -310,7 +310,7 @@ export default function WhyCness() {
                 We Offer
               </span>
             </h3>
-            <p className="font-['Open Sans'] openSans pt-2 text-center w-full font-['Open Sans'] text-[#64748B] font-400 text-[16px] leading-[24.38px] tracking-[0px]">
+            <p className="font-['Open Sans'] openSans pt-2 text-center w-full font-['Open Sans'] text-[#64748B] font-[300] text-[16px] leading-[24.38px] tracking-[0px]">
               CNESS is a super app that brings together tools for professional
               growth and <br />
               personal connection in one ecosystem.
@@ -383,7 +383,7 @@ export default function WhyCness() {
                   </h3>
 
                   {/* Description */}
-                  <p className="openSans font-['Open Sans'] mt-2 text-base font-normal text-[#64748B] leading-relaxed">
+                  <p className="openSans font-['Open Sans'] mt-2 text-base text-[#64748B] leading-relaxed font-[300]">
                     {item.desc}
                   </p>
                 </div>
@@ -408,7 +408,7 @@ export default function WhyCness() {
                 Our Team
               </span>
             </h2>
-            <p className="mt-3 font-['Open_Sans'] text-[14px] sm:text-[15px] md:text-[16px] leading-[22px] text-[#748399]">
+            <p className="mt-3 font-['Open_Sans'] text-[14px] sm:text-[15px] md:text-[16px] leading-[22px] text-[#748399] font-[300]">
               we’re a team of innovators, creators, and changemakers united by
               one belief:
               <br className="hidden md:block" />
