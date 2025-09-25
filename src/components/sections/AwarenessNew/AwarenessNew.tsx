@@ -77,7 +77,7 @@ export default function AwarenessSection() {
       {/* --- Second (Main) Section --- */}
       <motion.div
         key="second-load"
-        className="second-load h-[900px] flex flex-col items-center space-y-8 lg:py-24 py-15 px-4 bg-[#F7F7F7]"
+        className="second-load lg:h-[900px] flex flex-col items-center space-y-8 lg:py-24 py-15 px-4 bg-[#F7F7F7]"
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 40 }}
@@ -105,10 +105,10 @@ openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]
                   w-full md:max-w-[707px]
                 "
               >
-                Explore A Wide Range Of Conscious Products Crafted By Verified
-                Creators Who
+                Explore a wide range of conscious products crafted by verified
+                creators who
                 <br />
-                Prioritize Sustainability And Ethical Practices.
+                Prioritize sustainability and ethical practices.
               </p>
             </div>
 
@@ -180,13 +180,13 @@ openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]
 
             <div className="flex lg:flex-row md:flex-row flex-col max-w-[550px] w-full mx-auto mt-0">
               <p className="lg:w-8/12 md:w-5/12 w-full openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]">
-                Showcase Your Products In Our Conscious
+                Showcase your products in our conscious
                 <br />
-                Marketplace, Connect With The Right
+                Marketplace, connect with the right
                 <br />
-                Audience, And Grow Your Business In A
+                Audience, and grow your business in a
                 <br />
-                Purpose-Driven Ecosystem.
+                Purpose-driven ecosystem.
               </p>
               <div className="flex lg:justify-end justify-start md:gap-6 gap-2 lg:w-4/13 md:w-7/12 w-full lg:mt-7 md:mt-0 mt-5 mb-4">
                 <Button
@@ -196,9 +196,9 @@ openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]
                     rounded-[100px]
                     w-full md:w-[160px] h-[43px]
                     px-0 gap-[12.19px]
-                    font-['Open Sans'] font-semibold font-[600]
+                    font-['Open Sans'] font-medium 
                     text-[16px] leading-[100%] tracking-[0]
-                    text-white
+                    text-white 
                   "
                   onClick={() => {navigate("/cness-marketplace")
                    window.scrollTo({ top: 0, behavior: "instant" }); }}

@@ -3,7 +3,7 @@ import mentor_banner from "../../public/mentor_banner.jpg";
 import who_become from "../../public/who_become.jpg";
 import bulb from "../../src/assets/bulb.png";
 import applicationform from "../../public/applicationform.jpg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "react-phone-input-2/lib/style.css";
 import { createMentor } from "../Common/ServerAPI";
 import clsx from "clsx";
@@ -13,6 +13,7 @@ import mentor3 from "../assets/mentor3.svg";
 import mentor4 from "../assets/mentor4.svg";
 import mentor5 from "../assets/mentor5.svg";
 import { PhoneInput } from "react-international-phone";
+import TimezoneSelect from "react-timezone-select";
 
 // Define types for the API response and form data
 //interface ApiResponse {
@@ -23,15 +24,15 @@ import { PhoneInput } from "react-international-phone";
 
 interface MentorFormData {
   name: string;
+  email: string;
   phone_code: string;
   phone_no: string;
-  email: string;
+  country_timezone: string;
   year_of_experience: number | "";
   website: string;
   bio: string;
   motivation: string;
   availability: string;
-  country_timezone: string;
 }
 
 const BecomeMentor = () => {
@@ -42,19 +43,20 @@ const BecomeMentor = () => {
     type: "success" | "error";
     text: string;
   } | null>(null);
+  const [timezone, setTimezone] = useState<any | string>("");
 
   // Form state
   const [formData, setFormData] = useState<MentorFormData>({
     name: "",
+    email: "",
     phone_code: "",
     phone_no: "",
-    email: "",
+    country_timezone: timezone?.value,
     year_of_experience: "",
     website: "",
     bio: "",
     motivation: "",
     availability: "",
-    country_timezone: "",
   });
   const [_fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
@@ -189,35 +191,43 @@ const BecomeMentor = () => {
     },
   ];
 
-  // Handle form input changes
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { id, value } = e.target;
+  useEffect(() => {
     setFormData((prev) => ({
       ...prev,
-      [id]: value,
+      country_timezone:
+        typeof timezone === "string" ? timezone : timezone.value,
+    }));
+  }, [timezone]);
+
+  // Handle form input changes
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
     }));
 
     // Validate field in real-time
-    const error = validateField(id, value);
+    const error = validateField(name, value);
     setFieldErrors((prev) => ({
       ...prev,
-      [id]: error,
+      [name]: error,
     }));
   };
 
   // Handle number input changes specifically
-  const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    // Only allow numbers, empty string, or 0
-    if (value === "" || /^\d+$/.test(value)) {
-      setFormData((prev) => ({
-        ...prev,
-        [id]: value === "" ? "" : Number(value),
-      }));
-    }
-  };
+  // const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { name, value } = e.target;
+  //   // Only allow numbers, empty string, or 0
+  //   if (value === "" || /^\d+$/.test(value)) {
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       [name]: value === "" ? "" : Number(value),
+  //     }));
+  //   }
+  // };
 
   const [countryCode, setCountryCode] = useState("");
 
@@ -225,16 +235,6 @@ const BecomeMentor = () => {
   const handlePhoneChange = (value: string, country: any) => {
     setPhone(value);
     setCountryCode(country.country.dialCode);
-
-    // Validate phone
-    const phoneError =
-      value.replace(/\D/g, "").length < 5
-        ? "Please enter a valid phone number"
-        : "";
-    setFieldErrors((prev) => ({
-      ...prev,
-      phone: phoneError,
-    }));
   };
 
   // Handle form submission
@@ -359,15 +359,15 @@ const BecomeMentor = () => {
         // Reset form
         setFormData({
           name: "",
+          email: "",
           phone_code: "",
           phone_no: "",
-          email: "",
+          country_timezone: "",
           year_of_experience: "",
           website: "",
           bio: "",
           motivation: "",
           availability: "",
-          country_timezone: "",
         });
         setPhone("");
         setCountryCode("");
@@ -489,7 +489,7 @@ const BecomeMentor = () => {
 
         {/* What is Mentor Section */}
         <div className="py-12 flex flex-col justify-center items-center mx-auto bg-white">
-          <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px]">
+          <h1 className="text-center font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px]">
             <span className="text-black">Why Become a </span>
             <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
               CNESS Mentor
@@ -507,8 +507,8 @@ const BecomeMentor = () => {
         </div>
 
         {/* Benefits Section */}
-        <div className="w-full flex mx-auto flex-col justify-center items-center bg-[#F5F7F9] pt-10 pb-[86px] px-14">
-          <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px]">
+        <div className="w-full flex mx-auto flex-col justify-center items-center bg-[#F5F7F9] pt-10 pb-[86px] px-5 sm:px-14">
+          <h1 className="font-['Poppins',Helvetica] text-center font-medium text-2xl md:text-[32px] sm:leading-[54px]">
             <span className="text-black">Your Role as a </span>
             <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
               CNESS Mentor
@@ -551,8 +551,8 @@ const BecomeMentor = () => {
 
         {/* Benefits Section */}
         <div className="flex justify-center items-center mx-auto w-full bg-white">
-          <div className="mx-auto w-full px-[20px] md:px-[60px] py-[86px]">
-            <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px] text-center">
+          <div className="mx-auto w-full px-[20px] md:px-[60px] pb-[60px] pt-[50px] sm:py-[86px]">
+            <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px] text-center">
               <span className="text-black">Why You’ll Love Being a </span>
               <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                 Mentor
@@ -568,17 +568,17 @@ const BecomeMentor = () => {
           </div>
         </div>
 
-        <div className="w-full bg-[#F5F7F9] py-[86px] px-20 md:px-20">
+        <div className="w-full bg-[#F5F7F9] py-[50px] sm:py-[86px] px-10 sm:px-20">
           <div className="mx-auto flex flex-col lg:flex-row justify-between items-center gap-10">
             <div className="w-full lg:w-3/5 flex flex-col justify-start items-start text-start">
-              <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px] text-center">
+              <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px] text-center">
                 <span className="text-black">Who can become a </span>
                 <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                   Mentor?
                 </span>
               </h1>
 
-              <ul className="mt-6 list-disc pl-5 text-[#64748B] text-base font-normal leading-[32px] space-y-1">
+              <ul className="mt-6 list-disc pl-5 text-[#64748B] text-base font-light leading-[32px] space-y-1">
                 <li>
                   Hold at least an Aspiring CNESS Certification (Inspired and
                   Luminary Mentors are highly valued).
@@ -604,7 +604,7 @@ const BecomeMentor = () => {
           </div>
         </div>
 
-        <section className="bg-white px-6 sm:px-10 md:px-16 lg:px-22 py-[60px] mb-0">
+        <section className="hidden sm:flex flex-col bg-white px-6 sm:px-10 md:px-16 lg:px-22 py-[60px] mb-0">
           <div className="text-center mb-10">
             <h2 className="font-['Poppins',Helvetica] font-medium text-2xl sm:text-3xl lg:text-[32px] leading-snug sm:leading-[40px] lg:leading-[54px] tracking-[-0.02em]">
               Your Path to Becoming a{" "}
@@ -666,7 +666,7 @@ const BecomeMentor = () => {
         {/* Application Form Section */}
         <div
           id="apply_partner"
-          className="w-full bg-[#F5F7F9] py-10 px-5 lg:px-10"
+          className="w-full bg-[#F5F7F9] pb-10 sm:py-10 px-5 lg:px-10"
         >
           <h1 className="pb-10 font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px] text-center">
             <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
@@ -691,7 +691,7 @@ const BecomeMentor = () => {
                 <div className="mx-auto w-full max-w-[760px] 2xl:max-w-none grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 items-start">
                   <Field label="Name">
                     <Input
-                      id="name" // Add this
+                      name="name"
                       value={formData.name}
                       onChange={handleInputChange}
                       placeholder="Enter your name"
@@ -700,7 +700,7 @@ const BecomeMentor = () => {
                   </Field>
                   <Field label="Email Address">
                     <Input
-                      id="email" // Add this
+                      name="email"
                       type="email"
                       value={formData.email}
                       onChange={handleInputChange}
@@ -711,6 +711,7 @@ const BecomeMentor = () => {
 
                   <Field label="Phone Number">
                     <PhoneInputField
+                      name="phone"
                       value={phone}
                       onChange={handlePhoneChange}
                       defaultCountry="us"
@@ -718,27 +719,40 @@ const BecomeMentor = () => {
                     />
                   </Field>
                   <Field label="Country & Time Zone">
-                    <Input
-                      id="country_timezone" // This should probably be availability or create a new field
-                      value={formData.country_timezone}
-                      onChange={handleInputChange}
-                      placeholder="Select your country & Time zone"
-                      required
-                    />
+                    <div className="w-full h-full rounded-sm border-2 border-[#EEEEEE] bg-white pt-[9px] pb-[9px] px-1 text-[14px] outline-none focus-within:border-[#C9C9FF]">
+                      <TimezoneSelect
+                        value={timezone}
+                        onChange={setTimezone}
+                        styles={customSelectStyles}
+                        className="react-select-container"
+                        classNamePrefix="react-select"
+                      />
+                    </div>
                   </Field>
 
                   <Field label="Experience">
-                    <Input
-                      id="year_of_experience" // Add this
+                    <select
+                      name="year_of_experience"
                       value={formData.year_of_experience.toString()}
-                      onChange={handleNumberInputChange}
-                      placeholder="Enter your years of experience"
-                      required
-                    />
+                      onChange={handleInputChange}
+                      className={`w-full py-[15px] px-[12px] border border-[#CBD0DC] rounded-sm border-2 border-[#EEEEEE] bg-white text-[14px] outline-none focus:border-[#C9C9FF] placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-[20px] ${formData.year_of_experience ? "text-black" : "text-[#6E7179]"}`}
+                    >
+                      <option value="" disabled>
+                        Select your years of experience
+                      </option>
+                      {[...Array(31).keys()].map((year) => (
+                        <option key={year} value={year}>
+                          {year} {year === 1 ? "year" : "years"}
+                        </option>
+                      ))}
+                      <option value='more'>
+                          More than 31
+                        </option>
+                    </select>
                   </Field>
                   <Field label="Website / Social Media Link (if any)">
                     <Input
-                      id="website" // Add this
+                      name="website"
                       value={formData.website}
                       onChange={handleInputChange}
                       placeholder="Enter your link"
@@ -747,7 +761,7 @@ const BecomeMentor = () => {
 
                   <Field label="Profile summary">
                     <TextArea
-                      id="bio" // Add this
+                      name="bio"
                       value={formData.bio}
                       onChange={handleInputChange}
                       placeholder="Add Notes..."
@@ -755,7 +769,7 @@ const BecomeMentor = () => {
                   </Field>
                   <Field label="Why do you want to become a mentor?">
                     <TextArea
-                      id="motivation" // Add this
+                      name="motivation"
                       value={formData.motivation}
                       onChange={handleInputChange}
                       placeholder="Add Notes..."
@@ -764,7 +778,7 @@ const BecomeMentor = () => {
 
                   <Field label="Areas & availability">
                     <Input
-                      id="availability" // Add this
+                      name="availability"
                       type="text"
                       value={formData.availability}
                       onChange={handleInputChange}
@@ -851,14 +865,14 @@ function Field({
 }
 
 function Input({
-  id, // Add this
+  name,
   value,
   onChange,
   placeholder,
   type = "text",
   required = false,
 }: {
-  id?: string; // Add this
+  name: string;
   value: string;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
   placeholder?: string;
@@ -867,7 +881,7 @@ function Input({
 }) {
   return (
     <input
-      id={id} // Add this
+      name={name}
       value={value}
       onChange={onChange}
       type={type}
@@ -880,19 +894,19 @@ function Input({
 
 // Similarly update TextArea component:
 function TextArea({
-  id, // Add this
+  name,
   value,
   onChange,
   placeholder,
 }: {
-  id?: string; // Add this
+  name: string;
   value: string;
   onChange: React.ChangeEventHandler<HTMLTextAreaElement>;
   placeholder?: string;
 }) {
   return (
     <textarea
-      id={id} // Add this
+      name={name}
       value={value}
       onChange={onChange}
       rows={4}
@@ -903,11 +917,13 @@ function TextArea({
 }
 
 function PhoneInputField({
+  name,
   value,
   onChange,
   defaultCountry = "us",
   placeholder = "Enter your phone number",
 }: {
+  name: string;
   value: string;
   onChange: (value: string, country: any) => void;
   defaultCountry?: string;
@@ -918,6 +934,7 @@ function PhoneInputField({
       <input type="hidden" value={value} />
 
       <PhoneInput
+        name={name}
         value={value}
         onChange={onChange}
         defaultCountry={defaultCountry as any}
@@ -951,5 +968,38 @@ function PhoneInputField({
     </div>
   );
 }
+
+const customSelectStyles = {
+  control: (provided: any) => ({
+    ...provided,
+    border: "none",
+    boxShadow: "none",
+    padding: 0,
+    minHeight: "auto",
+    backgroundColor: "transparent",
+  }),
+  placeholder: (provided: any) => ({
+    ...provided,
+    color: "#6E7179",
+    fontSize: "12px",
+    fontWeight: "400",
+  }),
+  singleValue: (provided: any) => ({
+    ...provided,
+    fontSize: "14px",
+  }),
+  dropdownIndicator: (provided: any) => ({
+    ...provided,
+    padding: "0 8px",
+  }),
+  indicatorsContainer: (provided: any) => ({
+    ...provided,
+    height: "auto",
+  }),
+  menu: (provided: any) => ({
+    ...provided,
+    zIndex: 9999,
+  }),
+};
 
 export default BecomeMentor;

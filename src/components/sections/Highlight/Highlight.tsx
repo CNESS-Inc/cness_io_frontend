@@ -66,8 +66,8 @@ export default function Highlight() {
              style={{ fontFamily: "Poppins, sans-serif" }}
             className="font-medium
     text-[32px] md:text-[42px]
-    leading-[54px] tracking-[-0.02em]
-    capitalize text-centerp">
+    lg:leading-[54px] md:leading-[54px] leading-[40px]  tracking-[-0.02em]
+    capitalize text-left pb-[15px]  ">
               Your conscious identity,
               <br />
                <span className="
@@ -82,14 +82,17 @@ export default function Highlight() {
               <br /> socially, creatively, and professionally.  Showcase your skills, share your story, connect with like-minded people, and unlock opportunities to grow with confidence and purpose.
               
             </p>
-            <Button className="jakarta w-fit rounded-[100px] h-[42px] py-1 px-6 bg-linear-to-r from-[#7077FE] to-[#F07EFF] self-stretch transition-colors duration-500 ease-in-out"
+            <Button className="font-['Open_Sans'] font-medium  text-[16px] leading-[100%] tracking-[0px] text-center 
+             w-fit h-[42px] py-1 px-6 rounded-[100px] 
+             bg-gradient-to-r from-[#7077FE] to-[#F07EFF] 
+             self-stretch transition-colors duration-500 ease-in-out"
               onClick={() => setOpen(true)}>
               See how it all works →
             </Button>
           </div>
         </div>
 
-        <div className="lg:p-5 md:p-0 p-0 lg:w-7/12 w-full lg:mt-0 mt-20  overflow-x-auto scrollbar-thin scrollbar-thumb-[#9747FF]/40 scrollbar-track-transparent highlight-right-content-box">
+        <div className="lg:p-5 md:p-0 p-0 lg:block md:block hidden lg:w-7/12 w-full lg:mt-0 mt-20  overflow-x-auto scrollbar-thin scrollbar-thumb-[#9747FF]/40 scrollbar-track-transparent highlight-right-content-box">
           {/* Mobile View - Vertical Cards */}
           <div className="lg:hidden flex flex-col gap-4 w-full">
             {highlightCards.map((card, index) => {

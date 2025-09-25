@@ -57,7 +57,11 @@ const navigate = useNavigate();
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
             <Button
               variant="gradient-primary"
-              className="w-full sm:w-auto rounded-[100px] hero-section-btn py-2 px-4 text-[14px] sm:py-3 sm:px-8 sm:text-base font-['Open Sans'] font-normal leading-[100%] text-center"
+              className="w-full sm:w-auto rounded-[100px] hero-section-btn 
+             py-2 px-4 sm:py-3 sm:px-8 
+             text-[16px] sm:text-base 
+             font-['Open_Sans'] font-medium 
+             leading-[100%] tracking-[0px] text-center"
               onClick={() => setOpenSignup(true)}
             >
               Start your Conscious Journey
@@ -65,7 +69,7 @@ const navigate = useNavigate();
 
             <Button
               variant="white-outline"
-              className="w-full sm:w-auto hero-section-btn py-2 px-4 text-[14px] sm:py-3 sm:px-8 sm:text-base font-['Plus Jakarta Sans'] font-medium leading-[100%] tracking-[0px] text-center border border-[#E2E8F0] shadow-[0_1px_2px_rgba(0,0,0,0.1)]"
+              className="w-full sm:w-auto hero-section-btn py-2 px-4 text-[16px] sm:py-3 sm:px-8 sm:text-base font-['Plus Jakarta Sans'] font-medium leading-[100%] tracking-[0px] text-center border border-[#E2E8F0] shadow-[0_1px_2px_rgba(0,0,0,0.1)]"
               size="md"
               onClick={() => navigate("/ecosystem")}
             >

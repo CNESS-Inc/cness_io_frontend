@@ -45,11 +45,11 @@ export default function Certifications() {
     <>
       <Header />
       {/* hero section */}
-      <LazySection effect="fade-up" delay={0.2}>
+      {/* <LazySection effect="fade-up" delay={0.2}> */}
         <CertificationsHero />
         <Benefit />
         <CertificationLevel />
-      </LazySection>
+      {/* </LazySection> */}
 
       {/* certification process section  */}
       <LazySection effect="fade-up" delay={0.2}>
@@ -82,7 +82,7 @@ export default function Certifications() {
               />
             </div>
 
-            <div className="flex flex-col items-center sm:items-start gap-6 sm:gap-8 p-6 sm:p-0  -translate-x-[50%] w-full max-w-4xl mx-auto sm:mx-0 absolute top-5 left-[50%] lg:top-[50%] lg:-translate-y-[50%] md:top-[50%] md:-translate-y-[50%] ">
+            <div className="flex flex-col h-full justify-center items-center sm:items-start gap-6 sm:gap-8 p-6 sm:p-0  -translate-x-[50%] w-full max-w-4xl mx-auto sm:mx-0 absolute top-5 left-[50%] lg:top-[50%] lg:-translate-y-[50%] md:top-[50%] md:-translate-y-[50%] ">
               <div className="flex flex-col items-center sm:items-start gap-3 w-full text-center sm:text-left">
                 <h2
                   style={{ fontFamily: "Poppins, sans-serif" }}
@@ -97,7 +97,10 @@ export default function Certifications() {
               <div className="flex items-center justify-center w-full joining-btn ">
                 <Button
                   variant="gradient-primary"
-                  className="jakarta font-normal w-fit rounded-[100px] h-[42px] py-1 px-8 self-stretch text-[14px] "
+                  className="w-fit h-[42px] rounded-[100px] 
+             py-1 px-8 self-stretch 
+             text-[16px] font-['Open_Sans'] font-medium
+             leading-[100%] tracking-[0px] text-center"
                   onClick={() => (window.location.href = "/sign-up")}
                 >
                   Join Us

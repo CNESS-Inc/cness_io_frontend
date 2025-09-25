@@ -63,7 +63,7 @@ export default function Process() {
           <div className="mt-4 mb-6">
             <Button
               variant="gradient-primary"
-              className="font-['Plus Jakarta Sans'] rounded-full py-2 px-4 sm:py-3 sm:px-8 text-sm sm:text-base font-normal"
+              className="font-['Plus Jakarta Sans'] text-[16px] rounded-full py-2 px-4 sm:py-3 sm:px-8  font-medium"
               onClick={() => setOpenSignup(true)}
               style={{
                 fontFamily: "Plus Jakarta Sans",

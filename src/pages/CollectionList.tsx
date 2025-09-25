@@ -14,12 +14,15 @@ import {
   TwitterShareButton,
   WhatsappShareButton,
 } from "react-share";
-import { PostsLike } from "../Common/ServerAPI";
+import { PostsLike, UnsavePost } from "../Common/ServerAPI";
 import CommentBox from "./CommentBox";
 import like from "../assets/like.png";
 import Like1 from "../assets/Like1.png";
 import comment from "../assets/comment.png";
 import comment1 from "../assets/comment1.png";
+
+import { MoreHorizontal, Bookmark } from "lucide-react";
+import { useToast } from "../components/ui/Toast/ToastProvider";
 
 interface CollectionItem {
   id: string;
@@ -166,7 +169,11 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
   const [collectionItems, setCollectionItems] = useState<CollectionItem[]>(items);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const loggedInUserID = localStorage.getItem("Id");
-  const [copy, setCopy] = useState<Boolean>(false)
+  const [copy, setCopy] = useState<Boolean>(false);
+
+  const [openActionMenuPostId, setOpenActionMenuPostId] = useState<string | null>(null); // for three dots
+  const actionMenuRef = useRef<HTMLDivElement | null>(null);
+  const { showToast } = useToast();
 
   const toggleExpand = (postId: string) => {
     setExpandedPosts(prev => ({
@@ -209,6 +216,12 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
     if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
       setOpenMenuPostId(null);
     }
+    if (
+        actionMenuRef.current &&
+        !actionMenuRef.current.contains(event.target as Node)
+      ) {
+      setOpenActionMenuPostId(null);
+    }
   };
 
   useEffect(() => {
@@ -224,6 +237,19 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
 
   const myid = localStorage.getItem("Id");
   const urldata = `https://dev.cness.io/directory/user-profile/${myid}`;
+
+  const handleUnsave = async (postId: string) => {
+    setCollectionItems(prevItems => prevItems.filter(item => item.originalData.id !== postId));
+    setOpenActionMenuPostId(null);
+    const response =  await UnsavePost(postId);
+    if (response.success) {
+        showToast({
+          type: "success",
+          message: "Post removed from collection!",
+          duration: 2000,
+        });
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -254,6 +280,33 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
                 </p>
               </div>
             </div>
+            <div className="relative">
+              <button
+                onClick={() => setOpenActionMenuPostId(item.originalData.id)}
+                className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-[8px] hover:bg-gray-100 transition-colors"
+                title="More options"
+              >
+                <MoreHorizontal size={20} />
+              </button>
+              {openActionMenuPostId === item.originalData.id && (
+                <div
+                  className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                  ref={actionMenuRef}
+                >
+                  <ul className="space-y-1">
+                    <li>
+                      <button
+                        onClick={() => handleUnsave(item.originalData.id)}
+                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                      >
+                      <Bookmark className="w-4 h-4" /> Unsave
+                      </button>
+                    </li>
+                  </ul>
+                  
+                </div>
+              )}
+            </div>
             {item.originalData.user.id !== loggedInUserID && (
               <button
                 className={`text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full bg-gray-200 text-gray-800 hover:bg-indigo-600 hover:text-white`}
@@ -261,6 +314,7 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
                 Follow
               </button>
             )}
+            
           </div>
 
           {/* Post Content */}

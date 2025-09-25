@@ -1661,7 +1661,9 @@ const UserProfilePage = () => {
                             )}
                           </div>
 
-                          <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
+                          
+                        </div>
+                        <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                             <Button
                               variant="white-outline"
                               className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
@@ -1680,7 +1682,6 @@ const UserProfilePage = () => {
                               {isSubmitting.basic ? "Saving..." : "Save"}
                             </Button>
                           </div>
-                        </div>
                       </form>
                     </Tab.Panel>
 
@@ -2004,6 +2005,8 @@ const UserProfilePage = () => {
                             </div>
                           </div>
 
+                        
+                        </div>
                           <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                             <Button
                               variant="white-outline"
@@ -2024,7 +2027,6 @@ const UserProfilePage = () => {
                               {isSubmitting.contact ? "Saving..." : "Save"}
                             </Button>
                           </div>
-                        </div>
                       </form>
                     </Tab.Panel>
 
@@ -2144,7 +2146,9 @@ const UserProfilePage = () => {
                             )}
                           </div>
 
-                          <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
+                          
+                        </div>
+                        <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                             <Button
                               variant="white-outline"
                               className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
@@ -2164,7 +2168,6 @@ const UserProfilePage = () => {
                               {isSubmitting.social ? "Saving..." : "Save"}
                             </Button>
                           </div>
-                        </div>
                       </form>
                     </Tab.Panel>
 
@@ -3096,7 +3099,9 @@ const UserProfilePage = () => {
                             )}
                           </div>
 
-                          <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
+                          
+                        </div>
+                        <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                             <Button
                               variant="white-outline"
                               className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
@@ -3109,14 +3114,13 @@ const UserProfilePage = () => {
                             </Button>
                             <Button
                               variant="gradient-primary"
-                              className="font-['Plus Jakarta Sans'] text-[14px] not-last:w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
+                              className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                               type="submit"
                               disabled={isSubmitting.public}
                             >
                               {isSubmitting.public ? "Saving..." : "Save"}
                             </Button>
                           </div>
-                        </div>
                       </form>
                     </Tab.Panel>
                   </Tab.Group>

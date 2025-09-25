@@ -37,7 +37,7 @@ const Footer = () => {
             <br /> driven individuals and organizations.
             </p>
           </div>
-          <div className="col-span-2 lg:w-[25%]  sm:col-span-3 md:col-span-3 space-y-4">
+          <div className="col-span-2 lg:w-[25%] md:w-[50%] w-[75%]  sm:col-span-3 md:col-span-3 space-y-4">
             <div className="flex justify-between gap-6 md:gap-8">
               {/* About section 
               <div className="w-fit space-y-3 md:space-y-4">
@@ -99,7 +99,7 @@ const Footer = () => {
       </footer>
 
       {/* Bottom section */}
-      <div className="py-4 bg-[#373578] px-4 sm:px-6">
+      <div className="py-4 lg:bg-[#373578] md:bg-[#373578] bg-[#fff] px-4 sm:px-6">
         <div className="max-w-7xl mx-auto lg:flex flex-col md:flex-row justify-between items-center gap-2 hidden">
           <div
             className="text-[15px] leading-[100%] font-[500] font-[Plus Jakarta Sans] text-white"
