@@ -22,9 +22,16 @@ import socialicon from "../../assets/socialprofileicon.svg";
 import postinsight from "../../assets/post-insights-badge.svg";
 import { useNavigate } from "react-router-dom";
 import {
+  DashboardDetails,
+  GetAllFormDetails,
+  GetAllPlanDetails,
   GetUserNotification,
+  PaymentDetails,
   SendBpFollowRequest,
 } from "../../Common/ServerAPI";
+import { useToast } from "../ui/Toast/ToastProvider";
+import Modal from "../ui/Modal";
+import Button from "../ui/Button";
 //import like from "../../assets/likes.svg";
 //import heart from "../../assets/heart.svg";
 
@@ -137,35 +144,277 @@ export function GreetingBar({
   name: string;
   onCloseSuggestion?: () => void;
 }) {
-  return (
-    <div className="mb-5 grid grid-cols-12 gap-5">
-      <div className="col-span-12 lg:col-span-8">
-        <h1 className="text-[26px] md:text-[26px] lg:text-[30px] font-semibold tracking-[-0.02em]">
-          Hello, <span className="text-[#7077FE]">{name}</span>
-        </h1>
-        <p className="mt-1 text-xs md:text-sm text-[#667085]">
-          Welcome to your CNESS Dashboard
-        </p>
-      </div>
+  const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [isAnnual, setIsAnnual] = useState(true);
+  const [personPricing, setPersonPricing] = useState<any[]>([]);
+  const [user, setUser] = useState<any | null>(null);
+  const [_readlineQuestion, setReadlineQuestion] = useState([]);
+  const { showToast } = useToast();
 
-      <div className="col-span-12 lg:col-span-4 flex items-start lg:justify-end justify-start">
-        <div className="w-full lg:min-w-[363px] lg:max-w-[400px] flex items-center gap-[10px] rounded-lg bg-[#FFCC00]/10 px-3 py-[10px] text-[#7A5A00]">
-          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full">
-            <Lightbulb className="h-4 w-4" stroke="#FFCC00" fill="#FFCC00" />
-          </span>
-          <span className="text-[12px] font-medium text-black leading-[100%] tracking-[0%] font-poppins">
-            Next Suggested Steps
-          </span>
-          <button
-            aria-label="Dismiss"
-            onClick={onCloseSuggestion}
-            className="ml-auto inline-flex h-6 w-6 items-center justify-center rounded-full text-[#7A5A00]/70 hover:bg-white/50"
-          >
-            <X className="h-4 w-4" />
-          </button>
+  const openPricingModal = async () => {
+    try {
+      setActiveModal("PricingModal");
+      const res = await GetAllPlanDetails();
+      const plansByRange: Record<string, any> = {};
+      res?.data?.data?.forEach((plan: any) => {
+        if (!plansByRange[plan.plan_range]) {
+          plansByRange[plan.plan_range] = {};
+        }
+        plansByRange[plan.plan_range][plan.plan_type] = plan;
+      });
+      // Create combined plan objects with both monthly and yearly data
+      const updatedPlans = Object.values(plansByRange).map((planGroup: any) => {
+        const monthlyPlan = planGroup.monthly;
+        const yearlyPlan = planGroup.yearly;
+
+        return {
+          id: monthlyPlan?.id || yearlyPlan?.id,
+          title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+          description: "Customized pricing based on your selection",
+          monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
+          yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+          period: isAnnual ? "/year" : "/month",
+          billingNote: yearlyPlan
+            ? isAnnual
+              ? `billed annually ($${yearlyPlan.amount})`
+              : `or $${monthlyPlan?.amount}/month`
+            : undefined,
+          features: [], // Add any features you need here
+          buttonText: "Get Started",
+          buttonClass: yearlyPlan
+            ? ""
+            : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+          borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
+          popular: !!yearlyPlan,
+        };
+      });
+
+      setPersonPricing(updatedPlans);
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+  const closeModal = async () => {
+    setActiveModal(null);
+    await fetchDashboard();
+  };
+
+  const fetchDashboard = async () => {
+    try {
+      const response: any = await DashboardDetails();
+      if (response?.data?.data) {
+        setUser(response.data.data);
+        localStorage.setItem("name", response.data.data?.name);
+        // localStorage.setItem("profile_picture",response.data.data?.profile_picture);
+      }
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboard();
+  }, []);
+
+  const handlePlanSelection = async (plan: any) => {
+    try {
+      const payload = {
+        plan_id: plan.id,
+        plan_type: isAnnual ? "Yearly" : "Monthly",
+      };
+
+      const res = await PaymentDetails(payload);
+
+      if (res?.data?.data?.url) {
+        const url = res.data.data.url;
+        window.location.href = url;
+      } else {
+        console.error("URL not found in response");
+      }
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
+  const completedStep = localStorage.getItem("completed_step");
+  const is_disqualify = localStorage.getItem("is_disqualify");
+
+  const openRetakeAssesmentModal = async () => {
+    try {
+      const personOrganization = localStorage.getItem("person_organization");
+      if (personOrganization === "2") {
+        setActiveModal("organization");
+      } else {
+        setActiveModal("person");
+      }
+
+      const response = await GetAllFormDetails();
+      setReadlineQuestion(response?.data?.data?.questions);
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+  return (
+    <>
+      <div className="mb-5 grid grid-cols-12 gap-5">
+        <div className="col-span-12 lg:col-span-8">
+          <h1 className="text-[26px] md:text-[26px] lg:text-[30px] font-semibold tracking-[-0.02em]">
+            Hello, <span className="text-[#7077FE]">{name}</span>
+          </h1>
+          <p className="mt-1 text-xs md:text-sm text-[#667085]">
+            Welcome to your CNESS Dashboard
+          </p>
+        </div>
+
+        <div className="col-span-12 lg:col-span-4 flex items-start lg:justify-end justify-start">
+          {completedStep !== "2" && (
+            <div className="mx-5 bg-[rgba(255,204,0,0.05)] text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
+              <div className="flex items-center gap-2">
+                {is_disqualify === "true" ? (
+                  Number(user?.daysRemaining) <= 0 ? (
+                    <span className="text-green-500">
+                      You are eligible for the Aspiration badge. Please{" "}
+                      <a
+                        href="#"
+                        className="text-blue-600 underline"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          openRetakeAssesmentModal();
+                        }}
+                      >
+                        click here
+                      </a>{" "}
+                      to retake the assessment.
+                    </span>
+                  ) : (
+                    <span className="text-red-500">
+                      You are not eligible for the Aspiration badge. Please try
+                      again after {user?.daysRemaining} days!
+                    </span>
+                  )
+                ) : (
+                  <>
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full">
+                      <Lightbulb
+                        className="h-4 w-4"
+                        stroke="#FFCC00"
+                        fill="#FFCC00"
+                      />
+                    </span>
+                    <div>
+                      <span className="text-[12px] font-medium text-black leading-[0%] tracking-[0%] font-poppins">
+                        To start the certification journey into our platform,
+                        please complete the payment here.{" "}
+                      </span>
+                      <a
+                        href="#"
+                        className="text-blue-600 text-[12px] underline"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          openPricingModal();
+                        }}
+                      >
+                        Click here
+                      </a>
+                    </div>
+                    <button
+                      aria-label="Dismiss"
+                      onClick={onCloseSuggestion}
+                      className="ml-auto inline-flex h-6 w-6 items-center justify-center rounded-full text-[#7A5A00]/70 hover:bg-white/50"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+          {/* <div className="w-full lg:min-w-[363px] lg:max-w-[400px] flex items-center gap-[10px] rounded-lg bg-[#FFCC00]/10 px-3 py-[10px] text-[#7A5A00]"></div> */}
         </div>
       </div>
-    </div>
+      <Modal isOpen={activeModal === "PricingModal"} onClose={closeModal}>
+        <div className="p-6 rounded-lg w-full mx-auto z-10 relative">
+          <h2 className="text-xl poppins font-bold mb-4 text-center">
+            Pricing Plan
+          </h2>
+
+          <div className="flex justify-center">
+            {personPricing.map((plan) => (
+              <div
+                key={plan.id}
+                className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
+              >
+                {plan.popular && (
+                  <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
+                    Popular
+                  </div>
+                )}
+                <h3 className="font-semibold text-lg mb-2 mt-2">
+                  {plan.title}
+                </h3>
+                <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
+                <div className="mb-4">
+                  <span className="text-3xl font-bold">
+                    {isAnnual
+                      ? plan.yearlyPrice || plan.monthlyPrice
+                      : plan.monthlyPrice}
+                  </span>
+                  <span className="text-gray-500">/month</span>
+                  {plan.billingNote && (
+                    <p className="text-sm text-gray-500 mt-1">
+                      {plan.billingNote}
+                    </p>
+                  )}
+                </div>
+                <Button
+                  variant="gradient-primary"
+                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                  onClick={() => handlePlanSelection(plan)}
+                >
+                  {plan.buttonText}
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 text-center">
+            <label className="inline-flex items-center cursor-pointer">
+              <span className="mr-3 text-sm font-medium text-gray-700">
+                Monthly billing
+              </span>
+              <div className="relative">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={isAnnual}
+                  onChange={() => setIsAnnual(!isAnnual)}
+                />
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
+              </div>
+              <span className="ml-3 text-sm font-medium text-gray-700">
+                Annual billing
+              </span>
+            </label>
+          </div>
+        </div>
+      </Modal>
+    </>
   );
 }
 
@@ -492,7 +741,7 @@ export function CertificationCard({
    4) BEST PRACTICES (left column, below Certification)
    =========================================================== */
 interface BestPracticeItem {
-  id: string; 
+  id: string;
   title: string;
   description: string;
   image: string;
@@ -1101,8 +1350,8 @@ export function SocialStackCard({
                   />
                   <div className="min-w-0">
                     <div className="truncate text-[14px] font-semibold text-[#0F1728]">
-                      {item.sender_profile.first_name}{" "}
-                      {item.sender_profile.last_name}
+                      {item?.sender_profile?.first_name}{" "}
+                      {item?.sender_profile?.last_name}
                     </div>
                     <div className="truncate text-[14px] text-[#98A2B3]">
                       {item.description}
