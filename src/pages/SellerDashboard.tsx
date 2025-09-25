@@ -194,7 +194,7 @@ export default function SellerDashboard() {
     try {
       const response = await GetFriendRequest();
       const formattedRequests = response.data.data.rows.map((item: any) => ({
-        id: item.friend_user.id,
+        id: item?.friend_user?.id,
         name: `${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
         handle: `@${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
         avatar: item.friend_user.profile.profile_picture,
