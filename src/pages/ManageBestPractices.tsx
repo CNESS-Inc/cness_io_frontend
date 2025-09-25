@@ -20,6 +20,7 @@ import {
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
 import AddBestPracticeModal from "../components/sections/bestPractiseHub/AddBestPractiseModal";
+import EditBestPracticeModal from "../components/sections/bestPractiseHub/EditBestPracticesModel";
 
 const Managebestpractices = () => {
   const [activeTab, setActiveTab] = useState<"saved" | "mine">("saved");
@@ -1036,8 +1037,22 @@ const Managebestpractices = () => {
         handleSubmit={handleCreateSubmit}
         isSubmitting={isCreateSubmitting}
       />
-
-      <Modal isOpen={activeModal === "bestpractices"} onClose={closeModal}>
+<EditBestPracticeModal
+  open={activeModal === "bestpractices"}
+  onClose={closeModal}
+  currentPractice={currentPractice}
+  setCurrentPractice={setCurrentPractice}
+  profession={profession}
+  interest={interest}
+  tags={tags}
+  editInputValue={editInputValue}
+  setEditInputValue={setEditInputValue}
+  removeTag={removeTag}
+  handleTagKeyDown={(e) => handleTagKeyDown(e, false)}
+  handleSubmit={handleSubmit}
+  isSubmitting={isSubmitting}
+/>
+     {/* <Modal isOpen={activeModal === "bestpractices"} onClose={closeModal}>
         <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
           <h2 className="text-xl font-bold mb-4">
             {isEditMode ? "Edit Best Practice" : "Add Best Practice"}
@@ -1212,7 +1227,7 @@ const Managebestpractices = () => {
             </div>
           </form>
         </div>
-      </Modal>
+      </Modal>*/}
 
       <Modal
         isOpen={deleteConfirmation.isOpen}
