@@ -53,7 +53,7 @@ const navigate = useNavigate();
 
         <Button
                variant="gradient-primary"
-            className="w-fit h-[42px] rounded-[100px] 
+            className="lg:w-fit md:w-fit w-full text-center h-[42px] rounded-[100px] 
              px-6 py-1 mt-8 cursor-pointer
              text-[16px] font-['Open_Sans'] font-semibold 
              leading-[100%] tracking-[0px] text-center text-white"
