@@ -350,7 +350,7 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
       <div
         className={`
           my-6 flex items-center
-          w-[415px] h-[19px]
+          lg:w-[415px] w-full h-[19px]
           gap-[20px]
           text-[14px] leading-[100%] tracking-[0]
           font-['Open_Sans'] font-normal

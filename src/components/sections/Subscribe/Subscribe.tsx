@@ -11,14 +11,14 @@ export default function Subscribe() {
           <div className="flex-1 min-w-0 text-left">
             <h2
               style={{ fontFamily: "Poppins, sans-serif" }}
-              className="text-[33px] font-medium leading-tight tracking-[-0.02em] text-gray-900"
+              className="text-[33px] font-medium lg:text-left md:text-left text-center leading-tight tracking-[-0.02em] text-gray-900"
             >
               Join{" "}
               <span className="bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">
                 2,000+ Subscribers
               </span>
             </h2>
-            <p className="mt-2 text-[#64748B] text-[20px] font-openSans font-light">
+            <p className="mt-2 text-[#64748B] lg:text-left md:text-left text-center text-[20px] font-openSans font-light">
               Stay updated with our newsletter
             </p>
           </div>
@@ -60,11 +60,11 @@ export default function Subscribe() {
             </div>
 
             {/* Privacy note */}
-            <p className="mt-2 text-[#64748B] text-sm font-openSans text-left sm:w-[600px] sm:ml-auto">
+            <p className="mt-2 text-[#64748B] text-sm font-openSans lg:text-left md:text-left text-center sm:w-[600px] sm:ml-auto">
               We care about your data in our{" "}
               <a
                 href="/privacy"
-                className="font-semibold text-slate-800 underline decoration-[#9747FF]/30 underline-offset-2 hover:text-[#9747FF]"
+                className="font-semibold text-sm text-slate-800 underline decoration-[#9747FF]/30 underline-offset-2 hover:text-[#9747FF]"
               >
                 Privacy Policy
               </a>.
