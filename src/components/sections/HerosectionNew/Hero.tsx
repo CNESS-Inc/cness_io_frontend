@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 export default function HeroSection() {
   const [step, setStep] = useState(0);
   const [openSignup, setOpenSignup] = useState(false);
-const navigate = useNavigate();
+  const navigate = useNavigate();
   useEffect(() => {
     const t: number[] = [];
     t.push(window.setTimeout(() => setStep(1), 300));
@@ -42,7 +42,7 @@ const navigate = useNavigate();
 
         <p
           className={`openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] text-center max-w-[62ch] mt-4 sm:mt-6 lg:mt-6 transition-all duration-1000 ease-in-out  ${
-    step >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            step >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
           }`}
         >
           Build your conscious identity. Connect with purpose-led peers. Share
