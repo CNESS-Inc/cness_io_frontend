@@ -16,7 +16,6 @@ import {
   GetPublicProfileDetails,
   GetProfileDetailsById,
   GetFollowBestpractices,
-  GetAllmineBestPractices,
   GetBestpracticesByUserProfile,
   //SendFollowRequest,
   //UnFriend,
