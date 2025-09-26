@@ -16,7 +16,7 @@ import {
   GetPublicProfileDetails,
   GetProfileDetailsById,
   GetFollowBestpractices,
-  //SendFollowRequest,
+  SendFollowRequest,
   //UnFriend,
 } from "../Common/ServerAPI";
 import { useNavigate, useParams } from "react-router-dom";
@@ -154,6 +154,18 @@ export default function UserProfileView() {
     fetchPublicUserDetails();
     fetchFollowBestPractises();
   }, []);
+
+  const handleFollow = async (userId: string) => {
+      try {
+        const formattedData = {
+          following_id: userId,
+        };
+        await SendFollowRequest(formattedData);
+        setUserDetails({ ...userDetails, if_following: !userDetails?.if_following })
+      } catch (error) {
+        console.error("Error fetching selection details:", error);
+      }
+    };
 
   const handleFriend = async (userId: string) => {
     try {
@@ -341,7 +353,26 @@ export default function UserProfileView() {
 
               {/* Buttons */}
               <div className="pt-4 pb-10 space-y-2 border-b border-[#E5E5E5]">
+
                 {!isOwnProfile && (
+                  <button
+                    onClick={() => handleFollow(userDetails?.user_id)}
+                    className={`w-full h-9 rounded-full 
+                    bg-gradient-to-r from-[#7077FE] via-[#9747FF] to-[#F07EFF] 
+                    font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
+                    text-white align-middle
+                    ${userDetails?.if_following
+                      ? "bg-gray-200 text-gray-800"
+                      : "bg-[#7C81FF] text-white"
+                      } hover:bg-indigo-600 hover:text-white`}
+                  >
+                    {userDetails?.if_following ? "Resonating" : "+ Resonate"}
+                  </button>
+                )}
+
+
+
+                {/* {!isOwnProfile && (
                   <button
                     className="w-full h-9 rounded-full 
                 bg-gradient-to-r from-[#7077FE] via-[#9747FF] to-[#F07EFF] 
@@ -350,7 +381,7 @@ export default function UserProfileView() {
                   >
                     + Resonate
                   </button>
-                )}
+                )} */}
                 {!isOwnProfile && (
                   <button
                     onClick={() => handleFriend(userDetails?.user_id)}
@@ -541,8 +572,8 @@ export default function UserProfileView() {
           </div>
         </div>
         <div className="w-full lg:w-[65%] xl:w-[75%]">
-<div className="px-6 relative flex flex-col md:flex-row justify-center items-center gap-3 sm:gap-4 md:gap-6 pt-3 md:pt-5">
-  <span className="absolute bottom-0 right-0 h-px bg-[#ECEEF2]
+    <div className="px-6 relative flex flex-col md:flex-row justify-center items-center gap-3 sm:gap-4 md:gap-6 pt-3 md:pt-5">
+      <span className="absolute bottom-0 right-0 h-px bg-[#ECEEF2]
                    left-6 md:left-6" />
             <div className="flex justify-center gap-6 -mt-2">
               <Button
@@ -629,10 +660,10 @@ export default function UserProfileView() {
 
                         {/* Date range */}
                       {(edu.start_date || edu.end_date || edu.currently_studying) && (
-  <span className="text-xs text-gray-400 mt-1 block">
-    {formatRange(edu.start_date, edu.end_date, edu.currently_studying)}
-  </span>
-)}
+                        <span className="text-xs text-gray-400 mt-1 block">
+                          {formatRange(edu.start_date, edu.end_date, edu.currently_studying)}
+                        </span>
+                      )}
                       </li>
                     ))}
                   </ul>
@@ -696,6 +727,28 @@ export default function UserProfileView() {
                             )}
                           </ul>
                         )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Service Offered */}
+                <div className="py-6 border-b border-[#ECEEF2]">
+                  <h3 className="flex items-center gap-2 font-['Poppins'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-[#000000]">
+                    <span className="flex items-center gap-2">
+                      <img src={work} alt="work" className="w-6 h-6" />
+                    </span>
+                    Services
+                  </h3>
+
+                  <div className="mt-2 space-y-5">
+                    {userDetails?.person_services?.map((service: any) => (
+                      <div key={service.id}>
+                        {/* Position + Company */}
+                        <p className="mt-2 font-['Open_Sans'] font-normal text-[14px] leading-[21px] tracking-[0px] text-[#64748B]">
+                          {service.name}
+                        </p>
+
                       </div>
                     ))}
                   </div>
