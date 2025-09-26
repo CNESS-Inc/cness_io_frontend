@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 
 import {
   GetAllPlanDetails,
@@ -12,6 +11,7 @@ import LoadingSpinner from "../components/ui/LoadingSpinner";
 import Button from "../components/ui/Button";
 import Modal from "../components/ui/Modal";
 import { useToast } from "../components/ui/Toast/ToastProvider";
+import { FaArrowUp, FaCalendarAlt } from "react-icons/fa";
 
 interface SubscriptionData {
   plan_active: boolean;
@@ -53,12 +53,12 @@ type BasicInfoData = {
   main_name: string;
   margaret_name: string;
   username: string;
-  email_verified : boolean;
+  email_verified: boolean;
   profile_picture: string;
   is_disqualify: boolean;
   completed_step: number;
   person_organization_complete: number;
-  createdAt : string;
+  createdAt: string;
 };
 
 const Setting = () => {
@@ -80,7 +80,7 @@ const Setting = () => {
   const [basicData, setBasicData] = useState<BasicInfoData | null>(null)
 
   const planType = (subscription?.plan_type ?? "").trim();
-const isMonthly = /month/i.test(planType); // true if plan type contains "month"
+  const isMonthly = /month/i.test(planType); // true if plan type contains "month"
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -296,22 +296,58 @@ const isMonthly = /month/i.test(planType); // true if plan type contains "month"
                       Plan Type:
                     </span>
                     <div className="flex items-center gap-2 whitespace-nowrap">
-                    <span className="text-gray-600">
-                      {subscription.plan_type}
-                    </span>
+                      <span className="text-gray-600">
+                        {subscription.plan_type}
+                      </span>
 
-{isMonthly && (
-      <Link
-        to="/pricing"
-        className="inline-flex items-center rounded-md px-2 py-1 text-sm
-                   bg-yellow-50 text-orange-700 hover:bg-indigo-100"
-      >
-        Upgrade
-      </Link>
-    )}
+                      {isMonthly && (
+                        <div className="bg-blue-50 rounded-lg p-6 border border-blue-200 relative overflow-hidden">
+                          <div className="absolute top-0 right-0 w-24 h-24 transform translate-x-8 -translate-y-8">
+                            <div className="absolute transform rotate-45 bg-blue-500 text-white text-xs py-1 right-[-35px] top-[32px] w-[140px] text-center">
+                              Recommended
+                            </div>
+                          </div>
 
+                          <div className="flex items-start space-x-4">
+                            <div className="bg-blue-100 p-3 rounded-full">
+                              <FaArrowUp className="text-blue-600 h-6 w-6" />
+                            </div>
+
+                            <div className="flex-1">
+                              <h3 className="text-lg font-bold text-blue-900 mb-2">
+                                Upgrade to Annual Plan
+                              </h3>
+                              <p className="text-blue-700 mb-4">
+                                Save up to 20% with our annual plan and get access to all features
+                                with no interruption for a full year.
+                              </p>
+
+                              <div className="flex flex-wrap gap-3 mt-2">
+                                <Button
+                                  onClick={openPricingModal}
+                                  variant="primary"
+                                  className="flex items-center gap-2"
+                                >
+                                  <FaArrowUp className="h-4 w-4" />
+                                  Upgrade Now
+                                </Button>
+
+                                <Button
+                                  onClick={openPricingModal}
+                                  variant="secondary"
+                                  className="flex items-center gap-2"
+                                >
+                                  <FaCalendarAlt className="h-4 w-4" />
+                                  Renew Monthly Plan
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                    </div>
                   </div>
-</div>
                   <div className="flex items-center justify-between">
                     <span className="font-medium text-gray-700">
                       Membership Level:
@@ -346,15 +382,26 @@ const isMonthly = /month/i.test(planType); // true if plan type contains "month"
               ) : (
                 <div className="text-center py-8">
                   <p className="text-gray-600">
-                    No subscription information available
+                    You don't have any active subscription.
                   </p>
                   <button
                     onClick={openPricingModal}
                     className="w-full sm:w-auto px-6 mt-3 py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold shadow-md hover:opacity-90 transition disabled:opacity-50"
                   >
-                    Retry
+                    View Plans
                   </button>
                 </div>
+                // <div className="text-center py-8">
+                //   <p className="text-gray-600">
+                //     No subscription information available
+                //   </p>
+                //   <button
+                //     onClick={openPricingModal}
+                //     className="w-full sm:w-auto px-6 mt-3 py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold shadow-md hover:opacity-90 transition disabled:opacity-50"
+                //   >
+                //     Retry
+                //   </button>
+                // </div>
               )}
             </div>
           </div>
@@ -437,7 +484,7 @@ const isMonthly = /month/i.test(planType); // true if plan type contains "month"
 
                 <div className="flex items-center justify-between">
                   <span className="font-medium text-gray-700">
-                 Email Verified Status:
+                    Email Verified Status:
                   </span>
                   <span
                     className={`px-3 py-1 rounded-full text-sm font-medium ${basicData?.email_verified
