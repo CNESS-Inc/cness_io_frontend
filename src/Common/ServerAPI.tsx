@@ -186,6 +186,7 @@ export const EndPoint = {
   like_bestpractices: "/best-practice/like",
   save_bestpractices: "/best-practice/save",
   get_savebestpractices: "/best-practice/get/save/best-practice",
+  get_bestpractice_by_user_profile: "/best-practice/get-by-user-profile",
   //get_followbestpractices:"/best-practice/folow"
   create_bestpracticescomment: "/best-practice/comment",
   get_bestpracticescomment: "/best-practice/comment",
@@ -766,6 +767,15 @@ export const GetSaveBestpractices = (): ApiResponse => {
     ServerAPI.APIMethod.GET,
     data,
     `${EndPoint.get_savebestpractices}`
+  );
+};
+
+export const GetBestpracticesByUserProfile = (id: any): ApiResponse => {
+  const data = {};
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.get_bestpractice_by_user_profile}/${id}`
   );
 };
 

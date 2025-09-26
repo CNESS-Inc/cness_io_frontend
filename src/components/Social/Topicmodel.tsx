@@ -21,6 +21,7 @@ export default function TopicModal({
   onClose,
 }: TopicModalProps) {
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     if (userSelectedTopics && userSelectedTopics.length > 0) {
@@ -32,9 +33,16 @@ export default function TopicModal({
     setSelectedTopics((prev) =>
       prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]
     );
+    if (selectedTopics) {
+      setErrorMessage("");
+    }
   };
 
   const handleSubmit = () => {
+    if (selectedTopics.length === 0) {
+      setErrorMessage("Please choose atleast a topic."); // set error message
+      return;
+    }
     onSelect(selectedTopics);
   };
 
@@ -53,11 +61,16 @@ export default function TopicModal({
         <h2 className="text-xl font-semibold text-center mb-3 text-purple-700">
           Choose Your Conscious Topics
         </h2>
-        <p className="text-gray-600 text-center mb-6">
+        <p className="text-gray-600 text-center">
           What’s on your mind? Pick topics to share and explore.
         </p>
+        {errorMessage && (
+          <p className="text-center text-red-600 text-xs mt-1">
+            {errorMessage}
+          </p>
+        )}
 
-        <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto">
+        <div className="mt-6 grid grid-cols-2 gap-3 max-h-64 overflow-y-auto">
           {topics.map((topic) => (
             <button
               key={topic.id}
@@ -76,7 +89,6 @@ export default function TopicModal({
         <div className="flex justify-center mt-6">
           <button
             onClick={handleSubmit}
-            disabled={selectedTopics.length === 0}
             className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg shadow-md disabled:opacity-50"
           >
             {userSelectedTopics && userSelectedTopics.length > 0
