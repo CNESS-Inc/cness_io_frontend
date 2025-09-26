@@ -101,7 +101,7 @@ export default function Certifications() {
              py-1 px-8 self-stretch 
              text-[16px] font-['Open_Sans'] font-medium
              leading-[100%] tracking-[0px] text-center"
-                  onClick={() => (window.location.href = "/sign-up")}
+                  onClick={() => (window.location.href = "/log-in")}
                 >
                   Join Us
                 </Button>
