@@ -347,7 +347,7 @@ export default function UserProfileView() {
                 </div>
               </div>
 
-              <div className="mt-3 flex gap-3 text-center">
+              {/* <div className="mt-3 flex gap-3 text-center">
                 <span>
                   <span className="font-['Open_Sans'] font-bold text-sm leading-[100%] text-[#64748B]">
                     2M
@@ -365,7 +365,7 @@ export default function UserProfileView() {
                     Connections
                   </span>
                 </span>
-              </div>
+              </div> */}
 
               {/* Buttons */}
               <div className="pt-4 pb-10 space-y-2 border-b border-[#E5E5E5]">
