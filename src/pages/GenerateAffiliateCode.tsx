@@ -16,7 +16,7 @@ import {
 } from "react-share";
 import {
   FaFacebook,
-  FaInstagram,
+  // FaInstagram,
   FaLinkedin,
   FaTwitter,
   FaWhatsapp,
@@ -345,9 +345,9 @@ const AffiliateGenerateCode = () => {
                                 <FaLinkedin size={32} color="#0077B5" />
                               </LinkedinShareButton>
                             </li>
-                            <li>
+                            {/* <li>
                               <FaInstagram size={32} color="#C13584" />
-                            </li>
+                            </li> */}
                             <TwitterShareButton url={`${baseUrl}/sign-up?referral_code=${myReferralCode}`} title={tweetText}>
                               <FaTwitter size={32} color="#1DA1F2" />
                             </TwitterShareButton>
