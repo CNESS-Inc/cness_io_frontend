@@ -1527,7 +1527,7 @@ export default function SocialTopBar() {
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 md:gap-3">
                           <Link
-                            to={`/dashboard/userprofile/${post?.profile?.id}`}
+                            to={`/dashboard/userprofile/${post?.profile?.user_id}`}
                           >
                             <img
                               src={
@@ -1546,7 +1546,7 @@ export default function SocialTopBar() {
                           <div>
                             <p className="font-semibold text-sm md:text-base text-black">
                               <Link
-                                to={`/dashboard/userprofile/${post?.profile?.id}`}
+                                to={`/dashboard/userprofile/${post?.profile?.user_id}`}
                               >
                                 {" "}
                                 {post.profile.first_name}{" "}
@@ -1555,7 +1555,7 @@ export default function SocialTopBar() {
                               <span className="text-[#999999] text-xs md:text-[12px] font-[300]">
                                 {" "}
                                 <Link
-                                  to={`/dashboard/userprofile/${post?.profile?.id}`}
+                                  to={`/dashboard/userprofile/${post?.profile?.user_id}`}
                                 >
                                   {" "}
                                   @{post.user.username}
