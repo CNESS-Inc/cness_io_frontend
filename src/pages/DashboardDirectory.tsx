@@ -90,6 +90,7 @@ export default function DashboardDirectory() {
     });
 
   const [popularCompanies, setPopularCompanies] = useState<Company[]>([]);
+  console.log('popularCompanies', popularCompanies);
   const [aspiringCompanies, setAspiringCompanies] = useState<Company[]>([]);
   const [inspiringCompanies, setInspiringCompanies] = useState<Company[]>([]);
 

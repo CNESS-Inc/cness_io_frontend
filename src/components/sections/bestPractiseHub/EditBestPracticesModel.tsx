@@ -135,6 +135,7 @@ export default function EditBestPracticeModal({
               </label>
               <select
                 id="interest"
+                // value={currentPractice?.interest || ""}
                 value={currentPractice?.interest || ""}
                 onChange={(e) =>
                   setCurrentPractice({
@@ -160,49 +161,55 @@ export default function EditBestPracticeModal({
           <div className="grid sm:grid-cols-2 gap-4">
             {/* Profession */}
             {/* Profession */}
-<div className="flex flex-col gap-[5px]">
-  <label
-    htmlFor="profession"
-    className="block text-[15px] font-normal text-black"
-  >
-    Profession*
-  </label>
+            <div className="flex flex-col gap-[5px]">
+              <label
+                htmlFor="profession"
+                className="block text-[15px] font-normal text-black"
+              >
+                Profession*
+              </label>
 
-  <div className="relative">
-    <select
-      id="profession"
-      value={String(currentPractice?.profession ?? "")}
-      onChange={(e) =>
-        setCurrentPractice({
-          ...currentPractice,
-          profession: e.target.value,
-        })
-      }
-      className={`w-full appearance-none px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none 
+              <div className="relative">
+                <select
+                  id="profession"
+                  value={currentPractice?.profession_data?.id || ""}
+                  onChange={(e) =>
+                    setCurrentPractice({
+                      ...currentPractice,
+                      profession: e.target.value,
+                    })
+                  }
+                  className={`w-full appearance-none px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none 
          focus:ring-2 focus:ring-indigo-500 text-sm font-normal
-         ${currentPractice?.profession ? "text-black" : "text-[#6E7179]"}`}
-      required
-    >
-      <option value="">Select your Profession</option>
-      {profession.map((prof) => (
-        <option key={prof.id} value={String(prof.id)}>
-          {prof.title}
-        </option>
-      ))}
-    </select>
+         ${currentPractice?.profession_data ? "text-black" : "text-[#6E7179]"}`}
+                  required
+                >
+                  <option value="">Select your Profession</option>
+                  {profession.map((prof) => (
+                    <option key={prof.id} value={prof.id}>
+                      {prof.title}
+                    </option>
+                  ))}
+                </select>
 
-    {/* custom arrow to match design and keep select box height */}
-    <svg
-      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6E7179]"
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden
-    >
-      <path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  </div>
-</div>
+                {/* custom arrow to match design and keep select box height */}
+                <svg
+                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6E7179]"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden
+                >
+                  <path
+                    d="M6 8l4 4 4-4"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
 
             {/* Tags */}
             <div className="flex flex-col gap-[5px]">

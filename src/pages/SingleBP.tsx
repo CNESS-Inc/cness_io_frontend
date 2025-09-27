@@ -32,6 +32,7 @@ const SingleBP = () => {
   const [commentCount, setCommentCount] = useState(0);
   const [comment, setComment] = useState("");
   const [postComment, setPostComment] = useState<any>("");
+  const [commentError, setCommentError] = useState("");
   const [singlepost, setSinglePost] = useState<any>({});
   const [media, setMedia] = useState<string>("");
   const [_saved, setSaved] = useState(false);
@@ -42,6 +43,10 @@ const SingleBP = () => {
 
   const handleCommentChange = (event: any) => {
     setComment(event.target.value);
+
+    if (commentError) {
+      setCommentError("");
+    }
   };
 
   // const { id } = getQueryParams();
@@ -61,7 +66,10 @@ const SingleBP = () => {
 
   const handleCommentSubmit = async (_bpid?: any) => {
     try {
-      if (!comment.trim()) return;
+      if (!comment.trim()) {
+        setCommentError("Please enter a comment."); // set error message
+        return;
+      }
       const payload = {
         post_id: id,
         text: comment,
@@ -74,6 +82,7 @@ const SingleBP = () => {
       console.error("Error creating comment:", error);
     }
   };
+
   const fetchSinglePost = async (id: any) => {
     try {
       const res = await GetSingleBestPractice(id);
@@ -246,59 +255,79 @@ useEffect(() => {
   </div>*/}
         </div>
         {/* Interaction Icons */}
-<div className="relative z-20 w-[90%] sm:w-[80%] md:w-[70%] mx-auto
-                mt-[150px] sm:mt-[120px] md:mt-[160px] mb-4">
-  <div className="flex items-center justify-between">
-    {/* LEFT: Like + Comment */}
-    <div className="flex items-center gap-6">
-      <button onClick={handleLike} className="flex items-center gap-2" aria-label={isLiked ? "Unlike" : "Like"}>
-        <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center ${
-          isLiked ? "bg-[#6269FF]" : "bg-[#7077EF]"
-        }`}>
-          <BiLike className="text-white text-base sm:text-lg" />
+        <div
+          className="relative z-20 w-[90%] sm:w-[80%] md:w-[70%] mx-auto
+                mt-[150px] sm:mt-[120px] md:mt-[160px] mb-4"
+        >
+          <div className="flex items-center justify-between">
+            {/* LEFT: Like + Comment */}
+            <div className="flex items-center gap-6">
+              <button
+                onClick={handleLike}
+                className="flex items-center gap-2"
+                aria-label={isLiked ? "Unlike" : "Like"}
+              >
+                <div
+                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center ${
+                    isLiked ? "bg-[#6269FF]" : "bg-[#7077EF]"
+                  }`}
+                >
+                  <BiLike className="text-white text-base sm:text-lg" />
+                </div>
+                <span className="text-sm text-gray-800">
+                  {_localLikeCount || 0}
+                </span>
+              </button>
+
+              <button className="flex items-center gap-2" aria-label="Comments">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#F07EFF] flex items-center justify-center">
+                  <BiComment className="text-white text-base sm:text-lg" />
+                </div>
+                <span className="text-sm text-gray-800">
+                  {commentCount || 0}
+                </span>
+              </button>
+            </div>
+
+            {/* RIGHT: Save + Follow */}
+            {/* RIGHT: Save + Follow */}
+            <div className="flex items-center gap-4 sm:gap-6">
+              <button
+                onClick={fetchSavedPost}
+                className="flex items-center gap-2"
+                aria-label={isSaved ? "Unsave" : "Save"}
+              >
+                {isSaved ? (
+                  <>
+                    <FaBookmark className="text-[#72DBF2] text-xl" />
+                    <span className="text-sm text-gray-800">Saved</span>
+                  </>
+                ) : (
+                  <>
+                    <FaRegBookmark className="text-[#72DBF2] text-xl" />
+                    <span className="text-sm text-gray-800">Save</span>
+                  </>
+                )}
+              </button>
+
+              {!isFollowing ? (
+                <button
+                  className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap"
+                  onClick={toggleFollowPost}
+                >
+                  + Follow
+                </button>
+              ) : (
+                <button
+                  className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF] whitespace-nowrap"
+                  onClick={toggleFollowPost}
+                >
+                  Following
+                </button>
+              )}
+            </div>
+          </div>
         </div>
-        <span className="text-sm text-gray-800">{_localLikeCount || 0}</span>
-      </button>
-
-      <button className="flex items-center gap-2" aria-label="Comments">
-        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#F07EFF] flex items-center justify-center">
-          <BiComment className="text-white text-base sm:text-lg" />
-        </div>
-        <span className="text-sm text-gray-800">{commentCount || 0}</span>
-      </button>
-    </div>
-
-  {/* RIGHT: Save + Follow */}
- {/* RIGHT: Save + Follow */}
-    <div className="flex items-center gap-4 sm:gap-6">
-      <button onClick={fetchSavedPost} className="flex items-center gap-2" aria-label={isSaved ? "Unsave" : "Save"}>
-        {isSaved ? (
-          <>
-            <FaBookmark className="text-[#72DBF2] text-xl" />
-            <span className="text-sm text-gray-800">Saved</span>
-          </>
-        ) : (
-          <>
-            <FaRegBookmark className="text-[#72DBF2] text-xl" />
-            <span className="text-sm text-gray-800">Save</span>
-          </>
-        )}
-      </button>
-
-      {!isFollowing ? (
-        <button className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap"
-                onClick={toggleFollowPost}>
-          + Follow
-        </button>
-      ) : (
-        <button className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF] whitespace-nowrap"
-                onClick={toggleFollowPost}>
-          Following
-        </button>
-      )}
-    </div>
-  </div>
-</div>
         {/* Main Content Area */}
         {/* Image/Video Section
       {media?.file_type === "video/mp4" ? (
@@ -356,6 +385,9 @@ useEffect(() => {
                 </button>
               </div>
             </div>
+            {commentError && (
+              <p className="ps-16 text-red-600 text-xs mt-1">{commentError}</p>
+            )}
           </div>
         </div>
         {postComment?.length > 0 && (
