@@ -2072,13 +2072,13 @@ export default function SocialTopBar() {
                 >
                   <img src={Trending} className="w-5 h-5" alt="" /> Trending
                 </li>
-                <li
+                {/*<li
                   // onClick={() => navigate("/dashboard/trendingpost")}
                   className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-2 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"
                 >
                   <img src={Mention} className="w-5 h-5" alt="" /> Mention &
                   tags
-                </li>
+                </li>*/}
                 <li
                   onClick={fetchCollectionItems}
                   className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-2 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"

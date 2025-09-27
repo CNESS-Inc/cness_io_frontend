@@ -7,13 +7,13 @@ import Footer from "../layout/Footer/Footer";
 import Button from "../components/ui/Button";
 import SignupModel from "../components/OnBoarding/Signup";
 import bulb from "../assets/bulb.svg";
-import Teamframe from "../components/ui/TeamFrame";
+//import Teamframe from "../components/ui/TeamFrame";
 import GetInTouch from "../components/sections/GetInTouch";
 import Subscribe from "../components/sections/Subscribe";
 import joinImage from "../assets/join-team.png";
 
 export default function WhyCness() {
-  const people = [
+  {/*const people = [
     {
       name: "John Doe",
       role: "Founder & CEO",
@@ -50,8 +50,8 @@ export default function WhyCness() {
       imageUrl: "https://cdn.cness.io/team.webp",
       socials: { linkedin: "#", instagram: "#", facebook: "#" },
     },
-  ];
-  const [selected, setSelected] = useState<number>(2);
+  ];*/}
+  //const [selected, setSelected] = useState<number>(2);
   const [openSignup, setOpenSignup] = useState(false);
 
   const scrollToGetInTouch = () => {
@@ -393,14 +393,14 @@ export default function WhyCness() {
         </section>
       </LazySection>
 
-      <LazySection effect="fade-up" delay={0.2}>
+     {/* <LazySection effect="fade-up" delay={0.2}>
         <section
           className="w-full py-12 md:py-16"
           style={{
             background: "linear-gradient(180deg, #FAFAFA 0%, #F6F5FA 100%)",
           }}
         >
-          {/* Heading */}
+           Heading 
           <div className="mx-auto max-w-[900px] px-4 sm:px-6 text-center">
             <h2 className="font-['Poppins'] font-medium text-[28px] sm:text-[32px] md:text-[42px] leading-tight md:leading-[54px] tracking-[-0.02em] text-[#0F172A]">
               Meet{" "}
@@ -416,7 +416,7 @@ export default function WhyCness() {
             </p>
           </div>
 
-          {/* Team Grid */}
+          {/* Team Grid 
           <div className="mx-auto mt-8 md:mt-12 max-w-[1800px] px-4 sm:px-6">
             <div
               className="
@@ -447,7 +447,7 @@ export default function WhyCness() {
             </div>
           </div>
         </section>
-      </LazySection>
+      </LazySection>*/}
 
       <LazySection effect="fade-up" delay={0.2}>
         <section className="flex flex-col items-center relative w-full ">
