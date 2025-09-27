@@ -41,6 +41,7 @@ export default function TopicModal({
   const handleSubmit = () => {
     if (selectedTopics.length === 0) {
       setErrorMessage("Please choose atleast a topic."); // set error message
+      if (onClose) onClose();
       return;
     }
     onSelect(selectedTopics);
