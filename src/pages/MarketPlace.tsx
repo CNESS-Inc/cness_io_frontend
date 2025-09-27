@@ -283,16 +283,13 @@ export default function MarketplacePage() {
         <Seller />
       </LazySection>
 
-    
-    <div className="w-full max-w-8xl mx-auto bg-white p-8 sm:p-10 rounded-xl ">
-  <Marketform
-    src="https://forms.zohopublic.com/vijicn1/form/SellerForm/formperma/cg_YdZsqMd1myB1bzzytsXvBByc4kI4DzhufAv4Cu2s"
-    title="Marketplace Submission"
-    minHeight={400}
-  />
-</div>
-        
-   
+      <div className="w-full max-w-8xl mx-auto bg-white p-8 sm:p-10 rounded-xl ">
+        <Marketform
+          src="https://forms.zohopublic.com/vijicn1/form/SellerForm/formperma/cg_YdZsqMd1myB1bzzytsXvBByc4kI4DzhufAv4Cu2s"
+          title="Marketplace Submission"
+          minHeight={400}
+        />
+      </div>
     </>
   );
 }
