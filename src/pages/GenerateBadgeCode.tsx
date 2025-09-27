@@ -7,6 +7,7 @@ import indv_leader from "../assets/indv_leader.svg";
 const GenerateBadgeCode = () => {
   const [embedCodes, setEmbedCodes] = useState<string[]>([]);
   const [staticImageURL, setStaticImageURL] = useState<string>("");
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const fetchUserBadge = async () => {
     try {
@@ -88,9 +89,16 @@ useEffect(() => {
     fetchUserBadge();
   }, []);
 
-  const copyToClipboard = (code: string) => {
-    navigator.clipboard.writeText(code);
+const copyToClipboard = async (code: string, index: number) => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopiedIndex(index);
+      setTimeout(() => setCopiedIndex(null), 2000); // reset after 2s
+    } catch (err) {
+      console.error("Clipboard copy failed:", err);
+    }
   };
+  
 
   return (
     <>
@@ -105,12 +113,16 @@ useEffect(() => {
                 rows={10}
                 className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
-              <button
-                onClick={() => copyToClipboard(embedCodes[0])}
-                className="mt-2 bg-green-600 text-white px-4 py-2 rounded cursor-pointer"
-              >
-                Copy to Clipboard
-              </button>
+             <button
+                    onClick={() => copyToClipboard(embedCodes[0], 0)}
+                    className={`mt-2 px-4 py-2 rounded cursor-pointer transition-colors ${
+                      copiedIndex === 0
+                        ? "bg-gray-500 text-white"
+                        : "bg-green-600 text-white hover:bg-green-700"
+                    }`}
+                  >
+                    {copiedIndex === 0 ? "Copied!" : "Copy to Clipboard"}
+                  </button>
             </div>
 
             <div>
@@ -121,12 +133,16 @@ useEffect(() => {
                 rows={10}
                 className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
-              <button
-                onClick={() => copyToClipboard(embedCodes[1])}
-                className="mt-2 bg-green-600 text-white px-4 py-2 rounded cursor-pointer"
-              >
-                Copy to Clipboard
-              </button>
+               <button
+                    onClick={() => copyToClipboard(embedCodes[1], 1)}
+                    className={`mt-2 px-4 py-2 rounded cursor-pointer transition-colors ${
+                      copiedIndex === 1
+                        ? "bg-gray-500 text-white"
+                        : "bg-green-600 text-white hover:bg-green-700"
+                    }`}
+                  >
+                    {copiedIndex === 1 ? "Copied!" : "Copy to Clipboard"}
+                  </button>
             </div>
 
             <div>
@@ -137,12 +153,16 @@ useEffect(() => {
                 rows={10}
                 className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
-              <button
-                onClick={() => copyToClipboard(embedCodes[2])}
-                className="mt-2 bg-green-600 text-white px-4 py-2 rounded cursor-pointer"
-              >
-                Copy to Clipboard
-              </button>
+             <button
+                    onClick={() => copyToClipboard(embedCodes[2], 2)}
+                    className={`mt-2 px-4 py-2 rounded cursor-pointer transition-colors ${
+                      copiedIndex === 2
+                        ? "bg-gray-500 text-white"
+                        : "bg-green-600 text-white hover:bg-green-700"
+                    }`}
+                  >
+                    {copiedIndex === 2 ? "Copied!" : "Copy to Clipboard"}
+                  </button>
             </div>
           </div>
         )}
