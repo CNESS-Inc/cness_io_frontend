@@ -17,6 +17,7 @@ import {
   GetProfileDetailsById,
   GetFollowBestpractices,
   SendFollowRequest,
+  GetBestpracticesByUserProfile
   //UnFriend,
 } from "../Common/ServerAPI";
 import { useNavigate, useParams } from "react-router-dom";
