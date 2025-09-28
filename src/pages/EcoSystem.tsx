@@ -7,7 +7,7 @@ import Button from "../components/ui/Button";
 import WhatOffer from "../components/ecoSystem/WhatOffer";
 import WhyCness from "../components/ecoSystem/WhyCness";
 import GetInTouch from "../components/sections/GetInTouch";
-import Subscribe from "../components/sections/Subscribe";
+//import Subscribe from "../components/sections/Subscribe";
 import Footer from "../layout/Footer/Footer";
 import SectionFaq from "../components/faqs/SectionFaq";
 import {  useState } from "react";
@@ -116,9 +116,9 @@ export default function EcoSystem() {
       <LazySection effect="fade-up" delay={0.2}>
         <SectionFaq faqs={faqs} />
       </LazySection>
-      <LazySection effect="fade-up" delay={0.2}>
+      {/*<LazySection effect="fade-up" delay={0.2}>
         <Subscribe />
-      </LazySection>
+      </LazySection>*/}
       <Footer />
     </>
   );
