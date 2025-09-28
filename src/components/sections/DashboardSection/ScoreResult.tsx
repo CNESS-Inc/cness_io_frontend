@@ -701,8 +701,8 @@ const ScoreResult = () => {
                       <img
                         src={
                           scoreData.badge.level === "Aspiring"
-                            ? 'https://cdn.cness.io/inspired.webp'
-                            : 'https://cdn.cness.io/aspiring.webp'
+                            ? 'https://cdn.cness.io/aspiring.webp'
+                            : 'https://cdn.cness.io/inspired.webp'
                         }
                         // src={
                         //   scoreData.badge.level === "Aspiring"

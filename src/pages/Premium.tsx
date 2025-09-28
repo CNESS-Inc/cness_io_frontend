@@ -5,7 +5,7 @@ import Footer from "../layout/Footer/Footer";
 import Plans from "../components/Premimum/Plans";
 import CompareFeatures from "../components/Premimum/CompareFeatures";
 import GetInTouch from "../components/sections/GetInTouch";
-import Subscribe from "../components/sections/Subscribe";
+//import Subscribe from "../components/sections/Subscribe";
 
 const Premium = () => {
   return (
@@ -23,9 +23,9 @@ const Premium = () => {
       <LazySection effect="fade-up" delay={0.4}>
         <GetInTouch />
       </LazySection>
-      <LazySection effect="fade-up" delay={0.4}>
+      {/*<LazySection effect="fade-up" delay={0.4}>
         <Subscribe />
-      </LazySection>
+      </LazySection>*/}
       <Footer />
     </>
   );

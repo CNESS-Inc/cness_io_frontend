@@ -1,5 +1,5 @@
 import {
-  SearchIcon,
+  //SearchIcon,
   SettingsIcon,
   LogOutIcon,
   BellIcon,
@@ -353,7 +353,7 @@ useEffect(() => {
           </button>
         </div>
 
-        {/* Search bar */}
+        {/* Search bar
         <div
           className={`hidden lg:flex items-center justify-between p-3 relative bg-white rounded-xl border border-solid border-slate-300 w-full lg:w-[430px] xl:w-[450px] ${
             isMobileNavOpen ? "ml-6" : "ml-14"
@@ -364,19 +364,19 @@ useEffect(() => {
             placeholder="Search"
           />
           <SearchIcon className="w-[15px] h-[15px] text-[#afb1b3]" />
-        </div>
+        </div> */}
         <div
           className={`flex lg:hidden items-center ${
             isMobileNavOpen ? "ml-6" : "ml-0"
           }`}
         >
-          <button
+            {/*<button
             onClick={() => setSearchOpen(true)}
             className="p-3 bg-white rounded-xl border border-slate-300 hover:bg-gray-50 transition"
             aria-label="Open search"
           >
             <SearchIcon className="w-[20px] h-[20px] text-[#afb1b3]" />
-          </button>
+          </button> */}
           {searchOpen && (
             <div
               className={`fixed top-0 bottom-0 right-0 z-50 bg-black/30 flex items-start justify-center ${
