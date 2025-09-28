@@ -200,11 +200,11 @@ const DashboardNavbar = ({
       children: [
         { label: "Search & Explore", path: "/dashboard/SearchExplore" },
         {
-          label: "Create Circles (Coming Soon)",
+          label: "Create Circles",
           path: "/dashboard/ComingSoon",
         },
         {
-          label: "Manage Circles (Coming Soon)",
+          label: "Manage Circles",
           path: "/dashboard/ComingSoon",
         },
         // { label: "Messagings", path: "/dashboard/ComingSoon" },
@@ -401,7 +401,7 @@ const DashboardNavbar = ({
               >
                 Edit Profile
               </NavLink>
-              <NavLink
+             {/* <NavLink
                 to="/dashboard/company-profile"
                 className={({ isActive }) =>
                   `px-3 py-3 rounded-lg w-full transition whitespace-nowrap ${
@@ -410,7 +410,7 @@ const DashboardNavbar = ({
                 }
               >
                 Company Profile
-              </NavLink>
+              </NavLink>*/}
             </div>
           )}
         </div>

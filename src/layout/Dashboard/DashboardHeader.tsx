@@ -10,7 +10,7 @@ import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import hambur from "../../assets/hambur.png";
-import { GetUserNotification, LogOut } from "../../Common/ServerAPI";
+import { GetUserNotification, LogOut,GetUserNotificationCount  } from "../../Common/ServerAPI";
 import { useToast } from "../../components/ui/Toast/ToastProvider";
 import { initSocket } from "../../Common/socket";
 import { BsCaretDownFill } from "react-icons/bs";
@@ -322,6 +322,22 @@ const DashboardHeader = ({
   useEffect(() => {
     getNotification();
   }, []);
+
+
+  const fetchNotificationCount = async () => {
+  try {
+    const res = await GetUserNotificationCount();
+    if (res?.data?.data) {
+      setNotificationCount(res.data.data.count.toString());
+      localStorage.setItem("notification_count", res.data.data.count.toString());
+    }
+  } catch (error) {
+    console.error("Error fetching notification count:", error);
+  }
+};
+useEffect(() => {
+  fetchNotificationCount();
+}, []);
 
   return (
     <header className="w-full bg-white border-b border-[#0000001a] relative px-4 py-[18px] flex items-center justify-between">

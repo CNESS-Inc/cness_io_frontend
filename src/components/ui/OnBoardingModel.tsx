@@ -1,5 +1,5 @@
 // PopupOnboardingModal.tsx
-import React, { useEffect ,Fragment } from "react";
+import React, { useEffect, Fragment } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { Transition } from "@headlessui/react";
@@ -43,7 +43,7 @@ export default function PopupOnboardingModal({
   if (!open) return null;
 
   return createPortal(
-   <Transition appear show={open} as={Fragment}>
+    <Transition appear show={open} as={Fragment}>
       <div className="fixed inset-0 z-[100]">
         {/* Overlay */}
         <Transition.Child
@@ -61,10 +61,11 @@ export default function PopupOnboardingModal({
             aria-hidden
           />
         </Transition.Child>
-    {/* Center container */}
-    <div className="absolute inset-0 grid place-items-center p-4">
-      {/* Modal frame matches: 1020w x 730h, gap 10, radius 32, padding 30 */}
-     <Transition.Child
+
+        {/* Center container */}
+        <div className="absolute inset-0 grid place-items-center p-4">
+          {/* Modal */}
+          <Transition.Child
             as={Fragment}
             enter="transform ease-out duration-500"
             enterFrom="translate-y-full opacity-0"
@@ -77,68 +78,70 @@ export default function PopupOnboardingModal({
               role="dialog"
               aria-modal="true"
               className="
-                relative grid grid-cols-1 md:grid-cols-[475px_475px]
-                w-full max-w-[1020px] w-full h-[620px] md:min-h-[850px]
-                rounded-[32px] p-[20px] md:p-[30px]
+                relative grid grid-cols-1 md:grid-cols-2
+                w-full max-w-[1020px] h-auto max-h-[95vh]
+                rounded-[24px] p-4 md:p-[30px]
                 shadow-2xl bg-white
-                will-change-transform [backface-visibility:hidden] overflow-y-auto
+                overflow-y-auto
               "
             >
+              {/* Left panel */}
+              <div
+                className="
+                  relative overflow-hidden rounded-[24px]
+                  hidden md:block
+                  flex-1 h-full
+                "
+              >
+                <img
+                  src={imageSrc}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #FFFFFF 0%, #FEDEDE 40%, #EE9CE5 100%)",
+                    opacity: 0.6,
+                  }}
+                />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-center w-full px-6">
+  <h2 className="text-center font-[Poppins] font-medium text-3xl md:text-[42px] leading-tight mb-5 bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text">
+    Welcome!
+  </h2>
+  <p className="text-[#64748B] text-center text-sm md:text-base leading-relaxed max-w-[380px] mx-auto">
+    Discover certifications, connect with like-minded people, grow your ideas,
+    and make an impact—all in one place.
+  </p>
+</div>
+              </div>
 
-        {/* Left pane: 475x670, padding: 60px (pt/pb 86px), radius 32 */}
-        <div
-          className="
-            relative overflow-hidden rounded-[32px]
-            w-[475px] h-[800px]
-            px-[60px] pt-[86px] pb-[86px] lg:block md:block hidden
-          "
-        >
-          <img
-            src={imageSrc}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background: "linear-gradient(135deg, #FFFFFF 0%, #FEDEDE 40%, #EE9CE5 100%)",
-              opacity: 0.6,
-            }}
-          />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-center w-full">
-            <h2 className="text-center font-[Poppins] font-medium text-[42px] leading-[100%] tracking-[-0.03em] mb-5 bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text">Welcome!</h2>
-            <span className="text-[#64748B] text-center text-[16px]">Discover certifications, connect with like-<br/>minded people, grow your ideas, and make an<br/> impact—all in one place.</span>
-          </div>
-          
-          {/* (Optional) left-side content can be slotted here later */}
-        </div>
+              {/* Right panel */}
+              <div
+                className="
+                  relative rounded-[24px] bg-white
+                  w-full h-full
+                  px-4 md:px-[30px] py-[20px] md:py-[30px]
+                "
+              >
+                {/* Close button */}
+                <button
+                  onClick={onClose}
+                  aria-label="Close"
+                  className="absolute right-4 top-4"
+                >
+                  <X className="h-6 w-6 md:h-7 md:w-7 stroke-[#9EA8B6]" />
+                </button>
 
-        {/* Right pane: 475x670, white, px:30, radius 32 */}
-        <div
-          className="
-            relative rounded-[32px] bg-white
-            lg:w-[475px] md:w-[475px] w-full lg:h-[670px] md:h-[670px] h-full
-            lg:px-[30px] md:px-[15px] py-[30px]
-            
-          "
-        >
-          {/* Close (mobile) */}
-          <button
-            onClick={onClose}
-            aria-label="Close"
-    className=" absolute right-0 top-0 "
-          >
-            <X className="h-7 w-7 stroke-[#9EA8B6]" />
-          </button>
-
-          {/* Right-side content slot */}
-          {children}
+                {/* Right-side content */}
+                {children}
+              </div>
+            </div>
+          </Transition.Child>
         </div>
       </div>
-        </Transition.Child>
-    </div>
-  </div>,
-  </Transition>,
-  document.body
+    </Transition>,
+    document.body
   );
 }

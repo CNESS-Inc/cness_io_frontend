@@ -3,7 +3,7 @@ import { DashboardDetails } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import score from "../assets/score.svg";
 import badge from "../assets/badge.svg";
-import logo from "../assets/Inspired _ Badge.png";
+import logo from "../assets/cnesslogo.svg";
 import bg from "../assets/certification_bg.png";
 import icon1 from "../assets/Frame 1.svg";
 import arrow from "../assets/arrow.svg";

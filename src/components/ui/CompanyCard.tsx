@@ -180,36 +180,47 @@ export default function CompanyCard({
             />
           </div>
 
-          <div className="flex justify-between items-center mb-1">
-            <p className="text-sm font-semibold text-gray-800">Overview</p>
-            <div className="flex items-center text-yellow-500 text-sm">
-              {"★".repeat(rating || 0)}
-              {"☆".repeat(5 - (rating || 0))}
-            </div>
-          </div>
+           {/* Show section only if real description OR rating > 0 */}
+ {description && description !== "No description available" && (
+    <>
+      <p className="text-sm font-semibold text-gray-800 mb-1">Overview</p>
+      <p className="text-sm text-gray-600 leading-snug mb-2">
+        {showFullDescription ? description : truncatedDescription}
+        {description.length > maxDescriptionLength && (
+          <span
+            className="text-purple-600 underline cursor-pointer ml-1"
+            onClick={toggleDescription}
+          >
+            {showFullDescription ? "Read Less" : "Read More"}
+          </span>
+        )}
+      </p>
+    </>
+  )}
 
-          <p className="text-sm text-gray-600 leading-snug">
-            {showFullDescription ? description : truncatedDescription}
-            {description.length > maxDescriptionLength && (
-              <span
-                className="text-purple-600 underline cursor-pointer ml-1"
-                onClick={toggleDescription}
-              >
-                {showFullDescription ? "Read Less" : "Read More"}
-              </span>
-            )}
-          </p>
+  {/* Rating aligned right */}
+  {typeof rating === "number" && rating > 0 && (
+  <div className="flex justify-end mb-2">
+    <div className="flex items-center text-yellow-500 text-sm">
+      {"★".repeat(rating)}
+      {"☆".repeat(5 - rating)}
+    </div>
+  </div>
+)}
 
-          <div className="flex flex-wrap gap-2 mt-3">
-            {tags?.map((tag, index) => (
-              <span
-                key={index}
-                className="bg-[#7077FE1A] text-[#7077FE] px-[26px] py-[6px] rounded-lg text-xs"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+  {/* Tags only if available */}
+  {tags?.length > 0 && (
+    <div className="flex flex-wrap gap-2 mt-3">
+      {tags.map((tag, index) => (
+        <span
+          key={index}
+          className="bg-[#7077FE1A] text-[#7077FE] px-[26px] py-[6px] rounded-lg text-xs"
+        >
+          {tag}
+        </span>
+      ))}
+    </div>
+  )}
         </CardContent>
 
         <CardFooter className="flex justify-between items-center px-4 py-3">
