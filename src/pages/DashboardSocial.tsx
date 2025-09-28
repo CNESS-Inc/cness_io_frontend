@@ -45,7 +45,7 @@ import {
 // import Announcement from "../assets/Announcement.png";
 import Collection from "../assets/collectionicon.svg";
 // import Leaderboard from "../assets/Leaderboard.png";
-import Mention from "../assets/mentionicon.svg";
+//import Mention from "../assets/mentionicon.svg";
 import people from "../assets/peopleicon.svg";
 import Trending from "../assets/trending.svg";
 import createstory from "../assets/createstory.jpg";
