@@ -4,7 +4,7 @@ import Header from "../layout/Header";
 import joinImage from "../assets/join-team.png";
 import blush_join from "../assets/blush join.png";
 import GetInTouch from "../components/sections/GetInTouch";
-import Subscribe from "../components/sections/Subscribe";
+//import Subscribe from "../components/sections/Subscribe";
 import Footer from "../layout/Footer/Footer";
 import CertificationsHero from "../components/certificationsComponents/CertificationsHero";
 import Benefit from "../components/certificationsComponents/Benefit";
@@ -114,9 +114,9 @@ export default function Certifications() {
       <LazySection effect="fade-up" delay={0.2}>
         <GetInTouch />
       </LazySection>
-      <LazySection effect="fade-up" delay={0.2}>
+    {/*  <LazySection effect="fade-up" delay={0.2}>
         <Subscribe />
-      </LazySection>
+      </LazySection>*/}
       <Footer />
     </>
   );

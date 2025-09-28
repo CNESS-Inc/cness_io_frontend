@@ -9,7 +9,7 @@ import SignupModel from "../components/OnBoarding/Signup";
 import bulb from "../assets/bulb.svg";
 //import Teamframe from "../components/ui/TeamFrame";
 import GetInTouch from "../components/sections/GetInTouch";
-import Subscribe from "../components/sections/Subscribe";
+//import Subscribe from "../components/sections/Subscribe";
 import joinImage from "../assets/join-team.png";
 
 export default function WhyCness() {
@@ -499,11 +499,11 @@ export default function WhyCness() {
         </section>
       </LazySection>
 
-      <LazySection effect="fade-up" delay={0.2}>
+      {/*<LazySection effect="fade-up" delay={0.2}>
         <section>
           <Subscribe />
         </section>
-      </LazySection>
+      </LazySection>*/}
 
       <Footer />
     </>
