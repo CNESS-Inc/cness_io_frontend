@@ -39,7 +39,7 @@ const CookieConsent = () => {
   if (!mounted) return null;
 
   return (
-    <Modal isOpen={activeModal === "cookiemodal"} onClose={closeModal} position="bottom">
+    <Modal isOpen={activeModal === "cookiemodal"} onClose={closeModal} position="bottom" aria-modal="true" aria-labelledby="cookie-modal-title">
       <div className="w-full">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between py-4 gap-4">

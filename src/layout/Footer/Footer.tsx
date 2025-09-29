@@ -52,7 +52,7 @@ const Footer = () => {
 
               {/* Quick Links section */}
               <div className="w-fit space-y-3 md:space-y-4 ">
-                <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#6F74DD] poppins">Quick Links</h4>
+                <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#373578] poppins">Quick Links</h4>
                 <ul className="space-y-1 md:space-y-2">
                   <li><Link to="/ecosystem" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Ecosystem</Link></li>
                   <li><Link to="/social" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Social</Link></li>
@@ -64,7 +64,7 @@ const Footer = () => {
 
               {/* Social Links section - full width on small mobile, then normal */}
               <div className="w-fit sm:col-span-1 space-y-3 md:space-y-4">
-                <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#6F74DD] poppins">Follow Us</h4>
+                <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#373578] poppins">Follow Us</h4>
                 <ul className="space-y-1 md:space-y-2">
                   <li>
                     <a href="https://www.facebook.com/share/1A8V21L6Qj" className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">

@@ -31,26 +31,26 @@ const Home = () => {
       <LazySection effect="fade-up" delay={0.2}>
         <FeaturedSection/>
       </LazySection>
-      <LazySection effect="fade-up" delay={0.1}>
+      <LazySection effect="fade-up" delay={0.1} className="belowFold">
         <MobileSection />
       </LazySection>
-      <LazySection effect="fade-up" delay={0.1}>
+      <LazySection effect="fade-up" delay={0.1} className="belowFold">
         <Community />
       </LazySection>
       {/* <Stepper /> */}
-      <LazySection effect="fade-up" delay={0.3}>
+      <LazySection effect="fade-up" delay={0.3} className="belowFold">
         <AwarenessNew />
       </LazySection>
-      <LazySection effect="fade-up" delay={0.2}>
+      <LazySection effect="fade-up" delay={0.2} className="belowFold">
         <Certification />
       </LazySection>
       {/* <LazySection effect="fade-up" delay={0.1}>
         <Team />
       </LazySection> */}
-      <LazySection effect="fade-up" delay={0.2}>
+      <LazySection effect="fade-up" delay={0.2} className="belowFold">
         <JoiningSection />
       </LazySection>
-       <LazySection effect="fade-up" delay={0.2}>
+       <LazySection effect="fade-up" delay={0.2} className="belowFold">
         <GetInTouch />
       </LazySection> 
       {/* <LazySection effect="fade-up" delay={0.2}>

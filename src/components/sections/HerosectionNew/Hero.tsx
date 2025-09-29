@@ -4,6 +4,7 @@ import Button from "../../ui/Button";
 //import { MessageCircle, ShoppingBag, BookOpen, Compass,  } from "lucide-react";
 import SignupModel from "../../OnBoarding/Signup";
 import { useNavigate } from "react-router-dom";
+import OptimizeImage from "../../ui/OptimizeImage";
 
 export default function HeroSection() {
   const [step, setStep] = useState(0);
@@ -83,12 +84,24 @@ export default function HeroSection() {
       <div className="w-full px-4 sm:px-6 lg:px-8 pb-10 sm:pb-12 pt-12 sm:pt-16">
         <div className="relative mx-auto w-full max-w-[1900px] rounded-[32px] overflow-hidden">
           {/* responsive height using aspect-ratio; keeps the face framed via object-position */}
-          <div className="w-full rounded-[32px] overflow-hidden aspect-[1900/460]">
-            <img
+          <div className="hero-img w-full rounded-[32px] aspect-auto object-cover object-center overflow-hidden">
+            {/* <img
               src="https://cdn.cness.io/Hero%20section1.webp"
               alt="Hero Section"
+              width="1600"
+              height="900"
+              fetchPriority="high"
+              loading="eager"
+              decoding="async"
               className="w-full h-full object-cover object-[58%_50%] sm:object-[60%_50%] md:object-[62%_50%] lg:object-[64%_50%] xl:object-[66%_50%] 2xl:object-[68%_50%]"
+            /> */}
+            <OptimizeImage
+              src="Hero_section1.webp"
+              alt="Hero Section"
+              width={'100%'}
+              className="w-full object-cover h-full"
             />
+            
           </div>
 
           {/* floating pills only on large screens to avoid crowding mobile */}
