@@ -13,7 +13,6 @@ export default function HeroSection() {
   //const [flip4, setFlip4] = useState<any>(null);
   //const [sphere, setSphere] = useState<any>(null);
 
-
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -24,29 +23,28 @@ export default function HeroSection() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-
   //useEffect(() => {
-    //const loadLotties = async () => {
-     // try {
-        //const [f1, f2, f3, f4, sph] = await Promise.all([
-         // fetch("https://cnessioassets.project-69e.workers.dev/New-Flip01.json").then(res => res.json()),
-          //fetch("https://cnessioassets.project-69e.workers.dev/New-Flip02.json").then(res => res.json()),
-          //fetch("https://cnessioassets.project-69e.workers.dev/New-Flip03.json").then(res => res.json()),
-          //fetch("https://cnessioassets.project-69e.workers.dev/New-Flip04.json").then(res => res.json()),
-          //fetch("https://cnessioassets.project-69e.workers.dev/Second-globe.json").then(res => res.json())
-        //]);
-       // setFlip1(f1);
-        //setFlip2(f2);
-        //setFlip3(f3);
-        //setFlip4(f4);
-        //setSphere(sph);
-     // } catch (err) {
-       // console.error("Failed to load Lottie animations", err);
-     // }
-   // };
+  //const loadLotties = async () => {
+  // try {
+  //const [f1, f2, f3, f4, sph] = await Promise.all([
+  // fetch("https://cnessioassets.project-69e.workers.dev/New-Flip01.json").then(res => res.json()),
+  //fetch("https://cnessioassets.project-69e.workers.dev/New-Flip02.json").then(res => res.json()),
+  //fetch("https://cnessioassets.project-69e.workers.dev/New-Flip03.json").then(res => res.json()),
+  //fetch("https://cnessioassets.project-69e.workers.dev/New-Flip04.json").then(res => res.json()),
+  //fetch("https://cnessioassets.project-69e.workers.dev/Second-globe.json").then(res => res.json())
+  //]);
+  // setFlip1(f1);
+  //setFlip2(f2);
+  //setFlip3(f3);
+  //setFlip4(f4);
+  //setSphere(sph);
+  // } catch (err) {
+  // console.error("Failed to load Lottie animations", err);
+  // }
+  // };
 
-   // loadLotties();
- // }, []);
+  // loadLotties();
+  // }, []);
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -61,22 +59,22 @@ export default function HeroSection() {
   //const [lottieSize, setLottieSize] = useState({ width: 200, height: 200 });
 
   //useEffect(() => {
-    //const updateSize = () => {
-     // const width = window.innerWidth;
-      //if (width < 640) {
-      //  setLottieSize({ width: 200, height: 200 });
-     // } else if (width < 1024) {
-       // setLottieSize({ width: 240, height: 240 });
-      //} else if (width < 1537) {
-       // setLottieSize({ width: 280, height: 280 });
-     // } else {
-      //  setLottieSize({ width: 320, height: 320 });
-      //}
-    //};
-    //updateSize();
-    //window.addEventListener("resize", updateSize);
-    //return () => window.removeEventListener("resize", updateSize);
- // }, []);
+  //const updateSize = () => {
+  // const width = window.innerWidth;
+  //if (width < 640) {
+  //  setLottieSize({ width: 200, height: 200 });
+  // } else if (width < 1024) {
+  // setLottieSize({ width: 240, height: 240 });
+  //} else if (width < 1537) {
+  // setLottieSize({ width: 280, height: 280 });
+  // } else {
+  //  setLottieSize({ width: 320, height: 320 });
+  //}
+  //};
+  //updateSize();
+  //window.addEventListener("resize", updateSize);
+  //return () => window.removeEventListener("resize", updateSize);
+  // }, []);
 
   if (isMobile) return <MobileHeroSection />;
 
@@ -85,58 +83,72 @@ export default function HeroSection() {
       <section className="relative  rounded-[12px]  lg:mx-[12px] bg-[#f4f3f9] hero-section overflow-hidden ">
         <div className=" inset-0 flex items-start justify-center  lg:pt-22 md:pt-18 pt-8">
           <div className="text-center px-4">
-
             <h1
               className={
                 `poppins text-[32px] md:text-[42px] lg:leading-14 font-bold mb-6
                  bg-gradient-to-b from-[#4E4E4E] to-[#232323]
                  text-transparent bg-clip-text transition-all duration-1000 ease-in-out ` +
-                (step >= 4 ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-6')
+                (step >= 4
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 -translate-y-6")
               }
             >
-              The World’s First<br /> Consciousness Super-App
+              The World’s First
+              <br /> Consciousness Super-App
             </h1>
 
-
-            <p className={
-              `openSans lg:text-lg md:text-[16px] text-[12px] text-[#64748B] lg:mb-10 md:mb-12 mb-4 max-w-2xl mx-auto transition-all duration-1000 ease-in-out ` +
-              (step >= 5 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6')
-            }>
-              Build your conscious identity. Connect with purpose-led peers. Share<br /> your knowledge. Learn, grow, and thrive - all in one place.
+            <p
+              style={{ fontFamily: "Open Sans, sans-serif" }}
+              className={
+                `lg:text-lg md:text-[16px] text-[12px] text-[#64748B] lg:mb-10 md:mb-12 mb-4 max-w-2xl mx-auto transition-all duration-1000 ease-in-out ` +
+                (step >= 5
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-6")
+              }
+            >
+              Build your conscious identity. Connect with purpose-led peers.
+              Share
+              <br /> your knowledge. Learn, grow, and thrive - all in one place.
             </p>
 
-
-            <div className={
-              `flex flex-row sm:flex-row justify-center gap-4 transition-all duration-1000 ease-in-out ` +
-              (step >= 5 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6')
-            }>
-                <Button
+            <div
+              className={
+                `flex flex-row sm:flex-row justify-center gap-4 transition-all duration-1000 ease-in-out ` +
+                (step >= 5
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-6")
+              }
+            >
+              <Button
                 className="rounded-[100px] hero-section-btn w-fit lg:py-3 py-2 lg:px-8 px-4
              lg:text-base text-[14px] font-['Open Sans'] font-normal
              leading-[100%] tracking-[0px] text-center
              bg-gradient-to-r from-[#7077FE] to-[#9747FF]"
-                onClick={() => window.location.href = "/sign-up"}
-                >
+                onClick={() => (window.location.href = "/sign-up")}
+              >
                 Start your Conscious Journey
-                </Button>
-              <Button variant="white-outline" className="lg:text-base hero-section-btn text-[14px] lg:py-3 py-2 lg:px-8 px-4
+              </Button>
+              <Button
+                variant="white-outline"
+                className="lg:text-base hero-section-btn text-[14px] lg:py-3 py-2 lg:px-8 px-4
              shadow-md font-['Plus Jakarta Sans'] font-medium leading-[100%]
-             tracking-[0px] text-center" size="md" onClick={() => window.location.href = "/sign-up"}>
-               Discover CNESS
+             tracking-[0px] text-center"
+                size="md"
+                onClick={() => (window.location.href = "/sign-up")}
+              >
+                Discover CNESS
               </Button>
             </div>
           </div>
         </div>
 
-  <div className="flex justify-center pb-12 pt-20">
-    <img
-      src="https://cdn.cness.io/herosection.webp"
-      alt="Hero Section"
-      className="w-[1375px] max-w-full h-[405px] rounded-[32px] object-cover"
-    />
-  </div>
-
-
+        <div className="flex justify-center pb-12 pt-20">
+          <img
+            src="https://cdn.cness.io/herosection.webp"
+            alt="Hero Section"
+            className="w-[1375px] max-w-full h-[405px] rounded-[32px] object-cover"
+          />
+        </div>
 
         {/*<Lottie
           animationData={flip1}

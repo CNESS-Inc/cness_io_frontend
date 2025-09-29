@@ -46,7 +46,7 @@ export default function Plateformrootedsection() {
             <h3 className="poppins font-semibold text-xl sm:text-2xl mb-2 text-gray-800">
               {item.title}
             </h3>
-            <p className="openSans text-sm sm:text-base text-[#666464] leading-relaxed">
+            <p style={{ fontFamily: "Open Sans, sans-serif" }} className="text-sm sm:text-base text-[#666464] leading-relaxed">
               {item.desc}
             </p>
           </div>

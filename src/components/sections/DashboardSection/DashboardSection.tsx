@@ -1265,7 +1265,7 @@ export default function DashboardSection() {
 
                       return (
                         <div key={question.id} className="mb-4">
-                          <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                          <label style={{ fontFamily: "Open Sans, sans-serif" }} className="block text-base font-medium text-gray-800 mb-1">
                             {question.question}
                           </label>
 
@@ -1287,7 +1287,8 @@ export default function DashboardSection() {
                                   />
                                   <label
                                     htmlFor={`question_${question.id}_${option.id}`}
-                                    className="ml-3 block openSans text-base text-gray-700"
+                                    style={{ fontFamily: "Open Sans, sans-serif" }}
+                                    className="ml-3 block text-base text-gray-700"
                                   >
                                     {option.option}
                                   </label>
@@ -1455,7 +1456,7 @@ export default function DashboardSection() {
 
                       return (
                         <div key={question.id} className="mb-4">
-                          <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                          <label style={{ fontFamily: "Open Sans, sans-serif" }} className="block text-base font-medium text-gray-800 mb-1">
                             {question.question}
                           </label>
 
@@ -1477,7 +1478,8 @@ export default function DashboardSection() {
                                   />
                                   <label
                                     htmlFor={`question_${question.id}_${option.id}`}
-                                    className="ml-3 block openSans text-base text-gray-700"
+                                    className="ml-3 block text-base text-gray-700"
+                                    style={{ fontFamily: "Open Sans, sans-serif" }}
                                   >
                                     {option.option}
                                   </label>

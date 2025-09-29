@@ -55,9 +55,10 @@ export default function NavLinks({ className }: { className?: string }) {
             <li key={link.name}>
               <NavLink
                 to={link.href}
+                style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}
                 className={({ isActive }) =>
                   cn(
-                    "font-['Open_Sans'] font-normal text-[16px] leading-[150%] tracking-normal transition-colors",
+                    "font-normal text-[16px] leading-[150%] tracking-normal transition-colors",
                     isActive
                       ? "text-[#F07EFF]" // active color
                       : "text-[#1A1A1A] hover:text-[#F07EFF]" // default + hover

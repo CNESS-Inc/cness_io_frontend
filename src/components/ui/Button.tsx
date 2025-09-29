@@ -29,7 +29,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseClasses =
- "rounded-full font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none relative overflow-hidden cursor-pointer";
+      "rounded-full font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none relative overflow-hidden cursor-pointer";
     const variantClasses = {
       primary:
         "flex w-[126px] py-2 px-6 justify-center items-center gap-[7px] rounded-full bg-[#7077FE] text-white",
@@ -60,6 +60,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           withGradientOverlay && "group",
           className
         )}
+        style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}
         disabled={isLoading}
         aria-busy={isLoading}
         {...props}
@@ -98,17 +99,17 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             Loading...
           </span>
         ) : (
-            <div
+          <div
             className="relative flex items-center justify-center gap-2"
             style={{
-              fontFamily: "Poppins",
+              fontFamily: "Plus Jakarta Sans, sans-serif",
               fontWeight: 500,
               fontStyle: "Medium",
               lineHeight: "20px",
             }}
-            >
+          >
             {children}
-            </div>
+          </div>
         )}
       </button>
     );

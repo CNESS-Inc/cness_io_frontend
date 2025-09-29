@@ -1230,14 +1230,17 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
         {/* Sign In Form */}
 
         <div className="mx-auto w-full max-w-[460px] lg:mt-15 md:mt-15 mt-6">
-          <h1 className="text-center font-[Poppins] font-medium lg:text-[32px] md:text-[32px] text-[28px] leading-[100%] tracking-[-0.03em] text-gray-900">
+          <h1  style={{ fontFamily: "Poppins, sans-serif" }} className="text-center font-medium lg:text-[32px] md:text-[32px] text-[28px] leading-[100%] tracking-[-0.03em] text-gray-900">
             Sign in to your account
           </h1>
 
           <ul className="mt-4 flex justify-center items-center gap-6 text-sm text-gray-600">
             <li className="flex items-center gap-2 font-['Open_Sans'] text-[14px] leading-[100%] text-gray-700">
               <Check className="h-6 w-6 stroke-[3px] text-green-500" />
-             <span className="text-center"> Securely access your dashboard anytime, anywhere.</span>
+              <span className="text-center">
+                {" "}
+                Securely access your dashboard anytime, anywhere.
+              </span>
             </li>
           </ul>
 
@@ -1362,12 +1365,13 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                   e.preventDefault();
                   onForgotPassword();
                 }}
-                className="font-openSans font-semibold
+                className="font-semibold
     text-[12px] leading-[24.4px] tracking-[0px]
     text-right align-middle
     bg-gradient-to-r from-[#7077FE] to-[#F07EFF]
     bg-clip-text text-transparent
     hover:underline"
+                style={{ fontFamily: "Open Sans, sans-serif" }}
               >
                 Reset password
               </a>
@@ -1581,7 +1585,10 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                   <>
                     {/* Organization Name */}
                     <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                      <label
+                        style={{ fontFamily: "Open Sans, sans-serif" }}
+                        className="block text-base font-medium text-gray-700 mb-1"
+                      >
                         Organization Name
                         <span className="text-red-500">*</span>
                       </label>
@@ -1605,7 +1612,10 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                     </div>
 
                     <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                      <label
+                        style={{ fontFamily: "Open Sans, sans-serif" }}
+                        className="block text-base font-medium text-gray-700 mb-1"
+                      >
                         Domain
                         <span className="text-red-500">*</span>
                       </label>
@@ -1636,7 +1646,10 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
 
                     {organizationForm.domain === "other" ? (
                       <div className="mb-4">
-                        <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                        <label
+                          style={{ fontFamily: "Open Sans, sans-serif" }}
+                          className="block text-base font-medium text-gray-700 mb-1"
+                        >
                           Custom Domain Name
                           <span className="text-red-500">*</span>
                         </label>
@@ -1660,7 +1673,10 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                       </div>
                     ) : (
                       <div className="mb-4">
-                        <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                        <label
+                          style={{ fontFamily: "Open Sans, sans-serif" }}
+                          className="block text-base font-medium text-gray-700 mb-1"
+                        >
                           Sub Domain
                         </label>
                         <select
@@ -1686,7 +1702,10 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
 
                     {/* Employees Size */}
                     <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                      <label
+                        style={{ fontFamily: "Open Sans, sans-serif" }}
+                        className="block text-base font-medium text-gray-700 mb-1"
+                      >
                         Employees Size
                         <span className="text-red-500">*</span>
                       </label>
@@ -1714,7 +1733,10 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
 
                     {/* Revenue */}
                     <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                      <label
+                        style={{ fontFamily: "Open Sans, sans-serif" }}
+                        className="block text-base font-medium text-gray-700 mb-1"
+                      >
                         Revenue
                         <span className="text-red-500">*</span>
                       </label>
@@ -1754,7 +1776,10 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
 
                         return (
                           <div key={question.id} className="mb-4">
-                            <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                            <label
+                              style={{ fontFamily: "Open Sans, sans-serif" }}
+                              className="block text-base font-medium text-gray-800 mb-1"
+                            >
                               {question.question}
                             </label>
 
@@ -1776,7 +1801,10 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                                     />
                                     <label
                                       htmlFor={`question_${question.id}_${option.id}`}
-                                      className="ml-3 block openSans text-base text-gray-700"
+                                      className="ml-3 block text-base text-gray-700"
+                                      style={{
+                                        fontFamily: "Open Sans, sans-serif",
+                                      }}
                                     >
                                       {option.option}
                                     </label>
@@ -1988,7 +2016,10 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                 {personFormStep === 1 && (
                   <>
                     <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                      <label
+                        className="block text-base font-medium text-gray-800 mb-1"
+                        style={{ fontFamily: "Open Sans, sans-serif" }}
+                      >
                         First Name
                         <span className="text-red-500">*</span>
                       </label>
@@ -2013,7 +2044,10 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                     </div>
 
                     <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                      <label
+                        style={{ fontFamily: "Open Sans, sans-serif" }}
+                        className="block text-base font-medium text-gray-800 mb-1"
+                      >
                         Last Name
                         <span className="text-red-500">*</span>
                       </label>
@@ -2038,7 +2072,10 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                     </div>
 
                     <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-800 mb-1 ">
+                      <label
+                        style={{ fontFamily: "Open Sans, sans-serif" }}
+                        className="block text-base font-medium text-gray-800 mb-1 "
+                      >
                         Interests
                         <span className="text-red-500">*</span>
                       </label>
@@ -2084,7 +2121,10 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                     </div>
 
                     <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                      <label
+                        style={{ fontFamily: "Open Sans, sans-serif" }}
+                        className="block text-base font-medium text-gray-800 mb-1"
+                      >
                         Professions
                         <span className="text-red-500">*</span>
                       </label>
@@ -2139,7 +2179,10 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                     {/* Add this after the Select component */}
                     {personForm.professions?.includes("other") && (
                       <div className="mb-4 mt-2">
-                        <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                        <label
+                          style={{ fontFamily: "Open Sans, sans-serif" }}
+                          className="block text-base font-medium text-gray-800 mb-1"
+                        >
                           Specify Your Profession
                         </label>
                         <input
@@ -2173,8 +2216,11 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                         return (
                           <div key={question.id} className="mb-4">
                             <label
-                              style={{ lineHeight: "1.8" }}
-                              className="block openSans text-base font-medium text-gray-800 mb-3 mt-4"
+                              style={{
+                                lineHeight: "1.8",
+                                fontFamily: "Open Sans, sans-serif",
+                              }}
+                              className="block text-base font-medium text-gray-800 mb-3 mt-4"
                             >
                               {question.question}
                             </label>
@@ -2197,7 +2243,8 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                                     />
                                     <label
                                       htmlFor={`question_${question.id}_${option.id}`}
-                                      className="ml-3 block openSans text-base text-gray-700 "
+                                      style={{ fontFamily: "Open Sans, sans-serif" }}
+                                      className="ml-3 block text-base text-gray-700 "
                                     >
                                       {option.option}
                                     </label>
@@ -2691,7 +2738,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
           </div>
           {apiMessage && (
             <div
-              className={`openSans text-center p-4 ${
+              cstyle={{ fontFamily: "Open Sans, sans-serif" }} lassName={`text-center p-4 ${
                 apiMessage.includes("A Forgot Password Email Has Been Sent")
                   ? "text-green-500"
                   : "text-red-500"
@@ -2729,7 +2776,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
               />
             </svg>
           </div>
-          <div className="openSans text-center p-4 text-red-500">
+          <div style={{ fontFamily: "Open Sans, sans-serif" }} className="text-center p-4 text-red-500">
             You are not eligible for the Aspiring Badge, Please try again after
             1 day.
           </div>

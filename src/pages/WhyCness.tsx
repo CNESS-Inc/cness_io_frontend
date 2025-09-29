@@ -13,7 +13,8 @@ import GetInTouch from "../components/sections/GetInTouch";
 import joinImage from "../assets/join-team.png";
 
 export default function WhyCness() {
-  {/*const people = [
+  {
+    /*const people = [
     {
       name: "John Doe",
       role: "Founder & CEO",
@@ -50,7 +51,8 @@ export default function WhyCness() {
       imageUrl: "https://cdn.cness.io/team.webp",
       socials: { linkedin: "#", instagram: "#", facebook: "#" },
     },
-  ];*/}
+  ];*/
+  }
   //const [selected, setSelected] = useState<number>(2);
   const [openSignup, setOpenSignup] = useState(false);
 
@@ -84,7 +86,8 @@ export default function WhyCness() {
             </h1>
 
             <p
-              className={`openSans md:text-base font-[300] text-[#64748B] mt-6 max-w-4xl mx-auto transition-all duration-1000 ease-in-out font-['Open Sans']`}
+              style={{ fontFamily: "Open Sans, sans-serif" }}
+              className={`md:text-base font-[300] text-[#64748B] mt-6 max-w-4xl mx-auto transition-all duration-1000 ease-in-out font-['Open Sans']`}
             >
               We’re building more than a platform—we’re shaping an ecosystem.
               From certifications and learning tools
@@ -310,7 +313,10 @@ export default function WhyCness() {
                 We Offer
               </span>
             </h3>
-            <p className="font-['Open Sans'] openSans pt-2 text-center w-full font-['Open Sans'] text-[#64748B] font-[300] text-[16px] leading-[24.38px] tracking-[0px]">
+            <p
+              style={{ fontFamily: "Open Sans, sans-serif" }}
+              className="font-['Open Sans'] pt-2 text-center w-full font-['Open Sans'] text-[#64748B] font-[300] text-[16px] leading-[24.38px] tracking-[0px]"
+            >
               CNESS is a super app that brings together tools for professional
               growth and <br />
               personal connection in one ecosystem.
@@ -370,7 +376,10 @@ export default function WhyCness() {
                   </div>
 
                   {/* Number */}
-                  <span className="openSans font-['Open Sans'] block text-lg text-[#4B4B4B] font-normal mb-2">
+                  <span
+                    style={{ fontFamily: "Open Sans, sans-serif" }}
+                    className="font-['Open Sans'] block text-lg text-[#4B4B4B] font-normal mb-2"
+                  >
                     {item.n}
                   </span>
 
@@ -383,7 +392,10 @@ export default function WhyCness() {
                   </h3>
 
                   {/* Description */}
-                  <p className="openSans font-['Open Sans'] mt-2 text-base text-[#64748B] leading-relaxed font-[300]">
+                  <p
+                    style={{ fontFamily: "Open Sans, sans-serif" }}
+                    className="font-['Open Sans'] mt-2 text-base text-[#64748B] leading-relaxed font-[300]"
+                  >
                     {item.desc}
                   </p>
                 </div>
@@ -393,7 +405,7 @@ export default function WhyCness() {
         </section>
       </LazySection>
 
-     {/* <LazySection effect="fade-up" delay={0.2}>
+      {/* <LazySection effect="fade-up" delay={0.2}>
         <section
           className="w-full py-12 md:py-16"
           style={{

@@ -1,6 +1,6 @@
 import React from "react";
 // import {X,MessageCircle} from "lucide-react";
-import {X} from "lucide-react";
+import { X } from "lucide-react";
 type Connection = {
   id: number | string;
   name: string;
@@ -27,22 +27,18 @@ const Connections: React.FC<ConnectionsListProps> = ({
   const rightCol = connections.slice(half);
 
   const renderConnection = (conn: Connection) => (
-    
     <div
       key={conn.id}
-    className="flex items-center justify-between  h-[76px] border border-gray-200 rounded-[12px] p-[12px] bg-white"
+      className="flex items-center justify-between  h-[76px] border border-gray-200 rounded-[12px] p-[12px] bg-white"
     >
-        
       <div className="flex items-center gap-3">
         <img
           src={conn.profileImage}
           alt={conn.name}
-        className="w-[52px] h-[52px] rounded-full object-cover border-[0.95px] border-gray-200"
+          className="w-[52px] h-[52px] rounded-full object-cover border-[0.95px] border-gray-200"
         />
         <div>
-          <h4
-            className="font-poppins font-medium text-[16px] leading-[100%] tracking-[0]"
-          >
+          <h4 className="font-poppins font-medium text-[16px] leading-[100%] tracking-[0]">
             {conn.name}
           </h4>
           <p className="text-xs text-gray-500">@{conn.username}</p>
@@ -52,20 +48,21 @@ const Connections: React.FC<ConnectionsListProps> = ({
         {/*
         <button
           onClick={() => onMessage?.(conn.id)}
-          className="w-[93px] h-[30px] rounded-[75px] px-[12px] py-[6px] gap-[6px] flex items-center justify-center bg-[#7B61FF] text-white hover:bg-[#684de0] transition font-openSans font-semibold text-[12px] leading-[150%] tracking-[0]"
+          className="w-[93px] h-[30px] rounded-[75px] px-[12px] py-[6px] gap-[6px] flex items-center justify-center bg-[#7B61FF] text-white hover:bg-[#684de0] transition font-semibold text-[12px] leading-[150%] tracking-[0]"
         >
           <MessageCircle className="inline-block w-4 h-4" />
           Message
         </button>
         */}
 
-<button
-  onClick={() => onUnfriend?.(conn.id)}
-  className="w-[93px] h-[30px] rounded-[75px] px-[12px] py-[6px] gap-[6px] flex items-center justify-center border border-gray-300 text-gray-600 hover:bg-gray-50 transition font-openSans font-semibold text-[12px] leading-[150%] tracking-[0]"
->
-  <X className="inline-block w-4 h-4" />
-  Unfriend
-</button>
+        <button
+          onClick={() => onUnfriend?.(conn.id)}
+          style={{ fontFamily: "Open Sans, sans-serif" }}
+          className="w-[93px] h-[30px] rounded-[75px] px-[12px] py-[6px] gap-[6px] flex items-center justify-center border border-gray-300 text-gray-600 hover:bg-gray-50 transition font-semibold text-[12px] leading-[150%] tracking-[0]"
+        >
+          <X className="inline-block w-4 h-4" />
+          Unfriend
+        </button>
       </div>
     </div>
   );
@@ -79,8 +76,12 @@ const Connections: React.FC<ConnectionsListProps> = ({
         </button>
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <div className="flex flex-col gap-4">{leftCol.map(renderConnection)}</div>
-        <div className="flex flex-col gap-4">{rightCol.map(renderConnection)}</div>
+        <div className="flex flex-col gap-4">
+          {leftCol.map(renderConnection)}
+        </div>
+        <div className="flex flex-col gap-4">
+          {rightCol.map(renderConnection)}
+        </div>
       </div>
     </div>
   );

@@ -1276,7 +1276,8 @@ export default function SocialFeed() {
                     <button
                       onClick={() => setOpenSignup(true)}
                       disabled={isLoading}
-                      className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-normal text-sm md:text-base leading-[150%] rounded-md bg-white text-[#7077FE] hover:bg-gray-50 ${
+                      style={{ fontFamily: "Open Sans, sans-serif" }}
+                      className={`flex items-center justify-center gap-2 py-1 h-[45px] font-normal text-sm md:text-base leading-[150%] rounded-md bg-white text-[#7077FE] hover:bg-gray-50 ${
                         isLoading ? "opacity-50 cursor-not-allowed" : ""
                       }`}
                     >

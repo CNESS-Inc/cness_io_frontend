@@ -13,13 +13,13 @@ const Footer = () => {
 
       {/* Top Section */}
       <footer
-         className="bg-[#F7F7F7] text-black py-8 md:py-12 px-4 sm:px-6"
-  style={{
-    marginLeft: "var(--sidebar-w, 0px)",
-    width: "calc(100% - var(--sidebar-w, 0px))",
-  }}
+        className="bg-[#F7F7F7] text-black py-8 md:py-12 px-4 sm:px-6"
+        style={{
+          marginLeft: "var(--sidebar-w, 0px)",
+          width: "calc(100% - var(--sidebar-w, 0px))",
+        }}
       >
-<div className="w-full max-w-7xl mx-auto flex flex-row flex-wrap justify-between gap-8">
+        <div className="w-full max-w-7xl mx-auto flex flex-row flex-wrap justify-between gap-8">
           {/* Logo + Description */}
           <div className="md:w-2/5 space-y-4">
             <Link to="/" className="flex items-center" aria-label="Home">
@@ -33,10 +33,13 @@ const Footer = () => {
                 src="/responsive-logo.png"
                 alt="Company Logo"
                 width={120}
-  className="block md:hidden h-auto max-w-[50px] w-auto"
+                className="block md:hidden h-auto max-w-[50px] w-auto"
               />
             </Link>
-            <p className="text-[16px] font-[400] font-openSans leading-[160%] text-[#1E1E1E] hidden md:block">
+            <p
+              style={{ fontFamily: "Open Sans, sans-serif" }}
+              className="text-[16px] font-[400] leading-[160%] text-[#1E1E1E] hidden md:block"
+            >
               CNESS is a consciousness-based certification and growth platform
               designed to empower purpose-driven individuals and organizations.
             </p>
@@ -58,7 +61,8 @@ const Footer = () => {
                 <li key={item.to}>
                   <Link
                     to={item.to}
-                    className="text-[15px] font-openSans hover:underline"
+                    style={{ fontFamily: "Open Sans, sans-serif" }}
+                    className="text-[15px] hover:underline"
                     onClick={() =>
                       window.scrollTo({ top: 0, behavior: "smooth" })
                     }
@@ -78,32 +82,36 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <a
+                  style={{ fontFamily: "Open Sans, sans-serif" }}
                   href="https://www.facebook.com/share/1A8V21L6Qj"
-                  className="flex items-center text-[15px] font-openSans hover:underline"
+                  className="flex items-center text-[15px] hover:underline"
                 >
                   <FaFacebookF className="mr-2" /> Facebook
                 </a>
               </li>
               <li>
                 <a
+                  style={{ fontFamily: "Open Sans, sans-serif" }}
                   href="https://x.com/CnessInc"
-                  className="flex items-center text-[15px] font-openSans hover:underline"
+                  className="flex items-center text-[15px] hover:underline"
                 >
                   <img src={vector} alt="X" className="w-4 h-4 mr-2" /> X
                 </a>
               </li>
               <li>
                 <a
+                  style={{ fontFamily: "Open Sans, sans-serif" }}
                   href="https://www.instagram.com/cness.inc"
-                  className="flex items-center text-[15px] font-openSans hover:underline"
+                  className="flex items-center text-[15px] hover:underline"
                 >
                   <FaInstagram className="mr-2" /> Instagram
                 </a>
               </li>
               <li>
                 <a
+                  style={{ fontFamily: "Open Sans, sans-serif" }}
                   href="https://www.youtube.com/@CNESSinc"
-                  className="flex items-center text-[15px] font-openSans hover:underline"
+                  className="flex items-center text-[15px] hover:underline"
                 >
                   <FaYoutube className="mr-2" /> YouTube
                 </a>
@@ -114,36 +122,42 @@ const Footer = () => {
       </footer>
 
       {/* Bottom Bar */}
-<div
-  className="py-2 bg-[#373578] px-4 sm:px-6"
-  style={{
-    marginLeft: "var(--sidebar-w, 0px)",
-    width: "calc(100% - var(--sidebar-w, 0px))",
-  }}
->
-  <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
-    {/* Left Side */}
-    <div
-      className="text-[15px] leading-[100%] font-[500] font-[Plus Jakarta Sans] text-white"
-      style={{
-        letterSpacing: "-0.2px",
-        fontStyle: "normal",
-      }}
-    >
-      Copyright © {new Date().getFullYear()}
-    </div>
+      <div
+        className="py-2 bg-[#373578] px-4 sm:px-6"
+        style={{
+          marginLeft: "var(--sidebar-w, 0px)",
+          width: "calc(100% - var(--sidebar-w, 0px))",
+        }}
+      >
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
+          {/* Left Side */}
+          <div
+            className="text-[15px] leading-[100%] font-[500] font-[Plus Jakarta Sans] text-white"
+            style={{
+              letterSpacing: "-0.2px",
+              fontStyle: "normal",
+            }}
+          >
+            Copyright © {new Date().getFullYear()}
+          </div>
 
-    {/* Right Side */}
-    <div className="flex items-center gap-6 text-white font-semibold text-[15px]">
-      <Link to="/terms-and-conditions" className="hover:underline whitespace-nowrap">
-        Terms &amp; Conditions
-      </Link>
-      <Link to="/privacy-policy" className="hover:underline whitespace-nowrap">
-        Privacy Policy
-      </Link>
-    </div>
-  </div>
-</div>
+          {/* Right Side */}
+          <div className="flex items-center gap-6 text-white font-semibold text-[15px]">
+            <Link
+              to="/terms-and-conditions"
+              className="hover:underline whitespace-nowrap"
+            >
+              Terms &amp; Conditions
+            </Link>
+            <Link
+              to="/privacy-policy"
+              className="hover:underline whitespace-nowrap"
+            >
+              Privacy Policy
+            </Link>
+          </div>
+        </div>
+      </div>
     </>
   );
 };

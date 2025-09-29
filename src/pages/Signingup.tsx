@@ -587,7 +587,8 @@ export default function Signingup() {
           </div>
           {apiMessage && (
             <div
-              className={`openSans text-center p-4 ${
+              style={{ fontFamily: "Open Sans, sans-serif" }}
+              className={`text-center p-4 ${
                 apiMessage.includes("verification")
                   ? "text-green-500"
                   : "text-red-500"

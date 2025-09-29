@@ -1902,7 +1902,8 @@ export default function SocialTopBar() {
                         <button
                           onClick={() => handleLike(post.id)}
                           disabled={isLoading}
-                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 ${
+                          style={{ fontFamily: "Open Sans, sans-serif" }}
+                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 ${
                             isLoading ? "opacity-50 cursor-not-allowed" : ""
                           }`}
                         >

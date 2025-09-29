@@ -18,7 +18,7 @@ export default function Subscribe() {
                 2,000+ Subscribers
               </span>
             </h2>
-            <p className="mt-2 text-[#64748B] lg:text-left md:text-left text-center text-[20px] font-openSans font-light">
+            <p style={{ fontFamily: "Open Sans, sans-serif" }} className="mt-2 text-[#64748B] lg:text-left md:text-left text-center text-[20px] font-light">
               Stay updated with our newsletter
             </p>
           </div>
@@ -50,7 +50,7 @@ export default function Subscribe() {
                 className="
                   w-full sm:w-[140px] h-[44px] rounded-[81px]
                   flex items-center justify-center
-                  text-white text-[16px] font-openSans font-medium
+                  text-white text-[16px] font-medium
                   hover:opacity-90 transition
                   focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#9B6BFF]
                 "
@@ -60,7 +60,7 @@ export default function Subscribe() {
             </div>
 
             {/* Privacy note 
-            <p className="mt-2 text-[#64748B] text-sm font-openSans lg:text-left md:text-left text-center sm:w-[600px] sm:ml-auto">
+            <p className="mt-2 text-[#64748B] text-sm lg:text-left md:text-left text-center sm:w-[600px] sm:ml-auto">
               We care about your data in our{" "}
               <a
                 href="/privacy"

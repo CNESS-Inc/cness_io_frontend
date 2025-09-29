@@ -32,7 +32,10 @@ export default function Testimonialsection() {
                   Founder, Soulful Yoga Retreat
                 </p>
               </div>
-              <p className="openSans font-normal text-sm leading-[21px] tracking-normal text-center text-[#1E1E1E]">
+              <p
+                style={{ fontFamily: "Open Sans, sans-serif" }}
+                className="font-normal text-sm leading-[21px] tracking-normal text-center text-[#1E1E1E]"
+              >
                 CNESS gave us a structure to grow with integrity. It's not just
                 a badge — it's our internal compass.
               </p>
@@ -57,7 +60,10 @@ export default function Testimonialsection() {
                   Founder, Soulful Yoga Retreat
                 </p>
               </div>
-              <p className="openSans font-normal text-sm leading-[21px] tracking-normal text-center text-[#1E1E1E]">
+              <p
+                style={{ fontFamily: "Open Sans, sans-serif" }}
+                className="font-normal text-sm leading-[21px] tracking-normal text-center text-[#1E1E1E]"
+              >
                 CNESS gave us a structure to grow with integrity. It's not just
                 a badge — it's our internal compass.
               </p>
@@ -83,7 +89,10 @@ export default function Testimonialsection() {
                     Founder, Soulful Yoga Retreat
                   </p>
                 </div>
-                <p className="openSans font-normal text-sm leading-[21px] tracking-normal text-center text-[#1E1E1E]">
+                <p
+                  style={{ fontFamily: "Open Sans, sans-serif" }}
+                  className="font-normal text-sm leading-[21px] tracking-normal text-center text-[#1E1E1E]"
+                >
                   CNESS gave us a structure to grow with integrity. It's not
                   just a badge — it's our internal compass.
                 </p>
@@ -99,7 +108,10 @@ export default function Testimonialsection() {
                   Founder, Soulful Yoga Retreat
                 </p>
               </div>
-              <p className="openSans font-normal text-sm leading-[21px] tracking-normal text-center text-[#1E1E1E]">
+              <p
+                style={{ fontFamily: "Open Sans, sans-serif" }}
+                className="font-normal text-sm leading-[21px] tracking-normal text-center text-[#1E1E1E]"
+              >
                 CNESS gave us a structure to grow with integrity. It's not just
                 a badge — it's our internal compass.
               </p>

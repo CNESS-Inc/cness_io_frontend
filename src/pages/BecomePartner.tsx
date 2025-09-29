@@ -462,7 +462,7 @@ const BecomePartner = () => {
                   </h3>
 
                   {/* Description */}
-                  <p className="openSans font-['Open Sans'] text-base font-light text-[#64748B] leading-relaxed lg:pe-5">
+                  <p style={{ fontFamily: "Open Sans, sans-serif" }} className="font-['Open Sans'] text-base font-light text-[#64748B] leading-relaxed lg:pe-5">
                     {item.description}
                   </p>
                 </div>

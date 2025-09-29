@@ -201,7 +201,9 @@ const BecomeMentor = () => {
 
   // Handle form input changes
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -540,7 +542,10 @@ const BecomeMentor = () => {
                   </h3>
 
                   {/* Description */}
-                  <p className="openSans font-['Open Sans'] text-base font-light text-[#64748B] leading-relaxed lg:pe-5">
+                  <p
+                    style={{ fontFamily: "Open Sans, sans-serif" }}
+                    className="font-['Open Sans'] text-base font-light text-[#64748B] leading-relaxed lg:pe-5"
+                  >
                     {item.description}
                   </p>
                 </div>
@@ -735,7 +740,11 @@ const BecomeMentor = () => {
                       name="year_of_experience"
                       value={formData.year_of_experience.toString()}
                       onChange={handleInputChange}
-                      className={`w-full py-[15px] px-[12px] border border-[#CBD0DC] rounded-sm border-2 border-[#EEEEEE] bg-white text-[14px] outline-none focus:border-[#C9C9FF] placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-[20px] ${formData.year_of_experience ? "text-black" : "text-[#6E7179]"}`}
+                      className={`w-full py-[15px] px-[12px] border border-[#CBD0DC] rounded-sm border-2 border-[#EEEEEE] bg-white text-[14px] outline-none focus:border-[#C9C9FF] placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-[20px] ${
+                        formData.year_of_experience
+                          ? "text-black"
+                          : "text-[#6E7179]"
+                      }`}
                     >
                       <option value="" disabled>
                         Select your years of experience
@@ -745,9 +754,7 @@ const BecomeMentor = () => {
                           {year} {year === 1 ? "year" : "years"}
                         </option>
                       ))}
-                      <option value='more'>
-                          More than 31
-                        </option>
+                      <option value="more">More than 31</option>
                     </select>
                   </Field>
                   <Field label="Website / Social Media Link (if any)">

@@ -40,14 +40,14 @@ export default function SectionFaq({ faqs }: CertificationFaqProps) {
             >
               FAQs
             </h1>
-            <p className="openSans font-light text-[16px] leading-[24px] tracking-[0px] text-[#64748B] pt-4 md:pt-2">
+            <p style={{ fontFamily: "Open Sans, sans-serif" }} className="font-light text-[16px] leading-[24px] tracking-[0px] text-[#64748B] pt-4 md:pt-2">
               Have questions? We’ve got you covered. Explore our FAQs to find
               quick answers 
               <br />about certifications, benefits, levels, and the
               process to get started.
             </p>
             <div className="pt-4 md:pt-2 mb-4 md:mb-6">
-              <span className="font-['Open Sans'] openSans relative inline-block bg-gradient-to-r from-[#6340FF] to-[#D748EA] text-transparent bg-clip-text text-base font-semibold after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-full after:h-[1px] after:bg-gradient-to-r after:from-[#6340FF] after:to-[#D748EA]">
+              <span style={{ fontFamily: "Open Sans, sans-serif" }} className="font-['Open Sans'] relative inline-block bg-gradient-to-r from-[#6340FF] to-[#D748EA] text-transparent bg-clip-text text-base font-semibold after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-full after:h-[1px] after:bg-gradient-to-r after:from-[#6340FF] after:to-[#D748EA]">
                 Chat with our friendly team
               </span>
             </div>
@@ -83,7 +83,7 @@ export default function SectionFaq({ faqs }: CertificationFaqProps) {
                       isOpen ? "max-h-40 py-2" : "max-h-0 py-0"
                     }`}
                   >
-                    <p className="openSans font-['Open Sans'] text-base text-[#64748B] font-light">
+                    <p style={{ fontFamily: "Open Sans, sans-serif" }} className="font-['Open Sans'] text-base text-[#64748B] font-light">
                       {faq.answer}
                     </p>
                   </div>

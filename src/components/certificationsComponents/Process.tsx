@@ -8,8 +8,8 @@ import Button from "../ui/Button";
 import SignupModel from "../OnBoarding/Signup";
 
 export default function Process() {
-    const [openSignup, setOpenSignup] = useState(false);
-  
+  const [openSignup, setOpenSignup] = useState(false);
+
   const steps = [
     {
       step: "STEP–01",
@@ -55,7 +55,10 @@ export default function Process() {
           >
             Our Certification Process
           </h1>
-          <p className="openSans font-['Open Sans'] text-base text-[#64748B] font-light mt-2">
+          <p
+            style={{ fontFamily: "Open Sans, sans-serif" }}
+            className="font-['Open Sans'] text-base text-[#64748B] font-light mt-2"
+          >
             We’ve made the path to certification clear and straightforward — so
             you can focus on learning, growing, and getting recognized without
             complications.
@@ -123,7 +126,10 @@ export default function Process() {
                 >
                   {step.title}
                 </h2>
-                <p className="openSans font-['Open Sans'] text-sm lg:text-base font-light text-[#64748B] mt-1">
+                <p
+                  style={{ fontFamily: "Open Sans, sans-serif" }}
+                  className="font-['Open Sans'] text-sm lg:text-base font-light text-[#64748B] mt-1"
+                >
                   {step.desc}
                 </p>
               </div>

@@ -490,7 +490,10 @@ const Managebestpractices = () => {
         {/* Tab Content */}
         {activeTab === "mine" && (
           <div className="min-h-screen bg-white p-6 font-sans">
-            <h3 className="font-[Poppins] font-medium text-[18px] leading-[150%] tracking-normal mb-4">
+            <h3
+              style={{ fontFamily: "Poppins, sans-serif" }}
+              className="font-medium text-[18px] leading-[150%] tracking-normal mb-4"
+            >
               View My Best Practices
             </h3>
 
@@ -760,7 +763,10 @@ const Managebestpractices = () => {
 
         {activeTab === "saved" && (
           <div className="min-h-screen bg-white p-6 font-sans">
-            <h3 className="font-[Poppins] font-medium text-[18px] leading-[150%] tracking-normal mb-4">
+            <h3
+              style={{ fontFamily: "Poppins, sans-serif" }}
+              className="font-medium text-[18px] leading-[150%] tracking-normal mb-4"
+            >
               View Saved Best Practices
             </h3>
 

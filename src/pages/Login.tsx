@@ -1585,7 +1585,10 @@ export default function Login() {
                   <>
                     {/* Organization Name */}
                     <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                      <label
+                        style={{ fontFamily: "Open Sans, sans-serif" }}
+                        className="block text-base font-medium text-gray-700 mb-1"
+                      >
                         Organization Name
                         <span className="text-red-500">*</span>
                       </label>
@@ -1609,7 +1612,10 @@ export default function Login() {
                     </div>
 
                     <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                      <label
+                        style={{ fontFamily: "Open Sans, sans-serif" }}
+                        className="block text-base font-medium text-gray-700 mb-1"
+                      >
                         Domain
                         <span className="text-red-500">*</span>
                       </label>
@@ -1640,7 +1646,10 @@ export default function Login() {
 
                     {organizationForm.domain === "other" ? (
                       <div className="mb-4">
-                        <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                        <label
+                          style={{ fontFamily: "Open Sans, sans-serif" }}
+                          className="block text-base font-medium text-gray-700 mb-1"
+                        >
                           Custom Domain Name
                           <span className="text-red-500">*</span>
                         </label>
@@ -1664,7 +1673,10 @@ export default function Login() {
                       </div>
                     ) : (
                       <div className="mb-4">
-                        <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                        <label
+                          style={{ fontFamily: "Open Sans, sans-serif" }}
+                          className="block text-base font-medium text-gray-700 mb-1"
+                        >
                           Sub Domain
                         </label>
                         <select
@@ -1690,7 +1702,10 @@ export default function Login() {
 
                     {/* Employees Size */}
                     <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                      <label
+                        style={{ fontFamily: "Open Sans, sans-serif" }}
+                        className="block text-base font-medium text-gray-700 mb-1"
+                      >
                         Employees Size
                         <span className="text-red-500">*</span>
                       </label>
@@ -1718,7 +1733,10 @@ export default function Login() {
 
                     {/* Revenue */}
                     <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                      <label
+                        style={{ fontFamily: "Open Sans, sans-serif" }}
+                        className="block text-base font-medium text-gray-700 mb-1"
+                      >
                         Revenue
                         <span className="text-red-500">*</span>
                       </label>
@@ -1758,7 +1776,10 @@ export default function Login() {
 
                         return (
                           <div key={question.id} className="mb-4">
-                            <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                            <label
+                              style={{ fontFamily: "Open Sans, sans-serif" }}
+                              className="block text-base font-medium text-gray-800 mb-1"
+                            >
                               {question.question}
                             </label>
 
@@ -1780,7 +1801,10 @@ export default function Login() {
                                     />
                                     <label
                                       htmlFor={`question_${question.id}_${option.id}`}
-                                      className="ml-3 block openSans text-base text-gray-700"
+                                      style={{
+                                        fontFamily: "Open Sans, sans-serif",
+                                      }}
+                                      className="ml-3 block text-base text-gray-700"
                                     >
                                       {option.option}
                                     </label>
@@ -1988,7 +2012,10 @@ export default function Login() {
                 {personFormStep === 1 && (
                   <>
                     <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                      <label
+                        style={{ fontFamily: "Open Sans, sans-serif" }}
+                        className="block text-base font-medium text-gray-800 mb-1"
+                      >
                         First Name
                         <span className="text-red-500">*</span>
                       </label>
@@ -2013,7 +2040,10 @@ export default function Login() {
                     </div>
 
                     <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                      <label
+                        style={{ fontFamily: "Open Sans, sans-serif" }}
+                        className="block text-base font-medium text-gray-800 mb-1"
+                      >
                         Last Name
                         <span className="text-red-500">*</span>
                       </label>
@@ -2038,7 +2068,10 @@ export default function Login() {
                     </div>
 
                     <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-800 mb-1 ">
+                      <label
+                        style={{ fontFamily: "Open Sans, sans-serif" }}
+                        className="block text-base font-medium text-gray-800 mb-1 "
+                      >
                         Interests
                         <span className="text-red-500">*</span>
                       </label>
@@ -2084,7 +2117,10 @@ export default function Login() {
                     </div>
 
                     <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                      <label
+                        style={{ fontFamily: "Open Sans, sans-serif" }}
+                        className="block text-base font-medium text-gray-800 mb-1"
+                      >
                         Professions
                         <span className="text-red-500">*</span>
                       </label>
@@ -2139,7 +2175,10 @@ export default function Login() {
                     {/* Add this after the Select component */}
                     {personForm.professions?.includes("other") && (
                       <div className="mb-4 mt-2">
-                        <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                        <label
+                          style={{ fontFamily: "Open Sans, sans-serif" }}
+                          className="block text-base font-medium text-gray-800 mb-1"
+                        >
                           Specify Your Profession
                         </label>
                         <input
@@ -2173,8 +2212,11 @@ export default function Login() {
                         return (
                           <div key={question.id} className="mb-4">
                             <label
-                              style={{ lineHeight: "1.8" }}
-                              className="block openSans text-base font-medium text-gray-800 mb-3 mt-4"
+                              style={{
+                                lineHeight: "1.8",
+                                fontFamily: "Open Sans, sans-serif",
+                              }}
+                              className="block text-base font-medium text-gray-800 mb-3 mt-4"
                             >
                               {question.question}
                             </label>
@@ -2197,7 +2239,10 @@ export default function Login() {
                                     />
                                     <label
                                       htmlFor={`question_${question.id}_${option.id}`}
-                                      className="ml-3 block openSans text-base text-gray-700 "
+                                      style={{
+                                        fontFamily: "Open Sans, sans-serif",
+                                      }}
+                                      className="ml-3 block text-base text-gray-700 "
                                     >
                                       {option.option}
                                     </label>
@@ -2678,7 +2723,8 @@ export default function Login() {
           </div>
           {apiMessage && (
             <div
-              className={`openSans text-center p-4 ${
+              style={{ fontFamily: "Open Sans, sans-serif" }}
+              className={`text-center p-4 ${
                 apiMessage.includes("A Forgot Password Email Has Been Sent")
                   ? "text-green-500"
                   : "text-red-500"
@@ -2716,7 +2762,10 @@ export default function Login() {
               />
             </svg>
           </div>
-          <div className="openSans text-center p-4 text-red-500">
+          <div
+            style={{ fontFamily: "Open Sans, sans-serif" }}
+            className="text-center p-4 text-red-500"
+          >
             You are not eligible for the Aspiring Badge, Please try again after
             1 day.
           </div>

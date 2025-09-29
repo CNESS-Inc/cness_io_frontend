@@ -486,17 +486,24 @@ export function TrueProfileCard({
 
         {/* Texts + Button */}
         <div className="min-w-0 flex-1 text-center sm:text-left">
-          <h3 className="font-opensans font-semibold text-[16px] sm:text-[18px] md:text-[20px] leading-[24px] sm:leading-[28px] md:leading-[32px] text-[#222224]">
+          <h3
+            style={{ fontFamily: "Open Sans, sans-serif" }}
+            className="font-semibold text-[16px] sm:text-[18px] md:text-[20px] leading-[24px] sm:leading-[28px] md:leading-[32px] text-[#222224]"
+          >
             {title}
           </h3>
 
-          <p className="mt-2 font-opensans font-normal text-[13px] sm:text-[14px] md:text-[16px] leading-[150%] text-[#7A7A7A]">
+          <p
+            style={{ fontFamily: "Open Sans, sans-serif" }}
+            className="mt-2 font-normal text-[13px] sm:text-[14px] md:text-[16px] leading-[150%] text-[#7A7A7A]"
+          >
             {description}
           </p>
 
           <button
             onClick={onUpdateProfile}
-            className="mt-4 sm:mt-5 inline-flex w-full sm:w-auto min-w-[140px] h-10 sm:h-[40px] items-center justify-center gap-[7px] rounded-full bg-[#7077FE] px-5 sm:px-6 font-opensans text-[13px] sm:text-[14px] leading-[100%] text-white shadow hover:bg-[#5A61E8] transition"
+            style={{ fontFamily: "Open Sans, sans-serif" }}
+            className="mt-4 sm:mt-5 inline-flex w-full sm:w-auto min-w-[140px] h-10 sm:h-[40px] items-center justify-center gap-[7px] rounded-full bg-[#7077FE] px-5 sm:px-6 text-[13px] sm:text-[14px] leading-[100%] text-white shadow hover:bg-[#5A61E8] transition"
           >
             Update Profile
           </button>
@@ -707,7 +714,8 @@ export function CertificationCard({
 
                   <button
                     onClick={onUpgrade}
-                    className="mt-4 sm:mt-5 inline-flex w-full sm:w-auto min-w-[140px] h-10 sm:h-[40px] items-center justify-center gap-[7px] rounded-full bg-[#7077FE] px-5 sm:px-6 font-opensans text-[13px] sm:text-[14px] leading-[100%] text-white shadow hover:bg-[#5A61E8] transition"
+                    style={{ fontFamily: "Open Sans, sans-serif" }}
+                    className="mt-4 sm:mt-5 inline-flex w-full sm:w-auto min-w-[140px] h-10 sm:h-[40px] items-center justify-center gap-[7px] rounded-full bg-[#7077FE] px-5 sm:px-6 text-[13px] sm:text-[14px] leading-[100%] text-white shadow hover:bg-[#5A61E8] transition"
                   >
                     Upgrade
                   </button>
@@ -862,7 +870,10 @@ export function BestPracticesSection({
 
       {/* Subheader + arrows (desktop arrows only) */}
       <div className="mt-3 flex items-center justify-between">
-        <div className="font-opensans text-[14px] leading-[100%] text-[#222224]">
+        <div
+          className="text-[14px] leading-[100%] text-[#222224]"
+          style={{ fontFamily: "Open Sans, sans-serif" }}
+        >
           Recommended
         </div>
         <div className="hidden sm:flex items-center gap-2">
@@ -907,13 +918,17 @@ export function BestPracticesSection({
                 <div className="font-poppins font-medium text-[16px] leading-[120%] text-[#0F1728]">
                   {bp.title}
                 </div>
-                <p className="mt-3 font-opensans text-[14px] leading-[150%] text-[#667085] line-clamp-2">
+                <p
+                  style={{ fontFamily: "Open Sans, sans-serif" }}
+                  className="mt-3 text-[14px] leading-[150%] text-[#667085] line-clamp-2"
+                >
                   {bp.description}
                 </p>
                 {bp.if_following ? (
                   <button
+                    style={{ fontFamily: "Open Sans, sans-serif" }}
                     className="mt-auto w-full h-[37px] rounded-full bg-[#F396FF] px-3 py-2
-                             font-opensans text-[14px] font-semibold text-white
+                             text-[14px] font-semibold text-white
                              shadow transition"
                     onClick={() => toggleFollowPost(bp.id)}
                   >
@@ -921,8 +936,9 @@ export function BestPracticesSection({
                   </button>
                 ) : (
                   <button
+                    style={{ fontFamily: "Open Sans, sans-serif" }}
                     className="mt-auto w-full h-[37px] rounded-full bg-[#7077FE] px-3 py-2
-                             font-opensans text-[14px] font-semibold text-white
+                            text-[14px] font-semibold text-white
                              shadow hover:bg-[#5A61E8] transition"
                     onClick={() => toggleFollowPost(bp.id)}
                   >
@@ -970,13 +986,17 @@ export function BestPracticesSection({
               <div className="font-poppins font-medium text-[16px] leading-[120%] text-[#0F1728]">
                 {bp.title}
               </div>
-              <p className="mt-3 font-opensans text-[16px] leading-[150%] text-[#667085] line-clamp-2">
+              <p
+                style={{ fontFamily: "Open Sans, sans-serif" }}
+                className="mt-3 text-[16px] leading-[150%] text-[#667085] line-clamp-2"
+              >
                 {bp.description}
               </p>
               {bp.if_following ? (
                 <button
+                  style={{ fontFamily: "Open Sans, sans-serif" }}
                   className="mt-auto w-full h-[37px] rounded-full bg-[#F396FF] px-3 py-2
-                             font-opensans text-[14px] font-semibold text-white
+                             text-[14px] font-semibold text-white
                              shadow transition"
                   onClick={() => toggleFollowPost(bp.id)}
                 >
@@ -984,8 +1004,9 @@ export function BestPracticesSection({
                 </button>
               ) : (
                 <button
+                  style={{ fontFamily: "Open Sans, sans-serif" }}
                   className="mt-auto w-full h-[37px] rounded-full bg-[#7077FE] px-3 py-2
-                             font-opensans text-[14px] font-semibold text-white
+                              text-[14px] font-semibold text-white
                              shadow hover:bg-[#5A61E8] transition"
                   onClick={() => toggleFollowPost(bp.id)}
                 >
@@ -1574,17 +1595,21 @@ export function SocialStackCard({
             </div>
 
             {/* handle below */}
-            <div className="truncate font-opensans text-[14px] text-[#222224]/50">
+            <div
+              style={{ fontFamily: "Open Sans, sans-serif" }}
+              className="truncate text-[14px] text-[#222224]/50"
+            >
               @{handle}
             </div>
           </div>
         </div>
         {/* Button */}
         <button
+          style={{ fontFamily: "Open Sans, sans-serif" }}
           className="mt-auto w-full flex items-center justify-center gap-[7.09px] 
              h-[34px] rounded-[100px] bg-[#7077FE] 
              px-[24px] py-[12px] 
-             font-opensans font-normal text-[14px] leading-[100%] text-white 
+           font-normal text-[14px] leading-[100%] text-white 
              shadow hover:bg-[#5A61E8] transition"
           onClick={() => navigate("/dashboard/Profile")}
         >
@@ -1814,7 +1839,10 @@ export function DirectorySection({
                 <div className="font-poppins font-semibold text-[16px] sm:text-[18px] leading-[120%] text-[#0F1728] truncate">
                   {it.name}
                 </div>
-                <div className="font-opensans text-[14px] sm:text-[16px] leading-[140%] text-[#667085] truncate">
+                <div
+                  style={{ fontFamily: "Open Sans, sans-serif" }}
+                  className="text-[14px] sm:text-[16px] leading-[140%] text-[#667085] truncate"
+                >
                   {it.handle}
                 </div>
               </div>
@@ -1823,7 +1851,8 @@ export function DirectorySection({
             {/* Right: button */}
             <button
               onClick={() => onView?.(it)}
-              className={`w-full sm:w-[127px] h-[32px] rounded-full px-4 py-2 text-center font-opensans text-[14px] text-white ${GRADIENT}`}
+              style={{ fontFamily: "Open Sans, sans-serif" }}
+              className={`w-full sm:w-[127px] h-[32px] rounded-full px-4 py-2 text-center text-[14px] text-white ${GRADIENT}`}
             >
               View Details
             </button>

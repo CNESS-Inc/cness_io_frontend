@@ -104,7 +104,8 @@ export default function PlatformSections() {
                   {platform.features.map((feature, i) => (
                     <li
                       key={i}
-                      className="openSans w-fit text-sm sm:text-base lg:text-lg xl:text-xl leading-tight tracking-normal text-black bg-[#F7F7F7] px-4 py-2 rounded-full sm:rounded-[90px] text-left"
+                      style={{ fontFamily: "Open Sans, sans-serif" }}
+                      className="w-fit text-sm sm:text-base lg:text-lg xl:text-xl leading-tight tracking-normal text-black bg-[#F7F7F7] px-4 py-2 rounded-full sm:rounded-[90px] text-left"
                     >
                       {feature}
                     </li>

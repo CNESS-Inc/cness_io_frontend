@@ -721,7 +721,7 @@ export default function DashboardSection() {
                       </h2>
                       <p className="font-['Open_Sans',Helvetica] text-[#7a7a7a] text-sm sm:text-base">
                         Fill out your profile with all the necessary<br></br>
-                          details.
+                        details.
                       </p>
                     </div>
                     <div className="w-full">
@@ -1265,7 +1265,10 @@ export default function DashboardSection() {
 
                       return (
                         <div key={question.id} className="mb-4">
-                          <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                          <label
+                            style={{ fontFamily: "Open Sans, sans-serif" }}
+                            className="block text-base font-medium text-gray-800 mb-1"
+                          >
                             {question.question}
                           </label>
 
@@ -1287,7 +1290,10 @@ export default function DashboardSection() {
                                   />
                                   <label
                                     htmlFor={`question_${question.id}_${option.id}`}
-                                    className="ml-3 block openSans text-base text-gray-700"
+                                    className="ml-3 block text-base text-gray-700"
+                                    style={{
+                                      fontFamily: "Open Sans, sans-serif",
+                                    }}
                                   >
                                     {option.option}
                                   </label>
@@ -1455,7 +1461,10 @@ export default function DashboardSection() {
 
                       return (
                         <div key={question.id} className="mb-4">
-                          <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                          <label
+                            className="block text-base font-medium text-gray-800 mb-1"
+                            style={{ fontFamily: "Open Sans, sans-serif" }}
+                          >
                             {question.question}
                           </label>
 
@@ -1477,7 +1486,10 @@ export default function DashboardSection() {
                                   />
                                   <label
                                     htmlFor={`question_${question.id}_${option.id}`}
-                                    className="ml-3 block openSans text-base text-gray-700"
+                                    className="ml-3 block text-base text-gray-700"
+                                    style={{
+                                      fontFamily: "Open Sans, sans-serif",
+                                    }}
                                   >
                                     {option.option}
                                   </label>

@@ -70,7 +70,7 @@ export default function What() {
           <p className="poppins text-3xl sm:text-4xl md:text-5xl text-neutral-800 font-bold mb-6">
             What is CNESS?
           </p>
-          <p className="openSans text-base sm:text-lg md:text-xl text-neutral-600 mb-10 max-w-2xl mx-auto">
+          <p style={{ fontFamily: "Open Sans, sans-serif" }} className="text-base sm:text-lg md:text-xl text-neutral-600 mb-10 max-w-2xl mx-auto">
             Conscious Enterprise & Social Standards
           </p>
         </div>

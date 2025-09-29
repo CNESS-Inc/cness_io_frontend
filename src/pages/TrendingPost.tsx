@@ -34,7 +34,7 @@ export default function Trending() {
     setIsLoading(true);
     try {
       // Pass page parameter correctly to the API
-      const res = await GetTrendingPost("","", page);
+      const res = await GetTrendingPost("", "", page);
       console.log("🚀 ~ getUserPosts ~ res:", res, "Page:", page);
 
       if (res?.data?.data?.rows) {
@@ -63,15 +63,17 @@ export default function Trending() {
         } else {
           setPosts((prevPosts) => {
             // Avoid duplicates by checking if post already exists
-            const existingIds = new Set(prevPosts.map(p => p.id));
-            const filteredNewPosts = newPosts.filter(p => !existingIds.has(p.id));
+            const existingIds = new Set(prevPosts.map((p) => p.id));
+            const filteredNewPosts = newPosts.filter(
+              (p) => !existingIds.has(p.id)
+            );
             return [...prevPosts, ...filteredNewPosts];
           });
 
           if (page >= totalPages) {
             setHasMore(false);
           } else {
-            setPage(prevPage => prevPage + 1);
+            setPage((prevPage) => prevPage + 1);
           }
         }
       }
@@ -118,11 +120,11 @@ export default function Trending() {
     setPage(1);
     setHasMore(true);
     setIsLoading(true);
-    
+
     // Load first page immediately
     const loadFirstPage = async () => {
       try {
-        const res = await GetTrendingPost("","", 1);
+        const res = await GetTrendingPost("", "", 1);
         console.log("Initial load response:", res);
 
         if (res?.data?.data?.rows) {
@@ -224,14 +226,14 @@ export default function Trending() {
                       );
                     }
                   })}
-                  
+
                   {/* Loading indicator */}
                   {isLoading && (
                     <div className="flex justify-center py-4">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
                     </div>
                   )}
-                  
+
                   {/* No more posts message */}
                   {!hasMore && posts.length > 0 && (
                     <div className="text-center py-4 text-gray-500">
@@ -260,7 +262,8 @@ export default function Trending() {
                 <li
                   key={t.label}
                   onClick={() => nav("trendingai")}
-                  className="flex items-center justify-between font-opensans font-normal text-[14px] leading-[100%] cursor-pointer px-3 py-2 rounded-md hover:bg-[#E6E9FF] transition-all duration-200 ease-in-out transform hover:scale-y-110 w-full"
+                  style={{ fontFamily: "Open Sans, sans-serif" }}
+                  className="flex items-center justify-between font-normal text-[14px] leading-[100%] cursor-pointer px-3 py-2 rounded-md hover:bg-[#E6E9FF] transition-all duration-200 ease-in-out transform hover:scale-y-110 w-full"
                 >
                   <span className="text-black hover:text-[#7077FE] transition-colors duration-200">
                     {idx + 1}. {t.label}

@@ -105,12 +105,12 @@ const rightCards = [
 export default function EcoSystemApp() {
   const [activeCard, setActiveCard] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
-  const isSmallScreen = window.innerWidth < 640; 
+  const isSmallScreen = window.innerWidth < 640;
 
   // autoplay through cards until user interacts
   useEffect(() => {
     if (!autoPlay) return;
-   const order = isSmallScreen ? [0, 1, 2, 3] : [0, 2, 3, 1]; // 1,3,4,2 visual order
+    const order = isSmallScreen ? [0, 1, 2, 3] : [0, 2, 3, 1]; // 1,3,4,2 visual order
     // start from current index inside order
     let step = Math.max(0, order.indexOf(activeCard));
     const id = setInterval(() => {
@@ -193,24 +193,30 @@ export default function EcoSystemApp() {
                   }}
                 />
                 <div className="relative z-10">
-
                   <div className="lg:block md:block flex align-center gap-2">
-                    <h3 style={{ fontFamily: "Poppins, sans-serif" }} className={`font-medium text-2xl ${activeCard === i ? "text-white" : "text-black"}`}>
+                    <h3
+                      style={{ fontFamily: "Poppins, sans-serif" }}
+                      className={`font-medium text-2xl ${
+                        activeCard === i ? "text-white" : "text-black"
+                      }`}
+                    >
                       {cards[i].title}
                     </h3>
                     <span
                       style={{ fontFamily: "Poppins, sans-serif" }}
-                      className={`text-sm lg:mt-0 md:mt-0 mt-2  font-semibold ${activeCard === i ? "text-white" : "text-[#6F41FD]"}`}
+                      className={`text-sm lg:mt-0 md:mt-0 mt-2  font-semibold ${
+                        activeCard === i ? "text-white" : "text-[#6F41FD]"
+                      }`}
                     >
                       {cards[i].subtitle}
                     </span>
                   </div>
-                  
 
                   <p
-                    className={`mt-2 text-base font-light font-['Open Sans'] openSans ${
+                    className={`mt-2 text-base font-light font-['Open Sans'] ${
                       activeCard === i ? "text-white" : "text-[#64748B]"
                     }`}
+                    style={{ fontFamily: "Open Sans, sans-serif" }}
                   >
                     {cards[i].content}
                   </p>
@@ -271,9 +277,10 @@ export default function EcoSystemApp() {
                     {cards[i].title}
                   </h3>
                   <p
-                    className={`mt-2 text-base font-light openSans font-['Open Sans'] openSans ${
+                    className={`mt-2 text-base font-light  ${
                       activeCard === i ? "text-white" : "text-[#64748B]"
                     }`}
+                    style={{ fontFamily: "Open Sans, sans-serif" }}
                   >
                     {cards[i].content}
                   </p>
@@ -308,7 +315,8 @@ export default function EcoSystemApp() {
               {rightCards[activeCard].list.map((item, idx) => (
                 <li
                   key={idx}
-                  className="text-[#64748B] font-light text-base leading-6 font-['Open Sans'] openSans"
+                  className="text-[#64748B] font-light text-base leading-6 font-['Open Sans']"
+                  style={{ fontFamily: "Open Sans, sans-serif" }}
                 >
                   • {item}
                 </li>
@@ -325,7 +333,10 @@ export default function EcoSystemApp() {
               >
                 {rightCards[activeCard].button}
               </button>*/}
-              <p className="flex flex-col text-[#64748B] text-base font-light font-['Open Sans'] openSans">
+              <p
+                className="flex flex-col text-[#64748B] text-base font-light font-['Open Sans']"
+                style={{ fontFamily: "Open Sans, sans-serif" }}
+              >
                 {rightCards[activeCard].caption.before}
                 <span className="text-black font-normal">
                   {rightCards[activeCard].caption.highlight}

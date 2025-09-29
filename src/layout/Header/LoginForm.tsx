@@ -566,9 +566,12 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     if (!validateForm(organizationForm, "organization")) {
       return;
     }
-    
+
     setIsSubmitting(true);
-    console.log("🚀 ~ handleOrganizationSubmit ~ organizationForm:", organizationForm)
+    console.log(
+      "🚀 ~ handleOrganizationSubmit ~ organizationForm:",
+      organizationForm
+    );
     try {
       const res = await submitOrganizationDetails(organizationForm);
       localStorage.setItem("person_organization", "2");
@@ -876,7 +879,10 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
             )}
           </div>
 
-          <div className="text-center openSans text-sm text-gray-600 mb-4">
+          <div
+            style={{ fontFamily: "Open Sans, sans-serif" }}
+            className="text-center text-sm text-gray-600 mb-4"
+          >
             Trouble logging in?{" "}
             <button
               type="button"
@@ -913,7 +919,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
           <h2 className="text-xl poppins font-bold mb-4">
             Select Account Type
           </h2>
-          <p className="mb-6 openSans">
+          <p style={{ fontFamily: "Open Sans, sans-serif" }} className="mb-6">
             Please choose whether you're signing up as an individual or an
             organization.
           </p>
@@ -948,7 +954,10 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
           <form onSubmit={handleOrganizationSubmit}>
             {/* Organization Name */}
             <div className="mb-4">
-              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
+              <label
+                style={{ fontFamily: "Open Sans, sans-serif" }}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Organization Name*
               </label>
               <input
@@ -971,7 +980,10 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
             </div>
 
             <div className="mb-4">
-              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
+              <label
+                style={{ fontFamily: "Open Sans, sans-serif" }}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Domain*
               </label>
               <select
@@ -1000,7 +1012,10 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
 
             {/* Sub Domain */}
             <div className="mb-4">
-              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
+              <label
+                style={{ fontFamily: "Open Sans, sans-serif" }}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Sub Domain
               </label>
               <select
@@ -1027,7 +1042,10 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
 
             {/* Employees Size */}
             <div className="mb-4">
-              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
+              <label
+                style={{ fontFamily: "Open Sans, sans-serif" }}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Employees Size*
               </label>
               <select
@@ -1054,7 +1072,10 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
 
             {/* Revenue */}
             <div className="mb-4">
-              <label className="block openSans text-sm font-medium text-gray-700 mb-1">
+              <label
+                style={{ fontFamily: "Open Sans, sans-serif" }}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Revenue*
               </label>
               <select
@@ -1089,7 +1110,10 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
 
                 return (
                   <div key={question.id} className="mb-4">
-                    <label className="block openSans text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      style={{ fontFamily: "Open Sans, sans-serif" }}
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       {question.question}
                     </label>
 
@@ -1108,7 +1132,8 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
                             />
                             <label
                               htmlFor={`question_${question.id}_${option.id}`}
-                              className="ml-3 block openSans text-sm text-gray-700"
+                              style={{ fontFamily: "Open Sans, sans-serif" }}
+                              className="ml-3 block text-sm text-gray-700"
                             >
                               {option.option}
                             </label>
@@ -1174,7 +1199,10 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
 
               return (
                 <div key={question.id} className="mb-4">
-                  <label className="block openSans text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    style={{ fontFamily: "Open Sans, sans-serif" }}
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     {question.question}
                   </label>
 
@@ -1483,7 +1511,8 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
           </div>
           {apiMessage && (
             <div
-              className={`openSans text-center p-4 ${
+              style={{ fontFamily: "Open Sans, sans-serif" }}
+              className={`text-center p-4 ${
                 apiMessage.includes("A Forgot Password Email Has Been Sent")
                   ? "text-green-500"
                   : "text-red-500"

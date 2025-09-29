@@ -304,7 +304,7 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
     <PopupOnboardingModal open={open} onClose={onClose}>
       {/* Right-side content only */}
       <div className={formssubmitted ? "hidden" : ""}>
-        <h1 className="text-center font-[Poppins] font-medium text-[32px] leading-[100%] tracking-[-0.03em] text-gray-900">
+        <h1  style={{ fontFamily: "Poppins, sans-serif" }} className="text-center font-medium text-[32px] leading-[100%] tracking-[-0.03em] text-gray-900">
           Create a Free Account
         </h1>
 

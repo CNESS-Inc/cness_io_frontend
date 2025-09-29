@@ -41,9 +41,10 @@ export default function HeroSection() {
         </h1>
 
         <p
-          className={`openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] text-center max-w-[62ch] mt-4 sm:mt-6 lg:mt-6 transition-all duration-1000 ease-in-out  ${
+          className={`font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] text-center max-w-[62ch] mt-4 sm:mt-6 lg:mt-6 transition-all duration-1000 ease-in-out  ${
             step >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
           }`}
+          style={{ fontFamily: "Open Sans, sans-serif" }}
         >
           Build your conscious identity. Connect with purpose-led peers. Share
           your knowledge. Learn, grow, and thrive – all in one place.
@@ -63,6 +64,7 @@ export default function HeroSection() {
              font-['Open_Sans'] font-medium 
              leading-[100%] tracking-[0px] text-center"
               onClick={() => setOpenSignup(true)}
+              style={{ fontFamily: "Poppins, sans-serif" }}
             >
               Start your Conscious Journey
             </Button>

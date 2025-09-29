@@ -107,7 +107,7 @@ export default function PopupOnboardingModal({
                   }}
                 />
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-center w-full px-6">
-  <h2 className="text-center font-[Poppins] font-medium text-3xl md:text-[42px] leading-tight mb-5 bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text">
+  <h2  style={{ fontFamily: "Poppins, sans-serif" }} className="text-center font-medium text-3xl md:text-[42px] leading-tight mb-5 bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text">
     Welcome!
   </h2>
   <p className="text-[#64748B] text-center text-sm md:text-base leading-relaxed max-w-[380px] mx-auto">

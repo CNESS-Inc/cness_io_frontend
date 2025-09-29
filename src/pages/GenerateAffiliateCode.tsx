@@ -415,7 +415,7 @@ const AffiliateGenerateCode = () => {
             </svg>
           </div>
           {apiMessage && (
-            <div className="openSans text-center p-4">
+            <div style={{ fontFamily: "Open Sans, sans-serif" }} className="text-center p-4">
               <p className="mb-2">{apiMessage}</p>
               <button
                 onClick={() => copyToClipboard(apiMessage)}

@@ -70,7 +70,10 @@ export default function What() {
           <p className="poppins text-3xl sm:text-4xl md:text-5xl text-neutral-800 font-bold mb-6">
             What is CNESS?
           </p>
-          <p className="openSans text-base sm:text-lg md:text-xl text-neutral-600 mb-10 max-w-2xl mx-auto">
+          <p
+            style={{ fontFamily: "Open Sans, sans-serif" }}
+            className="text-base sm:text-lg md:text-xl text-neutral-600 mb-10 max-w-2xl mx-auto"
+          >
             Conscious Enterprise & Social Standards
           </p>
         </div>
@@ -101,7 +104,10 @@ export default function What() {
             >
               <h3 className="text-2xl font-bold mb-6">What is CNESS?</h3>
               <p className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed max-w-[600px] mx-auto md:mx-0">
-                <strong>CNESS</strong> is a global certification and assessment framework that helps organisations measure, improve, and showcase their commitment to ethical, conscious, and human-centred business practices.
+                <strong>CNESS</strong> is a global certification and assessment
+                framework that helps organisations measure, improve, and
+                showcase their commitment to ethical, conscious, and
+                human-centred business practices.
               </p>
             </motion.div>
           </div>
@@ -118,7 +124,14 @@ export default function What() {
             >
               <p className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed max-w-[600px] mx-auto md:mx-0">
                 Think of it as the{" "}
-                <span className="font-semibold italic">“Consciousness Score”</span> for your organisation — a powerful new way to assess how well a company integrates values like <strong>ethics</strong>, <strong>inclusion</strong>, <strong>sustainability</strong>, <strong>culture</strong>, and <strong>well-being</strong> into its core operations.
+                <span className="font-semibold italic">
+                  “Consciousness Score”
+                </span>{" "}
+                for your organisation — a powerful new way to assess how well a
+                company integrates values like <strong>ethics</strong>,{" "}
+                <strong>inclusion</strong>, <strong>sustainability</strong>,{" "}
+                <strong>culture</strong>, and <strong>well-being</strong> into
+                its core operations.
               </p>
             </motion.div>
 
@@ -166,7 +179,9 @@ export default function What() {
                     className="flex items-start gap-3 bg-white p-5 rounded-xl shadow-sm border border-purple-100"
                   >
                     <div className="w-4 h-4 mt-1 bg-purple-600 rounded-full flex-shrink-0" />
-                    <p className="text-base sm:text-lg text-gray-800 leading-snug">{point}</p>
+                    <p className="text-base sm:text-lg text-gray-800 leading-snug">
+                      {point}
+                    </p>
                   </motion.div>
                 ))}
               </div>
@@ -202,7 +217,9 @@ export default function What() {
                   <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mb-4">
                     <Icon className="w-5 h-5 text-purple-700 group-hover:text-white transition" />
                   </div>
-                  <h4 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">{pillar.title}</h4>
+                  <h4 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">
+                    {pillar.title}
+                  </h4>
                 </div>
                 <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
                   {pillar.description}
@@ -223,7 +240,13 @@ export default function What() {
           className="w-full flex justify-center mt-10"
         >
           <p className="max-w-3xl text-center text-base sm:text-lg md:text-xl text-gray-700 font-poppins leading-relaxed">
-            Each pillar includes specific areas (like <span className="italic">diversity</span>, <span className="italic">emissions</span>, <span className="italic">mental health</span>, <span className="italic">transparency</span>, etc.) and is measured through qualitative and quantitative questions tailored to your size and sector.
+            Each pillar includes specific areas (like{" "}
+            <span className="italic">diversity</span>,{" "}
+            <span className="italic">emissions</span>,{" "}
+            <span className="italic">mental health</span>,{" "}
+            <span className="italic">transparency</span>, etc.) and is measured
+            through qualitative and quantitative questions tailored to your size
+            and sector.
           </p>
         </motion.div>
       </div>

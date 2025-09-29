@@ -298,7 +298,7 @@ export default function SignupForm({
             )}
           </div>
 
-          <div className="text-center openSans text-sm text-gray-600 mb-4">
+          <div style={{ fontFamily: "Open Sans, sans-serif" }} className="text-center text-sm text-gray-600 mb-4">
             Already have an account?{" "}
             <button
               type="button"
@@ -349,7 +349,8 @@ export default function SignupForm({
           </div>
           {apiMessage && (
             <div
-              className={`openSans text-center p-4 ${
+            style={{ fontFamily: "Open Sans, sans-serif" }}
+              className={`text-center p-4 ${
                 apiMessage.includes("verification")
                   ? "text-green-500"
                   : "text-red-500"

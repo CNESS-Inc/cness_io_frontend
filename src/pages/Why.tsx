@@ -23,7 +23,7 @@ export default function Why() {
           <h1 className="poppins text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text">
             Why CNESS?
           </h1>
-          <p className="openSans text-base sm:text-lg md:text-xl text-neutral-600 mb-10 max-w-2xl mx-auto">
+          <p style={{ fontFamily: "Open Sans, sans-serif" }} className="text-base sm:text-lg md:text-xl text-neutral-600 mb-10 max-w-2xl mx-auto">
             The world's first conscious business platform — where individuals and organizations certify, connect, grow, and lead with integrity.
           </p>
         </div>
@@ -44,7 +44,7 @@ export default function Why() {
             <span className="inline-block mb-2 px-4 py-1 bg-[#EFEFFF] text-[#6B6BFF] font-semibold rounded-full text-sm">
               Why CNESS
             </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#232323] mb-4 openSans">
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#232323] mb-4" style={{ fontFamily: "Open Sans, sans-serif" }}>
               Empowering Conscious Individuals & Organizations
             </h2>
             {[
@@ -53,7 +53,7 @@ export default function Why() {
               "CNESS recognizes itself as the world’s most valuable company that offers the ultimate experience of transformation, interactions, trust and reliability, opportunities and growth. Our goal—Empower conscious individuals and organizations.",
               "The \"Good Guy\" wins in being the reckoning brand, trusted as reliable and dependable, inspired & innovative, ethically run with greater goodness as intent and empowered in prosperity that serves humanity."
             ].map((para, idx) => (
-              <p key={idx} className="openSans text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed mb-4">
+              <p key={idx} style={{ fontFamily: "Open Sans, sans-serif" }} className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed mb-4">
                 {para}
               </p>
             ))}
@@ -64,7 +64,7 @@ export default function Why() {
       {/* Section: Why CNESS Exists */}
       <section className="bg-[#F4F1FF] py-20 px-6 sm:px-8">
         <div className="max-w-5xl mx-auto text-center mb-16">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#232323] leading-snug openSans mb-5">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#232323] leading-snug mb-5" style={{ fontFamily: "Open Sans, sans-serif" }}> 
             CNESS constitutes the new paradigm that platforms<br />
             individuals and organizations that are ethical and with<br />
             vision of betterment of all.
@@ -103,10 +103,10 @@ export default function Why() {
                 key={index}
                 className="group bg-white rounded-xl p-6 shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300 hover:bg-[#E8CDFD] flex flex-col gap-4 min-h-[320px]"
               >
-                <h3 className="text-xl font-semibold text-[#232323] mb-2 openSans">
+                <h3 className="text-xl font-semibold text-[#232323] mb-2" style={{ fontFamily: "Open Sans, sans-serif" }}>
                   {item.title}
                 </h3>
-                <p className="text-base sm:text-lg text-gray-700 openSans leading-relaxed text-justify">
+                <p className="text-base sm:text-lg text-gray-700 leading-relaxed text-justify" style={{ fontFamily: "Open Sans, sans-serif" }}>
                   {item.content}
                 </p>
               </div>
@@ -121,7 +121,7 @@ export default function Why() {
           <h2 className="text-xl sm:text-2xl font-bold uppercase text-[#9747FF] tracking-widest mb-4">
             The Ultimate Why
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed openSans">
+          <p className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed" style={{ fontFamily: "Open Sans, sans-serif" }}>
             CNESS epitomizes consciousness that is mindful, abundant & prosperous, resourceful, evolving, strategic, intelligent & smart, sustainable and uplifting to humanity.
           </p>
         </div>

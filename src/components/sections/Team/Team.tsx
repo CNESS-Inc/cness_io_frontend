@@ -60,7 +60,7 @@ export default function Team() {
             <h2 className="poppins text-3xl md:text-[32px] font-semibold mb-4 leading-10 text-[#4E4E4E]">
               Proof That Consciousness Moves the World.
             </h2>
-            <p className="text-[18px] text-[#64748B] font-regular openSans">Hear how CNESS helps purpose-driven professionals amplify their values and turn <br /> them into real-world change.</p>
+            <p style={{ fontFamily: "Open Sans, sans-serif" }} className="text-[18px] text-[#64748B] font-regular">Hear how CNESS helps purpose-driven professionals amplify their values and turn <br /> them into real-world change.</p>
           </div>
 
           <Swiper
@@ -105,7 +105,7 @@ export default function Team() {
                           <h2 className="poppins text-[16px] text-[#222224] font-semibold leading-7 md:leading-8">
                             {card.title}
                           </h2>
-                          <span className="openSans text-[#606060] text-[12px] font-regular text-nowrap">{card.SubTitle}</span>
+                          <span style={{ fontFamily: "Open Sans, sans-serif" }} className="text-[#606060] text-[12px] font-regular text-nowrap">{card.SubTitle}</span>
                         </div>
                         <div className="badge">
                           <img
@@ -116,7 +116,7 @@ export default function Team() {
                         </div>
                       </div>
 
-                      <p className="openSans text-[12px] text-[#2A2A2A] font-regular leading-4 mb-2 mt-2">
+                      <p style={{ fontFamily: "Open Sans, sans-serif" }} className="text-[12px] text-[#2A2A2A] font-regular leading-4 mb-2 mt-2">
                         {card.description}
                       </p>
                     </div>

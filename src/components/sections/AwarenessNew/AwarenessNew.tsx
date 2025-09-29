@@ -99,9 +99,10 @@ export default function AwarenessSection() {
               </h1>
 
               <p
+                style={{ fontFamily: "Open Sans, sans-serif" }}
                 className="
                   mx-auto mt-3 md:mt-3
-openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]
+ font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]
                   w-full md:max-w-[707px]
                 "
               >
@@ -179,7 +180,10 @@ openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]
             </Swiper>
 
             <div className="flex lg:flex-row md:flex-row flex-col max-w-[550px] w-full mx-auto mt-0">
-              <p className="lg:w-8/12 md:w-5/12 w-full openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]">
+              <p
+                style={{ fontFamily: "Open Sans, sans-serif" }}
+                className="lg:w-8/12 md:w-5/12 w-full font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]"
+              >
                 Showcase your products in our conscious
                 <br />
                 Marketplace, connect with the right
@@ -200,9 +204,11 @@ openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]
                     text-[16px] leading-[100%] tracking-[0]
                     text-white 
                   "
-                  onClick={() => {navigate("/cness-marketplace")
-                   window.scrollTo({ top: 0, behavior: "instant" }); }}
-            >
+                  onClick={() => {
+                    navigate("/cness-marketplace");
+                    window.scrollTo({ top: 0, behavior: "instant" });
+                  }}
+                >
                   Become a Seller
                 </Button>
               </div>
@@ -221,7 +227,10 @@ openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]
           Connect with the trustworthy. Work with the <br />
           Reliable. Grow with the Dependable.
         </h3>
-        <p className="openSans mt-2 lg:text-[16px] md:text-[16px] text-[16px] font-[300] text-[#494949] leading-[24px] text-center">
+        <p
+          style={{ fontFamily: "Open Sans, sans-serif" }}
+          className="mt-2 lg:text-[16px] md:text-[16px] text-[16px] font-[300] text-[#494949] leading-[24px] text-center"
+        >
           On CNESS, every profile, product, and organization is aligned with
           values you can count on.
         </p>

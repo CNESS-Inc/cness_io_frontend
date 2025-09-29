@@ -6,7 +6,7 @@ import Dummyvideo from "../../ui/Dummyvideo";
 export default function Highlight() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
- const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
     checkMobile();
@@ -58,35 +58,47 @@ export default function Highlight() {
       <div className="max-w-[1336px] mx-auto flex lg:flex-row flex-col">
         <div className="md:px-0 lg:px-0 lg:w-5/12 w-full">
           <div className="w-full">
-            <span className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-[500] px-4 py-1 rounded-[100px] mb-6 inline-block 
-            rounded-tl-[100px] rounded-br-[100px] rounded-tr-[10px] rounded-bl-[10px] bg-white">
+            <span
+              className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-[500] px-4 py-1 rounded-[100px] mb-6 inline-block 
+            rounded-tl-[100px] rounded-br-[100px] rounded-tr-[10px] rounded-bl-[10px] bg-white"
+            >
               Highlights
             </span>
-            <h3 
-             style={{ fontFamily: "Poppins, sans-serif" }}
-            className="font-medium
+            <h3
+              style={{ fontFamily: "Poppins, sans-serif" }}
+              className="font-medium
     text-[32px] md:text-[42px]
     lg:leading-[54px] md:leading-[54px] leading-[40px]  tracking-[-0.02em]
-    capitalize text-left pb-[15px]  ">
+    capitalize text-left pb-[15px]  "
+            >
               Your conscious identity,
               <br />
-               <span className="
+              <span
+                className="
     bg-gradient-to-r from-[#D747EA] to-[#7741FB]
     text-transparent bg-clip-text
-  ">
-               Activated.
-               </span>
+  "
+              >
+                Activated.
+              </span>
             </h3>
-            <p className="openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] mb-6">
-              CNESS helps you build visibility, earn credibility, and express your purpose — 
-              <br /> socially, creatively, and professionally.  Showcase your skills, share your story, connect with like-minded people, and unlock opportunities to grow with confidence and purpose.
-              
+            <p
+              style={{ fontFamily: "Open Sans, sans-serif" }}
+              className="font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] mb-6"
+            >
+              CNESS helps you build visibility, earn credibility, and express
+              your purpose —
+              <br /> socially, creatively, and professionally. Showcase your
+              skills, share your story, connect with like-minded people, and
+              unlock opportunities to grow with confidence and purpose.
             </p>
-            <Button className="font-['Open_Sans'] font-medium  text-[16px] leading-[100%] tracking-[0px] text-center 
+            <Button
+              className="font-['Open_Sans'] font-medium  text-[16px] leading-[100%] tracking-[0px] text-center 
              w-fit h-[42px] py-1 px-6 rounded-[100px] 
              bg-gradient-to-r from-[#7077FE] to-[#F07EFF] 
              self-stretch transition-colors duration-500 ease-in-out"
-              onClick={() => setOpen(true)}>
+              onClick={() => setOpen(true)}
+            >
               See how it all works →
             </Button>
           </div>
@@ -104,20 +116,30 @@ export default function Highlight() {
                   className="group relative cursor-pointer w-full"
                   onClick={() => handleClick(index)}
                 >
-                  <div className={`absolute inset-0 rounded-[16px] border ${isOpen ? 'border-[#9747FF]' : 'border-transparent'} p-[1px] transition-all duration-500 ease-in-out`}></div>
+                  <div
+                    className={`absolute inset-0 rounded-[16px] border ${
+                      isOpen ? "border-[#9747FF]" : "border-transparent"
+                    } p-[1px] transition-all duration-500 ease-in-out`}
+                  ></div>
 
                   <div
-                    className={`card relative z-10 bg-white ${isOpen ? 'h-auto min-h-[150px]' : 'h-[80px] min-h-[80px]'} w-full px-4 py-4 border border-[#E9EDF0] rounded-[16px] flex ${isOpen ? 'flex-col' : 'flex-row items-center'} transition-all duration-500 ease-in-out`}
+                    className={`card relative z-10 bg-white ${
+                      isOpen ? "h-auto min-h-[150px]" : "h-[80px] min-h-[80px]"
+                    } w-full px-4 py-4 border border-[#E9EDF0] rounded-[16px] flex ${
+                      isOpen ? "flex-col" : "flex-row items-center"
+                    } transition-all duration-500 ease-in-out`}
                   >
                     <Image
                       src={card.icon}
                       alt="Company Logo"
                       width={45}
                       height={45}
-                      className={`${isOpen ? 'w-10 h-10 mb-4' : 'w-8 h-8 mr-4'}`}
+                      className={`${
+                        isOpen ? "w-10 h-10 mb-4" : "w-8 h-8 mr-4"
+                      }`}
                     />
 
-                    <div className={`${isOpen ? '' : 'flex-1'}`}>
+                    <div className={`${isOpen ? "" : "flex-1"}`}>
                       {isOpen ? (
                         // Top-left when expanded
                         <span className="text-[#4B4B4B] text-[14px] font-[600] mb-2">
@@ -157,9 +179,7 @@ export default function Highlight() {
                 >
                   <div className="absolute inset-0 rounded-[16px] border border-transparent group-hover:border-[#9747FF] p-[1px] transition-all duration-500 ease-in-out"></div>
 
-                  <div
-                    className="card relative z-10 bg-white h-[350px] min-h-[350px] px-[18px] py-[26px] border border-[#E9EDF0] rounded-[16px] flex flex-col justify-between items-start transition-all duration-500 ease-in-out origin-right w-[78px] group-hover:w-[240px]"
-                  >
+                  <div className="card relative z-10 bg-white h-[350px] min-h-[350px] px-[18px] py-[26px] border border-[#E9EDF0] rounded-[16px] flex flex-col justify-between items-start transition-all duration-500 ease-in-out origin-right w-[78px] group-hover:w-[240px]">
                     <Image
                       src={card.icon}
                       alt="Company Logo"
