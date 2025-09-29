@@ -1,4 +1,4 @@
-import Button from "../../ui/Button";
+//import Button from "../../ui/Button";
 
 export default function Subscribe() {
   return (
@@ -23,12 +23,12 @@ export default function Subscribe() {
             </p>
           </div>
 
-          {/* RIGHT: Form */}
+          {/* RIGHT: Form 
           <form
             onSubmit={(e) => e.preventDefault()}
             className="w-full lg:w-auto lg:ml-auto flex flex-col items-stretch"
           >
-            {/* Input + button */}
+            {/* Input + button 
             <div className="w-full flex flex-col sm:flex-row sm:justify-end gap-3">
               <label htmlFor="email" className="sr-only">Email</label>
               <input
@@ -59,7 +59,7 @@ export default function Subscribe() {
               </Button>
             </div>
 
-            {/* Privacy note */}
+            {/* Privacy note 
             <p className="mt-2 text-[#64748B] text-sm font-openSans lg:text-left md:text-left text-center sm:w-[600px] sm:ml-auto">
               We care about your data in our{" "}
               <a
@@ -69,7 +69,7 @@ export default function Subscribe() {
                 Privacy Policy
               </a>.
             </p>
-          </form>
+          </form>*/}
         </div>
       </div>
     </div>

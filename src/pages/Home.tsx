@@ -13,7 +13,7 @@ import Certification from "../components/sections/Certification";
 import FeaturedSection from "../components/sections/FeaturedSection";
 import LazySection from "../components/ui/LazySection";
 import GetInTouch from "../components/sections/GetInTouch";
-import Subscribe from "../components/sections/Subscribe";
+//import Subscribe from "../components/sections/Subscribe";
 
 const Home = () => {
   return (
@@ -53,9 +53,9 @@ const Home = () => {
        <LazySection effect="fade-up" delay={0.2}>
         <GetInTouch />
       </LazySection> 
-      <LazySection effect="fade-up" delay={0.2}>
+      {/* <LazySection effect="fade-up" delay={0.2}>
         <Subscribe />
-      </LazySection>
+      </LazySection>*/}
       <Footer/>
     </>
   );

@@ -1,5 +1,5 @@
 import {
-  SearchIcon,
+  //SearchIcon,
   SettingsIcon,
   LogOutIcon,
   BellIcon,
@@ -10,7 +10,7 @@ import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import hambur from "../../assets/hambur.png";
-import { GetUserNotification, LogOut } from "../../Common/ServerAPI";
+import { GetUserNotification, LogOut,GetUserNotificationCount  } from "../../Common/ServerAPI";
 import { useToast } from "../../components/ui/Toast/ToastProvider";
 import { initSocket } from "../../Common/socket";
 import { BsCaretDownFill } from "react-icons/bs";
@@ -323,6 +323,22 @@ const DashboardHeader = ({
     getNotification();
   }, []);
 
+
+  const fetchNotificationCount = async () => {
+  try {
+    const res = await GetUserNotificationCount();
+    if (res?.data?.data) {
+      setNotificationCount(res.data.data.count.toString());
+      localStorage.setItem("notification_count", res.data.data.count.toString());
+    }
+  } catch (error) {
+    console.error("Error fetching notification count:", error);
+  }
+};
+useEffect(() => {
+  fetchNotificationCount();
+}, []);
+
   return (
     <header className="w-full bg-white border-b border-[#0000001a] relative px-4 py-[18px] flex items-center justify-between">
       {/* Left side - Hamburger (mobile) and Search */}
@@ -337,7 +353,7 @@ const DashboardHeader = ({
           </button>
         </div>
 
-        {/* Search bar */}
+        {/* Search bar
         <div
           className={`hidden lg:flex items-center justify-between p-3 relative bg-white rounded-xl border border-solid border-slate-300 w-full lg:w-[430px] xl:w-[450px] ${
             isMobileNavOpen ? "ml-6" : "ml-14"
@@ -348,19 +364,19 @@ const DashboardHeader = ({
             placeholder="Search"
           />
           <SearchIcon className="w-[15px] h-[15px] text-[#afb1b3]" />
-        </div>
+        </div> */}
         <div
           className={`flex lg:hidden items-center ${
             isMobileNavOpen ? "ml-6" : "ml-0"
           }`}
         >
-          <button
+            {/*<button
             onClick={() => setSearchOpen(true)}
             className="p-3 bg-white rounded-xl border border-slate-300 hover:bg-gray-50 transition"
             aria-label="Open search"
           >
             <SearchIcon className="w-[20px] h-[20px] text-[#afb1b3]" />
-          </button>
+          </button> */}
           {searchOpen && (
             <div
               className={`fixed top-0 bottom-0 right-0 z-50 bg-black/30 flex items-start justify-center ${

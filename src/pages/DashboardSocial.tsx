@@ -45,7 +45,7 @@ import {
 // import Announcement from "../assets/Announcement.png";
 import Collection from "../assets/collectionicon.svg";
 // import Leaderboard from "../assets/Leaderboard.png";
-import Mention from "../assets/mentionicon.svg";
+//import Mention from "../assets/mentionicon.svg";
 import people from "../assets/peopleicon.svg";
 import Trending from "../assets/trending.svg";
 import createstory from "../assets/createstory.jpg";
@@ -1527,7 +1527,7 @@ export default function SocialTopBar() {
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 md:gap-3">
                           <Link
-                            to={`/dashboard/userprofile/${post?.profile?.id}`}
+                            to={`/dashboard/userprofile/${post?.profile?.user_id}`}
                           >
                             <img
                               src={
@@ -1546,7 +1546,7 @@ export default function SocialTopBar() {
                           <div>
                             <p className="font-semibold text-sm md:text-base text-black">
                               <Link
-                                to={`/dashboard/userprofile/${post?.profile?.id}`}
+                                to={`/dashboard/userprofile/${post?.profile?.user_id}`}
                               >
                                 {" "}
                                 {post.profile.first_name}{" "}
@@ -1555,7 +1555,7 @@ export default function SocialTopBar() {
                               <span className="text-[#999999] text-xs md:text-[12px] font-[300]">
                                 {" "}
                                 <Link
-                                  to={`/dashboard/userprofile/${post?.profile?.id}`}
+                                  to={`/dashboard/userprofile/${post?.profile?.user_id}`}
                                 >
                                   {" "}
                                   @{post.user.username}
@@ -2072,13 +2072,13 @@ export default function SocialTopBar() {
                 >
                   <img src={Trending} className="w-5 h-5" alt="" /> Trending
                 </li>
-                <li
+                {/*<li
                   // onClick={() => navigate("/dashboard/trendingpost")}
                   className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-2 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"
                 >
                   <img src={Mention} className="w-5 h-5" alt="" /> Mention &
                   tags
-                </li>
+                </li>*/}
                 <li
                   onClick={fetchCollectionItems}
                   className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-2 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"

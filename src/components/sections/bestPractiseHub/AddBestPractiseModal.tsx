@@ -71,7 +71,7 @@ export default function AddBestPracticeModal({
           <div className="pb-4 flex flex-col items-center">
             <img src={cloud} alt="Upload" className="w-12" />
             <h4 className="pt-2 text-base font-medium text-[#292D32]">
-              Choose your image
+              Choose your image*
             </h4>
             <h4 className="pt-2 font-normal text-sm text-[#A9ACB4]">
               JPEG, PNG formats, up to 2MB
@@ -234,7 +234,7 @@ export default function AddBestPracticeModal({
               htmlFor="description"
               className="block text-[15px] font-normal text-black"
             >
-              Description
+              Description*
             </label>
             <textarea
               id="description"

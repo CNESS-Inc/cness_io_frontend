@@ -1,6 +1,6 @@
 import { useState } from "react";
 import GetInTouch from "../components/sections/GetInTouch";
-import Subscribe from "../components/sections/Subscribe";
+//import Subscribe from "../components/sections/Subscribe";
 import LazySection from "../components/ui/LazySection";
 import Footer from "../layout/Footer/Footer";
 import Header from "../layout/Header";
@@ -272,6 +272,14 @@ export default function Faqs() {
     },
   ];
 
+  const filteredFaqCategories = faqCategories.map(category => ({
+  ...category,
+  faqs: category.faqs.filter(faq =>
+    faq.question.toLowerCase().includes(searchText.toLowerCase()) ||
+    faq.answer.toLowerCase().includes(searchText.toLowerCase())
+  )
+})).filter(category => category.faqs.length > 0);
+
   return (
     <>
       <Header />
@@ -323,7 +331,7 @@ export default function Faqs() {
         </div>
       </LazySection>
       <LazySection effect="fade-up" delay={0.2}>
-        <FAQSection faqs={faqCategories} />
+        <FAQSection faqs={filteredFaqCategories} />
       </LazySection>
       <LazySection effect="fade-up" delay={0.2}>
         <div className="flex flex-col items-center text-center z-10 pb-10 px-4">
@@ -345,9 +353,9 @@ export default function Faqs() {
         </div>
         <GetInTouch />
       </LazySection>
-      <LazySection effect="fade-up" delay={0.2}>
+      {/*<LazySection effect="fade-up" delay={0.2}>
         <Subscribe />
-      </LazySection>
+      </LazySection>*/}
       <Footer />
     </>
   );
