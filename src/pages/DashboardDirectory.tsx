@@ -94,11 +94,21 @@ export default function DashboardDirectory() {
   const [aspiringCompanies, setAspiringCompanies] = useState<Company[]>([]);
   const [inspiringCompanies, setInspiringCompanies] = useState<Company[]>([]);
 
-  useEffect(() => {
-    if (measureRef.current) {
-      setTextWidth(measureRef.current.offsetWidth);
+useEffect(() => {
+  if (!measureRef.current) return;
+  const el = measureRef.current;
+
+  const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
+    for (const entry of entries) {
+      setTextWidth(entry.contentRect.width);
     }
-  }, [selectedDomainText]);
+  });
+
+  observer.observe(el);
+
+  return () => observer.disconnect();
+}, []); // run once
+
 
   const fetchDomain = async () => {
     try {
