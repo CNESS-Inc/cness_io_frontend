@@ -20,13 +20,13 @@ export default function MobileHeroSection() {
     return () => timers.forEach((t) => clearTimeout(t));
   }, []);
 
-  const [animationData, setAnimationData] = useState<object | null>(null);
-  useEffect(() => {
-    fetch("https://cnessioassets.project-69e.workers.dev/Second-globe.json")
-      .then((res) => res.json())
-      .then((data) => setAnimationData(data))
-      .catch((err) => console.error("Failed to load Lottie JSON:", err));
-  }, []);
+  // const [animationData, setAnimationData] = useState<object | null>(null);
+  // useEffect(() => {
+  //   fetch("https://cnessioassets.project-69e.workers.dev/Second-globe.json")
+  //     .then((res) => res.json())
+  //     .then((data) => setAnimationData(data))
+  //     .catch((err) => console.error("Failed to load Lottie JSON:", err));
+  // }, []);
 
   return (
     <>
@@ -35,25 +35,38 @@ export default function MobileHeroSection() {
         <div className="absolute inset-0 flex items-start justify-center z-10 pt-8">
           <div className="text-center px-4 w-full">
             <h1
-              className={`poppins text-[28px] font-bold mb-4 bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text transition-all duration-1000 ease-in-out ${step === 3 ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-6"
-                }`}
+              className={`poppins text-[28px] font-bold mb-4 bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text transition-all duration-1000 ease-in-out ${
+                step === 3
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 -translate-y-6"
+              }`}
             >
-              The World's First<br /> Consciousness Super-App
+              The World's First
+              <br /> Consciousness Super-App
             </h1>
 
             <p
-              className={`openSans text-[14px] text-[#64748B] mb-6 max-w-sm mx-auto transition-all duration-1000 ease-in-out ${step === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-                }`}
+              style={{ fontFamily: "Open Sans, sans-serif" }}
+              className={`text-[14px] text-[#64748B] mb-6 max-w-sm mx-auto transition-all duration-1000 ease-in-out ${
+                step === 3
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-6"
+              }`}
             >
-              Build your conscious identity. Connect with purpose-led peers. Share your knowledge. Learn, grow, and thrive - all in one place.
+              Build your conscious identity. Connect with purpose-led peers.
+              Share your knowledge. Learn, grow, and thrive - all in one place.
             </p>
 
             <div
-              className={`flex flex-col gap-3 transition-all duration-1000 ease-in-out ${step === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-                }`}
+              className={`flex flex-col gap-3 transition-all duration-1000 ease-in-out ${
+                step === 3
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-6"
+              }`}
             >
-              <Button className="rounded-[100px] hero-section-btn py-3 px-6 text-[14px] bg-linear-to-r from-[#7077FE] to-[#9747FF]"
-                onClick={() => window.location.href = "/sign-up"}
+              <Button
+                className="rounded-[100px] hero-section-btn py-3 px-6 text-[14px] bg-linear-to-r from-[#7077FE] to-[#9747FF]"
+                onClick={() => (window.location.href = "/sign-up")}
               >
                 Get Started
               </Button>
@@ -61,7 +74,9 @@ export default function MobileHeroSection() {
                 variant="white-outline"
                 className="text-[14px] py-3 px-6 hero-section-btn"
                 size="md"
-                onClick={() => window.location.href = "https://visionary.cness.io"}
+                onClick={() =>
+                  (window.location.href = "https://visionary.cness.io")
+                }
               >
                 Explore the Movement
               </Button>
@@ -86,8 +101,14 @@ export default function MobileHeroSection() {
 
             transformOrigin: "center bottom",
             WebkitTransformOrigin: "center bottom",
-            transform: step === 3 ? "translateX(-50%) scale(1)" : "translateX(-50%) scale(0.2)",
-            WebkitTransform: step === 3 ? "translateX(-50%) scale(1)" : "translateX(-50%) scale(0.2)",
+            transform:
+              step === 3
+                ? "translateX(-50%) scale(1)"
+                : "translateX(-50%) scale(0.2)",
+            WebkitTransform:
+              step === 3
+                ? "translateX(-50%) scale(1)"
+                : "translateX(-50%) scale(0.2)",
             transition: "transform 1s ease-in-out, opacity 1s ease-in-out",
 
             opacity: step === 3 ? 1 : 0,
@@ -100,9 +121,11 @@ export default function MobileHeroSection() {
             transformStyle: "preserve-3d",
           }}
         >
-          {step === 3 && animationData && (
+          {step === 3 && (
+            // animationData &&
             <LottieOnView
-              animationData={animationData}
+              // animationData={animationData}
+              src="https://cnessioassets.project-69e.workers.dev/Second-globe.json"
               loop
               style={{
                 width: "100%",
@@ -119,7 +142,6 @@ export default function MobileHeroSection() {
             />
           )}
         </div>
-
       </section>
     </>
   );
