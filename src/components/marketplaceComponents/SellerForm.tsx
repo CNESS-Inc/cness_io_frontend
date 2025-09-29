@@ -1,3 +1,5 @@
+import LazyZohoForm from "../ui/LazyZohoFormProps";
+
 export default function SellerForm() {
   return (
     <section
@@ -8,15 +10,13 @@ export default function SellerForm() {
       }}
     >
       <div className="max-w-[1500px] mx-auto px-4 flex flex-col lg:flex-row items-stretch gap-8 lg:gap-12">
-        
         {/* Form (Zoho Embed) */}
         <div className="w-full lg:w-[60%] bg-white shadow-lg rounded-[28px] p-4 sm:p-6 md:p-10 flex flex-col">
-          <iframe
-            src="https://forms.zohopublic.com/vijicn1/form/SellerForm/formperma/cg_YdZsqMd1myB1bzzytsXvBByc4kI4DzhufAv4Cu2s"
-            className="w-full flex-1 border-0 rounded-lg"
-            style={{ minHeight: "750px", height: "100%", overflow: "auto" }}
-            scrolling="auto"
+          <LazyZohoForm
+            url="https://forms.zohopublic.com/vijicn1/form/SellerForm/formperma/cg_YdZsqMd1myB1bzzytsXvBByc4kI4DzhufAv4Cu2s"
             title="CNESS Seller Form"
+            style={{ minHeight: "750px", height: "100%", overflow: "auto" }}
+            className="w-full flex-1 border-0 rounded-lg"
           />
         </div>
 
