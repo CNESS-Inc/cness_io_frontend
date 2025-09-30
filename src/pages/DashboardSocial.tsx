@@ -26,7 +26,6 @@ import {
   GetStory,
   GetSavedPosts,
   MeDetails,
-  PostsDetails,
   PostsLike,
   SendFollowRequest,
   UnFriend,
@@ -39,6 +38,7 @@ import {
   UserSelectedTopic,
   getUserSelectedTopic,
   updateUserSelectedTopic,
+  FeedPostsDetails,
 } from "../Common/ServerAPI";
 
 // images
@@ -569,7 +569,8 @@ export default function SocialTopBar() {
     setIsPostsLoading(true);
     try {
       // Call the API to get the posts for the current page
-      const res = await PostsDetails(page);
+      const res = await FeedPostsDetails(page);
+      // const res = await PostsDetails(page);
       if (res?.data) {
         const newPosts = res?.data.data.rows || [];
         const totalPages = res?.data?.data?.count / 10 || 0;
@@ -602,7 +603,8 @@ export default function SocialTopBar() {
     setIsPostsLoading(true);
     try {
       // Call the API to get the posts for the current page
-      const res = await PostsDetails(1);
+      // const res = await PostsDetails(1);
+      const res = await FeedPostsDetails(1);
       if (res?.data) {
         const newPosts = res?.data.data.rows || [];
         const totalPages = res?.data?.data?.count / 10 || 0;
