@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { IoCloseOutline } from "react-icons/io5";
 
 interface ModalProps {
   isOpen: boolean;
@@ -106,7 +107,7 @@ export default function Modal({
             onClick={onClose}
             aria-label="Close modal"
           >
-            ✕
+            <IoCloseOutline className="text-[#E1056D]" />
           </button>
 
           {/* Modal content */}
