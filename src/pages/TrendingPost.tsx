@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import PostCard from "../components/Profile/Post";
 import { Outlet, useLocation } from "react-router-dom";
 import { useEffect, useState, useCallback, useRef } from "react";
-import { GetTrendingPost } from "../Common/ServerAPI";
+import { GetAllTrendingPost } from "../Common/ServerAPI";
 
 type Post = React.ComponentProps<typeof PostCard>;
 
@@ -34,7 +34,7 @@ export default function Trending() {
     setIsLoading(true);
     try {
       // Pass page parameter correctly to the API
-      const res = await GetTrendingPost("","", page);
+      const res = await GetAllTrendingPost(page);
       console.log("🚀 ~ getUserPosts ~ res:", res, "Page:", page);
 
       if (res?.data?.data?.rows) {
@@ -122,7 +122,7 @@ export default function Trending() {
     // Load first page immediately
     const loadFirstPage = async () => {
       try {
-        const res = await GetTrendingPost("","", 1);
+        const res = await GetAllTrendingPost(1);
         console.log("Initial load response:", res);
 
         if (res?.data?.data?.rows) {

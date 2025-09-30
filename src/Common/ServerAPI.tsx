@@ -140,6 +140,7 @@ export const EndPoint = {
   report: "/quiz/report",
   get_front_all_post: "/user/posts/get/front/all",
   get_all_post: "/user/posts/get/all",
+  get_all_feed_post: "/user/posts/feed",
   create_post: "/user/posts",
   delete_post: "/user/posts",
   postComments: "/user/post/comments",
@@ -160,7 +161,7 @@ export const EndPoint = {
   story_like: "/story/like",
   story_comment: "/story/comment",
   event: "/event",
-  trending_post: "/user/posts/trending",
+  trending_post: "/user/posts/trending-post",
   trending_movie: "/movie/trending",
   following: "/user/following",
   follow_status: "/user/follow/status",
@@ -991,6 +992,18 @@ export const PostsDetails = (page: any) => {
   );
 };
 
+export const FeedPostsDetails = (page: any) => {
+  let data = {};
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    EndPoint.get_all_feed_post,
+    params
+  );
+};
+
 export const AddPost = (formData: any): ApiResponse => {
   // console.log('POST FORMDATA----->', Object.fromEntries(formData.entries()));
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.create_post);
@@ -1120,6 +1133,18 @@ export const GetTrendingPost = (
     ServerAPI.APIMethod.GET,
     data,
     `/user/posts/${tab ? tab : "trending"}`,
+    params
+  );
+};
+
+export const GetAllTrendingPost = (page: any) => {
+  let data = {};
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    EndPoint.trending_post,
     params
   );
 };
