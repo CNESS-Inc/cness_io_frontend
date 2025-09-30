@@ -1,4 +1,5 @@
-import React, { useRef, useEffect } from "react";
+import React from "react";
+import LazyZohoForm from "../ui/LazyZohoFormProps";
 
 interface FormPopupProps {
   formType: "contact" | "feedback";
@@ -6,28 +7,10 @@ interface FormPopupProps {
 }
 
 const FormPopup: React.FC<FormPopupProps> = ({ formType, onClose }) => {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.innerHTML = "";
-
-      const iframe = document.createElement("iframe");
-      iframe.src =
-        formType === "contact"
-          ? "https://forms.zohopublic.com/vijicn1/form/ContactUs/formperma/AIrQeiVD8-sU0ApGGPfnhgdRbE4zmRcYN0dLiam7ZQI"
-          : "https://forms.zohopublic.com/vijicn1/form/Feedback1/formperma/UiuS4wyKkpqz1XsTbHsHZVtFfj3tg8MTGPPQzLT8S40"; // Replace with your feedback form URL
-
-      iframe.width = "100%";
-      iframe.height = "100%";
-      iframe.frameBorder = "0";
-      iframe.setAttribute("allowTransparency", "true");
-      iframe.style.border = "none";
-      iframe.style.borderRadius = "8px";
-
-      containerRef.current.appendChild(iframe);
-    }
-  }, [formType]);
+  const formUrl =
+    formType === "contact"
+      ? "https://forms.zohopublic.com/vijicn1/form/ContactUs/formperma/AIrQeiVD8-sU0ApGGPfnhgdRbE4zmRcYN0dLiam7ZQI"
+      : "https://forms.zohopublic.com/vijicn1/form/Feedback1/formperma/UiuS4wyKkpqz1XsTbHsHZVtFfj3tg8MTGPPQzLT8S40";
 
   return (
     <div className="fixed inset-0 flex items-center justify-center  bg-opacity-50 z-50">
@@ -41,7 +24,13 @@ const FormPopup: React.FC<FormPopupProps> = ({ formType, onClose }) => {
         </button>
 
         {/* Form Container */}
-        <div ref={containerRef} className="w-full h-full"></div>
+        <LazyZohoForm
+          url={formUrl}
+          title={formType === "contact" ? "Contact Form" : "Feedback Form"}
+          minHeight={750}
+          style={{ height: "100%" }}
+          className="rounded-lg"
+        />
       </div>
     </div>
   );

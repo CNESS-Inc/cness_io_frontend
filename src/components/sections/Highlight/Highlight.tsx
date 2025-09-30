@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Button from "../../ui/Button";
 import Image from "../../ui/Image";
 import Dummyvideo from "../../ui/Dummyvideo";
+import OptimizeImage from "../../ui/OptimizeImage";
 
 export default function Highlight() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -109,10 +110,10 @@ export default function Highlight() {
                   <div
                     className={`card relative z-10 bg-white ${isOpen ? 'h-auto min-h-[150px]' : 'h-[80px] min-h-[80px]'} w-full px-4 py-4 border border-[#E9EDF0] rounded-[16px] flex ${isOpen ? 'flex-col' : 'flex-row items-center'} transition-all duration-500 ease-in-out`}
                   >
-                    <Image
+                    <OptimizeImage
                       src={card.icon}
                       alt="Company Logo"
-                      width={45}
+                      width={'100%'}
                       height={45}
                       className={`${isOpen ? 'w-10 h-10 mb-4' : 'w-8 h-8 mr-4'}`}
                     />
@@ -163,8 +164,8 @@ export default function Highlight() {
                     <Image
                       src={card.icon}
                       alt="Company Logo"
-                      width={45}
-                      height={45}
+                      width={'45px'}
+                      height={'45px'}
                       className="w-14 h-14 hight-box-img"
                     />
 

@@ -1,80 +1,92 @@
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import LottieOnView from "../../ui/LottieOnView";
 import { useNavigate } from "react-router-dom";
 import Button from "../../ui/Button";
 
 const Certification = () => {
-  const [animationData, setAnimationData] = useState(null);
-const navigate = useNavigate();
+  // const [animationData, setAnimationData] = useState(null);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    
-    fetch("https://cnessioassets.project-69e.workers.dev/badgecard.json")
-      .then((res) => res.json())
-      .then((data) => setAnimationData(data))
-      .catch((err) => console.error("Failed to load Lottie JSON:", err));
-  }, []);
+  // useEffect(() => {
+  //   fetch("https://cnessioassets.project-69e.workers.dev/badgecard.json")
+  //     .then((res) => res.json())
+  //     .then((data) => setAnimationData(data))
+  //     .catch((err) => console.error("Failed to load Lottie JSON:", err));
+  // }, []);
 
   return (
-    <div className='py-20 w-full bg-[#FAFAFA] px-6 pb-28'>
-      <div className='max-w-[1336px] w-full mx-auto flex lg:flex-row flex-col justify-between'>
-        <div className='lg:w-[60%] w-full flex flex-col justify-center items-start'>
-
-          <h3 style={{ fontFamily: "Poppins, sans-serif" }}
-          className=' leading-10 text-[42px] font-medium text-black'>
+    <div className="py-20 w-full bg-[#FAFAFA] px-6 pb-28">
+      <div className="max-w-[1336px] w-full mx-auto flex lg:flex-row flex-col justify-between">
+        <div className="lg:w-[60%] w-full flex flex-col justify-center items-start">
+          <h3
+            style={{ fontFamily: "Poppins, sans-serif" }}
+            className=" leading-10 text-[42px] font-medium text-black"
+          >
             Certification Makes It Official.
           </h3>
-          <p className='openSans text-[18px] font-Regular pt-[10px] mb-2'>
-            Get your conscious identity verified and unlock everything CNESS has to offer.
+          <p
+            style={{ fontFamily: "Open Sans, sans-serif" }}
+            className="text-[18px] font-Regular pt-[10px] mb-2"
+          >
+            Get your conscious identity verified and unlock everything CNESS has
+            to offer.
           </p>
-           <span className="badge text-[#F07EFF] border-[#F07EFF] mt-4 border text-[16px] font-[500] px-4 py-1 rounded-[100px] mb-2 inline-block 
-            rounded-tl-[10px] rounded-br-[10px] rounded-tr-[100px] rounded-bl-[100px] ">
+          <span
+            className="badge text-[#F07EFF] border-[#F07EFF] mt-4 border text-[16px] font-[500] px-4 py-1 rounded-[100px] mb-2 inline-block 
+            rounded-tl-[10px] rounded-br-[10px] rounded-tr-[100px] rounded-bl-[100px] "
+          >
             Benefits
           </span>
 
-          <div className='lg:leading-9 md:leading-9 leading-[24px] pt-[20px] flex flex-col gap-4 w-full'>
+          <div className="lg:leading-9 md:leading-9 leading-[24px] pt-[20px] flex flex-col gap-4 w-full">
             {[
               "Unlock your True Profile with verified status",
               "Sell your services or digital tools in the Conscious Marketplace",
               "Publish reflections, stories, and offerings on your social feed",
               "Get featured in the CNESS Directory with certification tags",
               "Become eligible to mentor others and earn through guidance",
-              "Priority access to broadcasting and live events"
+              "Priority access to broadcasting and live events",
             ].map((text, index) => (
-              <div className='flex items-center gap-2' key={index}>
-                <div className='h-[25px] w-[25px] rounded-full bg-[#F4D373] flex items-center justify-center'>
-                  <FaCheck className='text-white' />
+              <div className="flex items-center gap-2" key={index}>
+                <div className="h-[25px] w-[25px] rounded-full bg-[#F4D373] flex items-center justify-center">
+                  <FaCheck className="text-white" />
                 </div>
-                <p className='text-[18px] text-[#1A2D36] font-regular openSans w-[90%]'>{text}</p>
+                <p
+                  style={{ fontFamily: "Open Sans, sans-serif" }}
+                  className="text-[18px] text-[#1A2D36] font-regular w-[90%]"
+                >
+                  {text}
+                </p>
               </div>
             ))}
           </div>
 
-        <Button
-               variant="gradient-primary"
+          <Button
+            variant="gradient-primary"
             className="lg:w-fit md:w-fit w-full text-center h-[42px] rounded-[100px] 
              px-6 py-1 mt-8 cursor-pointer
              text-[16px] font-['Open_Sans'] font-semibold 
              leading-[100%] tracking-[0px] text-center text-white"
             onClick={() => {
-    navigate("/certifications");
-    // Reset scroll
-    window.scrollTo({ top: 0, behavior: "instant" }); // or "smooth"
-  }}
->
-  Know More
-</Button>
+              navigate("/certifications");
+              // Reset scroll
+              window.scrollTo({ top: 0, behavior: "instant" }); // or "smooth"
+            }}
+          >
+            Know More
+          </Button>
         </div>
 
-        <div className='certificate-animation md:h-[100%] rounded-2xl lg:w-[40%] w-full lg:mt-0 mt-15'>
-          {animationData && (
-            <LottieOnView
-              animationData={animationData}
-              loop
-              className="w-full lg:h-full lg:scale-120"
-            />
-          )}
+        <div className="certificate-animation md:h-[100%] rounded-2xl lg:w-[40%] w-full lg:mt-0 mt-15">
+          {/* {animationData && ( */}
+          <LottieOnView
+            // animationData={animationData}
+            src="https://cnessioassets.project-69e.workers.dev/badgecard.json"
+            loop
+            className="w-full lg:h-full lg:scale-120"
+          />
+          {/* )} */}
         </div>
       </div>
     </div>

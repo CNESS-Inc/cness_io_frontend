@@ -160,6 +160,11 @@ body {
   justify-content: center;
 }
 
+.hero-img .relative {
+    aspect-ratio: auto !important;
+}
+
+
 
 @media (max-width:1536px) {
   .certificate-animation {
@@ -313,6 +318,14 @@ body {
 
   .hero-section-btn div {
     justify-content: center;
+  }
+
+  .hero-img img {
+    height: auto;
+  }
+
+  .belowFold {
+    content-visibility: auto;
   }
 
 }

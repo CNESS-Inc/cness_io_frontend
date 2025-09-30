@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import FAQSection from "../components/ui/Faq"; 
+import { useState } from "react";
+import FAQSection from "../components/ui/Faq";
 import tollfree from "..//assets/tollfree.png";
 import ContactUsPopup from "../components/zohoforms/contactus";
 
@@ -7,19 +7,18 @@ declare global {
   interface Window {
     showZForm_982213: () => void;
     showZForm_574943: () => void;
-
   }
 }
 
 const Support = () => {
-  const [activeTab, setActiveTab] = useState<'tickets' | 'faq'>('faq');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<"tickets" | "faq">("faq");
+  const [searchQuery, setSearchQuery] = useState("");
   const [showForm, setShowForm] = useState<"contact" | "feedback" | null>(null);
 
   // Sample ticket data
   const tickets = [
     {
-       id: "1",
+      id: "1",
       status: "General",
       ticketId: "350-001",
       title: "uniforms, watches as well (American)",
@@ -40,7 +39,9 @@ const Support = () => {
         {/* Header Section */}
         <header className="mb-8">
           <h1 className="font-['Poppins',Helvetica] text-2xl md:text-[32px] leading-8 mb-5">
-            <span className="font-semibold text-[#222224]">Support Center </span>
+            <span className="font-semibold text-[#222224]">
+              Support Center{" "}
+            </span>
           </h1>
           <p className="text-gray-600">
             Find answers to your questions or get help from our support team
@@ -57,7 +58,7 @@ const Support = () => {
           </button>
 
           <button
-             onClick={() => setShowForm("feedback")} // ✅ Same popup for feedback
+            onClick={() => setShowForm("feedback")} // ✅ Same popup for feedback
             className="px-6 py-2 rounded-full bg-[#FF5C7C] text-white font-semibold hover:bg-[#e14a67]"
           >
             Provide Feedback
@@ -101,12 +102,12 @@ const Support = () => {
         {/* Tab Navigation */}
         <div className="flex border-b border-gray-200 mb-6">
           <button
-           className={`px-4 py-2 font-medium ${
-            activeTab === "faq"
-              ? "text-blue-600 border-b-2 border-blue-600"
-              : "text-gray-500"
-          }`}
-          onClick={() => setActiveTab("faq")}
+            className={`px-4 py-2 font-medium ${
+              activeTab === "faq"
+                ? "text-blue-600 border-b-2 border-blue-600"
+                : "text-gray-500"
+            }`}
+            onClick={() => setActiveTab("faq")}
           >
             FAQ
           </button>
@@ -128,7 +129,7 @@ const Support = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -174,8 +175,8 @@ const Support = () => {
           <FAQSection searchQuery={searchQuery} />
         )}
       </div>
-    {/* Modal for Zoho Form */}
-    {showForm && (
+      {/* Modal for Zoho Form */}
+      {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-2xl shadow-lg max-w-2xl w-full relative animate-fadeIn">
             <button
@@ -190,12 +191,11 @@ const Support = () => {
               formType={showForm} // either "contact" or "feedback"
               onClose={() => setShowForm(null)}
             />
+          </div>
+        </div>
+      )}
     </div>
-  </div>
-)}
-    
-    </div>
-  );  
+  );
 };
 
 export default Support;
