@@ -53,11 +53,20 @@ export default function TechnologyAndAIPage() {
     selectedCertificationLevel
   );
 
-  useEffect(() => {
-    if (measureRef.current) {
-      setTextWidth(measureRef.current.offsetWidth);
+ useEffect(() => {
+  if (!measureRef.current) return;
+  const el = measureRef.current;
+
+  const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
+    for (const entry of entries) {
+      setTextWidth(entry.contentRect.width);
     }
-  }, [selectedDomainText]);
+  });
+
+  observer.observe(el);
+
+  return () => observer.disconnect();
+}, []); // run once
 
   const itemsPerPage = 10;
   const totalPages = Math.ceil(totalCount / itemsPerPage);

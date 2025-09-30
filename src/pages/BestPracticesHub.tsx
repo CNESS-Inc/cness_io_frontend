@@ -229,11 +229,20 @@ useEffect(() => {
   //     [id]: !prev[id],
   //   }));
   // };
-  useEffect(() => {
-    if (measureRef.current) {
-      setTextWidth(measureRef.current.offsetWidth);
+useEffect(() => {
+  if (!measureRef.current) return;
+  const el = measureRef.current;
+
+  const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
+    for (const entry of entries) {
+      setTextWidth(entry.contentRect.width);
     }
-  }, [selectedFilter, selectedDomainText]);
+  });
+
+  observer.observe(el);
+
+  return () => observer.disconnect();
+}, [selectedFilter, selectedDomainText]);
 
   const handleFilterChange = async (
     e: React.ChangeEvent<HTMLSelectElement>
