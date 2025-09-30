@@ -6,7 +6,6 @@ import {
   Lightbulb,
   X,
   Bell,
-  MoreHorizontal,
   Plus,
   ArrowLeft,
   ArrowRight,
@@ -1344,7 +1343,11 @@ export function SocialStackCard({
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <img
-                    src={`https://i.pravatar.cc/56?u=${item.sender_id}`}
+                    src={
+                      item?.sender_profile?.profile_picture
+                        ? item?.sender_profile?.profile_picture
+                        : `https://i.pravatar.cc/56?u=${item.sender_id}`
+                    }
                     className="h-11 w-11 rounded-full object-cover"
                     alt=""
                   />
@@ -1358,9 +1361,9 @@ export function SocialStackCard({
                     </div>
                   </div>
                 </div>
-                <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EEF0F5] bg-white shadow-sm">
+                {/* <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EEF0F5] bg-white shadow-sm">
                   <MoreHorizontal className="h-4 w-4 text-[#8F9AA6]" />
-                </div>
+                </div> */}
               </div>
             ))}
           </div>

@@ -59,6 +59,7 @@ interface ApiResponse<T> {
 
 export default function SellerDashboard() {
   const [user, setUser] = useState<UserData | null>(null);
+  console.log('user', user);
   const [resonating, setReasonating] = useState<UserData | null>(null);
   const [reasonators, setReasonators] = useState<UserData | null>(null);
   const [bestPractices, setBestPractices] = useState<BestPracticeItem[]>([]);
@@ -101,6 +102,7 @@ export default function SellerDashboard() {
   const fetchDashboard = async () => {
     try {
       const response: ApiResponse<UserData> = await DashboardDetails();
+      console.log('response', response);
       if (response?.data?.data) {
         setUser(response.data.data);
         localStorage.setItem("name", response.data.data?.name);
@@ -487,7 +489,7 @@ export default function SellerDashboard() {
         {/* RIGHT column: single long Social stack */}
         <div className="col-span-12 lg:col-span-4">
           <SocialStackCard
-            coverUrl="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop"
+            coverUrl="https://cdn.cness.io/banner.webp"
             avatarUrl={userProfilePicture}
             name={userName}
             handle={userName}
