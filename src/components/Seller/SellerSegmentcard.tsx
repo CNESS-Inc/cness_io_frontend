@@ -3606,7 +3606,7 @@ export function DirectorySection({
             {/* Left: image + text */}
             <div className="flex items-center gap-3 min-w-0">
               <img
-                src={it.avatar}
+                src={it.avatar || 'https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=1200&auto=format&fit=crop'}
                 alt={it.name}
                 className="h-12 w-12 rounded-xl object-cover"
               />

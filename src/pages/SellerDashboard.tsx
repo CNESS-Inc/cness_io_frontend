@@ -124,7 +124,6 @@ export default function SellerDashboard() {
     try {
       // const res = await GetUserProfileDetails(id);
       const res = await GetProfileDetailsById(id);
-      console.log('rgfhgjgdgfdgdfgdfhes', res);
       setUserDetails(res?.data?.data);
     } catch (error: any) {
       showToast({
@@ -179,9 +178,7 @@ export default function SellerDashboard() {
           id: item.id,
           name: item.name,
           handle: `@${item.name}` || "@liamthegreat",
-          avatar:
-            item.profile_picture ||
-            "https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=1200&auto=format&fit=crop", // fallback image
+          avatar: item.profile_picture
         }));
         setDirectoryItems(transformedData);
       }
