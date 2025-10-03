@@ -9,7 +9,7 @@ import {
   GetInterestsDetails,
   GetPopularCompanyDetails,
   GetRecommendedBestPractices,
-  GetValidProfessionalDetails,
+  GetValidProfessionalDetails
 } from "../Common/ServerAPI";
 import aspired from "../assets/aspired.png";
 import inspired from "../assets/inspired.png";
@@ -373,10 +373,6 @@ export default function SellerDashboard() {
     },
   ];
 
-  const userProfilePicture =
-    localStorage.getItem("profile_picture") || "/profile.png";
-  const Id = localStorage.getItem("Id") || "";
-
   const userName =
     localStorage.getItem("name") +
       " " +
@@ -391,11 +387,10 @@ export default function SellerDashboard() {
 
       <div className="grid grid-cols-12 gap-5">
         {/* LEFT column stacks: TrueProfile -> Certification -> BestPractices -> Directory */}
-        <div className="col-span-12 lg:col-span-8 space-y-5">
+        <div className="col-span-12 xl:col-span-8 space-y-5">
           <TrueProfileCard
-            avatarUrl={userProfilePicture}
             completion={user?.profile_progress || 100}
-            onUpdateProfile={() => navigate(`/dashboard/user-profile/${Id}`)}
+            onUpdateProfile={() => navigate(`/dashboard/user-profile`)}
             onOpen={() => console.log("Open True Profile")}
           />
 
@@ -487,10 +482,9 @@ export default function SellerDashboard() {
         </div>
 
         {/* RIGHT column: single long Social stack */}
-        <div className="col-span-12 lg:col-span-4">
+        <div className="col-span-12 xl:col-span-4">
           <SocialStackCard
             coverUrl="https://cdn.cness.io/banner.webp"
-            avatarUrl={userProfilePicture}
             name={userName}
             handle={userName}
             resonating={resonating || 0}
@@ -508,7 +502,7 @@ export default function SellerDashboard() {
           />
         </div>
 
-        <div className="col-span-12 lg:col-span-4">
+        <div className="col-span-12 xl:col-span-4">
           <div className="w-full flex flex-col gap-3">
             <div
               className="w-full h-full relative py-8 px-[20px] rounded-xl bg-[#FAFAFA]"
