@@ -622,6 +622,7 @@ export const GetPopularCompanyDetails = (
     params
   );
 };
+
 export const GetInspiringCompanies = (
   page: number,
   limit: number

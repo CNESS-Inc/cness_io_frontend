@@ -74,9 +74,9 @@ const Connections: React.FC<ConnectionsListProps> = ({
     <div className="bg-white rounded-lg border border-gray-200 p-5">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold">{title}</h3>
-        <button className="inline-flex items-center gap-2 rounded-full border bg-white border-gray-200 px-3 py-1.5 text-sm text-black hover:bg-gray-50 bg-color-white">
+        {/* <button className="inline-flex items-center gap-2 rounded-full border bg-white border-gray-200 px-3 py-1.5 text-sm text-black hover:bg-gray-50 bg-color-white">
           View all
-        </button>
+        </button> */}
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-4">{leftCol.map(renderConnection)}</div>
