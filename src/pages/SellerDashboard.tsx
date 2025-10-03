@@ -8,8 +8,9 @@ import {
   GetFriendSuggestions,
   GetInterestsDetails,
   GetPopularCompanyDetails,
+  GetProfileDetailsById,
   GetRecommendedBestPractices,
-  GetValidProfessionalDetails
+  GetValidProfessionalDetails,
 } from "../Common/ServerAPI";
 import aspired from "../assets/aspired.png";
 import inspired from "../assets/inspired.png";
@@ -84,6 +85,8 @@ export default function SellerDashboard() {
 
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const id = localStorage.getItem("id") || "";
+  const [userDetails, setUserDetails] = useState<any>(null);
 
   const hasFetched = useRef(false);
 
@@ -109,6 +112,21 @@ export default function SellerDashboard() {
       }
     } catch (error: any) {
       console.error("Error fetching dashboard data:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
+  const fetchUserDetails = async () => {
+    try {
+      // const res = await GetUserProfileDetails(id);
+      const res = await GetProfileDetailsById(id);
+      console.log('rgfhgjgdgfdgdfgdfhes', res);
+      setUserDetails(res?.data?.data);
+    } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -231,6 +249,7 @@ export default function SellerDashboard() {
       fetchFriendSuggestions();
       fetchProfession();
       fetchIntrusts();
+      fetchUserDetails();
       hasFetched.current = true;
     }
   }, []);
@@ -484,7 +503,7 @@ export default function SellerDashboard() {
         {/* RIGHT column: single long Social stack */}
         <div className="col-span-12 xl:col-span-4">
           <SocialStackCard
-            coverUrl="https://cdn.cness.io/banner.webp"
+            coverUrl={userDetails?.profile_banner || "https://cdn.cness.io/banner.webp"}
             name={userName}
             handle={userName}
             resonating={resonating || 0}

@@ -3500,14 +3500,14 @@ export function SocialStackCard({
         {/* list */}
         <div className="space-y-3 flex-1">
           {list && list.length > 0 ? (
-            list.slice(0, 5).map((f) => (
+            list.slice(0, 4).map((f) => (
               <div
                 key={f.id}
                 className="flex items-center justify-between gap-3"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <img
-                    src={f.avatar}
+                    src={f.avatar || '/profile.png'}
                     className="h-9 w-9 rounded-full object-cover"
                   />
                   <div className="min-w-0">
