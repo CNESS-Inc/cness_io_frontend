@@ -60,7 +60,7 @@ interface ApiResponse<T> {
 
 export default function SellerDashboard() {
   const [user, setUser] = useState<UserData | null>(null);
-  console.log('user', user);
+  console.log("user", user);
   const [resonating, setReasonating] = useState<UserData | null>(null);
   const [reasonators, setReasonators] = useState<UserData | null>(null);
   const [bestPractices, setBestPractices] = useState<BestPracticeItem[]>([]);
@@ -105,7 +105,7 @@ export default function SellerDashboard() {
   const fetchDashboard = async () => {
     try {
       const response: ApiResponse<UserData> = await DashboardDetails();
-      console.log('response', response);
+      console.log("response", response);
       if (response?.data?.data) {
         setUser(response.data.data);
         localStorage.setItem("name", response.data.data?.name);
@@ -178,7 +178,7 @@ export default function SellerDashboard() {
           id: item.id,
           name: item.name,
           handle: `@${item.name}` || "@liamthegreat",
-          avatar: item.profile_picture
+          avatar: item.profile_picture,
         }));
         setDirectoryItems(transformedData);
       }
@@ -405,6 +405,7 @@ export default function SellerDashboard() {
         {/* LEFT column stacks: TrueProfile -> Certification -> BestPractices -> Directory */}
         <div className="col-span-12 xl:col-span-8 space-y-5">
           <TrueProfileCard
+            avatar={userDetails?.profile_picture}
             completion={user?.profile_progress || 100}
             onUpdateProfile={() => navigate(`/dashboard/user-profile`)}
             onOpen={() => console.log("Open True Profile")}
@@ -500,7 +501,10 @@ export default function SellerDashboard() {
         {/* RIGHT column: single long Social stack */}
         <div className="col-span-12 xl:col-span-4">
           <SocialStackCard
-            coverUrl={userDetails?.profile_banner || "https://cdn.cness.io/banner.webp"}
+            coverUrl={
+              userDetails?.profile_banner || "https://cdn.cness.io/banner.webp"
+            }
+            avatar={userDetails?.profile_picture}
             name={userName}
             handle={userName}
             resonating={resonating || 0}
