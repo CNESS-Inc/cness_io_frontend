@@ -123,7 +123,6 @@ interface Profession {
 const GRADIENT = "bg-[linear-gradient(90deg,#7077FE_0%,#F07EFF_100%)]";
 const BORDER = "border border-[#ECEEF2]";
 const SOFT = "shadow-[0_1px_2px_rgba(16,24,40,0.04)]";
-const userProfilePicture = localStorage.getItem("profile_picture");
 
 /* ---------- Primitives ---------- */
 export function Card({
@@ -2214,10 +2213,12 @@ export function TrueProfileCard({
   title = "True Profile Created",
   description = "Your profile is now complete with all the essential details added. This allows us to customize your experience!",
   completion = 100,
+  avatar,
   onUpdateProfile,
   onOpen,
 }: {
   title?: string;
+  avatar?: string;
   description?: string;
   completion?: number;
   onUpdateProfile?: () => void;
@@ -2259,11 +2260,9 @@ export function TrueProfileCard({
             <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
               <img
                 src={
-                  !userProfilePicture ||
-                  userProfilePicture === "null" ||
-                  userProfilePicture === "undefined"
+                  !avatar || avatar === "null" || avatar === "undefined"
                     ? "/profile.png"
-                    : userProfilePicture
+                    : avatar
                 }
                 alt="Avatar"
                 className="w-[74px] h-[74px] sm:w-[87px] sm:h-[87px] rounded-full object-cover"
@@ -2820,6 +2819,7 @@ export function BestPracticesSection({
 export function SocialStackCard({
   // profile
   coverUrl,
+  avatar,
   name,
   handle,
   resonating = 100,
@@ -2840,6 +2840,7 @@ export function SocialStackCard({
   onConnect,
 }: {
   coverUrl: string;
+  avatar: string;
   name: string;
   handle: string;
   resonating?: any;
@@ -3337,11 +3338,9 @@ export function SocialStackCard({
         <div className="flex items-center gap-3">
           <img
             src={
-              !userProfilePicture ||
-              userProfilePicture === "null" ||
-              userProfilePicture === "undefined"
+              !avatar || avatar === "null" || avatar === "undefined"
                 ? "/profile.png"
-                : userProfilePicture
+                : avatar
             }
             alt={name}
             className="h-12 w-12 rounded-full object-cover"
@@ -3507,7 +3506,7 @@ export function SocialStackCard({
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <img
-                    src={f.avatar || '/profile.png'}
+                    src={f.avatar || "/profile.png"}
                     className="h-9 w-9 rounded-full object-cover"
                   />
                   <div className="min-w-0">
@@ -3606,7 +3605,11 @@ export function DirectorySection({
             {/* Left: image + text */}
             <div className="flex items-center gap-3 min-w-0">
               <img
-                src={it.avatar || 'https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=1200&auto=format&fit=crop'}
+                src={
+                  !it.avatar || it.avatar === "null" || it.avatar === "undefined"
+                    ? "https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=1200&auto=format&fit=crop"
+                    : it.avatar
+                }
                 alt={it.name}
                 className="h-12 w-12 rounded-xl object-cover"
               />
