@@ -3558,18 +3558,6 @@ type DirectoryItem = {
   subtitle: string;
 };
 
-function getValidAvatar(url?: string) {
-  if (
-    !url || // null, undefined, empty
-    url === "null" ||
-    url === "undefined" || // literal bad strings
-    !url.startsWith("http") // not a full URL
-  ) {
-    return "https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=1200&auto=format&fit=crop"; // default
-  }
-  return url;
-}
-
 export function DirectorySection({
   items,
   title = "Directory",
