@@ -23,12 +23,12 @@ import {
   AddStory,
   GetStory,
   MeDetails,
-  PostsDetails,
   GetFriendStatus,
   ReportPost,
   getAllTopics,
   GetPostsDetails,
   GetAllStory,
+  FeedPostsDetails,
 } from "../../../Common/ServerAPI";
 
 import createstory from "../../../assets/createstory.jpg";
@@ -470,7 +470,8 @@ export default function SocialFeed() {
       // Call the API to get the posts for the current page
       let res;
       if (loggedInUserID) {
-        res = await PostsDetails(page);
+        // res = await PostsDetails(page);
+        res = await FeedPostsDetails(page);
       } else {
         res = await GetPostsDetails(page);
       }

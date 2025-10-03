@@ -8,6 +8,7 @@ import {
   GetFriendSuggestions,
   GetInterestsDetails,
   GetPopularCompanyDetails,
+  GetProfileDetailsById,
   GetRecommendedBestPractices,
   GetValidProfessionalDetails,
 } from "../Common/ServerAPI";
@@ -59,6 +60,7 @@ interface ApiResponse<T> {
 
 export default function SellerDashboard() {
   const [user, setUser] = useState<UserData | null>(null);
+  console.log('user', user);
   const [resonating, setReasonating] = useState<UserData | null>(null);
   const [reasonators, setReasonators] = useState<UserData | null>(null);
   const [bestPractices, setBestPractices] = useState<BestPracticeItem[]>([]);
@@ -83,6 +85,8 @@ export default function SellerDashboard() {
 
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const id = localStorage.getItem("id") || "";
+  const [userDetails, setUserDetails] = useState<any>(null);
 
   const hasFetched = useRef(false);
 
@@ -101,12 +105,28 @@ export default function SellerDashboard() {
   const fetchDashboard = async () => {
     try {
       const response: ApiResponse<UserData> = await DashboardDetails();
+      console.log('response', response);
       if (response?.data?.data) {
         setUser(response.data.data);
         localStorage.setItem("name", response.data.data?.name);
       }
     } catch (error: any) {
       console.error("Error fetching dashboard data:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
+  const fetchUserDetails = async () => {
+    try {
+      // const res = await GetUserProfileDetails(id);
+      const res = await GetProfileDetailsById(id);
+      console.log('rgfhgjgdgfdgdfgdfhes', res);
+      setUserDetails(res?.data?.data);
+    } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
@@ -229,6 +249,7 @@ export default function SellerDashboard() {
       fetchFriendSuggestions();
       fetchProfession();
       fetchIntrusts();
+      fetchUserDetails();
       hasFetched.current = true;
     }
   }, []);
@@ -371,10 +392,6 @@ export default function SellerDashboard() {
     },
   ];
 
-  const userProfilePicture =
-    localStorage.getItem("profile_picture") || "/profile.png";
-  const Id = localStorage.getItem("Id") || "";
-
   const userName =
     localStorage.getItem("name") +
       " " +
@@ -389,11 +406,10 @@ export default function SellerDashboard() {
 
       <div className="grid grid-cols-12 gap-5">
         {/* LEFT column stacks: TrueProfile -> Certification -> BestPractices -> Directory */}
-        <div className="col-span-12 lg:col-span-8 space-y-5">
+        <div className="col-span-12 xl:col-span-8 space-y-5">
           <TrueProfileCard
-            avatarUrl={userProfilePicture}
             completion={user?.profile_progress || 100}
-            onUpdateProfile={() => navigate(`/dashboard/user-profile/${Id}`)}
+            onUpdateProfile={() => navigate(`/dashboard/user-profile`)}
             onOpen={() => console.log("Open True Profile")}
           />
 
@@ -485,10 +501,9 @@ export default function SellerDashboard() {
         </div>
 
         {/* RIGHT column: single long Social stack */}
-        <div className="col-span-12 lg:col-span-4">
+        <div className="col-span-12 xl:col-span-4">
           <SocialStackCard
-            coverUrl="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop"
-            avatarUrl={userProfilePicture}
+            coverUrl={userDetails?.profile_banner || "https://cdn.cness.io/banner.webp"}
             name={userName}
             handle={userName}
             resonating={resonating || 0}
@@ -506,7 +521,7 @@ export default function SellerDashboard() {
           />
         </div>
 
-        <div className="col-span-12 lg:col-span-4">
+        <div className="col-span-12 xl:col-span-4">
           <div className="w-full flex flex-col gap-3">
             <div
               className="w-full h-full relative py-8 px-[20px] rounded-xl bg-[#FAFAFA]"

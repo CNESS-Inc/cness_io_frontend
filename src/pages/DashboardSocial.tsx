@@ -26,7 +26,6 @@ import {
   GetStory,
   GetSavedPosts,
   MeDetails,
-  PostsDetails,
   PostsLike,
   SendFollowRequest,
   UnFriend,
@@ -39,6 +38,7 @@ import {
   UserSelectedTopic,
   getUserSelectedTopic,
   updateUserSelectedTopic,
+  FeedPostsDetails,
 } from "../Common/ServerAPI";
 
 // images
@@ -334,6 +334,7 @@ export default function SocialTopBar() {
   const [isAdult, setIsAdult] = useState<Boolean>(false);
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const userProfilePicture = localStorage.getItem("profile_picture");
 
   const [friendRequests, setFriendRequests] = useState<{
     [key: string]: string;
@@ -569,7 +570,8 @@ export default function SocialTopBar() {
     setIsPostsLoading(true);
     try {
       // Call the API to get the posts for the current page
-      const res = await PostsDetails(page);
+      const res = await FeedPostsDetails(page);
+      // const res = await PostsDetails(page);
       if (res?.data) {
         const newPosts = res?.data.data.rows || [];
         const totalPages = res?.data?.data?.count / 10 || 0;
@@ -602,7 +604,8 @@ export default function SocialTopBar() {
     setIsPostsLoading(true);
     try {
       // Call the API to get the posts for the current page
-      const res = await PostsDetails(1);
+      // const res = await PostsDetails(1);
+      const res = await FeedPostsDetails(1);
       if (res?.data) {
         const newPosts = res?.data.data.rows || [];
         const totalPages = res?.data?.data?.count / 10 || 0;
@@ -1333,8 +1336,6 @@ export default function SocialTopBar() {
     }
   };
 
-
-
   return (
     <>
       {isAdult ? (
@@ -1355,8 +1356,11 @@ export default function SocialTopBar() {
                       <div className="flex items-center gap-8">
                         <img
                           src={
-                            localStorage.getItem("profile_picture") ||
-                            createstory
+                            !userProfilePicture ||
+                            userProfilePicture === "null" ||
+                            userProfilePicture === "undefined"
+                              ? '/profile.png'
+                              : userProfilePicture
                           }
                           alt="User"
                           className="w-8 h-8 md:w-16 md:h-16 rounded-full object-cover"
@@ -1649,20 +1653,19 @@ export default function SocialTopBar() {
                                             connectingUsers[post.user_id] ||
                                             false
                                           }
-                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
-                                            <img
-                                              src={iconMap["userplus"]}
-                                              alt="userplus"
-                                              className="w-4 h-4"
-                                            />
-                                            {connectingUsers[post.user_id]
-                                              ? "Loading..."
-                                              : getFriendStatus(
-                                                  post.user_id
-
-                                                ) === "requested"
-                                              ? "Requested"
-                                              : "Connect"}
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                        >
+                                          <img
+                                            src={iconMap["userplus"]}
+                                            alt="userplus"
+                                            className="w-4 h-4"
+                                          />
+                                          {connectingUsers[post.user_id]
+                                            ? "Loading..."
+                                            : getFriendStatus(post.user_id) ===
+                                              "requested"
+                                            ? "Requested"
+                                            : "Connect"}
                                         </button>
                                       </li>
                                       <li>
@@ -2183,8 +2186,8 @@ export default function SocialTopBar() {
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
               <div className="bg-white rounded-[18px] w-full max-w-md mx-4 shadow-lg relative">
                 <div className="flex px-5 py-3 bg-[#897AFF1A] justify-between items-center">
-                <div className="w-fit h-fit">
-                      {/*<Image
+                  <div className="w-fit h-fit">
+                    {/*<Image
                       src="/popup-plus-icon.png"
                       alt="plus-icon"
                       width={36}
@@ -2253,7 +2256,6 @@ export default function SocialTopBar() {
                   <div className="flex justify-end text-xs text-gray-500">
                     {postMessage.length}/{maxChars}
                   </div>
-
 
                   <div className="space-y-3 mb-4 flex rounded-[8px] border border-[#F07EFF1A]  justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
                     <p className="mb-0 text-sm font-semibold">

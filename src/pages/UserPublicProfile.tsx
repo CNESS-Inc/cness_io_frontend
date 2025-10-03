@@ -983,13 +983,13 @@ export default function UserProfileView() {
                   })
                 : "—"}
             </p>
-            <a
+            {/* <a
               href="#"
               className="font-['Open_Sans'] font-normal text-[12px] leading-[21px] 
              tracking-[0px] text-[#64748B] underline"
             >
               Report
-            </a>
+            </a> */}
           </div>
         </div>
       </div>

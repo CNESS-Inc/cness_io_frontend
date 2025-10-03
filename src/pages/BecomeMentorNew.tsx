@@ -310,7 +310,7 @@ const BecomeMentor = () => {
       }
 
       if (formData.motivation.trim().length < 50) {
-        return "Please provide a more detailed motivation (at least 50 characters)";
+        return "Please share at least 50 characters about why you want to become a mentor.";
       }
 
       if (formData.bio.trim().length > 1000) {

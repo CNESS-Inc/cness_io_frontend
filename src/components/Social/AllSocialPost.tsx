@@ -15,8 +15,8 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import {
   AddPost,
   AddStory,
-  GetStory,
-  PostsDetails,
+  FeedPostsDetails,
+  GetStory
 } from "../../Common/ServerAPI.tsx";
 import LoadingSpinner from "../ui/LoadingSpinner.tsx";
 import Button from "../ui/Button.tsx";
@@ -111,7 +111,8 @@ export default function AllSocialPost() {
       setIsLoading(true);
 
       // Call the API to get the posts for the current page
-      const res = await PostsDetails(page);
+      // const res = await PostsDetails(page);
+      const res = await FeedPostsDetails(page);
       if (res?.data) {
         const newPosts = res?.data.data.rows || [];
         const totalPages = res?.data?.data?.count / 10 || 0;

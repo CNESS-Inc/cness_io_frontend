@@ -6,7 +6,6 @@ import {
   Lightbulb,
   X,
   Bell,
-  MoreHorizontal,
   Plus,
   ArrowLeft,
   ArrowRight,
@@ -21,13 +20,18 @@ import friendsicon from "../../assets/friendsicon.svg";
 import socialicon from "../../assets/socialprofileicon.svg";
 import postinsight from "../../assets/post-insights-badge.svg";
 import { useNavigate } from "react-router-dom";
+import Select from "react-select";
 import {
   DashboardDetails,
   GetAllFormDetails,
   GetAllPlanDetails,
+  GetSubDomainDetails,
   GetUserNotification,
+  MeDetails,
   PaymentDetails,
   SendBpFollowRequest,
+  submitOrganizationDetails,
+  submitPersonDetails,
 } from "../../Common/ServerAPI";
 import { useToast } from "../ui/Toast/ToastProvider";
 import Modal from "../ui/Modal";
@@ -35,10 +39,91 @@ import Button from "../ui/Button";
 //import like from "../../assets/likes.svg";
 //import heart from "../../assets/heart.svg";
 
+interface OrganizationForm {
+  domain_id: string;
+  sub_domain_id: string;
+  organization_type_id: string;
+  revenue_range_id: string;
+  organization_name: string;
+  domain: string;
+  custom_domain?: string;
+  sub_domain: string;
+  employee_size: string;
+  revenue: string;
+  question: Array<{
+    question_id: string;
+    answer: string;
+  }>;
+}
+
+interface FormErrors {
+  email?: string;
+  password?: string;
+  organization_name?: string;
+  domain?: string;
+  sub_domain?: string;
+  employee_size?: string;
+  revenue?: string;
+  [key: string]: string | undefined; // For dynamic question errors
+}
+
+interface ValidationRules {
+  required?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  pattern?: RegExp;
+  custom?: (value: string) => string | undefined;
+}
+
+interface QuestionAnswer {
+  question_id: string;
+  answer: string;
+}
+
+type OrgPricingPlan = {
+  id: any;
+  title: any;
+  description: string;
+  monthlyPrice?: string;
+  yearlyPrice?: string;
+  period: string;
+  billingNote?: string;
+  features: string[];
+  buttonText: string;
+  buttonClass: string;
+  borderClass: string;
+  popular: boolean;
+};
+
+interface PersonForm {
+  first_name: string;
+  last_name: string;
+  interests: (string | number)[];
+  professions: (string | number)[];
+  custom_profession?: string;
+  question: QuestionAnswer[];
+}
+
+interface SubDomain {
+  id: string;
+  name: string;
+}
+
+interface Interest {
+  id: string | number;
+  name: string;
+}
+
+interface Profession {
+  id: string | number;
+  title: string; // Changed from 'name' to 'title' to match your usage
+}
+
 /* ---------- Theme ---------- */
 const GRADIENT = "bg-[linear-gradient(90deg,#7077FE_0%,#F07EFF_100%)]";
 const BORDER = "border border-[#ECEEF2]";
 const SOFT = "shadow-[0_1px_2px_rgba(16,24,40,0.04)]";
+const userProfilePicture = localStorage.getItem("profile_picture");
 
 /* ---------- Primitives ---------- */
 export function Card({
@@ -144,12 +229,420 @@ export function GreetingBar({
   name: string;
   onCloseSuggestion?: () => void;
 }) {
-  const [activeModal, setActiveModal] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const [activeModal, setActiveModal] = useState<
+    | "PricingModal"
+    | "organization"
+    | "person"
+    | "personPricing"
+    | "organizationPricing"
+    | "disqualify"
+    | null
+  >(null);
   const [isAnnual, setIsAnnual] = useState(true);
   const [personPricing, setPersonPricing] = useState<any[]>([]);
   const [user, setUser] = useState<any | null>(null);
-  const [_readlineQuestion, setReadlineQuestion] = useState([]);
+  const [readlineQuestion, setReadlineQuestion] = useState([]);
   const { showToast } = useToast();
+  const [domains, setDomains] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [orgFormStep, setOrgFormStep] = useState(1);
+  const [personFormStep, setPersonFormStep] = useState(1);
+  const [subDomain, setsubDomain] = useState<SubDomain[] | null>();
+  const [profession, setProfession] = useState<Profession[]>([]);
+  const [interest, setInterest] = useState<Interest[]>([]);
+  const [revenue, setRevenue] = useState([]);
+  const [OrganizationSize, setOrganizationSize] = useState([]);
+  const [organizationpricingPlans, setorganizationpricingPlans] = useState<
+    OrgPricingPlan[]
+  >([]);
+  const [isOrgFormSubmitted, setIsOrgFormSubmitted] = useState(false);
+  const [organizationErrors, setOrganizationErrors] = useState<FormErrors>({});
+  const [personErrors, setPersonErrors] = useState<FormErrors>({});
+  const [organizationForm, setOrganizationForm] = useState<OrganizationForm>({
+    domain_id: "",
+    sub_domain_id: "",
+    organization_type_id: "",
+    revenue_range_id: "",
+    organization_name: "",
+    domain: "",
+    sub_domain: "",
+    employee_size: "",
+    revenue: "",
+    question: [], // Changed from 'question' to 'questions' to match interface
+  });
+
+  const [personForm, setPersonForm] = useState<PersonForm>({
+    first_name: "",
+    last_name: "",
+    interests: [],
+    professions: [],
+    question: [],
+  });
+
+  const handleOrganizationFormChange = async (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+
+    if (name.startsWith("question_")) {
+      // Handle question answers (unchanged)
+      const questionId = name.replace("question_", "");
+      setOrganizationForm((prev) => {
+        const existingQuestionIndex = prev.question.findIndex(
+          (q) => q.question_id === questionId
+        );
+
+        if (existingQuestionIndex >= 0) {
+          // Update existing answer
+          const updatedQuestions = [...prev.question];
+          updatedQuestions[existingQuestionIndex] = {
+            question_id: questionId,
+            answer: value,
+          };
+          return { ...prev, question: updatedQuestions };
+        } else {
+          // Add new question answer
+          return {
+            ...prev,
+            question: [
+              ...prev.question,
+              { question_id: questionId, answer: value },
+            ],
+          };
+        }
+      });
+    } else {
+      // Handle other fields normally
+      setOrganizationForm((prev) => ({
+        ...prev,
+        [name]: value,
+        ...(name === "domain" && value !== "other" && { sub_domain: "" }),
+        ...(name === "domain" && value !== "other" && { custom_domain: "" }),
+      }));
+      if (name === "domain" && value && value !== "other") {
+        try {
+          const response = await GetSubDomainDetails(value);
+          setsubDomain(response?.data?.data);
+        } catch (error: any) {
+          console.error("Error calling API:", error);
+          showToast({
+            message: error?.response?.data?.error?.message,
+            type: "error",
+            duration: 5000,
+          });
+        }
+      }
+    }
+  };
+
+  const handlePersonSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    if (
+      personForm.professions?.includes("other") &&
+      !personForm.custom_profession?.trim()
+    ) {
+      setPersonErrors({
+        ...personErrors,
+        custom_profession: "Please specify your profession",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!validateForm(personForm, "person", 2, true)) {
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const payload = {
+        ...personForm,
+        // Include custom_profession in the payload if "other" is selected
+        professions: personForm.professions.includes("other")
+          ? [
+              ...personForm.professions.filter((p) => p !== "other"),
+              personForm.custom_profession,
+            ]
+          : personForm.professions,
+      };
+
+      const res = await submitPersonDetails(payload as any);
+      localStorage.setItem("person_organization", "1");
+      localStorage.setItem("completed_step", "1");
+      // Group plans by their range (Basic Plan, Pro Plan, etc.)
+      if (res.success.statusCode === 200) {
+        const plansByRange: Record<string, any> = {};
+        res?.data?.data?.plan.forEach((plan: any) => {
+          if (!plansByRange[plan.plan_range]) {
+            plansByRange[plan.plan_range] = {};
+          }
+          plansByRange[plan.plan_range][plan.plan_type] = plan;
+        });
+
+        const response = await MeDetails();
+        console.log("responsedffdatadata", response.data.data);
+        localStorage.setItem(
+          "profile_picture",
+          response?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          response?.data?.data?.user.margaret_name
+        );
+
+        // Create combined plan objects with both monthly and yearly data
+        const updatedPlans = Object.values(plansByRange)?.map(
+          (planGroup: any) => {
+            const monthlyPlan = planGroup.monthly;
+            const yearlyPlan = planGroup.yearly;
+
+            return {
+              id: monthlyPlan?.id || yearlyPlan?.id,
+              title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+              description: "Customized pricing based on your selection",
+              monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
+              yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+              period: isAnnual ? "/year" : "/month",
+              billingNote: yearlyPlan
+                ? isAnnual
+                  ? `billed annually ($${yearlyPlan.amount})`
+                  : `or $${monthlyPlan?.amount}/month`
+                : undefined,
+              features: [], // Add any features you need here
+              buttonText: "Get Started",
+              buttonClass: yearlyPlan
+                ? ""
+                : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+              borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
+              popular: !!yearlyPlan,
+            };
+          }
+        );
+
+        setPersonPricing(updatedPlans);
+        setActiveModal("personPricing");
+      } else if (res.success.statusCode === 201) {
+        setActiveModal("disqualify");
+        const response = await MeDetails();
+        localStorage.setItem(
+          "profile_picture",
+          response?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          response?.data?.data?.user.margaret_name
+        );
+        localStorage.setItem("is_disqualify", "true");
+        setTimeout(() => {
+          setActiveModal(null);
+          navigate("/dashboard");
+        }, 2000);
+      }
+    } catch (error) {
+      console.error("Error submitting organization form:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const validateField = (
+    name: string,
+    value: string,
+    rules: ValidationRules
+  ): string | undefined => {
+    if (name === "interests" || name === "professions") {
+      if (rules.required && (!value || value.length === 0)) {
+        return `${name.replace("_", " ")} is required`;
+      }
+      return undefined;
+    }
+
+    if (rules.required && !value?.trim()) {
+      return `${name.replace("_", " ")} is required`;
+    }
+
+    if (rules.minLength && value.length < rules.minLength) {
+      return `${name.replace("_", " ")} must be at least ${
+        rules.minLength
+      } characters`;
+    }
+
+    if (rules.maxLength && value.length > rules.maxLength) {
+      return `${name.replace("_", " ")} must be less than ${
+        rules.maxLength
+      } characters`;
+    }
+
+    if (rules.pattern && !rules.pattern.test(value)) {
+      return `Invalid ${name.replace("_", " ")} format`;
+    }
+
+    if (rules.custom) {
+      return rules.custom(value);
+    }
+
+    return undefined;
+  };
+
+  const validateForm = (
+    formData: any,
+    formType: "organization" | "person",
+    step?: number,
+    setErrors?: boolean
+  ): boolean => {
+    let isValid = true;
+    const newErrors: FormErrors = {};
+
+    if (formType === "organization") {
+      // Always validate step 1 fields if we're on step 1 or validating all steps
+      if (step === 1) {
+        const requiredFields = [
+          "organization_name",
+          "domain",
+          "employee_size",
+          "revenue",
+        ];
+
+        // Only require sub_domain if domain is not "other"
+        if (formData.domain !== "other") {
+          requiredFields.push("sub_domain");
+        }
+
+        requiredFields.forEach((field) => {
+          // Special handling for domain="other" case
+          if (field === "domain" && formData.domain === "other") {
+            if (!formData.custom_domain?.trim()) {
+              newErrors.custom_domain = "Custom domain is required";
+              isValid = false;
+            }
+          } else {
+            const error = validateField(field, formData[field], {
+              required: true,
+            });
+            if (error) {
+              newErrors[field] = error;
+              isValid = false;
+            }
+          }
+        });
+      }
+
+      // Only validate questions when submitting (validateAllSteps = true)
+      if (step === 2) {
+        readlineQuestion.forEach((question: any) => {
+          const answer =
+            formData.question?.find(
+              (q: QuestionAnswer) => q.question_id === question.id
+            )?.answer || "";
+
+          if (!answer || answer.trim() === "") {
+            newErrors[`question_${question.id}`] = "This Field is required";
+            isValid = false;
+          }
+        });
+      }
+
+      if (setErrors) {
+        console.log("🚀 ~ Login ~ setErrors:", setErrors);
+        setOrganizationErrors(newErrors);
+      }
+      return isValid;
+    }
+
+    if (formType === "person") {
+      // Always validate step 1 fields if we're on step 1 or validating all steps
+      if (step === 1) {
+        const requiredFields: Array<
+          "first_name" | "last_name" | "interests" | "professions"
+        > = ["first_name", "last_name", "interests", "professions"];
+
+        requiredFields.forEach((field) => {
+          const error = validateField(field, formData[field], {
+            required: true,
+          });
+          if (error) {
+            newErrors[field] = error;
+            isValid = false;
+          }
+          if (field === "interests" || field === "professions") {
+            if (!formData[field] || formData[field].length === 0) {
+              newErrors[field] = `${field} is required`;
+              isValid = false;
+            }
+          }
+        });
+      }
+
+      // Only validate questions when submitting (step 2) or validating all steps
+      if (step === 2) {
+        readlineQuestion.forEach((question: any) => {
+          const answer =
+            formData.question?.find(
+              (q: QuestionAnswer) => q.question_id === question.id
+            )?.answer || "";
+
+          if (!answer || answer.trim() === "") {
+            newErrors[`question_${question.id}`] = "This field is required";
+            isValid = false;
+          }
+        });
+      }
+
+      if (setErrors) {
+        setPersonErrors(newErrors);
+      }
+      return isValid;
+    }
+
+    return isValid;
+  };
+
+  const fetchAllDataDetails = async () => {
+    try {
+      const response = await GetAllFormDetails();
+      setDomains((response as any)?.data?.data?.domain);
+      setProfession((response as any)?.data?.data?.profession);
+      setInterest((response as any)?.data?.data?.interest);
+      setReadlineQuestion(response?.data?.data?.questions);
+      setOrganizationSize(response?.data?.data?.organization_size);
+      setRevenue(response?.data?.data?.revenue);
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
+  const handleNextClick = () => {
+    // Only validate step 1 fields when clicking next
+    const isValid = validateForm(organizationForm, "organization", 1, true);
+
+    if (isValid) {
+      setOrgFormStep(2);
+      setOrganizationErrors({});
+    }
+  };
+
+  const handleNextPersonClick = () => {
+    // Only validate step 1 fields when clicking next
+    const isValid = validateForm(personForm, "person", 1, true);
+
+    if (isValid) {
+      setPersonFormStep(2);
+      setOrganizationErrors({});
+    }
+  };
 
   const openPricingModal = async () => {
     try {
@@ -209,7 +702,6 @@ export function GreetingBar({
       if (response?.data?.data) {
         setUser(response.data.data);
         localStorage.setItem("name", response.data.data?.name);
-        // localStorage.setItem("profile_picture",response.data.data?.profile_picture);
       }
     } catch (error: any) {
       showToast({
@@ -223,6 +715,12 @@ export function GreetingBar({
   useEffect(() => {
     fetchDashboard();
   }, []);
+
+  useEffect(() => {
+    if (activeModal === "organization" || activeModal === "person") {
+      fetchAllDataDetails();
+    }
+  }, [activeModal]);
 
   const handlePlanSelection = async (plan: any) => {
     try {
@@ -252,8 +750,11 @@ export function GreetingBar({
   const is_disqualify = localStorage.getItem("is_disqualify");
 
   const openRetakeAssesmentModal = async () => {
+    console.log("1");
     try {
+      console.log("2");
       const personOrganization = localStorage.getItem("person_organization");
+      console.log("personOrganization", personOrganization);
       if (personOrganization === "2") {
         setActiveModal("organization");
       } else {
@@ -270,6 +771,146 @@ export function GreetingBar({
       });
     }
   };
+
+  const handleOrganizationSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsOrgFormSubmitted(true);
+    // Validate all fields (both steps) when submitting
+    const isValid = validateForm(organizationForm, "organization", 2, true);
+
+    if (!isValid) return;
+    setIsSubmitting(true);
+
+    if (
+      organizationForm.domain === "other" &&
+      !organizationForm.custom_domain
+    ) {
+      setOrganizationErrors({
+        ...organizationErrors,
+        custom_domain: "Custom domain name is required",
+      });
+      return;
+    }
+
+    try {
+      const res = await submitOrganizationDetails(organizationForm);
+      localStorage.setItem("person_organization", "2");
+      localStorage.setItem("completed_step", "1");
+      if (res.success.statusCode === 200) {
+        const plansByRange: Record<string, any> = {};
+        res?.data?.data?.plan.forEach((plan: any) => {
+          if (!plansByRange[plan.plan_range]) {
+            plansByRange[plan.plan_range] = {};
+          }
+          plansByRange[plan.plan_range][plan.plan_type] = plan;
+        });
+
+        const response = await MeDetails();
+        localStorage.setItem(
+          "profile_picture",
+          response?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          response?.data?.data?.user.margaret_name
+        );
+
+        // Create combined plan objects with both monthly and yearly data
+        const updatedPlans = Object.values(plansByRange)?.map(
+          (planGroup: any) => {
+            const monthlyPlan = planGroup.monthly;
+            const yearlyPlan = planGroup.yearly;
+
+            return {
+              id: monthlyPlan?.id || yearlyPlan?.id,
+              title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+              description: "Customized pricing based on your selection",
+              monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
+              yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+              period: isAnnual ? "/year" : "/month",
+              billingNote: yearlyPlan
+                ? isAnnual
+                  ? `billed annually ($${yearlyPlan.amount})`
+                  : `or $${monthlyPlan?.amount}/month`
+                : undefined,
+              features: [], // Add any features you need here
+              buttonText: "Get Started",
+              buttonClass: yearlyPlan
+                ? ""
+                : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+              borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
+              popular: !!yearlyPlan,
+            };
+          }
+        );
+
+        setorganizationpricingPlans(updatedPlans);
+        setActiveModal("organizationPricing");
+      } else if (res.success.statusCode === 201) {
+        navigate("/dashboard");
+        const response = await MeDetails();
+        localStorage.setItem(
+          "profile_picture",
+          response?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          response?.data?.data?.user.margaret_name
+        );
+        localStorage.setItem("is_disqualify", "true");
+      }
+      // onSuccess();
+      // navigate("/dashboard");
+    } catch (error) {
+      console.error("Error submitting organization form:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handlePersonFormChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+
+    if (name.startsWith("question_")) {
+      const questionId = name.replace("question_", "");
+      setPersonForm((prev) => {
+        const existingQuestionIndex = prev.question.findIndex(
+          (q) => q.question_id === questionId
+        );
+
+        if (existingQuestionIndex >= 0) {
+          const updatedQuestions = [...prev.question];
+          updatedQuestions[existingQuestionIndex] = {
+            question_id: questionId,
+            answer: value,
+          };
+          return { ...prev, question: updatedQuestions };
+        } else {
+          return {
+            ...prev,
+            question: [
+              ...prev.question,
+              { question_id: questionId, answer: value },
+            ],
+          };
+        }
+      });
+    } else {
+      setPersonForm((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+
   return (
     <>
       <div className="mb-5 grid grid-cols-12 gap-5">
@@ -290,16 +931,15 @@ export function GreetingBar({
                   Number(user?.daysRemaining) <= 0 ? (
                     <span className="text-green-500">
                       You are eligible for the Aspiration badge. Please{" "}
-                      <a
-                        href="#"
-                        className="text-blue-600 underline"
+                      <button
+                        className="text-blue-600 underline hover:text-blue-800"
                         onClick={(e) => {
                           e.preventDefault();
                           openRetakeAssesmentModal();
                         }}
                       >
                         click here
-                      </a>{" "}
+                      </button>{" "}
                       to retake the assessment.
                     </span>
                   ) : (
@@ -414,6 +1054,1155 @@ export function GreetingBar({
           </div>
         </div>
       </Modal>
+      <Modal isOpen={activeModal === "organization"} onClose={closeModal}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
+          {" "}
+          {/* Ensures center + padding on small screens */}
+          <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+            {/* LEFT PANEL */}
+            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+              <div>
+                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-15 h-15 text-gray-700"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="3"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <circle
+                      cx="4.5"
+                      cy="4.5"
+                      r="2"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <circle
+                      cx="19.5"
+                      cy="4.5"
+                      r="2"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <circle
+                      cx="4.5"
+                      cy="19.5"
+                      r="2"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <circle
+                      cx="19.5"
+                      cy="19.5"
+                      r="2"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <line
+                      x1="12"
+                      y1="12"
+                      x2="4.5"
+                      y2="4.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <line
+                      x1="12"
+                      y1="12"
+                      x2="19.5"
+                      y2="4.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <line
+                      x1="12"
+                      y1="12"
+                      x2="4.5"
+                      y2="19.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <line
+                      x1="12"
+                      y1="12"
+                      x2="19.5"
+                      y2="19.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                  </svg>
+                </div>
+
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                  Let’s Get to Know Your Organization
+                </h2>
+                <p className="text-gray-900 text-sm">
+                  This information helps us understand your conscious impact
+                  better.
+                </p>
+              </div>
+            </div>
+
+            {/* Right Form Panel */}
+            <div className="w-full lg:w-[60%] bg-white px-4 py-6 sm:px-6 sm:py-8 md:p-10 overflow-y-auto">
+              <h2 className="text-xl font-bold text-gray-800 mb-6">
+                Let’s Set Up Your Organization
+              </h2>
+
+              <form onSubmit={handleOrganizationSubmit} className="space-y-6">
+                {orgFormStep === 1 && (
+                  <>
+                    {/* Organization Name */}
+                    <div className="mb-4">
+                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                        Organization Name
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="organization_name"
+                        value={organizationForm.organization_name}
+                        onChange={handleOrganizationFormChange}
+                        className={`w-full px-3 py-2 border ${
+                          organizationErrors.organization_name
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        } rounded-md`}
+                        placeholder="Enter organization name"
+                      />
+                      {organizationErrors.organization_name && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {organizationErrors.organization_name}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                        Domain
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        name="domain"
+                        value={organizationForm.domain}
+                        onChange={handleOrganizationFormChange}
+                        className={`w-full px-3 py-2 border ${
+                          organizationErrors.domain
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        } rounded-md`}
+                      >
+                        <option value="">Select domain</option>
+                        {domains?.map((domain: any) => (
+                          <option key={domain.id} value={domain.id}>
+                            {domain.name}
+                          </option>
+                        ))}
+                        <option value="other">Other (please specify)</option>
+                      </select>
+                      {organizationErrors.domain && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {organizationErrors.domain}
+                        </p>
+                      )}
+                    </div>
+
+                    {organizationForm.domain === "other" ? (
+                      <div className="mb-4">
+                        <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                          Custom Domain Name
+                          <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="custom_domain"
+                          value={organizationForm.custom_domain || ""}
+                          onChange={handleOrganizationFormChange}
+                          className={`w-full px-3 py-2 border ${
+                            organizationErrors.custom_domain
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          } rounded-md`}
+                          placeholder="Enter your domain name"
+                        />
+                        {organizationErrors.custom_domain && (
+                          <p className="mt-1 text-sm text-red-600">
+                            {organizationErrors.custom_domain}
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="mb-4">
+                        <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                          Sub Domain
+                        </label>
+                        <select
+                          name="sub_domain"
+                          value={organizationForm.sub_domain}
+                          onChange={handleOrganizationFormChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        >
+                          <option value="">Select Sub domain</option>
+                          {subDomain?.map((subdomain: any) => (
+                            <option key={subdomain.id} value={subdomain.id}>
+                              {subdomain.name}
+                            </option>
+                          ))}
+                        </select>
+                        {organizationErrors.sub_domain && (
+                          <p className="mt-1 text-sm text-red-600">
+                            {organizationErrors.sub_domain}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Employees Size */}
+                    <div className="mb-4">
+                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                        Employees Size
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        name="employee_size"
+                        value={organizationForm.employee_size}
+                        onChange={handleOrganizationFormChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      >
+                        <>
+                          <option value="">Select Employee Size</option>
+                          {OrganizationSize?.map((orgsize: any) => (
+                            <option key={orgsize.id} value={orgsize.id}>
+                              {orgsize.name}
+                            </option>
+                          ))}
+                        </>
+                      </select>
+                      {organizationErrors.employee_size && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {organizationErrors.employee_size}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Revenue */}
+                    <div className="mb-4">
+                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
+                        Revenue
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        name="revenue"
+                        value={organizationForm.revenue}
+                        onChange={handleOrganizationFormChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      >
+                        <>
+                          <option value="">Select Revenue Range</option>
+                          {revenue?.map((revenue: any) => (
+                            <option key={revenue.id} value={revenue.id}>
+                              {revenue.revenue_range}
+                            </option>
+                          ))}
+                        </>
+                      </select>
+                      {organizationErrors.revenue && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {organizationErrors.revenue}
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {orgFormStep === 2 && (
+                  <>
+                    {/* Questions with options as radio buttons */}
+                    <div className="space-y-4">
+                      {readlineQuestion?.map((question: any) => {
+                        const existingAnswer =
+                          organizationForm.question.find(
+                            (q: QuestionAnswer) => q.question_id === question.id
+                          )?.answer || "";
+
+                        return (
+                          <div key={question.id} className="mb-4">
+                            <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                              {question.question}
+                            </label>
+
+                            {question.options && question.options.length > 0 ? (
+                              <div className="space-y-2">
+                                {question?.options?.map((option: any) => (
+                                  <div
+                                    key={option.id}
+                                    className="flex items-center"
+                                  >
+                                    <input
+                                      type="radio"
+                                      id={`question_${question.id}_${option.id}`}
+                                      name={`question_${question.id}`}
+                                      value={option.option}
+                                      checked={existingAnswer === option.option}
+                                      onChange={handleOrganizationFormChange}
+                                      className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 flex-shrink-0 peer-checked:border-transparent peer-checked:bg-gradient-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
+                                    />
+                                    <label
+                                      htmlFor={`question_${question.id}_${option.id}`}
+                                      className="ml-3 block openSans text-base text-gray-700"
+                                    >
+                                      {option.option}
+                                    </label>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <textarea
+                                name={`question_${question.id}`}
+                                value={existingAnswer}
+                                onChange={handleOrganizationFormChange}
+                                className={`w-full px-3 py-2 border ${
+                                  organizationErrors[`question_${question.id}`]
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-md`}
+                                placeholder={`Enter your answer`}
+                                rows={3}
+                              />
+                            )}
+
+                            {isOrgFormSubmitted &&
+                              organizationErrors[`question_${question.id}`] && (
+                                <p className="mt-1 text-sm text-red-600">
+                                  {
+                                    organizationErrors[
+                                      `question_${question.id}`
+                                    ]
+                                  }
+                                </p>
+                              )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+                {/* Form Footer Actions */}
+
+                {/* Form Footer Actions */}
+                <div className="flex justify-end mt-6 gap-3 flex-wrap">
+                  {orgFormStep === 2 && (
+                    <>
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          setOrgFormStep(1);
+                          setOrganizationErrors({});
+                        }}
+                        variant="white-outline"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+          font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+          flex items-center justify-center"
+                      >
+                        Back
+                      </Button>
+
+                      <Button
+                        type="button"
+                        onClick={closeModal}
+                        variant="white-outline"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+          font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+          flex items-center justify-center"
+                      >
+                        Cancel
+                      </Button>
+
+                      <Button
+                        type="submit"
+                        variant="gradient-primary"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+          font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+          flex items-center justify-center"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? "Submitting..." : "Submit"}
+                      </Button>
+
+                      {/* <Button
+                              type="button"
+                              onClick={() => setOrgFormStep(3)}
+                              variant="white-outline"
+                              className="border border-[#7077FE] text-[#7077FE] hover:bg-[#f0f4ff]"
+                            >
+                              Pricing
+                            </Button> */}
+                    </>
+                  )}
+
+                  {orgFormStep === 1 && (
+                    <>
+                      <Button
+                        type="button"
+                        onClick={closeModal}
+                        variant="white-outline"
+                      >
+                        Cancel
+                      </Button>
+
+                      <Button
+                        type="button"
+                        onClick={handleNextClick}
+                        variant="gradient-primary"
+                        className="rounded-full py-3 px-8 transition-all"
+                      >
+                        Next
+                      </Button>
+                    </>
+                  )}
+                </div>
+
+                {/* Dummy Pricing */}
+                {orgFormStep === 3 && (
+                  <>
+                    <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">
+                      🌟 Choose Your Plan
+                    </h2>
+
+                    <div className="flex justify-center">
+                      <div className="relative w-full max-w-sm p-8 rounded-3xl border border-violet-300 shadow-xl bg-white hover:shadow-2xl transition-all duration-300">
+                        {/* Ribbon */}
+                        <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-3 py-1 rounded-bl-xl rounded-tr-3xl font-semibold shadow-md">
+                          Popular
+                        </div>
+
+                        {/* Plan Info */}
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                          Starter Plan
+                        </h3>
+                        <p className="text-sm text-gray-600 mb-6">
+                          Perfect for small conscious teams
+                        </p>
+
+                        <div className="text-center mb-6">
+                          <span className="text-4xl font-extrabold text-gray-900">
+                            $36
+                          </span>
+                          <span className="text-sm text-gray-500 ml-1">
+                            /month
+                          </span>
+                        </div>
+
+                        {/* CTA */}
+                        <div className="flex justify-center">
+                          <Button
+                            variant="gradient-primary"
+                            className="rounded-full py-3 px-8 text-white shadow-lg hover:opacity-90 transition"
+                            onClick={() => closeModal()} // or navigate("/dashboard")
+                          >
+                            Get Started
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </form>
+            </div>
+          </div>
+        </div>
+      </Modal>
+      <Modal
+        isOpen={activeModal === "organizationPricing"}
+        onClose={closeModal}
+      >
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
+          <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+            {/* LEFT PANEL */}
+            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+              <div>
+                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-15 h-15 text-gray-700"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="3"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <circle
+                      cx="4.5"
+                      cy="4.5"
+                      r="2"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <circle
+                      cx="19.5"
+                      cy="4.5"
+                      r="2"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <circle
+                      cx="4.5"
+                      cy="19.5"
+                      r="2"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <circle
+                      cx="19.5"
+                      cy="19.5"
+                      r="2"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <line
+                      x1="12"
+                      y1="12"
+                      x2="4.5"
+                      y2="4.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <line
+                      x1="12"
+                      y1="12"
+                      x2="19.5"
+                      y2="4.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <line
+                      x1="12"
+                      y1="12"
+                      x2="4.5"
+                      y2="19.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <line
+                      x1="12"
+                      y1="12"
+                      x2="19.5"
+                      y2="19.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                  </svg>
+                </div>
+
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                  Let’s Get to Know Your Organization
+                </h2>
+                <p className="text-gray-900 text-sm">
+                  This information helps us understand your conscious impact
+                  better.
+                </p>
+              </div>
+            </div>
+
+            {/* Right Form Panel */}
+            <div className=" p-6 rounded-lg w-full mx-auto my-auto z-10 relative">
+              <h2 className="text-xl poppins font-bold mb-4 text-center">
+                Organization Pricing Plan
+              </h2>
+
+              <div className="flex justify-center">
+                {organizationpricingPlans?.map((plan) => (
+                  <div
+                    key={plan.id}
+                    className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
+                  >
+                    {plan.popular && (
+                      <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
+                        Popular
+                      </div>
+                    )}
+                    <h3 className="font-semibold text-lg mb-2 mt-2">
+                      {plan.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-4">
+                      {plan.description}
+                    </p>
+                    <div className="mb-4">
+                      <span className="text-3xl font-bold">
+                        {isAnnual
+                          ? plan.yearlyPrice || plan.monthlyPrice
+                          : plan.monthlyPrice}
+                      </span>
+                      <span className="text-gray-500">/month</span>
+                      {plan.billingNote && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {plan.billingNote}
+                        </p>
+                      )}
+                    </div>
+                    <Button
+                      variant="gradient-primary"
+                      className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                      onClick={() => handlePlanSelection(plan)}
+                    >
+                      {plan.buttonText}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 text-center">
+                <label className="inline-flex items-center cursor-pointer">
+                  <span className="mr-3 text-sm font-medium text-gray-700">
+                    Monthly billing
+                  </span>
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={isAnnual}
+                      onChange={() => setIsAnnual(!isAnnual)}
+                    />
+                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
+                  </div>
+                  <span className="ml-3 text-sm font-medium text-gray-700">
+                    Annual billing
+                  </span>
+                </label>
+              </div>
+
+              <div className="mt-6 text-center">
+                <button
+                  onClick={closeModal}
+                  className="text-gray-500 hover:text-gray-700 font-medium text-sm underline focus:outline-none"
+                >
+                  Skip for now, go to Dashboard
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Modal>
+      <Modal isOpen={activeModal === "person"} onClose={closeModal}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
+          <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+            {/* LEFT PANEL */}
+            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2]  w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+              <div>
+                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-15 h-15 text-gray-700"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </div>
+
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                  Let's Get to <br></br>
+                  Know You Better
+                </h2>
+                <p className="text-[#f3f1ff] text-sm">
+                  This information helps us understand your conscious impact
+                  better.
+                </p>
+              </div>
+            </div>
+
+            {/* Right Form Panel */}
+            <div className="w-full lg:w-[60%] bg-white px-4 py-6 sm:px-6 sm:py-8 md:p-10 overflow-y-auto">
+              <h2 className="text-xl font-bold text-gray-800 mb-6">
+                Tell Us About Yourself
+              </h2>
+              <form onSubmit={handlePersonSubmit} className="space-y-6">
+                {/* Step 1 - Basic Information */}
+                {personFormStep === 1 && (
+                  <>
+                    <div className="mb-4">
+                      <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                        First Name
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="first_name"
+                        placeholder="Enter your first name"
+                        value={personForm.first_name}
+                        onChange={handlePersonFormChange}
+                        className={`w-[440px] h-[41px]
+                rounded-[12px]
+                border-[0.82px]
+                p-[12px] mt-2 ${
+                  personErrors.first_name ? "border-red-500" : "border-gray-300"
+                } rounded-md`}
+                      />
+                      {personErrors.first_name && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {personErrors.first_name}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                        Last Name
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="last_name"
+                        value={personForm.last_name}
+                        onChange={handlePersonFormChange}
+                        className={`w-[440px] h-[41px]
+                rounded-[12px]
+                border-[0.82px]
+                p-[12px] mt-2 ${
+                  personErrors.last_name ? "border-red-500" : "border-gray-300"
+                } rounded-md`}
+                        placeholder="Enter your last name"
+                      />
+                      {personErrors.last_name && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {personErrors.last_name}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="block openSans text-base font-medium text-gray-800 mb-1 ">
+                        Interests
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <div className="mt-4">
+                        <Select
+                          isMulti
+                          options={interest?.map((interestItem: Interest) => ({
+                            value: interestItem.id,
+                            label: interestItem.name,
+                          }))}
+                          value={
+                            personForm.interests?.map((interestId: any) => ({
+                              value: interestId,
+                              label: interest?.find(
+                                (i: any) => i.id === interestId
+                              )?.name,
+                            })) || []
+                          }
+                          onChange={(selectedOptions) => {
+                            // Update your form state with the selected values
+                            const selectedValues = selectedOptions?.map(
+                              (option) => option.value
+                            );
+                            setPersonForm({
+                              ...personForm,
+                              interests: selectedValues,
+                            });
+                          }}
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          placeholder="Select interests..."
+                          menuPortalTarget={document.body}
+                          styles={{
+                            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                          }}
+                        />
+                      </div>
+                      {personErrors.interests && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {personErrors.interests}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                        Professions
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <div className="mt-4">
+                        <Select
+                          isMulti
+                          options={[
+                            ...profession?.map(
+                              (professionItem: Profession) => ({
+                                value: professionItem.id,
+                                label: professionItem.title,
+                              })
+                            ),
+                            { value: "other", label: "Other (please specify)" },
+                          ]}
+                          value={
+                            personForm.professions?.map(
+                              (professionId: any) => ({
+                                value: professionId,
+                                label:
+                                  profession?.find(
+                                    (p: any) => p.id === professionId
+                                  )?.title ||
+                                  (professionId === "other" ? "Other" : ""),
+                              })
+                            ) || []
+                          }
+                          onChange={(selectedOptions) => {
+                            const selectedValues = selectedOptions?.map(
+                              (option) => option.value
+                            );
+                            setPersonForm({
+                              ...personForm,
+                              professions: selectedValues,
+                            });
+                          }}
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          placeholder="Select professions..."
+                          menuPortalTarget={document.body}
+                          styles={{
+                            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                          }}
+                        />
+                      </div>
+                      {personErrors.professions && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {personErrors.professions}
+                        </p>
+                      )}
+                    </div>
+                    {/* Add this after the Select component */}
+                    {personForm.professions?.includes("other") && (
+                      <div className="mb-4 mt-2">
+                        <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                          Specify Your Profession
+                        </label>
+                        <input
+                          type="text"
+                          name="custom_profession"
+                          value={personForm.custom_profession || ""}
+                          onChange={(e) =>
+                            setPersonForm({
+                              ...personForm,
+                              custom_profession: e.target.value,
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          placeholder="Enter your profession"
+                        />
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* Step 2 - Questions */}
+                {personFormStep === 2 && (
+                  <>
+                    <div className="space-y-4">
+                      {readlineQuestion?.map((question: any) => {
+                        const existingAnswer =
+                          personForm.question.find(
+                            (q: QuestionAnswer) => q.question_id === question.id
+                          )?.answer || "";
+
+                        return (
+                          <div key={question.id} className="mb-4">
+                            <label
+                              style={{ lineHeight: "1.8" }}
+                              className="block openSans text-base font-medium text-gray-800 mb-3 mt-4"
+                            >
+                              {question.question}
+                            </label>
+
+                            {question.options && question.options.length > 0 ? (
+                              <div className="space-y-2">
+                                {question?.options?.map((option: any) => (
+                                  <div
+                                    key={option.id}
+                                    className="flex items-center"
+                                  >
+                                    <input
+                                      type="radio"
+                                      id={`question_${question.id}_${option.id}`}
+                                      name={`question_${question.id}`}
+                                      value={option.option}
+                                      checked={existingAnswer === option.option}
+                                      onChange={handlePersonFormChange}
+                                      className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 flex-shrink-0 peer-checked:border-transparent peer-checked:bg-gradient-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
+                                    />
+                                    <label
+                                      htmlFor={`question_${question.id}_${option.id}`}
+                                      className="ml-3 block openSans text-base text-gray-700 "
+                                    >
+                                      {option.option}
+                                    </label>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <textarea
+                                name={`question_${question.id}`}
+                                value={existingAnswer}
+                                onChange={handlePersonFormChange}
+                                className={`w-full px-3 py-2 border ${
+                                  personErrors[`question_${question.id}`]
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-md`}
+                                placeholder={`Enter your answer`}
+                                rows={3}
+                              />
+                            )}
+
+                            {personErrors[`question_${question.id}`] && (
+                              <p className="mt-1 text-sm text-red-600">
+                                {personErrors[`question_${question.id}`]}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+
+                {/* Form Footer Actions */}
+                <div className="flex justify-end mt-6 gap-3 flex-wrap">
+                  {personFormStep === 2 && (
+                    <>
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          setPersonFormStep(1);
+                          setPersonErrors({});
+                        }}
+                        variant="white-outline"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+                font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+                flex items-center justify-center"
+                      >
+                        Back
+                      </Button>
+
+                      <Button
+                        type="button"
+                        onClick={closeModal}
+                        variant="white-outline"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+                font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+                flex items-center justify-center"
+                      >
+                        Cancel
+                      </Button>
+
+                      <Button
+                        type="submit"
+                        variant="gradient-primary"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+                font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+                flex items-center justify-center"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? "Submitting..." : "Submit"}
+                      </Button>
+                    </>
+                  )}
+
+                  {personFormStep === 1 && (
+                    <>
+                      <Button
+                        type="button"
+                        onClick={closeModal}
+                        variant="white-outline"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+                font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+                flex items-center justify-center"
+                      >
+                        Cancel
+                      </Button>
+
+                      <Button
+                        type="button"
+                        onClick={handleNextPersonClick}
+                        variant="gradient-primary"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+                font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+                flex items-center justify-center"
+                      >
+                        Next
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </Modal>
+      <Modal isOpen={activeModal === "personPricing"} onClose={closeModal}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
+          <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+            {/* LEFT PANEL */}
+            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+              <div>
+                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-15 h-15 text-gray-700"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </div>
+
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                  Let's Get to <br></br>
+                  Know You Better
+                </h2>
+                <p className="text-gray-700 text-sm">
+                  This information helps us understand your conscious impact
+                  better.
+                </p>
+              </div>
+            </div>
+
+            {/* Right Form Panel */}
+            <div className=" p-6 rounded-lg w-full mx-auto my-auto z-10 relative">
+              <h2 className="text-xl poppins font-bold mb-4 text-center">
+                Person Pricing Plan
+              </h2>
+
+              <div className="flex justify-center">
+                {personPricing?.map((plan) => (
+                  <div
+                    key={plan.id}
+                    className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
+                  >
+                    {plan.popular && (
+                      <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
+                        Popular
+                      </div>
+                    )}
+                    <h3 className="font-semibold text-lg mb-2 mt-2">
+                      {plan.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-4">
+                      {plan.description}
+                    </p>
+                    <div className="mb-4">
+                      <span className="text-3xl font-bold">
+                        {isAnnual
+                          ? plan.yearlyPrice || plan.monthlyPrice
+                          : plan.monthlyPrice}
+                      </span>
+                      <span className="text-gray-500">/month</span>
+                      {plan.billingNote && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {plan.billingNote}
+                        </p>
+                      )}
+                    </div>
+                    <Button
+                      variant="gradient-primary"
+                      className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                      onClick={() => handlePlanSelection(plan)}
+                    >
+                      {plan.buttonText}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 text-center">
+                <label className="inline-flex items-center cursor-pointer">
+                  <span className="mr-3 text-sm font-medium text-gray-700">
+                    Monthly billing
+                  </span>
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={isAnnual}
+                      onChange={() => setIsAnnual(!isAnnual)}
+                    />
+                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
+                  </div>
+                  <span className="ml-3 text-sm font-medium text-gray-700">
+                    Annual billing
+                  </span>
+                </label>
+              </div>
+
+              <div className="mt-6 text-center">
+                <button
+                  onClick={closeModal}
+                  className="text-gray-500 hover:text-gray-700 font-medium text-sm underline focus:outline-none"
+                >
+                  Skip for now, go to Dashboard
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Modal>
+      <Modal isOpen={activeModal === "disqualify"} onClose={closeModal}>
+        <div className="text-center p-6 max-w-md">
+          <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] mb-4">
+            <svg
+              className="h-10 w-10 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </div>
+          <div className="openSans text-center p-4 text-red-500">
+            You are not eligible for the Aspiring Badge, Please try again after
+            1 day.
+          </div>
+          <div className="mt-6">
+            <Button
+              onClick={() => {
+                closeModal();
+                navigate("/dashboard");
+              }}
+              variant="gradient-primary"
+              className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+            >
+              Got it!
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }
@@ -422,14 +2211,12 @@ export function GreetingBar({
    1) TRUE PROFILE
    =========================================================== */
 export function TrueProfileCard({
-  avatarUrl,
   title = "True Profile Created",
   description = "Your profile is now complete with all the essential details added. This allows us to customize your experience!",
   completion = 100,
   onUpdateProfile,
   onOpen,
 }: {
-  avatarUrl: string;
   title?: string;
   description?: string;
   completion?: number;
@@ -471,7 +2258,13 @@ export function TrueProfileCard({
           <div className="relative w-[92px] h-[92px] sm:w-[108px] sm:h-[108px] rounded-full p-[3px] bg-gradient-to-r from-[#9747FF] to-[#F07EFF]">
             <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
               <img
-                src={avatarUrl}
+                src={
+                  !userProfilePicture ||
+                  userProfilePicture === "null" ||
+                  userProfilePicture === "undefined"
+                    ? "/profile.png"
+                    : userProfilePicture
+                }
                 alt="Avatar"
                 className="w-[74px] h-[74px] sm:w-[87px] sm:h-[87px] rounded-full object-cover"
               />
@@ -1027,7 +2820,6 @@ export function BestPracticesSection({
 export function SocialStackCard({
   // profile
   coverUrl,
-  avatarUrl,
   name,
   handle,
   resonating = 100,
@@ -1048,7 +2840,6 @@ export function SocialStackCard({
   onConnect,
 }: {
   coverUrl: string;
-  avatarUrl: string;
   name: string;
   handle: string;
   resonating?: any;
@@ -1344,7 +3135,11 @@ export function SocialStackCard({
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <img
-                    src={`https://i.pravatar.cc/56?u=${item.sender_id}`}
+                    src={
+                      item?.sender_profile?.profile_picture
+                        ? item?.sender_profile?.profile_picture
+                        : `https://i.pravatar.cc/56?u=${item.sender_id}`
+                    }
                     className="h-11 w-11 rounded-full object-cover"
                     alt=""
                   />
@@ -1358,9 +3153,9 @@ export function SocialStackCard({
                     </div>
                   </div>
                 </div>
-                <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EEF0F5] bg-white shadow-sm">
+                {/* <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EEF0F5] bg-white shadow-sm">
                   <MoreHorizontal className="h-4 w-4 text-[#8F9AA6]" />
-                </div>
+                </div> */}
               </div>
             ))}
           </div>
@@ -1541,24 +3336,35 @@ export function SocialStackCard({
         {/* Profile */}
         <div className="flex items-center gap-3">
           <img
-            src={avatarUrl}
+            src={
+              !userProfilePicture ||
+              userProfilePicture === "null" ||
+              userProfilePicture === "undefined"
+                ? "/profile.png"
+                : userProfilePicture
+            }
             alt={name}
             className="h-12 w-12 rounded-full object-cover"
           />
-          <div className="min-w-0 w-full">
+          <div className="w-full">
             {/* top row: name (left) + metrics (right) */}
-            <div className="flex items-center gap-3">
-              <div className="min-w-0 truncate font-poppins font-medium text-[18px] leading-[30px] text-[#222224]">
-                {name}
+            <div className="flex items-center justify-between gap-3">
+              <div className="justify-start shrink-0 flex flex-col text-[14px]">
+                <div className="items-center truncate font-poppins font-medium text-[18px] leading-[30px] text-[#222224]">
+                  {name}
+                </div>
+                <div className="truncate font-opensans text-[14px] text-[#222224]/50">
+                  @{handle}
+                </div>
               </div>
 
               {/* metrics – right aligned */}
-              <div className="ml-auto shrink-0 flex items-center gap-4 text-[14px] mr-20">
+              <div className="justify-end shrink-0 flex flex-col sm:flex-row xl:flex-col 2xl:flex-row items-start sm:gap-4 xl:gap-0 2xl:gap-4 text-[14px]">
                 <span className="whitespace-nowrap">
                   <span className="font-poppins font-medium text-[16px] leading-[100%] text-[#7077FE]">
                     {resonating}
                   </span>
-                  <span className="ml-1 font-['Plus_Jakarta_Sans'] font-normal text-[11px] leading-[100%] text-[#667085]">
+                  <span className="ml-1 font-['Plus_Jakarta_Sans'] font-normal text-[11px] leading-[100%] text-[#7077FE]">
                     Resonating
                   </span>
                 </span>
@@ -1566,16 +3372,11 @@ export function SocialStackCard({
                   <span className="font-poppins font-medium text-[16px] leading-[100%] text-[#A855F7]">
                     {Intl.NumberFormat().format(resonators)}
                   </span>
-                  <span className="ml-1 font-['Plus_Jakarta_Sans'] font-normal text-[11px] leading-[100%] text-[#667085]">
+                  <span className="ml-1 font-['Plus_Jakarta_Sans'] font-normal text-[11px] leading-[100%] text-[#A855F7]">
                     Resonators
                   </span>
                 </span>
               </div>
-            </div>
-
-            {/* handle below */}
-            <div className="truncate font-opensans text-[14px] text-[#222224]/50">
-              @{handle}
             </div>
           </div>
         </div>
@@ -1699,14 +3500,14 @@ export function SocialStackCard({
         {/* list */}
         <div className="space-y-3 flex-1">
           {list && list.length > 0 ? (
-            list.slice(0, 5).map((f) => (
+            list.slice(0, 4).map((f) => (
               <div
                 key={f.id}
                 className="flex items-center justify-between gap-3"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <img
-                    src={f.avatar}
+                    src={f.avatar || '/profile.png'}
                     className="h-9 w-9 rounded-full object-cover"
                   />
                   <div className="min-w-0">
