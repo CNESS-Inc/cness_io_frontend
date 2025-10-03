@@ -3606,7 +3606,10 @@ export function DirectorySection({
             <div className="flex items-center gap-3 min-w-0">
               <img
                 src={
-                  !it.avatar || it.avatar === "null" || it.avatar === "undefined"
+                  !it.avatar ||
+                  it.avatar === "null" ||
+                  it.avatar === "undefined" ||
+                  !it.avatar.startsWith("http") // <-- check for http/https
                     ? "https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=1200&auto=format&fit=crop"
                     : it.avatar
                 }
