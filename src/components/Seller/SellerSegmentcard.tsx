@@ -2260,7 +2260,10 @@ export function TrueProfileCard({
             <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
               <img
                 src={
-                  !avatar || avatar === "null" || avatar === "undefined"
+                  !avatar ||
+                  avatar === "null" ||
+                  avatar === "undefined" ||
+                  !avatar.startsWith("http")
                     ? "/profile.png"
                     : avatar
                 }
@@ -2688,7 +2691,14 @@ export function BestPracticesSection({
               {/* Image */}
               <div className="h-[135px] rounded-[8px] overflow-hidden">
                 <img
-                  src={bp.image}
+                  src={
+                    !bp.image ||
+                    bp.image === "null" ||
+                    bp.image === "undefined" ||
+                    !bp.image.startsWith("http") // <-- check for http/https
+                      ? "https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=1200&auto=format&fit=crop"
+                      : bp.image
+                  }
                   alt={bp.title}
                   className="h-full w-full object-cover"
                 />
@@ -3338,7 +3348,10 @@ export function SocialStackCard({
         <div className="flex items-center gap-3">
           <img
             src={
-              !avatar || avatar === "null" || avatar === "undefined"
+              !avatar ||
+              avatar === "null" ||
+              avatar === "undefined" ||
+              !avatar.startsWith("http")
                 ? "/profile.png"
                 : avatar
             }
@@ -3506,7 +3519,14 @@ export function SocialStackCard({
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <img
-                    src={f.avatar || "/profile.png"}
+                    src={
+                      !f.avatar ||
+                      f.avatar === "null" ||
+                      f.avatar === "undefined" ||
+                      !f.avatar.startsWith("http")
+                        ? "/profile.png"
+                        : f.avatar
+                    }
                     className="h-9 w-9 rounded-full object-cover"
                   />
                   <div className="min-w-0">

@@ -17,7 +17,7 @@ import {
   GetProfileDetailsById,
   GetFollowBestpractices,
   SendFollowRequest,
-  GetBestpracticesByUserProfile
+  GetBestpracticesByUserProfile,
   //UnFriend,
 } from "../Common/ServerAPI";
 import { useNavigate, useParams } from "react-router-dom";
@@ -172,16 +172,19 @@ export default function UserProfileView() {
   }, []);
 
   const handleFollow = async (userId: string) => {
-      try {
-        const formattedData = {
-          following_id: userId,
-        };
-        await SendFollowRequest(formattedData);
-        setUserDetails({ ...userDetails, if_following: !userDetails?.if_following })
-      } catch (error) {
-        console.error("Error fetching selection details:", error);
-      }
-    };
+    try {
+      const formattedData = {
+        following_id: userId,
+      };
+      await SendFollowRequest(formattedData);
+      setUserDetails({
+        ...userDetails,
+        if_following: !userDetails?.if_following,
+      });
+    } catch (error) {
+      console.error("Error fetching selection details:", error);
+    }
+  };
 
   const handleFriend = async (userId: string) => {
     try {
@@ -288,12 +291,18 @@ export default function UserProfileView() {
   }
 
   return (
-    <div className="relative mx-auto w-full mx-auto px-3 mt-4">
+    <div className="relative mx-auto w-full h-full mx-auto px-3 mt-4">
       {/* Banner */}
       <div className="w-full h-[180px] sm:h-[220px] md:h-[260px] lg:h-[300px] xl:h-[320px] rounded-[8px]">
         <img
           src={
-            userDetails?.profile_banner || "https://cdn.cness.io/banner.webp"
+            !userDetails?.profile_banner ||
+            userDetails?.profile_banner === "null" ||
+            userDetails?.profile_banner === "undefined" ||
+            !userDetails?.profile_banner.startsWith("http") ||
+            userDetails?.profile_banner === "http://localhost:5026/file/"
+              ? "https://cdn.cness.io/banner.webp"
+              : userDetails?.profile_banner
           }
           alt="Profile Banner"
           className="w-full h-full object-cover rounded-[8px]"
@@ -306,10 +315,13 @@ export default function UserProfileView() {
             <div className="rounded-[10px] p-[6px] bg-white object-cover shadow w-[150px] lg:w-full h-[110px] sm:h-[140px] md:h-[190px] lg:h-[250px] 2xl:h-[320px]">
               <img
                 src={
-                  userDetails?.profile_picture &&
-                  userDetails?.profile_picture !== "http://localhost:5026/file/"
-                    ? userDetails?.profile_picture
-                    : "/profile.png"
+                  !userDetails?.profile_picture ||
+                  userDetails?.profile_picture === "null" ||
+                  userDetails?.profile_picture === "undefined" ||
+                  !userDetails?.profile_picture.startsWith("http") ||
+                  userDetails?.profile_picture === "http://localhost:5026/file/"
+                    ? "/profile.png"
+                    : userDetails?.profile_picture
                 }
                 alt="userlogo1"
                 className="w-full h-full object-cover rounded-[10px]"
@@ -369,7 +381,6 @@ export default function UserProfileView() {
 
               {/* Buttons */}
               <div className="pt-4 pb-10 space-y-2 border-b border-[#E5E5E5]">
-
                 {!isOwnProfile && (
                   <button
                     onClick={() => handleFollow(userDetails?.user_id)}
@@ -377,16 +388,15 @@ export default function UserProfileView() {
                     bg-gradient-to-r from-[#7077FE] via-[#9747FF] to-[#F07EFF] 
                     font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
                     text-white align-middle
-                    ${userDetails?.if_following
-                      ? "bg-gray-200 text-gray-800"
-                      : "bg-[#7C81FF] text-white"
-                      } hover:bg-indigo-600 hover:text-white`}
+                    ${
+                      userDetails?.if_following
+                        ? "bg-gray-200 text-gray-800"
+                        : "bg-[#7C81FF] text-white"
+                    } hover:bg-indigo-600 hover:text-white`}
                   >
                     {userDetails?.if_following ? "Resonating" : "+ Resonate"}
                   </button>
                 )}
-
-
 
                 {/* {!isOwnProfile && (
                   <button
@@ -585,10 +595,12 @@ export default function UserProfileView() {
             </div>
           </div>
         </div>
-        <div className="w-full lg:w-[65%] xl:w-[75%]">
-    <div className="px-6 relative flex flex-col md:flex-row justify-center items-center gap-3 sm:gap-4 md:gap-6 pt-3 md:pt-5">
-      <span className="absolute bottom-0 right-0 h-px bg-[#ECEEF2]
-                   left-6 md:left-6" />
+        <div className="w-full lg:w-[65%] xl:w-[75%] h-full">
+          <div className="px-6 relative flex flex-col md:flex-row justify-center items-center gap-3 sm:gap-4 md:gap-6 pt-3 md:pt-5">
+            <span
+              className="absolute bottom-0 right-0 h-px bg-[#ECEEF2]
+                   left-6 md:left-6"
+            />
 
             <div className="flex justify-center gap-6 -mt-2">
               <Button
@@ -674,12 +686,17 @@ export default function UserProfileView() {
                         </p>
 
                         {/* Date range */}
-                      {(edu.start_date || edu.end_date || edu.currently_studying) && (
-                        <span className="text-xs text-gray-400 mt-1 block">
-                          {formatRange(edu.start_date, edu.end_date, edu.currently_studying)}
-                        </span>
-                      )}
-
+                        {(edu.start_date ||
+                          edu.end_date ||
+                          edu.currently_studying) && (
+                          <span className="text-xs text-gray-400 mt-1 block">
+                            {formatRange(
+                              edu.start_date,
+                              edu.end_date,
+                              edu.currently_studying
+                            )}
+                          </span>
+                        )}
                       </li>
                     ))}
                   </ul>
@@ -770,7 +787,6 @@ export default function UserProfileView() {
                         <p className="mt-2 font-['Open_Sans'] font-normal text-[14px] leading-[21px] tracking-[0px] text-[#64748B]">
                           {service.name}
                         </p>
-
                       </div>
                     ))}
                   </div>
@@ -810,7 +826,12 @@ export default function UserProfileView() {
                               }
                               username={userDetails.first_name}
                               profileImage={
-                                userDetails.profile_picture || "/profile.png"
+                                !userDetails.profile_picture ||
+                                userDetails.profile_picture === "null" ||
+                                userDetails.profile_picture === "undefined" ||
+                                !userDetails.profile_picture.startsWith("http")
+                                  ? "/profile.png"
+                                  : userDetails.profile_picture
                               }
                               coverImage={imageForCard}
                               title={section.section.name}
@@ -832,75 +853,79 @@ export default function UserProfileView() {
               )}
 
             {/* Best Practices profession */}
-            {activeTab === "best" &&
-              myBP?.length > 0 && (
-                <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
-                  <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
-                    My Best Practices 
-                  </h3>
+            {activeTab === "best" && myBP?.length > 0 && (
+              <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
+                <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
+                  My Best Practices
+                </h3>
 
-                  {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4"> */}
-                  <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3">
-                    {myBP?.map(
-                      (practice: any) => {
-                        return (
-                          <div
-                            key={practice?.id}
-                            onClick={(e) => {
-                              // Only navigate if it's not the Read More button
-                              if (
-                                !(e.target as HTMLElement).closest(
-                                  ".read-more-btn"
-                                )
-                              ) {
-                                navigate(
-                                  `/dashboard/bestpractices/${
-                                    practice.id
-                                  }/${slugify(practice.title)}`,
-                                  {
-                                    state: {
-                                      likesCount: practice.likesCount,
-                                      isLiked: practice.isLiked,
-                                    },
-                                  }
-                                );
-                              }
-                            }}
-                          >
-                            <BestPracticeCard
-                              name={
-                                `${practice?.profile?.first_name || ""} ${
-                                  practice?.profile?.last_name || ""
-                                }`.trim() || "CNESS User"
-                              }
-                              username={practice?.user?.username || "user"}
-                              profileImage={
-                                practice?.profile?.profile_picture
-                                  ? practice.profile.profile_picture
-                                  : "/profile.png"
-                              }
-                              coverImage={
-                                practice?.file
-                                  ? practice.file
-                                  : bcard1 || "https://cdn.cness.io/banner.webp"
-                              }
-                              title={
-                                practice?.title ||
-                                practice?.profession_data?.title ||
-                                "Untitled"
-                              }
-                              description={practice?.description || ""}
-                              link={`/dashboard/bestpractices/${
+                {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4"> */}
+                <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3">
+                  {myBP?.map((practice: any) => {
+                    return (
+                      <div
+                        key={practice?.id}
+                        onClick={(e) => {
+                          // Only navigate if it's not the Read More button
+                          if (
+                            !(e.target as HTMLElement).closest(".read-more-btn")
+                          ) {
+                            navigate(
+                              `/dashboard/bestpractices/${
                                 practice.id
-                              }/${slugify(practice.title)}`}
-                            />
-                          </div>
-                        );
-                      }
-                    )}
-                  </div>
+                              }/${slugify(practice.title)}`,
+                              {
+                                state: {
+                                  likesCount: practice.likesCount,
+                                  isLiked: practice.isLiked,
+                                },
+                              }
+                            );
+                          }
+                        }}
+                      >
+                        <BestPracticeCard
+                          name={
+                            `${practice?.profile?.first_name || ""} ${
+                              practice?.profile?.last_name || ""
+                            }`.trim() || "CNESS User"
+                          }
+                          username={practice?.user?.username || "user"}
+                          profileImage={
+                            !practice?.profile?.profile_picture ||
+                            practice?.profile?.profile_picture === "null" ||
+                            practice?.profile?.profile_picture ===
+                              "undefined" ||
+                            !practice?.profile?.profile_picture.startsWith(
+                              "http"
+                            )
+                              ? "/profile.png"
+                              : practice?.profile?.profile_picture
+                          }
+                          coverImage={
+                            !practice?.file ||
+                            practice?.file === "null" ||
+                            practice?.file === "undefined" ||
+                            !practice?.file.startsWith("http")
+                              ? "https://cdn.cness.io/banner.webp"
+                              : practice?.file
+                          }
+                          title={
+                            practice?.title ||
+                            practice?.profession_data?.title ||
+                            "Untitled"
+                          }
+                          description={practice?.description || ""}
+                          link={`/dashboard/bestpractices/${
+                            practice.id
+                          }/${slugify(practice.title)}`}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
-              )}
+              </div>
+            )}
 
             {activeTab === "best" && followBP?.length > 0 && (
               <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
@@ -941,14 +966,23 @@ export default function UserProfileView() {
                           }
                           username={practice?.user?.username || "user"}
                           profileImage={
-                            practice?.profile?.profile_picture
-                              ? practice.profile.profile_picture
-                              : "/profile.png"
+                            !practice?.profile?.profile_picture ||
+                            practice?.profile?.profile_picture === "null" ||
+                            practice?.profile?.profile_picture ===
+                              "undefined" ||
+                            !practice?.profile?.profile_picture.startsWith(
+                              "http"
+                            )
+                              ? "/profile.png"
+                              : practice?.profile?.profile_picture
                           }
                           coverImage={
-                            practice?.file
-                              ? practice.file
-                              : bcard1 || "https://cdn.cness.io/banner.webp"
+                            !practice?.file ||
+                            practice?.file === "null" ||
+                            practice?.file === "undefined" ||
+                            !practice?.file.startsWith("http")
+                              ? "https://cdn.cness.io/banner.webp"
+                              : practice?.file
                           }
                           title={
                             practice?.title ||

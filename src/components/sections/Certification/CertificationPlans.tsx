@@ -3,23 +3,36 @@ import { Check } from "lucide-react";
 import aspired from "../../../assets/aspired-upgrade.png";
 import inspired from "../../../assets/inspired-upgrade.png";
 import leader from "../../../assets/leader.png";
+import { useNavigate } from "react-router-dom";
 
-type Card = {
+interface ApiResponse {
+  is_assessment_submited: boolean;
+  is_submitted_by_head: boolean;
+  badge: {
+    level: string;
+    user_type: string;
+  };
+  cis_score: number;
+  cis_result: any[];
+}
+
+interface Card {
   id: string;
   title: string;
   subtitle: string;
-  price?: string | number;
+  price: string;
   features: string[];
-  selected?: boolean;
-  ctaType: "completed" | "continue" | "upgrade";
+  selected: boolean;
+  ctaType: string;
   badge: string;
-};
+}
 
 function TopBadge({ src, alt }: { src: string; alt: string }) {
   return <img src={src} alt={alt} className="w-13 h-13" />;
 }
 
 function PricingCard({ card }: { card: Card }) {
+  const navigate = useNavigate();
   const selected = !!card.selected;
 
   const selectedStyles: React.CSSProperties = selected
@@ -80,6 +93,14 @@ function PricingCard({ card }: { card: Card }) {
           </div>
         </div>
         <div>
+          {card.ctaType === "pending" && (
+            <button
+              disabled
+              className="w-full rounded-full bg-[#F3F3F3] font-['Plus Jakarta Sans'] px-6 py-4 text-sm font-medium text-[#64748B] flex items-center justify-center"
+            >
+              Pending for Approval
+            </button>
+          )}
           {card.ctaType === "completed" && (
             <button
               disabled
@@ -100,7 +121,7 @@ function PricingCard({ card }: { card: Card }) {
 
           {card.ctaType === "upgrade" && (
             <button
-              disabled
+            onClick={() => navigate('/dashboard/assesment')}
               className="w-full rounded-full bg-[#7077FE] hover:bg-[#897aff] font-['Plus Jakarta Sans'] px-6 py-4 text-sm font-medium text-white flex items-center justify-center"
             >
               Upgrade
@@ -112,7 +133,7 @@ function PricingCard({ card }: { card: Card }) {
   );
 }
 
-export default function CertificationPlans() {
+export default function CertificationPlans({ data }: { data: ApiResponse }) {
   const cards: Card[] = [
     {
       id: "left",
@@ -125,8 +146,15 @@ export default function CertificationPlans() {
         "Resources Library",
         "Basic profile creation",
       ],
-      selected: false,
-      ctaType: "completed",
+      selected: data?.badge === null,
+      ctaType:
+        data?.badge === null
+          ? data?.is_assessment_submited
+            ? data?.is_submitted_by_head
+              ? "completed"
+              : "pending"
+            : "upgrade"
+          : "completed",
       badge: aspired,
     },
     {
@@ -140,8 +168,15 @@ export default function CertificationPlans() {
         "Resources Library",
         "Social media Access",
       ],
-      selected: true,
-      ctaType: "continue",
+      selected: data?.badge?.level === "Aspiring",
+      ctaType:
+        data?.badge?.level === "Aspiring"
+          ? data?.is_assessment_submited
+            ? data?.is_submitted_by_head
+              ? "completed"
+              : "pending"
+            : "upgrade"
+          : "completed",
       badge: inspired,
     },
     {
@@ -155,7 +190,7 @@ export default function CertificationPlans() {
         "Resources Library",
         "Basic profile creation",
       ],
-      selected: false,
+      selected: data?.badge?.level === "Inspired",
       ctaType: "upgrade",
       badge: leader,
     },

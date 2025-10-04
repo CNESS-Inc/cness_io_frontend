@@ -305,10 +305,13 @@ export default function DashboardUserProfile() {
             <div className="w-40 h-40 md:w-52 md:h-52 rounded-full border-8 border-white shadow-lg bg-white overflow-hidden">
               <img
                 src={
-                  userDetails?.profile_picture &&
-                  userDetails?.profile_picture !== "http://localhost:5026/file/"
-                    ? userDetails?.profile_picture
-                    : "/profile.png"
+                  !userDetails?.profile_picture ||
+                  userDetails?.profile_picture === "null" ||
+                  userDetails?.profile_picture === "undefined" ||
+                  !userDetails?.profile_picture.startsWith("http") ||
+                  userDetails?.profile_picture === "http://localhost:5026/file/"
+                    ? "/profile.png"
+                    : userDetails?.profile_picture
                 }
                 alt="userlogo1"
                 className="w-full h-full object-cover"
@@ -1067,11 +1070,17 @@ export default function DashboardUserProfile() {
                       <div className="flex items-center gap-3">
                         <img
                           src={
-                            reviewItem.profile.profile_picture &&
-                            reviewItem.profile.profile_picture !==
+                            !reviewItem.profile.profile_picture ||
+                            reviewItem.profile.profile_picture === "null" ||
+                            reviewItem.profile.profile_picture ===
+                              "undefined" ||
+                            !reviewItem.profile.profile_picture.startsWith(
+                              "http"
+                            ) ||
+                            reviewItem.profile.profile_picture ===
                               "http://localhost:5026/file/"
-                              ? reviewItem.profile.profile_picture
-                              : "/profile.png"
+                              ? "/profile.png"
+                              : reviewItem.profile.profile_picture
                           }
                           alt={reviewItem.profile.name}
                           className="w-10 h-10 rounded-full"

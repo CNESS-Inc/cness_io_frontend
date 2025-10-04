@@ -147,9 +147,7 @@ export default function SellerDashboard() {
             id: item.id,
             title: item.title,
             description: item.description,
-            image:
-              item.file ||
-              "https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=1200&auto=format&fit=crop", // fallback image
+            image: item.file,
             if_following: item.if_following,
           })
         );
