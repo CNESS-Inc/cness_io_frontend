@@ -18,6 +18,9 @@ import {
   GetFollowBestpractices,
   SendFollowRequest,
   GetBestpracticesByUserProfile,
+  GetValidProfessionalDetails,
+  GetInterestsDetails,
+  CreateBestPractice,
   //UnFriend,
 } from "../Common/ServerAPI";
 import { useNavigate, useParams } from "react-router-dom";
@@ -32,6 +35,12 @@ import bcard4 from "../assets/Bcard4.png";
 import { FaLocationDot } from "react-icons/fa6";
 import SharePopup from "../components/Social/SharePopup";
 import { buildShareUrl } from "../lib/utils";
+import bpicon from "../assets/bpicon.svg";
+import {
+  OutlinePill,
+  PrimaryButton,
+} from "../components/Seller/SellerSegmentcard";
+import AddBestPracticeModal from "../components/sections/bestPractiseHub/AddBestPractiseModal";
 
 const levels = [
   {
@@ -83,7 +92,21 @@ export default function UserProfileView() {
   const [isShareOpen, setIsShareOpen] = useState(false);
   const handleShareToggle = () => setIsShareOpen((prev) => !prev);
   const handleShareClose = () => setIsShareOpen(false);
+  const [activeModal, setActiveModal] = useState(false);
   const loggedInUserID = localStorage.getItem("Id");
+  const [profession, setProfession] = useState<Profession[]>([]);
+  const [interest, setInterestData] = useState<any[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
+  const [inputValue, setInputValue] = useState("");
+  const [newPractice, setNewPractice] = useState({
+    title: "",
+    description: "",
+    profession: "",
+    interest: "",
+    file: null as File | null,
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const isOwnProfile =
     (id && String(id) === String(loggedInUserID)) ||
     (userDetails?.user_id &&
@@ -98,6 +121,43 @@ export default function UserProfileView() {
   } else if (userLevel === "Leader") {
     displayLevels = levels;
   }
+
+  useEffect(() => {
+    fetchUserDetails();
+    fetchPublicUserDetails();
+    fetchAllBestPractises();
+    fetchFollowBestPractises();
+    fetchProfession();
+    fetchIntrusts();
+  }, []);
+
+  const fetchProfession = async () => {
+    try {
+      const res = await GetValidProfessionalDetails();
+      setProfession(res?.data?.data);
+    } catch (error: any) {
+      console.error("Error fetching professions:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
+  const fetchIntrusts = async () => {
+    try {
+      const res = await GetInterestsDetails();
+      setInterestData(res?.data?.data);
+    } catch (error: any) {
+      console.error("Error fetching Intrusts:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
 
   const slugify = (str: string) => {
     return str
@@ -164,13 +224,6 @@ export default function UserProfileView() {
     }
   };
 
-  useEffect(() => {
-    fetchUserDetails();
-    fetchPublicUserDetails();
-    fetchAllBestPractises();
-    fetchFollowBestPractises();
-  }, []);
-
   const handleFollow = async (userId: string) => {
     try {
       const formattedData = {
@@ -220,6 +273,109 @@ export default function UserProfileView() {
       }
     } catch (error) {
       console.error("Error fetching selection details:", error);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const hasProfession = !!newPractice.profession;
+    const hasInterest = !!newPractice.interest;
+
+    if (!hasProfession && !hasInterest) {
+      showToast({
+        message: "Please select either a profession or an interest.",
+        type: "error",
+        duration: 5000,
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("title", newPractice.title);
+      formData.append("description", newPractice.description);
+      formData.append("profession", newPractice.profession);
+      formData.append("interest", newPractice.interest);
+      formData.append("tags", JSON.stringify(tags));
+      if (newPractice.file) {
+        formData.append("file", newPractice.file);
+      }
+
+      await CreateBestPractice(formData);
+
+      showToast({
+        message:
+          "Best practices has been created and please wait until admin reviews it!",
+        type: "success",
+        duration: 5000,
+      });
+
+      closeModal();
+      navigate("/dashboard/bestpractices");
+      setActiveModal(false);
+    } catch (error: any) {
+      console.error("Error creating best practice:", error);
+      showToast({
+        message:
+          error?.response?.data?.error?.message ||
+          "Failed to create best practice",
+        type: "error",
+        duration: 5000,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setNewPractice((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setNewPractice((prev) => ({
+        ...prev,
+        file: e.target.files![0],
+      }));
+    }
+  };
+
+  const closeModal = () => {
+    setActiveModal(false);
+    setNewPractice({
+      title: "",
+      description: "",
+      profession: "",
+      interest: "",
+      file: null,
+    });
+  };
+
+  const removeTag = (index: number) => {
+    const newTags = [...tags];
+    newTags.splice(index, 1);
+    setTags(newTags);
+  };
+
+  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && inputValue.trim()) {
+      e.preventDefault();
+      const newTag = inputValue.trim();
+      if (!tags.includes(newTag)) {
+        setTags([...tags, newTag]);
+        setInputValue("");
+      }
     }
   };
 
@@ -347,17 +503,22 @@ export default function UserProfileView() {
                 {publicUserDetails?.about_us}
               </p>
 
-              <div className="mt-3 font-['Open_Sans'] font-normal text-[16px] leading-[100%] text-[#64748B]">
-                <div className="flex items-start gap-1 text-[#64748B] text-sm">
-                  <div className="pt-[4px] flex-shrink-0 flex items-center">
-                    <FaLocationDot className="w-3 h-3" stroke="#64748B" />
-                  </div>
-                  <div className="leading-snug">
-                    {userDetails?.address}, {userDetails?.location?.city || ""},{" "}
-                    {userDetails?.country?.name}
+              {(userDetails?.address ||
+                userDetails?.location?.city ||
+                userDetails?.country?.name) && (
+                <div className="mt-3 font-['Open_Sans'] font-normal text-[16px] leading-[100%] text-[#64748B]">
+                  <div className="flex items-start gap-1 text-[#64748B] text-sm">
+                    <div className="pt-[4px] flex-shrink-0 flex items-center">
+                      <FaLocationDot className="w-3 h-3" stroke="#64748B" />
+                    </div>
+                    <div className="leading-snug">
+                      {userDetails?.address},{" "}
+                      {userDetails?.location?.city || ""},{" "}
+                      {userDetails?.country?.name}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* <div className="mt-3 flex gap-3 text-center">
                 <span>
@@ -666,6 +827,14 @@ export default function UserProfileView() {
                     </span>{" "}
                     Education
                   </h3>
+                  {userDetails?.education?.length === 0 && (
+                    <p
+                      className="mt-2 font-['Open_Sans'] font-normal text-[14px] leading-[21px]
+                      tracking-[0px] text-[#64748B]"
+                    >
+                      No Education details shared yet.
+                    </p>
+                  )}
                   <ul className="mt-2 space-y-4">
                     {userDetails?.education?.map((edu: any) => (
                       <li key={edu.id}>
@@ -712,6 +881,14 @@ export default function UserProfileView() {
                   </h3>
 
                   <div className="mt-2 space-y-5">
+                    {userDetails?.education?.length === 0 && (
+                    <p
+                      className="mt-2 font-['Open_Sans'] font-normal text-[14px] leading-[21px]
+                      tracking-[0px] text-[#64748B]"
+                    >
+                      No work experience added yet.
+                    </p>
+                  )}
                     {userDetails?.work_experience?.map((job: any) => (
                       <div key={job.id}>
                         {/* Position + Company */}
@@ -796,210 +973,277 @@ export default function UserProfileView() {
 
             {/* Best Practices Tab */}
             {activeTab === "best" &&
-              userDetails?.best_practices_questions?.length > 0 && (
-                <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
-                  <h3 className="font-['Poppins'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-[#000000] mb-6">
-                    Best Practices Aligned CNESS
-                  </h3>
+              (userDetails?.best_practices_questions?.length > 0 ||
+              myBP?.length > 0 ||
+              followBP?.length > 0 ? (
+                <div>
+                  {userDetails?.best_practices_questions?.length > 0 && (
+                    <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
+                      <h3 className="font-['Poppins'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-[#000000] mb-6">
+                        Best Practices Aligned CNESS
+                      </h3>
 
-                  <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3">
-                    {userDetails.best_practices_questions.map(
-                      (section: any, index: number) => {
-                        const allQuestions = section.sub_sections?.flatMap(
-                          (sub: any) => sub.questions
-                        );
+                      <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3">
+                        {userDetails.best_practices_questions.map(
+                          (section: any, index: number) => {
+                            const allQuestions = section.sub_sections?.flatMap(
+                              (sub: any) => sub.questions
+                            );
 
-                        if (!allQuestions?.length) return null;
+                            if (!allQuestions?.length) return null;
 
-                        return allQuestions.map((question: any) => {
-                          const cardImages = [bcard1, bcard2, bcard3, bcard4];
-                          const imageForCard =
-                            cardImages[index % cardImages.length];
+                            return allQuestions.map((question: any) => {
+                              const cardImages = [
+                                bcard1,
+                                bcard2,
+                                bcard3,
+                                bcard4,
+                              ];
+                              const imageForCard =
+                                cardImages[index % cardImages.length];
 
+                              return (
+                                <BestPracticeCard
+                                  key={question.id}
+                                  name={
+                                    userDetails.first_name +
+                                    " " +
+                                    userDetails.last_name
+                                  }
+                                  username={userDetails.first_name}
+                                  profileImage={
+                                    !userDetails.profile_picture ||
+                                    userDetails.profile_picture === "null" ||
+                                    userDetails.profile_picture ===
+                                      "undefined" ||
+                                    !userDetails.profile_picture.startsWith(
+                                      "http"
+                                    )
+                                      ? "/profile.png"
+                                      : userDetails.profile_picture
+                                  }
+                                  coverImage={imageForCard}
+                                  title={section.section.name}
+                                  description={
+                                    question.answer?.answer ||
+                                    "No answer provided"
+                                  }
+                                  link={
+                                    question.answer?.show_question_in_public
+                                      ? "#read-more"
+                                      : undefined
+                                  }
+                                />
+                              );
+                            });
+                          }
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Best Practices profession  */}
+                  {myBP?.length > 0 && (
+                    <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
+                      <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
+                        My Best Practices
+                      </h3>
+
+                      {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4"> */}
+                      <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3">
+                        {myBP?.map((practice: any) => {
                           return (
-                            <BestPracticeCard
-                              key={question.id}
-                              name={
-                                userDetails.first_name +
-                                " " +
-                                userDetails.last_name
-                              }
-                              username={userDetails.first_name}
-                              profileImage={
-                                !userDetails.profile_picture ||
-                                userDetails.profile_picture === "null" ||
-                                userDetails.profile_picture === "undefined" ||
-                                !userDetails.profile_picture.startsWith("http")
-                                  ? "/profile.png"
-                                  : userDetails.profile_picture
-                              }
-                              coverImage={imageForCard}
-                              title={section.section.name}
-                              description={
-                                question.answer?.answer || "No answer provided"
-                              }
-                              link={
-                                question.answer?.show_question_in_public
-                                  ? "#read-more"
-                                  : undefined
-                              }
-                            />
+                            <div
+                              key={practice?.id}
+                              onClick={(e) => {
+                                // Only navigate if it's not the Read More button
+                                if (
+                                  !(e.target as HTMLElement).closest(
+                                    ".read-more-btn"
+                                  )
+                                ) {
+                                  navigate(
+                                    `/dashboard/bestpractices/${
+                                      practice.id
+                                    }/${slugify(practice.title)}`,
+                                    {
+                                      state: {
+                                        likesCount: practice.likesCount,
+                                        isLiked: practice.isLiked,
+                                      },
+                                    }
+                                  );
+                                }
+                              }}
+                            >
+                              <BestPracticeCard
+                                name={
+                                  `${practice?.profile?.first_name || ""} ${
+                                    practice?.profile?.last_name || ""
+                                  }`.trim() || "CNESS User"
+                                }
+                                username={practice?.user?.username || "user"}
+                                profileImage={
+                                  !practice?.profile?.profile_picture ||
+                                  practice?.profile?.profile_picture ===
+                                    "null" ||
+                                  practice?.profile?.profile_picture ===
+                                    "undefined" ||
+                                  !practice?.profile?.profile_picture.startsWith(
+                                    "http"
+                                  )
+                                    ? "/profile.png"
+                                    : practice?.profile?.profile_picture
+                                }
+                                coverImage={
+                                  !practice?.file ||
+                                  practice?.file === "null" ||
+                                  practice?.file === "undefined" ||
+                                  !practice?.file.startsWith("http")
+                                    ? "https://cdn.cness.io/banner.webp"
+                                    : practice?.file
+                                }
+                                title={
+                                  practice?.title ||
+                                  practice?.profession_data?.title ||
+                                  "Untitled"
+                                }
+                                description={practice?.description || ""}
+                                link={`/dashboard/bestpractices/${
+                                  practice.id
+                                }/${slugify(practice.title)}`}
+                              />
+                            </div>
                           );
-                        });
-                      }
-                    )}
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {followBP?.length > 0 && (
+                    <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
+                      <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
+                        Best Practices Aligned Follow
+                      </h3>
+
+                      {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4"> */}
+                      <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3">
+                        {followBP?.map((practice: any) => {
+                          return (
+                            <div
+                              key={practice?.id}
+                              onClick={(e) => {
+                                // Only navigate if it's not the Read More button
+                                if (
+                                  !(e.target as HTMLElement).closest(
+                                    ".read-more-btn"
+                                  )
+                                ) {
+                                  navigate(
+                                    `/dashboard/bestpractices/${
+                                      practice.id
+                                    }/${slugify(practice.title)}`,
+                                    {
+                                      state: {
+                                        likesCount: practice.likesCount,
+                                        isLiked: practice.isLiked,
+                                      },
+                                    }
+                                  );
+                                }
+                              }}
+                            >
+                              <BestPracticeCard
+                                name={
+                                  `${practice?.profile?.first_name || ""} ${
+                                    practice?.profile?.last_name || ""
+                                  }`.trim() || "CNESS User"
+                                }
+                                username={practice?.user?.username || "user"}
+                                profileImage={
+                                  !practice?.profile?.profile_picture ||
+                                  practice?.profile?.profile_picture ===
+                                    "null" ||
+                                  practice?.profile?.profile_picture ===
+                                    "undefined" ||
+                                  !practice?.profile?.profile_picture.startsWith(
+                                    "http"
+                                  )
+                                    ? "/profile.png"
+                                    : practice?.profile?.profile_picture
+                                }
+                                coverImage={
+                                  !practice?.file ||
+                                  practice?.file === "null" ||
+                                  practice?.file === "undefined" ||
+                                  !practice?.file.startsWith("http")
+                                    ? "https://cdn.cness.io/banner.webp"
+                                    : practice?.file
+                                }
+                                title={
+                                  practice?.title ||
+                                  practice?.profession_data?.title ||
+                                  "Untitled"
+                                }
+                                description={practice?.description || ""}
+                                link={`/dashboard/bestpractices/${
+                                  practice.id
+                                }/${slugify(practice.title)}`}
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : isOwnProfile ? (
+                <div className="flex flex-col items-center justify-center text-center p-8">
+                  <img
+                    src={bpicon}
+                    alt="Learn Best Practices"
+                    className="w-20 mb-6"
+                  />
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    Start Your Journey
+                  </h2>
+                  <p className="text-gray-500 mt-2 max-w-2xl">
+                    Best Practices help you showcase your conscious leadership,
+                    ethical innovation, and positive impact. Add one to begin
+                    building your conscious portfolio.
+                  </p>
+                  <div className="mt-4 flex justify-center gap-2 w-full mx-auto place-items-center">
+                    <PrimaryButton
+                      className="px-6 py-2 rounded-lg whitespace-nowrap shrink-0
+                      !justify-center text-white rounded-lg shadow"
+                      onClick={() => setActiveModal(true)}
+                    >
+                      Add Best Practice
+                    </PrimaryButton>
+                    <OutlinePill
+                      className="px-6 py-2 rounded-lg whitespace-nowrap shrink-0
+                      !justify-center rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50"
+                      onClick={() => navigate("/dashboard/bestpractices")}
+                    >
+                      Explore Examples
+                    </OutlinePill>
                   </div>
                 </div>
-              )}
-
-            {/* Best Practices profession */}
-            {activeTab === "best" && myBP?.length > 0 && (
-              <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
-                <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
-                  My Best Practices
-                </h3>
-
-                {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4"> */}
-                <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3">
-                  {myBP?.map((practice: any) => {
-                    return (
-                      <div
-                        key={practice?.id}
-                        onClick={(e) => {
-                          // Only navigate if it's not the Read More button
-                          if (
-                            !(e.target as HTMLElement).closest(".read-more-btn")
-                          ) {
-                            navigate(
-                              `/dashboard/bestpractices/${
-                                practice.id
-                              }/${slugify(practice.title)}`,
-                              {
-                                state: {
-                                  likesCount: practice.likesCount,
-                                  isLiked: practice.isLiked,
-                                },
-                              }
-                            );
-                          }
-                        }}
-                      >
-                        <BestPracticeCard
-                          name={
-                            `${practice?.profile?.first_name || ""} ${
-                              practice?.profile?.last_name || ""
-                            }`.trim() || "CNESS User"
-                          }
-                          username={practice?.user?.username || "user"}
-                          profileImage={
-                            !practice?.profile?.profile_picture ||
-                            practice?.profile?.profile_picture === "null" ||
-                            practice?.profile?.profile_picture ===
-                              "undefined" ||
-                            !practice?.profile?.profile_picture.startsWith(
-                              "http"
-                            )
-                              ? "/profile.png"
-                              : practice?.profile?.profile_picture
-                          }
-                          coverImage={
-                            !practice?.file ||
-                            practice?.file === "null" ||
-                            practice?.file === "undefined" ||
-                            !practice?.file.startsWith("http")
-                              ? "https://cdn.cness.io/banner.webp"
-                              : practice?.file
-                          }
-                          title={
-                            practice?.title ||
-                            practice?.profession_data?.title ||
-                            "Untitled"
-                          }
-                          description={practice?.description || ""}
-                          link={`/dashboard/bestpractices/${
-                            practice.id
-                          }/${slugify(practice.title)}`}
-                        />
-                      </div>
-                    );
-                  })}
+              ) : (
+                <div className="flex flex-col items-center justify-center text-center p-8">
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    {userDetails?.first_name || "This user"} hasn’t shared any
+                    Best Practices publicly.
+                  </h2>
+                  <PrimaryButton
+                    className="mt-6 px-6 py-2 rounded-lg whitespace-nowrap shrink-0
+                      !justify-center rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50"
+                    onClick={() => navigate("/dashboard/bestpractices")}
+                  >
+                    Explore Best Practices Hub
+                  </PrimaryButton>
                 </div>
-              </div>
-            )}
-
-            {activeTab === "best" && followBP?.length > 0 && (
-              <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
-                <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
-                  Best Practices Aligned Follow
-                </h3>
-
-                {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4"> */}
-                <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3">
-                  {followBP?.map((practice: any) => {
-                    return (
-                      <div
-                        key={practice?.id}
-                        onClick={(e) => {
-                          // Only navigate if it's not the Read More button
-                          if (
-                            !(e.target as HTMLElement).closest(".read-more-btn")
-                          ) {
-                            navigate(
-                              `/dashboard/bestpractices/${
-                                practice.id
-                              }/${slugify(practice.title)}`,
-                              {
-                                state: {
-                                  likesCount: practice.likesCount,
-                                  isLiked: practice.isLiked,
-                                },
-                              }
-                            );
-                          }
-                        }}
-                      >
-                        <BestPracticeCard
-                          name={
-                            `${practice?.profile?.first_name || ""} ${
-                              practice?.profile?.last_name || ""
-                            }`.trim() || "CNESS User"
-                          }
-                          username={practice?.user?.username || "user"}
-                          profileImage={
-                            !practice?.profile?.profile_picture ||
-                            practice?.profile?.profile_picture === "null" ||
-                            practice?.profile?.profile_picture ===
-                              "undefined" ||
-                            !practice?.profile?.profile_picture.startsWith(
-                              "http"
-                            )
-                              ? "/profile.png"
-                              : practice?.profile?.profile_picture
-                          }
-                          coverImage={
-                            !practice?.file ||
-                            practice?.file === "null" ||
-                            practice?.file === "undefined" ||
-                            !practice?.file.startsWith("http")
-                              ? "https://cdn.cness.io/banner.webp"
-                              : practice?.file
-                          }
-                          title={
-                            practice?.title ||
-                            practice?.profession_data?.title ||
-                            "Untitled"
-                          }
-                          description={practice?.description || ""}
-                          link={`/dashboard/bestpractices/${
-                            practice.id
-                          }/${slugify(practice.title)}`}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+              ))}
           </div>
 
           {/* Member Since */}
@@ -1027,6 +1271,22 @@ export default function UserProfileView() {
           </div>
         </div>
       </div>
+      <AddBestPracticeModal
+        open={activeModal}
+        onClose={closeModal}
+        newPractice={newPractice}
+        profession={profession}
+        interest={interest}
+        tags={tags}
+        inputValue={inputValue}
+        setInputValue={setInputValue}
+        removeTag={removeTag}
+        handleTagKeyDown={handleTagKeyDown}
+        handleInputChange={handleInputChange}
+        handleFileChange={handleFileChange}
+        handleSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 }
