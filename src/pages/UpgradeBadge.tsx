@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { DashboardDetails } from "../Common/ServerAPI";
+import { DashboardDetails, GetUserScoreResult } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import score from "../assets/score.svg";
 import badge from "../assets/badge.svg";
-import logo from "../assets/cnesslogo.svg";
 import bg from "../assets/certification_bg.png";
 import icon1 from "../assets/Frame 1.svg";
 import arrow from "../assets/arrow.svg";
@@ -12,7 +11,14 @@ import CertificationPlans from "../components/sections/Certification/Certificati
 
 const UpgradeBadge = () => {
   const [user, setUser] = useState<any | null>(null);
+  const [scoreData, setScoreData] = useState<any>(null);
+  console.log("scoreData", scoreData);
   const { showToast } = useToast();
+
+  useEffect(() => {
+    fetchDashboard();
+    fetchRatingDetails();
+  }, []);
 
   const fetchDashboard = async () => {
     try {
@@ -31,9 +37,19 @@ const UpgradeBadge = () => {
     }
   };
 
-  useEffect(() => {
-    fetchDashboard();
-  }, []);
+  const fetchRatingDetails = async () => {
+    try {
+      const res = await GetUserScoreResult();
+      setScoreData(res.data.data);
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    } 
+  };
+
   return (
     <>
       <section className="w-full px-2 sm:px-4 lg:px-0.5 pt-4 pb-10">
@@ -172,13 +188,21 @@ const UpgradeBadge = () => {
                 Badge
               </h5>
             </div>
-            <div className="flex-1 flex items-center justify-center">
-              <img
-                src={logo}
-                alt="badge logo"
-                className="max-w-[136px] h-auto object-contain"
-              />
-            </div>
+            {scoreData?.badge?.level ? (
+              <div className="flex-1 flex items-center justify-center">
+                <img
+                  src={
+                    scoreData.badge.level === "Aspiring"
+                      ? "https://cdn.cness.io/aspiring.webp"
+                      : "https://cdn.cness.io/inspired.webp"
+                  }
+                  alt={`${scoreData.badge.level} Badge`}
+                  className="max-w-[136px] h-auto object-contain"
+                />
+              </div>
+            ) : (
+              <div className="h-[87px]"></div>
+            )}
           </div>
         </div>
         <div className="relative my-5 flex flex-col items-center justify-center w-full h-full px-6 pt-6 pb-8 md:pb-12 rounded-xl">
@@ -197,7 +221,7 @@ const UpgradeBadge = () => {
             </h5>
           </div>
           <div className="w-full relative">
-            <CertificationPlans />
+            <CertificationPlans data={scoreData}/>
           </div>
         </div>
         <div className="my-5 bg-white flex flex-col w-full h-full px-[18px] pt-[18px] pb-6 rounded-xl">

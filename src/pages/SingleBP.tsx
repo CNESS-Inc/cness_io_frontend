@@ -228,11 +228,14 @@ useEffect(() => {
             <div className="absolute z-20 top-[90px] left-1/2 transform -translate-x-1/2">
               <img
                 src={
-                  singlepost.profile?.profile_picture &&
-                  singlepost.profile.profile_picture !==
+                  !singlepost.profile?.profile_picture ||
+                  singlepost.profile?.profile_picture === "null" ||
+                  singlepost.profile?.profile_picture === "undefined" ||
+                  !singlepost.profile?.profile_picture.startsWith("http") ||
+                  singlepost.profile?.profile_picture ===
                     "http://localhost:5026/file/"
-                    ? singlepost.profile.profile_picture
-                    : "/profile.png"
+                    ? "/profile.png"
+                    : singlepost.profile?.profile_picture
                 }
                 alt="Profile"
                 className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full border-4 border-white object-cover shadow-xl"

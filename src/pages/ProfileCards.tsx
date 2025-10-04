@@ -20,7 +20,15 @@ export default function ProfileCard({
         {/* Image */}
         <div className="relative w-full h-[209px] xs:h-[160px]">
           <img
-            src={profilePicture ? profilePicture : "/profile.png"}
+            src={
+              !profilePicture ||
+              profilePicture === "null" ||
+              profilePicture === "undefined" ||
+              !profilePicture.startsWith("http") ||
+              profilePicture === "http://localhost:5026/file/"
+                ? "/profile.png"
+                : profilePicture
+            }
             alt={`${firstName} ${lastName}`}
             className="w-full h-full object-cover rounded-[12px]"
           />

@@ -69,7 +69,7 @@ const DashboardHeader = ({
     localStorage.getItem("margaret_name") || ""
   );
   const [profilePic, setProfilePic] = useState(
-    localStorage.getItem("profile_picture") || ""
+    localStorage.getItem("profile_picture")
   );
 
   // State for notifications from API
@@ -546,9 +546,11 @@ const DashboardHeader = ({
                 src={
                   !profilePic ||
                   profilePic === "null" ||
-                  profilePic === "undefined"
-                    ? "/profile.png"
-                    : defaultAvatar
+                  profilePic === "undefined" ||
+                  !profilePic.startsWith("http") ||
+                  profilePic === "http://localhost:5026/file/"
+                    ? defaultAvatar
+                    : profilePic
                 }
                 alt="User avatar"
                 className="w-[44.25px] h-[44.25px] rounded-full border-[0.39px] border-transparent bg-gradient-to-r from-[#9747FF] to-[#F3CCF3]"
@@ -597,7 +599,9 @@ const DashboardHeader = ({
                 src={
                   !profilePic ||
                   profilePic === "null" ||
-                  profilePic === "undefined"
+                  profilePic === "undefined" ||
+                  !profilePic.startsWith("http") ||
+                  profilePic === "http://localhost:5026/file/"
                     ? defaultAvatar
                     : profilePic
                 }

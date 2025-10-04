@@ -1358,8 +1358,9 @@ export default function SocialTopBar() {
                           src={
                             !userProfilePicture ||
                             userProfilePicture === "null" ||
-                            userProfilePicture === "undefined"
-                              ? '/profile.png'
+                            userProfilePicture === "undefined" ||
+                            !userProfilePicture.startsWith("http")
+                              ? "/profile.png"
                               : userProfilePicture
                           }
                           alt="User"
@@ -1535,9 +1536,12 @@ export default function SocialTopBar() {
                           >
                             <img
                               src={
-                                post.profile.profile_picture
-                                  ? post.profile.profile_picture
-                                  : "/profile.png"
+                                !post.profile.profile_picture ||
+                                post.profile.profile_picture === "null" ||
+                                post.profile.profile_picture === "undefined" ||
+                                !post.profile.profile_picture.startsWith("http")
+                                  ? "/profile.png"
+                                  : post.profile.profile_picture
                               }
                               className="w-8 h-8 md:w-[63px] md:h-[63px] rounded-full"
                               alt="User"
@@ -2209,9 +2213,12 @@ export default function SocialTopBar() {
                   <Link to={`/dashboard/userprofile/${userInfo?.id}`}>
                     <img
                       src={
-                        userInfo.profile_picture
-                          ? userInfo.profile_picture
-                          : "/profile.png"
+                        !userInfo.profile_picture ||
+                        userInfo.profile_picture === "null" ||
+                        userInfo.profile_picture === "undefined" ||
+                        !userInfo.profile_picture.startsWith("http")
+                          ? "/profile.png"
+                          : userInfo.profile_picture
                       }
                       className="w-8 h-8 md:w-10 md:h-10 rounded-full"
                       alt="User"

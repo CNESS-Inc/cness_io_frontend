@@ -663,11 +663,16 @@ const Managebestpractices = () => {
                           <div className="flex items-start gap-1 pr-12">
                             <img
                               src={
-                                company?.user?.profilePicture &&
-                                company?.user?.profilePicture !==
+                                !company?.user?.profilePicture ||
+                                company?.user?.profilePicture === "null" ||
+                                company?.user?.profilePicture === "undefined" ||
+                                !company?.user?.profilePicture.startsWith(
+                                  "http"
+                                ) ||
+                                company?.user?.profilePicture ===
                                   "http://localhost:5026/file/"
-                                  ? company?.user?.profilePicture
-                                  : "/profile.png"
+                                  ? "/profile.png"
+                                  : company?.user?.profilePicture
                               }
                               alt={company.user.username}
                               className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover mr-2 sm:mr-3"
@@ -691,12 +696,15 @@ const Managebestpractices = () => {
                           <div className="rounded-xl overflow-hidden mb-3">
                             {company.file && (
                               <img
-                                src={
-                                  company.file &&
-                                  company.file !== "http://localhost:5026/file/"
-                                    ? company.file
-                                    : iconMap["companycard1"]
-                                }
+                              src={
+                                !company.file ||
+                                company.file === "null" ||
+                                company.file === "undefined" ||
+                                !company.file.startsWith("http") ||
+                                company.file === "http://localhost:5026/file/"
+                                ? iconMap["companycard1"]
+                                : company.file
+                              }
                                 alt={company.title}
                                 className="w-full h-40 sm:h-48 object-cover"
                                 onError={(e) => {
@@ -793,11 +801,16 @@ const Managebestpractices = () => {
                         <div className="flex items-start gap-1 pr-12">
                           <img
                             src={
-                              company?.user?.profilePicture &&
-                              company?.user?.profilePicture !==
+                              !company?.user?.profilePicture ||
+                              company?.user?.profilePicture === "null" ||
+                              company?.user?.profilePicture === "undefined" ||
+                              !company?.user?.profilePicture.startsWith(
+                                "http"
+                              ) ||
+                              company?.user?.profilePicture ===
                                 "http://localhost:5026/file/"
-                                ? company?.user?.profilePicture
-                                : "/profile.png"
+                                ? "/profile.png"
+                                : company?.user?.profilePicture
                             }
                             alt={company.user.username}
                             className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover mr-2 sm:mr-3"
@@ -820,11 +833,14 @@ const Managebestpractices = () => {
                         <div className="rounded-xl overflow-hidden mb-3">
                           {company.file && (
                             <img
-                              src={
-                                company.file &&
-                                company.file !== "http://localhost:5026/file/"
-                                  ? company.file
-                                  : iconMap["companycard1"]
+                            src={
+                                !company.file ||
+                                company.file === "null" ||
+                                company.file === "undefined" ||
+                                !company.file.startsWith("http") ||
+                                company.file === "http://localhost:5026/file/"
+                                ? iconMap["companycard1"]
+                                : company.file 
                               }
                               alt={company.title}
                               className="w-full h-40 sm:h-48 object-cover"

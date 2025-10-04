@@ -106,7 +106,7 @@ export default function CompanyCard({
   const handleModalClose = () => {
     setShowLoginPrompt(false);
     if (targetPath) {
-      navigate(targetPath); 
+      navigate(targetPath);
       setTargetPath(null);
     }
   };
@@ -142,9 +142,13 @@ export default function CompanyCard({
           <div className="flex items-start gap-1 pr-12">
             <img
               src={
-                logoUrl && logoUrl !== "http://localhost:5026/file/"
-                  ? logoUrl
-                  : "/profile.png"
+                !logoUrl ||
+                logoUrl === "null" ||
+                logoUrl === "undefined" ||
+                !logoUrl.startsWith("http") ||
+                logoUrl === "http://localhost:5026/file/"
+                  ? "/profile.jpg"
+                  : logoUrl
               }
               alt={`${name} logo`}
               className="h-8 w-8 rounded-full"
@@ -167,9 +171,13 @@ export default function CompanyCard({
           <div className="rounded-xl overflow-hidden mb-3">
             <img
               src={
-                bannerUrl && bannerUrl !== "http://localhost:5026/file/"
-                  ? bannerUrl
-                  : iconMap["companycard1"]
+                !bannerUrl ||
+                bannerUrl === "null" ||
+                bannerUrl === "undefined" ||
+                !bannerUrl.startsWith("http") ||
+                bannerUrl === "http://localhost:5026/file/"
+                  ? iconMap["companycard1"]
+                  : bannerUrl
               }
               alt={`${name} banner`}
               className="w-full h-36 object-cover"
@@ -180,47 +188,49 @@ export default function CompanyCard({
             />
           </div>
 
-           {/* Show section only if real description OR rating > 0 */}
- {description && description !== "No description available" && (
-    <>
-      <p className="text-sm font-semibold text-gray-800 mb-1">Overview</p>
-      <p className="text-sm text-gray-600 leading-snug mb-2">
-        {showFullDescription ? description : truncatedDescription}
-        {description.length > maxDescriptionLength && (
-          <span
-            className="text-purple-600 underline cursor-pointer ml-1"
-            onClick={toggleDescription}
-          >
-            {showFullDescription ? "Read Less" : "Read More"}
-          </span>
-        )}
-      </p>
-    </>
-  )}
+          {/* Show section only if real description OR rating > 0 */}
+          {description && description !== "No description available" && (
+            <>
+              <p className="text-sm font-semibold text-gray-800 mb-1">
+                Overview
+              </p>
+              <p className="text-sm text-gray-600 leading-snug mb-2">
+                {showFullDescription ? description : truncatedDescription}
+                {description.length > maxDescriptionLength && (
+                  <span
+                    className="text-purple-600 underline cursor-pointer ml-1"
+                    onClick={toggleDescription}
+                  >
+                    {showFullDescription ? "Read Less" : "Read More"}
+                  </span>
+                )}
+              </p>
+            </>
+          )}
 
-  {/* Rating aligned right */}
-  {typeof rating === "number" && rating > 0 && (
-  <div className="flex justify-end mb-2">
-    <div className="flex items-center text-yellow-500 text-sm">
-      {"★".repeat(rating)}
-      {"☆".repeat(5 - rating)}
-    </div>
-  </div>
-)}
+          {/* Rating aligned right */}
+          {typeof rating === "number" && rating > 0 && (
+            <div className="flex justify-end mb-2">
+              <div className="flex items-center text-yellow-500 text-sm">
+                {"★".repeat(rating)}
+                {"☆".repeat(5 - rating)}
+              </div>
+            </div>
+          )}
 
-  {/* Tags only if available */}
-  {tags?.length > 0 && (
-    <div className="flex flex-wrap gap-2 mt-3">
-      {tags.map((tag, index) => (
-        <span
-          key={index}
-          className="bg-[#7077FE1A] text-[#7077FE] px-[26px] py-[6px] rounded-lg text-xs"
-        >
-          {tag}
-        </span>
-      ))}
-    </div>
-  )}
+          {/* Tags only if available */}
+          {tags?.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="bg-[#7077FE1A] text-[#7077FE] px-[26px] py-[6px] rounded-lg text-xs"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
         </CardContent>
 
         <CardFooter className="flex justify-between items-center px-4 py-3">
