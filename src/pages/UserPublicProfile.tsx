@@ -94,7 +94,7 @@ export default function UserProfileView() {
   const handleShareClose = () => setIsShareOpen(false);
   const [activeModal, setActiveModal] = useState(false);
   const loggedInUserID = localStorage.getItem("Id");
-  const [profession, setProfession] = useState<Profession[]>([]);
+  const [profession, setProfession] = useState<any[]>([]);
   const [interest, setInterestData] = useState<any[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
