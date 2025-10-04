@@ -1,15 +1,31 @@
 // src/components/Footer.jsx
-
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Image from "../../components/ui/Image";
 import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
 import BackToTopButton from "./BackToTop";
 import vector from "../../assets/Vector.svg";
-
+import ContentModal from "../../components/ui/ContentModal";
 
 
 
 const Footer = () => {
+  const [showTermModal, setShowTermModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [content, setContent] = useState('');
+  const [privacyContent, privacySetContent] = useState('');
+
+  useEffect(() => {
+    fetch("/terms and conditions new.html")
+      .then((res) => res.text())
+      .then((data) => setContent(data));
+  }, []);
+  useEffect(() => {
+    fetch("/CNESS privacy policy.htm")
+      .then((res) => res.text())
+      .then((data) => privacySetContent(data));
+  }, []);
+
   return (
     <>
     
@@ -59,6 +75,7 @@ const Footer = () => {
                    <li><Link to="/certifications" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Certification</Link></li>
                   <li><Link to="/premium" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Premium</Link></li>
                   <li><Link to="/whycness" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Why CNESS</Link></li>
+                  <li><Link to="/cness-marketplace" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Become a seller</Link></li>
                 </ul>
               </div>
 
@@ -112,24 +129,74 @@ const Footer = () => {
           </div>          
           <div className="flex flex-wrap justify-between gap-4 md:gap-16 lg:gap-24">
 
-            <Link to="/terms-and-conditions" className="text-[15px] leading-[100%] font-[600] font-[Plus Jakarta Sans] text-white">
+            {/* <Link to="/terms-and-conditions" className="text-[15px] leading-[100%] font-[600] font-[Plus Jakarta Sans] text-white">
               Terms & Conditions
-            </Link>
-            <Link to="/privacy-policy" className="text-[15px] leading-[100%] font-[600] font-[Plus Jakarta Sans] text-white">
+            </Link> */}
+            <button onClick={() => setShowTermModal(true)} className="text-[15px] leading-[100%] font-[600] font-[Plus Jakarta Sans] text-white">
+              Terms & Conditions
+            </button> 
+            {/* <Link to="/privacy-policy" className="text-[15px] leading-[100%] font-[600] font-[Plus Jakarta Sans] text-white">
               Privacy Policy
-            </Link>
+            </Link> */}
+            <button onClick={() => setShowPrivacyModal(true)} className="text-[15px] leading-[100%] font-[600] font-[Plus Jakarta Sans] text-white">
+              Privacy Policy
+            </button> 
           </div>
         </div>
         <div className="max-w-7xl mx-auto lg:hidden flex flex-row  justify-between items-center gap-2">
           <p className="text-xs md:text-sm jakarta font-semibold">Copyright © {new Date().getFullYear()}</p>
-            <Link to="/terms-and-conditions" className="text-xs md:text-sm hover:underline jakarta font-semibold">
+            {/* <Link to="/terms-and-conditions" className="text-xs md:text-sm hover:underline jakarta font-semibold">
               Terms & Conditions
-            </Link>
-            <Link to="/privacy-policy" className="text-xs md:text-sm hover:underline jakarta font-semibold">
+            </Link> */}
+            <button onClick={() => setShowTermModal(true)} className="text-xs md:text-sm hover:underline jakarta font-semibold">
+              Terms & Conditions
+            </button> 
+            {/* <Link to="/privacy-policy" className="text-xs md:text-sm hover:underline jakarta font-semibold">
               Privacy Policy
-            </Link>
+            </Link> */}
+             <button onClick={() => setShowPrivacyModal(true)} className="text-xs md:text-sm hover:underline jakarta font-semibold">
+              Privacy Policy
+            </button>
         </div>
       </div>
+
+      {/* Term & condition Modal */}
+      <ContentModal isOpen={showTermModal} onClose={() => setShowTermModal(false)}>
+        <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
+          <h3 className="lg:text-[36px] md:text-[30] text-[24px] font-[500] text-black mb-4 text-center">
+            CNESS TERMS AND CONDITIONS
+          </h3>
+          <div
+            className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg w-full max-w-7xl max-h-[500px] overflow-y-auto content-container"
+            style={{
+              fontFamily: "'Open Sans', 'Poppins', sans-serif",
+              fontSize: "16px",
+              textAlign: "justify",
+              lineHeight: "1.6",
+              color: "#333",
+            }}
+            dangerouslySetInnerHTML={{ __html: content }}
+          />
+          </div>
+      </ContentModal>
+      <ContentModal isOpen={showPrivacyModal} onClose={() => setShowPrivacyModal(false)}>
+        <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
+          <h3 className="lg:text-[36px] md:text-[30] text-[24px] font-[500] text-black mb-4 text-center">
+            CNESS PRIVACY POLICY
+          </h3>
+          <div
+            className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg w-full max-w-7xl max-h-[500px] overflow-y-auto content-container"
+            style={{
+              fontFamily: "'Open Sans', 'Poppins', sans-serif",
+              fontSize: "16px",
+              textAlign: "justify",
+              lineHeight: "1.6",
+              color: "#333",
+            }}
+            dangerouslySetInnerHTML={{ __html: privacyContent }}
+          />
+          </div>
+      </ContentModal>
     </>
   );
 };

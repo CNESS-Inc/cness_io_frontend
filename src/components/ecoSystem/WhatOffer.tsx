@@ -1,49 +1,58 @@
-import bulb from "../../assets/bulb.png";
+"use client";
+
 
 const features = [
   {
     id: "01",
+    icon: "/ecosystem_social.png",
     title: "Social Media",
     description:
       "Share stories, inspire others, and build your personal brand.",
   },
   {
     id: "02",
+    icon: "/award.png",
     title: "Certification",
     description: "Gain knowledge, upskill, and get certified with ease.",
   },
   {
     id: "03",
+    icon: "/market-place.png",
     title: "Marketplace",
     description:
       "A digital space to buy, sell, and showcase meaningful products.",
   },
   {
     id: "04",
+    icon: "/lms.png",
     title: "LMS",
     description:
       "Access courses and structured learning paths to upskill at your own pace.",
   },
   {
     id: "05",
+    icon: "/directory.png",
     title: "Directory",
     description:
       "A hub to discover verified businesses, professionals, communities, and creators.",
   },
   {
     id: "06",
+    icon: "/best-practice.png",
     title: "Best Practices",
     description:
       "Ensure ethical learning, responsible selling, & conscious growth.",
   },
   {
     id: "07",
+    icon: "/ecosystem-location.png",
     title: "AriOme",
     description:
       "Explore curated content that informs, entertains, and inspires.",
   },
   {
     id: "08",
+    icon: "/communities.png",
     title: "Communities",
     description: "Connect, collaborate, and grow with like-minded individuals.",
   },
@@ -76,8 +85,8 @@ export default function WhatOffer() {
               className="relative rounded-4xl bg-[#FAFAFA] hover:shadow-md transition p-6"
             >
               {/* Top right icon */}
-              <div className="absolute top-4 right-4 w-10 h-10">
-                <img src={bulb} alt="bulb" />
+              <div className="absolute top-4 right-4 w-8 h-8">
+                <img src={item.icon} alt="bulb" className="ecosystem-card-icon w-full h-full object-cover " />
               </div>
 
               {/* Number */}
