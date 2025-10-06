@@ -35,7 +35,7 @@ type SignupModalProps = {
   onGoogle?: () => void;
 };
 
-export default function SignupModal({ open, onClose }: SignupModalProps) {
+export default function SignupModal({ open = true, onClose = () => {} }: SignupModalProps) {
   // const [email, setEmail] = useState("");
   // const [pwd, setPwd] = useState("");
   // const [pwd2, setPwd2] = useState("");
@@ -301,118 +301,119 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
   //const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY; // or process.env...
 
   return (
-    <PopupOnboardingModal open={open} onClose={onClose}>
-      {/* Right-side content only */}
-      <div className={formssubmitted ? "hidden" : ""}>
-        <h1 className="text-center font-[Poppins] font-medium text-[32px] leading-[100%] tracking-[-0.03em] text-gray-900">
-          Create a Free Account
-        </h1>
+    <>
+      <PopupOnboardingModal open={open} onClose={onClose}>
+        {/* Right-side content only */}
+        <div className={formssubmitted ? "hidden" : ""}>
+          <h1 className="text-center font-[Poppins] font-medium text-[32px] leading-[100%] tracking-[-0.03em] text-gray-900">
+            Create a Free Account
+          </h1>
 
-        <ul className="mt-4 flex justify-center items-center gap-6 text-sm text-gray-600">
-          <li className="flex items-center gap-2 font-[Open_Sans] font-normal text-[14px] leading-[100%] tracking-[0px] text-gray-700">
-            <Check className="h-6 w-6 stroke-[3px] text-green-500" />
-            Forever Free plan
-          </li>
-          <li className="flex items-center gap-2 font-[Open_Sans] font-normal text-[14px] leading-[100%] tracking-[0px] text-gray-700">
-            <Check className="h-6 w-6 stroke-[3px] text-green-500" />
-            Setup in minutes
-          </li>
-        </ul>
+          <ul className="mt-4 flex justify-center items-center gap-6 text-sm text-gray-600">
+            <li className="flex items-center gap-2 font-[Open_Sans] font-normal text-[14px] leading-[100%] tracking-[0px] text-gray-700">
+              <Check className="h-6 w-6 stroke-[3px] text-green-500" />
+              Forever Free plan
+            </li>
+            <li className="flex items-center gap-2 font-[Open_Sans] font-normal text-[14px] leading-[100%] tracking-[0px] text-gray-700">
+              <Check className="h-6 w-6 stroke-[3px] text-green-500" />
+              Setup in minutes
+            </li>
+          </ul>
 
-        <button
-          type="button"
-          onClick={() => {
-            login();
-            navigate("/log-in", {
-              state: { autoGoogleLogin: true },
-            });
-          }}
-          className="mt-6 w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-800 shadow-sm hover:bg-gray-50"
-        >
-          <span
-            className="
+          <button
+            type="button"
+            onClick={() => {
+              login();
+              navigate("/log-in", {
+                state: { autoGoogleLogin: true },
+              });
+            }}
+            className="mt-6 w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-800 shadow-sm hover:bg-gray-50"
+          >
+            <span
+              className="
               inline-flex items-center gap-3
               font-inter font-medium
               text-[14px] leading-[20px] tracking-[0]
               text-gray-900
             "
-          >
-            <img
-              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-              alt="Google"
-              className="h-5 w-5"
-            />
-            Register with Google
-          </span>
-        </button>
-      </div>
-      {/* Divider */}
-      <div
-        className={`
+            >
+              <img
+                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                alt="Google"
+                className="h-5 w-5"
+              />
+              Register with Google
+            </span>
+          </button>
+        </div>
+        {/* Divider */}
+        <div
+          className={`
           my-6 flex items-center
           lg:w-[415px] w-full h-[19px]
           gap-[20px]
           text-[14px] leading-[100%] tracking-[0]
           font-['Open_Sans'] font-normal
           text-gray-500 ${formssubmitted ? " hidden" : ""}`}
-      >
-        <div className="h-px w-full bg-gray-200" />
-
-        <span
-          className={`whitespace-nowrap ${formssubmitted ? " hidden" : ""}`}
         >
-          Or sign up with
-        </span>
-        <div className="h-px w-full bg-gray-200" />
-      </div>
-      <form
-        className={`grid grid-cols-1 gap-4 ${formssubmitted ? "hidden" : ""}`}
-        onSubmit={handleRegisterSubmit}
-      >
-        {/* Username */}
-        <label className="block">
-          <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
-            Username
+          <div className="h-px w-full bg-gray-200" />
+
+          <span
+            className={`whitespace-nowrap ${formssubmitted ? " hidden" : ""}`}
+          >
+            Or sign up with
           </span>
-          <input
-            type="text"
-            name="username"
-            value={registerForm.username}
-            onChange={handleRegisterChange}
-            onBlur={() => {
-              setTouched((prev) => ({ ...prev, username: true }));
-              validateForm(registerForm);
-            }}
-            placeholder="Enter your Username"
-            className="w-full h-[45px]
+          <div className="h-px w-full bg-gray-200" />
+        </div>
+        <form
+          className={`grid grid-cols-1 gap-4 ${formssubmitted ? "hidden" : ""}`}
+          onSubmit={handleRegisterSubmit}
+        >
+          {/* Username */}
+          <label className="block">
+            <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
+              Username
+            </span>
+            <input
+              type="text"
+              name="username"
+              value={registerForm.username}
+              onChange={handleRegisterChange}
+              onBlur={() => {
+                setTouched((prev) => ({ ...prev, username: true }));
+                validateForm(registerForm);
+              }}
+              placeholder="Enter your Username"
+              className="w-full h-[45px]
                   rounded-[4px] border-2 border-gray-200
                   px-[10px]  /* pr + pl = 10px */
                   outline-none
                   text-[14px] leading-[20px]
                   placeholder:text-gray-400"
-            required
-          />
-          {(touched.username || formssubmitted) && errors.username && (
-            <p className="text-sm text-red-600">{errors.username}</p>
-          )}
-        </label>
-        {/* Email */}
-        <label className="block">
-          <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
-            Email
-          </span>
-          <input
-            type="email"
-            name="email"
-            required
-            placeholder="Enter your email"
-            value={registerForm.email}
-            onChange={handleRegisterChange}
-            onBlur={() => {
-              setTouched((prev) => ({ ...prev, email: true }));
-              validateForm(registerForm);
-            }}
-            className="
+              required
+            />
+            {(touched.username || formssubmitted) && errors.username && (
+              <p className="text-sm text-red-600">{errors.username}</p>
+            )}
+          </label>
+          {/* Email */}
+          <label className="block">
+            <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
+              Email
+            </span>
+            <input
+              type="email"
+              name="email"
+              required
+              placeholder="Enter your email"
+              value={registerForm.email}
+              onChange={handleRegisterChange}
+              onBlur={() => {
+                setTouched((prev) => ({ ...prev, email: true }));
+                validateForm(registerForm);
+              }}
+              className="
                   lg:w-[415px] w-full h-[45px]
                   rounded-[4px] border-2 border-gray-200
                   px-[10px]  /* pr + pl = 10px */
@@ -421,30 +422,30 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
                   placeholder:text-gray-400
                 
                 "
-          />
-          {(touched.email || formssubmitted) && errors.email && (
-            <p className="text-sm text-red-600">{errors.email}</p>
-          )}
-        </label>
+            />
+            {(touched.email || formssubmitted) && errors.email && (
+              <p className="text-sm text-red-600">{errors.email}</p>
+            )}
+          </label>
 
-        {/* Passwords */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <label className="block w-full">
-            <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
-              Password
-            </span>
-            <input
-              type="password"
-              name="password"
-              required
-              placeholder="Type your password"
-              value={registerForm.password}
-              onChange={handleRegisterChange}
-              onBlur={() => {
-                setTouched((prev) => ({ ...prev, password: true }));
-                validateForm(registerForm);
-              }}
-              className="
+          {/* Passwords */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <label className="block w-full">
+              <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
+                Password
+              </span>
+              <input
+                type="password"
+                name="password"
+                required
+                placeholder="Type your password"
+                value={registerForm.password}
+                onChange={handleRegisterChange}
+                onBlur={() => {
+                  setTouched((prev) => ({ ...prev, password: true }));
+                  validateForm(registerForm);
+                }}
+                className="
                     lg:w-[195.5px] w-full h-[45px]
                     rounded-[4px] border-2 border-gray-200
                     px-[10px]
@@ -453,28 +454,28 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
                     placeholder:text-gray-400
                   
                   "
-            />
-            {(touched.password || formssubmitted) && errors.password && (
-              <p className="text-sm text-red-600">{errors.password}</p>
-            )}
-          </label>
+              />
+              {(touched.password || formssubmitted) && errors.password && (
+                <p className="text-sm text-red-600">{errors.password}</p>
+              )}
+            </label>
 
-          <label className="block w-full">
-            <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
-              Re-type Password
-            </span>
-            <input
-              type="password"
-              name="confirmPassword"
-              required
-              placeholder="Re-type your password"
-              value={registerForm.confirmPassword}
-              onChange={handleRegisterChange}
-              onBlur={() => {
-                setTouched((prev) => ({ ...prev, confirmPassword: true }));
-                validateForm(registerForm);
-              }}
-              className="
+            <label className="block w-full">
+              <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
+                Re-type Password
+              </span>
+              <input
+                type="password"
+                name="confirmPassword"
+                required
+                placeholder="Re-type your password"
+                value={registerForm.confirmPassword}
+                onChange={handleRegisterChange}
+                onBlur={() => {
+                  setTouched((prev) => ({ ...prev, confirmPassword: true }));
+                  validateForm(registerForm);
+                }}
+                className="
                     lg:w-[195.5px] w-full h-[45px]
                     rounded-[4px] border-2 border-gray-200
                     px-[10px]
@@ -483,44 +484,46 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
                     placeholder:text-gray-400
                     
                   "
-            />
-            {(touched.confirmPassword || formssubmitted) &&
-              errors.confirmPassword && (
-                <p className="text-sm text-red-600">{errors.confirmPassword}</p>
-              )}
-          </label>
-        </div>
+              />
+              {(touched.confirmPassword || formssubmitted) &&
+                errors.confirmPassword && (
+                  <p className="text-sm text-red-600">
+                    {errors.confirmPassword}
+                  </p>
+                )}
+            </label>
+          </div>
 
-        <p
-          className="
+          <p
+            className="
                 font-['Poppins'] font-normal
                 text-[9px] leading-[100%] tracking-[0]
                 text-gray-500
               "
-        >
-          Password must be at least 8 characters with uppercase, number, and
-          special character
-        </p>
+          >
+            Password must be at least 8 characters with uppercase, number, and
+            special character
+          </p>
 
-        {/* Referral + CAPTCHA placeholder */}
-        <div className="grid grid-cols-1 gap-4">
-          {/* Referral Code */}
-          <div className="mb-0 w-[100%]">
-            <label className="block">
-              <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
-                Referral code (optional)
-              </span>
-              <input
-                type="text"
-                name="referralCode"
-                placeholder="Enter your referral code"
-                value={registerForm.referralCode}
-                onChange={handleRegisterChange}
-                onBlur={() => {
-                  setTouched((prev) => ({ ...prev, referralCode: true }));
-                  validateForm(registerForm);
-                }}
-                className="
+          {/* Referral + CAPTCHA placeholder */}
+          <div className="grid grid-cols-1 gap-4">
+            {/* Referral Code */}
+            <div className="mb-0 w-[100%]">
+              <label className="block">
+                <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
+                  Referral code (optional)
+                </span>
+                <input
+                  type="text"
+                  name="referralCode"
+                  placeholder="Enter your referral code"
+                  value={registerForm.referralCode}
+                  onChange={handleRegisterChange}
+                  onBlur={() => {
+                    setTouched((prev) => ({ ...prev, referralCode: true }));
+                    validateForm(registerForm);
+                  }}
+                  className="
                       w-full h-[45px]
                       rounded-[4px] border-2 border-gray-200
                       px-[10px]
@@ -529,96 +532,101 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
                       placeholder:text-gray-400
                     
                     "
-              />
-            </label>
-            {(touched.referralCode || formssubmitted) &&
-              errors.referralCode && (
-                <p className="text-sm text-red-600">{errors.referralCode}</p>
-              )}
-          </div>
+                />
+              </label>
+              {(touched.referralCode || formssubmitted) &&
+                errors.referralCode && (
+                  <p className="text-sm text-red-600">{errors.referralCode}</p>
+                )}
+            </div>
 
-          {/* CAPTCHA */}
-          <div className="mt-4 md:mt-0 grid place-items-center w-full  overflow-hidden">
-            <div className="w-full h-full flex flex-col items-center justify-start">
-              <ReCAPTCHA
-                ref={recaptchaRef}
-                sitekey={RECAPTCHA_SITE_KEY}
-                onChange={(value) => {
-                  handleCaptchaChange(value);
-                  setRecaptchaTouched(false);
-                }}
-                style={{ width: "100%" }}
-              />
-              {(errors.recaptcha || (recaptchaTouched && !recaptchaValue)) && (
-                <p className="mt-1 text-sm text-red-600">
-                  Please complete reCAPTCHA
-                </p>
-              )}
+            {/* CAPTCHA */}
+            <div className="mt-4 md:mt-0 grid place-items-center w-full overflow-hidden">
+              <div className="w-full h-full flex flex-col items-center justify-start">
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey={RECAPTCHA_SITE_KEY}
+                  onChange={(value) => {
+                    handleCaptchaChange(value);
+                    setRecaptchaTouched(false);
+                  }}
+                  style={{ width: "100%" }}
+                />
+                {(errors.recaptcha ||
+                  (recaptchaTouched && !recaptchaValue)) && (
+                  <p className="mt-1 text-sm text-red-600">
+                    Please complete reCAPTCHA
+                  </p>
+                )}
+              </div>
             </div>
           </div>
-        </div>
 
-        {registerError && (
-          <p className="text-sm text-red-600 mb-0">{registerError}</p>
-        )}
+          {registerError && (
+            <p className="text-sm text-red-600 mb-0">{registerError}</p>
+          )}
 
-        {/* Submit */}
-        <button
-          type="submit"
-          className="mt-0 w-full rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-6 py-0 h-[42px] text-white text-[14px] shadow-md hover:opacity-95"
-          disabled={registerLoading || !recaptchaValue}
-        >
-          {registerLoading ? "Signing In..." : "Sign In"}
-        </button>
-      </form>
-
-      <p
-        className={`mt-4 text-center text-[13px] text-gray-600 ${
-          formssubmitted ? "hidden" : ""
-        }`}
-      >
-        Already have an account?{" "}
-        <button
-          type="button"
-          onClick={() => setOpenLogin(true)}
-          className="text-purple-600 hover:underline font-medium"
-        >
-          Login
-        </button>
-      </p>
-
-      <div
-        className={`w-full h-full flex flex-col justify-center items-center ${
-          formssubmitted ? "block" : "hidden"
-        }`}
-      >
-        <h2 className="text-[32px] text-black font-[500] mb-2">
-          Verify Your E-Mail
-        </h2>
-        <p className="text-[#64748B] text-[14px] font-[400]">
-          We have sent a verification link to your mail id
-        </p>
-        <span className="text-[16px] text-[#9747FF] font-[600] mb-[35px]">
-          {useremail}
-        </span>
-        <button
-          type="submit"
-          onClick={handleResendMail}
-          className="mt-0 w-full rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-6 py-0 h-[45px] text-white text-[14px] shadow-md hover:opacity-95"
-        >
-          Resend Verification Email
-        </button>
-        <p className="mt-4 text-center text-[13px] text-[#64748B]">
-          Do you want to change your email ID?{" "}
-          <Link
-            to="/"
-            className="text-purple-600 hover:underline font-medium ml-2"
+          {/* Submit */}
+          <button
+            type="submit"
+            className="mt-0 w-full rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-6 py-0 h-[42px] text-white text-[14px] shadow-md hover:opacity-95"
+            disabled={registerLoading || !recaptchaValue}
           >
-            Re-type Again
-          </Link>
+            {registerLoading ? "Signing Up..." : "Sign Up"}
+          </button>
+        </form>
+
+        <p
+          className={`mt-4 text-center text-[13px] text-gray-600 ${
+            formssubmitted ? "hidden" : ""
+          }`}
+        >
+          Already have an account?{" "}
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              setOpenLogin(true);
+            }}
+            className="text-purple-600 hover:underline font-medium"
+          >
+            Login
+          </button>
         </p>
-      </div>
+
+        <div
+          className={`w-full h-[730px] flex flex-col justify-center items-center ${
+            formssubmitted ? "block" : "hidden"
+          }`}
+        >
+          <h2 className="text-[32px] text-black font-[500] mb-2">
+            Verify Your E-Mail
+          </h2>
+          <p className="text-[#64748B] text-[14px] font-[400]">
+            We have sent a verification link to your mail id
+          </p>
+          <span className="text-[16px] text-[#9747FF] font-[600] mb-[35px]">
+            {useremail}
+          </span>
+          <button
+            type="submit"
+            onClick={handleResendMail}
+            className="mt-0 w-full rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-6 py-0 h-[45px] text-white text-[14px] shadow-md hover:opacity-95"
+          >
+            Resend Verification Email
+          </button>
+          <p className="mt-4 text-center text-[13px] text-[#64748B]">
+            Do you want to change your email ID?{" "}
+            <Link
+              to="/"
+              className="text-purple-600 hover:underline font-medium ml-2"
+            >
+              Re-type Again
+            </Link>
+          </p>
+        </div>
+      </PopupOnboardingModal>
       <Loginmodule open={openLogin} onClose={() => setOpenLogin(false)} />
-    </PopupOnboardingModal>
+    </>
   );
 }

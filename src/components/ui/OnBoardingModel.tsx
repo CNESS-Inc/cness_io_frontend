@@ -44,7 +44,7 @@ export default function PopupOnboardingModal({
 
   return createPortal(
     <Transition appear show={open} as={Fragment}>
-      <div className="fixed inset-0 z-[100]">
+      <div className="absolute inset-0 z-40">
         {/* Overlay */}
         <Transition.Child
           as={Fragment}
