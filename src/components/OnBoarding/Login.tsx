@@ -221,12 +221,12 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
   const location = useLocation();
 
   useEffect(() => {
-  if (activeModal) {
-    setShowLogin(false); // Hide Login when any modal is open
-  } else {
-    setShowLogin(true); // Show Login when all modals are closed
-  }
-}, [activeModal]);
+    if (activeModal) {
+      setShowLogin(false); // Hide Login when any modal is open
+    } else {
+      setShowLogin(true); // Show Login when all modals are closed
+    }
+  }, [activeModal]);
 
   useEffect(() => {
     if (location.state?.autoGoogleLogin) {
@@ -2671,13 +2671,14 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                 variant="white-outline"
                 size="md"
                 onClick={closeModal}
+                className="text-sm"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 variant="gradient-primary"
-                className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                className="rounded-[100px] py-3 px-8 self-stretch font-['Plus Jakarta Sans'] font-medium text-sm leading-none flex items-center justify-center text-[#FFFFFF]"
               >
                 Forgot Password
               </Button>

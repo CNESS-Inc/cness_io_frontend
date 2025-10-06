@@ -13,13 +13,13 @@ const Footer = () => {
 
       {/* Top Section */}
       <footer
-         className="bg-[#F7F7F7] text-black py-8 md:py-12 px-4 sm:px-6"
-  style={{
-    marginLeft: "var(--sidebar-w, 0px)",
-    width: "calc(100% - var(--sidebar-w, 0px))",
-  }}
+        className="bg-[#F7F7F7] text-black py-8 md:py-12 px-4 sm:px-6"
+        style={{
+          marginLeft: "var(--sidebar-w, 0px)",
+          width: "calc(100% - var(--sidebar-w, 0px))",
+        }}
       >
-<div className="w-full max-w-7xl mx-auto flex flex-row flex-wrap justify-between gap-8">
+        <div className="w-full max-w-7xl mx-auto flex flex-row flex-wrap justify-between gap-8">
           {/* Logo + Description */}
           <div className="md:w-2/5 space-y-4">
             <Link to="/" className="flex items-center" aria-label="Home">
@@ -33,7 +33,7 @@ const Footer = () => {
                 src="/responsive-logo.png"
                 alt="Company Logo"
                 width={120}
-  className="block md:hidden h-auto max-w-[50px] w-auto"
+                className="block md:hidden h-auto max-w-[50px] w-auto"
               />
             </Link>
             <p className="text-[16px] font-[400] font-openSans leading-[160%] text-[#1E1E1E] hidden md:block">
@@ -114,36 +114,42 @@ const Footer = () => {
       </footer>
 
       {/* Bottom Bar */}
-<div
-  className="py-2 bg-[#373578] px-4 sm:px-6"
-  style={{
-    marginLeft: "var(--sidebar-w, 0px)",
-    width: "calc(100% - var(--sidebar-w, 0px))",
-  }}
->
-  <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
-    {/* Left Side */}
-    <div
-      className="text-[15px] leading-[100%] font-[500] font-[Plus Jakarta Sans] text-white"
-      style={{
-        letterSpacing: "-0.2px",
-        fontStyle: "normal",
-      }}
-    >
-      Copyright © {new Date().getFullYear()}
-    </div>
+      <div
+        className="py-2 bg-[#373578] px-4 sm:px-6"
+        style={{
+          marginLeft: "var(--sidebar-w, 0px)",
+          width: "calc(100% - var(--sidebar-w, 0px))",
+        }}
+      >
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
+          {/* Left Side */}
+          <div
+            className="text-[15px] leading-[100%] font-[500] font-[Plus Jakarta Sans] text-white"
+            style={{
+              letterSpacing: "-0.2px",
+              fontStyle: "normal",
+            }}
+          >
+            © {new Date().getFullYear()} Cness Inc. All rights reserved.
+          </div>
 
-    {/* Right Side */}
-    <div className="flex items-center gap-6 text-white font-semibold text-[15px]">
-      <Link to="/terms-and-conditions" className="hover:underline whitespace-nowrap">
-        Terms &amp; Conditions
-      </Link>
-      <Link to="/privacy-policy" className="hover:underline whitespace-nowrap">
-        Privacy Policy
-      </Link>
-    </div>
-  </div>
-</div>
+          {/* Right Side */}
+          <div className="flex items-center gap-6 text-white font-semibold text-[15px]">
+            <Link
+              to="/terms-and-conditions"
+              className="hover:underline whitespace-nowrap"
+            >
+              Terms &amp; Conditions
+            </Link>
+            <Link
+              to="/privacy-policy"
+              className="hover:underline whitespace-nowrap"
+            >
+              Privacy Policy
+            </Link>
+          </div>
+        </div>
+      </div>
     </>
   );
 };

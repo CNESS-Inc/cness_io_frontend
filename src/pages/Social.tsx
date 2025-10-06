@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import LeftSocial from "../components/sections/FrontSocialSection/SocialNavbar.tsx";
 import { useLocation } from "react-router-dom";
 import Header from "../layout/Header/Header.tsx";
@@ -6,16 +6,16 @@ import Footer from "../layout/Footer/Footer.tsx";
 import SocialFeed from "../components/sections/FrontSocialSection/SocialFeed.tsx";
 
 const Social = () => {
-  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  // const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [selectedDomain, setSelectedDomain] = useState<string>("");
   const [sort, setSort] = useState<"az" | "za">("az");
   const location = useLocation();
 
-  useEffect(() => {
-    if (window.innerWidth >= 768) {
-      setIsMobileNavOpen(true);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (window.innerWidth >= 768) {
+  //     setIsMobileNavOpen(true);
+  //   }
+  // }, []);
 
   return (
     <>
@@ -25,7 +25,7 @@ const Social = () => {
         {/* First Part (1/3 width on medium screens and above) */}
         <div className="w-full md:w-[20%] bg-white rounded-[12px] h-[300px]">
           <LeftSocial
-            isMobileNavOpen={isMobileNavOpen}
+            // isMobileNavOpen={isMobileNavOpen}
             currentPath={location.pathname}
             selectedDomain={selectedDomain}
             setSelectedDomain={setSelectedDomain}
