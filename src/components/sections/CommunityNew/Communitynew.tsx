@@ -119,7 +119,7 @@ const Communitynew: React.FC = () => {
           A Community Built Around
           <span className="bg-gradient-to-r from-[#a545f4] to-[#B646F1] text-transparent bg-clip-text"> Conscious Living</span>
         </h2>
-        <p className="openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] text-center w-fit mx-auto">
+        <p className="openSans font-light text-[16px] leading-[24px] tracking-[0px] text-[#64748B] text-center w-fit mx-auto">
           Whether you're here to grow your career, share your passion, or simply<br className='lg:block md:block hidden' />
           connect with others who care — CNESS gives you a space to belong, be<br className='lg:block md:block hidden' />
           seen, and evolve together.

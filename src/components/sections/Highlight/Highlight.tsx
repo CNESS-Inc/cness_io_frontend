@@ -78,7 +78,7 @@ export default function Highlight() {
                Activated.
                </span>
             </h3>
-            <p className="openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] mb-6">
+            <p className="openSans font-light text-[16px] leading-[24px] tracking-[0px] text-[#64748B] mb-6">
               CNESS helps you build visibility, earn credibility, and express your purpose — 
               <br /> socially, creatively, and professionally.  Showcase your skills, share your story, connect with like-minded people, and unlock opportunities to grow with confidence and purpose.
               
@@ -122,12 +122,12 @@ export default function Highlight() {
                       {isOpen ? (
                         // Top-left when expanded
                         <span className="text-[#4B4B4B] text-[14px] font-[600] mb-2">
-                          /0{index + 1}
+                          0{index + 1}
                         </span>
                       ) : (
                         // Bottom-right when collapsed
                         <span className="absolute bottom-3 right-4 text-[#4B4B4B] text-[14px] font-[600]">
-                          /0{index + 1}
+                          0{index + 1}
                         </span>
                       )}
 
@@ -136,7 +136,7 @@ export default function Highlight() {
                           <h2 className="font-semibold text-start bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text text-[16px] mt-2">
                             {card.title}
                           </h2>
-                          <p className="text-[#64748B] font-regular text-start text-[12px] mt-2">
+                          <p className="text-[#64748B] font-light text-start text-[12px] mt-2">
                             {card.desc}
                           </p>
                         </>
@@ -171,14 +171,14 @@ export default function Highlight() {
 
                     <div>
                       <span className="text-[#64748B] text-[18px] font-[400]">
-                        /0{index + 1}
+                        0{index + 1}
                       </span>
 
                       <h2 className="transition-all duration-500 font-semibold text-start bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text text-[0px] group-hover:text-[16px] group-hover:mt-2">
                         {card.title}
                       </h2>
 
-                      <p className="text-[#64748B] font-regular transition-all duration-500 text-start text-[0px] group-hover:text-[12px] group-hover:mt-2">
+                      <p className="text-[#64748B] font-light transition-all duration-500 text-start text-[0px] group-hover:text-[12px] group-hover:mt-2">
                         {card.desc}
                       </p>
                     </div>

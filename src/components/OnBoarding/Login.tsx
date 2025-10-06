@@ -142,6 +142,7 @@ type Props = { open: boolean; onClose: () => void };
 
 export default function Login({ open = true, onClose = () => {} }: Props) {
   const navigate = useNavigate();
+  const [showLogin, setShowLogin] = useState(true);
   const [, setAuthenticated] = useState<boolean>(
     localStorage.getItem("authenticated") === "true"
   );
@@ -175,7 +176,6 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
     revenue: "",
     question: [], // Changed from 'question' to 'questions' to match interface
   });
-  console.log("🚀 ~ Login ~ organizationForm:", organizationForm);
   const [personForm, setPersonForm] = useState<PersonForm>({
     first_name: "",
     last_name: "",
@@ -183,7 +183,6 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
     professions: [],
     question: [],
   });
-  console.log("🚀 ~ Login ~ personForm:", personForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [subDomain, setsubDomain] = useState<SubDomain[] | null>();
   const [isAnnual, setIsAnnual] = useState(true);
@@ -220,7 +219,14 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
   const location = useLocation();
-  console.log("🚀 ~ Login ~ location:", location);
+
+  useEffect(() => {
+  if (activeModal) {
+    setShowLogin(false); // Hide Login when any modal is open
+  } else {
+    setShowLogin(true); // Show Login when all modals are closed
+  }
+}, [activeModal]);
 
   useEffect(() => {
     if (location.state?.autoGoogleLogin) {
@@ -1226,157 +1232,163 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
 
   return (
     <>
-      <PopupOnboardingModal open={open} onClose={onClose}>
-        {/* Sign In Form */}
+      {showLogin && (
+        <PopupOnboardingModal open={open} onClose={onClose}>
+          {/* Sign In Form */}
 
-        <div className="mx-auto w-full max-w-[460px] lg:mt-15 md:mt-15 mt-6">
-          <h1 className="text-center font-[Poppins] font-medium lg:text-[32px] md:text-[32px] text-[28px] leading-[100%] tracking-[-0.03em] text-gray-900">
-            Sign in to your account
-          </h1>
+          <div className="mx-auto w-full max-w-[460px] lg:mt-15 md:mt-15 mt-6 z-50">
+            <h1 className="text-center font-[Poppins] font-medium lg:text-[32px] md:text-[32px] text-[28px] leading-[100%] tracking-[-0.03em] text-gray-900">
+              Sign in to your account
+            </h1>
 
-          <ul className="mt-4 flex justify-center items-center gap-6 text-sm text-gray-600">
-            <li className="flex items-center gap-2 font-['Open_Sans'] text-[14px] leading-[100%] text-gray-700">
-              <Check className="h-6 w-6 stroke-[3px] text-green-500" />
-             <span className="text-center"> Securely access your dashboard anytime, anywhere.</span>
-            </li>
-          </ul>
-
-          {apiMessage && (
-            <div
-              className={`text-center mb-4 ${
-                apiMessage.includes("Successfully")
-                  ? "text-green-500"
-                  : "text-red-500"
-              }`}
-            >
-              {apiMessage}
-            </div>
-          )}
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="mb-4 relative">
-              {/* Google Sign-In Button */}
-              <button
-                type="button"
-                onClick={() => login()}
-                className="mt-6 w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-800 shadow-sm hover:bg-gray-50"
-              >
-                <span className="inline-flex items-center gap-3 font-inter font-medium text-[14px] leading-[20px] text-gray-900">
-                  <img
-                    src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                    alt="Google"
-                    className="w-5 h-5"
-                  />
-                  Sign in with Google
+            <ul className="mt-4 flex justify-center items-center gap-6 text-sm text-gray-600">
+              <li className="flex items-center gap-2 font-['Open_Sans'] text-[14px] leading-[100%] text-gray-700">
+                <Check className="h-6 w-6 stroke-[3px] text-green-500" />
+                <span className="text-center">
+                  {" "}
+                  Securely access your dashboard anytime, anywhere.
                 </span>
-              </button>
+              </li>
+            </ul>
 
-              {/* Divider with "Or sign in with" */}
-              {/* Divider */}
-              <div className="my-6 flex items-center gap-5 text-[14px] font-['Open_Sans'] text-gray-500">
-                <div className="h-px w-full bg-gray-200" />
-                <span className="whitespace-nowrap">Or sign in with</span>
-                <div className="h-px w-full bg-gray-200" />
+            {apiMessage && (
+              <div
+                className={`text-center mb-4 ${
+                  apiMessage.includes("Successfully")
+                    ? "text-green-500"
+                    : "text-red-500"
+                }`}
+              >
+                {apiMessage}
+              </div>
+            )}
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              <div className="mb-4 relative">
+                {/* Google Sign-In Button */}
+                <button
+                  type="button"
+                  onClick={() => login()}
+                  className="mt-6 w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-800 shadow-sm hover:bg-gray-50"
+                >
+                  <span className="inline-flex items-center gap-3 font-inter font-medium text-[14px] leading-[20px] text-gray-900">
+                    <img
+                      src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                      alt="Google"
+                      className="w-5 h-5"
+                    />
+                    Sign in with Google
+                  </span>
+                </button>
+
+                {/* Divider with "Or sign in with" */}
+                {/* Divider */}
+                <div className="my-6 flex items-center gap-5 text-[14px] font-['Open_Sans'] text-gray-500">
+                  <div className="h-px w-full bg-gray-200" />
+                  <span className="whitespace-nowrap">Or sign in with</span>
+                  <div className="h-px w-full bg-gray-200" />
+                </div>
+
+                <label
+                  htmlFor="password"
+                  className="block font-poppins font-medium text-[12px] text-[#000000] mb-1"
+                >
+                  Email
+                </label>
+                <div className="relative">
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                    placeholder="Enter your email"
+                    onFocus={() => setEmailFocused(true)}
+                    onBlur={() => setEmailFocused(false)}
+                    className={`w-full h-[53px] px-[10px] rounded-[2px] border-2 ${
+                      loginErrors.email ? "border-red-500" : "border-[#CBD5E1]"
+                    } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                  />
+
+                  <FiMail
+                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-opacity duration-300 ${
+                      emailFocused ? "opacity-100" : "opacity-0"
+                    }`}
+                    size={18}
+                  />
+                </div>
+                {loginErrors.email && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {loginErrors.email}
+                  </p>
+                )}
               </div>
 
               <label
                 htmlFor="password"
                 className="block font-poppins font-medium text-[12px] text-[#000000] mb-1"
               >
-                Email
+                Password
               </label>
               <div className="relative">
                 <input
-                  type="email"
-                  id="email"
-                  name="email"
+                  type={showLoginPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
                   required
-                  placeholder="Enter your email"
-                  onFocus={() => setEmailFocused(true)}
-                  onBlur={() => setEmailFocused(false)}
-                  className={`w-full h-[53px] px-[10px] rounded-[2px] border-2 ${
-                    loginErrors.email ? "border-red-500" : "border-[#CBD5E1]"
+                  placeholder="Enter your Password"
+                  className={`w-full h-[53px] px-[10px] rounded-[4px] border-2 ${
+                    loginErrors.password ? "border-red-500" : "border-[#CBD5E1]"
                   } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                 />
 
-                <FiMail
-                  className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-opacity duration-300 ${
-                    emailFocused ? "opacity-100" : "opacity-0"
-                  }`}
-                  size={18}
-                />
+                <div
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                  onClick={() => setShowLoginPassword(!showLoginPassword)}
+                >
+                  {showLoginPassword ? (
+                    <FiEyeOff size={18} />
+                  ) : (
+                    <FiEye size={18} />
+                  )}
+                </div>
               </div>
-              {loginErrors.email && (
-                <p className="mt-1 text-sm text-red-600">{loginErrors.email}</p>
+              {loginErrors.password && (
+                <p className="mt-1 text-sm text-red-600">
+                  {loginErrors.password}
+                </p>
               )}
-            </div>
 
-            <label
-              htmlFor="password"
-              className="block font-poppins font-medium text-[12px] text-[#000000] mb-1"
-            >
-              Password
-            </label>
-            <div className="relative">
-              <input
-                type={showLoginPassword ? "text" : "password"}
-                id="password"
-                name="password"
-                required
-                placeholder="Enter your Password"
-                className={`w-full h-[53px] px-[10px] rounded-[4px] border-2 ${
-                  loginErrors.password ? "border-red-500" : "border-[#CBD5E1]"
-                } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
-              />
-
-              <div
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-                onClick={() => setShowLoginPassword(!showLoginPassword)}
-              >
-                {showLoginPassword ? (
-                  <FiEyeOff size={18} />
-                ) : (
-                  <FiEye size={18} />
-                )}
-              </div>
-            </div>
-            {loginErrors.password && (
-              <p className="mt-1 text-sm text-red-600">
-                {loginErrors.password}
-              </p>
-            )}
-
-            <div className="flex items-center justify-between text-[13px]">
-              <label className="inline-flex items-center gap-2 select-none">
-                <input
-                  type="checkbox"
-                  className="accent-[#6750A4] w-4 h-4"
-                  defaultChecked
-                />
-                <span className="font-poppins font-normal text-[12px] leading-[100%] tracking-[0px] text-[#64748B]">
-                  Remember me on this device
-                </span>
-              </label>
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  onForgotPassword();
-                }}
-                className="font-openSans font-semibold
+              <div className="flex items-center justify-between text-[13px]">
+                <label className="inline-flex items-center gap-2 select-none">
+                  <input
+                    type="checkbox"
+                    className="accent-[#6750A4] w-4 h-4"
+                    defaultChecked
+                  />
+                  <span className="font-poppins font-normal text-[12px] leading-[100%] tracking-[0px] text-[#64748B]">
+                    Remember me on this device
+                  </span>
+                </label>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onForgotPassword();
+                  }}
+                  className="font-openSans font-semibold
     text-[12px] leading-[24.4px] tracking-[0px]
     text-right align-middle
     bg-gradient-to-r from-[#7077FE] to-[#F07EFF]
     bg-clip-text text-transparent
     hover:underline"
-              >
-                Reset password
-              </a>
-            </div>
+                >
+                  Reset password
+                </a>
+              </div>
 
-            <Button
-              type="submit"
-              variant="gradient-primary"
-              className="mt-1 lg:w-[415px] md:w-[415px] w-full h-[42px] 
+              <Button
+                type="submit"
+                variant="gradient-primary"
+                className="mt-1 lg:w-[415px] md:w-[415px] w-full h-[42px] 
     rounded-[81.26px]
     bg-gradient-to-r from-indigo-500 to-fuchsia-500
     px-[19.5px] py-[16px]
@@ -1386,12 +1398,12 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
     text-[14px] leading-[100%] tracking-[0px]
     flex items-center justify-center
     shadow-md hover:opacity-95"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Sign In..." : "Sign In"}
-            </Button>
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Sign In..." : "Sign In"}
+              </Button>
 
-            {/* Google & Facebook Icons 
+              {/* Google & Facebook Icons 
               <div className="flex justify-center gap-4 mt-2">
                 <button
                   type="button"
@@ -1419,19 +1431,25 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                 </button>
               </div>
 */}
-            <p className="mt-4 text-center font-poppins font-normal text-[13px] leading-[100%] tracking-[0px] text-[#64748B]">
-              New to Cness?{" "}
-              <button
-                type="button"
-                onClick={() => setOpenSignup(true)}
-                className="font-poppins font-semibold text-[13px] leading-[100%] tracking-[0px] text-[#D748EA] underline underline-offset-[2px] decoration-solid hover:opacity-80"
-              >
-                Create account
-              </button>
-            </p>
-          </form>
-        </div>
-      </PopupOnboardingModal>
+              <p className="mt-4 text-center font-poppins font-normal text-[13px] leading-[100%] tracking-[0px] text-[#64748B]">
+                New to Cness?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowLogin(false);
+                    setOpenSignup(true);
+                  }}
+                  className="font-poppins font-semibold text-[13px] leading-[100%] tracking-[0px] text-[#D748EA] underline underline-offset-[2px] decoration-solid hover:opacity-80"
+                >
+                  Create account
+                </button>
+              </p>
+            </form>
+          </div>
+        </PopupOnboardingModal>
+      )}
+
+      <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
 
       {/* Type Selection Modal - only shows when activeModal is "type" */}
       <Modal
@@ -1439,7 +1457,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
         onClose={closeModal}
         modalKey="type"
       >
-        <div className=" p-6 rounded-lg z-10 relative">
+        <div className=" p-6 rounded-lg relative">
           <h2 className="text-2xl font-bold text-gray-800 mb-3">
             Select Account Type
           </h2>
@@ -1475,7 +1493,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
         onClose={() => closeByKey("organization")}
         modalKey="organization"
       >
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
+        <div className="fixed inset-0 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           {" "}
           {/* Ensures center + padding on small screens */}
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
@@ -1945,7 +1963,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
         onClose={() => closeByKey("person")}
         modalKey="person"
       >
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
+        <div className="fixed inset-0 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
             <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2]  w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
@@ -2310,7 +2328,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
         onClose={() => closeByKey("personPricing")}
         modalKey="personPricing"
       >
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
+        <div className="fixed inset-0 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
             <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
@@ -2428,7 +2446,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
         onClose={() => closeByKey("organizationPricing")}
         modalKey="organizationPricing"
       >
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
+        <div className="fixed inset-0 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
             <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
@@ -2606,7 +2624,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
         onClose={closeModal}
         modalKey="forgotpassword"
       >
-        <div className=" p-6 rounded-lg w-full mx-auto z-10 relative">
+        <div className=" p-6 rounded-lg w-full mx-auto relative">
           <h2 className="text-xl poppins font-bold mb-4 text-center">
             Forgot Password
           </h2>
@@ -2747,8 +2765,6 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
           </div>
         </div>
       </Modal>
-
-      <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
     </>
   );
 }
