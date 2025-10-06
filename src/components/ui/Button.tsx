@@ -99,12 +99,11 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           </span>
         ) : (
             <div
-            className="relative flex items-center gap-2"
+            className="relative flex items-center justify-center gap-2"
             style={{
               fontFamily: "Poppins",
               fontWeight: 500,
               fontStyle: "Medium",
-              fontSize: "15px",
               lineHeight: "20px",
             }}
             >

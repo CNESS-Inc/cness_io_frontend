@@ -4,17 +4,19 @@ import AppLayout from "../layout/AppLayout";
 import EmailVerify from "../components/ui/EmailVerify";
 import PaymentVerify from "../components/ui/PaymentVerify";
 import ResetPassword from "../components/ui/ResetPassword";
-import Why from "../pages/Why";
+//import Why from "../pages/Why";
 // import What from "../pages/What";
 import GenerateBadgeCode from "../pages/GenerateBadgeCode";
+import GenerateAffiliateCode from "../pages/GenerateAffiliateCode";
 import AssessmentQuestion from "../pages/AssessmentQuestion";
 import Setting from "../pages/Setting";
-import What from "../pages/What";
+//import What from "../pages/What";
+// import Social from "../pages/Social";
 import Social from "../pages/Social";
-import SinglePost from "../components/Social/SinglePost";
-import ReelsCard from "../components/Social/Reels/ReelsCard";
+// import SinglePost from "../components/Social/SinglePost";
+// import ReelsCard from "../components/Social/Reels/ReelsCard";
 import About from "../pages/About";
-import SocialLayout from "../layout/SocialLayout";
+// import SocialLayout from "../layout/SocialLayout";
 import UploadProof from "../pages/UploadProof";
 import LearningLab from "../pages/LearningLab";
 import UpgradeBadge from "../pages/UpgradeBadge";
@@ -24,9 +26,9 @@ import Support from "../pages/Support";
 import MarketPlace from "../pages/MarketPlace";
 import SearchListing from "../pages/SearchListing";
 import DigitalProducts from "../pages/DigitalProducts";
-import Feed from "../pages/Feed";
+// import Feed from "../pages/Feed";
 import SearchExplore from "../pages/SearchExplore";
-import BecomeMentor from "../pages/BecomeMentor";
+import BecomeMentor from "../pages/BecomeMentorNew";
 //import DashboardDirectoryPage from "../pages/DashboardDirectoryPage";
 import EditPublicListing from "../pages/EditPublicListing";
 import VisibilitySettings from "../pages/VisibilitySettings";
@@ -44,14 +46,31 @@ import DashboardTechnology from "../pages/DashboardTechnology";
 import BestPracticesHub from "../pages/BestPracticesHub";
 import ManageBestPractices from "../pages/ManageBestPractices";
 import SingleBP from "../pages/SingleBP";
-import TermsAndConditions  from "../pages/TermsAndConditions";
+import TermsAndConditions from "../pages/TermsAndConditions";
 import PrivacyPolicy from "../pages/Privacypolicy";
-
+//import DashboardUserProfile from "../pages/DashboardUserProfile";
+import CommunityGuidelines from "../pages/CommunityGuidelines";
+import { StoriesApp } from "../components/Social/Story/StoryApp";
+import Trendingpost from "../pages/TrendingPost";
+import Mycollectionview from "../pages/Mycollectionview";
+import TrendingAI from "../pages/TrendingAI";
+import BecomePartner from "../pages/BecomePartner";
+import Pricing from "../pages/Pricing";
+import TopicPost from "../pages/TopicPost";
+import CnessMarketplace from "../pages/CnessMarketplace";
+import Certifications from "../pages/Certifications";
+import Faqs from "../pages/Faqs";
+import EcoSystem from "../pages/EcoSystem";
+import Premium from "../pages/Premium";
+import WhyCness from "../pages/WhyCness";
+//import SellerDashboard from "../pages/SellerDashboard";
+import UserPublicProfile from "../pages/UserPublicProfile";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
 const DirectoryPage = lazy(() => import("../pages/DirectoryPage"));
-const Dashboard = lazy(() => import("../pages/Dashboard"));
+//const Dashboard = lazy(() => import("../pages/Dashboard"));
+const SellerDashboard = lazy(() => import("../pages/SellerDashboard"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 const ScoreResult = lazy(
   () => import("../components/sections/DashboardSection/ScoreResult")
@@ -69,7 +88,7 @@ const PublicCompanyProfile = lazy(
 const Login = lazy(() => import("../pages/Login"));
 
 const Signingup = lazy(() => import("../pages/Signingup"));
-const UserProfileView = lazy(() => import("../pages/UserProfileView"));
+// const UserProfileView = lazy(() => import("../pages/UserProfileView"));
 const TechnologyAndAIPage = lazy(() => import("../pages/TechnologyandAI"));
 
 export const router = createBrowserRouter([
@@ -83,26 +102,56 @@ export const router = createBrowserRouter([
         element: <HomePage />,
       },
 
+      //{
+      // // path: "why",
+       // element: <Why />,
+      //},
+      // {
+      //   path: "what",
+      //   element: <What />,
+      // },
       {
-        path: "/why",
-        element: <Why />,
-      },
-      {
-        path: "/what",
-        element: <What />,
-      },
-      {
-        path: "/about",
+        path: "about",
         element: <About />,
+      },
+      {
+        path: "certifications",
+        element: <Certifications />,
+      },
+      {
+        path: "ecosystem",
+        element: <EcoSystem />,
+      },
+      {
+        path: "faq",
+        element: <Faqs />,
+      },
+      {
+        path: "comingSoon",
+        element: <ComingSoon />,
       },
 
       {
+        path: "cness-marketplace",
+        element: <CnessMarketplace />,
+      },
+    {
+      path: "premium",
+      element: <Premium />,
+    },
+    {
+      path:"whycness",
+      element:<WhyCness />
+    },
+      {
+      
         path: "dashboard",
         element: <DashboardLayout />, // ✅ now it's wrapped!
         children: [
           {
             index: true,
-            element: <Dashboard />,
+            //element: <Dashboard />,
+            element: <SellerDashboard />,
           },
           {
             path: "score-result",
@@ -111,6 +160,10 @@ export const router = createBrowserRouter([
           {
             path: "user-profile",
             element: <UserProfilePage />,
+          },
+          {
+            path: "user-profile/:id",
+            element: <UserPublicProfile />,
           },
           {
             path: "company-profile",
@@ -124,13 +177,16 @@ export const router = createBrowserRouter([
             path: "assesment",
             element: <AssessmentQuestion />,
           },
-         {
-  path: "setting",
-      element:
-        import.meta.env.VITE_ENV_STAGE === "test"
-          ? <Setting />
-          : <ComingSoon />,
-    },
+          {
+            path: "setting",
+            element: (
+              // import.meta.env.VITE_ENV_STAGE === "test" ? (
+              <Setting />
+            ),
+            // ) : (
+            //   <ComingSoon />
+            // ),
+          },
           {
             path: "upload-proof",
             element: <UploadProof />,
@@ -156,15 +212,26 @@ export const router = createBrowserRouter([
             element: <Support />,
           },
           {
-            path: "market_place",
+            path: "market-place",
             element: <MarketPlace />,
           },
+          // {
+          //   path: "search-listing",
+          //   element:
+          //     import.meta.env.VITE_ENV_STAGE === "test" ? (
+          //       <SearchListing />
+          //     ) : (
+          //       <ComingSoon />
+          //     ),
+          // },
           {
-            path: "search_listing",
-             element:
-        import.meta.env.VITE_ENV_STAGE === "test"
-          ? <SearchListing />
-          : <ComingSoon />,
+            path: "search-listing",
+            element: <SearchListing />,
+          },
+          {
+            path: "userprofile/:id",
+            //element: <DashboardUserProfile />,
+            element:<UserPublicProfile />,
           },
           {
             path: "digital_products",
@@ -173,7 +240,25 @@ export const router = createBrowserRouter([
 
           {
             path: "Feed",
-            element: <Feed />,
+            element: <DashboardSocial />,
+          },
+
+          {
+            path: "trendingpost",
+            children: [
+              {
+                index: true,
+                element: <Trendingpost />,
+              },
+              {
+                path: "trendingai",
+                element: <TrendingAI />,
+              },
+            ],
+          },
+          {
+            path: ":slug",
+            element: <TopicPost />,
           },
 
           {
@@ -181,12 +266,20 @@ export const router = createBrowserRouter([
             element: <SearchExplore />,
           },
           {
-            path: "Become_mentor",
+            path: "become-mentor",
             element: <BecomeMentor />,
+          },
+          {
+            path: "Become_partner",
+            element: <BecomePartner />,
           },
           {
             path: "GenerateBadgeCode",
             element: <GenerateBadgeCode />,
+          },
+          {
+            path: "GenerateAffiliateCode",
+            element: <GenerateAffiliateCode />,
           },
           {
             path: "UploadProof",
@@ -194,10 +287,13 @@ export const router = createBrowserRouter([
           },
           {
             path: "EditPublicListing",
-             element:
-        import.meta.env.VITE_ENV_STAGE === "test"
-          ? <EditPublicListing />
-          : <ComingSoon />,
+            element: (
+              // import.meta.env.VITE_ENV_STAGE === "test" ? (
+              <EditPublicListing />
+            ),
+            // ) : (
+            //   <ComingSoon />
+            // ),
           },
 
           {
@@ -224,20 +320,25 @@ export const router = createBrowserRouter([
             element: <CreatorGuideline />,
           },
           {
-            path: "Profile",
+            path: "Profile/:id?",
             element: <Profile />,
+          },
+
+          {
+            path: "MyCollection/:id",
+            element: <Mycollectionview />,
           },
           {
             path: "MyConnection",
             element: <MyConnection />,
           },
           {
-            path: "ComingSoon",
+            path: "comingSoon",
             element: <ComingSoon />,
           },
 
           {
-            path: "DashboardSocial",
+            path: "feed",
             element: <DashboardSocial />,
           },
           {
@@ -271,12 +372,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element:
-        import.meta.env.VITE_ENV_STAGE === "test"
-          ? <DirectoryPage />
-          : <ComingSoon />,
-
-        
+        element: <DirectoryPage />, // ✅ now it's wrapped!
       },
 
       {
@@ -286,7 +382,7 @@ export const router = createBrowserRouter([
 
       {
         path: "user-profile/:id",
-        element: <UserProfileView />,
+        element: <UserPublicProfile />,
       },
       {
         path: "technology-ai",
@@ -304,16 +400,27 @@ export const router = createBrowserRouter([
     ],
   },
   {
+    path: "story-design",
+    children: [
+      {
+        index: true,
+        element: <StoriesApp />, // ✅ now it's wrapped!
+      },
+    ],
+  },
+  /*{
     path: "social",
     element: <SocialLayout />,
     children: [
       {
         index: true,
-element:
-        import.meta.env.VITE_ENV_STAGE === "test"
-          ? <Social />
-          : <ComingSoon />,
-
+        element: (
+          // import.meta.env.VITE_ENV_STAGE === "test" ? (
+          <Social />
+        ),
+        // ) : (
+        //   <ComingSoon />
+        // ),
       },
 
       {
@@ -325,6 +432,10 @@ element:
         element: <ReelsCard />,
       },
     ],
+  },*/
+  {
+    path: "social",
+    element: <Social />,
   },
   {
     path: "/email-verify",
@@ -345,17 +456,26 @@ element:
       passProps: true,
     },
   },
-    {
-  path: '/terms-and-conditions',
-  element: <TermsAndConditions />,
-},
+  {
+    path: "/terms-and-conditions",
+    element: <TermsAndConditions />,
+  },
 
   {
-  path: '/privacy-policy',
-  element: <PrivacyPolicy />,
-},
+    path: "/privacy-policy",
+    element: <PrivacyPolicy />,
+  },
+  {
+    path: "/community-guidelines",
+    element: <CommunityGuidelines />,
+  },
+
   {
     path: "/sign-up",
     element: <Signingup />,
+  },
+  {
+    path: "/pricing",
+    element: <Pricing />,
   },
 ]);

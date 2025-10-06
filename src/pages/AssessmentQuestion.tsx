@@ -13,6 +13,7 @@ import { EyeIcon } from "lucide-react";
 import Modal from "../components/ui/Modal";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import missionicon from "../assets/missionicon.svg";
+import { Check } from "lucide-react";
 
 interface Section {
   id: string;
@@ -33,14 +34,15 @@ interface Section {
   bestPracticePrompt: string;
   bestPracticeQuestionId: string;
   bestPracticeAnswer?: string;
+  showBestPracticeInPublic: boolean; // Add this
   suggestedUploads: Array<{
     label: string;
     acceptedTypes: string;
     id: string;
     fileUrl?: string | null;
   }>;
-  referenceLinkQuestionId: string; // Add this
-  referenceLinkAnswer: string; // Add this
+  referenceLinkQuestionId: string;
+  referenceLinkAnswer: string;
   next_section_id: string | null;
   previous_section_id: string | null;
 }
@@ -48,15 +50,19 @@ interface Section {
 interface FormValues {
   selectedCheckboxIds: string[];
   checkboxes_question_id: string;
-  purposePauseAnswers: PurposePauseAnswer[];
+  purposePauseAnswers: Array<{
+    id: string;
+    answer: string;
+  }>;
   bestPractice: {
     answer: string;
     question_id: string;
+    showInPublic: boolean; // Add this
   };
   uploads: Array<{
     file: File | null;
     id: string;
-    fileUrl?: string | null; // Added this field
+    fileUrl?: string | null;
   }>;
   referenceLink: {
     url: string;
@@ -64,14 +70,10 @@ interface FormValues {
   };
 }
 
-interface PurposePauseAnswer {
-  id: string;
-  answer: string;
-}
 
 const AssessmentQuestion: React.FC = () => {
   const [currentSection, setCurrentSection] = useState<Section | null>(null);
-  const [toggles, setToggles] = useState<boolean[]>([]);
+  const [_toggles, setToggles] = useState<boolean[]>([]);
   const [formData, setFormData] = useState<FormValues | null>(null);
   const [loading, setLoading] = useState(false);
   const [_progress, setprogress] = useState(0);
@@ -88,6 +90,8 @@ const AssessmentQuestion: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { showToast } = useToast();
   const completed_step = localStorage.getItem("completed_step");
+  const [urlError, setUrlError] = useState("");
+
   // const [errors, setErrors] = useState<FormErrors>({});
 
   // interface FormErrors {
@@ -156,6 +160,7 @@ const AssessmentQuestion: React.FC = () => {
       });
       setIsFinalSubmitting(false);
       setActiveModal(null);
+      await fetchQuestions()
     } catch (error: any) {
       console.log("🚀 ~ handleFinalSubmit ~ error:", error);
       showToast({
@@ -168,14 +173,12 @@ const AssessmentQuestion: React.FC = () => {
   };
 
   const transformApiData = (apiData: any): Section => {
-    // Initialize variables for each section type
     let checkboxesData: any = null;
     let purposePauseData: any = null;
     let bestPracticeData: any = null;
     let suggestedUploadsData: any = null;
     let referenceLinkData: any = null;
 
-    // Iterate through each question_data item and categorize them by sub_section name
     apiData.question_data.forEach((section: any) => {
       if (section.sub_section.name === "Select all that apply") {
         checkboxesData = section;
@@ -203,10 +206,13 @@ const AssessmentQuestion: React.FC = () => {
           question: q.question,
           id: q.id,
           answer: q.answer || "",
+          showInPublic: q.show_question_in_public || false,
         })) || [],
       bestPracticePrompt: bestPracticeData?.questions[0]?.question || "",
       bestPracticeQuestionId: bestPracticeData?.questions[0]?.id || "",
       bestPracticeAnswer: bestPracticeData?.questions[0]?.answer || "",
+      showBestPracticeInPublic:
+        bestPracticeData?.questions[0]?.show_question_in_public || false,
       suggestedUploads:
         suggestedUploadsData?.questions?.map((q: any) => ({
           label: q.question,
@@ -215,9 +221,10 @@ const AssessmentQuestion: React.FC = () => {
             ? ".jpg,.png,.jpeg"
             : ".pdf,.doc,.docx,.jpg,.png,.jpeg",
           fileUrl: q.answer || null,
+          showInPublic: q.show_question_in_public || false,
         })) || [],
-      referenceLinkQuestionId: referenceLinkData?.questions[0]?.id || "", // Add this
-      referenceLinkAnswer: referenceLinkData?.questions[0]?.answer || "", // Add this
+      referenceLinkQuestionId: referenceLinkData?.questions[0]?.id || "",
+      referenceLinkAnswer: referenceLinkData?.questions[0]?.answer || "",
       next_section_id: apiData.next_section_id,
       previous_section_id: apiData.previous_section_id,
     };
@@ -225,7 +232,7 @@ const AssessmentQuestion: React.FC = () => {
 
   const initializeFormData = (section: Section): FormValues => {
     return {
-      selectedCheckboxIds: section.checkboxAnswers || [], // Initialize with saved checkbox answers
+      selectedCheckboxIds: section.checkboxAnswers || [],
       checkboxes_question_id: section.checkboxes_question_id,
       purposePauseAnswers: section.purposePauseQuestions.map((question) => ({
         id: question.id,
@@ -234,6 +241,7 @@ const AssessmentQuestion: React.FC = () => {
       bestPractice: {
         answer: section.bestPracticeAnswer || "",
         question_id: section.bestPracticeQuestionId,
+        showInPublic: section.showBestPracticeInPublic,
       },
       uploads: section.suggestedUploads.map((upload) => ({
         file: null,
@@ -256,7 +264,7 @@ const AssessmentQuestion: React.FC = () => {
 
       setCurrentSection(transformedSection);
       setFormData(initialFormData);
-      setToggles([true]); // Initialize toggle for this section
+      setToggles([false]); // Initialize toggle for this section
       setprogress(res.data.data.assesment_progress);
       settotalstep(res.data.data.total_sections);
       setIsSubmitted(res.data.data.find_answer_submited);
@@ -283,7 +291,16 @@ const AssessmentQuestion: React.FC = () => {
     }
   }, []);
   const handleToggleChange = (checked: boolean) => {
-    setToggles([checked]);
+    setFormData((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        bestPractice: {
+          ...prev.bestPractice,
+          showInPublic: checked,
+        },
+      };
+    });
   };
 
   const handleCheckboxChange = (optionId: string, isChecked: boolean) => {
@@ -361,6 +378,11 @@ const AssessmentQuestion: React.FC = () => {
         formData.append("question_id", upload.id);
         const response = await QuestionFileDetails(formData);
         console.log("🚀 ~ handleFileUpload ~ response:", response);
+        showToast({
+          message: response?.success?.message,
+          type: "success",
+          duration: 5000,
+        });
       } catch (error: any) {
         console.error("Error uploading file:", error);
         showToast({
@@ -373,6 +395,15 @@ const AssessmentQuestion: React.FC = () => {
   };
 
   const handleReferenceLinkChange = (value: string) => {
+    const urlPattern =
+      /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/;
+
+    if (value && !urlPattern.test(value)) {
+      setUrlError("Enter a valid URL");
+    } else {
+      setUrlError("");
+    }
+
     setFormData((prev) => {
       if (!prev) return null;
       return {
@@ -406,6 +437,7 @@ const AssessmentQuestion: React.FC = () => {
 
     setIsSubmitting(true);
     try {
+      console.log(formData, 'ud - form data')
       const res = await submitAnswerDetails(formData);
       showToast({
         message: res?.success?.message,
@@ -565,7 +597,8 @@ const AssessmentQuestion: React.FC = () => {
     );
   }
 
-  const handleconfirm = () => {
+  const handleconfirm =async () => {
+    await handleSave()
     setActiveModal("assesment");
   };
   const currentStepIndex = currentSection?.order_number - 1;
@@ -599,26 +632,47 @@ const AssessmentQuestion: React.FC = () => {
           <div className="bg-white rounded-3xl shadow-base p-4 sm:p-6 lg:p-8 space-y-8">
             {/* Section 1: Describe Your Approach */}
             <div className="space-y-4">
-              <h3 className="text-[12px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
+              <h3 className="text-[14px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
                 {currentSection.checkboxes_question}
               </h3>
               <div className="space-y-3">
                 {currentSection.checkboxes.map((option) => (
                   <label
                     key={option.id}
-                    className="text-[12px] flex items-start gap-3 text-[#222224]"
+                    className="text-[14px] flex items-center gap-3 text-[#222224]"
                   >
-                    <input
-                      type="checkbox"
-                      checked={formData.selectedCheckboxIds.includes(option.id)}
-                      onChange={(e) =>
-                        handleCheckboxChange(option.id, e.target.checked)
-                      }
-                      disabled={isSubmitted}
-                      className={
-                        isSubmitted ? "opacity-50 cursor-not-allowed" : ""
-                      }
-                    />
+                    <label className="relative inline-flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={formData.selectedCheckboxIds.includes(
+                          option.id
+                        )}
+                        onChange={(e) =>
+                          handleCheckboxChange(option.id, e.target.checked)
+                        }
+                        disabled={isSubmitted}
+                        className={`
+      appearance-none
+      w-[16px] h-[16px] sm:w-[17px] sm:h-[17px]
+      rounded-[4px]
+      border
+      transition-all duration-300 ease-in-out
+      bg-white 
+   
+      ${formData.selectedCheckboxIds.includes(option.id)
+                            ? "border-[#7077ef] shadow-[2px_2px_4px_rgba(59,130,246,0.3)]"
+                            : "border-[#D0D5DD] shadow-inner"
+                          }
+      ${isSubmitted ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+    `}
+                      />
+                      {formData.selectedCheckboxIds.includes(option.id) && (
+                        <Check
+                          className="absolute left-[3px] top-[2px] text-[#6269FF] w-[12px] h-[12px] pointer-events-none transition-transform duration-200 scale-100"
+                          strokeWidth={5}
+                        />
+                      )}
+                    </label>
                     <span>{option.option}</span>
                   </label>
                 ))}
@@ -632,20 +686,20 @@ const AssessmentQuestion: React.FC = () => {
 
             {/* Section 2: Purpose Pause */}
             <div className="space-y-6">
-              <h3 className="text-[12px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
+              <h3 className="text-[14px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
                 Purpose Pause
               </h3>
               {currentSection.purposePauseQuestions.map((q, i) => (
                 <div key={i}>
                   <p
-                    className="text-[12px] flex items-start gap-3 text-[#222224]
+                    className="text-[14px] flex items-start gap-3 text-[#222224]
 "
                   >
                     {q.question}
                   </p>
                   <textarea
                     placeholder="Enter Text here"
-                    className="w-full p-2 sm:p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full p-2 sm:p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 mt-3"
                     rows={3}
                     value={formData.purposePauseAnswers[i]?.answer || ""}
                     onChange={(e) =>
@@ -663,14 +717,13 @@ const AssessmentQuestion: React.FC = () => {
                 <input
                   type="checkbox"
                   className="sr-only peer"
-                  checked={toggles[0]}
+                  checked={formData?.bestPractice.showInPublic || false}
                   onChange={(e) => handleToggleChange(e.target.checked)}
                   disabled={isSubmitted}
                 />
                 <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
               </label>
-              {/* Text next to toggle */}
-              <span className="text-[12px] flex items-start gap-3 text-[#222224]">
+              <span className="text-[14px] flex items-start gap-3 text-[#222224]">
                 Do you have best practices to highlight?
               </span>
             </div>
@@ -686,21 +739,21 @@ const AssessmentQuestion: React.FC = () => {
 
             {/* Section 4: Suggested Uploads */}
             <div className="space-y-6">
-              <h3 className="text-[12px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
+              <h3 className="text-[14px] sm:text-base font-semibold text-gray-600 pb-2 border-b border-dashed border-gray-200">
                 Purpose Pause
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 {currentSection.suggestedUploads.map((upload, i) => (
                   <div key={i}>
-                    <label className="text-[12px] flex items-start gap-3 text-[#222224] mb-4">
+                    <label className="text-[14px] flex items-start gap-3 text-[#222224] mb-2">
                       {upload.label}
                     </label>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 mt-4">
                       <input
                         type="file"
                         accept={upload.acceptedTypes}
-                        className="w-full h-16 px-2 py-3 cursor-pointer rounded-xl border border-gray-300 file:mr-4 file:rounded-full file:border-0 file:bg-[#7077FE] file:px-[12px] file:py-[8px] file:text-white file:text-[14px] file:cursor-pointer"
+                        className="w-full h-16 px-2 py-3 cursor-pointer rounded-xl border border-gray-300 file:mr-4 file:rounded-full file:border-0 file:bg-[#7077FE] file:px-[20px] file:py-[8px] file:text-white  file:font-['Plus Jakarta Sans'] file:font-medium  file:text-[14px] file:cursor-pointer"
                         onChange={(e) =>
                           handleFileUpload(i, e.target.files?.[0] || null)
                         }
@@ -722,40 +775,34 @@ const AssessmentQuestion: React.FC = () => {
                 ))}
               </div>
               <div>
-                <label className="text-[12px] flex items-start gap-3 text-[#222224] mb-1">
+                <label className="text-[14px] flex items-start gap-3 text-[#222224] mb-1">
                   Link for Reference
                 </label>
                 <input
                   type="url"
-                  className="w-full p-2 rounded-lg border border-gray-300"
+                  className={`w-full p-2 rounded-lg border ${urlError ? "border-red-500" : "border-gray-300"
+                    }`}
                   placeholder="https://example.com"
                   value={formData.referenceLink.url || ""}
                   onChange={(e) => handleReferenceLinkChange(e.target.value)}
                   disabled={isSubmitted}
                 />
+                {urlError && (
+                  <p className="text-red-500 text-sm mt-1">{urlError}</p>
+                )}
               </div>
             </div>
 
             {/* Action Buttons */}
             {/* {!isSubmitted && ( */}
-            <div className="flex flex-col sm:flex-row items-center justify-between mt-10 px-4 py-6 bg-white rounded-xl shadow-sm gap-4 cursor-pointer">
+            <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between sm:items-center sm:gap-4 w-full">
               {/* Save Button - Gradient */}
               <Button
                 variant="gradient-primary"
                 onClick={handleSave}
                 // disabled={isSubmitting}
                 disabled={isSubmitted}
-                className="
-    w-[77px] h-[31px]
-    rounded-[70.94px]
-    px-[24px] py-[8px]
-    flex items-center justify-center
-    gap-[7.09px]
-    text-white
-    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-[100%] text-center
-    disabled:opacity-60
-    transition-colors duration-200 cursor-pointer
-  "
+                className="w-[85px] h-[35px] rounded-[70.94px] px-[24px] py-[8px] flex items-center justify-center gap-[7.09px] text-white font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center disabled:opacity-60 transition-colors duration-200"
                 style={{
                   opacity: 1,
                   transform: "rotate(0deg)",
@@ -765,57 +812,46 @@ const AssessmentQuestion: React.FC = () => {
               </Button>
 
               {/* Prev & Next Buttons */}
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+              <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
                 <button
                   onClick={handlePrevious}
                   disabled={!currentSection.previous_section_id}
-                  className={`w-[104px] h-[31px] 
-              px-6 py-2 
-              rounded-[100px] 
-              text-sm font-medium 
-              transition-all duration-200 
-              border  
-                              ${
-                                prevVariant === "white-disabled"
-                                  ? "bg-white font-['Plus Jakarta Sans'] font-medium text-[12px] leading-[100%] text-center text-gray-400 border border-gray-200 shadow-md cursor-pointer"
-                                  : prevVariant === "blue"
-                                  ? "bg-[#EEF0FF] text-[#7077FE] cursor-pointer"
-                                  : "bg-[#EEF0FF] text-[#7077FE] hover:bg-[#DDE1FF] shadow-md cursor-pointer"
-                              }`}
+                  className={` w-[117px] h-[35px]
+    px-[24px] py-[8px]
+   rounded-[70.94px]
+    border border-gray-200
+    bg-white text-[#64748B]
+    font-['Plus Jakarta Sans'] text-[12px] font-medium
+    transition-all duration-200
+    hover:bg-[#F4F4F5]
+    disabled:text-gray-400 disabled:border-gray-200 disabled:cursor-not-allowed
+                              ${prevVariant === "white-disabled"
+                      ? "bg-white font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center text-gray-400 border border-gray-200 shadow-md cursor-pointer"
+                      : prevVariant === "blue"
+                        ? "bg-[#EEF0FF] text-[#7077FE] cursor-pointer"
+                        : "bg-[#EEF0FF] text-[#7077FE] hover:bg-[#DDE1FF] shadow-md cursor-pointer"
+                    }`}
                 >
                   Previous
                 </button>
 
-                <Button
-                  onClick={handleNext}
-                  disabled={!currentSection.next_section_id}
-                  className="
-    w-[117px] h-[31px]
-    rounded-[70.94px]
-    px-[24px] py-[8px]
-    flex items-center justify-center
-    gap-[7.09px]
-    cursor-pointer
-    transition-colors duration-200
-    text-white
-  "
-                  style={{
-                    opacity: 1,
-                    transform: "rotate(0deg)",
-                  }}
-                >
-                  <span
-                    className="
-    font-['Plus Jakarta Sans']
-    font-medium
-    text-[12px]
-    leading-[100%]
-    text-center
-  "
+                {
+                  currentSection.next_section_id &&
+                  <Button
+                    onClick={handleNext}
+                    disabled={!currentSection.next_section_id}
+                    className="w-[117px] h-[35px] rounded-[70.94px] px-[24px] py-[8px] flex items-center justify-center gap-[7.09px] text-white bg-[#897AFF] font-['Plus Jakarta Sans'] font-medium text-[12px] leading-[100%] text-center whitespace-nowrap transition-colors duration-200 disabled:opacity-50"
+                    style={{
+                      opacity: 1,
+                      transform: "rotate(0deg)",
+                    }}
                   >
-                    Save & Next
-                  </span>
-                </Button>
+                    <span className="font-['Plus Jakarta Sans'] font-medium text-[14px] leading-[100%] text-center whitespace-nowrap ">
+                      Save & Next
+                    </span>
+                  </Button>
+                }
+
               </div>
             </div>
             {/* )} */}
@@ -826,9 +862,8 @@ const AssessmentQuestion: React.FC = () => {
                 {[...Array(totalstep)].map((_, i) => (
                   <div
                     key={i}
-                    className={`w-2.5 h-2.5 rounded-full ${
-                      i === currentStepIndex ? "bg-purple-500" : "bg-purple-300"
-                    } transition`}
+                    className={`w-2.5 h-2.5 rounded-full ${i === currentStepIndex ? "bg-purple-500" : "bg-purple-300"
+                      } transition`}
                   />
                 ))}
               </div>
@@ -844,7 +879,18 @@ const AssessmentQuestion: React.FC = () => {
                     after submission.
                   </p>
                   <div className="flex justify-center">
-                    <Button onClick={handleconfirm}>
+                    <Button
+                      onClick={handleconfirm}
+                      className="
+      w-[250px] h-[45px]
+      rounded-[100px]
+      px-[24px] py-[16px]
+      flex items-center justify-center
+      gap-[10px]
+      text-white
+      whitespace-nowrap
+    "
+                    >
                       Submit For Assessment
                     </Button>
                   </div>

@@ -114,14 +114,11 @@ const FAQSection: React.FC<FAQSectionProps> = ({ searchQuery }) => {
 },
    {
   id: 'signup-4',
-  question: 'Can I use Google or Facebook to sign up quickly?',
+  question: 'Can I use Google to sign up quickly?',
   answer: (
     <div>
-      <p>Yes! You can sign up instantly with:</p>
-      <ul className="list-disc pl-5 mt-2 space-y-1">
-        <li><strong>Google Login</strong></li>
-        <li><strong>Facebook Login</strong></li>
-      </ul>
+      <p>Yes! You can sign up instantly with <strong>Google</strong></p>
+      
       <p className="mt-2">No extra passwords needed. You can fill out more profile details anytime after.</p>
     </div>
   )
@@ -559,8 +556,8 @@ const FAQSection: React.FC<FAQSectionProps> = ({ searchQuery }) => {
     </div>
   )
 },
-    { id: 'tech-4', question: 'Can I log in using Google or Facebook?', answer: <p>Yes. If you signed up using Google or Facebook, make sure you continue using the same method to log in. If you signed up with email/password,
-       Google/Facebook login won't work unless linked manually later.</p> },
+    { id: 'tech-4', question: 'Can I log in using Google', answer: <p>Yes. If you signed up using Google, make sure you continue using the same method to log in. If you signed up with email/password,
+       Google login won't work unless linked manually later.</p> },
     { id: 'tech-5', question: 'Is my data secure on cness.io?', answer: <p>Yes. We use industry-standard encryption to protect your data. Your information is never sold or shared without your consent. 
       For more, please review our Privacy Policy.</p> },
     { id: 'tech-6', question: 'Can I access cness.io from my phone or tablet?', answer: <p>Yes! CNESS is fully responsive and works smoothly on mobile, tablet, and desktop browsers. A mobile app is in development and will be available soon for easier access.</p> },

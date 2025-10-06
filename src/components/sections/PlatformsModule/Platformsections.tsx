@@ -43,7 +43,7 @@ export default function PlatformSections() {
             "Six pillars of conscious leadership",
             "Required for renewals & upgrades",
           ],
-          navigateTo: "/what",
+          navigateTo: "/about",
         },
         {
           title: "Directory",

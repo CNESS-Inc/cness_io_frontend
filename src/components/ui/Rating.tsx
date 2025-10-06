@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface StarRatingProps {
   initialRating?: number;
@@ -16,7 +16,13 @@ export const StarRating = ({
   allowHalfStars = false,
 }: StarRatingProps) => {
 
-  const [rating, setRating] = useState(initialRating);
+  // console.log(initialRating, 'initialRating----------')
+  const [rating, setRating] = useState(0);
+
+  useEffect(() => {
+    setRating(initialRating)
+  }, [])
+  
   const [hover, setHover] = useState(0);
   const [_hoverPosition, setHoverPosition] = useState<number | null>(null);
 
@@ -58,7 +64,7 @@ export const StarRating = ({
   };
 
   const renderStar = (star: number) => {
-    const currentValue = hover || rating;
+    const currentValue = rating || initialRating;
     const isFilled = star <= currentValue;
     const isHalfFilled = allowHalfStars && (star - 0.5 <= currentValue) && (currentValue < star);
 

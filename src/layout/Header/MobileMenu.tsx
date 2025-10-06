@@ -3,26 +3,32 @@
 import { Link } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import { useState } from "react";
-import Modal from "../../components/ui/Modal";
-import SignupForm from "./SignupForm";
-import LoginForm from "./LoginForm";
+// import Modal from "../../components/ui/Modal";
+// import SignupForm from "./SignupForm";
+// import LoginForm from "./LoginForm";
+import SignupModel from "../../components/OnBoarding/Signup.tsx";
+import LoginModel from "../../components/OnBoarding/Login.tsx"
 
 const links = [
-{ name: "Why", href: "/why" },
-  { name: "What", href: "/what" },
-  { name: "About", href: "/about" },
-  { name: "Directory", href: "/directory" },
+  { name: "Home", href: "/" },
+  { name: "Ecosystem", href: "/ecosystem" },
+  { name: "Social", href: "/social" },
+  { name: "Certifications", href: "/certifications" },
+  { name: "Premium", href: "/premium" },
+   { name: "WhyCNESS", href: "/whycness" },
+    { name: "FAQs", href: "/faq" },
 ];
 
 export default function MobileMenu({ isOpen }: { isOpen: boolean }) {
-  const [activeModal, setActiveModal] = useState<"signup" | "login" | null>(
-    null
-  );
+  // const [activeModal, setActiveModal] = useState<"signup" | "login" | null>(
+  //   null
+  // );
 
-  const openSignupModal = () => setActiveModal("signup");
-  const openLoginModal = () => setActiveModal("login");
-  const closeModal = () => setActiveModal(null);
-
+  // const openSignupModal = () => setActiveModal("signup");
+   // const openLoginModal = () => setActiveModal("login");
+   // const closeModal = () => setActiveModal(null);
+  const [openSignup, setOpenSignup] = useState(false);
+  const [openLogin,setOpenLogin] = useState(false);
   const completed_step = localStorage.getItem("completed_step");
   const showDashboardButton = completed_step === "1" || completed_step === "2";
   return (
@@ -66,7 +72,7 @@ export default function MobileMenu({ isOpen }: { isOpen: boolean }) {
                     className="w-[104px] h-[39px] rounded-[100px] px-6 py-3 gap-3 border 
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-[12px]"
                  
-                    onClick={openSignupModal}
+                    onClick={() => setOpenSignup(true)}
                   >
                     Sign Up
                   </Button>
@@ -79,7 +85,7 @@ export default function MobileMenu({ isOpen }: { isOpen: boolean }) {
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
     flex items-center justify-center
   "
-  onClick={openLoginModal}
+ onClick={() => setOpenLogin(true)}
 >
   <span className="w-full text-center">Login</span>
 </Button>
@@ -109,7 +115,7 @@ export default function MobileMenu({ isOpen }: { isOpen: boolean }) {
           </ul>
         </nav>
       </div>
-      <Modal isOpen={activeModal === "signup"} onClose={closeModal}>
+      {/* <Modal isOpen={activeModal === "signup"} onClose={closeModal}>
         <SignupForm
           onSuccess={closeModal}
           onSwitchToLogin={() => setActiveModal("login")}
@@ -121,7 +127,9 @@ export default function MobileMenu({ isOpen }: { isOpen: boolean }) {
           onSuccess={closeModal}
           onSwitchToSignup={() => setActiveModal("signup")}
         />
-      </Modal>
+      </Modal> */}
+       <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
+        <LoginModel open={openLogin} onClose={()=>setOpenLogin(false)} />
     </>
   );
 }

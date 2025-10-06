@@ -11,6 +11,7 @@ interface StoryCardProps {
   title: string;
   videoSrc: string;
   id: string;
+  userId?: string; // Add user ID for navigation
 }
 
 const StoryCard: React.FC<StoryCardProps> = ({
@@ -19,14 +20,20 @@ const StoryCard: React.FC<StoryCardProps> = ({
   title,
   videoSrc,
   id,
+  userId,
 }) => {
   const navigate = useNavigate();
 
-  const handleReel = (id: any) => {
-    navigate(`/social/reel/${id}`);
+  const handleReel = () => {
+    if (userId) {
+      navigate(`/story-design?user=${userId}&story=${id}`);
+    } else {
+      navigate(`/story-design`);
+    }
   };
   return (
-    <div onClick={() => handleReel(id)}>
+    <div onClick={() => handleReel()}>
+    {/* <div onClick={() => handleReel(id)}> */}
       <div className="relative w-40 h-80 rounded-lg overflow-hidden shadow-md">
         <LazyLoadComponent>
           <video

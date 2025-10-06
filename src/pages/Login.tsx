@@ -153,6 +153,7 @@ export default function Login() {
     | "organizationPricing"
     | "forgotpassword"
     | "success"
+    | "disqualify"
     | null
   >(null);
   const [organizationForm, setOrganizationForm] = useState<OrganizationForm>({
@@ -460,7 +461,10 @@ export default function Login() {
         setIsSubmitting(false);
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);
-        console.log("🚀 ~ handleSubmit ~ response?.data?.data?.jwt:", response?.data?.data?.jwt)
+        console.log(
+          "🚀 ~ handleSubmit ~ response?.data?.data?.jwt:",
+          response?.data?.data?.jwt
+        );
         localStorage.setItem(
           "is_disqualify",
           response?.data?.data?.user?.is_disqualify
@@ -484,7 +488,13 @@ export default function Login() {
           "margaret_name",
           response?.data?.data?.user.margaret_name
         );
-
+        const myReferralCode = response?.data?.data?.user.my_referral_code;
+        if (myReferralCode) {
+          localStorage.setItem(
+            "referral_code",
+            response?.data?.data?.user.my_referral_code
+          );
+        }
         const completionStatus =
           response.data.data.user.person_organization_complete;
         const completed_step = response.data.data.user.completed_step;
@@ -923,7 +933,7 @@ export default function Login() {
         setPersonPricing(updatedPlans);
         setActiveModal("personPricing");
       } else if (res.success.statusCode === 201) {
-        navigate("/dashboard");
+        setActiveModal("disqualify");
         const response = await MeDetails();
         localStorage.setItem(
           "profile_picture",
@@ -936,6 +946,10 @@ export default function Login() {
           response?.data?.data?.user.margaret_name
         );
         localStorage.setItem("is_disqualify", "true");
+        setTimeout(() => {
+          setActiveModal(null);
+          navigate("/dashboard");
+        }, 2000);
       }
     } catch (error) {
       console.error("Error submitting organization form:", error);
@@ -1217,171 +1231,178 @@ export default function Login() {
             <SignupAnimation />
           </div>
 
-   <div className="relative w-full h-[250px]">
-  <div className="absolute top-1 left-5 z-30 p-0">
-   <Link to="/">
-                 <img
-                   src={cnesslogo}
-                   alt="logo"
-                   className="w-48 h-48 object-contain"
-                 />
-               </Link>
-  </div>
-</div>
-
+          <div className="relative w-full h-[250px]">
+            <div className="absolute top-1 left-5 z-30 p-0">
+              <Link to="/">
+                <img
+                  src={cnesslogo}
+                  alt="logo"
+                  className="w-48 h-48 object-contain"
+                />
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Sign In Form */}
-<div className="absolute top-[80px] sm:top-[120px] md:top-[160px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
- <div className="w-[576px] h-[650px] bg-white rounded-[24px] shadow-xl border border-gray-200 px-[42px] py-[52px] flex flex-col gap-8">
-
-    <h2 className="text-left" >
-              Sign in to your account<br />
-                <span className="font-publicSans font-normal text-[15px] leading-[20px] text-[#281D1B]">
-                Please enter your login details to access your account
+        <div className="min-h-[700px] ">
+          <div className="absolute top-[80px] sm:top-[120px] md:top-[160px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
+            <div className="w-[576px] h-[750px] sm:h-[650px] bg-white rounded-[24px] shadow-xl border border-gray-200 px-[42px] py-[52px] flex flex-col gap-8">
+              <h2 className="font-poppins font-semibold text-[28px] leading-[32px] tracking-[-0.02em] text-gray-900">
+                Sign in to your account
+                <br />
+                <span className="font-publicSans font-normal text-[15px] leading-[20px] tracking-[-0.005em] text-[#281D1B]">
+                  Please enter your login details to access your account
                 </span>
-            </h2>
-            
-            {apiMessage && (
-              <div
-                className={`text-center mb-4 ${
-                  apiMessage.includes("Successfully")
-                    ? "text-green-500"
-                    : "text-red-500"
-                }`}
-              >
-                {apiMessage}
-              </div>
-            )}
-            <form className="space-y-4" onSubmit={handleSubmit}>
-              <div className="mb-4 relative">
-                {/* Google Sign-In Button */}
-                <div className="flex justify-center gap-4 mt-2">
-                  <button
-                    type="button"
-                    onClick={() => login()}
-          className="flex items-center gap-2 border border-gray-300 rounded-3xl px-12 py-3 bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 hover:cursor-pointer"
+              </h2>
+
+              {apiMessage && (
+                <div
+                  className={`text-center mb-4 ${
+                    apiMessage.includes("Successfully")
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }`}
+                >
+                  {apiMessage}
+                </div>
+              )}
+              <form className="space-y-4" onSubmit={handleSubmit}>
+                <div className="mb-4 relative">
+                  {/* Google Sign-In Button */}
+                  <div className="flex justify-center gap-4 mt-2">
+                    <button
+                      type="button"
+                      onClick={() => login()}
+                      className="flex items-center gap-2 border border-gray-300 rounded-3xl px-12 py-3 bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 hover:cursor-pointer"
+                    >
+                      <img
+                        src="/google-icon-logo.svg"
+                        alt="Google"
+                        className="w-6 h-6"
+                      />
+                      <span className="text-sm font-medium text-gray-700">
+                        Sign in with Google
+                      </span>
+                    </button>
+                  </div>
+
+                  {/* Divider with "Or sign in with" */}
+                  <div className="relative my-8">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="bg-white px-3 font-publicSans font-normal text-[15px] leading-[20px] text-[#281D1B]">
+                        Or sign in with
+                      </span>
+                    </div>
+                  </div>
+
+                  <label
+                    htmlFor="email"
+                    className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
                   >
-                    <img
-                      src="/google-icon-logo.svg"
-                      alt="Google"
-                      className="w-6 h-6"
+                    Email
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      required
+                      placeholder="Enter your email"
+                      onFocus={() => setEmailFocused(true)}
+                      onBlur={() => setEmailFocused(false)}
+                      className={`w-full px-3 py-2 rounded-[12px] border ${
+                        loginErrors.email
+                          ? "border-red-500"
+                          : "border-[#CBD5E1]"
+                      } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                     />
-                    <span className="text-sm font-medium text-gray-700">
-                      Sign in with Google
-                    </span>
-                  </button>
-                </div>
 
-                {/* Divider with "Or sign in with" */}
-                <div className="relative my-8">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                    <FiMail
+                      className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-opacity duration-300 ${
+                        emailFocused ? "opacity-100" : "opacity-0"
+                      }`}
+                      size={18}
+                    />
                   </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="bg-white px-3 font-publicSans font-normal text-[15px] leading-[20px] text-[#281D1B]">Or sign in with</span>
-                  </div>
+                  {loginErrors.email && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {loginErrors.email}
+                    </p>
+                  )}
                 </div>
 
-                <label
-                  htmlFor="email"
-                  className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
-                >
-                  Email
-                </label>
-                <div className="relative">
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    placeholder="Enter your email"
-                    onFocus={() => setEmailFocused(true)}
-                    onBlur={() => setEmailFocused(false)}
-                    className={`w-full px-3 py-2 rounded-[12px] border ${
-                      loginErrors.email ? "border-red-500" : "border-[#CBD5E1]"
-                    } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
-                  />
-
-                  <FiMail
-                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-opacity duration-300 ${
-                      emailFocused ? "opacity-100" : "opacity-0"
-                    }`}
-                    size={18}
-                  />
-                </div>
-                {loginErrors.email && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {loginErrors.email}
-                  </p>
-                )}
-              </div>
-
-              <div className="mb-4 relative">
-                <label
-                  htmlFor="password"
-                  className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
-                >
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={showLoginPassword ? "text" : "password"}
-                    id="password"
-                    name="password"
-                    required
-                    placeholder="Enter your Password"
-                    className={`w-full px-3 py-2 rounded-[12px] border ${
-                      loginErrors.password
-                        ? "border-red-500"
-                        : "border-[#CBD5E1]"
-                    } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
-                  />
-
-                  <div
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-                    onClick={() => setShowLoginPassword(!showLoginPassword)}
+                <div className="mb-4 relative">
+                  <label
+                    htmlFor="password"
+                    className="block text-[14px] font-normal leading-normal text-[#222224] font-sans mb-1"
                   >
-                    {showLoginPassword ? (
-                      <FiEyeOff size={18} />
-                    ) : (
-                      <FiEye size={18} />
-                    )}
+                    Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showLoginPassword ? "text" : "password"}
+                      id="password"
+                      name="password"
+                      required
+                      placeholder="Enter your Password"
+                      className={`w-full px-3 py-2 rounded-[12px] border ${
+                        loginErrors.password
+                          ? "border-red-500"
+                          : "border-[#CBD5E1]"
+                      } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                    />
+
+                    <div
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                      onClick={() => setShowLoginPassword(!showLoginPassword)}
+                    >
+                      {showLoginPassword ? (
+                        <FiEyeOff size={18} />
+                      ) : (
+                        <FiEye size={18} />
+                      )}
+                    </div>
                   </div>
+                  {loginErrors.password && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {loginErrors.password}
+                    </p>
+                  )}
                 </div>
-                {loginErrors.password && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {loginErrors.password}
-                  </p>
-                )}
-              </div>
 
-              <div className="flex items-center justify-between text-sm">
-                <label className="flex items-center gap-2">
-                  <input type="checkbox" className="rounded border-gray-300" />
-                  <span className="text-gray-600">
-                    Remember me on this device
-                  </span>
-                </label>
-                <a
-                  href="#"
-                  className="text-[#7F57FC] hover:underline"
-                  onClick={onForgotPassword}
+                <div className="flex items-center justify-between text-sm">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      className="rounded border-gray-300"
+                    />
+                    <span className="text-gray-600">
+                      Remember me on this device
+                    </span>
+                  </label>
+                  <a
+                    href="#"
+                    className="text-[#7F57FC] hover:underline"
+                    onClick={onForgotPassword}
+                  >
+                    Trouble logging in? Reset password
+                  </a>
+                </div>
+
+                <Button
+                  type="submit"
+                  variant="gradient-primary"
+                  className="w-full rounded-[100px] flex justify-center py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+                  disabled={isSubmitting}
                 >
-                  Trouble logging in? Reset password
-                </a>
-              </div>
+                  {isSubmitting ? "Loging..." : "Login"}
+                </Button>
 
-              <Button
-                type="submit"
-                variant="gradient-primary"
-                className="w-full rounded-[100px] flex justify-center py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Loging..." : "Login"}
-              </Button>
-
-              {/* Google & Facebook Icons 
+                {/* Google & Facebook Icons 
               <div className="flex justify-center gap-4 mt-2">
                 <button
                   type="button"
@@ -1409,16 +1430,17 @@ export default function Login() {
                 </button>
               </div>
 */}
-              <p className="flex flex-col sm:flex-row justify-center items-center text-sm gap-2 sm:gap-2 mt-4">
-                New to Cness?{" "}
-                <Link
-                  to={"/sign-up"}
-                  className="text-[#7F57FC] font-medium hover:underline"
-                >
-                  Create account
-                </Link>
-              </p>
-            </form>
+                <p className="flex flex-col sm:flex-row justify-center items-center text-sm gap-2 sm:gap-2 mt-4">
+                  New to Cness?{" "}
+                  <Link
+                    to={"/sign-up"}
+                    className="text-[#7F57FC] font-medium hover:underline"
+                  >
+                    Create account
+                  </Link>
+                </p>
+              </form>
+            </div>
           </div>
         </div>
       </div>
@@ -1809,6 +1831,9 @@ export default function Login() {
                           setOrganizationErrors({});
                         }}
                         variant="white-outline"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center"
                       >
                         Back
                       </Button>
@@ -1817,6 +1842,9 @@ export default function Login() {
                         type="button"
                         onClick={closeModal}
                         variant="white-outline"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center"
                       >
                         Cancel
                       </Button>
@@ -1824,7 +1852,9 @@ export default function Login() {
                       <Button
                         type="submit"
                         variant="gradient-primary"
-                        className="rounded-full py-3 px-8 transition-all"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center"
                         disabled={isSubmitting}
                       >
                         {isSubmitting ? "Submitting..." : "Submit"}
@@ -1918,7 +1948,7 @@ export default function Login() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2]  w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -1938,9 +1968,10 @@ export default function Login() {
                 </div>
 
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                  Let's Get to Know You Better
+                  Let's Get to <br></br>
+                  Know You Better
                 </h2>
-                <p className="text-gray-900 text-sm">
+                <p className="text-[#f3f1ff] text-sm">
                   This information helps us understand your conscious impact
                   better.
                 </p>
@@ -1964,14 +1995,15 @@ export default function Login() {
                       <input
                         type="text"
                         name="first_name"
+                        placeholder="Enter your first name"
                         value={personForm.first_name}
                         onChange={handlePersonFormChange}
-                        className={`w-full px-3 py-2 border ${
-                          personErrors.first_name
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        } rounded-md`}
-                        placeholder="Enter your first name"
+                        className={`w-[440px] h-[41px]
+    rounded-[12px]
+    border-[0.82px]
+    p-[12px] mt-2 ${
+      personErrors.first_name ? "border-red-500" : "border-gray-300"
+    } rounded-md`}
                       />
                       {personErrors.first_name && (
                         <p className="mt-1 text-sm text-red-600">
@@ -1990,11 +2022,12 @@ export default function Login() {
                         name="last_name"
                         value={personForm.last_name}
                         onChange={handlePersonFormChange}
-                        className={`w-full px-3 py-2 border ${
-                          personErrors.last_name
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        } rounded-md`}
+                        className={`w-[440px] h-[41px]
+    rounded-[12px]
+    border-[0.82px]
+    p-[12px] mt-2 ${
+      personErrors.last_name ? "border-red-500" : "border-gray-300"
+    } rounded-md`}
                         placeholder="Enter your last name"
                       />
                       {personErrors.last_name && (
@@ -2005,42 +2038,44 @@ export default function Login() {
                     </div>
 
                     <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                      <label className="block openSans text-base font-medium text-gray-800 mb-1 ">
                         Interests
                         <span className="text-red-500">*</span>
                       </label>
-                      <Select
-                        isMulti
-                        options={interest?.map((interestItem: Interest) => ({
-                          value: interestItem.id,
-                          label: interestItem.name,
-                        }))}
-                        value={
-                          personForm.interests?.map((interestId: any) => ({
-                            value: interestId,
-                            label: interest?.find(
-                              (i: any) => i.id === interestId
-                            )?.name,
-                          })) || []
-                        }
-                        onChange={(selectedOptions) => {
-                          // Update your form state with the selected values
-                          const selectedValues = selectedOptions?.map(
-                            (option) => option.value
-                          );
-                          setPersonForm({
-                            ...personForm,
-                            interests: selectedValues,
-                          });
-                        }}
-                        className="react-select-container"
-                        classNamePrefix="react-select"
-                        placeholder="Select interests..."
-                        menuPortalTarget={document.body}
-                        styles={{
-                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                        }}
-                      />
+                      <div className="mt-4">
+                        <Select
+                          isMulti
+                          options={interest?.map((interestItem: Interest) => ({
+                            value: interestItem.id,
+                            label: interestItem.name,
+                          }))}
+                          value={
+                            personForm.interests?.map((interestId: any) => ({
+                              value: interestId,
+                              label: interest?.find(
+                                (i: any) => i.id === interestId
+                              )?.name,
+                            })) || []
+                          }
+                          onChange={(selectedOptions) => {
+                            // Update your form state with the selected values
+                            const selectedValues = selectedOptions?.map(
+                              (option) => option.value
+                            );
+                            setPersonForm({
+                              ...personForm,
+                              interests: selectedValues,
+                            });
+                          }}
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          placeholder="Select interests..."
+                          menuPortalTarget={document.body}
+                          styles={{
+                            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                          }}
+                        />
+                      </div>
                       {personErrors.interests && (
                         <p className="mt-1 text-sm text-red-600">
                           {personErrors.interests}
@@ -2053,49 +2088,54 @@ export default function Login() {
                         Professions
                         <span className="text-red-500">*</span>
                       </label>
-                      <Select
-                        isMulti
-                        options={[
-                          ...profession?.map((professionItem: Profession) => ({
-                            value: professionItem.id,
-                            label: professionItem.title,
-                          })),
-                          { value: "other", label: "Other (please specify)" },
-                        ]}
-                        value={
-                          personForm.professions?.map((professionId: any) => ({
-                            value: professionId,
-                            label:
-                              profession?.find(
-                                (p: any) => p.id === professionId
-                              )?.title ||
-                              (professionId === "other" ? "Other" : ""),
-                          })) || []
-                        }
-                        onChange={(selectedOptions) => {
-                          const selectedValues = selectedOptions?.map(
-                            (option) => option.value
-                          );
-                          setPersonForm({
-                            ...personForm,
-                            professions: selectedValues,
-                          });
-                        }}
-                        className="react-select-container"
-                        classNamePrefix="react-select"
-                        placeholder="Select professions..."
-                        menuPortalTarget={document.body}
-                        styles={{
-                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                        }}
-                      />
+                      <div className="mt-4">
+                        <Select
+                          isMulti
+                          options={[
+                            ...profession?.map(
+                              (professionItem: Profession) => ({
+                                value: professionItem.id,
+                                label: professionItem.title,
+                              })
+                            ),
+                            { value: "other", label: "Other (please specify)" },
+                          ]}
+                          value={
+                            personForm.professions?.map(
+                              (professionId: any) => ({
+                                value: professionId,
+                                label:
+                                  profession?.find(
+                                    (p: any) => p.id === professionId
+                                  )?.title ||
+                                  (professionId === "other" ? "Other" : ""),
+                              })
+                            ) || []
+                          }
+                          onChange={(selectedOptions) => {
+                            const selectedValues = selectedOptions?.map(
+                              (option) => option.value
+                            );
+                            setPersonForm({
+                              ...personForm,
+                              professions: selectedValues,
+                            });
+                          }}
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          placeholder="Select professions..."
+                          menuPortalTarget={document.body}
+                          styles={{
+                            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                          }}
+                        />
+                      </div>
                       {personErrors.professions && (
                         <p className="mt-1 text-sm text-red-600">
                           {personErrors.professions}
                         </p>
                       )}
                     </div>
-
                     {/* Add this after the Select component */}
                     {personForm.professions?.includes("other") && (
                       <div className="mb-4 mt-2">
@@ -2132,7 +2172,10 @@ export default function Login() {
 
                         return (
                           <div key={question.id} className="mb-4">
-                            <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                            <label
+                              style={{ lineHeight: "1.8" }}
+                              className="block openSans text-base font-medium text-gray-800 mb-3 mt-4"
+                            >
                               {question.question}
                             </label>
 
@@ -2154,7 +2197,7 @@ export default function Login() {
                                     />
                                     <label
                                       htmlFor={`question_${question.id}_${option.id}`}
-                                      className="ml-3 block openSans text-base text-gray-700"
+                                      className="ml-3 block openSans text-base text-gray-700 "
                                     >
                                       {option.option}
                                     </label>
@@ -2199,6 +2242,9 @@ export default function Login() {
                           setPersonErrors({});
                         }}
                         variant="white-outline"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center"
                       >
                         Back
                       </Button>
@@ -2207,6 +2253,9 @@ export default function Login() {
                         type="button"
                         onClick={closeModal}
                         variant="white-outline"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center"
                       >
                         Cancel
                       </Button>
@@ -2214,7 +2263,9 @@ export default function Login() {
                       <Button
                         type="submit"
                         variant="gradient-primary"
-                        className="rounded-full py-3 px-8 transition-all"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center"
                         disabled={isSubmitting}
                       >
                         {isSubmitting ? "Submitting..." : "Submit"}
@@ -2228,6 +2279,9 @@ export default function Login() {
                         type="button"
                         onClick={closeModal}
                         variant="white-outline"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center"
                       >
                         Cancel
                       </Button>
@@ -2236,7 +2290,9 @@ export default function Login() {
                         type="button"
                         onClick={handleNextPersonClick}
                         variant="gradient-primary"
-                        className="rounded-full py-3 px-8 transition-all"
+                        className="w-[104px] h-[39px] rounded-[100px] p-0
+    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+    flex items-center justify-center"
                       >
                         Next
                       </Button>
@@ -2273,9 +2329,10 @@ export default function Login() {
                 </div>
 
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                  Let's Get to Know You Better
+                  Let's Get to <br></br>
+                  Know You Better
                 </h2>
-                <p className="text-gray-900 text-sm">
+                <p className="text-gray-700 text-sm">
                   This information helps us understand your conscious impact
                   better.
                 </p>
@@ -2633,6 +2690,42 @@ export default function Login() {
           <div className="mt-6">
             <Button
               onClick={closeModal}
+              variant="gradient-primary"
+              className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+            >
+              Got it!
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={activeModal === "disqualify"} onClose={closeModal}>
+        <div className="text-center p-6 max-w-md">
+          <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] mb-4">
+            <svg
+              className="h-10 w-10 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </div>
+          <div className="openSans text-center p-4 text-red-500">
+            You are not eligible for the Aspiring Badge, Please try again after
+            1 day.
+          </div>
+          <div className="mt-6">
+            <Button
+              onClick={() => {
+                closeModal();
+                navigate("/dashboard");
+              }}
               variant="gradient-primary"
               className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
             >

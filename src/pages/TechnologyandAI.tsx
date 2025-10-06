@@ -3,10 +3,11 @@ import Footer from "../layout/Footer/Footer";
 import { useState, useEffect, useRef } from "react";
 import CompanyCard from "../components/ui/CompanyCard";
 import { iconMap } from "../assets/icons";
-import { Filter, SortAsc, SortDesc } from "lucide-react";
+import { Filter, SortAsc, SortDesc, X } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import {
-  GetDomainDetails,
+  GetBadgeListDetails,
+  GetProfessionalDetails,
   GetUsersearchProfileDetails,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -22,12 +23,13 @@ interface Company {
   tags: string[];
   rating?: number;
   isCertified?: boolean;
+  certificationLevel?: string;
 }
 
 export default function TechnologyAndAIPage() {
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search");
-  const domain = searchParams.get("domain");
+  const domain = searchParams.get("profession");
   const { showToast } = useToast();
   const [Domain, setDomain] = useState([]);
   const [selectedDomain, setSelectedDomain] = useState<any>(domain);
@@ -39,6 +41,32 @@ export default function TechnologyAndAIPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const measureRef = useRef<HTMLSpanElement>(null);
+  const [selectedDomainText, setSelectedDomainText] = useState("All Domains");
+  const [textWidth, setTextWidth] = useState(0);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [certificationLevels, setCertificationLevels] = useState<any[]>([]);
+  const [selectedCertificationLevel, setSelectedCertificationLevel] =
+    useState<string>("");
+  console.log(
+    "🚀 ~ TechnologyAndAIPage ~ selectedCertificationLevel:",
+    selectedCertificationLevel
+  );
+
+ useEffect(() => {
+  if (!measureRef.current) return;
+  const el = measureRef.current;
+
+  const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
+    for (const entry of entries) {
+      setTextWidth(entry.contentRect.width);
+    }
+  });
+
+  observer.observe(el);
+
+  return () => observer.disconnect();
+}, []); // run once
 
   const itemsPerPage = 10;
   const totalPages = Math.ceil(totalCount / itemsPerPage);
@@ -51,27 +79,35 @@ export default function TechnologyAndAIPage() {
         selectedDomain,
         searchQuery,
         page,
-        itemsPerPage
+        itemsPerPage,
+        selectedCertificationLevel,
+        sort
       );
 
       if (res?.data) {
         setTotalCount(res.data.data.count);
 
-        const transformedCompanies = res.data.data.rows.map((company: any) => ({
-          id: company.id,
-          name: company.name,
-          domain: selectedDomain || "Technology and AI",
-          logoUrl: company.profile_picture || iconMap["comlogo"],
-          bannerUrl: company.profile_banner || iconMap["companycard1"],
-          location: company.location || "Unknown location",
-          description: company.bio || "No description available",
-          tags: company.tags || [],
-          rating: Math.floor(Math.random() * 5) + 1,
-          isCertified: Math.random() > 0.5,
-          is_organization: company?.is_organization,
-          is_person: company?.is_person,
-        }));
-
+        const transformedCompanies = res.data.data.rows
+          .map((company: any) => ({
+            id: company.id,
+            name: company.name,
+            domain: selectedDomain || "Technology and AI",
+            logoUrl: company.profile_picture || iconMap["comlogo"],
+            bannerUrl: company.profile_banner || iconMap["companycard1"],
+            location: company.location || "Unknown location",
+            description: company.bio || "No description available",
+            tags: company.tags || [],
+            rating: company.average,
+            isCertified: Math.random() > 0.5,
+            is_organization: company?.is_organization,
+            is_person: company?.is_person,
+            level: company?.level?.level,
+          }))
+          .sort((a: Company, b: Company) => {
+            if (sort === "az") return a.name.localeCompare(b.name);
+            if (sort === "za") return b.name.localeCompare(a.name);
+            return 0;
+          });
         setCompanies(transformedCompanies);
       }
     } catch (err: any) {
@@ -89,7 +125,7 @@ export default function TechnologyAndAIPage() {
 
   const fetchDomain = async () => {
     try {
-      const res = await GetDomainDetails();
+      const res = await GetProfessionalDetails();
       setDomain(res?.data?.data);
       const foundDomain = res?.data?.data?.find((d: any) => d.slug === domain);
       if (foundDomain) {
@@ -103,10 +139,28 @@ export default function TechnologyAndAIPage() {
       });
     }
   };
+  const fetchBadge = async () => {
+    try {
+      const res = await GetBadgeListDetails();
+      // Transform the badge data to have label and value properties
+      const transformedBadges = res?.data?.data.map((badge: any) => ({
+        label: badge.level,
+        value: badge.slug,
+      }));
+      setCertificationLevels(transformedBadges);
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
 
   useEffect(() => {
     if (!hasFetched.current) {
       fetchDomain();
+      fetchBadge();
       hasFetched.current = true;
     }
     fetchUsersearchProfileDetails(currentPage);
@@ -115,11 +169,22 @@ export default function TechnologyAndAIPage() {
   useEffect(() => {
     setCurrentPage(1);
     fetchUsersearchProfileDetails(1);
-  }, [searchQuery, sort, selectedDomain]);
+  }, [sort, selectedDomain, selectedCertificationLevel]);
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleSearch = () => {
+    if (selectedDomain || searchQuery) {
+      fetchUsersearchProfileDetails(1);
+    }
+  };
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
   };
 
   return (
@@ -127,63 +192,133 @@ export default function TechnologyAndAIPage() {
       <Header />
 
       <div className="w-full bg-[#f9f7ff] px-4 sm:px-6 py-[34px]">
-        <h1 className="text-xl font-bold text-gray-900 mb-4">
-          Technology and AI
-        </h1>
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-xl font-bold text-gray-900">Technology and AI</h1>
+          <button
+            className="lg:hidden flex items-center gap-2 rounded-full shadow-sm border border-gray-200 bg-[#7077FE] text-white h-full font-semibold px-3 md:px-4 py-2 appearance-none focus:outline-none cursor-pointer text-[12px]"
+            onClick={() => setMobileFiltersOpen(true)}
+          >
+            <Filter size={16} />
+            <span className="text-sm">Filters</span>
+          </button>
+        </div>
 
-        <div className="w-full max-w-2xl flex items-center rounded-full bg-white shadow-sm border border-[#CBD5E1] overflow-hidden">
-          <div className="relative">
-            <select
-              className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold px-5 py-2 rounded-l-full appearance-none focus:outline-none cursor-pointer w-[130px]"
-              value={selectedDomain}
-              onChange={(e) => setSelectedDomain(e.target.value)}
-            >
-              <option>Explore</option>
-              {Domain.map((domain: any) => (
-                <option key={domain.id} value={domain.slug}>
-                  {domain.name}
-                </option>
-              ))}
-            </select>
-            <div className="absolute top-1/2 right-3 transform -translate-y-1/2 text-white text-xs pointer-events-none">
-              ▼
-            </div>
-          </div>
-
-          <div className="relative flex-1">
-            <input
-              type="text"
-              value={searchQuery || ""}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Find & Choose your perfect organization"
-              className="w-full px-4 py-2 pr-10 text-sm text-gray-700 placeholder-gray-400 outline-none"
-            />
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
+        <div className="relative z-10 text-center max-w-4xl">
+          {/* Updated responsive container */}
+          <div className="w-full mx-auto flex flex-col md:flex-row items-stretch md:items-center h-[34px] gap-2">
+            {/* Domain Selector - now full width on mobile */}
+            <div className="relative rounded-full">
+              {/* Measurement span with exact same text styling */}
+              <span
+                className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4 py-2"
+                ref={measureRef}
+                style={{
+                  fontFamily: "inherit",
+                  fontSize: "12px", // Explicitly set to match select
+                }}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 21l-4.35-4.35M9.5 17a7.5 7.5 0 100-15 7.5 7.5 0 000 15z"
-                />
-              </svg>
+                {selectedDomainText || "All Domains"}
+              </span>
+
+              <select
+                className="bg-[#7077FE] rounded-full text-white h-full font-semibold px-3 md:px-4 py-2 appearance-none focus:outline-none cursor-pointer text-[12px]"
+                style={{
+                  width: `${textWidth}px`, // Adjusted padding
+                  maxWidth: "100%",
+                  minWidth: "120px",
+                }}
+                value={selectedDomain}
+                onChange={(e) => {
+                  setSelectedDomain(e.target.value);
+                  const selectedText =
+                    e.target.options[e.target.selectedIndex].text;
+                  setSelectedDomainText(selectedText);
+                }}
+              >
+                <option value="" className="text-white text-[12px]">
+                  All Profession
+                </option>
+                {Domain.map((domain: any) => (
+                  <option
+                    key={domain.id}
+                    value={domain.id}
+                    className="text-white text-[12px]"
+                  >
+                    {domain.title}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute top-1/2 right-3 transform -translate-y-1/2 text-white text-[10px] pointer-events-none">
+                ▼
+              </div>
+            </div>
+
+            {/* Search Input - full width on mobile */}
+            <div className="relative flex-grow bg-white border border-gray-200 rounded-full md:rounded-full px-3 h-[100%] shadow-sm">
+              <input
+                type="text"
+                placeholder="Find & Choose your perfect organization"
+                className="w-full py-2 bg-transparent text-sm text-gray-700 h-full placeholder:text-gray-400 outline-none border-none px-2"
+                value={searchQuery || ""}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyPress}
+              />
+              <button
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE] cursor-pointer"
+                onClick={handleSearch}
+              >
+                🔍
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="w-full max-w-[2100px] mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-3">
-        {/* Left Sidebar */}
-        <aside className="hidden lg:block w-64 px-4 py-8 border-r border-gray-100 bg-white">
-          <div className="mb-6">
-            <h2 className="text-sm font-semibold text-gray-900 mb-5">Filter</h2>
-            <ul className="space-y-8 text-sm text-gray-800">
+      {/* Mobile filters dialog */}
+      <div
+        className={`fixed inset-0 z-40 lg:hidden ${
+          mobileFiltersOpen ? "block" : "hidden"
+        }`}
+      >
+        <div className="fixed inset-0 bg-black bg-opacity-25" />
+        <div className="fixed inset-y-0 left-0 z-40 w-full max-w-xs overflow-y-auto bg-white px-4 py-4 sm:max-w-sm sm:px-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-medium text-gray-900">Filters</h2>
+            <button
+              type="button"
+              className="-mr-2 flex h-10 w-10 items-center justify-center rounded-md p-2 text-gray-400 hover:text-gray-500"
+              onClick={() => setMobileFiltersOpen(false)}
+            >
+              <X className="h-6 w-6" />
+            </button>
+          </div>
+
+          <div className="mt-4">
+            <h3 className="text-sm font-semibold text-gray-900 mb-5">Filter</h3>
+            <div className="mb-6">
+              <h4 className="text-xs font-medium text-gray-500 mb-2">
+                Certification Level
+              </h4>
+              <ul className="space-y-2 text-sm text-gray-800">
+                {certificationLevels.map((level) => (
+                  <li
+                    key={level.value}
+                    className={`flex items-center gap-2 cursor-pointer p-2 rounded ${
+                      selectedCertificationLevel === level.value
+                        ? "bg-[#7077FE] text-white"
+                        : ""
+                    }`}
+                    onClick={() => {
+                      setSelectedCertificationLevel(level.value);
+                      setMobileFiltersOpen(false);
+                    }}
+                  >
+                    {level.label}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {/* <ul className="space-y-8 text-sm text-gray-800">
               <li className="flex items-center gap-2 cursor-pointer">
                 <Filter size={16} /> Certification Level
               </li>
@@ -196,7 +331,74 @@ export default function TechnologyAndAIPage() {
               <li className="flex items-center gap-2 cursor-pointer">
                 <Filter size={16} /> Tags
               </li>
+            </ul> */}
+          </div>
+
+          <div className="mt-8">
+            <h3 className="text-sm font-semibold text-gray-900 mb-5">Sort</h3>
+            <ul className="space-y-7 text-sm text-gray-700">
+              <li
+                className="flex items-center gap-2 cursor-pointer"
+                onClick={() => {
+                  setSort("az");
+                  setMobileFiltersOpen(false);
+                }}
+              >
+                <SortAsc size={16} /> Sort A-Z
+              </li>
+              <li
+                className="flex items-center gap-2 cursor-pointer"
+                onClick={() => {
+                  setSort("za");
+                  setMobileFiltersOpen(false);
+                }}
+              >
+                <SortDesc size={16} /> Sort Z-A
+              </li>
             </ul>
+          </div>
+        </div>
+      </div>
+
+      <div className="w-full max-w-[2100px] mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-3">
+        {/* Left Sidebar - Desktop */}
+        <aside className="hidden lg:block w-[200px] px-4 py-8 border-r border-gray-100 bg-white">
+          <div className="mb-6">
+            <h2 className="text-sm font-semibold text-gray-900 mb-5">Filter</h2>
+            <div className="mb-6">
+              <h4 className="text-xs font-medium text-gray-500 mb-2">
+                Certification Level
+              </h4>
+              <ul className="space-y-2 text-sm text-gray-800">
+                {certificationLevels.map((level) => (
+                  <li
+                    key={level.value}
+                    className={`flex items-center gap-2 cursor-pointer p-2 rounded ${
+                      selectedCertificationLevel === level.value
+                        ? "bg-[#7077FE] text-white"
+                        : ""
+                    }`}
+                    onClick={() => setSelectedCertificationLevel(level.value)}
+                  >
+                    {level.label}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {/* <ul className="space-y-8 text-sm text-gray-800">
+              <li className="flex items-center gap-2 cursor-pointer">
+                <Filter size={16} /> Certification Level
+              </li>
+              <li className="flex items-center gap-2 cursor-pointer">
+                <Filter size={16} /> Industry
+              </li>
+              <li className="flex items-center gap-2 cursor-pointer">
+                <Filter size={16} /> Geographic Location
+              </li>
+              <li className="flex items-center gap-2 cursor-pointer">
+                <Filter size={16} /> Tags
+              </li>
+            </ul> */}
           </div>
 
           <div>
@@ -219,7 +421,7 @@ export default function TechnologyAndAIPage() {
         </aside>
 
         {/* Right Content (Company Grid) */}
-        <main className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8 items-stretch">
+        <main className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
           {isLoading ? (
             <div className="col-span-full flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
@@ -230,7 +432,7 @@ export default function TechnologyAndAIPage() {
             </div>
           ) : companies.length === 0 ? (
             <div className="col-span-full text-center py-10 text-gray-500">
-              No companies found
+              No people found
             </div>
           ) : (
             companies.map((company) => (
@@ -251,7 +453,7 @@ export default function TechnologyAndAIPage() {
               <button
                 onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-1 rounded-l-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
+                className="px-3 py-2 rounded-l-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
               >
                 «
               </button>
@@ -272,7 +474,7 @@ export default function TechnologyAndAIPage() {
                   <button
                     key={pageNum}
                     onClick={() => handlePageChange(pageNum)}
-                    className={`px-3 py-1 border border-gray-300 ${
+                    className={`px-4 py-2 border border-gray-300 ${
                       pageNum === currentPage
                         ? "bg-indigo-500 text-white"
                         : "bg-white text-gray-700 hover:bg-gray-100"
@@ -284,7 +486,7 @@ export default function TechnologyAndAIPage() {
               })}
 
               {totalPages > 5 && currentPage < totalPages - 2 && (
-                <span className="px-3 py-1 border border-gray-300 bg-white">
+                <span className="px-4 py-2 border border-gray-300 bg-white">
                   ...
                 </span>
               )}
@@ -292,7 +494,7 @@ export default function TechnologyAndAIPage() {
               {totalPages > 5 && currentPage < totalPages - 2 && (
                 <button
                   onClick={() => handlePageChange(totalPages)}
-                  className="px-3 py-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
+                  className="px-4 py-2 border border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
                 >
                   {totalPages}
                 </button>
@@ -303,7 +505,7 @@ export default function TechnologyAndAIPage() {
                   handlePageChange(Math.min(currentPage + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
-                className="px-3 py-1 rounded-r-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
+                className="px-3 py-2 rounded-r-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
               >
                 »
               </button>

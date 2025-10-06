@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {LazyLoadImage } from "react-lazy-load-image-component";
-import { GetTrendingPost } from "../../Common/ServerAPI";
+import { GetAllTrendingPost } from "../../Common/ServerAPI";
 import LoadingSpinner from "../ui/LoadingSpinner";
 
 export default function PostForSocialMedia() {
@@ -12,7 +12,7 @@ export default function PostForSocialMedia() {
   const GetPostData = async () => {
     setLoading(true);
     try {
-      const res = await GetTrendingPost()
+      const res = await GetAllTrendingPost(1)
       if (res?.success?.status) {
         setPostData(res?.data?.data?.rows); // Ensure it's an array
       } else {

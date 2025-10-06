@@ -1,53 +1,101 @@
 import { useEffect } from "react";
+import { IoCloseOutline } from "react-icons/io5";
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
-  position?: 'center' | 'bottom'; // Add position prop
-}
+  position?: "center" | "bottom"; // Add position prop
 
-export default function Modal({ isOpen, onClose, children, position = 'center' }: ModalProps) {
+  modalKey?: string;
+  completionStatus?: number; // 👈 add optional prop
+  completedStep?: number; // 👈 add optional prop
+}
+let activeModalKey: string | null = null;
+
+export default function Modal({
+  isOpen,
+  onClose,
+  children,
+  position = "center",
+
+  modalKey,
+  completionStatus,
+  completedStep,
+}: ModalProps) {
+  const resolvedCompletionStatus =
+    completionStatus ??
+    Number(localStorage.getItem("person_organization") || "0");
+  const resolvedCompletedStep =
+    completedStep ?? Number(localStorage.getItem("completed_step") || "0");
+  if (
+    isOpen &&
+    modalKey === "person" &&
+    resolvedCompletionStatus > 0 &&
+    resolvedCompletedStep > 0
+  ) {
+    // optional: actively close parent state instead of just not rendering
+    // setTimeout(onClose, 0);
+    return null;
+  }
+
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
+    if (isOpen && modalKey) {
+      // close any previous modal
+      if (activeModalKey && activeModalKey !== modalKey) {
+        // auto-close previous modal
+        document.dispatchEvent(
+          new CustomEvent("closeModal", { detail: activeModalKey })
+        );
+      }
+      activeModalKey = modalKey;
     }
 
     return () => {
-      document.body.style.overflow = "auto";
+      if (activeModalKey === modalKey) {
+        activeModalKey = null;
+      }
     };
-  }, [isOpen]);
+  }, [isOpen, modalKey]);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    const handler = (e: any) => {
+      if (e.detail === modalKey) {
+        onClose();
+      }
+    };
+    document.addEventListener("closeModal", handler);
+    return () => document.removeEventListener("closeModal", handler);
+  }, [modalKey, onClose]);
 
-  // Determine positioning classes based on position prop
   const positionClasses = {
     center: "items-center justify-center",
-    bottom: "items-end justify-center"
+    bottom: "items-end justify-center",
   };
 
   const modalSizeClasses = {
     center: "max-w-lg mx-auto my-8",
-    bottom: "w-full max-w-full my-0"
+    bottom: "w-full max-w-full my-0",
   };
 
+  if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className={`flex min-h-screen p-4 sm:p-0 ${positionClasses[position]}`}>
-        <div 
-          className={`fixed inset-0 transition-opacity duration-1000 ease-in-out opacity-75 bg-black`}
+    <div className="fixed inset-0 overflow-y-auto z-[2000]">
+      <div
+        className={`flex min-h-screen p-4 sm:p-6 ${positionClasses[position]}`}
+      >
+        <div
+          className="fixed inset-0 transition-opacity duration-500 ease-in-out opacity-60 bg-black"
           onClick={onClose}
           aria-hidden="true"
         />
 
         {/* Modal content */}
-        <div 
-          className={`relative overflow-hidden bg-white rounded-lg shadow-xl transition-all transform ${modalSizeClasses[position]}`}
+        <div
+          className={`relative bg-white rounded-2xl shadow-xl transition-all transform ${modalSizeClasses[position]}`}
           style={{
             maxHeight: "90vh",
-            overflowY: "auto"
+            overflowY: "auto",
           }}
           role="dialog"
           aria-modal="true"
@@ -55,29 +103,15 @@ export default function Modal({ isOpen, onClose, children, position = 'center' }
           {/* Close button */}
           <button
             type="button"
-            className="absolute top-2 right-2 p-2 text-gray-500 hover:text-gray-700 focus:outline-none z-50"
+            className="absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-700"
             onClick={onClose}
             aria-label="Close modal"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            <IoCloseOutline className="text-[#E1056D]" />
           </button>
-          
+
           {/* Modal content */}
-          <div className="p-4 sm:p-6">
-            {children}
-          </div>
+          <div className="p-6 sm:p-10">{children}</div>
         </div>
       </div>
     </div>

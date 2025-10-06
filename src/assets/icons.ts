@@ -23,6 +23,8 @@ import companylogo2 from './comlogo2.png';
 import aspcompany1 from './aspcom1.png';
 import aspcompany2 from './aspcom2.png';
 import herosection from './Hero section.png'
+import herosections from './banner3.png'
+
 // import companycard3 from './companycard3.jpg';
 // import companylogo3 from  './companylogo3.jpg';
 
@@ -36,10 +38,15 @@ import certify from './certify.svg';
 import directory from './directory.svg';
 import usericon from './Icon.svg';
 import mentor1 from './mentor1.png';
-
-
-
-
+import socialuser from './signup.svg';
+import socialhome from './home.svg';
+import socialsearch from './search.svg';
+import socialtrending from './trending.svg';
+import leaderboard from './social_leaderboard.png';
+import socialannouncement from './social_announcement.png';
+import storyplus from './plus.png';
+import sociallike from './social_like.png';
+import userplus from './userplus.png';
 
 export const iconMap: Record<string, string> = {
   leftimg:leftimage,
@@ -60,6 +67,7 @@ export const iconMap: Record<string, string> = {
  domain13: domain13Icon,
   domain14: domain14Icon,
 heroimg: herosection,
+heroimgs: herosections,
 inslogo,
 companycard1,
 companycard2,
@@ -78,6 +86,15 @@ community,
 directory,
 certify,
 usericon,
-mentor1
+mentor1,
+socialuser,
+socialhome,
+socialsearch,
+socialtrending,
+leaderboard,
+socialannouncement,
+storyplus,
+sociallike,
+userplus
 
 };
