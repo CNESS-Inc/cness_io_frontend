@@ -131,12 +131,12 @@ export default function WhyCness() {
 
       {/* --- Our Story + Mission / Vision (Section 2) --- */}
       <LazySection effect="fade-up" delay={0.2}>
-        <section className="relative w-full py-16 md:py-20 bg-gradient-to-r from-[#FAFAFA] to-[#F6F5FA]">
+        <section className="relative w-full py-16 lg:py-20 bg-gradient-to-r from-[#FAFAFA] to-[#F6F5FA]">
           <div className="mx-auto max-w-[1200px] px-6">
             {/* Top row */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-10 items-start">
               {/* Left: title */}
-              <div>
+              <div className="text-center lg:text-left">
                 <p className="text-[32px] md:text-[38px] lg:text-[42px] font-semibold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                   Our Story
                 </p>
@@ -146,7 +146,7 @@ export default function WhyCness() {
               </div>
 
               {/* Right: copy + CTA */}
-              <div className="flex flex-col items-start gap-6">
+              <div className="flex flex-col items-center lg:items-start gap-6">
                 <p className="max-w-[620px] font-['Open Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#64748B] font-[300]">
                   We Built Our Super App To Unite Learning, Certifications,
                   Communities, And Marketplaces In One Ecosystem—Helping People
@@ -281,13 +281,13 @@ export default function WhyCness() {
           }}
         >
           <div className="w-full">
-            <h2 className="font-['Poppins'] font-medium text-[32px] md:text-[42px] leading-[1.3] tracking-[-0.02em] text-[#111] px-6 md:px-10 lg:px-16">
+            <h2 className="text-center lg:text-left font-['Poppins'] font-medium text-[32px] md:text-[42px] leading-[1.3] tracking-[-0.02em] text-[#111] px-6 md:px-10 lg:px-16">
               Our{" "}
               <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                 Road ahead
               </span>
             </h2>
-            <div className="absolute bottom-0 lg:mb-[86px] w-full h-full lg:h-[493px]">
+            <div className="absolute top-8 lg:top-auto bottom-0 lg:mb-[86px] w-full h-full lg:h-[493px]">
               <img
                 src="https://cdn.cness.io/road.webp"
                 alt="CNESS roadmap"

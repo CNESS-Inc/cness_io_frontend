@@ -8,18 +8,15 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { iconMap } from "../../../assets/icons";
 import SignupModel from "../../OnBoarding/Signup";
 
-const SocialNavbar = ({
-  isMobileNavOpen,
-}: // currentPath,
-{
-  isMobileNavOpen: boolean;
-  // toggleMobileNav: () => void;
+interface LeftSocialProps {
   currentPath: string;
   selectedDomain: string;
-  setSelectedDomain: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedDomain: (domain: string) => void;
   sort: "az" | "za";
-  setSort: React.Dispatch<React.SetStateAction<"az" | "za">>;
-}) => {
+  setSort: (sort: "az" | "za") => void;
+}
+
+const SocialNavbar: React.FC<LeftSocialProps> = () => {
   const navigate = useNavigate();
   // const { showToast } = useToast();
   const [openDropdown, setOpenDropdown] = useState<{ [key: string]: boolean }>(
@@ -331,17 +328,15 @@ const SocialNavbar = ({
 
   return (
     <>
-      {isMobileNavOpen && (
-        <div
-          // onClick={toggleMobileNav}
-          className="fixed inset-0 bg-transparent z-40 md:hidden"
-        />
-      )}
+      <div
+        // onClick={toggleMobileNav}
+        className="fixed inset-0 bg-transparent z-40 md:hidden"
+      />
       <nav
         className={` h-full flex pt-8 pb-8 flex-col justify-between items-start w-full bg-white rounded-[12px]
-          transform transition-transform duration-300 ease-in-out
-          ${isMobileNavOpen ? "translate-x-0" : "-translate-x-full"}
-        `}
+          transform transition-transform duration-300 ease-in-out translate-x-0
+          `}
+          // ${isMobileNavOpen ? "translate-x-0" : "-translate-x-full"}
       >
         <div className="flex flex-col w-full font-poppins leading-[20px] h-full">
           <div className="flex flex-col justify-between items-start space-y-3 px-3 w-full h-full">
