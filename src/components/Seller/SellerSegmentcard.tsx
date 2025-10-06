@@ -2649,7 +2649,8 @@ export function BestPracticesSection({
         <div className="flex items-center gap-2">
           <OutlinePill onClick={onAdd}>
             <Plus className="h-4 w-4" />
-            Add Best Practices
+            <span className="hidden md:block">Add Best Practices</span>
+            <span className="block md:hidden">Add</span>
           </OutlinePill>
         </div>
       </div>
@@ -3135,6 +3136,7 @@ export function SocialStackCard({
             <h3 className="font-poppins font-semibold text-[20px] leading-[32.3px] tracking-[0.15px] text-center text-[#0F1728]">
               Notification
             </h3>
+            
           </div>
 
           {/* rows */}
@@ -3187,7 +3189,7 @@ export function SocialStackCard({
     return (
       <>
         <div
-          className="relative -mx-2 sm:-mx-3 md:-mx-4
+          className="relative 
              h-auto min-h-[320px] sm:h-[360px]
              rounded-[12px] border border-[#ECEEF2]
              px-[12px] py-[18px]
@@ -3212,13 +3214,16 @@ export function SocialStackCard({
               </div>
             </>
           )}
-
+          
           {/* content */}
+          
           <div
             className={`relative z-10 h-full flex flex-col justify-center ${edgePad}`}
           >
+            
             {idx === 0 ? (
               <div className="flex flex-col items-center justify-center h-full w-full px-2 sm:px-0">
+                
                 <h4 className="font-poppins font-semibold text-[#0F1728] text-center text-[20px] leading-[28px] break-words">
                   <MobileBreakTitle text={s.title} afterWords={3} />
                 </h4>
@@ -3230,6 +3235,7 @@ export function SocialStackCard({
                 >
                   {s.text}
                 </p>
+                
                 <div
                   className="mt-4 grid grid-cols-2 gap-2
   w-full max-w-[320px] sm:max-w-[360px] mx-auto
@@ -3269,6 +3275,7 @@ export function SocialStackCard({
               <NotificationsCard notifications={notifications} />
             )}
           </div>
+
 
           {/* marquee animations */}
           <style>{`
@@ -3392,7 +3399,7 @@ export function SocialStackCard({
             </div>
           </div>
         </div>
-        {/* Button */}
+        {/* Button */}  
         <button
           className="mt-auto w-full flex items-center justify-center gap-[7.09px] 
              h-[34px] rounded-[100px] bg-[#7077FE] 
@@ -3650,7 +3657,7 @@ export function DirectorySection({
             {/* Right: button */}
             <button
               onClick={() => onView?.(it)}
-              className={`w-full sm:w-[127px] h-[32px] rounded-full px-4 py-2 text-center font-opensans text-[14px] text-white ${GRADIENT}`}
+              className={`w-full sm:w-[127px] h-[35px] rounded-full px-4 pt-1 text-center font-opensans text-[14px] text-white flex items-center justify-center ${GRADIENT}`}
             >
               View Details
             </button>

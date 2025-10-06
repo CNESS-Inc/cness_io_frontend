@@ -283,13 +283,26 @@ export default function MarketplacePage() {
         <Seller />
       </LazySection>
 
-      <div className="w-full max-w-8xl mx-auto bg-white p-8 sm:p-10 rounded-xl ">
-        <Marketform
-          src="https://forms.zohopublic.com/vijicn1/form/SellerForm/formperma/cg_YdZsqMd1myB1bzzytsXvBByc4kI4DzhufAv4Cu2s"
-          title="Marketplace Submission"
-          minHeight={400}
-        />
-      </div>
+      <section className="bg-[linear-gradient(135deg,rgba(255,255,255,1)_10%,rgba(253,237,237,1)_70%,rgba(249,211,242,1)_100%)] pt-18 pb-18">
+        <div className="max-w-[1500px] mx-auto px-4 flex flex-col lg:flex-row items-stretch gap-8 lg:gap-12 ">
+              <div className="w-full shadow-lg rounded-[28px]  lg:w-[60%] bg-white  p-4 sm:p-6 md:p-10 flex flex-col">
+                <Marketform
+                  src="https://forms.zohopublic.com/vijicn1/form/SellerForm/formperma/cg_YdZsqMd1myB1bzzytsXvBByc4kI4DzhufAv4Cu2s"
+                  title="Marketplace Submission"
+                  minHeight={400}
+                />
+              </div>
+              {/* Side Image */}
+              <div className="w-full lg:w-[40%] flex">
+                <img
+                  src="https://cdn.cness.io/neon.webp"
+                  alt="Sell on CNESS"
+                  className="w-full h-full rounded-[28px] shadow-lg object-cover"
+                />
+              </div>
+            </div>
+      </section>
+    
     </>
   );
 }
