@@ -10,7 +10,7 @@ export default function Header() {
 
   return (
     <header 
-      className="bg-white "
+      className="bg-white sticky top-0 z-30 shadow-md"
       role="banner"
       aria-label="Main navigation"
     >

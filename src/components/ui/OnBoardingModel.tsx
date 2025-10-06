@@ -122,14 +122,14 @@ export default function PopupOnboardingModal({
                 className="
                   relative rounded-[24px] bg-white
                   w-full h-full
-                  px-4 md:px-[30px] py-[20px] md:py-[30px]
+                  px-4 md:px-[30px] pb-[20px] pt-0 md:pb-[0px]
                 "
               >
                 {/* Close button */}
                 <button
                   onClick={onClose}
                   aria-label="Close"
-                  className="absolute right-4 top-4"
+                  className="absolute right-0 top-0"
                 >
                   <X className="h-6 w-6 md:h-7 md:w-7 stroke-[#9EA8B6]" />
                 </button>
