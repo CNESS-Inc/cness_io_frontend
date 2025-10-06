@@ -11,8 +11,11 @@ import Benefit from "../components/certificationsComponents/Benefit";
 import CertificationLevel from "../components/certificationsComponents/CertificationLevel";
 import Process from "../components/certificationsComponents/Process";
 import SectionFaq from "../components/faqs/SectionFaq";
+import { useState } from "react";
+import SignupModel from "../components/OnBoarding/Signup";
 
 export default function Certifications() {
+  
   const faqs = [
     {
       question: "Who can apply?",
@@ -40,6 +43,7 @@ export default function Certifications() {
         "No worries — you can reattempt after revisiting the learning material.",
     },
   ];
+  const [openSignup, setOpenSignup] = useState(false);
 
   return (
     <>
@@ -101,13 +105,16 @@ export default function Certifications() {
              py-1 px-8 self-stretch 
              text-[16px] font-['Open_Sans'] font-medium
              leading-[100%] tracking-[0px] text-center"
-                  onClick={() => (window.location.href = "/log-in")}
+                  onClick={() => setOpenSignup(true)}
+
                 >
                   Join Us
                 </Button>
               </div>
             </div>
           </div>
+                    <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
+          
         </section>
       </LazySection>
 
