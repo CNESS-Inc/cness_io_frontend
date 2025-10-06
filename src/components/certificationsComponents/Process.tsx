@@ -20,13 +20,13 @@ export default function Process() {
     {
       step: "STEP–02",
       title: "Complete True Profile",
-      desc: "Access guided modules, complete the learning steps, and take the assessment at your own pace.",
+      desc: "Provide your complete profile details to verify your identity and move forward in the certification journey.",
       icon: step2,
     },
     {
       step: "STEP–03",
       title: "Complete Assessment",
-      desc: "Access guided modules, complete the learning steps, and take the assessment at your own pace.",
+      desc: "Complete the assessment to demonstrate your knowledge and skills. This step validates your readiness and moves you closer to certification.",
       icon: step3,
     },
     {

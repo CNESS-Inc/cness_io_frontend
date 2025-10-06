@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import like from "../../../assets/sociallike.svg";
 import StoryCard from "../../../components/Social/StoryCard";
 import {
   ChevronLeft,
@@ -294,6 +295,7 @@ export default function SocialFeed() {
 
   const [isCollectionLoading] = useState(false);
   const [storiesData, setStoriesData] = useState<Story[]>([]);
+  console.log('storiesData', storiesData);
   // const [addNewPost, setAddNewPost] = useState(false)
 
   const [userInfo, setUserInfo] = useState<any>();
@@ -779,6 +781,33 @@ export default function SocialFeed() {
     }
   };
 
+  const formatMessageTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+
+    if (diffInDays === 0) {
+      return "Today";
+    } else if (diffInDays === 1) {
+      return "Yesterday";
+    } else if (diffInDays < 7) {
+      return date.toLocaleDateString("en-US", { weekday: "long" });
+    } else {
+      // Manually format: 01 Sep 2025, 11.52 AM
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = date.toLocaleString("en-US", { month: "short" });
+      const year = date.getFullYear();
+
+      let hours = date.getHours();
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      const ampm = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12 || 12;
+
+      return `${day} ${month} ${year}, ${hours}.${minutes} ${ampm}`;
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (!openMenu.postId || !openMenu.type) return;
@@ -1001,8 +1030,8 @@ export default function SocialFeed() {
                             </Link>
                           </span>
                         </p>
-                        <p className="text-xs md:text-sm text-gray-400">
-                          {new Date(post.createdAt).toLocaleString()}
+                        <p className="text-xs md:text-[12px] text-[#606060]">
+                          {formatMessageTime(post.createdAt)}
                         </p>
                       </div>
                     </div>
@@ -1242,7 +1271,7 @@ export default function SocialFeed() {
                         <div className="flex items-center -space-x-2 md:-space-x-3">
                           <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
                             <img
-                              src={iconMap["sociallike"]}
+                              src={like}
                               alt="Home Icon"
                               className="w-8 h-8 transition duration-200 group-hover:brightness-0 group-hover:invert"
                             />
@@ -1391,7 +1420,7 @@ export default function SocialFeed() {
           )}
           <button
             className="mt-10 mb-10 w-[214px] h-[45px] bg-[#20B9EB] text-white rounded-[100px] mx-auto block"
-           onClick={() => setOpenSignup(true)}
+            onClick={() => setOpenSignup(true)}
           >
             Show more result
           </button>
@@ -1415,7 +1444,7 @@ export default function SocialFeed() {
               {topics.map((topic, index) => (
                 <li
                   key={index}
-                 onClick={() => setOpenSignup(true)}
+                  onClick={() => setOpenSignup(true)}
                   className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
                 >
                   {index + 1}. #{topic.topic_name}
@@ -1602,7 +1631,7 @@ export default function SocialFeed() {
                       src={postVideoPreviewUrl}
                     />
                     <button
-                     onClick={() => setOpenSignup(true)}
+                      onClick={() => setOpenSignup(true)}
                       className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center"
                     >
                       ×
@@ -1639,7 +1668,7 @@ export default function SocialFeed() {
                   </select>
 
                   <button
-                   onClick={() => setOpenSignup(true)}
+                    onClick={() => setOpenSignup(true)}
                     className="bg-[#7077FE] text-white px-6 py-2 rounded-full hover:bg-[#5b63e6]"
                   >
                     Post
@@ -1667,7 +1696,7 @@ export default function SocialFeed() {
                   Upload Story
                 </h2>
                 <button
-                 onClick={() => setOpenSignup(true)}
+                  onClick={() => setOpenSignup(true)}
                   className="text-black text-[26px] hover:text-black cursor-pointer"
                 >
                   ×
