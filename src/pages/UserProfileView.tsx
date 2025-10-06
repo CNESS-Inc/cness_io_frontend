@@ -191,7 +191,10 @@ export default function UserProfileView() {
         following_id: userId,
       };
       await SendFollowRequest(formattedData);
-      setUserDetails({ ...userDetails, if_following: !userDetails?.if_following })
+      setUserDetails({
+        ...userDetails,
+        if_following: !userDetails?.if_following,
+      });
     } catch (error) {
       console.error("Error fetching selection details:", error);
     }
@@ -199,22 +202,36 @@ export default function UserProfileView() {
 
   const handleFriend = async (userId: string) => {
     try {
-      if (userDetails.friend_request_status !== "ACCEPT" && userDetails.friend_request_status !== "PENDING" && !userDetails.if_friend) {
+      if (
+        userDetails.friend_request_status !== "ACCEPT" &&
+        userDetails.friend_request_status !== "PENDING" &&
+        !userDetails.if_friend
+      ) {
         const formattedData = {
           friend_id: userId,
         };
         await SendConnectionRequest(formattedData);
-        setUserDetails({ ...userDetails, if_friend: false, friend_request_status: "PENDING" })
+        setUserDetails({
+          ...userDetails,
+          if_friend: false,
+          friend_request_status: "PENDING",
+        });
       } else {
-        if (userDetails.friend_request_status == "ACCEPT" && userDetails.if_friend) {
+        if (
+          userDetails.friend_request_status == "ACCEPT" &&
+          userDetails.if_friend
+        ) {
           const formattedData = {
             friend_id: userId,
           };
           await UnFriend(formattedData);
-          setUserDetails({ ...userDetails, if_friend: false, friend_request_status: null })
+          setUserDetails({
+            ...userDetails,
+            if_friend: false,
+            friend_request_status: null,
+          });
         }
       }
-
     } catch (error) {
       console.error("Error fetching selection details:", error);
     }
@@ -286,10 +303,13 @@ export default function UserProfileView() {
             <div className="w-40 h-40 md:w-52 md:h-52 rounded-full border-8 border-white shadow-lg bg-white overflow-hidden">
               <img
                 src={
-                  userDetails?.profile_picture &&
-                  userDetails?.profile_picture !== "http://localhost:5026/file/"
-                    ? userDetails?.profile_picture
-                    : "/profile.png"
+                  !userDetails?.profile_picture ||
+                  userDetails?.profile_picture === "null" ||
+                  userDetails?.profile_picture === "undefined" ||
+                  !userDetails?.profile_picture.startsWith("http") ||
+                  userDetails?.profile_picture === "http://localhost:5026/file/"
+                    ? "/profile.png"
+                    : userDetails?.profile_picture
                 }
                 alt="userlogo1"
                 className="w-full h-full object-cover"
@@ -319,10 +339,11 @@ export default function UserProfileView() {
                 {userDetails?.user_id !== loggedInUserID && (
                   <button
                     onClick={() => handleFollow(userDetails?.user_id)}
-                    className={`text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full ${userDetails?.if_following
-                      ? "bg-gray-200 text-gray-800"
-                      : "bg-[#7C81FF] text-white"
-                      } hover:bg-indigo-600 hover:text-white`}
+                    className={`text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full ${
+                      userDetails?.if_following
+                        ? "bg-gray-200 text-gray-800"
+                        : "bg-[#7C81FF] text-white"
+                    } hover:bg-indigo-600 hover:text-white`}
                   >
                     {userDetails?.if_following ? "Following" : "+ Follow"}
                   </button>
@@ -331,9 +352,23 @@ export default function UserProfileView() {
                 {userDetails?.user_id !== loggedInUserID && (
                   <button
                     onClick={() => handleFriend(userDetails?.user_id)}
-                    className={`text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full ${userDetails?.if_friend && userDetails?.friend_request_status === "ACCEPT" ? "bg-gray-200 text-gray-800" : !userDetails?.if_friend && userDetails?.friend_request_status === "PENDING" ? "bg-[#7C81FF] text-white" : "bg-[#7C81FF] text-white"} hover:bg-indigo-600 hover:text-white`}
+                    className={`text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full ${
+                      userDetails?.if_friend &&
+                      userDetails?.friend_request_status === "ACCEPT"
+                        ? "bg-gray-200 text-gray-800"
+                        : !userDetails?.if_friend &&
+                          userDetails?.friend_request_status === "PENDING"
+                        ? "bg-[#7C81FF] text-white"
+                        : "bg-[#7C81FF] text-white"
+                    } hover:bg-indigo-600 hover:text-white`}
                   >
-                    {userDetails?.if_friend && userDetails?.friend_request_status === "ACCEPT" ? "Connected" : !userDetails?.if_friend && userDetails?.friend_request_status === "PENDING" ? "Requested..." : "+ Connect"}
+                    {userDetails?.if_friend &&
+                    userDetails?.friend_request_status === "ACCEPT"
+                      ? "Connected"
+                      : !userDetails?.if_friend &&
+                        userDetails?.friend_request_status === "PENDING"
+                      ? "Requested..."
+                      : "+ Connect"}
                   </button>
                 )}
               </div>
@@ -978,11 +1013,17 @@ export default function UserProfileView() {
                       <div className="flex items-center gap-3">
                         <img
                           src={
-                            reviewItem.profile.profile_picture &&
-                            reviewItem.profile.profile_picture !==
+                            !reviewItem.profile.profile_picture ||
+                            reviewItem.profile.profile_picture === "null" ||
+                            reviewItem.profile.profile_picture ===
+                              "undefined" ||
+                            !reviewItem.profile.profile_picture.startsWith(
+                              "http"
+                            ) ||
+                            reviewItem.profile.profile_picture ===
                               "http://localhost:5026/file/"
-                              ? reviewItem.profile.profile_picture
-                              : "/profile.png"
+                              ? "/profile.png"
+                              : reviewItem.profile.profile_picture
                           }
                           alt={reviewItem.profile.name}
                           className="w-10 h-10 rounded-full"

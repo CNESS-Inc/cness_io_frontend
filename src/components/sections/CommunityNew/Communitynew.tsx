@@ -45,7 +45,7 @@ const Communitynew: React.FC = () => {
       setIsVisible(true);
       setTimeout(() => {
         animateSteps();
-      }, 1000);
+      }, 300);
     };
     startAnimation();
     return () => {
@@ -56,13 +56,13 @@ const Communitynew: React.FC = () => {
   }, []);
 
   const animateSteps = () => {
-    const stepDuration = 1500; // 🔥 Faster speed here (was 2000)
+    const stepDuration = 1000; 
     const totalSteps = 4;
     const runStep = (step: number) => {
       setCurrentStep(step);
 
       if (step === 3) {
-        setTimeout(() => setCardsVisible(true), 300); // quicker card appearance
+        setTimeout(() => setCardsVisible(true), 500); 
       } else {
         setCardsVisible(false);
       }

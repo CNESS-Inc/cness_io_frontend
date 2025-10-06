@@ -229,20 +229,20 @@ useEffect(() => {
   //     [id]: !prev[id],
   //   }));
   // };
-useEffect(() => {
-  if (!measureRef.current) return;
-  const el = measureRef.current;
+  useEffect(() => {
+    if (!measureRef.current) return;
+    const el = measureRef.current;
 
-  const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
-    for (const entry of entries) {
-      setTextWidth(entry.contentRect.width);
-    }
-  });
+    const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
+      for (const entry of entries) {
+        setTextWidth(entry.contentRect.width);
+      }
+    });
 
-  observer.observe(el);
+    observer.observe(el);
 
-  return () => observer.disconnect();
-}, [selectedFilter, selectedDomainText]);
+    return () => observer.disconnect();
+  }, [selectedFilter, selectedDomainText]);
 
   const handleFilterChange = async (
     e: React.ChangeEvent<HTMLSelectElement>
@@ -792,11 +792,14 @@ useEffect(() => {
                       <div className="flex items-start gap-1 pr-12">
                         <img
                           src={
-                            company?.user?.profilePicture &&
-                            company?.user?.profilePicture !==
+                            !company?.user?.profilePicture ||
+                            company?.user?.profilePicture === "null" ||
+                            company?.user?.profilePicture === "undefined" ||
+                            !company?.user?.profilePicture.startsWith("http") ||
+                            company?.user?.profilePicture ===
                               "http://localhost:5026/file/"
-                              ? company?.user?.profilePicture
-                              : "/profile.png"
+                              ? "/profile.jpg"
+                              : company?.user?.profilePicture
                           }
                           alt={company.user.username}
                           className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover mr-2 sm:mr-3"
@@ -822,10 +825,13 @@ useEffect(() => {
                           {company.file && (
                             <img
                               src={
-                                company.file &&
-                                company.file !== "http://localhost:5026/file/"
-                                  ? company.file
-                                  : iconMap["companycard1"]
+                                !company.file ||
+                                company.file === "null" ||
+                                company.file === "undefined" ||
+                                !company.file.startsWith("http") ||
+                                company.file === "http://localhost:5026/file/"
+                                  ? "/profile.jpg"
+                                  : company.file
                               }
                               alt={company.title}
                               className="w-full h-40 sm:h-48 object-cover"
@@ -937,20 +943,21 @@ useEffect(() => {
                           }}
                         >
                           <div className="flex items-center gap-2 cursor-pointer">
-
-                          <Bookmark
-                            className="w-5 h-5 transition-all duration-200"
-                            fill={
-                              savedItems.has(company.id) ? "#72DBF2" : "none"
-                            } // full yellow when saved
-                            stroke={
-                              savedItems.has(company.id) ? "#72DBF2" : "#4338CA"
-                            } // yellow or indigo
-                          />
-                          <span className="text-sm font-normal text-gray-700">
-    {savedItems.has(company.id) ? "Saved" : "Save"}
-  </span>
-                        </div>
+                            <Bookmark
+                              className="w-5 h-5 transition-all duration-200"
+                              fill={
+                                savedItems.has(company.id) ? "#72DBF2" : "none"
+                              } // full yellow when saved
+                              stroke={
+                                savedItems.has(company.id)
+                                  ? "#72DBF2"
+                                  : "#4338CA"
+                              } // yellow or indigo
+                            />
+                            <span className="text-sm font-normal text-gray-700">
+                              {savedItems.has(company.id) ? "Saved" : "Save"}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>

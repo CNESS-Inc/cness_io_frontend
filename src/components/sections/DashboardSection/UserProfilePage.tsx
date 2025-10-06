@@ -39,31 +39,217 @@ const genderOptions = [
 ];
 
 const countryCode = [
-  "+1", "+20", "+30", "+32", "+33", "+34", "+36", "+39", "+44", "+44", "+44",
-  "+49", "+51", "+53", "+55", "+56", "+57", "+58", "+60", "+61", "+61", "+61",
-  "+62", "+64", "+65", "+66", "+81", "+82", "+84", "+86", "+91", "+92", "+93",
-  "+94", "+95", "+98", "+1242", "+1246", "+1264", "+1268", "+1284", "+1340",
-  "+1441", "+1473", "+1671", "+1684", "+1767", "+1849", "+1876", "+1939",
-  "+212", "+213", "+216", "+218", "+220", "+221", "+222", "+223", "+224",
-  "+225", "+226", "+227", "+228", "+229", "+230", "+231", "+232", "+233",
-  "+234", "+235", "+236", "+237", "+238", "+239", "+240", "+241", "+242",
-  "+243", "+244", "+245", "+246", "+248", "+249", "+250", "+251", "+252",
-  "+253", "+254", "+255", "+256", "+257", "+258", "+260", "+261", "+262",
-  "+263", "+264", "+265", "+266", "+267", "+268", "+269", "+290", "+291",
-  "+297", "+298", "+299", "+350", "+351", "+352", "+353", "+354", "+355",
-  "+356", "+357", "+358", "+358", "+359", "+370", "+371", "+372", "+373",
-  "+374", "+375", "+376", "+377", "+378", "+379", "+380", "+381", "+382",
-  "+383", "+385", "+386", "+387", "+389", "+420", "+421", "+423", "+500",
-  "+500", "+501", "+502", "+503", "+504", "+505", "+506", "+507", "+508",
-  "+509", "+590", "+590", "+591", "+592", "+593", "+594", "+595", "+596",
-  "+597", "+598", "+599", "+672", "+673", "+675", "+676", "+677", "+678",
-  "+679", "+680", "+681", "+682", "+683", "+685", "+686", "+687", "+688",
-  "+689", "+690", "+691", "+692", "+850", "+852", "+853", "+855", "+856",
-  "+880", "+886", "+960", "+961", "+962", "+963", "+964", "+965", "+966",
-  "+967", "+968", "+970", "+971", "+972", "+973", "+974", "+975", "+976",
-  "+977", "+992", "+993", "+994", "+995", "+996", "+998"
+  "+1",
+  "+20",
+  "+30",
+  "+32",
+  "+33",
+  "+34",
+  "+36",
+  "+39",
+  "+44",
+  "+44",
+  "+44",
+  "+49",
+  "+51",
+  "+53",
+  "+55",
+  "+56",
+  "+57",
+  "+58",
+  "+60",
+  "+61",
+  "+61",
+  "+61",
+  "+62",
+  "+64",
+  "+65",
+  "+66",
+  "+81",
+  "+82",
+  "+84",
+  "+86",
+  "+91",
+  "+92",
+  "+93",
+  "+94",
+  "+95",
+  "+98",
+  "+1242",
+  "+1246",
+  "+1264",
+  "+1268",
+  "+1284",
+  "+1340",
+  "+1441",
+  "+1473",
+  "+1671",
+  "+1684",
+  "+1767",
+  "+1849",
+  "+1876",
+  "+1939",
+  "+212",
+  "+213",
+  "+216",
+  "+218",
+  "+220",
+  "+221",
+  "+222",
+  "+223",
+  "+224",
+  "+225",
+  "+226",
+  "+227",
+  "+228",
+  "+229",
+  "+230",
+  "+231",
+  "+232",
+  "+233",
+  "+234",
+  "+235",
+  "+236",
+  "+237",
+  "+238",
+  "+239",
+  "+240",
+  "+241",
+  "+242",
+  "+243",
+  "+244",
+  "+245",
+  "+246",
+  "+248",
+  "+249",
+  "+250",
+  "+251",
+  "+252",
+  "+253",
+  "+254",
+  "+255",
+  "+256",
+  "+257",
+  "+258",
+  "+260",
+  "+261",
+  "+262",
+  "+263",
+  "+264",
+  "+265",
+  "+266",
+  "+267",
+  "+268",
+  "+269",
+  "+290",
+  "+291",
+  "+297",
+  "+298",
+  "+299",
+  "+350",
+  "+351",
+  "+352",
+  "+353",
+  "+354",
+  "+355",
+  "+356",
+  "+357",
+  "+358",
+  "+358",
+  "+359",
+  "+370",
+  "+371",
+  "+372",
+  "+373",
+  "+374",
+  "+375",
+  "+376",
+  "+377",
+  "+378",
+  "+379",
+  "+380",
+  "+381",
+  "+382",
+  "+383",
+  "+385",
+  "+386",
+  "+387",
+  "+389",
+  "+420",
+  "+421",
+  "+423",
+  "+500",
+  "+500",
+  "+501",
+  "+502",
+  "+503",
+  "+504",
+  "+505",
+  "+506",
+  "+507",
+  "+508",
+  "+509",
+  "+590",
+  "+590",
+  "+591",
+  "+592",
+  "+593",
+  "+594",
+  "+595",
+  "+596",
+  "+597",
+  "+598",
+  "+599",
+  "+672",
+  "+673",
+  "+675",
+  "+676",
+  "+677",
+  "+678",
+  "+679",
+  "+680",
+  "+681",
+  "+682",
+  "+683",
+  "+685",
+  "+686",
+  "+687",
+  "+688",
+  "+689",
+  "+690",
+  "+691",
+  "+692",
+  "+850",
+  "+852",
+  "+853",
+  "+855",
+  "+856",
+  "+880",
+  "+886",
+  "+960",
+  "+961",
+  "+962",
+  "+963",
+  "+964",
+  "+965",
+  "+966",
+  "+967",
+  "+968",
+  "+970",
+  "+971",
+  "+972",
+  "+973",
+  "+974",
+  "+975",
+  "+976",
+  "+977",
+  "+992",
+  "+993",
+  "+994",
+  "+995",
+  "+996",
+  "+998",
 ];
-
 
 const countryCodeOptions = countryCode.map((code) => ({
   value: code,
@@ -96,8 +282,8 @@ const customSelectStyles = {
     backgroundColor: state.isSelected
       ? "#E0E7FF"
       : state.isFocused
-        ? "#F3F4F6"
-        : "white",
+      ? "#F3F4F6"
+      : "white",
     color: "#111827",
     padding: "10px 12px",
     fontSize: "14px",
@@ -166,7 +352,7 @@ const tabMap = {
 
 const UserProfilePage = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [banner, setBanner] = useState<string | null>(null);
+  const [banner, setBanner] = useState<any>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
@@ -190,7 +376,10 @@ const UserProfilePage = () => {
     message: string;
   }>({ type: null, message: "" });
 
-  const [uploadIdentify, setUploadIdentify] = useState<any>({ message: "Uploading", loading: false })
+  const [uploadIdentify, setUploadIdentify] = useState<any>({
+    message: "Uploading",
+    loading: false,
+  });
 
   const { showToast } = useToast();
 
@@ -266,7 +455,7 @@ const UserProfilePage = () => {
         professions: yup.array().min(1, "At least one profession is required"),
         interests: yup.array().min(1, "At least one interest is required"),
         identify_uploaded: yup.mixed().nullable(),
-         custom_profession: yup.string().nullable(),
+        custom_profession: yup.string().nullable(),
       })
     ),
   });
@@ -363,19 +552,18 @@ const UserProfilePage = () => {
                   }
                 ),
               end_date: yup
-              .string()
-              .optional()
-              .test(
-                "is-after-start",
-                "End date must be after start date",
-                function (value) {
-                  const { start_date } = this.parent;
-                  if (!value) return true; // end_date is optional
-                  if (!start_date) return true; // if no start date, skip
-                  return new Date(value) > new Date(start_date);
-                }
-              ),
-             
+                .string()
+                .optional()
+                .test(
+                  "is-after-start",
+                  "End date must be after start date",
+                  function (value) {
+                    const { start_date } = this.parent;
+                    if (!value) return true; // end_date is optional
+                    if (!start_date) return true; // if no start date, skip
+                    return new Date(value) > new Date(start_date);
+                  }
+                ),
             })
           )
           .min(1, "At least one education entry is required"),
@@ -386,10 +574,10 @@ const UserProfilePage = () => {
     workExperiences: {
       company: string;
       position: string;
- roles_responsibilities?: string; 
-  work_city?: string;                   
-  work_state?: string;                  
-  work_country?: string;            
+      roles_responsibilities?: string;
+      work_city?: string;
+      work_state?: string;
+      work_country?: string;
       start_date: string;
       end_date?: string;
     }[];
@@ -773,7 +961,7 @@ const UserProfilePage = () => {
     try {
       const response = await GetProfileDetails();
       setProfileData(response.data.data);
-      console.log('response.data.data', response.data.data);
+      console.log("response.data.data", response.data.data);
 
       if (response.data.data) {
         // Basic Info
@@ -869,10 +1057,10 @@ const UserProfilePage = () => {
               {
                 company: "",
                 position: "",
-                roles_responsibilities:"",
-                work_city:"",
-                work_state:"",
-                work_country:"",
+                roles_responsibilities: "",
+                work_city: "",
+                work_state: "",
+                work_country: "",
                 start_date: "",
                 end_date: "",
               },
@@ -1003,7 +1191,7 @@ const UserProfilePage = () => {
     try {
       setUploadIdentify({
         ...uploadIdentify,
-        loading: true
+        loading: true,
       });
       const formData = new FormData();
       formData.append("file", file);
@@ -1011,13 +1199,13 @@ const UserProfilePage = () => {
       // Handle the response
       if (res.success) {
         // return res;
-        
+
         const { setValue } = basicInfoForm;
         setValue("identify_uploaded", res?.data?.data?.status);
 
         setUploadIdentify({
           ...uploadIdentify,
-          loading: false
+          loading: false,
         });
 
         return showToast({
@@ -1027,7 +1215,6 @@ const UserProfilePage = () => {
         });
       }
 
-      
       throw new Error(res.message || "Verification failed");
     } catch (error: any) {
       showToast({
@@ -1102,9 +1289,13 @@ const UserProfilePage = () => {
                   )}
                   <img
                     src={
-                      banner && banner !== "http://localhost:5026/file/"
-                        ? banner
-                        : "/banner.jpg"
+                      !banner ||
+                      banner === "null" ||
+                      banner === "undefined" ||
+                      !banner.startsWith("http") ||
+                      banner === "http://localhost:5026/file/"
+                        ? "/banner.jpg"
+                        : banner
                     }
                     alt="Banner"
                     className="w-full h-full object-cover"
@@ -1126,14 +1317,18 @@ const UserProfilePage = () => {
                       />
                       <PhotoIcon className="w-4 sm:w-5 h-4 sm:h-5 text-gray-600" />
                     </label>
-                    {banner && banner !== "http://localhost:5026/file/" && (
-                      <button
-                        onClick={() => setBanner(null)}
-                        className="bg-white p-1.5 sm:p-2 rounded-full shadow hover:bg-red-100"
-                      >
-                        <TrashIcon className="w-4 sm:w-5 h-4 sm:h-5 text-red-600" />
-                      </button>
-                    )}
+                    {banner &&
+                      banner !== "null" &&
+                      banner !== "undefined" &&
+                      banner.startsWith("http") &&
+                      banner !== "http://localhost:5026/file/" && (
+                        <button
+                          onClick={() => setBanner(null)}
+                          className="bg-white p-1.5 sm:p-2 rounded-full shadow hover:bg-red-100"
+                        >
+                          <TrashIcon className="w-4 sm:w-5 h-4 sm:h-5 text-red-600" />
+                        </button>
+                      )}
                   </div>
 
                   <div className="absolute -bottom-0 left-4 sm:left-6 md:left-8 z-20 group">
@@ -1167,10 +1362,13 @@ const UserProfilePage = () => {
                       )}
                       <img
                         src={
-                          logoPreview &&
-                            logoPreview !== "http://localhost:5026/file/"
-                            ? logoPreview
-                            : "/profile.png"
+                          !logoPreview ||
+                          logoPreview === "null" ||
+                          logoPreview === "undefined" ||
+                          !logoPreview.startsWith("http") ||
+                          logoPreview === "http://localhost:5026/file/"
+                            ? "/profile.jpg"
+                            : logoPreview
                         }
                         alt="Profile"
                         className="object-cover w-full h-full"
@@ -1197,6 +1395,9 @@ const UserProfilePage = () => {
                             <PhotoIcon className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-gray-600" />
                           </label>
                           {logoPreview &&
+                            logoPreview !== "null" &&
+                            logoPreview !== "undefined" &&
+                            logoPreview.startsWith("http") &&
                             logoPreview !== "http://localhost:5026/file/" && (
                               <button
                                 onClick={() => setLogoPreview(null)}
@@ -1246,10 +1447,11 @@ const UserProfilePage = () => {
                                   duration-200 
                                   focus:outline-none
                                   border
-                                  ${selected
-                                  ? "text-purple-600 h-[45px] bg-[#F8F3FF] shadow-md border-[#ECEEF2] border-b-0 transform"
-                                  : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
-                                }`
+                                  ${
+                                    selected
+                                      ? "text-purple-600 h-[45px] bg-[#F8F3FF] shadow-md border-[#ECEEF2] border-b-0 transform"
+                                      : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
+                                  }`
                               }
                             >
                               {tab}
@@ -1276,13 +1478,15 @@ const UserProfilePage = () => {
                               type="text"
                               {...basicInfoForm.register("firstName")}
                               placeholder="Enter your First Name"
-                              className={`w-full px-4 py-2 h-[41px]  border bg-white ${basicInfoForm.formState.errors.firstName
-                                ? "border-red-500"
-                                : "border-gray-300"
-                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.firstName
+                              className={`w-full px-4 py-2 h-[41px]  border bg-white ${
+                                basicInfoForm.formState.errors.firstName
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                basicInfoForm.formState.errors.firstName
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                                }`}
+                              }`}
                               maxLength={40}
                             />
                             {basicInfoForm.formState.errors.firstName && (
@@ -1304,13 +1508,15 @@ const UserProfilePage = () => {
                               type="text"
                               {...basicInfoForm.register("lastName")}
                               placeholder="Enter your Last Name"
-                              className={`w-full px-4 py-2 border h-[41px] bg-white ${basicInfoForm.formState.errors.lastName
-                                ? "border-red-500"
-                                : "border-gray-300"
-                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.lastName
+                              className={`w-full px-4 py-2 border h-[41px] bg-white ${
+                                basicInfoForm.formState.errors.lastName
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                basicInfoForm.formState.errors.lastName
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                                }`}
+                              }`}
                               maxLength={40}
                             />
                             {basicInfoForm.formState.errors.lastName && (
@@ -1371,18 +1577,29 @@ const UserProfilePage = () => {
                                 value: prof.id,
                                 label: prof.title,
                               }))}
-  value={basicInfoForm.watch("professions")?.map((profId: any) => {
-  if (profId === "other") {
-    // use custom_profession text if available, else fallback to "Other"
-    const customLabel = basicInfoForm.watch("custom_profession") || "Other";
-    return { value: "other", label: customLabel };
-  }
+                              value={basicInfoForm
+                                .watch("professions")
+                                ?.map((profId: any) => {
+                                  if (profId === "other") {
+                                    // use custom_profession text if available, else fallback to "Other"
+                                    const customLabel =
+                                      basicInfoForm.watch(
+                                        "custom_profession"
+                                      ) || "Other";
+                                    return {
+                                      value: "other",
+                                      label: customLabel,
+                                    };
+                                  }
 
-  return {
-    value: profId,
-    label: professional?.find((p: any) => p.id === profId)?.title || "",
-  };
-})}
+                                  return {
+                                    value: profId,
+                                    label:
+                                      professional?.find(
+                                        (p: any) => p.id === profId
+                                      )?.title || "",
+                                  };
+                                })}
                               onChange={(selectedOptions) => {
                                 basicInfoForm.setValue(
                                   "professions",
@@ -1406,7 +1623,7 @@ const UserProfilePage = () => {
                               <span className="text-red-500">*</span>
                             </label>
                             {basicInfoForm.watch("identify_uploaded") ==
-                              null ? (
+                            null ? (
                               <>
                                 <input
                                   type="file"
@@ -1434,7 +1651,9 @@ const UserProfilePage = () => {
                                     htmlFor="registrationFile"
                                     className="px-4 py-2 flex h-[41px] bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
                                   >
-                                    {uploadIdentify.loading ? uploadIdentify.message : 'Verify Identity'}
+                                    {uploadIdentify.loading
+                                      ? uploadIdentify.message
+                                      : "Verify Identity"}
                                     <div>
                                       {uploadIdentify.loading && (
                                         <div className="inset-0 ms-2 w-[20px] h-[20px] flex items-center justify-center">
@@ -1465,7 +1684,6 @@ const UserProfilePage = () => {
                                       )}
                                     </div>
                                   </label>
-
                                 </div>
                               </>
                             ) : basicInfoForm.watch("identify_uploaded") ==
@@ -1597,13 +1815,15 @@ const UserProfilePage = () => {
                               onClick={(
                                 e: React.MouseEvent<HTMLInputElement>
                               ) => e.currentTarget.showPicker()}
-                              className={`w-full px-4 py-2 h-[41px] border bg-white ${basicInfoForm.formState.errors.dob
-                                ? "border-red-500"
-                                : "border-gray-300"
-                                } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.dob
+                              className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                basicInfoForm.formState.errors.dob
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${
+                                basicInfoForm.formState.errors.dob
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                                }`}
+                              }`}
                             />
                             {basicInfoForm.formState.errors.dob && (
                               <p className="text-sm text-red-500 mt-1">
@@ -1622,13 +1842,15 @@ const UserProfilePage = () => {
                               type="text"
                               {...basicInfoForm.register("quote")}
                               placeholder="Enter your quote"
-                              className={`w-full px-4 py-2 h-[41px] border bg-white ${basicInfoForm.formState.errors.quote
-                                ? "border-red-500"
-                                : "border-gray-300"
-                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.quote
+                              className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                basicInfoForm.formState.errors.quote
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                basicInfoForm.formState.errors.quote
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                                }`}
+                              }`}
                             />
                             {basicInfoForm.formState.errors.quote && (
                               <p className="text-sm text-red-500 mt-1">
@@ -1647,13 +1869,15 @@ const UserProfilePage = () => {
                               type="text"
                               {...basicInfoForm.register("bio")}
                               placeholder="Add a short professional bio"
-                              className={`w-full px-4 py-2 border bg-white ${basicInfoForm.formState.errors.bio
-                                ? "border-red-500"
-                                : "border-gray-300"
-                                } rounded-xl h-[41px]    text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.bio
+                              className={`w-full px-4 py-2 border bg-white ${
+                                basicInfoForm.formState.errors.bio
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              } rounded-xl h-[41px]    text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                basicInfoForm.formState.errors.bio
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                                }`}
+                              }`}
                             />
                             {basicInfoForm.formState.errors.bio && (
                               <p className="text-sm text-red-500 mt-1">
@@ -1671,13 +1895,15 @@ const UserProfilePage = () => {
                               rows={4}
                               {...basicInfoForm.register("vision")}
                               placeholder="What is your conscious vision?"
-                              className={`w-full px-4 py-2  border bg-white ${basicInfoForm.formState.errors.vision
-                                ? "border-red-500"
-                                : "border-gray-300"
-                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.vision
+                              className={`w-full px-4 py-2  border bg-white ${
+                                basicInfoForm.formState.errors.vision
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                basicInfoForm.formState.errors.vision
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                                }`}
+                              }`}
                             />
                             {basicInfoForm.formState.errors.vision && (
                               <p className="text-sm text-red-500 mt-1">
@@ -1685,28 +1911,26 @@ const UserProfilePage = () => {
                               </p>
                             )}
                           </div>
-
-                          
                         </div>
                         <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
-                            <Button
-                              variant="white-outline"
-                              className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
+                          <Button
+                            variant="white-outline"
+                            className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
                                    hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
                                     shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
-                              onClick={() => basicInfoForm.reset()}
-                            >
-                              Reset
-                            </Button>
-                            <Button
-                              variant="gradient-primary"
-                              className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
-                              type="submit"
-                              disabled={isSubmitting.basic}
-                            >
-                              {isSubmitting.basic ? "Saving..." : "Save"}
-                            </Button>
-                          </div>
+                            onClick={() => basicInfoForm.reset()}
+                          >
+                            Reset
+                          </Button>
+                          <Button
+                            variant="gradient-primary"
+                            className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
+                            type="submit"
+                            disabled={isSubmitting.basic}
+                          >
+                            {isSubmitting.basic ? "Saving..." : "Save"}
+                          </Button>
+                        </div>
                       </form>
                     </Tab.Panel>
 
@@ -1731,47 +1955,57 @@ const UserProfilePage = () => {
                                   styles={customSelectStyles}
                                   value={
                                     countryCodeOptions.find(
-                                      (opt) => opt.value === contactInfoForm.watch("country_code")
+                                      (opt) =>
+                                        opt.value ===
+                                        contactInfoForm.watch("country_code")
                                     ) || countryCodeOptions[0]
                                   }
                                   onChange={(selectedOption) =>
-                                    contactInfoForm.setValue("country_code", selectedOption?.value || countryCode[0])
+                                    contactInfoForm.setValue(
+                                      "country_code",
+                                      selectedOption?.value || countryCode[0]
+                                    )
                                   }
-                                  onBlur={() => contactInfoForm.trigger("country_code")}
+                                  onBlur={() =>
+                                    contactInfoForm.trigger("country_code")
+                                  }
                                   isSearchable={false}
                                   placeholder="Code"
                                 />
                               </div>
-                            <input
-                              type="tel"
-                              placeholder="Enter Your Phone Number"
-                              {...contactInfoForm.register("phone", {
-                                required: "Phone number is required",
-                                pattern: {
-                                  value: /^[0-9]{8,13}$/,
-                                  message: "Phone must be between 8-13 digits",
-                                },
-                              })}
-                              minLength={8}
-                              maxLength={13}
-                              onKeyDown={(e) => {
-                                if (
-                                  !/[0-9]/.test(e.key) &&
-                                  e.key !== "Backspace" &&
-                                  e.key !== "Tab"
-                                ) {
-                                  e.preventDefault();
-                                }
-                              }}
-                              className={`w-full px-4 py-2 border bg-white ${contactInfoForm.formState.errors.phone
-                                ? "border-red-500"
-                                : "border-gray-300"
-                                } rounded-xl h-[41px] focus:outline-none focus:ring-2 placeholder:text-sm placeholder:text-gray-400  ${contactInfoForm.formState.errors.phone
-                                  ? "focus:ring-red-500"
-                                  : "focus:ring-purple-500"
+                              <input
+                                type="tel"
+                                placeholder="Enter Your Phone Number"
+                                {...contactInfoForm.register("phone", {
+                                  required: "Phone number is required",
+                                  pattern: {
+                                    value: /^[0-9]{8,13}$/,
+                                    message:
+                                      "Phone must be between 8-13 digits",
+                                  },
+                                })}
+                                minLength={8}
+                                maxLength={13}
+                                onKeyDown={(e) => {
+                                  if (
+                                    !/[0-9]/.test(e.key) &&
+                                    e.key !== "Backspace" &&
+                                    e.key !== "Tab"
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                className={`w-full px-4 py-2 border bg-white ${
+                                  contactInfoForm.formState.errors.phone
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-xl h-[41px] focus:outline-none focus:ring-2 placeholder:text-sm placeholder:text-gray-400  ${
+                                  contactInfoForm.formState.errors.phone
+                                    ? "focus:ring-red-500"
+                                    : "focus:ring-purple-500"
                                 }`}
-                            />
-                          </div>
+                              />
+                            </div>
                             {contactInfoForm.formState.errors.phone && (
                               <p className="text-sm text-red-500 mt-1">
                                 {
@@ -1797,13 +2031,15 @@ const UserProfilePage = () => {
                                   message: "Enter a valid email",
                                 },
                               })}
-                              className={`w-full px-4 py-2 border bg-white ${contactInfoForm.formState.errors.email
-                                ? "border-red-500"
-                                : "border-gray-300"
-                                } rounded-xl focus:outline-none h-[41px] focus:ring-2 placeholder:text-sm placeholder:text-gray-400 ${contactInfoForm.formState.errors.email
+                              className={`w-full px-4 py-2 border bg-white ${
+                                contactInfoForm.formState.errors.email
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              } rounded-xl focus:outline-none h-[41px] focus:ring-2 placeholder:text-sm placeholder:text-gray-400 ${
+                                contactInfoForm.formState.errors.email
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                                }`}
+                              }`}
                             />
                             {contactInfoForm.formState.errors.email && (
                               <p className="text-sm text-red-500 mt-1">
@@ -1847,27 +2083,27 @@ const UserProfilePage = () => {
                               options={
                                 Country
                                   ? Country.map((country: any) => ({
-                                    value: country.id,
-                                    label: country.name,
-                                  }))
+                                      value: country.id,
+                                      label: country.name,
+                                    }))
                                   : []
                               }
                               value={
                                 Country
                                   ? Country.find(
-                                    (c: any) =>
-                                      c.id ===
-                                      contactInfoForm.watch("country")
-                                  )
+                                      (c: any) =>
+                                        c.id ===
+                                        contactInfoForm.watch("country")
+                                    )
                                     ? {
-                                      value: contactInfoForm.watch("country"),
-                                      label:
-                                        Country.find(
-                                          (c: any) =>
-                                            c.id ===
-                                            contactInfoForm.watch("country")
-                                        )?.name || "Select your country",
-                                    }
+                                        value: contactInfoForm.watch("country"),
+                                        label:
+                                          Country.find(
+                                            (c: any) =>
+                                              c.id ===
+                                              contactInfoForm.watch("country")
+                                          )?.name || "Select your country",
+                                      }
                                     : null
                                   : null
                               }
@@ -1902,26 +2138,26 @@ const UserProfilePage = () => {
                               options={
                                 states
                                   ? states.map((state: any) => ({
-                                    value: state.id,
-                                    label: state.name,
-                                  }))
+                                      value: state.id,
+                                      label: state.name,
+                                    }))
                                   : []
                               }
                               value={
                                 states
                                   ? states.find(
-                                    (s: any) =>
-                                      s.id === contactInfoForm.watch("state")
-                                  )
+                                      (s: any) =>
+                                        s.id === contactInfoForm.watch("state")
+                                    )
                                     ? {
-                                      value: contactInfoForm.watch("state"),
-                                      label:
-                                        states.find(
-                                          (s: any) =>
-                                            s.id ===
-                                            contactInfoForm.watch("state")
-                                        )?.name || "Select your state",
-                                    }
+                                        value: contactInfoForm.watch("state"),
+                                        label:
+                                          states.find(
+                                            (s: any) =>
+                                              s.id ===
+                                              contactInfoForm.watch("state")
+                                          )?.name || "Select your state",
+                                      }
                                     : null
                                   : null
                               }
@@ -2029,29 +2265,27 @@ const UserProfilePage = () => {
                               </label>
                             </div>
                           </div>
-
-                        
                         </div>
-                          <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
-                            <Button
-                              variant="white-outline"
-                              className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
+                        <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
+                          <Button
+                            variant="white-outline"
+                            className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
              hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
              shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
-                              type="button"
-                              onClick={() => contactInfoForm.reset()}
-                            >
-                              Reset
-                            </Button>
-                            <Button
-                              variant="gradient-primary"
-                              className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
-                              type="submit"
-                              disabled={isSubmitting.contact}
-                            >
-                              {isSubmitting.contact ? "Saving..." : "Save"}
-                            </Button>
-                          </div>
+                            type="button"
+                            onClick={() => contactInfoForm.reset()}
+                          >
+                            Reset
+                          </Button>
+                          <Button
+                            variant="gradient-primary"
+                            className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
+                            type="submit"
+                            disabled={isSubmitting.contact}
+                          >
+                            {isSubmitting.contact ? "Saving..." : "Save"}
+                          </Button>
+                        </div>
                       </form>
                     </Tab.Panel>
 
@@ -2072,13 +2306,15 @@ const UserProfilePage = () => {
                               type="url"
                               {...socialLinksForm.register("facebook")}
                               placeholder="https://facebook.com/yourprofile"
-                              className={`w-full px-4 py-2 h-[41px] border bg-white ${socialLinksForm.formState.errors.facebook
-                                ? "border-red-500"
-                                : "border-gray-300"
-                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${socialLinksForm.formState.errors.facebook
+                              className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                socialLinksForm.formState.errors.facebook
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                socialLinksForm.formState.errors.facebook
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                                }`}
+                              }`}
                             />
                             {socialLinksForm.formState.errors.facebook && (
                               <p className="text-sm text-red-500 mt-1">
@@ -2099,13 +2335,15 @@ const UserProfilePage = () => {
                               type="url"
                               {...socialLinksForm.register("twitter")}
                               placeholder="https://twitter.com/yourprofile"
-                              className={`w-full px-4 py-2 h-[41px] border bg-white ${socialLinksForm.formState.errors.twitter
-                                ? "border-red-500"
-                                : "border-gray-300"
-                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${socialLinksForm.formState.errors.twitter
+                              className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                socialLinksForm.formState.errors.twitter
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                socialLinksForm.formState.errors.twitter
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                                }`}
+                              }`}
                             />
                             {socialLinksForm.formState.errors.twitter && (
                               <p className="text-sm text-red-500 mt-1">
@@ -2126,13 +2364,15 @@ const UserProfilePage = () => {
                               type="url"
                               {...socialLinksForm.register("linkedin")}
                               placeholder="https://linkedin.com/in/yourprofile"
-                              className={`w-full px-4 py-2 h-[41px] border bg-white ${socialLinksForm.formState.errors.linkedin
-                                ? "border-red-500"
-                                : "border-gray-300"
-                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${socialLinksForm.formState.errors.linkedin
+                              className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                socialLinksForm.formState.errors.linkedin
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                socialLinksForm.formState.errors.linkedin
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                                }`}
+                              }`}
                             />
                             {socialLinksForm.formState.errors.linkedin && (
                               <p className="text-sm text-red-500 mt-1">
@@ -2153,13 +2393,15 @@ const UserProfilePage = () => {
                               type="url"
                               {...socialLinksForm.register("instagram")}
                               placeholder="https://instagram.com/yourprofile"
-                              className={`w-full px-4 py-2 h-[41px] border bg-white ${socialLinksForm.formState.errors.instagram
-                                ? "border-red-500"
-                                : "border-gray-300"
-                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${socialLinksForm.formState.errors.instagram
+                              className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                                socialLinksForm.formState.errors.instagram
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                socialLinksForm.formState.errors.instagram
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                                }`}
+                              }`}
                             />
                             {socialLinksForm.formState.errors.instagram && (
                               <p className="text-sm text-red-500 mt-1">
@@ -2170,29 +2412,27 @@ const UserProfilePage = () => {
                               </p>
                             )}
                           </div>
-
-                          
                         </div>
                         <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
-                            <Button
-                              variant="white-outline"
-                              className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
+                          <Button
+                            variant="white-outline"
+                            className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
              hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
              shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
-                              type="button"
-                              onClick={() => socialLinksForm.reset()}
-                            >
-                              Reset
-                            </Button>
-                            <Button
-                              variant="gradient-primary"
-                              className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
-                              type="submit"
-                              disabled={isSubmitting.social}
-                            >
-                              {isSubmitting.social ? "Saving..." : "Save"}
-                            </Button>
-                          </div>
+                            type="button"
+                            onClick={() => socialLinksForm.reset()}
+                          >
+                            Reset
+                          </Button>
+                          <Button
+                            variant="gradient-primary"
+                            className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
+                            type="submit"
+                            disabled={isSubmitting.social}
+                          >
+                            {isSubmitting.social ? "Saving..." : "Save"}
+                          </Button>
+                        </div>
                       </form>
                     </Tab.Panel>
 
@@ -2254,27 +2494,29 @@ const UserProfilePage = () => {
                                     `educations.${index}.degree`
                                   )}
                                   placeholder="Enter your degree"
-                                  className={`w-full px-4 py-2 border bg-white ${educationForm.formState.errors
-                                    ?.educations?.[index]?.degree
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                    } rounded-xl h-[41px] text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${educationForm.formState.errors
+                                  className={`w-full px-4 py-2 border bg-white ${
+                                    educationForm.formState.errors
+                                      ?.educations?.[index]?.degree
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl h-[41px] text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    educationForm.formState.errors
                                       ?.educations?.[index]?.degree
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
-                                    }`}
+                                  }`}
                                 />
                                 {educationForm.formState.errors?.educations?.[
                                   index
                                 ]?.degree && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        educationForm.formState.errors.educations[
-                                          index
-                                        ]?.degree?.message
-                                      }
-                                    </p>
-                                  )}
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      educationForm.formState.errors.educations[
+                                        index
+                                      ]?.degree?.message
+                                    }
+                                  </p>
+                                )}
                               </div>
 
                               {/* Institution */}
@@ -2289,27 +2531,29 @@ const UserProfilePage = () => {
                                     `educations.${index}.institution`
                                   )}
                                   placeholder="Enter institution name"
-                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${educationForm.formState.errors
-                                    ?.educations?.[index]?.institution
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${educationForm.formState.errors
+                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                    educationForm.formState.errors
+                                      ?.educations?.[index]?.institution
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    educationForm.formState.errors
                                       ?.educations?.[index]?.institution
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
-                                    }`}
+                                  }`}
                                 />
                                 {educationForm.formState.errors?.educations?.[
                                   index
                                 ]?.institution && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        educationForm.formState.errors.educations[
-                                          index
-                                        ]?.institution?.message
-                                      }
-                                    </p>
-                                  )}
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      educationForm.formState.errors.educations[
+                                        index
+                                      ]?.institution?.message
+                                    }
+                                  </p>
+                                )}
                               </div>
 
                               {/* Start Date */}
@@ -2323,27 +2567,29 @@ const UserProfilePage = () => {
                                   {...educationForm.register(
                                     `educations.${index}.start_date`
                                   )}
-                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${educationForm.formState.errors
-                                    ?.educations?.[index]?.start_date
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                    } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${educationForm.formState.errors
+                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                    educationForm.formState.errors
+                                      ?.educations?.[index]?.start_date
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
+                                    educationForm.formState.errors
                                       ?.educations?.[index]?.start_date
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
-                                    }`}
+                                  }`}
                                 />
                                 {educationForm.formState.errors?.educations?.[
                                   index
                                 ]?.start_date && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        educationForm.formState.errors.educations[
-                                          index
-                                        ]?.start_date?.message
-                                      }
-                                    </p>
-                                  )}
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      educationForm.formState.errors.educations[
+                                        index
+                                      ]?.start_date?.message
+                                    }
+                                  </p>
+                                )}
                               </div>
 
                               {/* End Date */}
@@ -2356,27 +2602,29 @@ const UserProfilePage = () => {
                                   {...educationForm.register(
                                     `educations.${index}.end_date`
                                   )}
-                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${educationForm.formState.errors
-                                    ?.educations?.[index]?.end_date
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                    } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${educationForm.formState.errors
+                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                    educationForm.formState.errors
+                                      ?.educations?.[index]?.end_date
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
+                                    educationForm.formState.errors
                                       ?.educations?.[index]?.end_date
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
-                                    }`}
+                                  }`}
                                 />
                                 {educationForm.formState.errors?.educations?.[
                                   index
                                 ]?.end_date && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        educationForm.formState.errors.educations[
-                                          index
-                                        ]?.end_date?.message
-                                      }
-                                    </p>
-                                  )}
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      educationForm.formState.errors.educations[
+                                        index
+                                      ]?.end_date?.message
+                                    }
+                                  </p>
+                                )}
                               </div>
                             </div>
                           ))}
@@ -2498,26 +2746,28 @@ const UserProfilePage = () => {
                                   )}
                                   maxLength={40}
                                   placeholder="Enter Company Name"
-                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${workExperienceForm.formState.errors
-                                    ?.workExperiences?.[index]?.company
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${workExperienceForm.formState.errors
+                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                    workExperienceForm.formState.errors
+                                      ?.workExperiences?.[index]?.company
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]?.company
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
-                                    }`}
+                                  }`}
                                 />
                                 {workExperienceForm.formState.errors
                                   ?.workExperiences?.[index]?.company && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        workExperienceForm.formState.errors
-                                          .workExperiences[index]?.company
-                                          ?.message
-                                      }
-                                    </p>
-                                  )}
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      workExperienceForm.formState.errors
+                                        .workExperiences[index]?.company
+                                        ?.message
+                                    }
+                                  </p>
+                                )}
                               </div>
 
                               {/* Position */}
@@ -2533,134 +2783,171 @@ const UserProfilePage = () => {
                                   )}
                                   maxLength={40}
                                   placeholder="Enter your Designation"
-                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${workExperienceForm.formState.errors
-                                    ?.workExperiences?.[index]?.position
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${workExperienceForm.formState.errors
+                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                    workExperienceForm.formState.errors
+                                      ?.workExperiences?.[index]?.position
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]?.position
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
-                                    }`}
+                                  }`}
                                 />
                                 {workExperienceForm.formState.errors
                                   ?.workExperiences?.[index]?.position && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        workExperienceForm.formState.errors
-                                          .workExperiences[index]?.position
-                                          ?.message
-                                      }
-                                    </p>
-                                  )}
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      workExperienceForm.formState.errors
+                                        .workExperiences[index]?.position
+                                        ?.message
+                                    }
+                                  </p>
+                                )}
                               </div>
 
-{/* Roles & Responsibilities */}
-<div>
-  <label className="block text-sm font-medium text-gray-800 mb-2">
-    Roles & Responsibilities <span className="text-red-500">*</span>
-  </label>
-  <textarea
-    {...workExperienceForm.register(`workExperiences.${index}.roles_responsibilities`)}
-    rows={5}
-    placeholder="Describe your key roles and responsibilities"
-    className={`w-full px-4 py-2 border bg-white ${
-      workExperienceForm.formState.errors?.workExperiences?.[index]?.roles_responsibilities
-        ? "border-red-500"
-        : "border-gray-300"
-    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-      workExperienceForm.formState.errors?.workExperiences?.[index]?.roles_responsibilities
-        ? "focus:ring-red-500"
-        : "focus:ring-purple-500"
-    }`}
-  />
-  {workExperienceForm.formState.errors?.workExperiences?.[index]?.roles_responsibilities && (
-    <p className="text-sm text-red-500 mt-1">
-      {
-        workExperienceForm.formState.errors.workExperiences[index]?.roles_responsibilities
-          ?.message
-      }
-    </p>
-  )}
-</div>
+                              {/* Roles & Responsibilities */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Roles & Responsibilities{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <textarea
+                                  {...workExperienceForm.register(
+                                    `workExperiences.${index}.roles_responsibilities`
+                                  )}
+                                  rows={5}
+                                  placeholder="Describe your key roles and responsibilities"
+                                  className={`w-full px-4 py-2 border bg-white ${
+                                    workExperienceForm.formState.errors
+                                      ?.workExperiences?.[index]
+                                      ?.roles_responsibilities
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    workExperienceForm.formState.errors
+                                      ?.workExperiences?.[index]
+                                      ?.roles_responsibilities
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {workExperienceForm.formState.errors
+                                  ?.workExperiences?.[index]
+                                  ?.roles_responsibilities && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      workExperienceForm.formState.errors
+                                        .workExperiences[index]
+                                        ?.roles_responsibilities?.message
+                                    }
+                                  </p>
+                                )}
+                              </div>
 
+                              {/* Country */}
+                              <div className="w-full">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Country{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <Select
+                                  options={
+                                    Country?.map((country: any) => ({
+                                      value: country.name,
+                                      label: country.name,
+                                    })) || []
+                                  }
+                                  value={
+                                    workExperienceForm.watch(
+                                      `workExperiences.${index}.work_country`
+                                    )
+                                      ? {
+                                          value: workExperienceForm.watch(
+                                            `workExperiences.${index}.work_country`
+                                          ),
+                                          label: workExperienceForm.watch(
+                                            `workExperiences.${index}.work_country`
+                                          ),
+                                        }
+                                      : null
+                                  }
+                                  onChange={(selectedOption) => {
+                                    workExperienceForm.setValue(
+                                      `workExperiences.${index}.work_country`,
+                                      selectedOption?.value || ""
+                                    );
+                                  }}
+                                  onBlur={() =>
+                                    workExperienceForm.trigger(
+                                      `workExperiences.${index}.work_country`
+                                    )
+                                  }
+                                  styles={customSelectStyles}
+                                  placeholder="Select your country"
+                                  isSearchable
+                                  classNamePrefix="react-select"
+                                />
+                              </div>
 
-
-{/* Country */}
-              <div className="w-full">
-  <label className="block text-sm font-medium text-gray-700 mb-2">
-    Country <span className="text-red-500">*</span>
-  </label>
-  <Select
-    options={Country?.map((country: any) => ({
-      value: country.name,
-      label: country.name,
-    })) || []}
-    value={
-    workExperienceForm.watch(`workExperiences.${index}.work_country`)
-      ? {
-          value: workExperienceForm.watch(`workExperiences.${index}.work_country`),
-          label: workExperienceForm.watch(`workExperiences.${index}.work_country`),
-        }
-      : null
-  }
-  onChange={(selectedOption) => {
-    workExperienceForm.setValue(
-      `workExperiences.${index}.work_country`,
-      selectedOption?.value || ""
-    );
-  }}
-  onBlur={() => workExperienceForm.trigger(`workExperiences.${index}.work_country`)}
-  styles={customSelectStyles}
-  placeholder="Select your country"
-  isSearchable
-  classNamePrefix="react-select"
-/>
-</div>
-
-                          {/* State */}
-                          <div className="w-full relative">
-  <label className="block text-sm font-medium text-gray-700 mb-2">
-    State <span className="text-red-500">*</span>
-  </label>
-  <Select
-    options={states?.map((state: any) => ({
-      value: state.name,
-      label: state.name,
-    })) || []}
-    value={
-    workExperienceForm.watch(`workExperiences.${index}.work_state`)
-      ? {
-          value: workExperienceForm.watch(`workExperiences.${index}.work_state`),
-          label: workExperienceForm.watch(`workExperiences.${index}.work_state`),
-        }
-      : null
-  }
-  onChange={(selectedOption) => {
-    workExperienceForm.setValue(
-      `workExperiences.${index}.work_state`,
-      selectedOption?.value || ""
-    );
-  }}
-  onBlur={() => workExperienceForm.trigger(`workExperiences.${index}.work_state`)}
-  styles={customSelectStyles}
-  placeholder="Select your state"
-  isSearchable
-  classNamePrefix="react-select"
-/>
-</div>
-                          {/* City */}
-                          <div>
-  <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
-  <input
-    type="text"
-    {...workExperienceForm.register(`workExperiences.${index}.work_city`)}
-    placeholder="Enter city"
-    className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-  />
-</div>
-
-                         
+                              {/* State */}
+                              <div className="w-full relative">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  State <span className="text-red-500">*</span>
+                                </label>
+                                <Select
+                                  options={
+                                    states?.map((state: any) => ({
+                                      value: state.name,
+                                      label: state.name,
+                                    })) || []
+                                  }
+                                  value={
+                                    workExperienceForm.watch(
+                                      `workExperiences.${index}.work_state`
+                                    )
+                                      ? {
+                                          value: workExperienceForm.watch(
+                                            `workExperiences.${index}.work_state`
+                                          ),
+                                          label: workExperienceForm.watch(
+                                            `workExperiences.${index}.work_state`
+                                          ),
+                                        }
+                                      : null
+                                  }
+                                  onChange={(selectedOption) => {
+                                    workExperienceForm.setValue(
+                                      `workExperiences.${index}.work_state`,
+                                      selectedOption?.value || ""
+                                    );
+                                  }}
+                                  onBlur={() =>
+                                    workExperienceForm.trigger(
+                                      `workExperiences.${index}.work_state`
+                                    )
+                                  }
+                                  styles={customSelectStyles}
+                                  placeholder="Select your state"
+                                  isSearchable
+                                  classNamePrefix="react-select"
+                                />
+                              </div>
+                              {/* City */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  City
+                                </label>
+                                <input
+                                  type="text"
+                                  {...workExperienceForm.register(
+                                    `workExperiences.${index}.work_city`
+                                  )}
+                                  placeholder="Enter city"
+                                  className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
 
                               {/* Start Date */}
                               <div>
@@ -2673,26 +2960,28 @@ const UserProfilePage = () => {
                                   {...workExperienceForm.register(
                                     `workExperiences.${index}.start_date`
                                   )}
-                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${workExperienceForm.formState.errors
-                                    ?.workExperiences?.[index]?.start_date
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                    } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${workExperienceForm.formState.errors
+                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                    workExperienceForm.formState.errors
+                                      ?.workExperiences?.[index]?.start_date
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
+                                    workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]?.start_date
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
-                                    }`}
+                                  }`}
                                 />
                                 {workExperienceForm.formState.errors
                                   ?.workExperiences?.[index]?.start_date && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        workExperienceForm.formState.errors
-                                          .workExperiences[index]?.start_date
-                                          ?.message
-                                      }
-                                    </p>
-                                  )}
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      workExperienceForm.formState.errors
+                                        .workExperiences[index]?.start_date
+                                        ?.message
+                                    }
+                                  </p>
+                                )}
                               </div>
 
                               {/* End Date */}
@@ -2705,26 +2994,28 @@ const UserProfilePage = () => {
                                   {...workExperienceForm.register(
                                     `workExperiences.${index}.end_date`
                                   )}
-                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${workExperienceForm.formState.errors
-                                    ?.workExperiences?.[index]?.end_date
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                    } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${workExperienceForm.formState.errors
+                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                    workExperienceForm.formState.errors
+                                      ?.workExperiences?.[index]?.end_date
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
+                                    workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]?.end_date
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
-                                    }`}
+                                  }`}
                                 />
                                 {workExperienceForm.formState.errors
                                   ?.workExperiences?.[index]?.end_date && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                      {
-                                        workExperienceForm.formState.errors
-                                          .workExperiences[index]?.end_date
-                                          ?.message
-                                      }
-                                    </p>
-                                  )}
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      workExperienceForm.formState.errors
+                                        .workExperiences[index]?.end_date
+                                        ?.message
+                                    }
+                                  </p>
+                                )}
                               </div>
                             </div>
                           ))}
@@ -2880,8 +3171,8 @@ const UserProfilePage = () => {
                                 </button>
                                 <span className="flex-1 truncate text-gray-500">
                                   {publicProfileForm.watch("featuredImage") &&
-                                    publicProfileForm.watch("featuredImage")
-                                      .length > 0 ? (
+                                  publicProfileForm.watch("featuredImage")
+                                    .length > 0 ? (
                                     publicProfileForm.watch("featuredImage")[0]
                                       ?.name
                                   ) : (
@@ -2934,9 +3225,9 @@ const UserProfilePage = () => {
                                 value={
                                   serviceInput
                                     ? {
-                                      value: serviceInput,
-                                      label: serviceInput,
-                                    }
+                                        value: serviceInput,
+                                        label: serviceInput,
+                                      }
                                     : undefined
                                 }
                                 onChange={(selectedOption) => {
@@ -3106,13 +3397,15 @@ const UserProfilePage = () => {
                                   message: "Enter a valid email",
                                 },
                               })}
-                              className={`w-full h-[41px] px-4 py-2 border bg-white ${publicProfileForm.formState.errors.notifyEmail
-                                ? "border-red-500"
-                                : "border-gray-300"
-                                } rounded-xl focus:outline-none focus:ring-2 ${publicProfileForm.formState.errors.notifyEmail
+                              className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                publicProfileForm.formState.errors.notifyEmail
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              } rounded-xl focus:outline-none focus:ring-2 ${
+                                publicProfileForm.formState.errors.notifyEmail
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                                }`}
+                              }`}
                             />
                             {publicProfileForm.formState.errors.notifyEmail && (
                               <p className="text-sm text-red-500 mt-1">
@@ -3123,29 +3416,27 @@ const UserProfilePage = () => {
                               </p>
                             )}
                           </div>
-
-                          
                         </div>
                         <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
-                            <Button
-                              variant="white-outline"
-                              className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
+                          <Button
+                            variant="white-outline"
+                            className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
              hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
              shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
-                              type="button"
-                              onClick={() => publicProfileForm.reset()}
-                            >
-                              Reset
-                            </Button>
-                            <Button
-                              variant="gradient-primary"
-                              className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
-                              type="submit"
-                              disabled={isSubmitting.public}
-                            >
-                              {isSubmitting.public ? "Saving..." : "Save"}
-                            </Button>
-                          </div>
+                            type="button"
+                            onClick={() => publicProfileForm.reset()}
+                          >
+                            Reset
+                          </Button>
+                          <Button
+                            variant="gradient-primary"
+                            className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
+                            type="submit"
+                            disabled={isSubmitting.public}
+                          >
+                            {isSubmitting.public ? "Saving..." : "Save"}
+                          </Button>
+                        </div>
                       </form>
                     </Tab.Panel>
                   </Tab.Group>

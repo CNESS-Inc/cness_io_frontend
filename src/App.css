@@ -165,6 +165,10 @@ body {
 }
 
 
+.ecosystem-card-icon{
+  filter: brightness(0) saturate(100%) invert(58%) sepia(43%) saturate(6009%) hue-rotate(215deg) brightness(97%) contrast(108%);
+}
+
 
 @media (max-width:1536px) {
   .certificate-animation {

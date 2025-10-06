@@ -68,8 +68,7 @@ export interface Media {
   poster?: string;
 }
 //sample for collections
-const userProfilePicture =
-  localStorage.getItem("profile_picture") || "/profile.png";
+const userProfilePicture = localStorage.getItem("profile_picture");
 
 const userName =
   localStorage.getItem("name") + " " + localStorage.getItem("margaret_name") ||
@@ -77,7 +76,13 @@ const userName =
 
 const profiles = [
   {
-    profileImage: userProfilePicture,
+    profileImage:
+      !userProfilePicture ||
+      userProfilePicture === "null" ||
+      userProfilePicture === "undefined" ||
+      !userProfilePicture.startsWith("http")
+        ? "/profile.png"
+        : userProfilePicture,
     name: userName,
     username: userName,
     following: "",
@@ -228,19 +233,17 @@ export default function Profile() {
     postId: string | null;
   }>({ isOpen: false, postId: null });
 
-  
-
   useEffect(() => {
     // Check if URL has the openpost parameter and a post ID
-    const shouldOpenPost = searchParams.get('openpost') === 'true';
-    const postIdFromUrl = searchParams.get('dataset');
-    
+    const shouldOpenPost = searchParams.get("openpost") === "true";
+    const postIdFromUrl = searchParams.get("dataset");
+
     if (shouldOpenPost && postIdFromUrl && userPosts.length > 0) {
       // Find the post with matching ID
-      const postToOpen = userPosts.find(post => post.id === postIdFromUrl);
+      const postToOpen = userPosts.find((post) => post.id === postIdFromUrl);
       if (postToOpen) {
         setSelectedPost(postToOpen);
-        
+
         // Optional: Clear the URL parameters after opening the post
         // navigate(location.pathname, { replace: true });
       }
@@ -258,7 +261,7 @@ export default function Profile() {
       duration: 3000,
     });
     fetchFollowingUsers();
-  }
+  };
 
   const fetchFollowingUsers = async () => {
     try {
@@ -592,9 +595,13 @@ export default function Profile() {
                 id: f.id,
                 name: `${f.first_name} ${f.last_name}`.trim(),
                 username: `${f.first_name} ${f.last_name}`.trim(),
-                profileImage: f.profile_picture
-                  ? f.profile_picture
-                  : "/profile.png",
+                profileImage:
+                  !f.profile_picture ||
+                  f.profile_picture === "null" ||
+                  f.profile_picture === "undefined" ||
+                  !f.profile_picture.startsWith("http")
+                    ? "/profile.png"
+                    : f.profile_picture,
               }))}
               onMessage={(id) => console.log("Connect with", id)}
               // onUnfriend={(id) => console.log("Remove connection", id)}
@@ -618,7 +625,13 @@ export default function Profile() {
           id: user.id,
           name: `${user.first_name} ${user.last_name}`.trim(),
           handle: `${user.first_name} ${user.last_name}`.trim(),
-          avatar: user.profile_picture ? user.profile_picture : "/profile.png",
+          avatar:
+            !user.profile_picture ||
+            user.profile_picture === "null" ||
+            user.profile_picture === "undefined" ||
+            !user.profile_picture.startsWith("http")
+              ? "/profile.png"
+              : user.profile_picture,
         }))}
       />
 
@@ -629,7 +642,13 @@ export default function Profile() {
           id: user.id,
           name: `${user.first_name} ${user.last_name}`.trim(),
           handle: user.username,
-          avatar: user.profile_picture ? user.profile_picture : "/profile.png",
+          avatar:
+            !user.profile_picture ||
+            user.profile_picture === "null" ||
+            user.profile_picture === "undefined" ||
+            !user.profile_picture.startsWith("http")
+              ? "/profile.png"
+              : user.profile_picture,
           isFollowing: user.is_following,
         }))}
       />

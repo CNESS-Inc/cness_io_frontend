@@ -64,8 +64,7 @@ const CommentBox = ({
   const [showReply, setShowReply] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
   const commentBoxRef = useRef<HTMLDivElement>(null);
-  const profilePicture =
-    localStorage.getItem("profile_picture") || "/profile.png";
+  const profilePicture = localStorage.getItem("profile_picture");
   const { showToast } = useToast();
   const [expandedComments, setExpandedComments] = useState<
     Record<string, boolean>
@@ -112,11 +111,15 @@ const CommentBox = ({
   };
 
   // Handle reply mentions
-  const handleReplyMentionChange = (commentId: string, text: string, mentions: any[]) => {
+  const handleReplyMentionChange = (
+    commentId: string,
+    text: string,
+    mentions: any[]
+  ) => {
     setReplyText(text);
-    setReplyMentions(prev => ({
+    setReplyMentions((prev) => ({
       ...prev,
-      [commentId]: mentions
+      [commentId]: mentions,
     }));
   };
 
@@ -139,39 +142,41 @@ const CommentBox = ({
     const currentCommentId = showReply; // The currently open reply
     if (!currentCommentId) return;
 
-    const textarea = document.querySelector(`textarea[data-comment-id="${currentCommentId}"]`) as HTMLTextAreaElement;
+    const textarea = document.querySelector(
+      `textarea[data-comment-id="${currentCommentId}"]`
+    ) as HTMLTextAreaElement;
     if (!textarea) return;
 
     const cursorPos = textarea.selectionStart;
     const textBeforeCursor = textarea.value.substring(0, cursorPos);
     const textAfterCursor = textarea.value.substring(cursorPos);
-    
+
     // Find the last @ symbol before cursor
-    const lastAtIndex = textBeforeCursor.lastIndexOf('@');
+    const lastAtIndex = textBeforeCursor.lastIndexOf("@");
     const textBeforeAt = textBeforeCursor.substring(0, lastAtIndex);
     const newText = textBeforeAt + `@${user.username} ` + textAfterCursor;
-    
+
     // Update the textarea value
     textarea.value = newText;
-    
+
     // Set cursor position after the mention
     const newCursorPos = textBeforeAt.length + user.username.length + 2;
     textarea.setSelectionRange(newCursorPos, newCursorPos);
-    
+
     // Update state
     setShowReplySuggestions(false);
     setSelectedReplyMentionIndex(0);
-    
+
     // Add to mentions if not already present
     const currentMentions = replyMentions[currentCommentId] || [];
-    if (!currentMentions.find(m => m.id === user.id)) {
+    if (!currentMentions.find((m) => m.id === user.id)) {
       const newMentions = [...currentMentions, user];
-      setReplyMentions(prev => ({
+      setReplyMentions((prev) => ({
         ...prev,
-        [currentCommentId]: newMentions
+        [currentCommentId]: newMentions,
       }));
     }
-    
+
     // Update reply text
     setReplyText(newText);
   };
@@ -199,15 +204,15 @@ const CommentBox = ({
     const handleClickOutside = (event: MouseEvent) => {
       if (showReplySuggestions) {
         const target = event.target as HTMLElement;
-        if (!target.closest('.reply-suggestion-container')) {
+        if (!target.closest(".reply-suggestion-container")) {
           setShowReplySuggestions(false);
         }
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showReplySuggestions]);
 
@@ -218,7 +223,7 @@ const CommentBox = ({
       const formattedData = {
         text: commentText,
         post_id: postId,
-        mentioned_user_ids: commentMentions.map(mention => mention.id),
+        mentioned_user_ids: commentMentions.map((mention) => mention.id),
       };
 
       const response = await PostComments(formattedData);
@@ -256,7 +261,13 @@ const CommentBox = ({
           profile: {
             first_name: "Your",
             last_name: "Name",
-            profile_picture: profilePicture,
+            profile_picture:
+              !profilePicture ||
+              profilePicture === "null" ||
+              profilePicture === "undefined" ||
+              !profilePicture.startsWith("http")
+                ? "/profile.png"
+                : profilePicture,
           },
           child_comment_count: 0,
         };
@@ -287,7 +298,8 @@ const CommentBox = ({
         text: replyText,
         comment_id: commentId,
         post_id: postId,
-        mentioned_user_ids: replyMentions[commentId]?.map(mention => mention.id) || [],
+        mentioned_user_ids:
+          replyMentions[commentId]?.map((mention) => mention.id) || [],
       };
 
       const response = await PostChildComments(formattedData);
@@ -298,7 +310,9 @@ const CommentBox = ({
             if (comment.id === commentId) {
               return {
                 ...comment,
-                child_comment_count: response.data.data.child_comment_count || comment.child_comment_count + 1,
+                child_comment_count:
+                  response.data.data.child_comment_count ||
+                  comment.child_comment_count + 1,
                 replies: [
                   { ...response.data.data, is_liked: false, likes_count: 0 },
                   ...(comment.replies || []),
@@ -318,7 +332,12 @@ const CommentBox = ({
           profile: {
             first_name: "Your",
             last_name: "Name",
-            profile_picture: profilePicture,
+            profile_picture:  !profilePicture ||
+              profilePicture === "null" ||
+              profilePicture === "undefined" ||
+              !profilePicture.startsWith("http")
+                ? "/profile.png"
+                : profilePicture,
           },
         };
 
@@ -337,9 +356,9 @@ const CommentBox = ({
       }
 
       setReplyText("");
-      setReplyMentions(prev => ({
+      setReplyMentions((prev) => ({
         ...prev,
-        [commentId]: []
+        [commentId]: [],
       }));
       setShowReplySuggestions(false);
       setShowReply(null);
@@ -571,7 +590,6 @@ const CommentBox = ({
                 <div key={comment.id} className="flex flex-col">
                   {/* Main Comment */}
                   <div className="flex gap-3 py-2">
-                    
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between">
                         <div className="flex items-center gap-2 mb-[10px]">
@@ -610,7 +628,10 @@ const CommentBox = ({
                         </div>
                       </div>
                       <p className="mt-1 break-words bg-[#F7F7F7] rounded-[8px] py-[14px] pl-[24px]">
-                        <TextWithMentions text={comment.text} commentId={comment.id} />
+                        <TextWithMentions
+                          text={comment.text}
+                          commentId={comment.id}
+                        />
                       </p>
                       <div className="flex items-center text-xs text-gray-500 mt-1 gap-2">
                         {/* <button
@@ -654,7 +675,12 @@ const CommentBox = ({
                   {showReply === comment.id && (
                     <div className="ml-12 mb-2 flex gap-2">
                       <img
-                        src={profilePicture}
+                        src={ !profilePicture ||
+              profilePicture === "null" ||
+              profilePicture === "undefined" ||
+              !profilePicture.startsWith("http")
+                ? "/profile.png"
+                : profilePicture}
                         alt="Your profile"
                         className="w-8 h-8 rounded-full object-cover flex-shrink-0"
                         onError={(e) => {
@@ -670,10 +696,15 @@ const CommentBox = ({
                           value={replyText}
                           onChange={(e) => {
                             setReplyText(e.target.value);
-                            handleReplyMentionChange(comment.id, e.target.value, replyMentions[comment.id] || []);
+                            handleReplyMentionChange(
+                              comment.id,
+                              e.target.value,
+                              replyMentions[comment.id] || []
+                            );
                             // Fetch suggestions when user types @
-                            if (e.target.value.includes('@')) {
-                              const mentionText = e.target.value.match(/@(\w*)$/)?.[1] || '';
+                            if (e.target.value.includes("@")) {
+                              const mentionText =
+                                e.target.value.match(/@(\w*)$/)?.[1] || "";
                               if (mentionText) {
                                 fetchReplyFriendSuggestions(mentionText);
                               }
@@ -683,49 +714,62 @@ const CommentBox = ({
                           }}
                           onKeyDown={(e) => {
                             if (!showReplySuggestions) return;
-                            
+
                             switch (e.key) {
-                              case 'ArrowDown':
+                              case "ArrowDown":
                                 e.preventDefault();
-                                setSelectedReplyMentionIndex(prev => 
-                                  prev < replySuggestions.length - 1 ? prev + 1 : 0
+                                setSelectedReplyMentionIndex((prev) =>
+                                  prev < replySuggestions.length - 1
+                                    ? prev + 1
+                                    : 0
                                 );
                                 break;
-                              case 'ArrowUp':
+                              case "ArrowUp":
                                 e.preventDefault();
-                                setSelectedReplyMentionIndex(prev => 
-                                  prev > 0 ? prev - 1 : replySuggestions.length - 1
+                                setSelectedReplyMentionIndex((prev) =>
+                                  prev > 0
+                                    ? prev - 1
+                                    : replySuggestions.length - 1
                                 );
                                 break;
-                              case 'Enter':
+                              case "Enter":
                                 e.preventDefault();
-                                if (replySuggestions[selectedReplyMentionIndex]) {
-                                  selectReplyMention(replySuggestions[selectedReplyMentionIndex]);
+                                if (
+                                  replySuggestions[selectedReplyMentionIndex]
+                                ) {
+                                  selectReplyMention(
+                                    replySuggestions[selectedReplyMentionIndex]
+                                  );
                                 }
                                 break;
-                              case 'Escape':
+                              case "Escape":
                                 setShowReplySuggestions(false);
                                 break;
                             }
                           }}
                           onKeyPress={(e) =>
-                            e.key === "Enter" && !e.shiftKey && !showReplySuggestions && handleReplySubmit(comment.id)
+                            e.key === "Enter" &&
+                            !e.shiftKey &&
+                            !showReplySuggestions &&
+                            handleReplySubmit(comment.id)
                           }
                           rows={1}
-                          style={{ minHeight: '32px', maxHeight: '80px' }}
+                          style={{ minHeight: "32px", maxHeight: "80px" }}
                         />
-                        
+
                         {/* Reply Friend Suggestions */}
-                        {showReplySuggestions && replySuggestions.length > 0 && showReply === comment.id && (
-                          <div className="reply-suggestion-container">
-                            <FriendSuggestion
-                              suggestions={replySuggestions}
-                              selectedIndex={selectedReplyMentionIndex}
-                              onSelect={selectReplyMention}
-                              position={{ top: -200, left: 0 }}
-                            />
-                          </div>
-                        )}
+                        {showReplySuggestions &&
+                          replySuggestions.length > 0 &&
+                          showReply === comment.id && (
+                            <div className="reply-suggestion-container">
+                              <FriendSuggestion
+                                suggestions={replySuggestions}
+                                selectedIndex={selectedReplyMentionIndex}
+                                onSelect={selectReplyMention}
+                                position={{ top: -200, left: 0 }}
+                              />
+                            </div>
+                          )}
                         <button
                           className={`px-3 py-1 rounded-full text-sm ${
                             replyText
@@ -765,9 +809,12 @@ const CommentBox = ({
                                 {/* <span className="text-xs text-gray-500">
                                   {formatTimeAgo(reply.createdAt)}
                                 </span> */}
-                              <p className="text-sm break-words">
-                                <TextWithMentions text={reply.text} commentId={comment.id} />
-                              </p>
+                                <p className="text-sm break-words">
+                                  <TextWithMentions
+                                    text={reply.text}
+                                    commentId={comment.id}
+                                  />
+                                </p>
                               </div>
                               {/* <div className="flex items-center text-xs text-gray-500 mt-1 gap-2">
                                 <button
@@ -786,9 +833,7 @@ const CommentBox = ({
                                 </button>
                               </div> */}
                               <div className="flex items-center text-xs text-gray-500 mt-1 gap-2">
-                                <button
-                                  className="hover:underline text-[#E1056D]"
-                                >
+                                <button className="hover:underline text-[#E1056D]">
                                   Delete
                                 </button>
                               </div>
@@ -823,19 +868,22 @@ const CommentBox = ({
                 onChange={(e) => {
                   handleCommentTextChange(e.target.value);
                   // Fetch suggestions when user types @
-                  if (e.target.value.includes('@')) {
-                    const mentionText = e.target.value.match(/@(\w*)$/)?.[1] || '';
+                  if (e.target.value.includes("@")) {
+                    const mentionText =
+                      e.target.value.match(/@(\w*)$/)?.[1] || "";
                     if (mentionText) {
                       fetchFriendSuggestions(mentionText);
                     }
                   }
                 }}
                 onKeyDown={handleCommentKeyDown}
-                onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && handleSubmitComment()}
+                onKeyPress={(e) =>
+                  e.key === "Enter" && !e.shiftKey && handleSubmitComment()
+                }
                 rows={1}
-                style={{ minHeight: '40px', maxHeight: '120px' }}
+                style={{ minHeight: "40px", maxHeight: "120px" }}
               />
-              
+
               {/* Friend Suggestions */}
               {showCommentSuggestions && commentSuggestions.length > 0 && (
                 <FriendSuggestion
