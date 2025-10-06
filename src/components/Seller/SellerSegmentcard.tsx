@@ -36,6 +36,7 @@ import {
 import { useToast } from "../ui/Toast/ToastProvider";
 import Modal from "../ui/Modal";
 import Button from "../ui/Button";
+import { iconMap } from "../../assets/icons";
 //import like from "../../assets/likes.svg";
 //import heart from "../../assets/heart.svg";
 
@@ -2701,6 +2702,11 @@ export function BestPracticesSection({
                   }
                   alt={bp.title}
                   className="h-full w-full object-cover"
+                  onError={(e) => {
+                    // Fallback in case the image fails to load
+                    (e.target as HTMLImageElement).src =
+                      iconMap["companycard1"];
+                  }}
                 />
               </div>
 
