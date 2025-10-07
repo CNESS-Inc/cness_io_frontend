@@ -305,7 +305,7 @@ useEffect(() => {
 
   return (
     <>
-      <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] mx-auto rounded-[12px] overflow-hidden">
+      <section className="relative w-full h-[350px] sm:h-[400px] md:h-[500px] mx-auto rounded-[12px] overflow-hidden">
         <AnimatedBackground />
         <img
           src={iconMap["heroimgs"]}
@@ -391,7 +391,7 @@ useEffect(() => {
             </div>
           </div>
 
-          <p className="text-gray-700 text-xs md:text-sm mt-12 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
+          <p className="text-gray-700 text-xs md:text-sm mt-16 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
             <span
               className="font-medium text-[#F07EFF] underline cursor-pointer"
               onClick={() => navigate("/dashboard/company-profile")}

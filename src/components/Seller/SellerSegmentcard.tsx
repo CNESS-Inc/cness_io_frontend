@@ -2648,7 +2648,8 @@ export function BestPracticesSection({
         <div className="flex items-center gap-2">
           <OutlinePill onClick={onAdd}>
             <Plus className="h-4 w-4" />
-            Add Best Practices
+            <span className="hidden md:block">Add Best Practices</span>
+            <span className="block md:hidden">Add</span>
           </OutlinePill>
         </div>
       </div>
@@ -3229,7 +3230,7 @@ export function SocialStackCard({
     return (
       <>
         <div
-          className="relative -mx-2 sm:-mx-3 md:-mx-4
+          className="relative
              h-auto min-h-[320px] sm:h-[360px]
              rounded-[12px] border border-[#ECEEF2]
              px-[12px] py-[18px]
@@ -3691,7 +3692,7 @@ export function DirectorySection({
             {/* Right: button */}
             <button
               onClick={() => onView?.(it)}
-              className={`w-full sm:w-[127px] h-[32px] rounded-full px-4 py-2 text-center font-opensans text-[14px] text-white ${GRADIENT}`}
+              className={`w-full sm:w-[127px] h-[35px] rounded-full px-4 pt-1 text-center font-opensans text-[14px] text-white flex items-center justify-center ${GRADIENT}`}
             >
               View Details
             </button>
