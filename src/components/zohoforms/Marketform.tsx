@@ -41,7 +41,7 @@ export default function Marketform({
     : `${src}${src.includes("?") ? "&" : "?"}zf_rszfm=1`;
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white">
+    <div className="rounded-xl bg-white">
       {!loaded && <div className="p-6 text-sm text-gray-500">Loading form…</div>}
       <iframe
         ref={iframeRef}
