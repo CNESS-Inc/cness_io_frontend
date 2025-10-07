@@ -149,7 +149,7 @@ export default function SellerDashboard() {
             title: item.title,
             description: item.description,
             image: item.file,
-            if_following: item.if_following,
+            if_following: item.is_bp_following,
           })
         );
 

@@ -91,6 +91,7 @@ const AssessmentQuestion: React.FC = () => {
   const { showToast } = useToast();
   const completed_step = localStorage.getItem("completed_step");
   const [urlError, setUrlError] = useState("");
+  const [uploadProgress, setUploadProgress] = useState<Record<string, { loading: boolean, error: boolean }>>({});
 
   // const [errors, setErrors] = useState<FormErrors>({});
 
@@ -360,39 +361,78 @@ const AssessmentQuestion: React.FC = () => {
     // Get the upload details before updating the state
     const upload = currentSection.suggestedUploads[uploadIndex];
 
-    setFormData((prev) => {
-      if (!prev) return null;
-      const newData = { ...prev };
-      // Create an object to store both the file and the upload id
-      newData.uploads[uploadIndex] = {
-        file: file,
-        id: upload.id,
-      };
-      return newData;
-    });
+    const uploadId = `file-${uploadIndex}`;
+    setUploadProgress((prev) => ({
+      ...prev,
+      [uploadId]: { loading: true, error: false }
+    }));
 
-    if (file) {
-      try {
+    try {
+      setFormData((prev) => {
+        if (!prev) return null;
+        const newData = { ...prev };
+        // Create an object to store both the file and the upload id
+        newData.uploads[uploadIndex] = {
+          file: file,
+          id: upload.id,
+          fileUrl: null
+        };
+        return newData;
+      });
+
+      if (file) {
         const formData = new FormData();
         formData.append("file", file);
         formData.append("question_id", upload.id);
+
         const response = await QuestionFileDetails(formData);
-        console.log("🚀 ~ handleFileUpload ~ response:", response);
-        showToast({
-          message: response?.success?.message,
-          type: "success",
-          duration: 5000,
-        });
-      } catch (error: any) {
-        console.error("Error uploading file:", error);
-        showToast({
-          message: error?.response?.data?.error?.message,
-          type: "error",
-          duration: 5000,
-        });
+
+        if (response?.success) {
+          setFormData((prev) => {
+            if (!prev) return null;
+            const newData = { ...prev };
+            newData.uploads[uploadIndex] = {
+              file: file,
+              id: upload.id,
+              fileUrl: response.data?.file_url || URL.createObjectURL(file)
+            };
+            return newData;
+          });
+
+          showToast({
+            message: response?.success?.message || "File uploaded successfully",
+            type: "success",
+            duration: 5000,
+          });
+        }
       }
+    } catch (error: any) {
+      console.error("Error uploading file:", error);
+
+      setFormData((prev) => {
+        if (!prev) return null;
+        const newData = { ...prev };
+        newData.uploads[uploadIndex] = {
+          file: null,
+          id: upload.id,
+          fileUrl: null
+        };
+        return newData;
+      });
+
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to upload file. Please try again.",
+        type: "error",
+        duration: 5000,
+      });
+    } finally {
+      // Always clear upload status
+      setUploadProgress((prev) => ({
+        ...prev,
+        [uploadId]: { loading: false, error: false }
+      }));
     }
-  };
+  }
 
   const handleReferenceLinkChange = (value: string) => {
     const urlPattern =
@@ -597,7 +637,7 @@ const AssessmentQuestion: React.FC = () => {
     );
   }
 
-  const handleconfirm =async () => {
+  const handleconfirm = async () => {
     await handleSave()
     setActiveModal("assesment");
   };
@@ -753,11 +793,11 @@ const AssessmentQuestion: React.FC = () => {
                       <input
                         type="file"
                         accept={upload.acceptedTypes}
-                        className="w-full h-16 px-2 py-3 cursor-pointer rounded-xl border border-gray-300 file:mr-4 file:rounded-full file:border-0 file:bg-[#7077FE] file:px-[20px] file:py-[8px] file:text-white  file:font-['Plus Jakarta Sans'] file:font-medium  file:text-[14px] file:cursor-pointer"
+                        className={`w-full h-16 px-2 py-3 cursor-pointer rounded-xl border ${uploadProgress?.[`file-${i}`]?.error ? 'border-red-500' : 'border-gray-300'}   file:mr-4 file:rounded-full file:border-0 file:bg-[#7077FE] file:px-[20px] file:py-[8px] file:text-white  file:font-['Plus Jakarta Sans'] file:font-medium  file:text-[14px] file:cursor-pointer ${uploadProgress?.[`file-${i}`]?.loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                         onChange={(e) =>
                           handleFileUpload(i, e.target.files?.[0] || null)
                         }
-                        disabled={isSubmitted}
+                        disabled={isSubmitted || uploadProgress?.[`file-${i}`]?.loading}
                       />
                       {formData.uploads[i]?.fileUrl && (
                         <a
