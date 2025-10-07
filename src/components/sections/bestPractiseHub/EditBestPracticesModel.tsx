@@ -267,7 +267,7 @@ export default function EditBestPracticeModal({
           </div>
 
           {/* Objective / Purpose */}
-          <div className="flex flex-col gap-[5px]">
+          {/* <div className="flex flex-col gap-[5px]">
             <label
               htmlFor="objective"
               className="block text-[15px] font-normal text-black"
@@ -287,7 +287,7 @@ export default function EditBestPracticeModal({
               className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm placeholder:text-[#6E7179] placeholder:text-xs placeholder:font-normal"
               placeholder="Add Notes..."
             ></textarea>
-          </div>
+          </div> */}
 
           {/* Description */}
           <div className="flex flex-col gap-[5px]">
