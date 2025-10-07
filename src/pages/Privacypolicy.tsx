@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import cnesslogo from "../assets/cnesslogo.png";
-import SignupAnimation from "../components/ui/SignupAnimation";
 import { Link } from "react-router-dom";
 
 const PrivacyPolicy = () => {
@@ -13,11 +12,11 @@ const PrivacyPolicy = () => {
   }, []);
 
   return (
-    <div className="relative w-full h-screen bg-animated">
+     <div className="relative min-h-screen w-full bg-animated overflow-hidden">
       {/* Animated background */}
-      <div className="absolute top-0 left-0 w-full h-full z-0">
+      {/* <div className="absolute top-0 left-0 w-full h-full z-0">
         <SignupAnimation />
-      </div>
+      </div> */}
 
       {/* Logo */}
       <div className="fixed -top-8 left-4 z-20">

@@ -1905,7 +1905,7 @@ export default function SocialTopBar() {
                         )}
                       </div>
 
-                      <div className="border-t border-[#ECEEF2] pt-4 grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
+                     <div className="flex grid grid-cols-3 gap-2 md:gap-4 mt-3 md:mt-5 border-t border-[#ECEEF2] py-4 md:flex-none">
                         <button
                           onClick={() => handleLike(post.id)}
                           disabled={isLoading}
@@ -1914,12 +1914,12 @@ export default function SocialTopBar() {
                           }`}
                         >
                           <ThumbsUp
-                            className="w-5 h-5 md:w-6 md:h-6"
+                            className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0"
                             fill={post.is_liked ? "#7077FE" : "none"} // <-- condition here
                             stroke={post.is_liked ? "#7077FE" : "#000"} // keeps border visible
                           />
                           <span
-                            className={`${
+                            className={`hidden sm:flex ${
                               post.is_liked ? "#7077FE" : "text-black"
                             }`}
                           >
@@ -1947,7 +1947,7 @@ export default function SocialTopBar() {
                             }
                           />{" "}
                           <span
-                            className={`${
+                            className={`hidden sm:flex ${
                               selectedPostId === post.id
                                 ? "#7077FE"
                                 : "text-black"
@@ -1963,7 +1963,7 @@ export default function SocialTopBar() {
                             className={`flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 text-black`}
                           >
                             <Share2 className="w-5 h-5 md:w-6 md:h-6" />
-                            <span className="text-black">Share</span>
+                            <span className="hidden sm:flex text-black">Share</span>
                           </button>
                           {openMenu.postId === post.id &&
                             openMenu.type === "share" && (
