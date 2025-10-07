@@ -84,7 +84,7 @@ export default function EditBestPracticeModal({
           <div className="pb-4 flex flex-col items-center">
             <img src={cloud} alt="Upload" className="w-12" />
             <h4 className="pt-2 text-base font-medium text-[#292D32]">
-              Change your image*
+              Change your image <span className="text-red-600">*</span>
             </h4>
             <h4 className="pt-2 font-normal text-sm text-[#A9ACB4]">
               JPEG, PNG formats, up to 2MB
@@ -125,7 +125,7 @@ export default function EditBestPracticeModal({
                 htmlFor="title"
                 className="block text-[15px] font-normal text-black"
               >
-                Title of Best Practice*
+                Title of Best Practice <span className="text-red-600">*</span>
               </label>
               <input
                 type="text"
@@ -267,7 +267,7 @@ export default function EditBestPracticeModal({
           </div>
 
           {/* Objective / Purpose */}
-          <div className="flex flex-col gap-[5px]">
+          {/* <div className="flex flex-col gap-[5px]">
             <label
               htmlFor="objective"
               className="block text-[15px] font-normal text-black"
@@ -287,7 +287,7 @@ export default function EditBestPracticeModal({
               className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm placeholder:text-[#6E7179] placeholder:text-xs placeholder:font-normal"
               placeholder="Add Notes..."
             ></textarea>
-          </div>
+          </div> */}
 
           {/* Description */}
           <div className="flex flex-col gap-[5px]">
@@ -295,7 +295,7 @@ export default function EditBestPracticeModal({
               htmlFor="description"
               className="block text-[15px] font-normal text-black"
             >
-              Description*
+              Description <span className="text-red-600">*</span>
             </label>
             <textarea
               id="description"
