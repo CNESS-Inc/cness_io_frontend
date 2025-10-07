@@ -84,6 +84,10 @@ export default function UserProfileView() {
   const [userDetails, setUserDetails] = useState<any>();
   const [publicUserDetails, setPublicUserDetails] = useState<any>();
   const [myBP, setMyBP] = useState<any>([]);
+  const [myProfessionBP, setMyProfessionBP] = useState<any[]>([]);
+  console.log("myProfessionBP", myProfessionBP);
+  const [myInterestBP, setMyInterestBP] = useState<any[]>([]);
+  console.log("myInterestBP", myInterestBP);
   const [followBP, setFollowBP] = useState<any>([]);
   const [activeTab, setActiveTab] = useState("about");
   const { id } = useParams();
@@ -130,6 +134,26 @@ export default function UserProfileView() {
     fetchProfession();
     fetchIntrusts();
   }, []);
+
+  useEffect(() => {
+    if (myBP?.length > 0) {
+      // Separate profession-aligned BPs
+      const professionData = myBP.filter(
+        (bp: any) => bp?.profession_data !== null
+      );
+
+      // Separate interest-aligned BPs
+      const interestData = myBP.filter(
+        (bp: any) => bp?.interest !== null
+      );
+
+      setMyProfessionBP(professionData);
+      setMyInterestBP(interestData);
+    } else {
+      setMyProfessionBP([]);
+      setMyInterestBP([]);
+    }
+  }, [myBP]);
 
   const fetchProfession = async () => {
     try {
@@ -882,13 +906,13 @@ export default function UserProfileView() {
 
                   <div className="mt-2 space-y-5">
                     {userDetails?.education?.length === 0 && (
-                    <p
-                      className="mt-2 font-['Open_Sans'] font-normal text-[14px] leading-[21px]
+                      <p
+                        className="mt-2 font-['Open_Sans'] font-normal text-[14px] leading-[21px]
                       tracking-[0px] text-[#64748B]"
-                    >
-                      No work experience added yet.
-                    </p>
-                  )}
+                      >
+                        No work experience added yet.
+                      </p>
+                    )}
                     {userDetails?.work_experience?.map((job: any) => (
                       <div key={job.id}>
                         {/* Position + Company */}
@@ -1043,15 +1067,92 @@ export default function UserProfileView() {
                   )}
 
                   {/* Best Practices profession  */}
-                  {myBP?.length > 0 && (
+                  {myProfessionBP?.length > 0 && (
                     <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
                       <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
-                        My Best Practices
+                        My Best Practices aligned Profession
                       </h3>
 
                       {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4"> */}
                       <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3">
-                        {myBP?.map((practice: any) => {
+                        {myProfessionBP?.map((practice: any) => {
+                          return (
+                            <div
+                              key={practice?.id}
+                              onClick={(e) => {
+                                // Only navigate if it's not the Read More button
+                                if (
+                                  !(e.target as HTMLElement).closest(
+                                    ".read-more-btn"
+                                  )
+                                ) {
+                                  navigate(
+                                    `/dashboard/bestpractices/${
+                                      practice.id
+                                    }/${slugify(practice.title)}`,
+                                    {
+                                      state: {
+                                        likesCount: practice.likesCount,
+                                        isLiked: practice.isLiked,
+                                      },
+                                    }
+                                  );
+                                }
+                              }}
+                            >
+                              <BestPracticeCard
+                                name={
+                                  `${practice?.profile?.first_name || ""} ${
+                                    practice?.profile?.last_name || ""
+                                  }`.trim() || "CNESS User"
+                                }
+                                username={practice?.user?.username || "user"}
+                                profileImage={
+                                  !practice?.profile?.profile_picture ||
+                                  practice?.profile?.profile_picture ===
+                                    "null" ||
+                                  practice?.profile?.profile_picture ===
+                                    "undefined" ||
+                                  !practice?.profile?.profile_picture.startsWith(
+                                    "http"
+                                  )
+                                    ? "/profile.png"
+                                    : practice?.profile?.profile_picture
+                                }
+                                coverImage={
+                                  !practice?.file ||
+                                  practice?.file === "null" ||
+                                  practice?.file === "undefined" ||
+                                  !practice?.file.startsWith("http")
+                                    ? "https://cdn.cness.io/banner.webp"
+                                    : practice?.file
+                                }
+                                title={
+                                  practice?.title ||
+                                  practice?.profession_data?.title ||
+                                  "Untitled"
+                                }
+                                description={practice?.description || ""}
+                                link={`/dashboard/bestpractices/${
+                                  practice.id
+                                }/${slugify(practice.title)}`}
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {myInterestBP?.length > 0 && (
+                    <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
+                      <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
+                        My Best Practices aligned Interest
+                      </h3>
+
+                      {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4"> */}
+                      <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3">
+                        {myInterestBP?.map((practice: any) => {
                           return (
                             <div
                               key={practice?.id}

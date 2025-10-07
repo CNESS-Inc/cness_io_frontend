@@ -295,7 +295,7 @@ export default function SocialFeed() {
 
   const [isCollectionLoading] = useState(false);
   const [storiesData, setStoriesData] = useState<Story[]>([]);
-  console.log('storiesData', storiesData);
+  console.log("storiesData", storiesData);
   // const [addNewPost, setAddNewPost] = useState(false)
 
   const [userInfo, setUserInfo] = useState<any>();
@@ -876,7 +876,7 @@ export default function SocialFeed() {
                       readOnly
                     />
                   </div>
-                  <div className="flex justify-between md:justify-center md:gap-10 text-xs md:text-[15px] text-gray-700 mt-2 md:mt-3">
+                  <div className="flex justify-center gap-10 text-xs md:text-[15px] text-gray-700 mt-2 md:mt-3">
                     <button
                       className="flex items-center gap-1 md:gap-2"
                       onClick={() => setOpenSignup(true)}
@@ -1041,7 +1041,7 @@ export default function SocialFeed() {
                         <button
                           onClick={() => setOpenSignup(true)}
                           disabled={connectingUsers[post.user_id] || false}
-                          className={`flex w-[100px] justify-center items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors font-family-open-sans h-[35px]
+                          className={`hidden sm:flex w-[100px] justify-center items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors font-family-open-sans h-[35px]
                                 ${
                                   // getFriendStatus(post.user_id) === "connected"
                                   //   ? "bg-red-500 text-white hover:bg-red-600"
@@ -1104,6 +1104,27 @@ export default function SocialFeed() {
                                 }}
                               >
                                 <ul className="space-y-1">
+                                  <li className="sm:hidden">
+                                    <button
+                                      onClick={() => setOpenSignup(true)}
+                                      disabled={
+                                        connectingUsers[post.user_id] || false
+                                      }
+                                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                    >
+                                      <img
+                                        src={iconMap["userplus"]}
+                                        alt="userplus"
+                                        className="w-4 h-4"
+                                      />
+                                      {connectingUsers[post.user_id]
+                                        ? "Loading..."
+                                        : getFriendStatus(post.user_id) ===
+                                          "requested"
+                                        ? "Requested"
+                                        : "Connect"}
+                                    </button>
+                                  </li>
                                   <li>
                                     <button
                                       onClick={() => setOpenSignup(true)}
@@ -1302,7 +1323,7 @@ export default function SocialFeed() {
                     )}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5 border-t border-[#ECEEF2] py-4">
+                  <div className="flex grid grid-cols-3 gap-2 md:gap-4 mt-3 md:mt-5 border-t border-[#ECEEF2] py-4 md:flex-none">
                     <button
                       onClick={() => setOpenSignup(true)}
                       disabled={isLoading}
@@ -1311,12 +1332,12 @@ export default function SocialFeed() {
                       }`}
                     >
                       <ThumbsUp
-                        className="w-5 h-5 md:w-6 md:h-6"
+                        className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0"
                         fill={post.is_liked ? "#7077FE" : "none"} // <-- condition here
                         stroke={post.is_liked ? "#7077FE" : "#000"} // keeps border visible
                       />
                       <span
-                        className={`${
+                        className={`hidden sm:flex ${
                           post.is_liked ? "#7077FE" : "text-black"
                         }`}
                       >
@@ -1334,7 +1355,7 @@ export default function SocialFeed() {
                         stroke={selectedPostId === post.id ? "#7077FE" : "#000"}
                       />{" "}
                       <span
-                        className={`${
+                        className={`hidden sm:flex ${
                           selectedPostId === post.id ? "#7077FE" : "text-black"
                         }`}
                       >
@@ -1348,7 +1369,7 @@ export default function SocialFeed() {
                         className="flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-normal text-sm md:text-base rounded-md hover:bg-gray-50 text-black"
                       >
                         <Share2 className="w-5 h-5 md:w-6 md:h-6" />
-                        <span className="text-black">Share</span>
+                        <span className="hidden sm:flex text-black">Share</span>
                       </button>
                       {openMenu.postId === post.id &&
                         openMenu.type === "share" && (

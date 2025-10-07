@@ -7,13 +7,11 @@ import BackToTopButton from "./BackToTop";
 import vector from "../../assets/Vector.svg";
 import ContentModal from "../../components/ui/ContentModal";
 
-
-
 const Footer = () => {
   const [showTermModal, setShowTermModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
-  const [content, setContent] = useState('');
-  const [privacyContent, privacySetContent] = useState('');
+  const [content, setContent] = useState("");
+  const [privacyContent, privacySetContent] = useState("");
 
   useEffect(() => {
     fetch("/terms and conditions new.html")
@@ -28,8 +26,7 @@ const Footer = () => {
 
   return (
     <>
-    
-    <BackToTopButton/>
+      <BackToTopButton />
       <footer className="bg-[#F7F7F7] text-black py-8 md:py-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto lg:flex md:grid flex justify-between lg:grid-cols-2 grid-cols-2 md:grid-cols-5 lg:gap-6 md:gap-8 gap-2">
           {/* Main description - full width on mobile, then 2/5 on md+ */}
@@ -49,8 +46,9 @@ const Footer = () => {
               />
             </Link>
             <p className="text-[16px] font-[400] font-openSans leading-[160%] text-[#1E1E1E] lg:block md:block hidden">
-            CNESS is a consciousness-based certification and <br />growth platform designed to empower purpose-
-            <br /> driven individuals and organizations.
+              CNESS is a consciousness-based certification and <br />
+              growth platform designed to empower purpose-
+              <br /> driven individuals and organizations.
             </p>
           </div>
           <div className="col-span-2 lg:w-[25%] md:w-[50%] w-[75%]  sm:col-span-3 md:col-span-3 space-y-4">
@@ -68,41 +66,121 @@ const Footer = () => {
 
               {/* Quick Links section */}
               <div className="w-fit space-y-3 md:space-y-4 ">
-                <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#373578] poppins">Quick Links</h4>
+                <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#373578] poppins">
+                  Quick Links
+                </h4>
                 <ul className="space-y-1 md:space-y-2">
-                  <li><Link to="/ecosystem" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Ecosystem</Link></li>
-                  <li><Link to="/social" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Social</Link></li>
-                   <li><Link to="/certifications" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Certification</Link></li>
-                  <li><Link to="/premium" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Premium</Link></li>
-                  <li><Link to="/whycness" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Why CNESS</Link></li>
-                  <li><Link to="/cness-marketplace" className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Become a seller</Link></li>
+                  <li>
+                    <Link
+                      to="/ecosystem"
+                      className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                      onClick={() =>
+                        window.scrollTo({ top: 0, behavior: "smooth" })
+                      }
+                    >
+                      Ecosystem
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/social"
+                      className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                      onClick={() =>
+                        window.scrollTo({ top: 0, behavior: "smooth" })
+                      }
+                    >
+                      Social
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/certifications"
+                      className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                      onClick={() =>
+                        window.scrollTo({ top: 0, behavior: "smooth" })
+                      }
+                    >
+                      Certification
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/premium"
+                      className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                      onClick={() =>
+                        window.scrollTo({ top: 0, behavior: "smooth" })
+                      }
+                    >
+                      Premium
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/whycness"
+                      className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                      onClick={() =>
+                        window.scrollTo({ top: 0, behavior: "smooth" })
+                      }
+                    >
+                      Why CNESS
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/cness-marketplace"
+                      className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                      onClick={() =>
+                        window.scrollTo({ top: 0, behavior: "smooth" })
+                      }
+                    >
+                      Become a seller
+                    </Link>
+                  </li>
                 </ul>
               </div>
 
               {/* Social Links section - full width on small mobile, then normal */}
               <div className="w-fit sm:col-span-1 space-y-3 md:space-y-4">
-                <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#373578] poppins">Follow Us</h4>
+                <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#373578] poppins">
+                  Follow Us
+                </h4>
                 <ul className="space-y-1 md:space-y-2">
                   <li>
-                    <a href="https://www.facebook.com/share/1A8V21L6Qj" className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">
+                    <a
+                      href="https://www.facebook.com/share/1A8V21L6Qj"
+                      className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                    >
                       <FaFacebookF className="me-2 md:me-3" />
                       Facebook
                     </a>
                   </li>
                   <li>
-                    <a href="https://x.com/CnessInc" className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">
-                     <img src={vector} alt="X" className="w-4 h-4 me-2 md:me-3" />
+                    <a
+                      href="https://x.com/CnessInc"
+                      className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                    >
+                      <img
+                        src={vector}
+                        alt="X"
+                        className="w-4 h-4 me-2 md:me-3"
+                      />
                       X
                     </a>
                   </li>
                   <li>
-                    <a href="https://www.instagram.com/cness.inc" className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">
+                    <a
+                      href="https://www.instagram.com/cness.inc"
+                      className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                    >
                       <FaInstagram className="me-2 md:me-3" />
                       Instagram
                     </a>
                   </li>
                   <li>
-                    <a href="https://www.youtube.com/@CNESSinc" className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline">
+                    <a
+                      href="https://www.youtube.com/@CNESSinc"
+                      className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                    >
                       <FaYoutube className="me-2 md:me-3" />
                       YouTube
                     </a>
@@ -110,7 +188,6 @@ const Footer = () => {
                 </ul>
               </div>
             </div>
-
           </div>
         </div>
       </footer>
@@ -125,43 +202,59 @@ const Footer = () => {
               fontStyle: "normal",
             }}
           >
-            Copyright © {new Date().getFullYear()}
-          </div>          
+            © {new Date().getFullYear()} Cness Inc. All rights reserved.
+          </div>
           <div className="flex flex-wrap justify-between gap-4 md:gap-16 lg:gap-24">
-
             {/* <Link to="/terms-and-conditions" className="text-[15px] leading-[100%] font-[600] font-[Plus Jakarta Sans] text-white">
               Terms & Conditions
             </Link> */}
-            <button onClick={() => setShowTermModal(true)} className="text-[15px] leading-[100%] font-[600] font-[Plus Jakarta Sans] text-white">
+            <button
+              onClick={() => setShowTermModal(true)}
+              className="text-[15px] leading-[100%] font-[600] font-[Plus Jakarta Sans] text-white"
+            >
               Terms & Conditions
-            </button> 
+            </button>
             {/* <Link to="/privacy-policy" className="text-[15px] leading-[100%] font-[600] font-[Plus Jakarta Sans] text-white">
               Privacy Policy
             </Link> */}
-            <button onClick={() => setShowPrivacyModal(true)} className="text-[15px] leading-[100%] font-[600] font-[Plus Jakarta Sans] text-white">
+            <button
+              onClick={() => setShowPrivacyModal(true)}
+              className="text-[15px] leading-[100%] font-[600] font-[Plus Jakarta Sans] text-white"
+            >
               Privacy Policy
-            </button> 
+            </button>
           </div>
         </div>
         <div className="max-w-7xl mx-auto lg:hidden flex flex-row  justify-between items-center gap-2">
-          <p className="text-xs md:text-sm jakarta font-semibold">Copyright © {new Date().getFullYear()}</p>
-            {/* <Link to="/terms-and-conditions" className="text-xs md:text-sm hover:underline jakarta font-semibold">
+          <p className="text-xs md:text-sm jakarta font-semibold">
+            © {new Date().getFullYear()} Cness Inc. All rights reserved.
+          </p>
+          {/* <Link to="/terms-and-conditions" className="text-xs md:text-sm hover:underline jakarta font-semibold">
               Terms & Conditions
             </Link> */}
-            <button onClick={() => setShowTermModal(true)} className="text-xs md:text-sm hover:underline jakarta font-semibold">
-              Terms & Conditions
-            </button> 
-            {/* <Link to="/privacy-policy" className="text-xs md:text-sm hover:underline jakarta font-semibold">
+          <button
+            onClick={() => setShowTermModal(true)}
+            className="text-xs md:text-sm hover:underline jakarta font-semibold"
+          >
+            Terms & Conditions
+          </button>
+          {/* <Link to="/privacy-policy" className="text-xs md:text-sm hover:underline jakarta font-semibold">
               Privacy Policy
             </Link> */}
-             <button onClick={() => setShowPrivacyModal(true)} className="text-xs md:text-sm hover:underline jakarta font-semibold">
-              Privacy Policy
-            </button>
+          <button
+            onClick={() => setShowPrivacyModal(true)}
+            className="text-xs md:text-sm hover:underline jakarta font-semibold"
+          >
+            Privacy Policy
+          </button>
         </div>
       </div>
 
       {/* Term & condition Modal */}
-      <ContentModal isOpen={showTermModal} onClose={() => setShowTermModal(false)}>
+      <ContentModal
+        isOpen={showTermModal}
+        onClose={() => setShowTermModal(false)}
+      >
         <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
           <h3 className="lg:text-[36px] md:text-[30] text-[24px] font-[500] text-black mb-4 text-center">
             CNESS TERMS AND CONDITIONS
@@ -177,9 +270,12 @@ const Footer = () => {
             }}
             dangerouslySetInnerHTML={{ __html: content }}
           />
-          </div>
+        </div>
       </ContentModal>
-      <ContentModal isOpen={showPrivacyModal} onClose={() => setShowPrivacyModal(false)}>
+      <ContentModal
+        isOpen={showPrivacyModal}
+        onClose={() => setShowPrivacyModal(false)}
+      >
         <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
           <h3 className="lg:text-[36px] md:text-[30] text-[24px] font-[500] text-black mb-4 text-center">
             CNESS PRIVACY POLICY
@@ -195,7 +291,7 @@ const Footer = () => {
             }}
             dangerouslySetInnerHTML={{ __html: privacyContent }}
           />
-          </div>
+        </div>
       </ContentModal>
     </>
   );

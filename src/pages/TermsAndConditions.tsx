@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import cnesslogo from "../assets/cnesslogo.png";
-import SignupAnimation from "../components/ui/SignupAnimation";
 import { Link } from "react-router-dom";
 
 const TermsAndConditions = () => {
@@ -15,17 +14,17 @@ const TermsAndConditions = () => {
   return (
     <div className="relative min-h-screen w-full bg-animated overflow-hidden">
       {/* Animated Background */}
-      <div className="absolute top-0 left-0 w-full h-full -z-10">
+      {/* <div className="absolute top-0 left-0 w-full h-full -z-10">
         <SignupAnimation />
-      </div>
+      </div> */}
 
       {/* Logo */}
-      <div className="fixed top-4 left-4 z-20">
+      <div className="fixed -top-8 left-4 z-20">
         <Link to="/">
           <img
             src={cnesslogo}
             alt="logo"
-            className="w-24 h-24 md:w-32 md:h-32 object-contain"
+            className="w-48 h-48 object-contain"
           />
         </Link>
       </div>
