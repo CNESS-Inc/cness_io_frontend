@@ -18,6 +18,7 @@ const DashboardLayout = () => {
   const noPaddingRoutes = [
     "/dashboard/Become_partner",
     "/dashboard/become-mentor",
+    "/dashboard"
   ];
   const hasNoPadding = noPaddingRoutes.includes(location.pathname);
 

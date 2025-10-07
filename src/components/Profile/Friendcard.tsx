@@ -43,7 +43,15 @@ const FriendCard: React.FC<FriendCardProps> = ({
       {/* Image */}
       <div className="relative w-full h-[209px] xs:h-[160px]">
         <img
-          src={profileImage}
+          src={
+            !profileImage ||
+              profileImage === "null" ||
+              profileImage === "undefined" ||
+              !profileImage.startsWith("http") ||
+              profileImage === "http://localhost:5026/file/"
+              ? '/profile.png'
+              : profileImage
+          }
           alt={name}
           className="w-full h-full object-cover rounded-[12px]"
         />
@@ -57,10 +65,10 @@ const FriendCard: React.FC<FriendCardProps> = ({
       </div>
 
       {/* Info + Actions */}
-      <div className="mt-3 flex items-center justify-between">
-        <div>
-          <p className="font-semibold text-sm sm:text-base">{name}</p>
-          <p className="text-gray-500 text-xs sm:text-sm">@{username}</p>
+      <div className="mt-3 flex items-center justify-between gap-1">
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-sm sm:text-base truncate">{name}</p>
+          <p className="text-gray-500 text-xs sm:text-sm truncate">@{username}</p>
         </div>
 
         <div className="flex gap-2">
