@@ -273,17 +273,17 @@ export default function Faqs() {
   ];
 
   const filteredFaqCategories = faqCategories.map(category => ({
-  ...category,
-  faqs: category.faqs.filter(faq =>
-    faq.question.toLowerCase().includes(searchText.toLowerCase()) ||
-    faq.answer.toLowerCase().includes(searchText.toLowerCase())
-  )
-})).filter(category => category.faqs.length > 0);
+    ...category,
+    faqs: category.faqs.filter(faq =>
+      faq.question.toLowerCase().includes(searchText.toLowerCase()) ||
+      faq.answer.toLowerCase().includes(searchText.toLowerCase())
+    )
+  })).filter(category => category.faqs.length > 0);
 
   return (
     <>
       <Header />
-      <LazySection effect="fade-up" delay={0.2}>
+      <LazySection effect="fade-up" delay={0.1}>
         <div className="flex flex-col items-center text-center z-10 py-16 px-4">
           <h1
             style={{ fontFamily: "Poppins, sans-serif" }}
@@ -293,7 +293,7 @@ export default function Faqs() {
           </h1>
 
           <p
-            className="openSans font-['Open Sans'] lg:text-lg md:text-[16px] text-[12px] text-[#64748B] mb-5 lg:mb-10 md:mb-12 mb-4 mt-4
+            className="font-['Open_Sans'] lg:text-lg md:text-[16px] text-[12px] text-[#64748B] mb-5 lg:mb-10 md:mb-12 mb-4 mt-4
             max-w-4xl mx-auto transition-all duration-1000 ease-in-out font-[300]"
           >
             Find quick answers to common questions about our CNESS and <br />
@@ -305,7 +305,7 @@ export default function Faqs() {
               placeholder="Search"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
-              className="openSans font-['Open Sans'] w-full bg-transparent placeholder-[#AFB1B3] outline-none text-[16px]"
+              className="font-['Open_Sans'] w-full bg-transparent placeholder-[#AFB1B3] outline-none text-[16px]"
             />
             {searchText ? (
               <button onClick={() => setSearchText("")}>
@@ -330,29 +330,25 @@ export default function Faqs() {
           </div>
         </div>
       </LazySection>
-      <LazySection effect="fade-up" delay={0.2}>
-        <FAQSection faqs={filteredFaqCategories} />
-      </LazySection>
-      <LazySection effect="fade-up" delay={0.2}>
-        <div className="flex flex-col items-center text-center z-10 pb-10 px-4">
-          <h1
-            style={{ fontFamily: "Poppins, sans-serif" }}
-            className="font-medium text-[42px] md:text-[42px] leading-[115%] tracking-[0.03rem] text-center antialiased bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
-          >
-            Still have a question?
-          </h1>
+      <FAQSection faqs={filteredFaqCategories} />
+      <div className="flex flex-col items-center text-center z-10 pb-10 px-4">
+        <h1
+          style={{ fontFamily: "Poppins, sans-serif" }}
+          className="font-medium text-[42px] md:text-[42px] leading-[115%] tracking-[0.03rem] text-center antialiased bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
+        >
+          Still have a question?
+        </h1>
 
-          <p
-            className="openSans lg:text-lg md:text-[16px] text-[12px] text-[#64748B] lg:mb-10 md:mb-12 mb-4 mt-4
+        <p
+          className="font-['Open_Sans'] lg:text-lg md:text-[16px] text-[12px] text-[#64748B] lg:mb-10 md:mb-12 mb-4 mt-4
             max-w-4xl mx-auto transition-all duration-1000 ease-in-out font-[300]"
-          >
-            If you cannot find answer to a question in your FAQ, you can always{" "}
-            <br />
-            contact us. we will answer to you shortly
-          </p>
-        </div>
-        <GetInTouch />
-      </LazySection>
+        >
+          If you cannot find answer to a question in your FAQ, you can always{" "}
+          <br />
+          contact us. we will answer to you shortly
+        </p>
+      </div>
+      <GetInTouch />
       {/*<LazySection effect="fade-up" delay={0.2}>
         <Subscribe />
       </LazySection>*/}
