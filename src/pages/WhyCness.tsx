@@ -84,8 +84,7 @@ export default function WhyCness() {
             </h1>
 
             <p
-              className={`openSans md:text-base font-[300] text-[#64748B] mt-6 max-w-4xl mx-auto transition-all duration-1000 ease-in-out font-['Open Sans']`}
-            >
+className={`font-['Open_Sans'] md:text-base font-[300] text-[#64748B] mt-6 max-w-4xl mx-auto transition-all duration-1000 ease-in-out`}            >
               We’re building more than a platform—we’re shaping an ecosystem.
               From certifications and learning tools
               <br /> for professionals, to communities, marketplaces, and
@@ -147,7 +146,7 @@ export default function WhyCness() {
 
               {/* Right: copy + CTA */}
               <div className="flex flex-col items-center lg:items-start gap-6">
-                <p className="max-w-[620px] font-['Open Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#64748B] font-[300]">
+                <p className="max-w-[620px] font-['Open_Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#64748B] font-[300]">
                   We Built Our Super App To Unite Learning, Certifications,
                   Communities, And Marketplaces In One Ecosystem—Helping People
                   And Businesses Grow, Connect, And Thrive With Purpose.
@@ -170,8 +169,8 @@ export default function WhyCness() {
                 <h4 className="font-['Poppins'] font-medium text-[20px] md:text-[24px] leading-[1.2] text-[#111827]">
                   Mission
                 </h4>
-                <p className="font-['Open Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#64748B] font-[300]">
-                  We Built Our Super App To Unite Learning, Certifications,
+<p className="font-['Open_Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#64748B] font-[300]">
+                    We Built Our Super App To Unite Learning, Certifications,
                   Communities, And Marketplaces In One Ecosystem—Helping People
                   And Businesses Grow, Connect, And Thrive With Purpose.
                 </p>
@@ -181,7 +180,7 @@ export default function WhyCness() {
                 <h4 className="font-['Poppins'] font-medium text-[20px] md:text-[24px] leading-[1.2] text-[#111827]">
                   Vision
                 </h4>
-                <p className="font-['Open Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#64748B] font-[300]">
+<p className="font-['Open_Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#64748B] font-[300]">
                   To Be The World’s Most Trusted Ecosystem, Where Learning,
                   Business, And Community Come Together Seamlessly, Creating A
                   Future Where Opportunities Are Accessible To Everyone.
@@ -310,7 +309,7 @@ export default function WhyCness() {
                 We Offer
               </span>
             </h3>
-            <p className="font-['Open Sans'] openSans pt-2 text-center w-full font-['Open Sans'] text-[#64748B] font-[300] text-[16px] leading-[24.38px] tracking-[0px]">
+<p className="font-['Open_Sans'] pt-2 text-center w-full text-[#64748B] font-[300] text-[16px] leading-[24.38px]">
               CNESS is a super app that brings together tools for professional
               growth and <br />
               personal connection in one ecosystem.
@@ -370,7 +369,7 @@ export default function WhyCness() {
                   </div>
 
                   {/* Number */}
-                  <span className="openSans font-['Open Sans'] block text-lg text-[#4B4B4B] font-normal mb-2">
+<span className="font-['Open_Sans'] block text-lg text-[#4B4B4B] font-normal mb-2">
                     {item.n}
                   </span>
 
@@ -383,7 +382,7 @@ export default function WhyCness() {
                   </h3>
 
                   {/* Description */}
-                  <p className="openSans font-['Open Sans'] mt-2 text-base text-[#64748B] leading-relaxed font-[300]">
+<p className="font-['Open_Sans'] mt-2 text-base text-[#64748B] leading-relaxed font-[300]">
                     {item.desc}
                   </p>
                 </div>

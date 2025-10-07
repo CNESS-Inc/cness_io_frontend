@@ -111,6 +111,7 @@ export const EndPoint = {
   emailverify: "/auth/email-verify",
   paymentverify: "/payment/payment-confirm",
   profile: "/profile",
+  profile_remove: "/profile/image/remove",
   organizationProfile: "/organization-profile",
   organizationNumber: "/organization-profile/verify-identify",
   organization_profile_create: "/organization-profile",
@@ -570,6 +571,11 @@ export const GetSubDomainDetails = (formData: string): ApiResponse => {
 };
 export const SubmitProfileDetails = (formData: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.profile);
+};
+export const removeProfileImage = (type: any): ApiResponse => {
+    let params: { [key: string]: any } = {};
+  params["type"] = type;
+  return executeAPI(ServerAPI.APIMethod.GET, null, EndPoint.profile_remove,params);
 };
 export const SubmitPublicProfileDetails = (formData: any): ApiResponse => {
   return executeAPI(

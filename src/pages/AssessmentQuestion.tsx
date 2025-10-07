@@ -835,7 +835,7 @@ const AssessmentQuestion: React.FC = () => {
 
             {/* Action Buttons */}
             {/* {!isSubmitted && ( */}
-            <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between sm:items-center sm:gap-4 w-full">
+            <div className="flex flex-row items-center gap-3 sm:flex-row sm:justify-between sm:items-center sm:gap-4 w-full">
               {/* Save Button - Gradient */}
               <Button
                 variant="gradient-primary"
@@ -852,7 +852,7 @@ const AssessmentQuestion: React.FC = () => {
               </Button>
 
               {/* Prev & Next Buttons */}
-              <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
+              <div className="flex flex-row gap-4 sm:flex-row sm:gap-6">
                 <button
                   onClick={handlePrevious}
                   disabled={!currentSection.previous_section_id}

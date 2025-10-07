@@ -63,15 +63,19 @@ const BecomeMentor = () => {
   const validateField = (field: string, value: string): string => {
     switch (field) {
       case "email":
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(value))
-          return "Please enter a valid email address";
-        break;
+      if (!value.trim()) return "Email is required";
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(value))
+        return "Please enter a valid email address";
+      break;
 
-      case "name":
-        if (value.trim().length < 2)
-          return "Name should be at least 2 characters long";
-        break;
+       case "name":
+      if (!value.trim()) return "Name is required";
+      if (value.trim().length < 2)
+        return "Name should be at least 2 characters long";
+      if (!/^[a-zA-Z\s]+$/.test(value))
+        return "Name should contain only letters and spaces";
+      break;
 
       case "year_of_experience":
         const experience = Number(value);
@@ -79,15 +83,21 @@ const BecomeMentor = () => {
           return "Please enter a valid years of experience (0-60)";
         break;
 
-      case "website":
-        if (value && value.trim() !== "") {
-          try {
-            new URL(value.startsWith("http") ? value : `https://${value}`);
-          } catch {
-            return "Please enter a valid website URL";
-          }
-        }
-        break;
+ case "website":
+  if (value && value.trim() !== "") {
+    const trimmed = value.trim();
+    // Require the protocol explicitly
+    if (!/^https?:\/\//i.test(trimmed)) {
+      return "Website URL must start with http:// or https://";
+    }
+
+    try {
+      new URL(trimmed);
+    } catch {
+      return "Please enter a valid website URL";
+    }
+  }
+  break;
 
       case "bio":
         if (value.trim().length < 50)
@@ -273,15 +283,19 @@ const BecomeMentor = () => {
       }
 
       // Email validation
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        return "Please enter a valid email address";
-      }
+     if (!formData.email.trim())
+    return "Email is required.";
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(formData.email))
+    return "Please enter a valid email address.";
 
       // Name validation
-      if (formData.name.trim().length < 2) {
-        return "Name should be at least 2 characters long";
-      }
+      if (!formData.name.trim())
+    return "Name is required.";
+  if (formData.name.trim().length < 2)
+    return "Name should be at least 2 characters long.";
+  if (!/^[a-zA-Z\s]+$/.test(formData.name))
+    return "Name should contain only letters and spaces.";
 
       // Experience validation
       if (formData.year_of_experience !== "") {
@@ -292,17 +306,17 @@ const BecomeMentor = () => {
       }
 
       // Website validation (if provided)
-      if (formData.website && formData.website.trim() !== "") {
-        try {
-          new URL(
-            formData.website.startsWith("http")
-              ? formData.website
-              : `https://${formData.website}`
-          );
-        } catch {
-          return "Please enter a valid website URL";
-        }
-      }
+       if (formData.website && formData.website.trim() !== "") {
+    try {
+      new URL(
+        formData.website.startsWith("http")
+          ? formData.website
+          : `https://${formData.website}`
+      );
+    } catch {
+      return "Please enter a valid website URL.";
+    }
+  }
 
       // Bio and motivation length validation
       if (formData.bio.trim().length < 50) {
@@ -697,6 +711,9 @@ const BecomeMentor = () => {
                       placeholder="Enter your name"
                       required
                     />
+                    {_fieldErrors.name && (
+    <p className="text-red-500 text-xs mt-1">{_fieldErrors.name}</p>
+  )}
                   </Field>
                   <Field label="Email Address">
                     <Input
@@ -707,6 +724,9 @@ const BecomeMentor = () => {
                       placeholder="Enter your mail ID"
                       required
                     />
+                    {_fieldErrors.email && (
+    <p className="text-red-500 text-xs mt-1">{_fieldErrors.email}</p>
+  )}
                   </Field>
 
                   <Field label="Phone Number">
@@ -731,24 +751,36 @@ const BecomeMentor = () => {
                   </Field>
 
                   <Field label="Experience">
-                    <select
-                      name="year_of_experience"
-                      value={formData.year_of_experience.toString()}
-                      onChange={handleInputChange}
-                      className={`w-full py-[15px] px-[12px] border border-[#CBD0DC] rounded-sm border-2 border-[#EEEEEE] bg-white text-[14px] outline-none focus:border-[#C9C9FF] placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-[20px] ${formData.year_of_experience ? "text-black" : "text-[#6E7179]"}`}
-                    >
-                      <option value="" disabled>
-                        Select your years of experience
-                      </option>
-                      {[...Array(31).keys()].map((year) => (
-                        <option key={year} value={year}>
-                          {year} {year === 1 ? "year" : "years"}
+                    <div className="relative group">
+                        <select 
+                        name="year_of_experience"
+                        value={formData.year_of_experience.toString()}
+                        onChange={handleInputChange}
+                        className={`w-full appearance-none py-[15px] px-[12px] border border-[#CBD0DC] rounded-sm border-2 border-[#EEEEEE] bg-white text-[14px] outline-none focus:border-[#C9C9FF] placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-[20px] ${formData.year_of_experience ? "text-black" : "text-[#6E7179]"}`}
+                      >
+                        <option value="" disabled>
+                          Select your years of experience
                         </option>
-                      ))}
-                      <option value='more'>
-                          More than 31
-                        </option>
-                    </select>
+                        {[...Array(31).keys()].map((year) => (
+                          <option key={year} value={year}>
+                            {year} {year === 1 ? "year" : "years"}
+                          </option>
+                        ))}
+                        <option value='more'>
+                            More than 31
+                          </option>
+                      </select>
+                      {/* Custom dropdown arrow */}
+                      <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center px-2 text-gray-700 border-l border-gray-300 h-fit top-1/2 -translate-y-1/2">
+                        <svg
+                          className="fill-current text-[#ccc] h-5 w-5 group-focus-within:text-black"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M5.516 7.548L10 12.032l4.484-4.484L16 9.064l-6 6-6-6z" />
+                        </svg>
+                      </div>
+                      </div>
                   </Field>
                   <Field label="Website / Social Media Link (if any)">
                     <Input
@@ -757,6 +789,9 @@ const BecomeMentor = () => {
                       onChange={handleInputChange}
                       placeholder="Enter your link"
                     />
+                    {_fieldErrors.website && (
+    <p className="text-red-500 text-xs mt-1">{_fieldErrors.website}</p>
+  )}
                   </Field>
 
                   <Field label="Profile summary">

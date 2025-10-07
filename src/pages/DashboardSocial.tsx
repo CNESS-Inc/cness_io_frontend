@@ -1905,7 +1905,7 @@ export default function SocialTopBar() {
                         )}
                       </div>
 
-                     <div className="flex grid grid-cols-3 gap-2 md:gap-4 mt-3 md:mt-5 border-t border-[#ECEEF2] py-4 md:flex-none">
+                     <div className="border-t border-[#ECEEF2] pt-4 grid grid-cols-3  gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
                         <button
                           onClick={() => handleLike(post.id)}
                           disabled={isLoading}

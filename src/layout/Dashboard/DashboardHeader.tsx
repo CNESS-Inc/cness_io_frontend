@@ -297,9 +297,9 @@ const DashboardHeader = ({
   // Format the date to a more readable format
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    const now = new Date();
+    if (isNaN(date.getTime())) return "Invalid date"; // fallback if parsing fails
 
-    // Convert both dates to timestamps (numbers) before subtraction
+    const now = new Date();
     const diffInMs = now.getTime() - date.getTime();
     const diffInMins = Math.floor(diffInMs / (1000 * 60));
     const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));

@@ -101,7 +101,7 @@ export default function AwarenessSection() {
               <p
                 className="
                   mx-auto mt-3 md:mt-3
-openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]
+font-['Open_Sans'] font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]
                   w-full md:max-w-[707px]
                 "
               >
@@ -179,7 +179,7 @@ openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]
             </Swiper>
 
             <div className="flex lg:flex-row md:flex-row flex-col max-w-[550px] w-full mx-auto mt-0">
-              <p className="lg:w-8/12 md:w-5/12 w-full openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]">
+              <p className="lg:w-8/12 md:w-5/12 w-full font-['Open_Sans'] font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]">
                 Showcase your products in our conscious
                 <br />
                 Marketplace, connect with the right
@@ -221,7 +221,7 @@ openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]
           Connect with the trustworthy. Work with the <br />
           Reliable. Grow with the Dependable.
         </h3>
-        <p className="openSans mt-2 lg:text-[16px] md:text-[16px] text-[16px] font-[300] text-[#494949] leading-[24px] text-center">
+        <p className="font-['Open_Sans'] mt-2 lg:text-[16px] md:text-[16px] text-[16px] font-[300] text-[#494949] leading-[24px] text-center">
           On CNESS, every profile, product, and organization is aligned with
           values you can count on.
         </p>

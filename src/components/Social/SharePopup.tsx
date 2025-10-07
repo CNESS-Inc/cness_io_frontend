@@ -22,7 +22,7 @@ interface SharePopupProps {
 
 const SharePopup: React.FC<SharePopupProps> = ({
   isOpen,
-  url,
+  onClose,
   position = "bottom",
   className = "",
 }) => {
@@ -38,11 +38,16 @@ const SharePopup: React.FC<SharePopupProps> = ({
 
     const handleClick = (e: MouseEvent) => {
       if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
-        setVisible(false); // close on outside click
+        setVisible(false);
+        onClose?.();
       }
     };
+
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setVisible(false); // close on ESC
+      if (e.key === "Escape") {
+        setVisible(false);
+        onClose?.();
+      }
     };
 
     document.addEventListener("mousedown", handleClick);
@@ -51,11 +56,12 @@ const SharePopup: React.FC<SharePopupProps> = ({
       document.removeEventListener("mousedown", handleClick);
       document.removeEventListener("keydown", handleEsc);
     };
-  }, [visible]);
+  }, [visible, onClose]);
 
   if (!visible) return null;
 
-  const shareUrl = url || `https://dev.cness.io/directory/user-profile/${localStorage.getItem("Id")}`;
+  // 👇 Use current page URL dynamically if no `url` prop is provided
+  const shareUrl =`${window.location.origin}/directory/user-profile/${localStorage.getItem("Id")}`;
 
   const getPositionClasses = () => {
     switch (position) {

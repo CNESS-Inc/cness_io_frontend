@@ -293,7 +293,7 @@ export default function Faqs() {
           </h1>
 
           <p
-            className="openSans font-['Open Sans'] lg:text-lg md:text-[16px] text-[12px] text-[#64748B] mb-5 lg:mb-10 md:mb-12 mb-4 mt-4
+            className="font-['Open_Sans'] lg:text-lg md:text-[16px] text-[12px] text-[#64748B] mb-5 lg:mb-10 md:mb-12 mb-4 mt-4
             max-w-4xl mx-auto transition-all duration-1000 ease-in-out font-[300]"
           >
             Find quick answers to common questions about our CNESS and <br />
@@ -305,7 +305,7 @@ export default function Faqs() {
               placeholder="Search"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
-              className="openSans font-['Open Sans'] w-full bg-transparent placeholder-[#AFB1B3] outline-none text-[16px]"
+              className="font-['Open_Sans'] w-full bg-transparent placeholder-[#AFB1B3] outline-none text-[16px]"
             />
             {searchText ? (
               <button onClick={() => setSearchText("")}>
@@ -340,7 +340,7 @@ export default function Faqs() {
         </h1>
 
         <p
-          className="openSans lg:text-lg md:text-[16px] text-[12px] text-[#64748B] lg:mb-10 md:mb-12 mb-4 mt-4
+          className="font-['Open_Sans'] lg:text-lg md:text-[16px] text-[12px] text-[#64748B] lg:mb-10 md:mb-12 mb-4 mt-4
             max-w-4xl mx-auto transition-all duration-1000 ease-in-out font-[300]"
         >
           If you cannot find answer to a question in your FAQ, you can always{" "}
