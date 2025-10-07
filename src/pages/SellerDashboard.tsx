@@ -140,6 +140,7 @@ export default function SellerDashboard() {
       const response = await GetRecommendedBestPractices();
       console.log("🚀 ~ fetchRecommendedBestPractices ~ response:", response);
 
+      console.log('response.data.data.rows', response.data.data.rows)
       if (response?.data?.data?.rows) {
         // Transform the API response to match the expected BestPracticeItem format
         const transformedData: BestPracticeItem[] = response.data.data.rows.map(
@@ -312,10 +313,26 @@ export default function SellerDashboard() {
     }
   };
 
-  // ---- file input handler ----
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0] ?? null;
-    setNewPractice((prev) => ({ ...prev, file: f }));
+    const file = e.target.files?.[0];
+    if (file) {
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!validTypes.includes(file.type)) {
+        e.target.value = '';
+
+        showToast?.({
+          message: "Please select only JPG, JPEG or PNG files.",
+          type: "error",
+          duration: 3000,
+        });
+        return;
+      }
+
+      setNewPractice((prev) => ({
+        ...prev,
+        file: file,
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

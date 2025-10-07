@@ -304,6 +304,7 @@ useEffect(() => {
         type === "interest" ? id : "",
         searchText
       );
+      console.log('res.data.data.rowsfghghggg', res.data.data.rows)
       if (res?.data?.data) {
         const transformedCompanies = res.data.data.rows.map(
           (practice: any) => ({
@@ -392,10 +393,23 @@ useEffect(() => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
+    const file = e.target.files?.[0];
+    if (file) {
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!validTypes.includes(file.type)) {
+        e.target.value = '';
+
+        showToast?.({
+          message: "Please select only JPG, JPEG or PNG files.",
+          type: "error",
+          duration: 3000,
+        });
+        return;
+      }
+
       setNewPractice((prev) => ({
         ...prev,
-        file: e.target.files![0],
+        file: file,
       }));
     }
   };
@@ -407,19 +421,30 @@ useEffect(() => {
       let data = {
         post_id: id,
       };
-      await LikeBestpractices(data);
+      const response = await LikeBestpractices(data);
+
+      const message = response?.success?.message || "";
+
       // Optimistically update likesCount in bestPractices state
       setBestPractices((prev) =>
-        prev.map((item, i) =>
-          i === index
-            ? { ...item, likesCount: (Number(item.likesCount) || 0) + 1 }
-            : item
-        )
+        prev.map((item, i) => {
+          if (i !== index) return item;
+
+          const currentLikes = Number(item.likesCount) || 0;
+          const isLiked = message.includes("Liked!"); // checks both Liked/Unliked
+          const newLikes = message.includes("Unliked")
+            ? Math.max(currentLikes - 1, 0)
+            : currentLikes + 1;
+
+          return { ...item, likesCount: newLikes };
+        })
       );
-      // Optionally update local state for optimistic UI
-      // showToast({ message: "Liked!", type: "success", duration: 1500 });
-      // You may want to refetch or update likesCount in bestPractices state
-      // For now, just log
+
+      showToast({
+        message: message,
+        type: "success",
+        duration: 1500,
+      });
     } catch (error) {
       showToast({
         message: "Failed to like. Please try again.",
@@ -642,9 +667,9 @@ useEffect(() => {
                     "
                     {selectedFilter.type === "profession"
                       ? profession.find((p) => p.id === selectedFilter.id)
-                          ?.title
+                        ?.title
                       : interest.find((i: any) => i.id === selectedFilter.id)
-                          ?.name}
+                        ?.name}
                     "
                   </span>
                 )}
@@ -793,10 +818,10 @@ useEffect(() => {
                         <img
                           src={
                             !company?.user?.profilePicture ||
-                            company?.user?.profilePicture === "null" ||
-                            company?.user?.profilePicture === "undefined" ||
-                            !company?.user?.profilePicture.startsWith("http") ||
-                            company?.user?.profilePicture ===
+                              company?.user?.profilePicture === "null" ||
+                              company?.user?.profilePicture === "undefined" ||
+                              !company?.user?.profilePicture.startsWith("http") ||
+                              company?.user?.profilePicture ===
                               "http://localhost:5026/file/"
                               ? "/profile.jpg"
                               : company?.user?.profilePicture
@@ -826,10 +851,10 @@ useEffect(() => {
                             <img
                               src={
                                 !company.file ||
-                                company.file === "null" ||
-                                company.file === "undefined" ||
-                                !company.file.startsWith("http") ||
-                                company.file === "http://localhost:5026/file/"
+                                  company.file === "null" ||
+                                  company.file === "undefined" ||
+                                  !company.file.startsWith("http") ||
+                                  company.file === "http://localhost:5026/file/"
                                   ? "/profile.jpg"
                                   : company.file
                               }
@@ -890,7 +915,7 @@ useEffect(() => {
                           {company.description.length > 100 && (
                             <span
                               className="text-purple-600 underline cursor-pointer ml-1"
-                              // onClick={(e) => toggleDescription(e, company.id)}
+                            // onClick={(e) => toggleDescription(e, company.id)}
                             >
                               {expandedDescriptions[company.id]
                                 ? "Read Less"
@@ -906,14 +931,7 @@ useEffect(() => {
                             className="flex items-center gap-1 cursor-pointer"
                             onClick={(e) => {
                               e.stopPropagation();
-                              // TODO: Call like API here if available
                               handleLike(company.id, index);
-                              // Optionally update local state for optimistic UI
-                              showToast({
-                                message: "Liked!",
-                                type: "success",
-                                duration: 1500,
-                              });
                             }}
                           >
                             <img
@@ -1003,11 +1021,10 @@ useEffect(() => {
                           )
                         }
                         disabled={isLoading.popular}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                          1 === pagination.currentPage
-                            ? "bg-indigo-500 text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-100"
-                        }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${1 === pagination.currentPage
+                          ? "bg-indigo-500 text-white"
+                          : "bg-white text-gray-700 hover:bg-gray-100"
+                          }`}
                       >
                         1
                       </button>
@@ -1040,11 +1057,10 @@ useEffect(() => {
                           )
                         }
                         disabled={isLoading.popular}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                          page === pagination.currentPage
-                            ? "bg-indigo-500 text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-100"
-                        }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${page === pagination.currentPage
+                          ? "bg-indigo-500 text-white"
+                          : "bg-white text-gray-700 hover:bg-gray-100"
+                          }`}
                       >
                         {page}
                       </button>
@@ -1071,11 +1087,10 @@ useEffect(() => {
                             )
                           }
                           disabled={isLoading.popular}
-                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                            pagination.totalPages === pagination.currentPage
-                              ? "bg-indigo-500 text-white"
-                              : "bg-white text-gray-700 hover:bg-gray-100"
-                          }`}
+                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${pagination.totalPages === pagination.currentPage
+                            ? "bg-indigo-500 text-white"
+                            : "bg-white text-gray-700 hover:bg-gray-100"
+                            }`}
                         >
                           {pagination.totalPages}
                         </button>
