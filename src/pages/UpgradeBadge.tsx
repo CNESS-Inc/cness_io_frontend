@@ -189,7 +189,7 @@ const UpgradeBadge = () => {
               </h5>
             </div>
             {scoreData?.badge?.level ? (
-              <div className="flex-1 flex items-center justify-center">
+              <div className="flex-1 flex items-center justify-center ">
                 <img
                   src={
                     scoreData.badge.level === "Aspiring"

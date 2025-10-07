@@ -731,24 +731,36 @@ const BecomeMentor = () => {
                   </Field>
 
                   <Field label="Experience">
-                    <select
-                      name="year_of_experience"
-                      value={formData.year_of_experience.toString()}
-                      onChange={handleInputChange}
-                      className={`w-full py-[15px] px-[12px] border border-[#CBD0DC] rounded-sm border-2 border-[#EEEEEE] bg-white text-[14px] outline-none focus:border-[#C9C9FF] placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-[20px] ${formData.year_of_experience ? "text-black" : "text-[#6E7179]"}`}
-                    >
-                      <option value="" disabled>
-                        Select your years of experience
-                      </option>
-                      {[...Array(31).keys()].map((year) => (
-                        <option key={year} value={year}>
-                          {year} {year === 1 ? "year" : "years"}
+                    <div className="relative group">
+                        <select 
+                        name="year_of_experience"
+                        value={formData.year_of_experience.toString()}
+                        onChange={handleInputChange}
+                        className={`w-full appearance-none py-[15px] px-[12px] border border-[#CBD0DC] rounded-sm border-2 border-[#EEEEEE] bg-white text-[14px] outline-none focus:border-[#C9C9FF] placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-[20px] ${formData.year_of_experience ? "text-black" : "text-[#6E7179]"}`}
+                      >
+                        <option value="" disabled>
+                          Select your years of experience
                         </option>
-                      ))}
-                      <option value='more'>
-                          More than 31
-                        </option>
-                    </select>
+                        {[...Array(31).keys()].map((year) => (
+                          <option key={year} value={year}>
+                            {year} {year === 1 ? "year" : "years"}
+                          </option>
+                        ))}
+                        <option value='more'>
+                            More than 31
+                          </option>
+                      </select>
+                      {/* Custom dropdown arrow */}
+                      <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center px-2 text-gray-700 border-l border-gray-300 h-fit top-1/2 -translate-y-1/2">
+                        <svg
+                          className="fill-current text-[#ccc] h-5 w-5 group-focus-within:text-black"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M5.516 7.548L10 12.032l4.484-4.484L16 9.064l-6 6-6-6z" />
+                        </svg>
+                      </div>
+                      </div>
                   </Field>
                   <Field label="Website / Social Media Link (if any)">
                     <Input
