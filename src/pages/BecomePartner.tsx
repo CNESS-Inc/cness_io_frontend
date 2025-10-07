@@ -138,41 +138,82 @@ const BecomePartner = () => {
   } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const getFieldError = (fieldName: string, value: string): string | null => {
-    const validations: { [key: string]: (val: string) => string | null } = {
-      organization_name: (val) =>
-        val.trim().length < 2 ? "Must be at least 2 characters" : null,
-      contact_person_name: (val) =>
-        val.trim().length < 2 ? "Must be at least 2 characters" : null,
-      email: (val) =>
-        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? "Invalid email format" : null,
-      phone_number: (val) =>
-        val.replace(/\D/g, "").length < 7 ? "At least 7 digits required" : null,
-      industry_sector: (val) =>
-        val.trim().length < 2 ? "Must be at least 2 characters" : null,
-      website_link: (val) => {
-        if (val.trim() === "") return null; // Optional field
-        return !/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(
-          val
-        )
-          ? "Please enter a valid website URL"
-          : null;
-      },
-      about: (val) => {
-        if (val.trim().length < 50) return "At least 50 characters required";
-        if (val.trim().length > 2000) return "Maximum 2000 characters allowed";
-        return null;
-      },
-      reason_to_partner: (val) =>
-        val.trim().length < 20 ? "At least 20 characters required" : null,
-      organization_size: (val) =>
-        val.trim().length < 1 ? "Please specify your organization size" : null,
-      areas_of_collabration: (val) =>
-        val.trim().length < 2 ? "Please specify areas of collaboration" : null,
-    };
+const getFieldError = (fieldName: string, value: string): string | null => {
+  const validations: { [key: string]: (val: string) => string | null } = {
+    organization_name: (val) => {
+      if (!val.trim()) return "Organization name is required.";
+      if (val.trim().length < 2)
+        return "Organization name must be at least 2 characters.";
+      if (!/^[A-Za-z0-9&.,'()\- ]+$/.test(val.trim()))
+        return "Only letters, numbers, and basic punctuation are allowed.";
+      return null;
+    },
 
-    return validations[fieldName]?.(value) || null;
+    contact_person_name: (val) => {
+      if (!val.trim()) return "Contact person name is required.";
+      if (val.trim().length < 2)
+        return "Contact person name must be at least 2 characters.";
+      if (!/^[A-Za-z\s.'-]+$/.test(val.trim()))
+        return "Only letters, spaces, and basic punctuation are allowed.";
+      return null;
+    },
+
+    email: (val) =>
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)
+        ? "Invalid email format"
+        : null,
+
+    phone_number: (val) =>
+      val.replace(/\D/g, "").length < 7
+        ? "At least 7 digits required"
+        : null,
+
+    industry_sector: (val) =>
+      val.trim().length < 2 ? "Must be at least 2 characters" : null,
+
+    website_link: (val) => {
+      if (val.trim() === "") return null; // Optional
+      return !/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?$/.test(
+        val.trim()
+      )
+        ? "Please enter a valid website URL"
+        : null;
+    },
+
+    about: (val) => {
+      if (val.trim().length < 50) return "At least 50 characters required.";
+      if (val.trim().length > 2000)
+        return "Maximum 2000 characters allowed.";
+      return null;
+    },
+
+    reason_to_partner: (val) =>
+      val.trim().length < 20 ? "At least 20 characters required." : null,
+organization_size: (val) => {
+  const trimmed = val.trim();
+  if (!trimmed) return "Please specify your organization size.";
+
+  // ✅ Allow pure numbers (e.g., 25)
+  if (/^\d+$/.test(trimmed)) return null;
+
+  // ✅ Allow valid ranges (e.g., 51-200 or 5–10)
+  if (/^\d+\s*[-–]\s*\d+$/.test(trimmed)) return null;
+
+  // ❌ Anything else is invalid (like "ten", "5 employees", "approx 100")
+  return "Enter a number (e.g., 25) or a range (e.g., 51-200).";
+},
+
+    areas_of_collabration: (val) =>
+      val.trim().length < 2
+        ? "Please specify areas of collaboration."
+        : null,
   };
+
+  return validations[fieldName]?.(value) || null;
+};
+
+
+  
 
   const handleChange: React.ChangeEventHandler<
     HTMLInputElement | HTMLTextAreaElement

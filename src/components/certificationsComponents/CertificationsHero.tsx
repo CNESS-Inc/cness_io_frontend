@@ -38,7 +38,7 @@ export default function CertificationsHero() {
           </h1>
 
           <p
-            className={`openSans md:text-base font-light text-[#64748B] lg:mb-10 md:mb-12 mb-4 mt-6 max-w-4xl mx-auto transition-all duration-1000 ease-in-out font-['Open Sans'] ${
+            className={`font-['Open_Sans'] md:text-base font-light text-[#64748B] lg:mb-10 md:mb-12 mb-4 mt-6 max-w-4xl mx-auto transition-all duration-1000 ease-in-out ${
               step >= 5
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-6"

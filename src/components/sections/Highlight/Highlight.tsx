@@ -78,7 +78,7 @@ export default function Highlight() {
                Activated.
                </span>
             </h3>
-            <p className="openSans font-light text-[16px] leading-[24px] tracking-[0px] text-[#64748B] mb-6">
+            <p className="font-['Open_Sans'] font-light text-[16px] leading-[24px] tracking-[0px] text-[#64748B] mb-6">
               CNESS helps you build visibility, earn credibility, and express your purpose — 
               <br /> socially, creatively, and professionally.  Showcase your skills, share your story, connect with like-minded people, and unlock opportunities to grow with confidence and purpose.
               

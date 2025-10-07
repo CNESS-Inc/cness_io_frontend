@@ -28,7 +28,8 @@ export default function MobileSection() {
               >
                 A Conscious coach in your pocket
               </h2>
-              <p style={{ fontFamily: "Open Sans, sans-serif" }} className="font-light text-[16px] leading-[24px] tracking-[0px] text-[#64748B]">
+              <p style={{ fontFamily: "Open Sans, sans-serif" }} 
+              className="font-light text-[16px] leading-[24px] tracking-[0px] text-[#64748B]">
                 Meet Ariven AI — your consciousness companion. It reflects,
                 prompts, and <br /> guides you to stay aligned with your values,
                 choices, and evolution.
