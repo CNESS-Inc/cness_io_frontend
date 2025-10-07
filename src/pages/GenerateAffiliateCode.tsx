@@ -274,6 +274,7 @@ const AffiliateGenerateCode = () => {
                 <Button
                   type="button"
                   onClick={withdrawalRequest}
+                  className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none relative overflow-hidden cursor-pointer bg-gradient-to-r from-[#7077FE] to-[#F07EFF] hover:from-[#7077FE] hover:to-[#7077FE] text-white font-medium font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                   >
                   Withdraw
                 </Button>
@@ -388,7 +389,7 @@ const AffiliateGenerateCode = () => {
 
                     <button
                       onClick={() => copyReferralCode(`${baseUrl}/sign-up?referral_code=${myReferralCode}`)}
-                      className="mt-0 ms-3 text-sm bg-[#7077fe] text-white px-5 py-2 rounded-3xl cursor-pointer"
+                      className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none relative overflow-hidden cursor-pointer bg-gradient-to-r from-[#7077FE] to-[#F07EFF] hover:from-[#7077FE] hover:to-[#7077FE] text-white font-medium font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
                     >
                       Copy
                     </button>

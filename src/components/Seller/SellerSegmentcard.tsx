@@ -2383,7 +2383,7 @@ export function CertificationCard({
       <div className="mt-4">
         {/* Inner gradient card (responsive min-height) */}
         <div
-          className="relative min-h-[220px] sm:min-h-[250px] rounded-[22px] border border-[#EFE8FF] bg-gradient-to-r from-[#F6F2FF] via-[#FAF0FF] to-[#FFF1F8] p-4 sm:p-6 overflow-hidden"
+          className="relative min-h-[450px] sm:min-h-[300px] md:min-h-[270px] rounded-[22px] border border-[#EFE8FF] bg-gradient-to-r from-[#F6F2FF] via-[#FAF0FF] to-[#FFF1F8] p-4 sm:p-6 overflow-hidden"
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
@@ -2394,11 +2394,11 @@ export function CertificationCard({
               : "opacity-0 pointer-events-none"
               }`}
           >
-            <div className="text-[16px] sm:text-[18px] font-['Open_Sans'] leading-[100%] text-[#222224] mt-1 sm:mt-2 mb-3 sm:mb-4 px-1 sm:px-2">
+            <div className="text-[16px] sm:text-[18px] font-['Open_Sans'] leading-[100%] text-[#222224] mt-1 sm:mt-2 mb-3 sm:mb-4 px-2 pt-2 sm:pt-5">
               Certification Levels
             </div>
 
-            <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 px-1 sm:px-2">
+            <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 px-1 sm:px-2">
               {/* Aspired */}
               <div
                 className={`w-full h-[120px] sm:h-[150px] rounded-[18px] flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4 border ${activeLevel === "Aspired"
@@ -2648,7 +2648,8 @@ export function BestPracticesSection({
         <div className="flex items-center gap-2">
           <OutlinePill onClick={onAdd}>
             <Plus className="h-4 w-4" />
-            Add Best Practices
+            <span className="hidden md:block">Add Best Practices</span>
+            <span className="block md:hidden">Add</span>
           </OutlinePill>
         </div>
       </div>
@@ -3229,7 +3230,7 @@ export function SocialStackCard({
     return (
       <>
         <div
-          className="relative -mx-2 sm:-mx-3 md:-mx-4
+          className="relative
              h-auto min-h-[320px] sm:h-[360px]
              rounded-[12px] border border-[#ECEEF2]
              px-[12px] py-[18px]
@@ -3386,7 +3387,8 @@ export function SocialStackCard({
         />
 
         {/* Profile */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full overflow-hidden">
+          {/* Avatar */}
           <img
             src={
               !avatar ||
@@ -3397,35 +3399,34 @@ export function SocialStackCard({
                 : avatar
             }
             alt={name}
-            className="h-12 w-12 rounded-full object-cover"
+            className="h-12 w-12 rounded-full object-cover flex-shrink-0"
           />
-          <div className="w-full">
-            {/* top row: name (left) + metrics (right) */}
-            <div className="flex items-center justify-between gap-3">
-              <div className="justify-start shrink-0 flex flex-col text-[14px]">
-                <div className="items-center truncate font-poppins font-medium text-[18px] leading-[30px] text-[#222224]">
+
+          <div className="flex-1 min-w-0"> 
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <div className="font-poppins font-medium text-[16px] md:text-[18px] leading-[24px] text-[#222224] truncate">
                   {name}
                 </div>
-                <div className="truncate font-opensans text-[14px] text-[#222224]/50">
+                <div className="font-opensans text-[14px] text-[#222224]/50 truncate">
                   @{handle}
                 </div>
               </div>
 
-              {/* metrics – right aligned */}
-              <div className="justify-end shrink-0 flex flex-col sm:flex-row xl:flex-col 2xl:flex-row items-start sm:gap-4 xl:gap-0 2xl:gap-4 text-[14px]">
+              <div className="flex-shrink-0 flex flex-col sm:flex-row xl:flex-col 2xl:flex-row items-start sm:gap-4 xl:gap-0 2xl:gap-4 text-[14px] text-right">
                 <span className="whitespace-nowrap">
-                  <span className="font-poppins font-medium text-[16px] leading-[100%] text-[#7077FE]">
+                  <span className="font-poppins font-medium text-[16px] text-[#7077FE]">
                     {resonating}
                   </span>
-                  <span className="ml-1 font-['Plus_Jakarta_Sans'] font-normal text-[11px] leading-[100%] text-[#7077FE]">
+                  <span className="ml-1 font-['Plus_Jakarta_Sans'] text-[11px] text-[#7077FE]">
                     Resonating
                   </span>
                 </span>
                 <span className="whitespace-nowrap">
-                  <span className="font-poppins font-medium text-[16px] leading-[100%] text-[#A855F7]">
+                  <span className="font-poppins font-medium text-[16px] text-[#A855F7]">
                     {Intl.NumberFormat().format(resonators)}
                   </span>
-                  <span className="ml-1 font-['Plus_Jakarta_Sans'] font-normal text-[11px] leading-[100%] text-[#A855F7]">
+                  <span className="ml-1 font-['Plus_Jakarta_Sans'] text-[11px] text-[#A855F7]">
                     Resonators
                   </span>
                 </span>
@@ -3433,6 +3434,7 @@ export function SocialStackCard({
             </div>
           </div>
         </div>
+
         {/* Button */}
         <button
           className="mt-auto w-full flex items-center justify-center gap-[7.09px] 
@@ -3690,7 +3692,7 @@ export function DirectorySection({
             {/* Right: button */}
             <button
               onClick={() => onView?.(it)}
-              className={`w-full sm:w-[127px] h-[32px] rounded-full px-4 py-2 text-center font-opensans text-[14px] text-white ${GRADIENT}`}
+              className={`w-full sm:w-[127px] h-[35px] rounded-full px-4 pt-1 text-center font-opensans text-[14px] text-white flex items-center justify-center ${GRADIENT}`}
             >
               View Details
             </button>

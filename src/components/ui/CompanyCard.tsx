@@ -4,7 +4,7 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-  CardFooter,
+  // CardFooter,
 } from "../ui/DashboardCard";
 
 import { iconMap } from "../../assets/icons";
@@ -209,14 +209,14 @@ export default function CompanyCard({
           )}
 
           {/* Rating aligned right */}
-          {typeof rating === "number" && rating > 0 && (
             <div className="flex justify-end mb-2">
-              <div className="flex items-center text-yellow-500 text-sm">
-                {"★".repeat(rating)}
-                {"☆".repeat(5 - rating)}
-              </div>
+              {typeof rating === "number" && rating > 0 && (
+                <div className="flex items-center text-yellow-500 text-sm">
+                  {"★".repeat(rating)}
+                  {"☆".repeat(5 - rating)}
+                </div>
+              )}
             </div>
-          )}
 
           {/* Tags only if available */}
           {tags?.length > 0 && (
@@ -233,9 +233,9 @@ export default function CompanyCard({
           )}
         </CardContent>
 
-        <CardFooter className="flex justify-between items-center px-4 py-3">
-          {/* Optional footer content */}
-        </CardFooter>
+        {/* <CardFooter className="flex justify-between items-center px-4 py-3">
+          Optional footer content
+        </CardFooter> */}
       </Card>
       <Modal isOpen={showLoginPrompt} onClose={handleModalClose}>
         <div className="text-center space-y-6 p-8 w-full max-w-2xl">
