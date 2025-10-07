@@ -410,7 +410,7 @@ export default function SellerDashboard() {
       localStorage.getItem("margaret_name") || "User";
 
   return (
-    <div className="px-4 lg:px-6 py-6">
+    <div className="px-4 2xl:px-6 pt-4 md:pt-8 pb-5 md:pb-18">
       <GreetingBar
         name={user?.name || ""}
         onCloseSuggestion={() => console.log("close suggestion")}
@@ -582,7 +582,7 @@ export default function SellerDashboard() {
             </div>
           </div>
         </div>
-        <div className="col-span-12 lg:col-span-8">
+        <div className="col-span-12 xl:col-span-8">
           <DirectorySection
             items={directoryItems}
             onView={(item) => navigate(`/dashboard/userprofile/${item.id}`)}
