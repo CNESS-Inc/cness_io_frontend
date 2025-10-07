@@ -1,5 +1,6 @@
 import cloud from "../../../assets/cloud-add.svg";
 import Button from "../../ui/Button";
+import { useToast } from "../../ui/Toast/ToastProvider";
 
 interface EditBestPracticeModalProps {
   open: boolean;
@@ -32,6 +33,30 @@ export default function EditBestPracticeModal({
   handleSubmit,
   isSubmitting,
 }: EditBestPracticeModalProps) {
+  const { showToast } = useToast();
+
+  const handleEditFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!validTypes.includes(file.type)) {
+      e.target.value = '';
+
+      showToast?.({
+        message: "Please select only JPG, JPEG or PNG files.",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    setCurrentPractice({
+      ...currentPractice,
+      file: file,
+    });
+  };
+
   if (!open) return null;
 
   return (
@@ -72,14 +97,7 @@ export default function EditBestPracticeModal({
               id="editUploadFile"
               className="hidden"
               accept="image/*"
-              onChange={(e) => {
-                if (e.target.files) {
-                  setCurrentPractice({
-                    ...currentPractice,
-                    file: e.target.files[0],
-                  });
-                }
-              }}
+              onChange={handleEditFileChange}
             />
             <label
               htmlFor="editUploadFile"
@@ -131,7 +149,7 @@ export default function EditBestPracticeModal({
                 htmlFor="interest"
                 className="block text-[15px] font-normal text-black"
               >
-                Category*
+                Interest
               </label>
               <select
                 id="interest"
@@ -146,9 +164,8 @@ export default function EditBestPracticeModal({
                 className={`w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none 
                 focus:ring-2 focus:ring-indigo-500 text-sm font-normal
                 ${currentPractice?.interest ? "text-black" : "text-[#6E7179]"}`}
-                required
               >
-                <option value="">Select your Category</option>
+                <option value="">Select your Interest</option>
                 {interest.map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.name}
@@ -166,7 +183,7 @@ export default function EditBestPracticeModal({
                 htmlFor="profession"
                 className="block text-[15px] font-normal text-black"
               >
-                Profession*
+                Profession
               </label>
 
               <div className="relative">
@@ -182,7 +199,6 @@ export default function EditBestPracticeModal({
                   className={`w-full appearance-none px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none 
          focus:ring-2 focus:ring-indigo-500 text-sm font-normal
          ${currentPractice?.profession_data ? "text-black" : "text-[#6E7179]"}`}
-                  required
                 >
                   <option value="">Select your Profession</option>
                   {profession.map((prof) => (
@@ -291,6 +307,7 @@ export default function EditBestPracticeModal({
                   description: e.target.value,
                 })
               }
+              required
               className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm placeholder:text-[#6E7179] placeholder:text-xs placeholder:font-normal"
               placeholder="Add Notes..."
             ></textarea>

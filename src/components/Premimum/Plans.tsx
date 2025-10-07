@@ -1,5 +1,6 @@
 import { useState, useId } from "react";
 import { Check } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 type Billing = "monthly" | "annual";
 
@@ -21,7 +22,7 @@ function PricingCard({
   label: string;
   subtitle: string;
   price: number | string;
-  
+
   features: string[];
   selected?: boolean;
   cta: React.ReactNode;
@@ -29,19 +30,19 @@ function PricingCard({
   // Gradient border only when selected
   const selectedStyles = selected
     ? {
-        borderWidth: "2.51px",
-        borderColor: "transparent",
-        backgroundImage:
-          "linear-gradient(#FFFFFF, #FFFFFF), linear-gradient(90deg, #7077FE, #F07EFF)",
-        backgroundOrigin: "border-box",
-        backgroundClip: "padding-box, border-box",
-      }
+      borderWidth: "2.51px",
+      borderColor: "transparent",
+      backgroundImage:
+        "linear-gradient(#FFFFFF, #FFFFFF), linear-gradient(90deg, #7077FE, #F07EFF)",
+      backgroundOrigin: "border-box",
+      backgroundClip: "padding-box, border-box",
+    }
     : {
-        borderWidth: "1.26px",
-        borderColor: "#E1E1E1",
-      };
+      borderWidth: "1.26px",
+      borderColor: "#E1E1E1",
+    };
 
-   return (
+  return (
     <div
       className="relative flex flex-col justify-between bg-white shadow-sm mx-auto w-full sm:w-[400px] lg:w-[434px]"
       style={{
@@ -72,9 +73,9 @@ function PricingCard({
         <span
           className="inline-flex items-center justify-center mb-3 rounded-full px-3 py-2 text-[16px] leading-none font-medium bg-[#7077FE]/10 text-[#7077FE]"
           style={{
-    fontFamily: "Poppins, sans-serif",
-    alignSelf: "flex-start", // 👈 forces pill to left
-  }}
+            fontFamily: "Poppins, sans-serif",
+            alignSelf: "flex-start", // 👈 forces pill to left
+          }}
         >
           {label}
         </span>
@@ -166,11 +167,10 @@ function BillingToggle({
         onClick={() => onChange("annual")}
         style={{ fontFamily: "Poppins, sans-serif" }}
         className={`relative z-10 grid h-9 flex-1 place-items-center rounded-[10px] text-[16px] font-normal transition-colors
-        ${
-          value === "annual"
+        ${value === "annual"
             ? "bg-clip-text text-transparent bg-gradient-to-r from-[#6340FF] to-[#D748EA]"
             : "text-neutral-700"
-        }`}
+          }`}
       >
         Annual
       </button>
@@ -179,64 +179,78 @@ function BillingToggle({
 }
 
 /* ---------------- Section ---------------- */
-export default function PricingCompareSection() {
+export default function PricingCompareSection({ onOpenSignup }: { onOpenSignup: () => void }) {
+  const navigate = useNavigate();
+  const completed_step = localStorage.getItem("completed_step");
+  const showDashboard = completed_step === "1" || completed_step === "2";
   const [billing, setBilling] = useState<Billing>("annual");
-
+ 
   const freePrice = PRICES.free[billing];
   const premiumPrice = PRICES.premium[billing];
 
+  const handleNavigate = () => {
+    if (showDashboard) {
+      navigate("/dashboard");
+    } else {
+      onOpenSignup();
+    }
+  }
+
   return (
-    <section className="mx-auto mt-10 max-w-6xl px-4 sm:px-6 lg:px-8">
-      {/* Toggle */}
-      <div className="flex justify-center">
-        <BillingToggle value={billing} onChange={setBilling} />
-      </div>
+    <>
+      <section className="mx-auto mt-10 max-w-6xl px-4 sm:px-6 lg:px-8">
+        {/* Toggle */}
+        <div className="flex justify-center">
+          <BillingToggle value={billing} onChange={setBilling} />
+        </div>
 
-      {/* Cards */}
-<div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-y-8 lg:gap-x-6 justify-start">
-        {/* Free */}
-        <PricingCard
-          label="Free Plan"
-          subtitle="Perfect for getting started"
-          price={freePrice}
-          features={[
-            "Basic profile creation",
-            "Community Access",
-            "Resources Library",
-            "Basic profile creation",
-          ]}
-          selected={false}
-          cta={
-            <button
-              disabled
-              className="w-full sm:w-[374px] rounded-full bg-[#F3F3F3] px-6 py-5 text-[17.58px] font-semibold font-plus-jakarta-sans text-[#64748B] shadow flex items-center justify-center gap-2"
-            >
-              Current
-            </button>
-          }
-        />
+        {/* Cards */}
+        <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-y-8 lg:gap-x-6 justify-start">
+          {/* Free */}
+          <PricingCard
+            label="Free Plan"
+            subtitle="Perfect for getting started"
+            price={freePrice}
+            features={[
+              "Basic profile creation",
+              "Community Access",
+              "Resources Library",
+              "Basic profile creation",
+            ]}
+            selected={false}
+            cta={
+              <button
+                disabled
+                className="w-full sm:w-[374px] rounded-full bg-[#F3F3F3] px-6 py-5 text-[17.58px] font-semibold font-plus-jakarta-sans text-[#64748B] shadow flex items-center justify-center gap-2"
+              >
+                Current
+              </button>
+            }
+          />
 
-        {/* Premium */}
-        <PricingCard
-          label="Premium"
-          subtitle="Foundation level certification"
-          price={premiumPrice}
-          features={[
-            "Unlock True Profile",
-            "Community Access",
-            "Resources Library",
-            "Social media Access",
-          ]}
-          selected
-          cta={
-            <button className="w-full sm:w-[374px] rounded-full bg-gradient-to-r from-[#7077FE] to-[#F07EFF] px-6 py-5 text-[17.58px] font-semibold font-plus-jakarta-sans text-white shadow flex items-center justify-center gap-2 hover:from-[#7077FE] hover:to-[#7077FE]">
-              Upgrade
-            </button>
-          }
-        />
-      </div>
-    </section>
-
-
+          {/* Premium */}
+          <PricingCard
+            label="Premium"
+            subtitle="Foundation level certification"
+            price={premiumPrice}
+            features={[
+              "Unlock True Profile",
+              "Community Access",
+              "Resources Library",
+              "Social media Access",
+            ]}
+            selected
+            cta={
+              <button
+                onClick={handleNavigate}
+                className="w-full sm:w-[374px] rounded-full bg-gradient-to-r from-[#7077FE] to-[#F07EFF] px-6 py-5 text-[17.58px] font-semibold font-plus-jakarta-sans text-white shadow flex items-center justify-center gap-2 hover:from-[#7077FE] hover:to-[#7077FE]">
+                Upgrade
+              </button>
+            }
+          />
+        </div>
+      </section>
+      
+    </>
   );
 }
