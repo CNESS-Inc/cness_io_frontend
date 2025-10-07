@@ -11,7 +11,7 @@ class SocketService {
     }
 
     console.log('🔌 Connecting to socket server...');
-    this.socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:3100', {
+    this.socket = io(import.meta.env.VITE_API_SOCKET_URL || 'http://localhost:3100', {
       auth: {
         token: token
       },
