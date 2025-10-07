@@ -5,6 +5,7 @@ import {
   sendMessage as sendMessageAPI,
 } from "../../services/messagingService";
 import { GetConnectionUser } from "../../Common/ServerAPI";
+import socketService from '../../services/socketService';
 
 // Interface for the API response structure
 interface APIMessage {
@@ -58,6 +59,12 @@ interface MessagingContextType {
   loadConversations: () => Promise<Conversation[]>;
   refreshConversations: () => Promise<Conversation[]>;
   isLoading: boolean;
+  socketConnected: boolean;
+  typingUsers: Record<string, boolean>;
+  joinConversation: (conversationId: string) => void;
+  leaveConversation: (conversationId: string) => void;
+  sendTypingIndicator: (conversationId: string, receiverId: string, isTyping: boolean) => void;
+  markMessagesAsRead: (conversationId: string, senderId: string) => void;
 }
 
 const MessagingContext = createContext<MessagingContextType | undefined>(undefined);
@@ -78,6 +85,9 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversation, setActiveConversation] = useState<Conversation | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [socketConnected, setSocketConnected] = useState(false);
+  const [typingUsers, setTypingUsers] = useState<Record<string, boolean>>({});
   
   // Load conversations on mount
   useEffect(() => {
@@ -87,6 +97,117 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
     }
   }, []);
 
+  useEffect(() => {
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      // Connect to socket
+      // const socket = socketService.connect(token);
+      
+      // Set up real-time message listeners
+      socketService.onNewMessage((data) => {
+        console.log('📨 New message received:', data);
+        
+        // Update conversations with new message
+        setConversations(prev => prev.map(conv => {
+          if (conv.id === data.data.conversation_id) {
+            return {
+              ...conv,
+              lastMessage: data.data.content,
+              lastMessageTime: data.data.createdAt,
+              messages: [...conv.messages, {
+                id: data.data.id,
+                senderId: data.data.sender_id,
+                receiverId: data.data.receiver_id,
+                content: data.data.content,
+                timestamp: data.data.createdAt,
+                isRead: data.data.is_read,
+                conversationId: data.data.conversation_id,
+                attachments: data.data.attachments ? 
+                  data.data.attachments.split(',').map((url: string, index: number) => ({
+                    id: `${data.data.id}_attachment_${index}`,
+                    type: 'image' as const,
+                    url: url.trim(),
+                    filename: `attachment_${index + 1}`
+                  })) : []
+              }]
+            };
+          }
+          return conv;
+        }));
+  
+        // Update active conversation if it's the current one
+        if (activeConversation?.id === data.data.conversation_id) {
+          setActiveConversation(prev => prev ? {
+            ...prev,
+            lastMessage: data.data.content,
+            lastMessageTime: data.data.createdAt,
+            messages: [...prev.messages, {
+              id: data.data.id,
+              senderId: data.data.sender_id,
+              receiverId: data.data.receiver_id,
+              content: data.data.content,
+              timestamp: data.data.createdAt,
+              isRead: data.data.is_read,
+              conversationId: data.data.conversation_id,
+              attachments: data.data.attachments ? 
+                data.data.attachments.split(',').map((url: string, index: number) => ({
+                  id: `${data.data.id}_attachment_${index}`,
+                  type: 'image' as const,
+                  url: url.trim(),
+                  filename: `attachment_${index + 1}`
+                })) : []
+            }]
+          } : null);
+        }
+      });
+  
+      // Set up typing indicator listeners
+      socketService.onTypingIndicator((data) => {
+        setTypingUsers(prev => ({
+          ...prev,
+          [data.senderId]: data.isTyping
+        }));
+      });
+  
+      // Set up message read status listeners
+      socketService.onMessageRead((data) => {
+        console.log('📖 Message read:', data);
+        // Update message read status in conversations
+        setConversations(prev => prev.map(conv => {
+          if (conv.id === data.conversationId) {
+            return {
+              ...conv,
+              messages: conv.messages.map(msg => ({
+                ...msg,
+                isRead: true
+              }))
+            };
+          }
+          return conv;
+        }));
+      });
+  
+      // Set up notification listeners
+      socketService.onNotification((data) => {
+        console.log('🔔 Notification received:', data);
+        // Handle notification display
+      });
+  
+      socketService.onNotificationCount((data) => {
+        console.log('🔔 Notification count:', data);
+        // Handle notification count update
+      });
+  
+      setSocketConnected(true);
+    }
+  
+    return () => {
+      // Cleanup on unmount
+      socketService.disconnect();
+      setSocketConnected(false);
+    };
+  }, []);
+  
   const loadConversations = async () => {
     try {
       setIsLoading(true);
@@ -267,15 +388,164 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
     }
   };
 
+  // Socket connection management
+useEffect(() => {
+  const token = localStorage.getItem("jwt");
+  if (token) {
+    console.log('🔌 Connecting to socket...');
+    
+    // Connect to socket
+    const socket = socketService.connect(token);
+    
+    // Wait for connection before setting up listeners
+    socket.on('connect', () => {
+      console.log('🟢 Socket connected successfully');
+      setSocketConnected(true);
+      
+      // Set up real-time message listeners
+      socketService.onNewMessage((data) => {
+        console.log('📨 New message received:', data);
+        
+        // Update conversations with new message
+        setConversations(prev => prev.map(conv => {
+          if (conv.id === data.data.conversation_id) {
+            return {
+              ...conv,
+              lastMessage: data.data.content,
+              lastMessageTime: data.data.createdAt,
+              messages: [...conv.messages, {
+                id: data.data.id,
+                senderId: data.data.sender_id,
+                receiverId: data.data.receiver_id,
+                content: data.data.content,
+                timestamp: data.data.createdAt,
+                isRead: data.data.is_read,
+                conversationId: data.data.conversation_id,
+                attachments: data.data.attachments ? 
+                  data.data.attachments.split(',').map((url: string, index: number) => ({
+                    id: `${data.data.id}_attachment_${index}`,
+                    type: 'image' as const,
+                    url: url.trim(),
+                    filename: `attachment_${index + 1}`
+                  })) : []
+              }]
+            };
+          }
+          return conv;
+        }));
+
+        // Update active conversation if it's the current one
+        if (activeConversation?.id === data.data.conversation_id) {
+          setActiveConversation(prev => prev ? {
+            ...prev,
+            lastMessage: data.data.content,
+            lastMessageTime: data.data.createdAt,
+            messages: [...prev.messages, {
+              id: data.data.id,
+              senderId: data.data.sender_id,
+              receiverId: data.data.receiver_id,
+              content: data.data.content,
+              timestamp: data.data.createdAt,
+              isRead: data.data.is_read,
+              conversationId: data.data.conversation_id,
+              attachments: data.data.attachments ? 
+                data.data.attachments.split(',').map((url: string, index: number) => ({
+                  id: `${data.data.id}_attachment_${index}`,
+                  type: 'image' as const,
+                  url: url.trim(),
+                  filename: `attachment_${index + 1}`
+                })) : []
+            }]
+          } : null);
+        }
+      });
+
+      // Set up typing indicator listeners
+      socketService.onTypingIndicator((data) => {
+        setTypingUsers(prev => ({
+          ...prev,
+          [data.senderId]: data.isTyping
+        }));
+      });
+
+      // Set up message read status listeners
+      socketService.onMessageRead((data) => {
+        console.log('📖 Message read:', data);
+        setConversations(prev => prev.map(conv => {
+          if (conv.id === data.conversationId) {
+            return {
+              ...conv,
+              messages: conv.messages.map(msg => ({
+                ...msg,
+                isRead: true
+              }))
+            };
+          }
+          return conv;
+        }));
+      });
+
+      // Set up notification listeners
+      socketService.onNotification((data) => {
+        console.log('🔔 Notification received:', data);
+      });
+
+      socketService.onNotificationCount((data) => {
+        console.log('🔔 Notification count:', data);
+      });
+    });
+
+    socket.on('connect_error', (error) => {
+      console.error('❌ Socket connection error:', error);
+      setSocketConnected(false);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('❌ Socket disconnected');
+      setSocketConnected(false);
+    });
+  }
+
+  return () => {
+    console.log('🔌 Disconnecting socket...');
+    socketService.disconnect();
+    setSocketConnected(false);
+  };
+}, []);
+
+// Socket function implementations
+const joinConversation = (conversationId: string) => {
+  socketService.joinConversation(conversationId);
+};
+
+const leaveConversation = (conversationId: string) => {
+  socketService.leaveConversation(conversationId);
+};
+
+const sendTypingIndicator = (conversationId: string, receiverId: string, isTyping: boolean) => {
+  socketService.sendTypingIndicator(conversationId, receiverId, isTyping);
+};
+
+const markMessagesAsRead = (conversationId: string, senderId: string) => {
+  socketService.markAsRead(conversationId, senderId);
+};
+
   const value: MessagingContextType = {
     conversations,
-    activeConversation,
-    setActiveConversation,
-    sendMessage,
-    loadConversationMessages,
-    loadConversations,
-    refreshConversations,
-    isLoading
+  activeConversation,
+  setActiveConversation,
+  sendMessage,
+  loadConversationMessages,
+  loadConversations,
+  refreshConversations,
+  isLoading,
+  // Add new socket-related properties
+  socketConnected,
+  typingUsers,
+  joinConversation,
+  leaveConversation,
+  sendTypingIndicator,
+  markMessagesAsRead
   };
 
   return (
