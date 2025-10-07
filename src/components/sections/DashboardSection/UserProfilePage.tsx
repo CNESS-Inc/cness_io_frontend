@@ -647,58 +647,62 @@ const UserProfilePage = () => {
   const publicProfileForm = useForm();
 
   const handleImageChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    setter: React.Dispatch<React.SetStateAction<string | null>>,
-    formKey: string
-  ) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Set uploading state
-      setUploadProgress({
-        type: formKey === "profile" ? "profile" : "banner",
-        message: "Uploading. Please wait...",
+  e: React.ChangeEvent<HTMLInputElement>,
+  setter: React.Dispatch<React.SetStateAction<string | null>>,
+  formKey: string
+) => {
+  const file = e.target.files?.[0];
+  if (file) {
+    setUploadProgress({
+      type: formKey === "profile" ? "profile" : "banner",
+      message: "Uploading. Please wait...",
+    });
+
+    // Create a temporary object URL for preview (instead of base64)
+    const objectUrl = URL.createObjectURL(file);
+    setter(objectUrl);
+
+    // Prepare form data for upload
+    const formData = new FormData();
+    formData.append(formKey, file);
+
+    try {
+      const res = await SubmitProfileDetails(formData);
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 5000,
       });
-
-      // Preview image
-      const reader = new FileReader();
-      reader.onloadend = () => setter(reader.result as string);
-      reader.readAsDataURL(file);
-
-      // Prepare form data
-      const formData = new FormData();
-      formData.append(formKey, file); // Use dynamic key
-
-      try {
-        const res = await SubmitProfileDetails(formData);
-        showToast({
-          message: res?.success?.message,
-          type: "success",
-          duration: 5000,
-        });
-        setUploadProgress({ type: null, message: "" });
-        const response = await MeDetails();
-        localStorage.setItem(
-          "profile_picture",
-          response?.data?.data?.user.profile_picture
-        );
-        localStorage.setItem("name", response?.data?.data?.user.name);
-        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
-        localStorage.setItem(
-          "margaret_name",
-          response?.data?.data?.user.margaret_name
-        );
-      } catch (error: any) {
-        showToast({
-          message: error?.response?.data?.error?.message,
-          type: "error",
-          duration: 5000,
-        });
-      } finally {
-        // Reset uploading state
-        setUploadProgress({ type: null, message: "" });
+      
+      // After successful upload, get the actual URL from the server response
+      const response = await MeDetails();
+      const profilePictureUrl = response?.data?.data?.user.profile_picture;
+      
+      // Update the preview with the actual URL
+      if (profilePictureUrl) {
+        setter(profilePictureUrl);
+        // Clean up the object URL
+        URL.revokeObjectURL(objectUrl);
       }
+      
+      localStorage.setItem("profile_picture", profilePictureUrl);
+      localStorage.setItem("name", response?.data?.data?.user.name);
+      localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+      localStorage.setItem("margaret_name", response?.data?.data?.user.margaret_name);
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+      // Clean up object URL on error
+      URL.revokeObjectURL(objectUrl);
+      setter(null);
+    } finally {
+      setUploadProgress({ type: null, message: "" });
     }
-  };
+  }
+};
 
   const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && inputValue.trim()) {
