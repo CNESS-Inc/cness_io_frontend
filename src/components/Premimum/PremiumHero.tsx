@@ -24,7 +24,7 @@ style={{
           className="font-medium text-[clamp(28px,5vw,42px)] leading-[115%] tracking-[-0.02em] bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
         >          Choose Your Plan
         </h2>
-        <p className="mt-3 openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]">
+        <p className="mt-3 font-['Open_Sans'] font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]">
           Select the perfect plan for your needs. Upgrade anytime to unlock premium
           features <br /> and accelerate your growth.
         </p>

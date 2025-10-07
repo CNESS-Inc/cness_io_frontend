@@ -1,9 +1,9 @@
 import Button from "../ui/Button";
-import frame1 from "../../assets/eco-hero.png";
-import frame2 from "../../assets/eco-frame-1.png";
-import frame3 from "../../assets/eco-frame-2.png";
-import frame4 from "../../assets/eco-frame-3.png";
-import frame5 from "../../assets/eco-frame-4.png";
+//import frame1 from "../../assets/eco-hero.png";
+//import frame2 from "../../assets/eco-frame-1.png";
+//import frame3 from "../../assets/eco-frame-2.png";
+//import frame4 from "../../assets/eco-frame-3.png";
+//import frame5 from "../../assets/eco-frame-4.png";
 import texture from "../../assets/eco-texture.png";
 import ellipse from "../../assets/Ellipse eco.png";
 import {  useState } from "react";
@@ -44,7 +44,7 @@ export default function EcoHero() {
           Our Ecosystem
         </h1>
 
-        <p className="openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] pt-4 pb-7 max-w-4xl mx-auto transition-all duration-1000 ease-in-out">
+        <p className="font-['Open_Sans'] font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] pt-4 pb-7 max-w-4xl mx-auto transition-all duration-1000 ease-in-out">
           Revolutionizing digital experiences with integrated solutions for
           individuals,
           <br /> organizations, and enterprises across all platforms.
@@ -67,14 +67,14 @@ export default function EcoHero() {
 
       <div className="relative flex mx-auto justify-center items-center w-[350px] sm:w-[500px] md:w-[700px] lg:w-[600px] xl:w-[814px] xl:h-[500px]">
         <img
-          src={frame1}
+          src="https://cdn.cness.io/Frame_hero.webp"
           alt="Eco Hero"
           className="w-full h-full object-contain"
         />
 
         <div className="invisible lg:visible hidden lg:flex absolute -top-32 -right-38 xl:-right-46 w-[195px] xl:w-[235px] h-[235px] pointer-events-none select-none">
           <img
-            src={frame3}
+            src="https://cdn.cness.io/Frame_men.webp"
             alt=""
             className="w-full h-full object-contain"
             aria-hidden="true"
@@ -84,14 +84,14 @@ export default function EcoHero() {
         <div className="invisible lg:visible hidden lg:flex absolute -top-10 xl:top-14 -left-[23rem] xl:-left-[30.5rem] w-full h-[280px] xl:h-[334px] pointer-events-none select-none">
           <div className="relative w-full h-full">
             <img
-              src={frame4}
+              src="https://cdn.cness.io/Frame%2020.webp"
               alt=""
               className="w-full h-full object-contain"
               aria-hidden="true"
             />
             <div className="absolute -top-7 xl:-top-12 -right-20 xl:-right-24 w-full h-[70px] xl:h-[100px]">
               <img
-                src={frame2}
+                src="https://cdn.cness.io/Frame_10.webp"
                 alt=""
                 className="w-full h-full object-contain"
                 aria-hidden="true"
@@ -102,7 +102,7 @@ export default function EcoHero() {
 
         <div className="invisible lg:visible hidden lg:flex absolute top-32 xl:top-58 -right-[20%] h-[130px] xl:h-[170px] pointer-events-none overflow-hidden select-none">
           <img
-            src={frame5}
+            src="https://cdn.cness.io/Frame_sm.webp"
             alt=""
             className="w-full h-full object-contain"
             aria-hidden="true"
