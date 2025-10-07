@@ -436,7 +436,7 @@ useEffect(() => {
             ? Math.max(currentLikes - 1, 0)
             : currentLikes + 1;
 
-          return { ...item, likesCount: newLikes };
+          return { ...item, likesCount: newLikes, isLiked: isLiked };
         })
       );
 
