@@ -21,6 +21,7 @@ import {
   GetValidProfessionalDetails,
   GetInterestsDetails,
   CreateBestPractice,
+  SendBpFollowRequest,
   //UnFriend,
 } from "../Common/ServerAPI";
 import { useNavigate, useParams } from "react-router-dom";
@@ -256,7 +257,7 @@ export default function UserProfileView() {
       await SendFollowRequest(formattedData);
       setUserDetails({
         ...userDetails,
-        if_following: !userDetails?.if_following,
+        is_bp_following: !userDetails?.is_bp_following,
       });
     } catch (error) {
       console.error("Error fetching selection details:", error);
@@ -413,6 +414,43 @@ export default function UserProfileView() {
         setTags([...tags, newTag]);
         setInputValue("");
       }
+    }
+  };
+
+  const handleToggleFollow = async (bpId: any) => {
+    try {
+      const res = await SendBpFollowRequest({ bp_id: bpId });
+
+      if (res?.success?.statusCode === 200) {
+        const isNowFollowing = res?.data?.data !== null;
+
+        setFollowBP((prev: any) =>
+          prev.map((item: any) =>
+            item.id === bpId ? { ...item, is_bp_following: isNowFollowing } : item
+          )
+        );
+
+        setMyBP((prev: any) =>
+          prev.map((item: any) =>
+            item.id === bpId ? { ...item, is_bp_following: isNowFollowing } : item
+          )
+        );
+
+        showToast({
+          message: isNowFollowing ? "Added to followed practices" : "Removed from followed practices",
+          type: "success",
+          duration: 2000,
+        });
+      } else {
+        console.warn("Unexpected status code:", res?.success?.statusCode);
+      }
+    } catch (error) {
+      console.error("Error following/unfollowing:", error);
+      showToast({
+        message: "Failed to update follow status",
+        type: "error",
+        duration: 2000,
+      });
     }
   };
 
@@ -586,12 +624,12 @@ export default function UserProfileView() {
                     bg-gradient-to-r from-[#7077FE] via-[#9747FF] to-[#F07EFF] 
                     font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
                     text-white align-middle
-                    ${userDetails?.if_following
+                    ${userDetails?.is_bp_following
                         ? "bg-gray-200 text-gray-800"
                         : "bg-[#7C81FF] text-white"
                       } hover:bg-indigo-600 hover:text-white`}
                   >
-                    {userDetails?.if_following ? "Resonating" : "+ Resonate"}
+                    {userDetails?.is_bp_following ? "Resonating" : "+ Resonate"}
                   </button>
                 )}
 
@@ -1034,10 +1072,11 @@ export default function UserProfileView() {
                   {userDetails?.best_practices_questions?.length > 0 && (
                     <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
                       <h3 className="font-['Poppins'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-[#000000] mb-6">
-                        Best Practices Aligned CNESS
+                        Best practices aligned CNESS
                       </h3>
 
-                      <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3">
+                      {/* <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3"> */}
+                       <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 mt-4">
                         {userDetails.best_practices_questions.map(
                           (section: any, index: number) => {
                             const allQuestions = section.sub_sections?.flatMap(
@@ -1058,6 +1097,7 @@ export default function UserProfileView() {
 
                               return (
                                 <BestPracticeCard
+                                  id={question.id}
                                   key={question.id}
                                   name={
                                     userDetails.first_name +
@@ -1100,11 +1140,11 @@ export default function UserProfileView() {
                   {myProfessionBP?.length > 0 && (
                     <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
                       <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
-                        My Best Practices aligned Profession
+                        My best practices aligned profession
                       </h3>
 
-                      {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4"> */}
-                      <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3">
+                      <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 mt-4">
+                      {/* <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3"> */}
                         {myProfessionBP?.map((practice: any) => {
                           return (
                             <div
@@ -1130,6 +1170,7 @@ export default function UserProfileView() {
                               }}
                             >
                               <BestPracticeCard
+                                id={practice?.id}
                                 name={
                                   `${practice?.profile?.first_name || ""} ${practice?.profile?.last_name || ""
                                     }`.trim() || "CNESS User"
@@ -1163,6 +1204,8 @@ export default function UserProfileView() {
                                 description={practice?.description || ""}
                                 link={`/dashboard/bestpractices/${practice.id
                                   }/${slugify(practice.title)}`}
+                                ifFollowing={practice.is_bp_following}
+                                onToggleFollow={handleToggleFollow}
                               />
                             </div>
                           );
@@ -1174,11 +1217,11 @@ export default function UserProfileView() {
                   {myInterestBP?.length > 0 && (
                     <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
                       <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
-                        My Best Practices aligned Interest
+                        My best practices aligned interest
                       </h3>
 
-                      {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4"> */}
-                      <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3">
+                      {/* <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3"> */}
+                       <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 mt-4">
                         {myInterestBP?.map((practice: any) => {
                           return (
                             <div
@@ -1204,6 +1247,7 @@ export default function UserProfileView() {
                               }}
                             >
                               <BestPracticeCard
+                                id={practice?.id}
                                 name={
                                   `${practice?.profile?.first_name || ""} ${practice?.profile?.last_name || ""
                                     }`.trim() || "CNESS User"
@@ -1237,6 +1281,8 @@ export default function UserProfileView() {
                                 description={practice?.description || ""}
                                 link={`/dashboard/bestpractices/${practice.id
                                   }/${slugify(practice.title)}`}
+                                ifFollowing={practice.is_bp_following}
+                                onToggleFollow={handleToggleFollow}
                               />
                             </div>
                           );
@@ -1248,12 +1294,13 @@ export default function UserProfileView() {
                   {followBP?.length > 0 && (
                     <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
                       <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
-                        Best Practices Aligned Follow
+                        Best practices i am following
                       </h3>
 
-                      {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4"> */}
-                      <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3">
+                      {/* <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3"> */}
+                       <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 mt-4">
                         {followBP?.map((practice: any) => {
+                          console.log('practice', practice)
                           return (
                             <div
                               key={practice?.id}
@@ -1278,6 +1325,7 @@ export default function UserProfileView() {
                               }}
                             >
                               <BestPracticeCard
+                                id={practice?.id}
                                 name={
                                   `${practice?.profile?.first_name || ""} ${practice?.profile?.last_name || ""
                                     }`.trim() || "CNESS User"
@@ -1311,6 +1359,8 @@ export default function UserProfileView() {
                                 description={practice?.description || ""}
                                 link={`/dashboard/bestpractices/${practice.id
                                   }/${slugify(practice.title)}`}
+                                ifFollowing={practice.is_bp_following}
+                                onToggleFollow={handleToggleFollow}
                               />
                             </div>
                           );

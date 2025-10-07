@@ -282,8 +282,8 @@ const customSelectStyles = {
     backgroundColor: state.isSelected
       ? "#E0E7FF"
       : state.isFocused
-      ? "#F3F4F6"
-      : "white",
+        ? "#F3F4F6"
+        : "white",
     color: "#111827",
     padding: "10px 12px",
     fontSize: "14px",
@@ -647,12 +647,13 @@ const UserProfilePage = () => {
   const publicProfileForm = useForm();
 
   const handleImageChange = async (
-  e: React.ChangeEvent<HTMLInputElement>,
-  setter: React.Dispatch<React.SetStateAction<string | null>>,
-  formKey: string
-) => {
-  const file = e.target.files?.[0];
-  if (file) {
+    e: React.ChangeEvent<HTMLInputElement>,
+    setter: React.Dispatch<React.SetStateAction<string | null>>,
+    formKey: string
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
     setUploadProgress({
       type: formKey === "profile" ? "profile" : "banner",
       message: "Uploading. Please wait...",
@@ -662,47 +663,61 @@ const UserProfilePage = () => {
     const objectUrl = URL.createObjectURL(file);
     setter(objectUrl);
 
+    const timeoutId = setTimeout(() => {
+      setUploadProgress({ type: null, message: "" });
+      showToast({
+        message: "Upload failed. Please try again with a smaller image.",
+        type: "error",
+        duration: 5000,
+      });
+      URL.revokeObjectURL(objectUrl);
+      setter(null);
+    }, 8000); // 8 seconds is more reasonable
+
     // Prepare form data for upload
     const formData = new FormData();
     formData.append(formKey, file);
 
     try {
       const res = await SubmitProfileDetails(formData);
-      showToast({
-        message: res?.success?.message,
-        type: "success",
-        duration: 5000,
-      });
-      
-      // After successful upload, get the actual URL from the server response
-      const response = await MeDetails();
-      const profilePictureUrl = response?.data?.data?.user.profile_picture;
-      
-      // Update the preview with the actual URL
-      if (profilePictureUrl) {
-        setter(profilePictureUrl);
-        // Clean up the object URL
+      console.log('res', res)
+      clearTimeout(timeoutId);
+
+      if (res?.success?.status === true) {
+        showToast({
+          message: res?.success?.message || "Upload successful",
+          type: "success",
+          duration: 5000,
+        });
+
+        // After successful upload, get the actual URL from the server
+        const response = await MeDetails();
+        const profilePictureUrl = response?.data?.data?.user.profile_picture;
+
+        if (profilePictureUrl) {
+          setter(profilePictureUrl);
+          localStorage.setItem("profile_picture", profilePictureUrl);
+        }
         URL.revokeObjectURL(objectUrl);
+        localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+        localStorage.setItem("margaret_name", response?.data?.data?.user.margaret_name);
       }
-      
-      localStorage.setItem("profile_picture", profilePictureUrl);
-      localStorage.setItem("name", response?.data?.data?.user.name);
-      localStorage.setItem("main_name", response?.data?.data?.user.main_name);
-      localStorage.setItem("margaret_name", response?.data?.data?.user.margaret_name);
     } catch (error: any) {
+      clearTimeout(timeoutId);
+      setUploadProgress({ type: null, message: "" });
       showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
+        message: error?.response?.data?.error?.message || "Upload failed. Please try again.",
         duration: 5000,
       });
       // Clean up object URL on error
       URL.revokeObjectURL(objectUrl);
       setter(null);
     } finally {
+      clearTimeout(timeoutId);
       setUploadProgress({ type: null, message: "" });
     }
-  }
-};
+  };
 
   const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && inputValue.trim()) {
@@ -1294,10 +1309,10 @@ const UserProfilePage = () => {
                   <img
                     src={
                       !banner ||
-                      banner === "null" ||
-                      banner === "undefined" ||
-                      !banner.startsWith("http") ||
-                      banner === "http://localhost:5026/file/"
+                        banner === "null" ||
+                        banner === "undefined" ||
+                        !banner.startsWith("http") ||
+                        banner === "http://localhost:5026/file/"
                         ? "/banner.jpg"
                         : banner
                     }
@@ -1367,10 +1382,10 @@ const UserProfilePage = () => {
                       <img
                         src={
                           !logoPreview ||
-                          logoPreview === "null" ||
-                          logoPreview === "undefined" ||
-                          !logoPreview.startsWith("http") ||
-                          logoPreview === "http://localhost:5026/file/"
+                            logoPreview === "null" ||
+                            logoPreview === "undefined" ||
+                            !logoPreview.startsWith("http") ||
+                            logoPreview === "http://localhost:5026/file/"
                             ? "/profile.jpg"
                             : logoPreview
                         }
@@ -1451,11 +1466,10 @@ const UserProfilePage = () => {
                                   duration-200 
                                   focus:outline-none
                                   border
-                                  ${
-                                    selected
-                                      ? "text-purple-600 h-[45px] bg-[#F8F3FF] shadow-md border-[#ECEEF2] border-b-0 transform"
-                                      : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
-                                  }`
+                                  ${selected
+                                  ? "text-purple-600 h-[45px] bg-[#F8F3FF] shadow-md border-[#ECEEF2] border-b-0 transform"
+                                  : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
+                                }`
                               }
                             >
                               {tab}
@@ -1482,15 +1496,13 @@ const UserProfilePage = () => {
                               type="text"
                               {...basicInfoForm.register("firstName")}
                               placeholder="Enter your First Name"
-                              className={`w-full px-4 py-2 h-[41px]  border bg-white ${
-                                basicInfoForm.formState.errors.firstName
+                              className={`w-full px-4 py-2 h-[41px]  border bg-white ${basicInfoForm.formState.errors.firstName
                                   ? "border-red-500"
                                   : "border-gray-300"
-                              } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                basicInfoForm.formState.errors.firstName
+                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.firstName
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                              }`}
+                                }`}
                               maxLength={40}
                             />
                             {basicInfoForm.formState.errors.firstName && (
@@ -1512,15 +1524,13 @@ const UserProfilePage = () => {
                               type="text"
                               {...basicInfoForm.register("lastName")}
                               placeholder="Enter your Last Name"
-                              className={`w-full px-4 py-2 border h-[41px] bg-white ${
-                                basicInfoForm.formState.errors.lastName
+                              className={`w-full px-4 py-2 border h-[41px] bg-white ${basicInfoForm.formState.errors.lastName
                                   ? "border-red-500"
                                   : "border-gray-300"
-                              } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                basicInfoForm.formState.errors.lastName
+                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.lastName
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                              }`}
+                                }`}
                               maxLength={40}
                             />
                             {basicInfoForm.formState.errors.lastName && (
@@ -1627,7 +1637,7 @@ const UserProfilePage = () => {
                               <span className="text-red-500">*</span>
                             </label>
                             {basicInfoForm.watch("identify_uploaded") ==
-                            null ? (
+                              null ? (
                               <>
                                 <input
                                   type="file"
@@ -1819,15 +1829,13 @@ const UserProfilePage = () => {
                               onClick={(
                                 e: React.MouseEvent<HTMLInputElement>
                               ) => e.currentTarget.showPicker()}
-                              className={`w-full px-4 py-2 h-[41px] border bg-white ${
-                                basicInfoForm.formState.errors.dob
+                              className={`w-full px-4 py-2 h-[41px] border bg-white ${basicInfoForm.formState.errors.dob
                                   ? "border-red-500"
                                   : "border-gray-300"
-                              } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${
-                                basicInfoForm.formState.errors.dob
+                                } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.dob
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                              }`}
+                                }`}
                             />
                             {basicInfoForm.formState.errors.dob && (
                               <p className="text-sm text-red-500 mt-1">
@@ -1846,15 +1854,13 @@ const UserProfilePage = () => {
                               type="text"
                               {...basicInfoForm.register("quote")}
                               placeholder="Enter your quote"
-                              className={`w-full px-4 py-2 h-[41px] border bg-white ${
-                                basicInfoForm.formState.errors.quote
+                              className={`w-full px-4 py-2 h-[41px] border bg-white ${basicInfoForm.formState.errors.quote
                                   ? "border-red-500"
                                   : "border-gray-300"
-                              } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                basicInfoForm.formState.errors.quote
+                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.quote
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                              }`}
+                                }`}
                             />
                             {basicInfoForm.formState.errors.quote && (
                               <p className="text-sm text-red-500 mt-1">
@@ -1873,15 +1879,13 @@ const UserProfilePage = () => {
                               type="text"
                               {...basicInfoForm.register("bio")}
                               placeholder="Add a short professional bio"
-                              className={`w-full px-4 py-2 border bg-white ${
-                                basicInfoForm.formState.errors.bio
+                              className={`w-full px-4 py-2 border bg-white ${basicInfoForm.formState.errors.bio
                                   ? "border-red-500"
                                   : "border-gray-300"
-                              } rounded-xl h-[41px]    text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                basicInfoForm.formState.errors.bio
+                                } rounded-xl h-[41px]    text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.bio
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                              }`}
+                                }`}
                             />
                             {basicInfoForm.formState.errors.bio && (
                               <p className="text-sm text-red-500 mt-1">
@@ -1899,15 +1903,13 @@ const UserProfilePage = () => {
                               rows={4}
                               {...basicInfoForm.register("vision")}
                               placeholder="What is your conscious vision?"
-                              className={`w-full px-4 py-2  border bg-white ${
-                                basicInfoForm.formState.errors.vision
+                              className={`w-full px-4 py-2  border bg-white ${basicInfoForm.formState.errors.vision
                                   ? "border-red-500"
                                   : "border-gray-300"
-                              } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                basicInfoForm.formState.errors.vision
+                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.vision
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                              }`}
+                                }`}
                             />
                             {basicInfoForm.formState.errors.vision && (
                               <p className="text-sm text-red-500 mt-1">
@@ -1999,15 +2001,13 @@ const UserProfilePage = () => {
                                     e.preventDefault();
                                   }
                                 }}
-                                className={`w-full px-4 py-2 border bg-white ${
-                                  contactInfoForm.formState.errors.phone
+                                className={`w-full px-4 py-2 border bg-white ${contactInfoForm.formState.errors.phone
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                } rounded-xl h-[41px] focus:outline-none focus:ring-2 placeholder:text-sm placeholder:text-gray-400  ${
-                                  contactInfoForm.formState.errors.phone
+                                  } rounded-xl h-[41px] focus:outline-none focus:ring-2 placeholder:text-sm placeholder:text-gray-400  ${contactInfoForm.formState.errors.phone
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
-                                }`}
+                                  }`}
                               />
                             </div>
                             {contactInfoForm.formState.errors.phone && (
@@ -2035,15 +2035,13 @@ const UserProfilePage = () => {
                                   message: "Enter a valid email",
                                 },
                               })}
-                              className={`w-full px-4 py-2 border bg-white ${
-                                contactInfoForm.formState.errors.email
+                              className={`w-full px-4 py-2 border bg-white ${contactInfoForm.formState.errors.email
                                   ? "border-red-500"
                                   : "border-gray-300"
-                              } rounded-xl focus:outline-none h-[41px] focus:ring-2 placeholder:text-sm placeholder:text-gray-400 ${
-                                contactInfoForm.formState.errors.email
+                                } rounded-xl focus:outline-none h-[41px] focus:ring-2 placeholder:text-sm placeholder:text-gray-400 ${contactInfoForm.formState.errors.email
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                              }`}
+                                }`}
                             />
                             {contactInfoForm.formState.errors.email && (
                               <p className="text-sm text-red-500 mt-1">
@@ -2087,27 +2085,27 @@ const UserProfilePage = () => {
                               options={
                                 Country
                                   ? Country.map((country: any) => ({
-                                      value: country.id,
-                                      label: country.name,
-                                    }))
+                                    value: country.id,
+                                    label: country.name,
+                                  }))
                                   : []
                               }
                               value={
                                 Country
                                   ? Country.find(
-                                      (c: any) =>
-                                        c.id ===
-                                        contactInfoForm.watch("country")
-                                    )
+                                    (c: any) =>
+                                      c.id ===
+                                      contactInfoForm.watch("country")
+                                  )
                                     ? {
-                                        value: contactInfoForm.watch("country"),
-                                        label:
-                                          Country.find(
-                                            (c: any) =>
-                                              c.id ===
-                                              contactInfoForm.watch("country")
-                                          )?.name || "Select your country",
-                                      }
+                                      value: contactInfoForm.watch("country"),
+                                      label:
+                                        Country.find(
+                                          (c: any) =>
+                                            c.id ===
+                                            contactInfoForm.watch("country")
+                                        )?.name || "Select your country",
+                                    }
                                     : null
                                   : null
                               }
@@ -2142,26 +2140,26 @@ const UserProfilePage = () => {
                               options={
                                 states
                                   ? states.map((state: any) => ({
-                                      value: state.id,
-                                      label: state.name,
-                                    }))
+                                    value: state.id,
+                                    label: state.name,
+                                  }))
                                   : []
                               }
                               value={
                                 states
                                   ? states.find(
-                                      (s: any) =>
-                                        s.id === contactInfoForm.watch("state")
-                                    )
+                                    (s: any) =>
+                                      s.id === contactInfoForm.watch("state")
+                                  )
                                     ? {
-                                        value: contactInfoForm.watch("state"),
-                                        label:
-                                          states.find(
-                                            (s: any) =>
-                                              s.id ===
-                                              contactInfoForm.watch("state")
-                                          )?.name || "Select your state",
-                                      }
+                                      value: contactInfoForm.watch("state"),
+                                      label:
+                                        states.find(
+                                          (s: any) =>
+                                            s.id ===
+                                            contactInfoForm.watch("state")
+                                        )?.name || "Select your state",
+                                    }
                                     : null
                                   : null
                               }
@@ -2310,15 +2308,13 @@ const UserProfilePage = () => {
                               type="url"
                               {...socialLinksForm.register("facebook")}
                               placeholder="https://facebook.com/yourprofile"
-                              className={`w-full px-4 py-2 h-[41px] border bg-white ${
-                                socialLinksForm.formState.errors.facebook
+                              className={`w-full px-4 py-2 h-[41px] border bg-white ${socialLinksForm.formState.errors.facebook
                                   ? "border-red-500"
                                   : "border-gray-300"
-                              } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                socialLinksForm.formState.errors.facebook
+                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${socialLinksForm.formState.errors.facebook
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                              }`}
+                                }`}
                             />
                             {socialLinksForm.formState.errors.facebook && (
                               <p className="text-sm text-red-500 mt-1">
@@ -2339,15 +2335,13 @@ const UserProfilePage = () => {
                               type="url"
                               {...socialLinksForm.register("twitter")}
                               placeholder="https://twitter.com/yourprofile"
-                              className={`w-full px-4 py-2 h-[41px] border bg-white ${
-                                socialLinksForm.formState.errors.twitter
+                              className={`w-full px-4 py-2 h-[41px] border bg-white ${socialLinksForm.formState.errors.twitter
                                   ? "border-red-500"
                                   : "border-gray-300"
-                              } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                socialLinksForm.formState.errors.twitter
+                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${socialLinksForm.formState.errors.twitter
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                              }`}
+                                }`}
                             />
                             {socialLinksForm.formState.errors.twitter && (
                               <p className="text-sm text-red-500 mt-1">
@@ -2368,15 +2362,13 @@ const UserProfilePage = () => {
                               type="url"
                               {...socialLinksForm.register("linkedin")}
                               placeholder="https://linkedin.com/in/yourprofile"
-                              className={`w-full px-4 py-2 h-[41px] border bg-white ${
-                                socialLinksForm.formState.errors.linkedin
+                              className={`w-full px-4 py-2 h-[41px] border bg-white ${socialLinksForm.formState.errors.linkedin
                                   ? "border-red-500"
                                   : "border-gray-300"
-                              } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                socialLinksForm.formState.errors.linkedin
+                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${socialLinksForm.formState.errors.linkedin
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                              }`}
+                                }`}
                             />
                             {socialLinksForm.formState.errors.linkedin && (
                               <p className="text-sm text-red-500 mt-1">
@@ -2397,15 +2389,13 @@ const UserProfilePage = () => {
                               type="url"
                               {...socialLinksForm.register("instagram")}
                               placeholder="https://instagram.com/yourprofile"
-                              className={`w-full px-4 py-2 h-[41px] border bg-white ${
-                                socialLinksForm.formState.errors.instagram
+                              className={`w-full px-4 py-2 h-[41px] border bg-white ${socialLinksForm.formState.errors.instagram
                                   ? "border-red-500"
                                   : "border-gray-300"
-                              } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                socialLinksForm.formState.errors.instagram
+                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${socialLinksForm.formState.errors.instagram
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                              }`}
+                                }`}
                             />
                             {socialLinksForm.formState.errors.instagram && (
                               <p className="text-sm text-red-500 mt-1">
@@ -2498,29 +2488,27 @@ const UserProfilePage = () => {
                                     `educations.${index}.degree`
                                   )}
                                   placeholder="Enter your degree"
-                                  className={`w-full px-4 py-2 border bg-white ${
-                                    educationForm.formState.errors
+                                  className={`w-full px-4 py-2 border bg-white ${educationForm.formState.errors
                                       ?.educations?.[index]?.degree
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl h-[41px] text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                    educationForm.formState.errors
+                                    } rounded-xl h-[41px] text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${educationForm.formState.errors
                                       ?.educations?.[index]?.degree
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
-                                  }`}
+                                    }`}
                                 />
                                 {educationForm.formState.errors?.educations?.[
                                   index
                                 ]?.degree && (
-                                  <p className="text-sm text-red-500 mt-1">
-                                    {
-                                      educationForm.formState.errors.educations[
-                                        index
-                                      ]?.degree?.message
-                                    }
-                                  </p>
-                                )}
+                                    <p className="text-sm text-red-500 mt-1">
+                                      {
+                                        educationForm.formState.errors.educations[
+                                          index
+                                        ]?.degree?.message
+                                      }
+                                    </p>
+                                  )}
                               </div>
 
                               {/* Institution */}
@@ -2535,29 +2523,27 @@ const UserProfilePage = () => {
                                     `educations.${index}.institution`
                                   )}
                                   placeholder="Enter institution name"
-                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                    educationForm.formState.errors
+                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${educationForm.formState.errors
                                       ?.educations?.[index]?.institution
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                    educationForm.formState.errors
+                                    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${educationForm.formState.errors
                                       ?.educations?.[index]?.institution
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
-                                  }`}
+                                    }`}
                                 />
                                 {educationForm.formState.errors?.educations?.[
                                   index
                                 ]?.institution && (
-                                  <p className="text-sm text-red-500 mt-1">
-                                    {
-                                      educationForm.formState.errors.educations[
-                                        index
-                                      ]?.institution?.message
-                                    }
-                                  </p>
-                                )}
+                                    <p className="text-sm text-red-500 mt-1">
+                                      {
+                                        educationForm.formState.errors.educations[
+                                          index
+                                        ]?.institution?.message
+                                      }
+                                    </p>
+                                  )}
                               </div>
 
                               {/* Start Date */}
@@ -2571,29 +2557,27 @@ const UserProfilePage = () => {
                                   {...educationForm.register(
                                     `educations.${index}.start_date`
                                   )}
-                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                    educationForm.formState.errors
+                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${educationForm.formState.errors
                                       ?.educations?.[index]?.start_date
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
-                                    educationForm.formState.errors
+                                    } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${educationForm.formState.errors
                                       ?.educations?.[index]?.start_date
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
-                                  }`}
+                                    }`}
                                 />
                                 {educationForm.formState.errors?.educations?.[
                                   index
                                 ]?.start_date && (
-                                  <p className="text-sm text-red-500 mt-1">
-                                    {
-                                      educationForm.formState.errors.educations[
-                                        index
-                                      ]?.start_date?.message
-                                    }
-                                  </p>
-                                )}
+                                    <p className="text-sm text-red-500 mt-1">
+                                      {
+                                        educationForm.formState.errors.educations[
+                                          index
+                                        ]?.start_date?.message
+                                      }
+                                    </p>
+                                  )}
                               </div>
 
                               {/* End Date */}
@@ -2606,29 +2590,27 @@ const UserProfilePage = () => {
                                   {...educationForm.register(
                                     `educations.${index}.end_date`
                                   )}
-                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                    educationForm.formState.errors
+                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${educationForm.formState.errors
                                       ?.educations?.[index]?.end_date
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
-                                    educationForm.formState.errors
+                                    } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${educationForm.formState.errors
                                       ?.educations?.[index]?.end_date
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
-                                  }`}
+                                    }`}
                                 />
                                 {educationForm.formState.errors?.educations?.[
                                   index
                                 ]?.end_date && (
-                                  <p className="text-sm text-red-500 mt-1">
-                                    {
-                                      educationForm.formState.errors.educations[
-                                        index
-                                      ]?.end_date?.message
-                                    }
-                                  </p>
-                                )}
+                                    <p className="text-sm text-red-500 mt-1">
+                                      {
+                                        educationForm.formState.errors.educations[
+                                          index
+                                        ]?.end_date?.message
+                                      }
+                                    </p>
+                                  )}
                               </div>
                             </div>
                           ))}
@@ -2750,28 +2732,26 @@ const UserProfilePage = () => {
                                   )}
                                   maxLength={40}
                                   placeholder="Enter Company Name"
-                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                    workExperienceForm.formState.errors
+                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]?.company
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                    workExperienceForm.formState.errors
+                                    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]?.company
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
-                                  }`}
+                                    }`}
                                 />
                                 {workExperienceForm.formState.errors
                                   ?.workExperiences?.[index]?.company && (
-                                  <p className="text-sm text-red-500 mt-1">
-                                    {
-                                      workExperienceForm.formState.errors
-                                        .workExperiences[index]?.company
-                                        ?.message
-                                    }
-                                  </p>
-                                )}
+                                    <p className="text-sm text-red-500 mt-1">
+                                      {
+                                        workExperienceForm.formState.errors
+                                          .workExperiences[index]?.company
+                                          ?.message
+                                      }
+                                    </p>
+                                  )}
                               </div>
 
                               {/* Position */}
@@ -2787,28 +2767,26 @@ const UserProfilePage = () => {
                                   )}
                                   maxLength={40}
                                   placeholder="Enter your Designation"
-                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                    workExperienceForm.formState.errors
+                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]?.position
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                    workExperienceForm.formState.errors
+                                    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]?.position
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
-                                  }`}
+                                    }`}
                                 />
                                 {workExperienceForm.formState.errors
                                   ?.workExperiences?.[index]?.position && (
-                                  <p className="text-sm text-red-500 mt-1">
-                                    {
-                                      workExperienceForm.formState.errors
-                                        .workExperiences[index]?.position
-                                        ?.message
-                                    }
-                                  </p>
-                                )}
+                                    <p className="text-sm text-red-500 mt-1">
+                                      {
+                                        workExperienceForm.formState.errors
+                                          .workExperiences[index]?.position
+                                          ?.message
+                                      }
+                                    </p>
+                                  )}
                               </div>
 
                               {/* Roles & Responsibilities */}
@@ -2823,31 +2801,29 @@ const UserProfilePage = () => {
                                   )}
                                   rows={5}
                                   placeholder="Describe your key roles and responsibilities"
-                                  className={`w-full px-4 py-2 border bg-white ${
-                                    workExperienceForm.formState.errors
+                                  className={`w-full px-4 py-2 border bg-white ${workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]
                                       ?.roles_responsibilities
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                    workExperienceForm.formState.errors
+                                    } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]
                                       ?.roles_responsibilities
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
-                                  }`}
+                                    }`}
                                 />
                                 {workExperienceForm.formState.errors
                                   ?.workExperiences?.[index]
                                   ?.roles_responsibilities && (
-                                  <p className="text-sm text-red-500 mt-1">
-                                    {
-                                      workExperienceForm.formState.errors
-                                        .workExperiences[index]
-                                        ?.roles_responsibilities?.message
-                                    }
-                                  </p>
-                                )}
+                                    <p className="text-sm text-red-500 mt-1">
+                                      {
+                                        workExperienceForm.formState.errors
+                                          .workExperiences[index]
+                                          ?.roles_responsibilities?.message
+                                      }
+                                    </p>
+                                  )}
                               </div>
 
                               {/* Country */}
@@ -2868,13 +2844,13 @@ const UserProfilePage = () => {
                                       `workExperiences.${index}.work_country`
                                     )
                                       ? {
-                                          value: workExperienceForm.watch(
-                                            `workExperiences.${index}.work_country`
-                                          ),
-                                          label: workExperienceForm.watch(
-                                            `workExperiences.${index}.work_country`
-                                          ),
-                                        }
+                                        value: workExperienceForm.watch(
+                                          `workExperiences.${index}.work_country`
+                                        ),
+                                        label: workExperienceForm.watch(
+                                          `workExperiences.${index}.work_country`
+                                        ),
+                                      }
                                       : null
                                   }
                                   onChange={(selectedOption) => {
@@ -2912,13 +2888,13 @@ const UserProfilePage = () => {
                                       `workExperiences.${index}.work_state`
                                     )
                                       ? {
-                                          value: workExperienceForm.watch(
-                                            `workExperiences.${index}.work_state`
-                                          ),
-                                          label: workExperienceForm.watch(
-                                            `workExperiences.${index}.work_state`
-                                          ),
-                                        }
+                                        value: workExperienceForm.watch(
+                                          `workExperiences.${index}.work_state`
+                                        ),
+                                        label: workExperienceForm.watch(
+                                          `workExperiences.${index}.work_state`
+                                        ),
+                                      }
                                       : null
                                   }
                                   onChange={(selectedOption) => {
@@ -2964,28 +2940,26 @@ const UserProfilePage = () => {
                                   {...workExperienceForm.register(
                                     `workExperiences.${index}.start_date`
                                   )}
-                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                    workExperienceForm.formState.errors
+                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]?.start_date
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
-                                    workExperienceForm.formState.errors
+                                    } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]?.start_date
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
-                                  }`}
+                                    }`}
                                 />
                                 {workExperienceForm.formState.errors
                                   ?.workExperiences?.[index]?.start_date && (
-                                  <p className="text-sm text-red-500 mt-1">
-                                    {
-                                      workExperienceForm.formState.errors
-                                        .workExperiences[index]?.start_date
-                                        ?.message
-                                    }
-                                  </p>
-                                )}
+                                    <p className="text-sm text-red-500 mt-1">
+                                      {
+                                        workExperienceForm.formState.errors
+                                          .workExperiences[index]?.start_date
+                                          ?.message
+                                      }
+                                    </p>
+                                  )}
                               </div>
 
                               {/* End Date */}
@@ -2998,28 +2972,26 @@ const UserProfilePage = () => {
                                   {...workExperienceForm.register(
                                     `workExperiences.${index}.end_date`
                                   )}
-                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                    workExperienceForm.formState.errors
+                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]?.end_date
                                       ? "border-red-500"
                                       : "border-gray-300"
-                                  } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
-                                    workExperienceForm.formState.errors
+                                    } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]?.end_date
                                       ? "focus:ring-red-500"
                                       : "focus:ring-purple-500"
-                                  }`}
+                                    }`}
                                 />
                                 {workExperienceForm.formState.errors
                                   ?.workExperiences?.[index]?.end_date && (
-                                  <p className="text-sm text-red-500 mt-1">
-                                    {
-                                      workExperienceForm.formState.errors
-                                        .workExperiences[index]?.end_date
-                                        ?.message
-                                    }
-                                  </p>
-                                )}
+                                    <p className="text-sm text-red-500 mt-1">
+                                      {
+                                        workExperienceForm.formState.errors
+                                          .workExperiences[index]?.end_date
+                                          ?.message
+                                      }
+                                    </p>
+                                  )}
                               </div>
                             </div>
                           ))}
@@ -3175,8 +3147,8 @@ const UserProfilePage = () => {
                                 </button>
                                 <span className="flex-1 truncate text-gray-500">
                                   {publicProfileForm.watch("featuredImage") &&
-                                  publicProfileForm.watch("featuredImage")
-                                    .length > 0 ? (
+                                    publicProfileForm.watch("featuredImage")
+                                      .length > 0 ? (
                                     publicProfileForm.watch("featuredImage")[0]
                                       ?.name
                                   ) : (
@@ -3229,9 +3201,9 @@ const UserProfilePage = () => {
                                 value={
                                   serviceInput
                                     ? {
-                                        value: serviceInput,
-                                        label: serviceInput,
-                                      }
+                                      value: serviceInput,
+                                      label: serviceInput,
+                                    }
                                     : undefined
                                 }
                                 onChange={(selectedOption) => {
@@ -3401,15 +3373,13 @@ const UserProfilePage = () => {
                                   message: "Enter a valid email",
                                 },
                               })}
-                              className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                publicProfileForm.formState.errors.notifyEmail
+                              className={`w-full h-[41px] px-4 py-2 border bg-white ${publicProfileForm.formState.errors.notifyEmail
                                   ? "border-red-500"
                                   : "border-gray-300"
-                              } rounded-xl focus:outline-none focus:ring-2 ${
-                                publicProfileForm.formState.errors.notifyEmail
+                                } rounded-xl focus:outline-none focus:ring-2 ${publicProfileForm.formState.errors.notifyEmail
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
-                              }`}
+                                }`}
                             />
                             {publicProfileForm.formState.errors.notifyEmail && (
                               <p className="text-sm text-red-500 mt-1">

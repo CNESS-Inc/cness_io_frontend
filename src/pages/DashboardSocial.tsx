@@ -1581,7 +1581,7 @@ export default function SocialTopBar() {
                             <button
                               onClick={() => handleConnect(post.user_id)}
                               disabled={connectingUsers[post.user_id] || false}
-                              className={`hidden sm:flex w-[100px] justify-center items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors font-family-open-sans h-[35px]
+                              className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-[12px] py-[6px] rounded-full transition-colors font-family-open-sans h-[35px]
                                 ${
                                   // getFriendStatus(post.user_id) === "connected"
                                   //   ? "bg-red-500 text-white hover:bg-red-600"
@@ -1609,7 +1609,7 @@ export default function SocialTopBar() {
                             {/* Follow Button */}
                             <button
                               onClick={() => handleFollow(post.user_id)}
-                              className={`flex w-[100px] justify-center items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
+                              className={`flex w-[100px] justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
                                 ${
                                   post.if_following
                                     ? "bg-transparent text-[#7077FE] hover:text-[#7077FE]/80"
@@ -1648,7 +1648,7 @@ export default function SocialTopBar() {
                                     }}
                                   >
                                     <ul className="space-y-1">
-                                      <li className="sm:hidden">
+                                      <li className="lg:hidden">
                                         <button
                                           onClick={() =>
                                             handleConnect(post.user_id)
