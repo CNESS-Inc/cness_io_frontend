@@ -653,16 +653,29 @@ const UserProfilePage = () => {
     formKey: "profile" | "banner"
   ) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setUploadProgress({
-        type: formKey,
-        message: "Uploading. Please wait...",
+    if (!file) return;
+
+    setUploadProgress({
+      type: formKey,
+      message: "Uploading. Please wait...",
+    });
+
+    // Create temporary preview immediately
+    const objectUrl = URL.createObjectURL(file);
+    setter(objectUrl);
+
+    let timeoutId = setTimeout(() => {
+      setUploadProgress({ type: null, message: "" });
+      showToast({
+        message: "Upload is taking longer than expected. Please try again with a smaller image.",
+        type: "error",
+        duration: 5000,
       });
+      URL.revokeObjectURL(objectUrl);
+      setter(null);
+    }, 8000);
 
-      // Create temporary preview immediately
-      const objectUrl = URL.createObjectURL(file);
-      setter(objectUrl);
-
+    try {
       // Prepare form data
       const formData = new FormData();
 
@@ -672,56 +685,57 @@ const UserProfilePage = () => {
       } else {
         formData.append("banner", file);
       }
+      const res = await SubmitProfileDetails(formData);
+      clearTimeout(timeoutId);
 
-      try {
-        const res = await SubmitProfileDetails(formData);
-        showToast({
-          message: res?.success?.message,
-          type: "success",
-          duration: 5000,
-        });
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
 
-        // Get updated profile data
-        const response = await MeDetails();
-        const userData = response?.data?.data?.user;
+      // Get updated profile data
+      const response = await MeDetails();
+      const userData = response?.data?.data?.user;
 
-        // Update preview with actual server URL
-        if (formKey === "profile") {
-          const profilePictureUrl = userData?.profile_picture;
-          if (profilePictureUrl) {
-            setter(profilePictureUrl);
-            localStorage.setItem("profile_picture", profilePictureUrl);
-          }
-        } else {
-          const bannerUrl = userData?.profile_banner;
-          if (bannerUrl) {
-            setter(bannerUrl);
-            // Clean up temporary URL
-            URL.revokeObjectURL(objectUrl);
-          }
+      // Update preview with actual server URL
+      if (formKey === "profile") {
+        const profilePictureUrl = userData?.profile_picture;
+        if (profilePictureUrl) {
+          setter(profilePictureUrl);
+          localStorage.setItem("profile_picture", profilePictureUrl);
         }
-
-        // Update other user data in localStorage
-        localStorage.setItem("name", userData?.name);
-        localStorage.setItem("main_name", userData?.main_name);
-        localStorage.setItem("margaret_name", userData?.margaret_name);
-      } catch (error: any) {
-        showToast({
-          message: error?.response?.data?.error?.message,
-          type: "error",
-          duration: 5000,
-        });
-        // Clean up on error and reset to previous state
-        URL.revokeObjectURL(objectUrl);
-        // Reset to previous banner or default
-        const response = await MeDetails();
-        const userData = response?.data?.data?.user;
-        if (formKey === "banner") {
-          setter(userData?.profile_banner || null);
+      } else {
+        const bannerUrl = userData?.profile_banner;
+        if (bannerUrl) {
+          setter(bannerUrl);
+          // Clean up temporary URL
+          URL.revokeObjectURL(objectUrl);
         }
-      } finally {
-        setUploadProgress({ type: null, message: "" });
       }
+
+      // Update other user data in localStorage
+      localStorage.setItem("name", userData?.name);
+      localStorage.setItem("main_name", userData?.main_name);
+      localStorage.setItem("margaret_name", userData?.margaret_name);
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+      // Clean up on error and reset to previous state
+      URL.revokeObjectURL(objectUrl);
+      // Reset to previous banner or default
+      const response = await MeDetails();
+      const userData = response?.data?.data?.user;
+      if (formKey === "banner") {
+        setter(userData?.profile_banner || null);
+      }
+    } finally {
+      clearTimeout(timeoutId);
+      setUploadProgress({ type: null, message: "" });
     }
   };
 
@@ -749,7 +763,6 @@ const UserProfilePage = () => {
         localStorage.removeItem("profile_picture");
       }
     } catch (error: any) {
-      clearTimeout(timeoutId);
       setUploadProgress({ type: null, message: "" });
       showToast({
         message:
@@ -759,7 +772,6 @@ const UserProfilePage = () => {
         duration: 5000,
       });
     } finally {
-      clearTimeout(timeoutId);
       setUploadProgress({ type: null, message: "" });
     }
   };
@@ -1385,17 +1397,17 @@ const UserProfilePage = () => {
                   <img
                     src={
                       banner &&
-                      banner !== "null" &&
-                      banner !== "undefined" &&
-                      banner.startsWith("blob:")
+                        banner !== "null" &&
+                        banner !== "undefined" &&
+                        banner.startsWith("blob:")
                         ? banner // This will show the blob URL preview
                         : banner &&
                           banner !== "null" &&
                           banner !== "undefined" &&
                           banner.startsWith("http") &&
                           banner !== "http://localhost:5026/file/"
-                        ? banner
-                        : "/banner.jpg"
+                          ? banner
+                          : "/banner.jpg"
                     }
                     alt="Banner"
                     className="w-full h-full object-cover"
@@ -1579,8 +1591,8 @@ const UserProfilePage = () => {
                               {...basicInfoForm.register("firstName")}
                               placeholder="Enter your First Name"
                               className={`w-full px-4 py-2 h-[41px]  border bg-white ${basicInfoForm.formState.errors.firstName
-                                  ? "border-red-500"
-                                  : "border-gray-300"
+                                ? "border-red-500"
+                                : "border-gray-300"
                                 } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.firstName
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
@@ -1607,8 +1619,8 @@ const UserProfilePage = () => {
                               {...basicInfoForm.register("lastName")}
                               placeholder="Enter your Last Name"
                               className={`w-full px-4 py-2 border h-[41px] bg-white ${basicInfoForm.formState.errors.lastName
-                                  ? "border-red-500"
-                                  : "border-gray-300"
+                                ? "border-red-500"
+                                : "border-gray-300"
                                 } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.lastName
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
@@ -1912,8 +1924,8 @@ const UserProfilePage = () => {
                                 e: React.MouseEvent<HTMLInputElement>
                               ) => e.currentTarget.showPicker()}
                               className={`w-full px-4 py-2 h-[41px] border bg-white ${basicInfoForm.formState.errors.dob
-                                  ? "border-red-500"
-                                  : "border-gray-300"
+                                ? "border-red-500"
+                                : "border-gray-300"
                                 } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.dob
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
@@ -1937,8 +1949,8 @@ const UserProfilePage = () => {
                               {...basicInfoForm.register("quote")}
                               placeholder="Enter your quote"
                               className={`w-full px-4 py-2 h-[41px] border bg-white ${basicInfoForm.formState.errors.quote
-                                  ? "border-red-500"
-                                  : "border-gray-300"
+                                ? "border-red-500"
+                                : "border-gray-300"
                                 } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.quote
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
@@ -1962,8 +1974,8 @@ const UserProfilePage = () => {
                               {...basicInfoForm.register("bio")}
                               placeholder="Add a short professional bio"
                               className={`w-full px-4 py-2 border bg-white ${basicInfoForm.formState.errors.bio
-                                  ? "border-red-500"
-                                  : "border-gray-300"
+                                ? "border-red-500"
+                                : "border-gray-300"
                                 } rounded-xl h-[41px]    text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.bio
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
@@ -1986,8 +1998,8 @@ const UserProfilePage = () => {
                               {...basicInfoForm.register("vision")}
                               placeholder="What is your conscious vision?"
                               className={`w-full px-4 py-2  border bg-white ${basicInfoForm.formState.errors.vision
-                                  ? "border-red-500"
-                                  : "border-gray-300"
+                                ? "border-red-500"
+                                : "border-gray-300"
                                 } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.vision
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
@@ -2084,8 +2096,8 @@ const UserProfilePage = () => {
                                   }
                                 }}
                                 className={`w-full px-4 py-2 border bg-white ${contactInfoForm.formState.errors.phone
-                                    ? "border-red-500"
-                                    : "border-gray-300"
+                                  ? "border-red-500"
+                                  : "border-gray-300"
                                   } rounded-xl h-[41px] focus:outline-none focus:ring-2 placeholder:text-sm placeholder:text-gray-400  ${contactInfoForm.formState.errors.phone
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
@@ -2118,8 +2130,8 @@ const UserProfilePage = () => {
                                 },
                               })}
                               className={`w-full px-4 py-2 border bg-white ${contactInfoForm.formState.errors.email
-                                  ? "border-red-500"
-                                  : "border-gray-300"
+                                ? "border-red-500"
+                                : "border-gray-300"
                                 } rounded-xl focus:outline-none h-[41px] focus:ring-2 placeholder:text-sm placeholder:text-gray-400 ${contactInfoForm.formState.errors.email
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
@@ -2391,8 +2403,8 @@ const UserProfilePage = () => {
                               {...socialLinksForm.register("facebook")}
                               placeholder="https://facebook.com/yourprofile"
                               className={`w-full px-4 py-2 h-[41px] border bg-white ${socialLinksForm.formState.errors.facebook
-                                  ? "border-red-500"
-                                  : "border-gray-300"
+                                ? "border-red-500"
+                                : "border-gray-300"
                                 } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${socialLinksForm.formState.errors.facebook
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
@@ -2418,8 +2430,8 @@ const UserProfilePage = () => {
                               {...socialLinksForm.register("twitter")}
                               placeholder="https://twitter.com/yourprofile"
                               className={`w-full px-4 py-2 h-[41px] border bg-white ${socialLinksForm.formState.errors.twitter
-                                  ? "border-red-500"
-                                  : "border-gray-300"
+                                ? "border-red-500"
+                                : "border-gray-300"
                                 } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${socialLinksForm.formState.errors.twitter
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
@@ -2445,8 +2457,8 @@ const UserProfilePage = () => {
                               {...socialLinksForm.register("linkedin")}
                               placeholder="https://linkedin.com/in/yourprofile"
                               className={`w-full px-4 py-2 h-[41px] border bg-white ${socialLinksForm.formState.errors.linkedin
-                                  ? "border-red-500"
-                                  : "border-gray-300"
+                                ? "border-red-500"
+                                : "border-gray-300"
                                 } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${socialLinksForm.formState.errors.linkedin
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
@@ -2472,8 +2484,8 @@ const UserProfilePage = () => {
                               {...socialLinksForm.register("instagram")}
                               placeholder="https://instagram.com/yourprofile"
                               className={`w-full px-4 py-2 h-[41px] border bg-white ${socialLinksForm.formState.errors.instagram
-                                  ? "border-red-500"
-                                  : "border-gray-300"
+                                ? "border-red-500"
+                                : "border-gray-300"
                                 } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${socialLinksForm.formState.errors.instagram
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
@@ -2571,9 +2583,9 @@ const UserProfilePage = () => {
                                   )}
                                   placeholder="Enter your degree"
                                   className={`w-full px-4 py-2 border bg-white ${educationForm.formState.errors
-                                      ?.educations?.[index]?.degree
-                                      ? "border-red-500"
-                                      : "border-gray-300"
+                                    ?.educations?.[index]?.degree
+                                    ? "border-red-500"
+                                    : "border-gray-300"
                                     } rounded-xl h-[41px] text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${educationForm.formState.errors
                                       ?.educations?.[index]?.degree
                                       ? "focus:ring-red-500"
@@ -2606,9 +2618,9 @@ const UserProfilePage = () => {
                                   )}
                                   placeholder="Enter institution name"
                                   className={`w-full h-[41px] px-4 py-2 border bg-white ${educationForm.formState.errors
-                                      ?.educations?.[index]?.institution
-                                      ? "border-red-500"
-                                      : "border-gray-300"
+                                    ?.educations?.[index]?.institution
+                                    ? "border-red-500"
+                                    : "border-gray-300"
                                     } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${educationForm.formState.errors
                                       ?.educations?.[index]?.institution
                                       ? "focus:ring-red-500"
@@ -2640,9 +2652,9 @@ const UserProfilePage = () => {
                                     `educations.${index}.start_date`
                                   )}
                                   className={`w-full h-[41px] px-4 py-2 border bg-white ${educationForm.formState.errors
-                                      ?.educations?.[index]?.start_date
-                                      ? "border-red-500"
-                                      : "border-gray-300"
+                                    ?.educations?.[index]?.start_date
+                                    ? "border-red-500"
+                                    : "border-gray-300"
                                     } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${educationForm.formState.errors
                                       ?.educations?.[index]?.start_date
                                       ? "focus:ring-red-500"
@@ -2673,9 +2685,9 @@ const UserProfilePage = () => {
                                     `educations.${index}.end_date`
                                   )}
                                   className={`w-full h-[41px] px-4 py-2 border bg-white ${educationForm.formState.errors
-                                      ?.educations?.[index]?.end_date
-                                      ? "border-red-500"
-                                      : "border-gray-300"
+                                    ?.educations?.[index]?.end_date
+                                    ? "border-red-500"
+                                    : "border-gray-300"
                                     } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${educationForm.formState.errors
                                       ?.educations?.[index]?.end_date
                                       ? "focus:ring-red-500"
@@ -2815,9 +2827,9 @@ const UserProfilePage = () => {
                                   maxLength={40}
                                   placeholder="Enter Company Name"
                                   className={`w-full h-[41px] px-4 py-2 border bg-white ${workExperienceForm.formState.errors
-                                      ?.workExperiences?.[index]?.company
-                                      ? "border-red-500"
-                                      : "border-gray-300"
+                                    ?.workExperiences?.[index]?.company
+                                    ? "border-red-500"
+                                    : "border-gray-300"
                                     } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]?.company
                                       ? "focus:ring-red-500"
@@ -2850,9 +2862,9 @@ const UserProfilePage = () => {
                                   maxLength={40}
                                   placeholder="Enter your Designation"
                                   className={`w-full h-[41px] px-4 py-2 border bg-white ${workExperienceForm.formState.errors
-                                      ?.workExperiences?.[index]?.position
-                                      ? "border-red-500"
-                                      : "border-gray-300"
+                                    ?.workExperiences?.[index]?.position
+                                    ? "border-red-500"
+                                    : "border-gray-300"
                                     } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]?.position
                                       ? "focus:ring-red-500"
@@ -2884,10 +2896,10 @@ const UserProfilePage = () => {
                                   rows={5}
                                   placeholder="Describe your key roles and responsibilities"
                                   className={`w-full px-4 py-2 border bg-white ${workExperienceForm.formState.errors
-                                      ?.workExperiences?.[index]
-                                      ?.roles_responsibilities
-                                      ? "border-red-500"
-                                      : "border-gray-300"
+                                    ?.workExperiences?.[index]
+                                    ?.roles_responsibilities
+                                    ? "border-red-500"
+                                    : "border-gray-300"
                                     } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]
                                       ?.roles_responsibilities
@@ -3023,9 +3035,9 @@ const UserProfilePage = () => {
                                     `workExperiences.${index}.start_date`
                                   )}
                                   className={`w-full h-[41px] px-4 py-2 border bg-white ${workExperienceForm.formState.errors
-                                      ?.workExperiences?.[index]?.start_date
-                                      ? "border-red-500"
-                                      : "border-gray-300"
+                                    ?.workExperiences?.[index]?.start_date
+                                    ? "border-red-500"
+                                    : "border-gray-300"
                                     } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]?.start_date
                                       ? "focus:ring-red-500"
@@ -3055,9 +3067,9 @@ const UserProfilePage = () => {
                                     `workExperiences.${index}.end_date`
                                   )}
                                   className={`w-full h-[41px] px-4 py-2 border bg-white ${workExperienceForm.formState.errors
-                                      ?.workExperiences?.[index]?.end_date
-                                      ? "border-red-500"
-                                      : "border-gray-300"
+                                    ?.workExperiences?.[index]?.end_date
+                                    ? "border-red-500"
+                                    : "border-gray-300"
                                     } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${workExperienceForm.formState.errors
                                       ?.workExperiences?.[index]?.end_date
                                       ? "focus:ring-red-500"
@@ -3456,8 +3468,8 @@ const UserProfilePage = () => {
                                 },
                               })}
                               className={`w-full h-[41px] px-4 py-2 border bg-white ${publicProfileForm.formState.errors.notifyEmail
-                                  ? "border-red-500"
-                                  : "border-gray-300"
+                                ? "border-red-500"
+                                : "border-gray-300"
                                 } rounded-xl focus:outline-none focus:ring-2 ${publicProfileForm.formState.errors.notifyEmail
                                   ? "focus:ring-red-500"
                                   : "focus:ring-purple-500"
