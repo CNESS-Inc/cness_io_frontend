@@ -367,10 +367,23 @@ export default function UserProfileView() {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
+    const file = e.target.files?.[0];
+    if (file) {
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!validTypes.includes(file.type)) {
+        e.target.value = '';
+
+        showToast?.({
+          message: "Please select only JPG, JPEG or PNG files.",
+          type: "error",
+          duration: 3000,
+        });
+        return;
+      }
+
       setNewPractice((prev) => ({
         ...prev,
-        file: e.target.files![0],
+        file: file,
       }));
     }
   };
@@ -477,10 +490,10 @@ export default function UserProfileView() {
         <img
           src={
             !userDetails?.profile_banner ||
-            userDetails?.profile_banner === "null" ||
-            userDetails?.profile_banner === "undefined" ||
-            !userDetails?.profile_banner.startsWith("http") ||
-            userDetails?.profile_banner === "http://localhost:5026/file/"
+              userDetails?.profile_banner === "null" ||
+              userDetails?.profile_banner === "undefined" ||
+              !userDetails?.profile_banner.startsWith("http") ||
+              userDetails?.profile_banner === "http://localhost:5026/file/"
               ? "https://cdn.cness.io/banner.webp"
               : userDetails?.profile_banner
           }
@@ -496,10 +509,10 @@ export default function UserProfileView() {
               <img
                 src={
                   !userDetails?.profile_picture ||
-                  userDetails?.profile_picture === "null" ||
-                  userDetails?.profile_picture === "undefined" ||
-                  !userDetails?.profile_picture.startsWith("http") ||
-                  userDetails?.profile_picture === "http://localhost:5026/file/"
+                    userDetails?.profile_picture === "null" ||
+                    userDetails?.profile_picture === "undefined" ||
+                    !userDetails?.profile_picture.startsWith("http") ||
+                    userDetails?.profile_picture === "http://localhost:5026/file/"
                     ? "/profile.png"
                     : userDetails?.profile_picture
                 }
@@ -530,19 +543,19 @@ export default function UserProfileView() {
               {(userDetails?.address ||
                 userDetails?.location?.city ||
                 userDetails?.country?.name) && (
-                <div className="mt-3 font-['Open_Sans'] font-normal text-[16px] leading-[100%] text-[#64748B]">
-                  <div className="flex items-start gap-1 text-[#64748B] text-sm">
-                    <div className="pt-[4px] flex-shrink-0 flex items-center">
-                      <FaLocationDot className="w-3 h-3" stroke="#64748B" />
-                    </div>
-                    <div className="leading-snug">
-                      {userDetails?.address},{" "}
-                      {userDetails?.location?.city || ""},{" "}
-                      {userDetails?.country?.name}
+                  <div className="mt-3 font-['Open_Sans'] font-normal text-[16px] leading-[100%] text-[#64748B]">
+                    <div className="flex items-start gap-1 text-[#64748B] text-sm">
+                      <div className="pt-[4px] flex-shrink-0 flex items-center">
+                        <FaLocationDot className="w-3 h-3" stroke="#64748B" />
+                      </div>
+                      <div className="leading-snug">
+                        {userDetails?.address},{" "}
+                        {userDetails?.location?.city || ""},{" "}
+                        {userDetails?.country?.name}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {/* <div className="mt-3 flex gap-3 text-center">
                 <span>
@@ -573,11 +586,10 @@ export default function UserProfileView() {
                     bg-gradient-to-r from-[#7077FE] via-[#9747FF] to-[#F07EFF] 
                     font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
                     text-white align-middle
-                    ${
-                      userDetails?.if_following
+                    ${userDetails?.if_following
                         ? "bg-gray-200 text-gray-800"
                         : "bg-[#7C81FF] text-white"
-                    } hover:bg-indigo-600 hover:text-white`}
+                      } hover:bg-indigo-600 hover:text-white`}
                   >
                     {userDetails?.if_following ? "Resonating" : "+ Resonate"}
                   </button>
@@ -600,26 +612,25 @@ export default function UserProfileView() {
                     className={`w-full h-9 rounded-full border border-[#ECEEF2] 
              font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
              flex items-center justify-center gap-2
-             ${
-               userDetails?.user_id === loggedInUserID
-                 ? "bg-gray-200 text-gray-500 cursor-not-allowed" // 👈 styling when disabled
-                 : userDetails?.if_friend &&
-                   userDetails?.friend_request_status === "ACCEPT"
-                 ? "bg-green-100 text-green-700"
-                 : !userDetails?.if_friend &&
-                   userDetails?.friend_request_status === "PENDING"
-                 ? "bg-yellow-100 text-yellow-700"
-                 : "bg-[#FFFFFF] text-[#0B3449] hover:bg-indigo-600"
-             }`}
+             ${userDetails?.user_id === loggedInUserID
+                        ? "bg-gray-200 text-gray-500 cursor-not-allowed" // 👈 styling when disabled
+                        : userDetails?.if_friend &&
+                          userDetails?.friend_request_status === "ACCEPT"
+                          ? "bg-green-100 text-green-700"
+                          : !userDetails?.if_friend &&
+                            userDetails?.friend_request_status === "PENDING"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-[#FFFFFF] text-[#0B3449] hover:bg-indigo-600"
+                      }`}
                   >
                     <UserRoundPlus className="w-4 h-4" />
                     {userDetails?.if_friend &&
-                    userDetails?.friend_request_status === "ACCEPT"
+                      userDetails?.friend_request_status === "ACCEPT"
                       ? "Connected"
                       : !userDetails?.if_friend &&
                         userDetails?.friend_request_status === "PENDING"
-                      ? "Requested..."
-                      : "Connect"}
+                        ? "Requested..."
+                        : "Connect"}
                   </button>
                 )}
 
@@ -672,65 +683,71 @@ export default function UserProfileView() {
               )}
 
               {/* On The Web */}
-              <div className="border-b border-[#E5E5E5] pt-10 pb-10">
-                <h3 className="font-['Poppins'] font-semibold text-[16px] leading-[150%] text-[#000000] mb-3">
-                  On The Web
-                </h3>
+              {userDetails?.social_links &&
+                Object.keys(userDetails.social_links).some(key =>
+                  userDetails.social_links[key] &&
+                  ["linkedin", "facebook", "twitter", "instagram"].includes(key)
+                ) && (
+                  <div className="border-b border-[#E5E5E5] pt-10 pb-10">
+                    <h3 className="font-['Poppins'] font-semibold text-[16px] leading-[150%] text-[#000000] mb-3">
+                      On The Web
+                    </h3>
 
-                <div className="space-y-3">
-                  {[
-                    {
-                      key: "linkedin",
-                      label: "LinkedIn",
-                      icon: linkedin,
-                    },
-                    {
-                      key: "facebook",
-                      label: "Facebook",
-                      icon: facebook,
-                    },
-                    {
-                      key: "twitter",
-                      label: "X", // Twitter rebranded
-                      icon: twitter,
-                    },
-                    {
-                      key: "instagram",
-                      label: "Instagram",
-                      icon: insta,
-                    },
-                  ]
-                    .filter(
-                      (platform) => userDetails?.social_links?.[platform.key]
-                    )
-                    .map((platform) => (
-                      <a
-                        key={platform.key}
-                        href={userDetails.social_links[platform.key]}
-                        className="flex items-center justify-between w-full h-[45px] border border-[#ECEEF2] rounded-lg px-3 py-2 gap-[10px] hover:bg-gray-50"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={platform.icon}
-                            alt={platform.key}
-                            className="w-7 h-7"
-                          />
-                          <span className="font-['Open_Sans'] font-bold text-[12px] leading-[100%] tracking-[0px] text-[#000000]">
-                            {platform.label}
-                          </span>
-                          <Link className="w-4 h-4 text-[#64748B]" />
-                        </div>
-                        <img
-                          src={fluent}
-                          alt="navigation"
-                          className="w-5 h-5"
-                        />
-                      </a>
-                    ))}
-                </div>
-              </div>
+                    <div className="space-y-3">
+                      {[
+                        {
+                          key: "linkedin",
+                          label: "LinkedIn",
+                          icon: linkedin,
+                        },
+                        {
+                          key: "facebook",
+                          label: "Facebook",
+                          icon: facebook,
+                        },
+                        {
+                          key: "twitter",
+                          label: "X", // Twitter rebranded
+                          icon: twitter,
+                        },
+                        {
+                          key: "instagram",
+                          label: "Instagram",
+                          icon: insta,
+                        },
+                      ]
+                        .filter(
+                          (platform) => userDetails?.social_links?.[platform.key]
+                        )
+                        .map((platform) => (
+                          <a
+                            key={platform.key}
+                            href={userDetails.social_links[platform.key]}
+                            className="flex items-center justify-between w-full h-[45px] border border-[#ECEEF2] rounded-lg px-3 py-2 gap-[10px] hover:bg-gray-50"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <div className="flex items-center gap-3">
+                              <img
+                                src={platform.icon}
+                                alt={platform.key}
+                                className="w-7 h-7"
+                              />
+                              <span className="font-['Open_Sans'] font-bold text-[12px] leading-[100%] tracking-[0px] text-[#000000]">
+                                {platform.label}
+                              </span>
+                              <Link className="w-4 h-4 text-[#64748B]" />
+                            </div>
+                            <img
+                              src={fluent}
+                              alt="navigation"
+                              className="w-5 h-5"
+                            />
+                          </a>
+                        ))}
+                    </div>
+                  </div>
+                )}
 
               {/* My Interests */}
               <div className="border-b border-[#E5E5E5] pt-10 pb-10">
@@ -740,6 +757,12 @@ export default function UserProfileView() {
                 >
                   My Interests
                 </h3>
+                {userDetails?.interests?.length === 0 && (
+                  <p className="font-['Open_Sans'] font-normal text-[12px] leading-[21px]
+                  tracking-[0px] text-[#64748B]">
+                    No Interests shared yet
+                  </p>
+                )}
                 <div className="flex flex-wrap gap-3">
                   {userDetails?.interests?.map(
                     (interest: any, index: number) => (
@@ -753,6 +776,7 @@ export default function UserProfileView() {
                       </span>
                     )
                   )}
+
                 </div>
               </div>
 
@@ -764,6 +788,12 @@ export default function UserProfileView() {
                 >
                   My Professions
                 </h3>
+                {userDetails?.professions?.length === 0 && (
+                  <p className="font-['Open_Sans'] font-normal text-[12px] leading-[21px]
+                  tracking-[0px] text-[#64748B]">
+                    No professions shared yet
+                  </p>
+                )}
                 <div className="flex flex-wrap gap-3">
                   {userDetails?.professions?.map((pro: any, index: number) => (
                     <span
@@ -790,11 +820,10 @@ export default function UserProfileView() {
             <div className="flex justify-center gap-6 -mt-2">
               <Button
                 onClick={() => setActiveTab("about")}
-                className={`relative py-3 font-['Open_Sans'] text-[14px] leading-[100%] ${
-                  activeTab === "about"
-                    ? "font-bold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent"
-                    : "font-normal text-[#64748B]"
-                }`}
+                className={`relative py-3 font-['Open_Sans'] text-[14px] leading-[100%] ${activeTab === "about"
+                  ? "font-bold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent"
+                  : "font-normal text-[#64748B]"
+                  }`}
               >
                 About Me
                 {activeTab === "about" && (
@@ -804,11 +833,10 @@ export default function UserProfileView() {
 
               <Button
                 onClick={() => setActiveTab("best")}
-                className={`relative py-3 font-['Open_Sans'] text-[14px] leading-[100%] ${
-                  activeTab === "best"
-                    ? "font-bold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent"
-                    : "font-normal text-[#64748B]"
-                }`}
+                className={`relative py-3 font-['Open_Sans'] text-[14px] leading-[100%] ${activeTab === "best"
+                  ? "font-bold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent"
+                  : "font-normal text-[#64748B]"
+                  }`}
               >
                 My Best Practices
                 {activeTab === "best" && (
@@ -882,14 +910,14 @@ export default function UserProfileView() {
                         {(edu.start_date ||
                           edu.end_date ||
                           edu.currently_studying) && (
-                          <span className="text-xs text-gray-400 mt-1 block">
-                            {formatRange(
-                              edu.start_date,
-                              edu.end_date,
-                              edu.currently_studying
-                            )}
-                          </span>
-                        )}
+                            <span className="text-xs text-gray-400 mt-1 block">
+                              {formatRange(
+                                edu.start_date,
+                                edu.end_date,
+                                edu.currently_studying
+                              )}
+                            </span>
+                          )}
                       </li>
                     ))}
                   </ul>
@@ -937,14 +965,14 @@ export default function UserProfileView() {
                           {(job.start_date ||
                             job.end_date ||
                             job.currently_working) && (
-                            <span className="text-xs text-gray-400 mt-1 block">
-                              {formatRange(
-                                job.start_date,
-                                job.end_date,
-                                job.currently_working
-                              )}
-                            </span>
-                          )}
+                              <span className="text-xs text-gray-400 mt-1 block">
+                                {formatRange(
+                                  job.start_date,
+                                  job.end_date,
+                                  job.currently_working
+                                )}
+                              </span>
+                            )}
                         </p>
 
                         {/* Responsibilities (if array) */}
@@ -973,33 +1001,35 @@ export default function UserProfileView() {
                 </div>
 
                 {/* Service Offered */}
-                <div className="py-6 border-b border-[#ECEEF2]">
-                  <h3 className="flex items-center gap-2 font-['Poppins'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-[#000000]">
-                    <span className="flex items-center gap-2">
-                      <img src={work} alt="work" className="w-6 h-6" />
-                    </span>
-                    Services
-                  </h3>
+                {userDetails?.person_services?.length > 0 ? (
+                  <div className="py-6 border-b border-[#ECEEF2]">
+                    <h3 className="flex items-center gap-2 font-['Poppins'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-[#000000]">
+                      <span className="flex items-center gap-2">
+                        <img src={work} alt="work" className="w-6 h-6" />
+                      </span>
+                      Services
+                    </h3>
 
-                  <div className="mt-2 space-y-5">
-                    {userDetails?.person_services?.map((service: any) => (
-                      <div key={service.id}>
-                        {/* Position + Company */}
-                        <p className="mt-2 font-['Open_Sans'] font-normal text-[14px] leading-[21px] tracking-[0px] text-[#64748B]">
-                          {service.name}
-                        </p>
-                      </div>
-                    ))}
+                    <div className="mt-2 space-y-5">
+                      {userDetails?.person_services?.map((service: any) => (
+                        <div key={service.id}>
+                          {/* Position + Company */}
+                          <p className="mt-2 font-['Open_Sans'] font-normal text-[14px] leading-[21px] tracking-[0px] text-[#64748B]">
+                            {service.name}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                ) : null}
               </>
             )}
 
             {/* Best Practices Tab */}
             {activeTab === "best" &&
               (userDetails?.best_practices_questions?.length > 0 ||
-              myBP?.length > 0 ||
-              followBP?.length > 0 ? (
+                myBP?.length > 0 ||
+                followBP?.length > 0 ? (
                 <div>
                   {userDetails?.best_practices_questions?.length > 0 && (
                     <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
@@ -1037,12 +1067,12 @@ export default function UserProfileView() {
                                   username={userDetails.first_name}
                                   profileImage={
                                     !userDetails.profile_picture ||
-                                    userDetails.profile_picture === "null" ||
-                                    userDetails.profile_picture ===
+                                      userDetails.profile_picture === "null" ||
+                                      userDetails.profile_picture ===
                                       "undefined" ||
-                                    !userDetails.profile_picture.startsWith(
-                                      "http"
-                                    )
+                                      !userDetails.profile_picture.startsWith(
+                                        "http"
+                                      )
                                       ? "/profile.png"
                                       : userDetails.profile_picture
                                   }
@@ -1087,8 +1117,7 @@ export default function UserProfileView() {
                                   )
                                 ) {
                                   navigate(
-                                    `/dashboard/bestpractices/${
-                                      practice.id
+                                    `/dashboard/bestpractices/${practice.id
                                     }/${slugify(practice.title)}`,
                                     {
                                       state: {
@@ -1102,28 +1131,27 @@ export default function UserProfileView() {
                             >
                               <BestPracticeCard
                                 name={
-                                  `${practice?.profile?.first_name || ""} ${
-                                    practice?.profile?.last_name || ""
-                                  }`.trim() || "CNESS User"
+                                  `${practice?.profile?.first_name || ""} ${practice?.profile?.last_name || ""
+                                    }`.trim() || "CNESS User"
                                 }
                                 username={practice?.user?.username || "user"}
                                 profileImage={
                                   !practice?.profile?.profile_picture ||
-                                  practice?.profile?.profile_picture ===
+                                    practice?.profile?.profile_picture ===
                                     "null" ||
-                                  practice?.profile?.profile_picture ===
+                                    practice?.profile?.profile_picture ===
                                     "undefined" ||
-                                  !practice?.profile?.profile_picture.startsWith(
-                                    "http"
-                                  )
+                                    !practice?.profile?.profile_picture.startsWith(
+                                      "http"
+                                    )
                                     ? "/profile.png"
                                     : practice?.profile?.profile_picture
                                 }
                                 coverImage={
                                   !practice?.file ||
-                                  practice?.file === "null" ||
-                                  practice?.file === "undefined" ||
-                                  !practice?.file.startsWith("http")
+                                    practice?.file === "null" ||
+                                    practice?.file === "undefined" ||
+                                    !practice?.file.startsWith("http")
                                     ? "https://cdn.cness.io/banner.webp"
                                     : practice?.file
                                 }
@@ -1133,9 +1161,8 @@ export default function UserProfileView() {
                                   "Untitled"
                                 }
                                 description={practice?.description || ""}
-                                link={`/dashboard/bestpractices/${
-                                  practice.id
-                                }/${slugify(practice.title)}`}
+                                link={`/dashboard/bestpractices/${practice.id
+                                  }/${slugify(practice.title)}`}
                               />
                             </div>
                           );
@@ -1164,8 +1191,7 @@ export default function UserProfileView() {
                                   )
                                 ) {
                                   navigate(
-                                    `/dashboard/bestpractices/${
-                                      practice.id
+                                    `/dashboard/bestpractices/${practice.id
                                     }/${slugify(practice.title)}`,
                                     {
                                       state: {
@@ -1179,28 +1205,27 @@ export default function UserProfileView() {
                             >
                               <BestPracticeCard
                                 name={
-                                  `${practice?.profile?.first_name || ""} ${
-                                    practice?.profile?.last_name || ""
-                                  }`.trim() || "CNESS User"
+                                  `${practice?.profile?.first_name || ""} ${practice?.profile?.last_name || ""
+                                    }`.trim() || "CNESS User"
                                 }
                                 username={practice?.user?.username || "user"}
                                 profileImage={
                                   !practice?.profile?.profile_picture ||
-                                  practice?.profile?.profile_picture ===
+                                    practice?.profile?.profile_picture ===
                                     "null" ||
-                                  practice?.profile?.profile_picture ===
+                                    practice?.profile?.profile_picture ===
                                     "undefined" ||
-                                  !practice?.profile?.profile_picture.startsWith(
-                                    "http"
-                                  )
+                                    !practice?.profile?.profile_picture.startsWith(
+                                      "http"
+                                    )
                                     ? "/profile.png"
                                     : practice?.profile?.profile_picture
                                 }
                                 coverImage={
                                   !practice?.file ||
-                                  practice?.file === "null" ||
-                                  practice?.file === "undefined" ||
-                                  !practice?.file.startsWith("http")
+                                    practice?.file === "null" ||
+                                    practice?.file === "undefined" ||
+                                    !practice?.file.startsWith("http")
                                     ? "https://cdn.cness.io/banner.webp"
                                     : practice?.file
                                 }
@@ -1210,9 +1235,8 @@ export default function UserProfileView() {
                                   "Untitled"
                                 }
                                 description={practice?.description || ""}
-                                link={`/dashboard/bestpractices/${
-                                  practice.id
-                                }/${slugify(practice.title)}`}
+                                link={`/dashboard/bestpractices/${practice.id
+                                  }/${slugify(practice.title)}`}
                               />
                             </div>
                           );
@@ -1241,8 +1265,7 @@ export default function UserProfileView() {
                                   )
                                 ) {
                                   navigate(
-                                    `/dashboard/bestpractices/${
-                                      practice.id
+                                    `/dashboard/bestpractices/${practice.id
                                     }/${slugify(practice.title)}`,
                                     {
                                       state: {
@@ -1256,28 +1279,27 @@ export default function UserProfileView() {
                             >
                               <BestPracticeCard
                                 name={
-                                  `${practice?.profile?.first_name || ""} ${
-                                    practice?.profile?.last_name || ""
-                                  }`.trim() || "CNESS User"
+                                  `${practice?.profile?.first_name || ""} ${practice?.profile?.last_name || ""
+                                    }`.trim() || "CNESS User"
                                 }
                                 username={practice?.user?.username || "user"}
                                 profileImage={
                                   !practice?.profile?.profile_picture ||
-                                  practice?.profile?.profile_picture ===
+                                    practice?.profile?.profile_picture ===
                                     "null" ||
-                                  practice?.profile?.profile_picture ===
+                                    practice?.profile?.profile_picture ===
                                     "undefined" ||
-                                  !practice?.profile?.profile_picture.startsWith(
-                                    "http"
-                                  )
+                                    !practice?.profile?.profile_picture.startsWith(
+                                      "http"
+                                    )
                                     ? "/profile.png"
                                     : practice?.profile?.profile_picture
                                 }
                                 coverImage={
                                   !practice?.file ||
-                                  practice?.file === "null" ||
-                                  practice?.file === "undefined" ||
-                                  !practice?.file.startsWith("http")
+                                    practice?.file === "null" ||
+                                    practice?.file === "undefined" ||
+                                    !practice?.file.startsWith("http")
                                     ? "https://cdn.cness.io/banner.webp"
                                     : practice?.file
                                 }
@@ -1287,9 +1309,8 @@ export default function UserProfileView() {
                                   "Untitled"
                                 }
                                 description={practice?.description || ""}
-                                link={`/dashboard/bestpractices/${
-                                  practice.id
-                                }/${slugify(practice.title)}`}
+                                link={`/dashboard/bestpractices/${practice.id
+                                  }/${slugify(practice.title)}`}
                               />
                             </div>
                           );
@@ -1356,10 +1377,10 @@ export default function UserProfileView() {
               Member Since:{" "}
               {userDetails?.createdAt
                 ? new Date(userDetails.createdAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })
                 : "—"}
             </p>
             {/* <a

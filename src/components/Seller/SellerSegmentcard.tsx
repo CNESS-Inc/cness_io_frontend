@@ -365,9 +365,9 @@ export function GreetingBar({
         // Include custom_profession in the payload if "other" is selected
         professions: personForm.professions.includes("other")
           ? [
-              ...personForm.professions.filter((p) => p !== "other"),
-              personForm.custom_profession,
-            ]
+            ...personForm.professions.filter((p) => p !== "other"),
+            personForm.custom_profession,
+          ]
           : personForm.professions,
       };
 
@@ -471,15 +471,13 @@ export function GreetingBar({
     }
 
     if (rules.minLength && value.length < rules.minLength) {
-      return `${name.replace("_", " ")} must be at least ${
-        rules.minLength
-      } characters`;
+      return `${name.replace("_", " ")} must be at least ${rules.minLength
+        } characters`;
     }
 
     if (rules.maxLength && value.length > rules.maxLength) {
-      return `${name.replace("_", " ")} must be less than ${
-        rules.maxLength
-      } characters`;
+      return `${name.replace("_", " ")} must be less than ${rules.maxLength
+        } characters`;
     }
 
     if (rules.pattern && !rules.pattern.test(value)) {
@@ -1170,11 +1168,10 @@ export function GreetingBar({
                         name="organization_name"
                         value={organizationForm.organization_name}
                         onChange={handleOrganizationFormChange}
-                        className={`w-full px-3 py-2 border ${
-                          organizationErrors.organization_name
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        } rounded-md`}
+                        className={`w-full px-3 py-2 border ${organizationErrors.organization_name
+                          ? "border-red-500"
+                          : "border-gray-300"
+                          } rounded-md`}
                         placeholder="Enter organization name"
                       />
                       {organizationErrors.organization_name && (
@@ -1193,11 +1190,10 @@ export function GreetingBar({
                         name="domain"
                         value={organizationForm.domain}
                         onChange={handleOrganizationFormChange}
-                        className={`w-full px-3 py-2 border ${
-                          organizationErrors.domain
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        } rounded-md`}
+                        className={`w-full px-3 py-2 border ${organizationErrors.domain
+                          ? "border-red-500"
+                          : "border-gray-300"
+                          } rounded-md`}
                       >
                         <option value="">Select domain</option>
                         {domains?.map((domain: any) => (
@@ -1225,11 +1221,10 @@ export function GreetingBar({
                           name="custom_domain"
                           value={organizationForm.custom_domain || ""}
                           onChange={handleOrganizationFormChange}
-                          className={`w-full px-3 py-2 border ${
-                            organizationErrors.custom_domain
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          } rounded-md`}
+                          className={`w-full px-3 py-2 border ${organizationErrors.custom_domain
+                            ? "border-red-500"
+                            : "border-gray-300"
+                            } rounded-md`}
                           placeholder="Enter your domain name"
                         />
                         {organizationErrors.custom_domain && (
@@ -1368,11 +1363,10 @@ export function GreetingBar({
                                 name={`question_${question.id}`}
                                 value={existingAnswer}
                                 onChange={handleOrganizationFormChange}
-                                className={`w-full px-3 py-2 border ${
-                                  organizationErrors[`question_${question.id}`]
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                } rounded-md`}
+                                className={`w-full px-3 py-2 border ${organizationErrors[`question_${question.id}`]
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                                  } rounded-md`}
                                 placeholder={`Enter your answer`}
                                 rows={3}
                               />
@@ -1383,7 +1377,7 @@ export function GreetingBar({
                                 <p className="mt-1 text-sm text-red-600">
                                   {
                                     organizationErrors[
-                                      `question_${question.id}`
+                                    `question_${question.id}`
                                     ]
                                   }
                                 </p>
@@ -1752,9 +1746,8 @@ export function GreetingBar({
                         className={`w-[440px] h-[41px]
                 rounded-[12px]
                 border-[0.82px]
-                p-[12px] mt-2 ${
-                  personErrors.first_name ? "border-red-500" : "border-gray-300"
-                } rounded-md`}
+                p-[12px] mt-2 ${personErrors.first_name ? "border-red-500" : "border-gray-300"
+                          } rounded-md`}
                       />
                       {personErrors.first_name && (
                         <p className="mt-1 text-sm text-red-600">
@@ -1776,9 +1769,8 @@ export function GreetingBar({
                         className={`w-[440px] h-[41px]
                 rounded-[12px]
                 border-[0.82px]
-                p-[12px] mt-2 ${
-                  personErrors.last_name ? "border-red-500" : "border-gray-300"
-                } rounded-md`}
+                p-[12px] mt-2 ${personErrors.last_name ? "border-red-500" : "border-gray-300"
+                          } rounded-md`}
                         placeholder="Enter your last name"
                       />
                       {personErrors.last_name && (
@@ -1960,11 +1952,10 @@ export function GreetingBar({
                                 name={`question_${question.id}`}
                                 value={existingAnswer}
                                 onChange={handlePersonFormChange}
-                                className={`w-full px-3 py-2 border ${
-                                  personErrors[`question_${question.id}`]
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                } rounded-md`}
+                                className={`w-full px-3 py-2 border ${personErrors[`question_${question.id}`]
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                                  } rounded-md`}
                                 placeholder={`Enter your answer`}
                                 rows={3}
                               />
@@ -2262,9 +2253,9 @@ export function TrueProfileCard({
               <img
                 src={
                   !avatar ||
-                  avatar === "null" ||
-                  avatar === "undefined" ||
-                  !avatar.startsWith("http")
+                    avatar === "null" ||
+                    avatar === "undefined" ||
+                    !avatar.startsWith("http")
                     ? "/profile.png"
                     : avatar
                 }
@@ -2346,8 +2337,7 @@ export function CertificationCard({
   }, [auto, paused, intervalMs]);
 
   const dotCls = (on: boolean) =>
-    `h-1.5 w-1.5 rounded-full ${
-      on ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
+    `h-1.5 w-1.5 rounded-full ${on ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
     } transition-colors`;
 
   return (
@@ -2399,11 +2389,10 @@ export function CertificationCard({
         >
           {/* Slide 1: Levels */}
           <div
-            className={`absolute inset-0 transition-opacity duration-500 ${
-              slide === 0
-                ? "opacity-100 pointer-events-auto"
-                : "opacity-0 pointer-events-none"
-            }`}
+            className={`absolute inset-0 transition-opacity duration-500 ${slide === 0
+              ? "opacity-100 pointer-events-auto"
+              : "opacity-0 pointer-events-none"
+              }`}
           >
             <div className="text-[16px] sm:text-[18px] font-['Open_Sans'] leading-[100%] text-[#222224] mt-1 sm:mt-2 mb-3 sm:mb-4 px-1 sm:px-2">
               Certification Levels
@@ -2412,11 +2401,10 @@ export function CertificationCard({
             <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 px-1 sm:px-2">
               {/* Aspired */}
               <div
-                className={`w-full h-[120px] sm:h-[150px] rounded-[18px] flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4 border ${
-                  activeLevel === "Aspired"
-                    ? "border-2 border-transparent bg-clip-padding bg-white relative before:absolute before:inset-0 before:rounded-[18px] before:p-[2px] before:bg-gradient-to-r before:from-[#7077FE] before:to-[#F07EFF] before:-z-10"
-                    : "border-[#E5E7EB] bg-white"
-                }`}
+                className={`w-full h-[120px] sm:h-[150px] rounded-[18px] flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4 border ${activeLevel === "Aspired"
+                  ? "border-2 border-transparent bg-clip-padding bg-white relative before:absolute before:inset-0 before:rounded-[18px] before:p-[2px] before:bg-gradient-to-r before:from-[#7077FE] before:to-[#F07EFF] before:-z-10"
+                  : "border-[#E5E7EB] bg-white"
+                  }`}
               >
                 <img
                   src="https://cdn.cness.io/aspiring.webp"
@@ -2430,11 +2418,10 @@ export function CertificationCard({
 
               {/* Inspired */}
               <div
-                className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-[2px] ${
-                  activeLevel === "Inspired"
-                    ? "bg-gradient-to-r from-[#7077FE] to-[#F07EFF]"
-                    : "bg-[#E5E7EB]"
-                }`}
+                className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-[2px] ${activeLevel === "Inspired"
+                  ? "bg-gradient-to-r from-[#7077FE] to-[#F07EFF]"
+                  : "bg-[#E5E7EB]"
+                  }`}
               >
                 <div className="w-full h-full rounded-[16px] bg-white flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4">
                   <img
@@ -2450,11 +2437,10 @@ export function CertificationCard({
 
               {/* Leader */}
               <div
-                className={`w-full h-[120px] sm:h-[150px] rounded-[18px] flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4 border ${
-                  activeLevel === "Leader"
-                    ? "border-2 border-transparent bg-clip-padding bg-white relative before:absolute before:inset-0 before:rounded-[18px] before:p-[2px] before:bg-gradient-to-r before:from-[#7077FE] before:to-[#F07EFF] before:-z-10"
-                    : "border-[#E5E7EB] bg-white"
-                }`}
+                className={`w-full h-[120px] sm:h-[150px] rounded-[18px] flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4 border ${activeLevel === "Leader"
+                  ? "border-2 border-transparent bg-clip-padding bg-white relative before:absolute before:inset-0 before:rounded-[18px] before:p-[2px] before:bg-gradient-to-r before:from-[#7077FE] before:to-[#F07EFF] before:-z-10"
+                  : "border-[#E5E7EB] bg-white"
+                  }`}
               >
                 <img
                   src="https://cdn.cness.io/leader.webp"
@@ -2470,11 +2456,10 @@ export function CertificationCard({
 
           {/* Slide 2: Upgrade callout */}
           <div
-            className={`absolute inset-0 transition-opacity duration-500 ${
-              slide === 1
-                ? "opacity-100 pointer-events-auto"
-                : "opacity-0 pointer-events-none"
-            }`}
+            className={`absolute inset-0 transition-opacity duration-500 ${slide === 1
+              ? "opacity-100 pointer-events-auto"
+              : "opacity-0 pointer-events-none"
+              }`}
           >
             {/* Keep the layout anchored to the top-left and within the gradient card */}
             <div className="h-full w-full flex items-start">
@@ -2580,6 +2565,7 @@ export function BestPracticesSection({
   title?: string;
 }) {
   // Desktop: simple 2-up pager
+  const navigate = useNavigate();
   const pageSize = 2;
   const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
   const [page, setPage] = React.useState(0);
@@ -2634,6 +2620,18 @@ export function BestPracticesSection({
     }
   };
 
+  const slugify = (str: string) => {
+    return str
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w\-]+/g, "")
+      .replace(/\-\-+/g, "-")
+      .replace(/^-+/, "")
+      .replace(/-+$/, "");
+  };
+
   return (
     <Card className="p-4 md:p-5">
       {/* Header */}
@@ -2672,7 +2670,7 @@ export function BestPracticesSection({
       </div>
 
       {/* --- MOBILE list (horizontal scroll, snap) --- */}
-      <div className="relative sm:hidden mt-3 w-full">
+      <div className="relative sm:hidden mt-3 w-full overflow-hidden">
         {/* Fade edges to hint scroll */}
         <div className="pointer-events-none absolute left-0 top-0 h-full w-6 bg-gradient-to-r from-white to-transparent" />
         <div className="pointer-events-none absolute right-0 top-0 h-full w-6 bg-gradient-to-l from-white to-transparent" />
@@ -2687,17 +2685,25 @@ export function BestPracticesSection({
           {items.map((bp) => (
             <div
               key={bp.id}
-              className="snap-start flex-shrink-0 w-[332px] h-[317px] rounded-[12px] border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3"
+              onClick={() =>
+                navigate(
+                  `/dashboard/bestpractices/${bp.id}/${slugify(
+                    bp.title
+                  )}`,
+                )
+              }
+              className="snap-start flex-shrink-0 w-[332px] h-[317px] rounded-[12px] border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3 cursor-pointer"
             >
               {/* Image */}
               <div className="h-[135px] rounded-[8px] overflow-hidden">
                 <img
                   src={
                     !bp.image ||
-                    bp.image === "null" ||
-                    bp.image === "undefined" ||
-                    !bp.image.startsWith("http") // <-- check for http/https
-                      ? "https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=1200&auto=format&fit=crop"
+                      bp.image === "null" ||
+                      bp.image === "undefined" ||
+                      !bp.image.startsWith("http") ||
+                      bp.image === "http://localhost:5026/file/"
+                      ? iconMap["companycard1"]
                       : bp.image
                   }
                   alt={bp.title}
@@ -2723,7 +2729,10 @@ export function BestPracticesSection({
                     className="mt-auto w-full h-[37px] rounded-full bg-[#F396FF] px-3 py-2
                              font-opensans text-[14px] font-semibold text-white
                              shadow transition"
-                    onClick={() => toggleFollowPost(bp.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFollowPost(bp.id);
+                    }}
                   >
                     Following
                   </button>
@@ -2732,14 +2741,18 @@ export function BestPracticesSection({
                     className="mt-auto w-full h-[37px] rounded-full bg-[#7077FE] px-3 py-2
                              font-opensans text-[14px] font-semibold text-white
                              shadow hover:bg-[#5A61E8] transition"
-                    onClick={() => toggleFollowPost(bp.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFollowPost(bp.id);
+                    }}
                   >
                     Follow
                   </button>
                 )}
               </div>
             </div>
-          ))}
+          )
+          )}
         </div>
 
         {/* Tiny overlay arrows for mobile (optional) */}
@@ -2760,17 +2773,37 @@ export function BestPracticesSection({
       </div>
 
       {/* --- DESKTOP list (keep your 2-up pager) --- */}
-      <div className="mt-3 hidden sm:flex gap-4">
+      <div className="mt-3 hidden sm:flex gap-4 overflow-hidden">
         {visible.map((bp) => (
           <div
             key={bp.id}
-            className="flex-shrink-0 w-[332px] h-[317px] rounded-[12px] border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3"
+            onClick={() =>
+              navigate(
+                `/dashboard/bestpractices/${bp.id}/${slugify(
+                  bp.title
+                )}`,
+              )
+            }
+            className="flex-shrink-0 w-[332px] h-[317px] rounded-[12px] border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3 cursor-pointer"
           >
             <div className="h-[135px] rounded-[8px] overflow-hidden">
               <img
-                src={bp.image}
+                src={
+                  !bp.image ||
+                    bp.image === "null" ||
+                    bp.image === "undefined" ||
+                    !bp.image.startsWith("http") ||
+                    bp.image === "http://localhost:5026/file/"
+                    ? iconMap["companycard1"]
+                    : bp.image
+                }
                 alt={bp.title}
                 className="h-full w-full object-cover"
+                onError={(e) => {
+                  // Fallback in case the image fails to load
+                  (e.target as HTMLImageElement).src =
+                    iconMap["companycard1"];
+                }}
               />
             </div>
 
@@ -2786,7 +2819,10 @@ export function BestPracticesSection({
                   className="mt-auto w-full h-[37px] rounded-full bg-[#F396FF] px-3 py-2
                              font-opensans text-[14px] font-semibold text-white
                              shadow transition"
-                  onClick={() => toggleFollowPost(bp.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFollowPost(bp.id);
+                  }}
                 >
                   Following
                 </button>
@@ -2795,7 +2831,10 @@ export function BestPracticesSection({
                   className="mt-auto w-full h-[37px] rounded-full bg-[#7077FE] px-3 py-2
                              font-opensans text-[14px] font-semibold text-white
                              shadow hover:bg-[#5A61E8] transition"
-                  onClick={() => toggleFollowPost(bp.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFollowPost(bp.id);
+                  }}
                 >
                   Follow
                 </button>
@@ -2811,9 +2850,8 @@ export function BestPracticesSection({
         {items.map((_, i) => (
           <span
             key={i}
-            className={`h-1.5 w-1.5 rounded-full ${
-              i === mobileIndex ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
-            }`}
+            className={`h-1.5 w-1.5 rounded-full ${i === mobileIndex ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
+              }`}
           />
         ))}
       </div>
@@ -2822,9 +2860,8 @@ export function BestPracticesSection({
         {Array.from({ length: totalPages }).map((_, i) => (
           <span
             key={i}
-            className={`h-1.5 w-1.5 rounded-full ${
-              i === page ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
-            }`}
+            className={`h-1.5 w-1.5 rounded-full ${i === page ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
+              }`}
           />
         ))}
       </div>
@@ -2915,9 +2952,8 @@ export function SocialStackCard({
 
     const Rail = (
       <div
-        className={`flex flex-col gap-[3px] ${
-          reverse ? "marquee-ping-reverse" : "marquee-ping"
-        }`}
+        className={`flex flex-col gap-[3px] ${reverse ? "marquee-ping-reverse" : "marquee-ping"
+          }`}
       >
         {list.map((src, i) => (
           <div
@@ -3291,9 +3327,8 @@ export function SocialStackCard({
               key={i}
               onClick={() => setIdx(i)}
               aria-label={`Slide ${i + 1}`}
-              className={`h-1.5 w-1.5 rounded-full ${
-                i === idx ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
-              }`}
+              className={`h-1.5 w-1.5 rounded-full ${i === idx ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
+                }`}
             />
           ))}
         </div>
@@ -3335,8 +3370,8 @@ export function SocialStackCard({
         <input
           className="h-10 w-full outline-none text-sm"
           placeholder="Search…"
-          // onChange={(e) => onSearch?.(e.target.value)}
-          // onClick={(e) => e.stopPropagation()}
+        // onChange={(e) => onSearch?.(e.target.value)}
+        // onClick={(e) => e.stopPropagation()}
         />
         <SearchIcon className="h-4 w-4 text-[#667085]" />
       </div>
@@ -3355,9 +3390,9 @@ export function SocialStackCard({
           <img
             src={
               !avatar ||
-              avatar === "null" ||
-              avatar === "undefined" ||
-              !avatar.startsWith("http")
+                avatar === "null" ||
+                avatar === "undefined" ||
+                !avatar.startsWith("http")
                 ? "/profile.png"
                 : avatar
             }
@@ -3496,9 +3531,8 @@ export function SocialStackCard({
             role="tab"
             aria-selected={tab === "Suggested"}
             onClick={() => setTab("Suggested")}
-            className={`relative z-10 h-8 text-center text-sm font-semibold rounded-full transition-colors ${
-              tab === "Suggested" ? "text-white" : "text-[#222224]"
-            }`}
+            className={`relative z-10 h-8 text-center text-sm font-semibold rounded-full transition-colors ${tab === "Suggested" ? "text-white" : "text-[#222224]"
+              }`}
           >
             Suggested
           </button>
@@ -3507,9 +3541,8 @@ export function SocialStackCard({
             role="tab"
             aria-selected={tab === "Requested"}
             onClick={() => setTab("Requested")}
-            className={`relative z-10 h-8 text-center text-sm font-semibold rounded-full transition-colors ${
-              tab === "Requested" ? "text-white" : "text-[#222224]"
-            }`}
+            className={`relative z-10 h-8 text-center text-sm font-semibold rounded-full transition-colors ${tab === "Requested" ? "text-white" : "text-[#222224]"
+              }`}
           >
             Requested
           </button>
@@ -3527,9 +3560,9 @@ export function SocialStackCard({
                   <img
                     src={
                       !f.avatar ||
-                      f.avatar === "null" ||
-                      f.avatar === "undefined" ||
-                      !f.avatar.startsWith("http")
+                        f.avatar === "null" ||
+                        f.avatar === "undefined" ||
+                        !f.avatar.startsWith("http")
                         ? "/profile.png"
                         : f.avatar
                     }
@@ -3633,9 +3666,10 @@ export function DirectorySection({
               <img
                 src={
                   !it.avatar ||
-                  it.avatar === "null" ||
-                  it.avatar === "undefined" ||
-                  !it.avatar.startsWith("http") // <-- check for http/https
+                    it.avatar === "null" ||
+                    it.avatar === "undefined" ||
+                    !it.avatar.startsWith("http") ||
+                    it.avatar === "http://localhost:5026/file/"
                     ? "https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=1200&auto=format&fit=crop"
                     : it.avatar
                 }
