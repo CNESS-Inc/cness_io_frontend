@@ -12,6 +12,7 @@ import {
   GetServiceDetails,
   GetStateDetails,
   MeDetails,
+  removeProfileImage,
   SubmitProfileDetails,
   SubmitPublicProfileDetails,
 } from "../../../Common/ServerAPI";
@@ -649,24 +650,28 @@ const UserProfilePage = () => {
   const handleImageChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
     setter: React.Dispatch<React.SetStateAction<string | null>>,
-    formKey: string
+    formKey: "profile" | "banner"
   ) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Set uploading state
       setUploadProgress({
-        type: formKey === "profile" ? "profile" : "banner",
+        type: formKey,
         message: "Uploading. Please wait...",
       });
 
-      // Preview image
-      const reader = new FileReader();
-      reader.onloadend = () => setter(reader.result as string);
-      reader.readAsDataURL(file);
+      // Create temporary preview immediately
+      const objectUrl = URL.createObjectURL(file);
+      setter(objectUrl);
 
       // Prepare form data
       const formData = new FormData();
-      formData.append(formKey, file); // Use dynamic key
+
+      // Use the correct field name based on image type
+      if (formKey === "profile") {
+        formData.append("profile", file);
+      } else {
+        formData.append("banner", file);
+      }
 
       try {
         const res = await SubmitProfileDetails(formData);
@@ -675,28 +680,115 @@ const UserProfilePage = () => {
           type: "success",
           duration: 5000,
         });
-        setUploadProgress({ type: null, message: "" });
+
+        // Get updated profile data
         const response = await MeDetails();
-        localStorage.setItem(
-          "profile_picture",
-          response?.data?.data?.user.profile_picture
-        );
-        localStorage.setItem("name", response?.data?.data?.user.name);
-        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
-        localStorage.setItem(
-          "margaret_name",
-          response?.data?.data?.user.margaret_name
-        );
+        const userData = response?.data?.data?.user;
+
+        // Update preview with actual server URL
+        if (formKey === "profile") {
+          const profilePictureUrl = userData?.profile_picture;
+          if (profilePictureUrl) {
+            setter(profilePictureUrl);
+            localStorage.setItem("profile_picture", profilePictureUrl);
+          }
+        } else {
+          const bannerUrl = userData?.profile_banner;
+          if (bannerUrl) {
+            setter(bannerUrl);
+            // Clean up temporary URL
+            URL.revokeObjectURL(objectUrl);
+          }
+        }
+
+        // Update other user data in localStorage
+        localStorage.setItem("name", userData?.name);
+        localStorage.setItem("main_name", userData?.main_name);
+        localStorage.setItem("margaret_name", userData?.margaret_name);
       } catch (error: any) {
         showToast({
           message: error?.response?.data?.error?.message,
           type: "error",
           duration: 5000,
         });
+        // Clean up on error and reset to previous state
+        URL.revokeObjectURL(objectUrl);
+        // Reset to previous banner or default
+        const response = await MeDetails();
+        const userData = response?.data?.data?.user;
+        if (formKey === "banner") {
+          setter(userData?.profile_banner || null);
+        }
       } finally {
-        // Reset uploading state
         setUploadProgress({ type: null, message: "" });
       }
+    }
+  };
+
+  // Add these functions inside your UserProfilePage component
+
+  const handleRemoveProfileImage = async () => {
+    try {
+      setUploadProgress({
+        type: "profile",
+        message: "Removing profile image...",
+      });
+
+      const response = await removeProfileImage("profile");
+
+      if (response.success) {
+        setLogoPreview(null);
+        showToast({
+          message:
+            response.success.message || "Profile image removed successfully",
+          type: "success",
+          duration: 5000,
+        });
+
+        // Update localStorage if needed
+        localStorage.removeItem("profile_picture");
+      }
+    } catch (error: any) {
+      showToast({
+        message:
+          error?.response?.data?.error?.message ||
+          "Failed to remove profile image",
+        type: "error",
+        duration: 5000,
+      });
+    } finally {
+      setUploadProgress({ type: null, message: "" });
+    }
+  };
+
+  const handleRemoveBannerImage = async () => {
+    try {
+      setUploadProgress({
+        type: "banner",
+        message: "Removing banner image...",
+      });
+
+      const response = await removeProfileImage("banner");
+
+      if (response.success) {
+        setBanner(null);
+        showToast({
+          message:
+            response.success.message || "Banner image removed successfully",
+          type: "success",
+          duration: 5000,
+        });
+      }
+    } catch (error: any) {
+      showToast({
+        message:
+          error?.response?.data?.error?.message ||
+          "Failed to remove banner image",
+        type: "error",
+        duration: 5000,
+      });
+    } finally {
+      setUploadProgress({ type: null, message: "" });
     }
   };
 
@@ -1289,18 +1381,22 @@ const UserProfilePage = () => {
                   )}
                   <img
                     src={
-                      !banner ||
-                      banner === "null" ||
-                      banner === "undefined" ||
-                      !banner.startsWith("http") ||
-                      banner === "http://localhost:5026/file/"
-                        ? "/banner.jpg"
-                        : banner
+                      banner &&
+                      banner !== "null" &&
+                      banner !== "undefined" &&
+                      banner.startsWith("blob:")
+                        ? banner // This will show the blob URL preview
+                        : banner &&
+                          banner !== "null" &&
+                          banner !== "undefined" &&
+                          banner.startsWith("http") &&
+                          banner !== "http://localhost:5026/file/"
+                        ? banner
+                        : "/banner.jpg"
                     }
                     alt="Banner"
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      // Fallback if the image fails to load
                       const target = e.target as HTMLImageElement;
                       target.src = "/banner.jpg";
                     }}
@@ -1323,8 +1419,9 @@ const UserProfilePage = () => {
                       banner.startsWith("http") &&
                       banner !== "http://localhost:5026/file/" && (
                         <button
-                          onClick={() => setBanner(null)}
+                          onClick={handleRemoveBannerImage}
                           className="bg-white p-1.5 sm:p-2 rounded-full shadow hover:bg-red-100"
+                          disabled={uploadProgress.type === "banner"}
                         >
                           <TrashIcon className="w-4 sm:w-5 h-4 sm:h-5 text-red-600" />
                         </button>
@@ -1400,8 +1497,9 @@ const UserProfilePage = () => {
                             logoPreview.startsWith("http") &&
                             logoPreview !== "http://localhost:5026/file/" && (
                               <button
-                                onClick={() => setLogoPreview(null)}
+                                onClick={handleRemoveProfileImage}
                                 className="bg-white p-1.5 rounded-full shadow hover:bg-red-100"
+                                disabled={uploadProgress.type === "profile"}
                                 title="Remove Photo"
                               >
                                 <TrashIcon className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-red-600" />

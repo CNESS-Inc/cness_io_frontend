@@ -37,17 +37,17 @@ function PricingCard({ card }: { card: Card }) {
 
   const selectedStyles: React.CSSProperties = selected
     ? {
-        borderWidth: "2.51px",
-        borderColor: "transparent",
-        backgroundImage:
-          "linear-gradient(#FFFFFF, #FFFFFF), linear-gradient(90deg, #7077FE, #F07EFF)",
-        backgroundOrigin: "border-box",
-        backgroundClip: "padding-box, border-box",
-      }
+      borderWidth: "2.51px",
+      borderColor: "transparent",
+      backgroundImage:
+        "linear-gradient(#FFFFFF, #FFFFFF), linear-gradient(90deg, #7077FE, #F07EFF)",
+      backgroundOrigin: "border-box",
+      backgroundClip: "padding-box, border-box",
+    }
     : {
-        borderWidth: "1.26px",
-        borderColor: "#E1E1E1",
-      };
+      borderWidth: "1.26px",
+      borderColor: "#E1E1E1",
+    };
 
   return (
     <div
@@ -121,7 +121,7 @@ function PricingCard({ card }: { card: Card }) {
 
           {card.ctaType === "upgrade" && (
             <button
-            onClick={() => navigate('/dashboard/assesment')}
+              onClick={() => navigate('/dashboard/assesment')}
               className="w-full rounded-full bg-[#7077FE] hover:bg-[#897aff] font-['Plus Jakarta Sans'] px-6 py-4 text-sm font-medium text-white flex items-center justify-center"
             >
               Upgrade
@@ -176,33 +176,33 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
               ? "completed"
               : "pending"
             : "upgrade"
-          : "completed",
-      badge: inspired,
+          : "upgrade",
+    badge: inspired,
     },
-    {
-      id: "right",
-      title: "Leader",
+{
+  id: "right",
+    title: "Leader",
       subtitle: "Expert level certification",
-      price: "",
-      features: [
-        "Basic profile cSell your reation",
-        "Community Access",
-        "Resources Library",
-        "Basic profile creation",
-      ],
-      selected: data?.badge?.level === "Inspired",
-      ctaType: "upgrade",
-      badge: leader,
+        price: "",
+          features: [
+            "Basic profile cSell your reation",
+            "Community Access",
+            "Resources Library",
+            "Basic profile creation",
+          ],
+            selected: data?.badge?.level === "Inspired",
+              ctaType: "upgrade",
+                badge: leader,
     },
   ];
 
-  return (
-    <section className="w-full mt-10">
-      <div className="w-full mt-8 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-[18px]">
-        {cards.map((c) => (
-          <PricingCard key={c.id} card={c} />
-        ))}
-      </div>
-    </section>
-  );
+return (
+  <section className="w-full mt-10">
+    <div className="w-full mt-8 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-[18px]">
+      {cards.map((c) => (
+        <PricingCard key={c.id} card={c} />
+      ))}
+    </div>
+  </section>
+);
 }

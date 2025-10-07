@@ -44,7 +44,7 @@ export default function PopupOnboardingModal({
 
   return createPortal(
     <Transition appear show={open} as={Fragment}>
-      <div className="absolute inset-0 z-40">
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
         {/* Overlay */}
         <Transition.Child
           as={Fragment}
@@ -56,14 +56,14 @@ export default function PopupOnboardingModal({
           leaveTo="opacity-0"
         >
           <div
-            className="absolute inset-0 bg-black/50"
+            className="fixed inset-0 bg-black/50"
             onClick={() => closeOnOverlay && onClose()}
             aria-hidden
           />
         </Transition.Child>
 
         {/* Center container */}
-        <div className="absolute inset-0 grid place-items-center p-4">
+        <div className="relative place-items-center p-4">
           {/* Modal */}
           <Transition.Child
             as={Fragment}
@@ -106,15 +106,15 @@ export default function PopupOnboardingModal({
                     opacity: 0.6,
                   }}
                 />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-center w-full px-6">
-  <h2 className="text-center font-[Poppins] font-medium text-3xl md:text-[42px] leading-tight mb-5 bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text">
-    Welcome!
-  </h2>
-  <p className="text-[#64748B] text-center text-sm md:text-base leading-relaxed max-w-[380px] mx-auto">
-    Discover certifications, connect with like-minded people, grow your ideas,
-    and make an impact—all in one place.
-  </p>
-</div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-center w-full px-6">
+                  <h2 className="text-center font-[Poppins] font-medium text-3xl md:text-[42px] leading-tight mb-5 bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text">
+                    Welcome!
+                  </h2>
+                  <p className="text-[#64748B] text-center text-sm md:text-base leading-relaxed max-w-[380px] mx-auto">
+                    Discover certifications, connect with like-minded people, grow your ideas,
+                    and make an impact—all in one place.
+                  </p>
+                </div>
               </div>
 
               {/* Right panel */}

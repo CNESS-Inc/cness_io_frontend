@@ -373,10 +373,23 @@ const Managebestpractices = () => {
 
   // Function to handle file change for create form
   const handleCreateFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
+    const file = e.target.files?.[0];
+    if (file) {
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!validTypes.includes(file.type)) {
+        e.target.value = '';
+
+        showToast?.({
+          message: "Please select only JPG, JPEG or PNG files.",
+          type: "error",
+          duration: 3000,
+        });
+        return;
+      }
+
       setNewPractice((prev) => ({
         ...prev,
-        file: e.target.files![0],
+        file: file,
       }));
     }
   };
@@ -466,21 +479,19 @@ const Managebestpractices = () => {
         {/* Tab Navigation */}
         <div className="flex border-b border-gray-200 mb-6 mt-8">
           <button
-            className={`px-4 py-2 cursor-pointer font-medium ${
-              activeTab === "saved"
+            className={`px-4 py-2 cursor-pointer font-medium ${activeTab === "saved"
                 ? "text-blue-600 border-b-2 border-blue-600"
                 : "text-gray-500"
-            }`}
+              }`}
             onClick={() => setActiveTab("saved")}
           >
             Saved Best Practices
           </button>
           <button
-            className={`px-4 py-2 cursor-pointer font-medium ${
-              activeTab === "mine"
+            className={`px-4 py-2 cursor-pointer font-medium ${activeTab === "mine"
                 ? "text-blue-600 border-b-2 border-blue-600"
                 : "text-gray-500"
-            }`}
+              }`}
             onClick={() => setActiveTab("mine")}
           >
             My Best Practices
@@ -513,11 +524,10 @@ const Managebestpractices = () => {
                       text-ellipsis 
                       text-center
                       focus:outline-none
-                      border ${
-                        activeStatusTab === 0
-                          ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
-                          : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
-                      }`}
+                      border ${activeStatusTab === 0
+                    ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
+                    : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
+                  }`}
                 onClick={() => setActiveStatusTab(0)}
               >
                 Pending
@@ -539,11 +549,10 @@ const Managebestpractices = () => {
                       text-ellipsis 
                       text-center
                       focus:outline-none
-                      border ms-2 ${
-                        activeStatusTab === 1
-                          ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
-                          : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
-                      }`}
+                      border ms-2 ${activeStatusTab === 1
+                    ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
+                    : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
+                  }`}
                 onClick={() => setActiveStatusTab(1)}
               >
                 Approved
@@ -566,11 +575,10 @@ const Managebestpractices = () => {
                       text-center
                       focus:outline-none
                       border
-                      ms-2 ${
-                        activeStatusTab === 2
-                          ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
-                          : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
-                      }`}
+                      ms-2 ${activeStatusTab === 2
+                    ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
+                    : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
+                  }`}
                 onClick={() => setActiveStatusTab(2)}
               >
                 Rejected
@@ -664,12 +672,12 @@ const Managebestpractices = () => {
                             <img
                               src={
                                 !company?.user?.profilePicture ||
-                                company?.user?.profilePicture === "null" ||
-                                company?.user?.profilePicture === "undefined" ||
-                                !company?.user?.profilePicture.startsWith(
-                                  "http"
-                                ) ||
-                                company?.user?.profilePicture ===
+                                  company?.user?.profilePicture === "null" ||
+                                  company?.user?.profilePicture === "undefined" ||
+                                  !company?.user?.profilePicture.startsWith(
+                                    "http"
+                                  ) ||
+                                  company?.user?.profilePicture ===
                                   "http://localhost:5026/file/"
                                   ? "/profile.png"
                                   : company?.user?.profilePicture
@@ -696,15 +704,15 @@ const Managebestpractices = () => {
                           <div className="rounded-xl overflow-hidden mb-3">
                             {company.file && (
                               <img
-                              src={
-                                !company.file ||
-                                company.file === "null" ||
-                                company.file === "undefined" ||
-                                !company.file.startsWith("http") ||
-                                company.file === "http://localhost:5026/file/"
-                                ? iconMap["companycard1"]
-                                : company.file
-                              }
+                                src={
+                                  !company.file ||
+                                    company.file === "null" ||
+                                    company.file === "undefined" ||
+                                    !company.file.startsWith("http") ||
+                                    company.file === "http://localhost:5026/file/"
+                                    ? iconMap["companycard1"]
+                                    : company.file
+                                }
                                 alt={company.title}
                                 className="w-full h-40 sm:h-48 object-cover"
                                 onError={(e) => {
@@ -802,12 +810,12 @@ const Managebestpractices = () => {
                           <img
                             src={
                               !company?.user?.profilePicture ||
-                              company?.user?.profilePicture === "null" ||
-                              company?.user?.profilePicture === "undefined" ||
-                              !company?.user?.profilePicture.startsWith(
-                                "http"
-                              ) ||
-                              company?.user?.profilePicture ===
+                                company?.user?.profilePicture === "null" ||
+                                company?.user?.profilePicture === "undefined" ||
+                                !company?.user?.profilePicture.startsWith(
+                                  "http"
+                                ) ||
+                                company?.user?.profilePicture ===
                                 "http://localhost:5026/file/"
                                 ? "/profile.png"
                                 : company?.user?.profilePicture
@@ -833,14 +841,14 @@ const Managebestpractices = () => {
                         <div className="rounded-xl overflow-hidden mb-3">
                           {company.file && (
                             <img
-                            src={
+                              src={
                                 !company.file ||
-                                company.file === "null" ||
-                                company.file === "undefined" ||
-                                !company.file.startsWith("http") ||
-                                company.file === "http://localhost:5026/file/"
-                                ? iconMap["companycard1"]
-                                : company.file 
+                                  company.file === "null" ||
+                                  company.file === "undefined" ||
+                                  !company.file.startsWith("http") ||
+                                  company.file === "http://localhost:5026/file/"
+                                  ? iconMap["companycard1"]
+                                  : company.file
                               }
                               alt={company.title}
                               className="w-full h-40 sm:h-48 object-cover"
