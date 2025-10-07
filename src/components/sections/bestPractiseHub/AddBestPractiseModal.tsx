@@ -83,7 +83,7 @@ export default function AddBestPracticeModal({
               type="file"
               id="uploadFile1"
               className="hidden"
-              accept="image/*"
+               accept=".jpg,.jpeg,.png"
               onChange={handleFileChange}
             />
             <label
@@ -127,7 +127,7 @@ export default function AddBestPracticeModal({
                 htmlFor="interest"
                 className="block text-[15px] font-normal text-black"
               >
-                Category*
+                Interest
               </label>
               <select
                 id="interest"
@@ -138,7 +138,7 @@ export default function AddBestPracticeModal({
                focus:ring-2 focus:ring-indigo-500 text-sm font-normal
                ${newPractice.interest ? "text-black" : "text-[#6E7179]"}`}
               >
-                <option value="">Select your Category</option>
+                <option value="">Select your Interest</option>
                 {interest.map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.name}
@@ -154,7 +154,7 @@ export default function AddBestPracticeModal({
                 htmlFor="profession"
                 className="block text-[15px] font-normal text-black"
               >
-                Profession*
+                Profession
               </label>
               <select
                 id="profession"
