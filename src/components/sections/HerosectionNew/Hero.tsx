@@ -99,7 +99,15 @@ export default function HeroSection() {
               className="w-full object-cover h-full"
             /> */}
             <img
-              src="https://cdn.cness.io/Hero%20section1.webp?w=1271&h=374&format=webp&quality=70"
+              srcSet="
+    https://res.cloudinary.com/diudvzdkb/image/upload/w_640,h_188,c_fill,q_auto,f_auto/v1759910599/Hero_section1_s5fvxh.webp 640w,
+    https://res.cloudinary.com/diudvzdkb/image/upload/w_1024,h_301,c_fill,q_auto,f_auto/v1759910599/Hero_section1_s5fvxh.webp 1024w,
+    https://res.cloudinary.com/diudvzdkb/image/upload/w_1271,h_374,c_fill,q_auto,f_auto/v1759910599/Hero_section1_s5fvxh.webp 1271w
+  "
+              sizes="(max-width: 640px) 640px,
+         (max-width: 1024px) 1024px,
+         1271px"
+              src="https://res.cloudinary.com/diudvzdkb/image/upload/w_1271,h_374,c_fill,q_auto,f_auto/v1759910599/Hero_section1_s5fvxh.webp"
               alt="Hero Section"
               width={1271}
               height={374}
