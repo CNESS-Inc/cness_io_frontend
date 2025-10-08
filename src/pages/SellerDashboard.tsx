@@ -212,6 +212,7 @@ export default function SellerDashboard() {
         handle: `@${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
         avatar: item.friend_user.profile.profile_picture,
       }));
+      console.log("fetchFriendRequests ---------------->", formattedRequests);
       setFriendRequests(formattedRequests);
     } catch (error) {
       console.error("Error fetching friend requests:", error);
@@ -221,11 +222,12 @@ export default function SellerDashboard() {
     try {
       const response = await GetFriendSuggestions();
       const formattedRequests = response.data.data.rows.map((item: any) => ({
-        id: item.friend_user.id,
-        name: `${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
-        handle: `@${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
-        avatar: item.friend_user.profile.profile_picture,
+        id: item.id,
+        name: `${item.profile.first_name} ${item.profile.last_name}`,
+        handle: `@${item.profile.first_name} ${item.profile.last_name}`,
+        avatar: item.profile.profile_picture,
       }));
+      console.log("fetchFriendSuggestions ---------------->", formattedRequests);
       setFriendSuggestion(formattedRequests);
     } catch (error) {
       console.error("Error fetching friend requests:", error);
