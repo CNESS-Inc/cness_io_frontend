@@ -1294,7 +1294,7 @@ export default function UserProfileView() {
                   {followBP?.length > 0 && (
                     <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
                       <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
-                        Best practices i am following
+                        Best Practices I am following
                       </h3>
 
                       {/* <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3"> */}
