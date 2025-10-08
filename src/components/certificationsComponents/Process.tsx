@@ -1,5 +1,5 @@
 import { useState } from "react";
-import frame from "../../assets/frame.png";
+//import frame from "../../assets/frame.png";
 import step1 from "../../assets/step1.svg";
 import step2 from "../../assets/step2.svg";
 import step3 from "../../assets/step3.svg";
@@ -74,10 +74,12 @@ export default function Process() {
           </div>
           <div className="md:mt-4">
             <img
-              src={frame}
+              src="https://cdn.cness.io/woman.jpg"
               alt="Certification Process"
               className="rounded-[20px] w-full"
             />
+
+            
           </div>
           <div className="flex w-full">
             <span className="ml-auto text-right text-[#64748B] text-xs font-normal">

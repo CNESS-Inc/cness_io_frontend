@@ -1,8 +1,8 @@
 import { Eye, Network, Target } from "lucide-react";
-import mentor_banner from "../../public/mentor_banner.jpg";
-import who_become from "../../public/who_become.jpg";
+//import mentor_banner from "../../public/mentor_banner.jpg";
+///import who_become from "../../public/who_become.jpg";
 import bulb from "../../src/assets/bulb.png";
-import applicationform from "../../public/applicationform.jpg";
+//import applicationform from "../../public/applicationform.jpg";
 import { useEffect, useState } from "react";
 import "react-phone-input-2/lib/style.css";
 import { createMentor } from "../Common/ServerAPI";
@@ -456,7 +456,7 @@ const BecomeMentor = () => {
             </div>
             <div className="w-full lg:w-2/3 rounded-[40px]">
               <img
-                src={mentor_banner}
+                src="https://cdn.cness.io/mentor_banner.jpg"
                 alt="partner main poster"
                 className="w-full h-[427px] lg:h-full object-cover object-top pointer-events-none select-none rounded-[40px]"
                 aria-hidden="true"
@@ -610,10 +610,12 @@ const BecomeMentor = () => {
 
             <div className="w-full lg:w-2/5 rounded-[20px] overflow-hidden">
               <img
-                src={who_become}
+                src="https://cdn.cness.io/who_become.jpg"
                 alt="Handshake"
                 className="w-full h-auto object-cover"
               />
+
+              
             </div>
           </div>
         </div>
@@ -691,7 +693,7 @@ const BecomeMentor = () => {
           <div className="grid xl:grid-cols-[275px_1fr] gap-10 items-stretch">
             <div className="hidden xl:flex rounded-[20px] overflow-hidden">
               <img
-                src={applicationform}
+                src="https://cdn.cness.io/applicationform.jpg"
                 alt="Handshake"
                 className="h-full w-full object-cover"
               />
@@ -703,7 +705,7 @@ const BecomeMentor = () => {
                 onSubmit={handleSubmit}
               >
                 <div className="mx-auto w-full max-w-[760px] 2xl:max-w-none grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 items-start">
-                  <Field label="Name">
+                  <Field label={<span>Name <span style={{ color: "red" }}> *</span></span>}>
                     <Input
                       name="name"
                       value={formData.name}
@@ -712,10 +714,10 @@ const BecomeMentor = () => {
                       required
                     />
                     {_fieldErrors.name && (
-    <p className="text-red-500 text-xs mt-1">{_fieldErrors.name}</p>
-  )}
+                      <p className="text-red-500 text-xs mt-1">{_fieldErrors.name}</p>
+                    )}
                   </Field>
-                  <Field label="Email Address">
+                  <Field label={<span>Email Address<span style={{ color: "red" }}> *</span></span>}>
                     <Input
                       name="email"
                       type="email"
@@ -729,7 +731,7 @@ const BecomeMentor = () => {
   )}
                   </Field>
 
-                  <Field label="Phone Number">
+                  <Field label={<span>Phone Number<span style={{ color: "red" }}> *</span></span>}>
                     <PhoneInputField
                       name="phone"
                       value={phone}
@@ -738,7 +740,8 @@ const BecomeMentor = () => {
                       placeholder="Enter your phone number"
                     />
                   </Field>
-                  <Field label="Country & Time Zone">
+                  <Field label= {<span>Country & Time Zone<span style={{ color: "red" }}> *</span></span>}>
+
                     <div className="w-full h-full rounded-sm border-2 border-[#EEEEEE] bg-white pt-[9px] pb-[9px] px-1 text-[14px] outline-none focus-within:border-[#C9C9FF]">
                       <TimezoneSelect
                         value={timezone}
@@ -749,8 +752,8 @@ const BecomeMentor = () => {
                       />
                     </div>
                   </Field>
+                  <Field label={<span>Experience<span style={{ color: "red" }}> *</span></span>}>
 
-                  <Field label="Experience">
                     <div className="relative group">
                         <select 
                         name="year_of_experience"
@@ -794,7 +797,7 @@ const BecomeMentor = () => {
   )}
                   </Field>
 
-                  <Field label="Profile summary">
+                  <Field label={<span>Profile Summary<span style={{ color: "red" }}> *</span></span>}>
                     <TextArea
                       name="bio"
                       value={formData.bio}
@@ -802,7 +805,8 @@ const BecomeMentor = () => {
                       placeholder="Add Notes..."
                     />
                   </Field>
-                  <Field label="Why do you want to become a mentor?">
+                  <Field label={<span>Why do you want to become a mentor?
+<span style={{ color: "red" }}> *</span></span>}>
                     <TextArea
                       name="motivation"
                       value={formData.motivation}
@@ -811,7 +815,7 @@ const BecomeMentor = () => {
                     />
                   </Field>
 
-                  <Field label="Areas & availability">
+                  <Field label={<span>Areas & availability<span style={{ color: "red" }}> *</span></span>}>
                     <Input
                       name="availability"
                       type="text"
@@ -887,7 +891,7 @@ function Field({
   children,
   full,
 }: {
-  label: string;
+  label: React.ReactNode; 
   children: React.ReactNode;
   full?: boolean;
 }) {

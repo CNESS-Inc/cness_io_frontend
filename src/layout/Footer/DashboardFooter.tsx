@@ -1,13 +1,33 @@
 // src/components/Footer.jsx
+import { useEffect, useState } from "react";
 
 import { Link } from "react-router-dom";
 import Image from "../../components/ui/Image";
 import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
 import BackToTopButton from "./BackToTop";
 import vector from "../../assets/Vector.svg";
+import ContentModal from "../../components/ui/ContentModal";
 
 const Footer = () => {
+ const [showTermModal, setShowTermModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [content, setContent] = useState("");
+  const [privacyContent, privacySetContent] = useState("");
+
+  
+  useEffect(() => {
+    fetch("/terms and conditions new.html")
+      .then((res) => res.text())
+      .then((data) => setContent(data));
+  }, []);
+  useEffect(() => {
+    fetch("/CNESS privacy policy.htm")
+      .then((res) => res.text())
+      .then((data) => privacySetContent(data));
+  }, []);
+
   return (
+
     <>
       <BackToTopButton />
 
@@ -114,14 +134,9 @@ const Footer = () => {
       </footer>
 
       {/* Bottom Bar */}
-      <div
-        className="py-2 bg-[#373578] px-4 sm:px-6"
-        style={{
-          marginLeft: "var(--sidebar-w, 0px)",
-          width: "calc(100% - var(--sidebar-w, 0px))",
-        }}
-      >
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
+            <div className="py-4 lg:bg-[#373578] md:bg-[#373578] bg-[#fff] px-4 sm:px-6">
+
+        <div className="max-w-7xl mx-auto lg:flex flex-col md:flex-row justify-between items-center gap-2 hidden">
           {/* Left Side */}
           <div
             className="text-[15px] leading-[100%] font-[500] font-[Plus Jakarta Sans] text-white"
@@ -135,21 +150,65 @@ const Footer = () => {
 
           {/* Right Side */}
           <div className="flex items-center gap-6 text-white font-semibold text-[15px]">
-            <Link
-              to="/terms-and-conditions"
-              className="hover:underline whitespace-nowrap"
+             <button
+              onClick={() => setShowTermModal(true)}
+              className="text-[15px] leading-[100%] font-[600] font-[Plus Jakarta Sans] text-white"
             >
-              Terms &amp; Conditions
-            </Link>
-            <Link
-              to="/privacy-policy"
-              className="hover:underline whitespace-nowrap"
+              Terms & Conditions
+            </button>
+            <button
+              onClick={() => setShowPrivacyModal(true)}
+              className="text-[15px] leading-[100%] font-[600] font-[Plus Jakarta Sans] text-white"
             >
               Privacy Policy
-            </Link>
+            </button>
           </div>
         </div>
       </div>
+
+       {/* Term & condition Modal */}
+            <ContentModal
+              isOpen={showTermModal}
+              onClose={() => setShowTermModal(false)}
+            >
+              <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
+                <h3 className="lg:text-[36px] md:text-[30] text-[24px] font-[500] text-black mb-4 text-center">
+                  CNESS TERMS AND CONDITIONS
+                </h3>
+                <div
+                  className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg w-full max-w-7xl max-h-[500px] overflow-y-auto content-container"
+                  style={{
+                    fontFamily: "'Open Sans', 'Poppins', sans-serif",
+                    fontSize: "16px",
+                    textAlign: "justify",
+                    lineHeight: "1.6",
+                    color: "#333",
+                  }}
+                  dangerouslySetInnerHTML={{ __html: content }}
+                />
+              </div>
+            </ContentModal>
+            <ContentModal
+              isOpen={showPrivacyModal}
+              onClose={() => setShowPrivacyModal(false)}
+            >
+              <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
+                <h3 className="lg:text-[36px] md:text-[30] text-[24px] font-[500] text-black mb-4 text-center">
+                  CNESS PRIVACY POLICY
+                </h3>
+                <div
+                  className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg w-full max-w-7xl max-h-[500px] overflow-y-auto content-container"
+                  style={{
+                    fontFamily: "'Open Sans', 'Poppins', sans-serif",
+                    fontSize: "16px",
+                    textAlign: "justify",
+                    lineHeight: "1.6",
+                    color: "#333",
+                  }}
+                  dangerouslySetInnerHTML={{ __html: privacyContent }}
+                />
+              </div>
+            </ContentModal>
     </>
   );
 };

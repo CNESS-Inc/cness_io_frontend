@@ -1,5 +1,5 @@
 import { CircleCheckBig } from "lucide-react";
-import woman from "../../assets/woman.png";
+//import woman from "../../assets/woman.png";
 
 export default function SellerSection() {
   return (
@@ -10,7 +10,7 @@ export default function SellerSection() {
           {/* Left copy */}
           <div className="flex justify-center xl:justify-end">
             <img
-              src={woman}
+              src="https://cdn.cness.io/Mwoman.jpg"
               alt="woman icon"
               className="w-full max-w-[400px] md:max-w-[480px] xl:max-w-[500px] h-auto object-contain"
             />
@@ -19,6 +19,8 @@ export default function SellerSection() {
             alt="Seller"
             className="w-full max-w-[800px] lg:max-w-[1000px] object-contain scale-130"
           /> */}
+
+          
           </div>
 
           {/* right copy  */}

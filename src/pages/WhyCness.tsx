@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CircleCheckBig } from "lucide-react";
 import LazySection from "../components/ui/LazySection";
-import bg from "../assets/Frame why cness.png";
+//import bg from "../assets/Frame why cness.png";
 import Header from "../layout/Header/Header";
 import Footer from "../layout/Footer/Footer";
 import Button from "../components/ui/Button";
@@ -253,7 +253,7 @@ className={`font-['Open_Sans'] md:text-base font-[300] text-[#64748B] mt-6 max-w
               {/* Right image + popup */}
               <div className="flex justify-center xl:justify-end">
                 <img
-                  src={bg}
+                  src="https://cdn.cness.io/whycness.jpg"
                   alt="Seller"
                   className="w-full max-w-[400px] md:max-w-[480px] xl:max-w-[500px] h-auto object-contain"
                 />
