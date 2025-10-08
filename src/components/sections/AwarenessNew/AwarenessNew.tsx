@@ -15,41 +15,41 @@ export default function AwarenessSection() {
       title: "E Books",
       description:
         "Discover our 21-day guided journaling ebook designed to help you reset your mindset and embrace a positive outlook.",
-      image: "https://cdn.cness.io/ebooks.webp",
+      image: "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911069/ebooks_1_nbnpop.webp",
       altText: "Individual joining certification program",
-      bg_image: "url('/product-bg-1.png')",
+      bg_image: "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911622/product-bg-1_y5vjzb.png')",
     },
     {
       title: "Digital Books",
       description:
         "Join our 21-day guided journaling webinar to refresh your mindset and cultivate positivity.",
-      image: "https://cdn.cness.io/digitalbooks.webp",
+      image: "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911353/digitalbooks_xg8gvc.webp",
       altText: "Organization certification process",
-      bg_image: "url('/product-bg-2.png')",
+      bg_image: "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911482/product-bg-2_pyjtzl.png')",
     },
     {
       title: "Library",
       description: "High-resolution images capturing the beauty of nature",
-      image: "https://cdn.cness.io/library.webp",
+      image: "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911302/library_gpys6o.webp",
       altText:
         "Check out our 21-day guided journaling ebook, crafted to help you shift your mindset and cultivate a more positive perspective.",
-      bg_image: "url('/product-bg-3.png')",
+      bg_image: "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911591/product-bg-3_jlrbrz.png')",
     },
     {
       title: "Our specially curated audio tapes.",
       description:
         "Listen to our 21-day guided journaling audio series, designed to help you transform your mindset and foster a more positive outlook.",
-      image: "https://cdn.cness.io/audiotapes.webp",
+      image: "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911382/audiotapes_pw1bsr.webp",
       altText: "Mentorship and partnership opportunities",
-      bg_image: "url('/product-bg-1.png')",
+      bg_image: "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911622/product-bg-1_y5vjzb.png')",
     },
     {
       title: "Library",
       description:
         "Discover our 21-day guided journaling ebook designed to help you reset your mindset and embrace a positive outlook",
-      image: "https://cdn.cness.io/library.webp",
+      image: "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911302/library_gpys6o.webp",
       altText: "Individual joining certification program",
-      bg_image: "url('/product-bg-1.png')",
+      bg_image: "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911622/product-bg-1_y5vjzb.png')",
     },
   ];
 
@@ -149,6 +149,9 @@ font-['Open_Sans'] font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#6
                           <img
                             src={card.image}
                             alt={card.altText}
+                            width={311}
+                            height={348}
+                            loading="lazy"
                             className="w-full h-full object-cover rounded-t-[12px]"
                           />
                         </div>
@@ -200,9 +203,11 @@ font-['Open_Sans'] font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#6
                     text-[16px] leading-[100%] tracking-[0]
                     text-white 
                   "
-                  onClick={() => {navigate("/cness-marketplace")
-                   window.scrollTo({ top: 0, behavior: "instant" }); }}
-            >
+                  onClick={() => {
+                    navigate("/cness-marketplace")
+                    window.scrollTo({ top: 0, behavior: "instant" });
+                  }}
+                >
                   Become a Seller
                 </Button>
               </div>
