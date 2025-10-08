@@ -164,7 +164,7 @@ const ScoreResult = () => {
   const { showToast } = useToast();
   const [scoreData, setScoreData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const menuRef = useRef<HTMLDivElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);  
   const [copy, setCopy] = useState<Boolean>(false)
 
   const fetchRatingDetails = async () => {

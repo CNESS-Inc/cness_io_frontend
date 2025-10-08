@@ -12,9 +12,6 @@ import {
   GetRecommendedBestPractices,
   GetValidProfessionalDetails,
 } from "../Common/ServerAPI";
-import aspired from "../assets/aspired.png";
-import inspired from "../assets/inspired.png";
-import leader from "../assets/leader.png";
 import {
   GreetingBar,
   TrueProfileCard,
@@ -26,13 +23,13 @@ import {
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { useNavigate } from "react-router-dom";
 import marketplace from "../../src/assets/marketplace.png";
-import { HiOutlineLockClosed } from "react-icons/hi2";
 import AddBestPracticeModal from "../components/sections/bestPractiseHub/AddBestPractiseModal";
 
 interface UserData {
   id: number;
   name: string;
   email: string;
+  level: string;
   profile_progress: number;
   assesment_progress: number;
 }
@@ -389,20 +386,6 @@ export default function SellerDashboard() {
     }
   };
 
-  const badgeLevels = [
-    {
-      title: "Aspired",
-      image: aspired,
-    },
-    {
-      title: "Inspired",
-      image: inspired,
-    },
-    {
-      title: "Leader",
-      image: leader,
-    },
-  ];
 
   const userName =
     localStorage.getItem("name") +
@@ -426,7 +409,7 @@ export default function SellerDashboard() {
             onOpen={() => console.log("Open True Profile")}
           />
 
-          {user?.assesment_progress === 0 ? (
+          {/* {user?.assesment_progress === 0 ? (
             <div
               className="w-full relative p-6 rounded-xl bg-white"
               style={{ borderColor: "var(--Stroke, rgba(236, 238, 242, 1))" }}
@@ -491,14 +474,14 @@ export default function SellerDashboard() {
                 </div>
               </div>
             </div>
-          ) : (
-            <CertificationCard
-              progress={user?.assesment_progress || 100}
-              activeLevel="Inspired"
-              onContinue={() => navigate("/dashboard/assesment")}
-              onOpen={() => console.log("Open Certification")}
-            />
-          )}
+          ) : ( */}
+<CertificationCard
+  progress={user?.assesment_progress || 100}
+  activeLevel={user?.level} // Pass the actual user level from your API
+  onContinue={() => navigate("/dashboard/assesment")}
+  onOpen={() => console.log("Open Certification")}
+/>
+          {/* )} */}
 
           <BestPracticesSection
             items={bestPractices}

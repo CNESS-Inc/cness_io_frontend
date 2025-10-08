@@ -572,79 +572,93 @@ const UserProfilePage = () => {
     ),
   });
   const workExperienceForm = useForm<{
-    workExperiences: {
-      company: string;
-      position: string;
-      roles_responsibilities?: string;
-      work_city?: string;
-      work_state?: string;
-      work_country?: string;
-      start_date: string;
-      end_date?: string;
-    }[];
-  }>({
-    defaultValues: {
-      workExperiences: [
-        {
-          company: "",
-          position: "",
-          start_date: "",
-          end_date: "",
-        },
-      ],
-    },
-    resolver: yupResolver(
-      yup.object().shape({
-        workExperiences: yup
-          .array()
-          .of(
-            yup.object().shape({
-              company: yup
-                .string()
-                .required("Company name is required")
-                .matches(
-                  /^[a-zA-Z0-9\s.,'-]+$/,
-                  "Company name contains invalid characters"
-                ),
-              position: yup
-                .string()
-                .required("Position is required")
-                .matches(
-                  /^[a-zA-Z\s.,-]+$/,
-                  "Position contains invalid characters"
-                ),
-              start_date: yup
-                .string()
-                .required("Start date is required")
-                .test(
-                  "is-valid-date",
-                  "Start date must be a valid date",
-                  (value) => {
-                    if (!value) return false;
-                    const date = new Date(value);
-                    const today = new Date();
-                    return !isNaN(date.getTime()) && date <= today;
+  workExperiences: {
+    company: string;
+    position: string;
+    roles_responsibilities?: string;
+    work_city?: string;
+    work_state?: string;
+    work_country?: string;
+    start_date: string;
+    end_date?: string;
+  }[];
+}>({
+  defaultValues: {
+    workExperiences: [
+      {
+        company: "",
+        position: "",
+        start_date: "",
+        end_date: "",
+      },
+    ],
+  },
+  resolver: yupResolver(
+    yup.object().shape({
+      workExperiences: yup
+        .array()
+        .of(
+          yup.object().shape({
+            company: yup
+              .string()
+              .required("Company name is required")
+              .matches(
+                /^[a-zA-Z0-9\s.,'-]+$/,
+                "Company name contains invalid characters"
+              ),
+            position: yup
+              .string()
+              .required("Position is required")
+              .matches(
+                /^[a-zA-Z\s.,-]+$/,
+                "Position contains invalid characters"
+              ),
+            start_date: yup
+              .string()
+              .required("Start date is required")
+              .test(
+                "is-valid-date",
+                "Start date must be a valid date",
+                (value) => {
+                  if (!value) return false;
+                  const date = new Date(value);
+                  const today = new Date();
+                  return !isNaN(date.getTime()) && date <= today;
+                }
+              ),
+            end_date: yup
+              .string()
+              .optional()
+              .test(
+                "is-after-start",
+                "End date must be after start date",
+                function (value) {
+                  if (!value) return true; // optional field
+                  const startDate = this.parent.start_date;
+                  if (!startDate) return true; // if no start date, validation passes
+                  
+                  const start = new Date(startDate);
+                  const end = new Date(value);
+                  
+                  // Check if dates are the same
+                  if (start.getTime() === end.getTime()) {
+                    return this.createError({
+                      message: "End date cannot be the same as start date",
+                    });
                   }
-                ),
-              end_date: yup
-                .string()
-                .optional()
-                .test(
-                  "is-after-start",
-                  "End date must be after start date",
-                  function (value) {
-                    if (!value) return true; // optional field
-                    const startDate = this.parent.start_date;
-                    if (!startDate) return true; // if no start date, validation passes
-                    return new Date(value) >= new Date(startDate);
-                  }
-                ),
-            })
-          )
-          .required("At least one work experience is required"),
-      })
-    ),
-  });
+                  
+                  // Check if end date is after start date
+                  return end > start || this.createError({
+                    message: "End date must be after start date",
+                  });
+                }
+              ),
+          })
+        )
+        .required("At least one work experience is required"),
+    })
+  ),
+});
   const publicProfileForm = useForm();
 
   const handleImageChange = async (
