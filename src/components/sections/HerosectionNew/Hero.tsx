@@ -4,7 +4,7 @@ import Button from "../../ui/Button";
 //import { MessageCircle, ShoppingBag, BookOpen, Compass,  } from "lucide-react";
 import SignupModel from "../../OnBoarding/Signup";
 import { useNavigate } from "react-router-dom";
-import OptimizeImage from "../../ui/OptimizeImage";
+// import OptimizeImage from "../../ui/OptimizeImage";
 
 export default function HeroSection() {
   const [step, setStep] = useState(0);
