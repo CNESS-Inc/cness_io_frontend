@@ -55,7 +55,7 @@ export default function Highlight() {
   ];
 
   return (
-    <section className="highlight-section lg:min-h-[560px] px-4 sm:px-6 lg:px-8 py-18 sm:py-12 lg:py-[80px] bg-[#FAFAFA] relative lg:bg-[url(https://res.cloudinary.com/diudvzdkb/image/upload/v1753780724/highlight-ellipse_hahibm.png)] bg-no-repeat lg:bg-[position:right_bottom_3rem] overflow-hidden">
+    <section className="highlight-section lg:min-h-[560px] px-4 sm:px-6 lg:px-8 py-18 sm:py-12 lg:py-[80px] bg-[#FAFAFA] relative lg:bg-[url(https://res.cloudinary.com/diudvzdkb/image/upload/w_200,h_200,c_fill,f_webp,q_auto:eco/v1753780724/highlight-ellipse_hahibm.png)] bg-no-repeat lg:bg-[position:right_bottom_3rem] overflow-hidden">
       <div className="max-w-[1336px] mx-auto flex lg:flex-row flex-col">
         <div className="md:px-0 lg:px-0 lg:w-5/12 w-full">
           <div className="w-full">
