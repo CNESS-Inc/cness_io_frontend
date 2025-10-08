@@ -1,12 +1,12 @@
 // import Parterform from "../components/zohoforms/Patnerform";
-import image from "../assets/partner.jpg";
+//import image from "../assets/partner.jpg";
 import partner1 from "../assets/partner1.svg";
 import partner2 from "../assets/partner2.svg";
 import partner3 from "../assets/partner3.svg";
 import partner4 from "../assets/partner4.svg";
 import partner5 from "../assets/partner5.svg";
-import partner from "../assets/partner.png";
-import become_partner from "../assets/bcome-partner.png";
+//import partner from "../assets/partner.png";
+//import become_partner from "../assets/bcome-partner.png";
 import bulb from "../assets/bulb.png";
 import "react-international-phone/style.css";
 import { PhoneInput } from "react-international-phone";
@@ -442,11 +442,12 @@ organization_size: (val) => {
             </div>
             <div className="w-full lg:w-2/3 rounded-[40px]">
               <img
-                src={image}
+                src="https://cdn.cness.io/partner_banner.jpg"
                 alt="partner main poster"
                 className="w-full h-[427px] lg:h-full object-cover object-top pointer-events-none select-none rounded-[40px]"
                 aria-hidden="true"
               />
+              
             </div>
           </div>
         </div>
@@ -555,10 +556,12 @@ organization_size: (val) => {
 
             <div className="w-full lg:w-2/5 rounded-[20px] overflow-hidden">
               <img
-                src={become_partner}
+                src="https://cdn.cness.io/partner2.jpg"
                 alt="Handshake"
                 className="w-full h-auto object-cover"
               />
+
+              
             </div>
           </div>
         </div>
@@ -635,10 +638,12 @@ organization_size: (val) => {
           <div className="grid xl:grid-cols-[275px_1fr] gap-10 items-stretch">
             <div className="hidden xl:flex rounded-[20px] overflow-hidden">
               <img
-                src={partner}
+                src="https://cdn.cness.io/partnerapp_3.jpg"
                 alt="Handshake"
                 className="h-full w-full object-cover"
               />
+
+              
             </div>
 
             <div className="rounded-[25px] bg-white p-[20px] lg:p-[30px] flex flex-col">
@@ -647,7 +652,7 @@ organization_size: (val) => {
                 onSubmit={handleSubmit}
               >
                 <div className="mx-auto w-full max-w-[760px] 2xl:max-w-none grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 items-start">
-                  <Field label="Organization Name">
+                  <Field label={<span>Organization Name<span style={{ color: "red" }}> *</span></span>}>
                     <Input
                       name="organization_name"
                       placeholder="Enter organization name"
@@ -660,7 +665,7 @@ organization_size: (val) => {
                       }
                     />
                   </Field>
-                  <Field label="Contact Person Name">
+                  <Field label={<span>Contact Person Name<span style={{ color: "red" }}> *</span></span>}>
                     <Input
                       name="contact_person_name"
                       placeholder="Enter your name"
@@ -673,7 +678,7 @@ organization_size: (val) => {
                       }
                     />
                   </Field>
-                  <Field label="Phone Number">
+                  <Field label={<span>Phone Number<span style={{ color: "red" }}> *</span></span>}>
                     <PhoneInputField
                       name="phone_number"
                       value={data.phone_number}
@@ -687,7 +692,7 @@ organization_size: (val) => {
                       }
                     />
                   </Field>
-                  <Field label="Email Address">
+                  <Field label={<span>Email Address<span style={{ color: "red" }}> *</span></span>}>
                     <Input
                       name="email"
                       value={data.email}
@@ -699,7 +704,7 @@ organization_size: (val) => {
                       }
                     />
                   </Field>
-                  <Field label="Industry / Sector">
+                  <Field label={<span>Industry / Sector<span style={{ color: "red" }}> *</span></span>}>
                     <Input
                       name="industry_sector"
                       placeholder="Enter your years of experience"
@@ -725,7 +730,7 @@ organization_size: (val) => {
                       }
                     />
                   </Field>
-                  <Field label="Brief About Your Organization (150–200 words)">
+                  <Field label={<span>Brief About Your Organization (150–200 words)<span style={{ color: "red" }}> *</span></span>}>
                     <TextArea
                       name="about"
                       placeholder="Add Notes..."
@@ -736,7 +741,7 @@ organization_size: (val) => {
                       }
                     />
                   </Field>
-                  <Field label="Why do you want to partner with CNESS?">
+                  <Field label={<span>Why do you want to partner with CNESS?<span style={{ color: "red" }}> *</span></span>}>
                     <TextArea
                       name="reason_to_partner"
                       placeholder="Add Notes..."
@@ -749,7 +754,7 @@ organization_size: (val) => {
                       }
                     />
                   </Field>
-                  <Field label="Organization Size (No. of employees / scale)">
+                  <Field label={<span>Organization Size (No. of employees / scale)<span style={{ color: "red" }}> *</span></span>}>
                     <Input
                       name="organization_size"
                       placeholder="Number of employees"
@@ -762,7 +767,7 @@ organization_size: (val) => {
                       }
                     />
                   </Field>
-                  <Field label="Areas of Collaboration (e.g., Events, Tech, etc.)">
+                  <Field label={<span>Areas of Collaboration (e.g., Events, Tech, etc.)<span style={{ color: "red" }}> *</span></span>}>
                     <Input
                       name="areas_of_collabration"
                       placeholder="Select your Availability"
@@ -850,7 +855,7 @@ function Field({
   children,
   full,
 }: {
-  label: string;
+  label: React.ReactNode;
   children: React.ReactNode;
   full?: boolean;
 }) {
