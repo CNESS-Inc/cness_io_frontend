@@ -5,7 +5,6 @@ import Button from "./Button";
 import { useToast } from "./Toast/ToastProvider";
 import SignupAnimation from "./SignupAnimation";
 import { Link } from "react-router-dom";
-import cnesslogo from "../../assets/cnesslogo.png";
 
 
 interface PaymentVerifyData {
@@ -82,7 +81,7 @@ const PaymentVerify = () => {
             <div className="absolute top-1 left-5 z-30 p-0">
               <Link to="/">
                 <img
-                  src={cnesslogo}
+                  src={`https://res.cloudinary.com/diudvzdkb/image/upload/w_240,h_136,f_webp,q_auto/v1759918812/cnesslogo_neqkfd`}
                   alt="logo"
                   className="w-[150px] h-[150px] object-contain"
                 />

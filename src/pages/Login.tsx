@@ -19,7 +19,6 @@ import { Link } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { useGoogleLogin } from "@react-oauth/google";
 
-import cnesslogo from "../assets/cnesslogo.png";
 import { FiMail, FiEye, FiEyeOff } from "react-icons/fi"; // add if not already
 
 import Select from "react-select";
@@ -1235,7 +1234,7 @@ export default function Login() {
             <div className="absolute top-1 left-5 z-30 p-0">
               <Link to="/">
                 <img
-                  src={cnesslogo}
+                  src={`https://res.cloudinary.com/diudvzdkb/image/upload/w_240,h_136,f_webp,q_auto/v1759918812/cnesslogo_neqkfd`}
                   alt="logo"
                   className="w-48 h-48 object-contain"
                 />

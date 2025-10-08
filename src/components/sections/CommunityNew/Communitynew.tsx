@@ -21,13 +21,13 @@ const desktopStepImages = [
   'https://cdn.cness.io/Frame%202121453477.webp'
 ];
 const tabletStepImages = [
- 'https://cdn.cness.io/Frame%202121453477.webp',
+  'https://cdn.cness.io/Frame%202121453477.webp',
   'https://cdn.cness.io/Frame%202121453477.webp',
   'https://cdn.cness.io/Frame%202121453477.webp',
   'https://cdn.cness.io/Frame%202121453477.webp'
 ];
 const mobileStepImages = [
- 'https://cdn.cness.io/Frame%202121453477.webp',
+  'https://cdn.cness.io/Frame%202121453477.webp',
   'https://cdn.cness.io/Frame%202121453477.webp',
   'https://cdn.cness.io/Frame%202121453477.webp',
   'https://cdn.cness.io/Frame%202121453477.webp'
@@ -56,13 +56,13 @@ const Communitynew: React.FC = () => {
   }, []);
 
   const animateSteps = () => {
-    const stepDuration = 1000; 
+    const stepDuration = 1000;
     const totalSteps = 4;
     const runStep = (step: number) => {
       setCurrentStep(step);
 
       if (step === 3) {
-        setTimeout(() => setCardsVisible(true), 500); 
+        setTimeout(() => setCardsVisible(true), 500);
       } else {
         setCardsVisible(false);
       }
@@ -114,7 +114,7 @@ const Communitynew: React.FC = () => {
     >
       <div className="community-header">
         <h2 style={{ fontFamily: "Poppins, sans-serif" }}
-        className="poppins lg:leading-16 md:leading-14 leading-9 text-[32px] font-[500] bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
+          className="poppins lg:leading-16 md:leading-14 leading-9 text-[32px] font-[500] bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
                text-transparent bg-clip-text mb-3 w-fit mx-auto">
           A Community Built Around
           <span className="bg-gradient-to-r from-[#a545f4] to-[#B646F1] text-transparent bg-clip-text"> Conscious Living</span>
@@ -136,11 +136,20 @@ const Communitynew: React.FC = () => {
             >
               <div className="bg-card-content">
                 <div className="bg-card-icon">
-                  <Image
+                  {/* <Image
                     src={card.src}
                     alt={card.alt}
                     width={'100%'}
                     height={'100%'}
+                    className="bg-card-image"
+                  /> */}
+
+                  <Image
+                    src={`${card.src.replace('/upload/', '/upload/w_200,h_220,c_fill,q_auto,f_auto/')}`}
+                    alt={card.alt}
+                    width={200}
+                    height={220}
+                    loading="lazy"
                     className="bg-card-image"
                   />
                 </div>
@@ -163,7 +172,7 @@ const Communitynew: React.FC = () => {
         </div>
       </div>
 
-    
+
     </section>
   );
 };

@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { GetAllPlanDetails, PaymentDetails } from "../Common/ServerAPI";
 import SignupAnimation from "../components/ui/SignupAnimation";
-import cnesslogo from "../assets/cnesslogo.png";
 //import model from "../components/ui/Modal";
 
 type CombinedPlan = {
@@ -89,7 +88,7 @@ export default function Pricing() {
         <div className="relative z-10 pl-5 pt-3">
           <Link to="/">
             <img
-              src={cnesslogo}
+              src={`https://res.cloudinary.com/diudvzdkb/image/upload/w_240,h_136,f_webp,q_auto/v1759918812/cnesslogo_neqkfd`}
               alt="logo"
               className="w-[120px] sm:w-[150px] h-auto object-contain"
             />

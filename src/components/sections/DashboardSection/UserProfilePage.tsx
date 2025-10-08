@@ -630,13 +630,33 @@ const UserProfilePage = () => {
                 .string()
                 .optional()
                 .test(
-                  "is-after-start",
-                  "End date must be after start date",
+                  "min-duration",
+                  "Work duration must be at least 1 month",
                   function (value) {
                     if (!value) return true; // optional field
                     const startDate = this.parent.start_date;
                     if (!startDate) return true; // if no start date, validation passes
-                    return new Date(value) >= new Date(startDate);
+
+                    const start = new Date(startDate);
+                    const end = new Date(value);
+
+                    // Calculate month difference
+                    const monthDiff = (end.getFullYear() - start.getFullYear()) * 12 +
+                      (end.getMonth() - start.getMonth());
+
+                    return monthDiff >= 1;
+                  }
+                )
+
+                .test(
+                  "is-after-start",
+                  "End date must be after start date",
+                  function (value) {
+                    if (!value) return true;
+                    const startDate = this.parent.start_date;
+                    if (!startDate) return true;
+
+                    return new Date(value) > new Date(startDate);
                   }
                 ),
             })
