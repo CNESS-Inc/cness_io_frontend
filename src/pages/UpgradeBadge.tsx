@@ -1,5 +1,9 @@
-import { useEffect, useState } from "react";
-import { DashboardDetails, GetUserScoreResult } from "../Common/ServerAPI";
+import { useEffect, useRef, useState } from "react";
+import {
+  DashboardDetails,
+  GetReport,
+  GetUserScoreResult,
+} from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import score from "../assets/score.svg";
 import badge from "../assets/badge.svg";
@@ -8,16 +12,213 @@ import icon1 from "../assets/Frame 1.svg";
 import arrow from "../assets/arrow.svg";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 import CertificationPlans from "../components/sections/Certification/CertificationPlans";
+import { FaFacebook, FaLinkedin, FaTwitter, FaWhatsapp } from "react-icons/fa";
+import { MdContentCopy } from "react-icons/md";
+import {
+  FacebookShareButton,
+  LinkedinShareButton,
+  TwitterShareButton,
+  WhatsappShareButton,
+} from "react-share";
+import html2pdf from "html2pdf.js";
 
 const UpgradeBadge = () => {
+  const myid = localStorage.getItem("Id");
+  const urldata = `${window.location.origin}/directory/user-profile/${myid}`;
+  const tweetText = `Earned the CNESS Inspired Certification! Proud to lead with conscious values. Join us at cness.io`;
+
   const [user, setUser] = useState<any | null>(null);
   const [scoreData, setScoreData] = useState<any>(null);
-  console.log("scoreData", scoreData);
+  const [showMenu, setShowMenu] = useState<boolean>(false);
   const { showToast } = useToast();
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const [copy, setCopy] = useState<Boolean>(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   useEffect(() => {
     fetchDashboard();
     fetchRatingDetails();
+  }, []);
+
+  const toggleMenu = () => setShowMenu((prev) => !prev);
+
+  const handleReportDownload = async () => {
+    try {
+      setIsGeneratingPDF(true);
+      const response = await GetReport();
+      const data = {
+        array: response.data.data.array,
+        final_score: response.data.data.final_score,
+      };
+
+      let html = "";
+
+      // Generate HTML content for sections
+      for (const section of data.array) {
+        html += `<div style="margin-bottom: 25px;"><h2 style="margin-bottom: 10px;">Section: ${section.section.name} - (${section.section.weight} / ${section.section.total_weight})</h2>`;
+        for (const sub of section.question_data) {
+          html += `<div style="margin-bottom: 25px;"><h3>Sub Section: ${sub.sub_section.name} - (${sub.sub_section.weight} / 5)</h3>`;
+          for (const ques of sub.questions) {
+            html += `<p><b>Question:</b> ${ques.question}</p><ul>`;
+            for (const ans of ques.answer) {
+              if (ques.is_link) {
+                html += `<li><a href="${ans}" target="_blank">Click To View Uploaded File</a></li>`;
+              } else {
+                html += `<li>${ans}</li>`;
+              }
+            }
+            html += `</ul>`;
+          }
+          html += ` </div><br/> `;
+        }
+        html += ` </div><br/> `;
+      }
+
+      // Complete HTML template
+      const template = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <meta charset="utf-8">
+          <title>CNESS Inspired Certification</title>
+          <style>
+              body {
+                  font-family: Arial, sans-serif;
+              }
+              h1 {
+                  color: #4CAF50;
+              }
+              h2 {
+                  color: #333;
+                  margin-top: 30px;
+              }
+              h3 {
+                  color: #555;
+              }
+              table {
+                  width: 100%;
+                  border-collapse: collapse;
+                  margin-top: 20px;
+                  margin-bottom: 30px;
+              }
+              th, td {
+                  border: 1px solid #ddd;
+                  padding: 12px;
+                  text-align: left;
+              }
+              th {
+                  background-color: #4CAF50;
+                  color: white;
+              }
+              tr:nth-child(even) {
+                  background-color: #f2f2f2;
+              }
+              li {
+                  color: #666;
+              }
+              a {
+                  color: blue;
+                  text-decoration: underline;
+              }
+              .footer {
+                  margin-top: 20px;
+                  font-style: italic;
+                  color: #666;
+              }
+              .mb {
+                  margin-bottom: 20px;
+              }
+          </style>
+      </head>
+      <body>
+          <h1>CNESS Inspired Certification – Self-Assessment Report</h1>
+          <p>This report is auto-generated based on your self-assessment for the CNESS Inspired Certification.</p>
+
+          ${html}
+
+          <h2 id='summary-table'>Summary Table</h2>
+          <table>
+              <tr>
+                  <th>Pillar</th>
+                  <th>Max Points</th>
+                  <th>Score</th>
+                  <th>Percentage</th>
+              </tr>
+              ${data.array
+                .map(
+                  (item: any) => `
+              <tr>
+                  <td>${item.section.name}</td>
+                  <td>${item.section.total_weight}</td>
+                  <td>${item.section.weight}</td>
+                  <td>${Math.round(
+                    (item.section.weight / item.section.total_weight) * 100
+                  )}%</td>
+              </tr>
+              `
+                )
+                .join("")}
+              <tr>
+                  <th colspan="2">Total Score</th>
+                  <th colspan="2">${data.final_score} / 100</th>
+              </tr>
+          </table>
+
+          <div class="footer">
+              <p>Thank you for your dedication to conscious growth.</p>
+              <p class="mb">Generated on: ${new Date().toLocaleDateString()}</p>
+          </div>
+      </body>
+      </html>`;
+
+      // Generate PDF from HTML with correct typing
+      const options = {
+        margin: 10,
+        filename: `CNESS_Report_${new Date().toISOString().split("T")[0]}.pdf`,
+        image: { type: "jpeg" as const, quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          async: true,
+        },
+        jsPDF: {
+          unit: "mm" as const,
+          format: "a4" as const,
+          orientation: "portrait" as const,
+        },
+        pagebreak: {
+          mode: "avoid-all" as const,
+          before: ".section , #summary-table",
+          avoid: "img, table",
+        },
+      };
+
+      // Generate and download PDF
+      await html2pdf().set(options).from(template).save();
+    } catch (error: any) {
+      showToast({
+        message:
+          error?.response?.data?.error?.message || "Failed to generate report",
+        type: "error",
+        duration: 5000,
+      });
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
+    const handleClickOutside = (event: MouseEvent) => {
+    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      setShowMenu(false);
+    }
+  };
+
+    useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const fetchDashboard = async () => {
@@ -47,7 +248,7 @@ const UpgradeBadge = () => {
         type: "error",
         duration: 5000,
       });
-    } 
+    }
   };
 
   return (
@@ -60,25 +261,112 @@ const UpgradeBadge = () => {
                 Certification Journey
               </p>
             </div>
-            <div className="flex items-center justify-center gap-3 pr-3">
+            <div className="flex gap-2">
+              <div className="relative">
+                <button
+                  className="bg-white border cursor-pointer border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 rounded-full shadow-md"
+                  onClick={toggleMenu}
+                  style={{ cursor: "pointer" }}
+                >
+                  Share
+                </button>
+                {showMenu && (
+                  <div
+                    className="absolute top-10 sm:left-auto sm:right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
+                    ref={menuRef}
+                  >
+                    <ul className="flex items-center gap-4">
+                      <li>
+                        <FacebookShareButton url={urldata}>
+                          <FaFacebook size={32} color="#4267B2" />
+                        </FacebookShareButton>
+                      </li>
+                      <li>
+                        <LinkedinShareButton url={urldata}>
+                          <FaLinkedin size={32} color="#0077B5" />
+                        </LinkedinShareButton>
+                      </li>
+                      {/* <li>
+                                        <FaInstagram size={32} color="#C13584" />
+                                      </li> */}
+                      <TwitterShareButton url={urldata} title={tweetText}>
+                        <FaTwitter size={32} color="#1DA1F2" />
+                      </TwitterShareButton>
+                      <li>
+                        <WhatsappShareButton url={urldata}>
+                          <FaWhatsapp size={32} color="#1DA1F2" />
+                        </WhatsappShareButton>
+                      </li>
+                      <li>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(urldata);
+                            setCopy(true);
+                            setTimeout(() => setCopy(false), 1500);
+                          }}
+                          className="flex items-center relative"
+                          title="Copy link"
+                        >
+                          <MdContentCopy size={30} className="text-gray-600" />
+                          {copy && (
+                            <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
+                              Link Copied!
+                            </div>
+                          )}
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                )}
+              </div>
               <button
-                type="submit"
-                className="font-['Plus Jakarta Sans'] rounded-full px-6 py-2 text-xs font-medium text-[#64748B] hover:text-white bg-white hover:bg-[#5e5ecc] transition-colors duration-500 ease-in-out"
-                style={{
-                  border: "1px solid rgba(236, 238, 242, 1)",
-                  boxShadow: "0px 4px 8px 0px rgba(0, 0, 0, 0.1)",
-                }}
+                className="bg-[#FF6B81] text-white cursor-pointer text-sm font-medium px-5 py-2 rounded-full shadow-md flex items-center justify-center gap-2"
+                onClick={handleReportDownload}
+                disabled={isGeneratingPDF}
               >
-                Share
-              </button>
-              <button
-                type="submit"
-                className="font-['Plus Jakarta Sans'] rounded-full px-8 py-2 text-xs font-medium text-white bg-[#FF708A] hover:bg-[#5e5ecc] transition-colors duration-500 ease-in-out"
-                style={{
-                  boxShadow: "0px 4px 8px 0px rgba(0, 0, 0, 0.1)",
-                }}
-              >
-                Share
+                {isGeneratingPDF ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                      />
+                    </svg>
+                    Report
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -221,7 +509,7 @@ const UpgradeBadge = () => {
             </h5>
           </div>
           <div className="w-full relative">
-            <CertificationPlans data={scoreData}/>
+            <CertificationPlans data={scoreData} />
           </div>
         </div>
         <div className="my-5 bg-white flex flex-col w-full h-full px-[18px] pt-[18px] pb-6 rounded-xl">
