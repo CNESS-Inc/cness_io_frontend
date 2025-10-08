@@ -19,7 +19,7 @@ export default function Header() {
         <div className="flex items-center">
           <Link to="/" className="flex items-center" aria-label="Home">
             <Image
-              src="/cnesslogo.png"
+              src="https://res.cloudinary.com/diudvzdkb/image/upload/w_240,h_136,f_webp,q_auto/v1759918812/cnesslogo_neqkfd"
               alt="Company Logo"
               width={120}
               className="h-auto w-[144.16px]"

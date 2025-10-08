@@ -25,7 +25,7 @@ const Image: React.FC<LazyImageProps> = ({
           alt=""
           aria-hidden="true"
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
-            src === "/cnesslogo.png" ? "" : "rounded-0"
+            src === `https://res.cloudinary.com/diudvzdkb/image/upload/w_${width},h_${height},f_webp,q_auto/v1759918812/cnesslogo_neqkfd` ? "" : "rounded-0"
           }`}
           onError={(e) => {
             const target = e.target as HTMLImageElement;
@@ -40,7 +40,7 @@ const Image: React.FC<LazyImageProps> = ({
         loading={priority ? "eager" : "lazy"}
         onLoad={() => setIsLoaded(true)}
         className={`w-full h-full transition-opacity duration-300 ${
-          src === "/cnesslogo.png" ? "" : "rounded-0"
+          src === `https://res.cloudinary.com/diudvzdkb/image/upload/w_${width},h_${height},f_webp,q_auto/v1759918812/cnesslogo_neqkfd` ? "" : "rounded-0"
         } ${isLoaded ? "opacity-100" : "opacity-0"}`}
         width={width}
         height={height}

@@ -33,7 +33,7 @@ const Footer = () => {
           <div className="lg:col-span-2 lg:w-[40%] md:col-span-2  space-y-4">
             <Link to="/" className="flex items-center" aria-label="Home">
               <Image
-                src="/cnesslogo.png"
+                src="https://res.cloudinary.com/diudvzdkb/image/upload/w_240,h_136,f_webp,q_auto/v1759918812/cnesslogo_neqkfd"
                 alt="Company Logo"
                 width={120}
                 className="h-auto w-[120px] md:w-[144.16px] lg:block md:block hidden"

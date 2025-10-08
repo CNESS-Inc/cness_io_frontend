@@ -4,7 +4,6 @@ import Button from "./Button";
 import { ForgotPasswordDetailsSubmit } from "../../Common/ServerAPI";
 import SignupAnimation from "../ui/SignupAnimation";
 import Footer from "../../layout/Footer/Footer";
-import cnesslogo from "../../assets/cnesslogo.png";
 import { Link } from "react-router-dom";
 import { useToast } from "./Toast/ToastProvider";
 
@@ -133,7 +132,7 @@ const ResetPassword = () => {
           <div className="absolute top-1 left-5 z-30 p-0">
             <Link to="/">
               <img
-                src={cnesslogo}
+                src={`https://res.cloudinary.com/diudvzdkb/image/upload/w_240,h_136,f_webp,q_auto/v1759918812/cnesslogo_neqkfd`}
                 alt="logo"
                 className="w-48 h-48 object-contain"
               />

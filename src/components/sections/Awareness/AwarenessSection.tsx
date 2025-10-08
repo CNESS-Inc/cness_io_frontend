@@ -19,7 +19,7 @@ export default function AwarenessSection() {
       title: "E Books",
       description:
         "Discover our 21-day guided journaling ebook designed to help you reset your mindset and embrace a positive outlook.",
-      image: "https://cdn.cness.io/ebooks.webp",
+      image: "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911069/ebooks_1_nbnpop.webp",
       altText: "Individual joining certification program",
       //button: "Add to cart",
       //price: "$999",

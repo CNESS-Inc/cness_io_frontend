@@ -365,9 +365,9 @@ export function GreetingBar({
         // Include custom_profession in the payload if "other" is selected
         professions: personForm.professions.includes("other")
           ? [
-            ...personForm.professions.filter((p) => p !== "other"),
-            personForm.custom_profession,
-          ]
+              ...personForm.professions.filter((p) => p !== "other"),
+              personForm.custom_profession,
+            ]
           : personForm.professions,
       };
 
@@ -471,13 +471,15 @@ export function GreetingBar({
     }
 
     if (rules.minLength && value.length < rules.minLength) {
-      return `${name.replace("_", " ")} must be at least ${rules.minLength
-        } characters`;
+      return `${name.replace("_", " ")} must be at least ${
+        rules.minLength
+      } characters`;
     }
 
     if (rules.maxLength && value.length > rules.maxLength) {
-      return `${name.replace("_", " ")} must be less than ${rules.maxLength
-        } characters`;
+      return `${name.replace("_", " ")} must be less than ${
+        rules.maxLength
+      } characters`;
     }
 
     if (rules.pattern && !rules.pattern.test(value)) {
@@ -1168,10 +1170,11 @@ export function GreetingBar({
                         name="organization_name"
                         value={organizationForm.organization_name}
                         onChange={handleOrganizationFormChange}
-                        className={`w-full px-3 py-2 border ${organizationErrors.organization_name
-                          ? "border-red-500"
-                          : "border-gray-300"
-                          } rounded-md`}
+                        className={`w-full px-3 py-2 border ${
+                          organizationErrors.organization_name
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        } rounded-md`}
                         placeholder="Enter organization name"
                       />
                       {organizationErrors.organization_name && (
@@ -1190,10 +1193,11 @@ export function GreetingBar({
                         name="domain"
                         value={organizationForm.domain}
                         onChange={handleOrganizationFormChange}
-                        className={`w-full px-3 py-2 border ${organizationErrors.domain
-                          ? "border-red-500"
-                          : "border-gray-300"
-                          } rounded-md`}
+                        className={`w-full px-3 py-2 border ${
+                          organizationErrors.domain
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        } rounded-md`}
                       >
                         <option value="">Select domain</option>
                         {domains?.map((domain: any) => (
@@ -1221,10 +1225,11 @@ export function GreetingBar({
                           name="custom_domain"
                           value={organizationForm.custom_domain || ""}
                           onChange={handleOrganizationFormChange}
-                          className={`w-full px-3 py-2 border ${organizationErrors.custom_domain
-                            ? "border-red-500"
-                            : "border-gray-300"
-                            } rounded-md`}
+                          className={`w-full px-3 py-2 border ${
+                            organizationErrors.custom_domain
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          } rounded-md`}
                           placeholder="Enter your domain name"
                         />
                         {organizationErrors.custom_domain && (
@@ -1363,10 +1368,11 @@ export function GreetingBar({
                                 name={`question_${question.id}`}
                                 value={existingAnswer}
                                 onChange={handleOrganizationFormChange}
-                                className={`w-full px-3 py-2 border ${organizationErrors[`question_${question.id}`]
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                                  } rounded-md`}
+                                className={`w-full px-3 py-2 border ${
+                                  organizationErrors[`question_${question.id}`]
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-md`}
                                 placeholder={`Enter your answer`}
                                 rows={3}
                               />
@@ -1377,7 +1383,7 @@ export function GreetingBar({
                                 <p className="mt-1 text-sm text-red-600">
                                   {
                                     organizationErrors[
-                                    `question_${question.id}`
+                                      `question_${question.id}`
                                     ]
                                   }
                                 </p>
@@ -1746,8 +1752,9 @@ export function GreetingBar({
                         className={`w-[440px] h-[41px]
                 rounded-[12px]
                 border-[0.82px]
-                p-[12px] mt-2 ${personErrors.first_name ? "border-red-500" : "border-gray-300"
-                          } rounded-md`}
+                p-[12px] mt-2 ${
+                  personErrors.first_name ? "border-red-500" : "border-gray-300"
+                } rounded-md`}
                       />
                       {personErrors.first_name && (
                         <p className="mt-1 text-sm text-red-600">
@@ -1769,8 +1776,9 @@ export function GreetingBar({
                         className={`w-[440px] h-[41px]
                 rounded-[12px]
                 border-[0.82px]
-                p-[12px] mt-2 ${personErrors.last_name ? "border-red-500" : "border-gray-300"
-                          } rounded-md`}
+                p-[12px] mt-2 ${
+                  personErrors.last_name ? "border-red-500" : "border-gray-300"
+                } rounded-md`}
                         placeholder="Enter your last name"
                       />
                       {personErrors.last_name && (
@@ -1952,10 +1960,11 @@ export function GreetingBar({
                                 name={`question_${question.id}`}
                                 value={existingAnswer}
                                 onChange={handlePersonFormChange}
-                                className={`w-full px-3 py-2 border ${personErrors[`question_${question.id}`]
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                                  } rounded-md`}
+                                className={`w-full px-3 py-2 border ${
+                                  personErrors[`question_${question.id}`]
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-md`}
                                 placeholder={`Enter your answer`}
                                 rows={3}
                               />
@@ -2253,9 +2262,9 @@ export function TrueProfileCard({
               <img
                 src={
                   !avatar ||
-                    avatar === "null" ||
-                    avatar === "undefined" ||
-                    !avatar.startsWith("http")
+                  avatar === "null" ||
+                  avatar === "undefined" ||
+                  !avatar.startsWith("http")
                     ? "/profile.png"
                     : avatar
                 }
@@ -2299,20 +2308,16 @@ export function CertificationCard({
   progress = 82,
   onContinue,
   description = `You've successfully achieved Inspired certification and are currently working towards Inspired level. Complete the remaining requirements to unlock your next milestone.`,
-  activeLevel = "Inspired",
-
+  activeLevel,
   auto = true,
   intervalMs = 6000,
-  // 👇 new (customize slide-2 content if you want)
-  upgradeTitle = "Why you should upgrade to Leader",
   upgradeText = "To achieve the next level certification, you need to create a basic profile that includes selling your reactions, accessing the community, and utilizing the resources library.",
-  //upgradeCtaLabel = "Upgrade",
   onUpgrade,
 }: {
   progress?: number;
   onContinue?: () => void;
   description?: string;
-  activeLevel?: "Aspired" | "Inspired" | "Leader";
+  activeLevel?: string;
   onOpen?: () => void;
   auto?: boolean;
   intervalMs?: number;
@@ -2321,14 +2326,11 @@ export function CertificationCard({
   upgradeCtaLabel?: string;
   onUpgrade?: () => void;
 }) {
-  //const levelClasses = (isActive: boolean) =>
-  //`flex-1 rounded-2xl ${BORDER} p-4 text-center ${
-  // isActive ? "ring-2 ring-[#8B7CFF]/40 bg-[#F8F7FF]" : "bg-white"
-  //}`;
-
-  // --- slider state ---
+  console.log("🚀 ~ CertificationCard ~ activeLevel:", activeLevel);
   const [slide, setSlide] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
+  const [showiInterestModal, setShowInterestModal] = useState(false);
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     if (!auto || paused) return;
@@ -2336,185 +2338,292 @@ export function CertificationCard({
     return () => clearInterval(id);
   }, [auto, paused, intervalMs]);
 
+  const getUpgradeTitle = () => {
+    switch (activeLevel) {
+      case "Aspiring":
+        return "Why you should upgrade to Inspired";
+      case "Inspired":
+        return "Why you should upgrade to Leader";
+      case "Leader":
+        return "You've reached the highest level!";
+      default:
+        return "Why you should upgrade to Aspiring";
+    }
+  };
+
+  const getNextLevel = () => {
+    switch (activeLevel) {
+      case "Aspiring":
+        return "Inspired";
+      case "Inspired":
+        return "Leader";
+      case "Leader":
+        return "Leader";
+      default:
+        return "Aspiring";
+    }
+  };
+
+  const handleUpgradeClick = (activeLevel?: string) => {
+    if (!activeLevel) {
+      setShowInterestModal(true);
+    } else if (activeLevel === "Aspiring") {
+      navigate("/dashboard/assesment");
+    } else if (activeLevel === "Inspired") {
+      navigate("/dashboard/upgrade-badge");
+    } else {
+      onUpgrade?.();
+    }
+  };
+
   const dotCls = (on: boolean) =>
-    `h-1.5 w-1.5 rounded-full ${on ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
+    `h-1.5 w-1.5 rounded-full ${
+      on ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
     } transition-colors`;
 
   return (
-    <Card className="rounded-[12px] border border-[#E5E7EB] px-4 md:px-[18px] py-5 space-y-3">
-      {" "}
-      {/* no fixed height */}
-      {/* Header */}
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F2EAFE]">
-            <img src={certicon} alt="Certification Icon" className="h-5 w-5" />
-          </span>
-          <span className="font-poppins font-medium text-[16px] leading-[100%] text-[#0F1728]">
-            Certification
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <button
-            onClick={onContinue}
-            className="relative w-full sm:w-[194px] h-[40px] rounded-full px-5 py-[10px] flex items-center justify-center text-center font-[600] text-[14px] text-[#222224] font-['Open_Sans'] leading-[100%] bg-white"
-          >
-            <span className="relative z-10">Continue Assessment</span>
-            <span className="absolute inset-0 rounded-full p-[1px] bg-gradient-to-r from-[#9747FF] to-[#F07EFF]"></span>
-            <span className="absolute inset-[1px] rounded-full bg-white"></span>
-          </button>
-        </div>
-      </div>
-      <HeaderDivider />
-      {/* Progress */}
-      <div className="mt-2 flex items-center justify-between">
-        <span className="text-[22px] sm:text-[24px] font-semibold font-['Open_Sans'] leading-[32px] text-[#222224]">
-          {progress}%
-        </span>
-      </div>
-      <div>
-        <Progress value={progress} />
-      </div>
-      <p className="mt-4 text-[14px] sm:text-[16px] font-normal font-['Open_Sans'] leading-[140%] text-[#999999]">
-        {description}
-      </p>
-      {/* Slides container */}
-      <div className="mt-4">
-        {/* Inner gradient card (responsive min-height) */}
-        <div
-          className="relative min-h-[450px] sm:min-h-[300px] md:min-h-[270px] rounded-[22px] border border-[#EFE8FF] bg-gradient-to-r from-[#F6F2FF] via-[#FAF0FF] to-[#FFF1F8] p-4 sm:p-6 overflow-hidden"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-        >
-          {/* Slide 1: Levels */}
-          <div
-            className={`absolute inset-0 transition-opacity duration-500 ${slide === 0
-              ? "opacity-100 pointer-events-auto"
-              : "opacity-0 pointer-events-none"
-              }`}
-          >
-            <div className="text-[16px] sm:text-[18px] font-['Open_Sans'] leading-[100%] text-[#222224] mt-1 sm:mt-2 mb-3 sm:mb-4 px-2 pt-2 sm:pt-5">
-              Certification Levels
-            </div>
-
-            <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 px-1 sm:px-2">
-              {/* Aspired */}
-              <div
-                className={`w-full h-[120px] sm:h-[150px] rounded-[18px] flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4 border ${activeLevel === "Aspired"
-                  ? "border-2 border-transparent bg-clip-padding bg-white relative before:absolute before:inset-0 before:rounded-[18px] before:p-[2px] before:bg-gradient-to-r before:from-[#7077FE] before:to-[#F07EFF] before:-z-10"
-                  : "border-[#E5E7EB] bg-white"
-                  }`}
-              >
-                <img
-                  src="https://cdn.cness.io/aspiring.webp"
-                  alt="Aspired"
-                  className="h-[34px] w-[34px] sm:h-[39px] sm:w-[39px]"
-                />
-                <span className="font-poppins font-semibold text-[15px] sm:text-[18px] leading-[100%] text-[#0F1728]">
-                  Aspired
-                </span>
-              </div>
-
-              {/* Inspired */}
-              <div
-                className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-[2px] ${activeLevel === "Inspired"
-                  ? "bg-gradient-to-r from-[#7077FE] to-[#F07EFF]"
-                  : "bg-[#E5E7EB]"
-                  }`}
-              >
-                <div className="w-full h-full rounded-[16px] bg-white flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4">
-                  <img
-                    src="https://cdn.cness.io/inspired.webp"
-                    alt="Inspired"
-                    className="h-[34px] w-[34px] sm:h-[39px] sm:w-[39px]"
-                  />
-                  <span className="font-poppins font-semibold text-[15px] sm:text-[18px] leading-[100%] text-[#0F1728]">
-                    Inspired
-                  </span>
-                </div>
-              </div>
-
-              {/* Leader */}
-              <div
-                className={`w-full h-[120px] sm:h-[150px] rounded-[18px] flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4 border ${activeLevel === "Leader"
-                  ? "border-2 border-transparent bg-clip-padding bg-white relative before:absolute before:inset-0 before:rounded-[18px] before:p-[2px] before:bg-gradient-to-r before:from-[#7077FE] before:to-[#F07EFF] before:-z-10"
-                  : "border-[#E5E7EB] bg-white"
-                  }`}
-              >
-                <img
-                  src="https://cdn.cness.io/leader.webp"
-                  alt="Leader"
-                  className="h-[34px] w-[34px] sm:h-[39px] sm:w-[39px]"
-                />
-                <span className="font-poppins font-semibold text-[15px] sm:text-[18px] leading-[100%] text-[#0F1728]">
-                  Leader
-                </span>
-              </div>
-            </div>
+    <>
+      <Card className="rounded-[12px] border border-[#E5E7EB] px-4 md:px-[18px] py-5 space-y-3">
+        {/* Header */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F2EAFE]">
+              <img
+                src={certicon}
+                alt="Certification Icon"
+                className="h-5 w-5"
+              />
+            </span>
+            <span className="font-poppins font-medium text-[16px] leading-[100%] text-[#0F1728]">
+              Certification
+            </span>
           </div>
 
-          {/* Slide 2: Upgrade callout */}
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <button
+              onClick={onContinue}
+              className="relative w-full sm:w-[194px] h-[40px] rounded-full px-5 py-[10px] flex items-center justify-center text-center font-[600] text-[14px] text-[#222224] font-['Open_Sans'] leading-[100%] bg-white"
+            >
+              <span className="relative z-10">Continue Assessment</span>
+              <span className="absolute inset-0 rounded-full p-[1px] bg-gradient-to-r from-[#9747FF] to-[#F07EFF]"></span>
+              <span className="absolute inset-[1px] rounded-full bg-white"></span>
+            </button>
+          </div>
+        </div>
+        <HeaderDivider />
+
+        {/* Progress */}
+        <div className="mt-2 flex items-center justify-between">
+          <span className="text-[22px] sm:text-[24px] font-semibold font-['Open_Sans'] leading-[32px] text-[#222224]">
+            {progress}%
+          </span>
+        </div>
+        <div>
+          <Progress value={progress} />
+        </div>
+        <p className="mt-4 text-[14px] sm:text-[16px] font-normal font-['Open_Sans'] leading-[140%] text-[#999999]">
+          {description}
+        </p>
+
+        {/* Slides container */}
+        <div className="mt-4">
           <div
-            className={`absolute inset-0 transition-opacity duration-500 ${slide === 1
-              ? "opacity-100 pointer-events-auto"
-              : "opacity-0 pointer-events-none"
-              }`}
+            className="relative min-h-[450px] sm:min-h-[300px] md:min-h-[270px] rounded-[22px] border border-[#EFE8FF] bg-gradient-to-r from-[#F6F2FF] via-[#FAF0FF] to-[#FFF1F8] p-4 sm:p-6 overflow-hidden"
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
           >
-            {/* Keep the layout anchored to the top-left and within the gradient card */}
-            <div className="h-full w-full flex items-start">
-              {/* Two columns: fixed badge | flowing copy */}
-              <div className="w-full grid grid-cols-[56px,1fr] sm:grid-cols-[64px,1fr] gap-4 sm:gap-6 p-4 sm:p-6">
-                {/* Badge */}
-                <div className="flex items-start">
-                  <div className="h-14 w-14 sm:h-16 sm:w-16  flex items-center justify-center">
+            {/* Slide 1: Levels */}
+            <div
+              className={`absolute inset-0 transition-opacity duration-500 ${
+                slide === 0
+                  ? "opacity-100 pointer-events-auto"
+                  : "opacity-0 pointer-events-none"
+              }`}
+            >
+              <div className="text-[16px] sm:text-[18px] font-['Open_Sans'] leading-[100%] text-[#222224] mt-1 sm:mt-2 mb-3 sm:mb-4 px-2 pt-2 sm:pt-5">
+                Certification Levels
+              </div>
+
+              <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 px-1 sm:px-2">
+                {/* Aspiring */}
+                <div
+                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-[2px] ${
+                    activeLevel === "Aspiring"
+                      ? "bg-gradient-to-r from-[#7077FE] to-[#F07EFF]"
+                      : "border-[#E5E7EB] bg-white"
+                  }`}
+                >
+                  <div className="w-full h-full rounded-[16px] bg-white flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4">
                     <img
-                      src="https://cdn.cness.io/leader1.webp"
-                      alt="Leader badge"
-                      className="h-8 w-8 sm:h-9 sm:w-9"
+                      src="https://cdn.cness.io/aspiring.webp"
+                      alt="Aspiring"
+                      className="h-[34px] w-[34px] sm:h-[39px] sm:w-[39px]"
                     />
+                    <span className="font-poppins font-semibold text-[15px] sm:text-[18px] leading-[100%] text-[#0F1728]">
+                      Aspired
+                    </span>
                   </div>
                 </div>
 
-                {/* Copy + CTA */}
-                <div className="min-w-0">
-                  <h4 className="mr-5 -mt-1 sm:-mt-4 font-poppins font-semibold text-[18px] sm:text-[20px] leading-[32.3px] tracking-[0.15px] text-[#0F1728]">
-                    {upgradeTitle}
-                  </h4>
+                {/* Inspired */}
+                <div
+                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-[2px] ${
+                    activeLevel === "Inspired"
+                      ? "bg-gradient-to-r from-[#7077FE] to-[#F07EFF]"
+                      : "bg-[#E5E7EB]"
+                  }`}
+                >
+                  <div className="w-full h-full rounded-[16px] bg-white flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4">
+                    <img
+                      src="https://cdn.cness.io/inspired.webp"
+                      alt="Inspired"
+                      className="h-[34px] w-[34px] sm:h-[39px] sm:w-[39px]"
+                    />
+                    <span className="font-poppins font-semibold text-[15px] sm:text-[18px] leading-[100%] text-[#0F1728]">
+                      Inspired
+                    </span>
+                  </div>
+                </div>
 
-                  <p className="mt-1 font-['Open_Sans'] text-[13px] sm:text-[16px] leading-[150%] text-[#7A7A7A] max-w-[95ch]">
-                    {upgradeText}
-                  </p>
+                {/* Leader */}
+                <div
+                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-[2px] ${
+                    activeLevel === "Leader"
+                      ? "border-2 border-transparent bg-clip-padding bg-white relative before:absolute before:inset-0 before:rounded-[18px] before:p-[2px] before:bg-gradient-to-r before:from-[#7077FE] before:to-[#F07EFF] before:-z-10"
+                      : "border-[#E5E7EB] bg-white"
+                  }`}
+                >
+                  <div className="w-full h-full rounded-[16px] bg-white flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4">
+                    <img
+                      src="https://cdn.cness.io/leader.webp"
+                      alt="Leader"
+                      className="h-[34px] w-[34px] sm:h-[39px] sm:w-[39px]"
+                    />
+                    <span className="font-poppins font-semibold text-[15px] sm:text-[18px] leading-[100%] text-[#0F1728]">
+                      Leader
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-                  <button
-                    onClick={onUpgrade}
-                    className="mt-4 sm:mt-5 inline-flex w-full sm:w-auto min-w-[140px] h-10 sm:h-[40px] items-center justify-center gap-[7px] rounded-full bg-[#7077FE] px-5 sm:px-6 font-opensans text-[13px] sm:text-[14px] leading-[100%] text-white shadow hover:bg-[#5A61E8] transition"
-                  >
-                    Upgrade
-                  </button>
+            {/* Slide 2: Upgrade callout */}
+            <div
+              className={`absolute inset-0 transition-opacity duration-500 ${
+                slide === 1
+                  ? "opacity-100 pointer-events-auto"
+                  : "opacity-0 pointer-events-none"
+              }`}
+            >
+              <div className="h-full w-full flex items-start">
+                <div className="w-full grid grid-cols-[56px,1fr] sm:grid-cols-[64px,1fr] gap-4 sm:gap-6 p-4 sm:p-6">
+                  {/* Badge */}
+                  <div className="flex items-start">
+                    <div className="h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center">
+                      <img
+                        src={
+                          activeLevel === "Aspiring"
+                            ? "https://cdn.cness.io/inspired.webp"
+                            : activeLevel === "Inspired"
+                            ? "https://cdn.cness.io/leader.webp"
+                            : "https://cdn.cness.io/leader1.webp"
+                        }
+                        alt={`${getNextLevel()} badge`}
+                        className="h-8 w-8 sm:h-9 sm:w-9"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Copy + CTA */}
+                  <div className="min-w-0">
+                    <h4 className="mr-5 -mt-1 sm:-mt-4 font-poppins font-semibold text-[18px] sm:text-[20px] leading-[32.3px] tracking-[0.15px] text-[#0F1728]">
+                      {getUpgradeTitle()}
+                    </h4>
+
+                    <p className="mt-1 font-['Open_Sans'] text-[13px] sm:text-[16px] leading-[150%] text-[#7A7A7A] max-w-[95ch]">
+                      {upgradeText}
+                    </p>
+
+                    {/* Updated button logic */}
+                    {activeLevel !== "Leader" && (
+                      <button
+                        onClick={() => handleUpgradeClick(activeLevel)}
+                        className="mt-4 sm:mt-5 inline-flex w-full sm:w-auto min-w-[140px] h-10 sm:h-[40px] items-center justify-center gap-[7px] rounded-full bg-[#7077FE] px-5 sm:px-6 font-opensans text-[13px] sm:text-[14px] leading-[100%] text-white shadow hover:bg-[#5A61E8] transition"
+                      >
+                        Upgrade to {getNextLevel()}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Dots BELOW the gradient card */}
-        <div className="pt-3 flex justify-center">
-          <div className="flex gap-1.5">
-            <button
-              aria-label="Slide 1"
-              className={dotCls(slide === 0)}
-              onClick={() => setSlide(0)}
-            />
-            <button
-              aria-label="Slide 2"
-              className={dotCls(slide === 1)}
-              onClick={() => setSlide(1)}
-            />
+          {/* Dots BELOW the gradient card */}
+          <div className="pt-3 flex justify-center">
+            <div className="flex gap-1.5">
+              <button
+                aria-label="Slide 1"
+                className={dotCls(slide === 0)}
+                onClick={() => setSlide(0)}
+              />
+              <button
+                aria-label="Slide 2"
+                className={dotCls(slide === 1)}
+                onClick={() => setSlide(1)}
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+
+      <Modal
+        isOpen={showiInterestModal}
+        onClose={() => setShowInterestModal(false)}
+      >
+        <div className="p-6 lg:min-w-[450px] md:min-w-[450px] min-w-[300px] text-center">
+          {/* Success Icon with purple theme */}
+          <div className="flex justify-center mb-4">
+            <div className="h-12 w-12 rounded-full bg-[#F2EAFE] flex items-center justify-center">
+              <svg
+                className="h-6 w-6 text-[#7E5FFF]"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+          </div>
+
+          {/* Title */}
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Thank You!
+          </h3>
+
+          {/* Message */}
+          <p className="text-gray-600 mb-6">
+            Thanks for showing the interest! We will get back to you on this
+            process.
+          </p>
+
+          {/* Single OK Button */}
+          <div className="flex justify-center">
+            <button
+              onClick={() => setShowInterestModal(false)}
+              className="px-6 py-2 text-sm font-medium text-white bg-[#7077FE] rounded-md hover:bg-[#5A61E8] transition-colors"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      </Modal>
+    </>
   );
 }
 
@@ -2688,9 +2797,7 @@ export function BestPracticesSection({
               key={bp.id}
               onClick={() =>
                 navigate(
-                  `/dashboard/bestpractices/${bp.id}/${slugify(
-                    bp.title
-                  )}`,
+                  `/dashboard/bestpractices/${bp.id}/${slugify(bp.title)}`
                 )
               }
               className="snap-start flex-shrink-0 w-[332px] h-[317px] rounded-[12px] border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3 cursor-pointer"
@@ -2700,10 +2807,10 @@ export function BestPracticesSection({
                 <img
                   src={
                     !bp.image ||
-                      bp.image === "null" ||
-                      bp.image === "undefined" ||
-                      !bp.image.startsWith("http") ||
-                      bp.image === "http://localhost:5026/file/"
+                    bp.image === "null" ||
+                    bp.image === "undefined" ||
+                    !bp.image.startsWith("http") ||
+                    bp.image === "http://localhost:5026/file/"
                       ? iconMap["companycard1"]
                       : bp.image
                   }
@@ -2752,8 +2859,7 @@ export function BestPracticesSection({
                 )}
               </div>
             </div>
-          )
-          )}
+          ))}
         </div>
 
         {/* Tiny overlay arrows for mobile (optional) */}
@@ -2779,11 +2885,7 @@ export function BestPracticesSection({
           <div
             key={bp.id}
             onClick={() =>
-              navigate(
-                `/dashboard/bestpractices/${bp.id}/${slugify(
-                  bp.title
-                )}`,
-              )
+              navigate(`/dashboard/bestpractices/${bp.id}/${slugify(bp.title)}`)
             }
             className="flex-shrink-0 w-[332px] h-[317px] rounded-[12px] border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3 cursor-pointer"
           >
@@ -2791,10 +2893,10 @@ export function BestPracticesSection({
               <img
                 src={
                   !bp.image ||
-                    bp.image === "null" ||
-                    bp.image === "undefined" ||
-                    !bp.image.startsWith("http") ||
-                    bp.image === "http://localhost:5026/file/"
+                  bp.image === "null" ||
+                  bp.image === "undefined" ||
+                  !bp.image.startsWith("http") ||
+                  bp.image === "http://localhost:5026/file/"
                     ? iconMap["companycard1"]
                     : bp.image
                 }
@@ -2802,8 +2904,7 @@ export function BestPracticesSection({
                 className="h-full w-full object-cover"
                 onError={(e) => {
                   // Fallback in case the image fails to load
-                  (e.target as HTMLImageElement).src =
-                    iconMap["companycard1"];
+                  (e.target as HTMLImageElement).src = iconMap["companycard1"];
                 }}
               />
             </div>
@@ -2851,8 +2952,9 @@ export function BestPracticesSection({
         {items.map((_, i) => (
           <span
             key={i}
-            className={`h-1.5 w-1.5 rounded-full ${i === mobileIndex ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
-              }`}
+            className={`h-1.5 w-1.5 rounded-full ${
+              i === mobileIndex ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
+            }`}
           />
         ))}
       </div>
@@ -2861,8 +2963,9 @@ export function BestPracticesSection({
         {Array.from({ length: totalPages }).map((_, i) => (
           <span
             key={i}
-            className={`h-1.5 w-1.5 rounded-full ${i === page ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
-              }`}
+            className={`h-1.5 w-1.5 rounded-full ${
+              i === page ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
+            }`}
           />
         ))}
       </div>
@@ -2953,8 +3056,9 @@ export function SocialStackCard({
 
     const Rail = (
       <div
-        className={`flex flex-col gap-[3px] ${reverse ? "marquee-ping-reverse" : "marquee-ping"
-          }`}
+        className={`flex flex-col gap-[3px] ${
+          reverse ? "marquee-ping-reverse" : "marquee-ping"
+        }`}
       >
         {list.map((src, i) => (
           <div
@@ -3328,8 +3432,9 @@ export function SocialStackCard({
               key={i}
               onClick={() => setIdx(i)}
               aria-label={`Slide ${i + 1}`}
-              className={`h-1.5 w-1.5 rounded-full ${i === idx ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
-                }`}
+              className={`h-1.5 w-1.5 rounded-full ${
+                i === idx ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
+              }`}
             />
           ))}
         </div>
@@ -3371,8 +3476,8 @@ export function SocialStackCard({
         <input
           className="h-10 w-full outline-none text-sm"
           placeholder="Search…"
-        // onChange={(e) => onSearch?.(e.target.value)}
-        // onClick={(e) => e.stopPropagation()}
+          // onChange={(e) => onSearch?.(e.target.value)}
+          // onClick={(e) => e.stopPropagation()}
         />
         <SearchIcon className="h-4 w-4 text-[#667085]" />
       </div>
@@ -3392,9 +3497,9 @@ export function SocialStackCard({
           <img
             src={
               !avatar ||
-                avatar === "null" ||
-                avatar === "undefined" ||
-                !avatar.startsWith("http")
+              avatar === "null" ||
+              avatar === "undefined" ||
+              !avatar.startsWith("http")
                 ? "/profile.png"
                 : avatar
             }
@@ -3402,7 +3507,7 @@ export function SocialStackCard({
             className="h-12 w-12 rounded-full object-cover flex-shrink-0"
           />
 
-          <div className="flex-1 min-w-0"> 
+          <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0 flex-1">
                 <div className="font-poppins font-medium text-[16px] md:text-[18px] leading-[24px] text-[#222224] truncate">
@@ -3533,8 +3638,9 @@ export function SocialStackCard({
             role="tab"
             aria-selected={tab === "Suggested"}
             onClick={() => setTab("Suggested")}
-            className={`relative z-10 h-8 text-center text-sm font-semibold rounded-full transition-colors ${tab === "Suggested" ? "text-white" : "text-[#222224]"
-              }`}
+            className={`relative z-10 h-8 text-center text-sm font-semibold rounded-full transition-colors ${
+              tab === "Suggested" ? "text-white" : "text-[#222224]"
+            }`}
           >
             Suggested
           </button>
@@ -3543,8 +3649,9 @@ export function SocialStackCard({
             role="tab"
             aria-selected={tab === "Requested"}
             onClick={() => setTab("Requested")}
-            className={`relative z-10 h-8 text-center text-sm font-semibold rounded-full transition-colors ${tab === "Requested" ? "text-white" : "text-[#222224]"
-              }`}
+            className={`relative z-10 h-8 text-center text-sm font-semibold rounded-full transition-colors ${
+              tab === "Requested" ? "text-white" : "text-[#222224]"
+            }`}
           >
             Requested
           </button>
@@ -3552,6 +3659,7 @@ export function SocialStackCard({
 
         {/* list */}
         <div className="space-y-3 flex-1">
+          
           {list && list.length > 0 ? (
             list.slice(0, 4).map((f) => (
               <div
@@ -3562,9 +3670,9 @@ export function SocialStackCard({
                   <img
                     src={
                       !f.avatar ||
-                        f.avatar === "null" ||
-                        f.avatar === "undefined" ||
-                        !f.avatar.startsWith("http")
+                      f.avatar === "null" ||
+                      f.avatar === "undefined" ||
+                      !f.avatar.startsWith("http")
                         ? "/profile.png"
                         : f.avatar
                     }
@@ -3668,10 +3776,10 @@ export function DirectorySection({
               <img
                 src={
                   !it.avatar ||
-                    it.avatar === "null" ||
-                    it.avatar === "undefined" ||
-                    !it.avatar.startsWith("http") ||
-                    it.avatar === "http://localhost:5026/file/"
+                  it.avatar === "null" ||
+                  it.avatar === "undefined" ||
+                  !it.avatar.startsWith("http") ||
+                  it.avatar === "http://localhost:5026/file/"
                     ? "https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=1200&auto=format&fit=crop"
                     : it.avatar
                 }

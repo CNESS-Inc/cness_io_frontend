@@ -4,7 +4,7 @@ import Button from "../../ui/Button";
 //import { MessageCircle, ShoppingBag, BookOpen, Compass,  } from "lucide-react";
 import SignupModel from "../../OnBoarding/Signup";
 import { useNavigate } from "react-router-dom";
-import OptimizeImage from "../../ui/OptimizeImage";
+// import OptimizeImage from "../../ui/OptimizeImage";
 
 export default function HeroSection() {
   const [step, setStep] = useState(0);
@@ -33,27 +33,24 @@ export default function HeroSection() {
       <div className="z-10 pt-12 sm:pt-16 px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
         <h1
           style={{ fontFamily: "Poppins, sans-serif" }}
-          className={`font-medium text-[clamp(28px,5vw,42px)] leading-[115%] tracking-[-0.02em] bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out ${
-            step >= 4 ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-6"
-          }`}
+          className={`font-medium text-[clamp(28px,5vw,42px)] leading-[115%] tracking-[-0.02em] bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out ${step >= 4 ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-6"
+            }`}
         >
           The World’s First
           <br /> Consciousness Super-App
         </h1>
 
         <p
-          className={`font-['Open_Sans'] font-light text-[16px] leading-[24px] tracking-[0px] text-[#64748B] text-center max-w-[62ch] mt-4 sm:mt-6 lg:mt-6 transition-all duration-1000 ease-in-out  ${
-            step >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-          }`}
+          className={`font-['Open_Sans'] font-light text-[16px] leading-[24px] tracking-[0px] text-[#64748B] text-center max-w-[62ch] mt-4 sm:mt-6 lg:mt-6 transition-all duration-1000 ease-in-out  ${step >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            }`}
         >
           Build your conscious identity. Connect with purpose-led peers. Share
           your knowledge. Learn, grow, and thrive – all in one place.
         </p>
 
         <div
-          className={`mt-5 sm:mt-6 flex justify-center transition-all duration-1000 ease-in-out ${
-            step >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-          }`}
+          className={`mt-5 sm:mt-6 flex justify-center transition-all duration-1000 ease-in-out ${step >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            }`}
         >
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
             <Button
@@ -95,13 +92,30 @@ export default function HeroSection() {
               decoding="async"
               className="w-full h-full object-cover object-[58%_50%] sm:object-[60%_50%] md:object-[62%_50%] lg:object-[64%_50%] xl:object-[66%_50%] 2xl:object-[68%_50%]"
             /> */}
-            <OptimizeImage
+            {/* <OptimizeImage
               src="Hero_section1.webp"
               alt="Hero Section"
               width={'100%'}
               className="w-full object-cover h-full"
+            /> */}
+            <img
+              srcSet="
+    https://res.cloudinary.com/diudvzdkb/image/upload/w_640,h_188,c_fill,q_auto,f_auto/v1759910599/Hero_section1_s5fvxh.webp 640w,
+    https://res.cloudinary.com/diudvzdkb/image/upload/w_1024,h_301,c_fill,q_auto,f_auto/v1759910599/Hero_section1_s5fvxh.webp 1024w,
+    https://res.cloudinary.com/diudvzdkb/image/upload/w_1271,h_374,c_fill,q_auto,f_auto/v1759910599/Hero_section1_s5fvxh.webp 1271w
+  "
+              sizes="(max-width: 640px) 640px,
+         (max-width: 1024px) 1024px,
+         1271px"
+              src="https://res.cloudinary.com/diudvzdkb/image/upload/w_1271,h_374,c_fill,q_auto,f_auto/v1759910599/Hero_section1_s5fvxh.webp"
+              alt="Hero Section"
+              width={1271}
+              height={374}
+              loading="eager"
+              fetchPriority="high"
+              className="w-full h-full object-cover"
             />
-            
+
           </div>
 
           {/* floating pills only on large screens to avoid crowding mobile */}
