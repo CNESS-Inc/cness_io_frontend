@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import cnesslogo from "../assets/cnesslogo.png";
 import { Link } from "react-router-dom";
 
 const TermsAndConditions = () => {
@@ -22,7 +21,7 @@ const TermsAndConditions = () => {
       <div className="fixed -top-8 left-4 z-20">
         <Link to="/">
           <img
-            src={cnesslogo}
+            src={`https://res.cloudinary.com/diudvzdkb/image/upload/w_240,h_136,f_webp,q_auto/v1759918812/cnesslogo_neqkfd`}
             alt="logo"
             className="w-48 h-48 object-contain"
           />

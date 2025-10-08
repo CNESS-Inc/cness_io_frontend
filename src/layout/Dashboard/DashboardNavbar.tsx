@@ -525,7 +525,7 @@ const DashboardNavbar = ({
               <img
                 className="h-auto w-[100px]"
                 alt="Company Logo"
-                src="/cnesslogo.png"
+                src="https://res.cloudinary.com/diudvzdkb/image/upload/w_240,h_136,f_webp,q_auto/v1759918812/cnesslogo_neqkfd"
               />
             </Link>
             <div className="hidden md:block ml-auto">

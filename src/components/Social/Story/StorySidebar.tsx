@@ -2,7 +2,6 @@ import { cn } from "../../../lib/utils";
 import { IoCloseOutline } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
 import Image from "../../ui/Image";
-import logoImg from "../../../../public/cnesslogo.png";
 
 interface Story {
   id: string;
@@ -41,7 +40,7 @@ export function StorySidebar({
               <div className="flex items-center">
                 <Link to="/" className="flex items-center" aria-label="Home">
                   <Image
-                    src={logoImg}
+                    src={`https://res.cloudinary.com/diudvzdkb/image/upload/w_240,h_136,f_webp,q_auto/v1759918812/cnesslogo_neqkfd`}
                     alt="Company Logo"
                     width={100}
                     className="h-auto w-[144.16px]"
