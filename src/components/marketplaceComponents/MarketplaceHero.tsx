@@ -21,7 +21,7 @@ export default function MarketplaceHero() {
           >
             CNESS Marketplace
         </h2>
-        <p className="mt-3 openSans font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]">
+<p className="mt-3 font-['Open_Sans'] font-light text-base leading-6 text-[#64748B]">
           CNESS Marketplace is a digital hub for conscious creators to share
           music, podcasts, courses, eBooks, art, and videos. Every offering is rooted in authenticity and
           purpose — helping you discover and support creations that inspire growth and positive impact.

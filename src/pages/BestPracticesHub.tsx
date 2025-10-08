@@ -11,6 +11,7 @@ import {
   GetSaveBestpractices,
   GetValidProfessionalDetails,
   GetInterestsDetails,
+  SendBpFollowRequest,
   // SendBpFollowRequest,
 } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
@@ -161,41 +162,6 @@ useEffect(() => {
       });
     }
   };
-
-  /*const toggleFollow = async (bpId: string) => {
-    try {
-      const payload = { bp_id: bpId };
-      const res = await SendBpFollowRequest(payload);
-
-      if (res?.success?.statusCode === 200) {
-        const isNowFollowing = res?.data?.data !== null;
-
-        setBestPractices((prevPractices) =>
-          prevPractices.map((practice) =>
-            practice.id === bpId
-              ? { ...practice, is_bp_following: isNowFollowing }
-              : practice
-          )
-        );
-
-        showToast({
-          message: isNowFollowing
-            ? "Followed successfully - stay updated!"
-            : "Unfollowed - no longer receiving updates.",
-          type: isNowFollowing ? "success" : "info",
-          duration: 2000,
-        });
-      } else {
-        console.warn("Unexpected status code:", res?.success?.statusCode);
-      }
-    } catch (error) {
-      showToast({
-        message: "Failed to update follow. Please try again.",
-        type: "error",
-        duration: 2000,
-      });
-    }
-  };*/
 
   // Modal states
   const [newPractice, setNewPractice] = useState({
@@ -537,6 +503,45 @@ useEffect(() => {
     }
   };
 
+  const toggleFollow = async (id: string) => {
+    try {
+      const res = await SendBpFollowRequest({ bp_id: id });
+
+      if (res?.success?.statusCode === 200) {
+
+        const isFollowing = res?.data?.data !== null;
+        setBestPractices((prev) =>
+          prev.map((practice) => {
+            if (practice.id === id) {
+              return { ...practice, is_bp_following: isFollowing };
+            }
+            return practice;
+          })
+        );
+
+        showToast({
+          message: isFollowing ? "Added to followed practices" : "Removed from followed practices",
+          type: "success",
+          duration: 2000,
+        });
+      } else {
+        console.warn("Unexpected status code:", res?.success?.statusCode);
+        showToast({
+          message: "Something went wrong. Please try again.",
+          type: "warning",
+          duration: 2000,
+        });
+      }
+    } catch (error) {
+      console.error("Error toggling follow status:", error);
+      showToast({
+        message: "Failed to update follow status",
+        type: "error",
+        duration: 2000,
+      });
+    }
+  };
+
   return (
     <>
       <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] mx-auto rounded-[12px] overflow-hidden">
@@ -872,7 +877,7 @@ useEffect(() => {
                           <h3 className="text-base sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">
                             {company.title}
                           </h3>
-                          {/*<div>
+                          <div>
                             {!company.is_bp_following ? (
                               <button
                                 className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap"
@@ -894,7 +899,7 @@ useEffect(() => {
                                 Following
                               </button>
                             )}
-                          </div>*/}
+                          </div>
                         </div>
                         <p className="text-sm font-semibold text-gray-900">
                           Overview

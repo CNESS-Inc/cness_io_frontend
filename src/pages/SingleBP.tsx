@@ -349,9 +349,11 @@ useEffect(() => {
         {/* Description */}
         <div className="w-[90%] sm:w-[80%] md:w-[70%] mx-auto mt-4 sm:mt-6">
           <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6">
-            <p className="text-gray-800 leading-relaxed text-justify text-sm sm:text-base">
-              {singlepost.description}
-            </p>
+           <div
+  className="text-gray-800 leading-relaxed text-sm sm:text-base whitespace-pre-line"
+>
+  {singlepost.description}
+</div>
           </div>
         </div>
         {/* Comment Section */}
