@@ -3552,6 +3552,7 @@ export function SocialStackCard({
 
         {/* list */}
         <div className="space-y-3 flex-1">
+          
           {list && list.length > 0 ? (
             list.slice(0, 4).map((f) => (
               <div

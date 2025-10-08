@@ -1583,9 +1583,9 @@ export default function SocialTopBar() {
                               disabled={connectingUsers[post.user_id] || false}
                               className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-[12px] py-[6px] rounded-full transition-colors font-family-open-sans h-[35px]
                                 ${
-                                  // getFriendStatus(post.user_id) === "connected"
-                                  //   ? "bg-red-500 text-white hover:bg-red-600"
-                                  //   :
+                                  getFriendStatus(post.user_id) === "connected"
+                                    ? "bg-gray-400 text-white cursor-not-allowed"
+                                    :
                                   getFriendStatus(post.user_id) === "requested"
                                     ? "bg-gray-400 text-white cursor-not-allowed"
                                     : "bg-white text-black shadow-md"
@@ -1599,8 +1599,8 @@ export default function SocialTopBar() {
                                 />
                                 {connectingUsers[post.user_id]
                                   ? "Loading..."
-                                  : // : getFriendStatus(post.user_id) === "connected"
-                                  // ? "Connected"
+                                  :  getFriendStatus(post.user_id) === "connected"
+                                  ? "Connected" : 
                                   getFriendStatus(post.user_id) === "requested"
                                   ? "Requested"
                                   : "Connect"}
