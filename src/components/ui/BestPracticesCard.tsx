@@ -1,6 +1,7 @@
 //import React from "react";
 
 type BestPracticeCardProps = {
+  id?: string;
   name: string;
   username: string;
   profileImage: string;
@@ -8,9 +9,12 @@ type BestPracticeCardProps = {
   title: string;
   description: string;
   link?: string;
+  ifFollowing?: boolean;
+  onToggleFollow?: (id: string) => void;
 };
 
 export default function BestPracticeCard({
+  id,
   name,
   username,
   profileImage,
@@ -18,15 +22,18 @@ export default function BestPracticeCard({
   title,
   description,
   link,
+  ifFollowing,
+  onToggleFollow
 }: BestPracticeCardProps) {
+
   return (
     <div
       className="
-        flex flex-col
+        flex flex-col cursor-pointer
         rounded-[12px] border border-[#ECEEF2] bg-white
         pt-3 pr-3 pb-6 pl-3
         gap-2.5
-        shadow-sm hover:shadow-md transition-shadow
+        shadow-sm hover:shadow-md transition-shadow h-full
       "
     >
       {/* Header - Profile */}
@@ -61,7 +68,7 @@ export default function BestPracticeCard({
       </div>
 
       {/* Content */}
-      <div className="flex flex-col mt-1 sm:mt-2">
+      <div className="flex flex-col mt-1 sm:mt-2 flex-1">
         <h4 className="font-['Open_Sans'] font-semibold text-[14px] sm:text-[15px] text-[#0F1728]">
           {title}
         </h4>
@@ -74,10 +81,40 @@ export default function BestPracticeCard({
         {link && (
           <a
             href={link}
-            className="mt-2 inline-flex items-center text-[12px] sm:text-[13px] font-semibold text-[#D748EA] hover:underline self-start"
+            className="inline-flex items-center text-[12px] sm:text-[13px] font-semibold text-[#D748EA] hover:underline self-start"
           >
             Read More
           </a>
+        )}
+
+        {onToggleFollow && (
+          <div className="flex justify-end mt-auto pt-3">
+            {ifFollowing ? (
+              <button
+                className="w-full inline-block rounded-full bg-[#F396FF] px-4 py-2
+                font-opensans text-[14px] font-semibold text-white
+                shadow transition"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleFollow(id? id : "");
+                }}
+              >
+                Following
+              </button>
+            ) : (
+              <button
+                className="w-full rounded-full bg-[#7077FE] px-3 py-2
+                              font-opensans text-[14px] font-semibold text-white
+                              shadow hover:bg-[#5A61E8] transition"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleFollow(id? id : "");
+                }}
+              >
+                Follow
+              </button>
+            )}
+          </div>
         )}
       </div>
     </div>
