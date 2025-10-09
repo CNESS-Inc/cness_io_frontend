@@ -73,7 +73,7 @@ export default function DashboardFirsttimeSection() {
               </h1>
             </div>
             <div className="inline-flex items-center pt-1 pb-2 md:pt-2 md:pb-3">
-              <p className="font-['Open_Sans',Helvetica] text-[#7a7a7a] text-xs sm:text-sm font-normal">
+              <p className="font-['Open_Sans',Helvetica] text-[#242424] text-xs sm:text-sm font-light">
                 Welcome to your CNESS Dashboard
               </p>
             </div>
@@ -159,7 +159,7 @@ export default function DashboardFirsttimeSection() {
             <h6 className="font-['Poppins',Helvetica] font-medium text-[22px] sm:text-[28px] text-[#222224]">
               Certification Makes It Official.
             </h6>
-            <h5 className="pt-3 font-['Open_Sans',Helvetica] font-normal text-base sm:text-lg text-[#999999] leading-[32px]">
+            <h5 className="pt-3 font-['Open_Sans',Helvetica] font-light text-base sm:text-lg text-[#242424] leading-[32px]">
               Get your conscious identity verified and unlock everything CNESS
               has to offer.
             </h5>
@@ -231,7 +231,7 @@ export default function DashboardFirsttimeSection() {
               <h6 className="font-['Poppins',Helvetica] font-medium text-xl md:text-2xl text-black">
                 Directory
               </h6>
-              <h5 className="pt-3 pe-5 font-['Open_Sans',Helvetica] font-normal text-sm text-[#898989]">
+              <h5 className="pt-3 pe-5 font-['Open_Sans',Helvetica] font-light text-sm text-[#242424]">
                 Check out our diverse selection of eco-friendly products made by
                 trusted creators who care about sustainability and ethical
                 practices!
@@ -353,7 +353,7 @@ export default function DashboardFirsttimeSection() {
               <h6 className="font-['Poppins',Helvetica] text-xl md:text-2xl font-medium text-black">
                 Best Practices
               </h6>
-              <h5 className="pt-3 pe-5 font-['Open_Sans',Helvetica] font-normal text-sm text-[#898989]">
+              <h5 className="pt-3 pe-5 font-['Open_Sans',Helvetica] font-light text-sm text-[#242424]">
                 Discover our extensive selection of sustainable products made by
                 trusted artisans committed to eco-friendly methods and ethical
                 principles!
@@ -411,7 +411,7 @@ export default function DashboardFirsttimeSection() {
               <h6 className="font-['Poppins',Helvetica] text-xl md:text-2xl font-medium text-black">
                 Learning Lab
               </h6>
-              <h5 className="pt-3 pe-5 font-['Open_Sans',Helvetica] font-normal text-sm text-[#898989]">
+              <h5 className="pt-3 pe-5 font-['Open_Sans',Helvetica] font-light text-sm text-[#242424]">
                 Explore our wide range of sustainable products crafted by
                 reliable creators dedicated to eco-friendly practices and
                 ethical standards!
@@ -455,7 +455,7 @@ export default function DashboardFirsttimeSection() {
               <h6 className="font-['Poppins',Helvetica] text-xl md:text-2xl font-medium text-black">
                 Marketplace
               </h6>
-              <h5 className="pt-3 pe-5 font-['Open_Sans',Helvetica] font-normal text-sm text-[#898989]">
+              <h5 className="pt-3 pe-5 font-['Open_Sans',Helvetica] font-light text-sm text-[#242424]">
                 Explore a wide range of conscious products crafted by verified
                 creators who prioritize sustainability and ethical practices.
               </h5>

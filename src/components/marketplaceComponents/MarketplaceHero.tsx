@@ -1,10 +1,7 @@
-
 export default function MarketplaceHero() {
-    //const [openSignup, setOpenSignup] = useState(false);
+  //const [openSignup, setOpenSignup] = useState(false);
   //const [step, setStep] = useState(0);
 
- 
-  
   return (
     <section
       className="relative w-full py-16 md:py-20"
@@ -15,16 +12,17 @@ export default function MarketplaceHero() {
     >
       {/* Text container */}
       <div className="mx-auto max-w-[1100px] px-6 text-center">
-        <h2 
-        style={{ fontFamily: "Poppins, sans-serif" }}
+        <h2
+          style={{ fontFamily: "Poppins, sans-serif" }}
           className="font-medium text-[clamp(28px,5vw,42px)] leading-[100%] tracking-[-0.02em] bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
-          >
-            CNESS Marketplace
+        >
+          CNESS Marketplace
         </h2>
-<p className="mt-3 font-['Open_Sans'] font-light text-base leading-6 text-[#64748B]">
+        <p className="mt-3 font-['Open_Sans'] font-light text-base leading-6 text-[#242424]">
           CNESS Marketplace is a digital hub for conscious creators to share
-          music, podcasts, courses, eBooks, art, and videos. Every offering is rooted in authenticity and
-          purpose — helping you discover and support creations that inspire growth and positive impact.
+          music, podcasts, courses, eBooks, art, and videos. Every offering is
+          rooted in authenticity and purpose — helping you discover and support
+          creations that inspire growth and positive impact.
         </p>
       </div>
 

@@ -13,7 +13,8 @@ import GetInTouch from "../components/sections/GetInTouch";
 import joinImage from "../assets/join-team.png";
 
 export default function WhyCness() {
-  {/*const people = [
+  {
+    /*const people = [
     {
       name: "John Doe",
       role: "Founder & CEO",
@@ -50,7 +51,8 @@ export default function WhyCness() {
       imageUrl: "https://cdn.cness.io/team.webp",
       socials: { linkedin: "#", instagram: "#", facebook: "#" },
     },
-  ];*/}
+  ];*/
+  }
   //const [selected, setSelected] = useState<number>(2);
   const [openSignup, setOpenSignup] = useState(false);
 
@@ -84,7 +86,8 @@ export default function WhyCness() {
             </h1>
 
             <p
-className={`font-['Open_Sans'] md:text-base font-[300] text-[#64748B] mt-6 max-w-4xl mx-auto transition-all duration-1000 ease-in-out`}            >
+              className={`font-['Open_Sans'] md:text-base font-light text-[#242424] mt-6 max-w-4xl mx-auto transition-all duration-1000 ease-in-out`}
+            >
               We’re building more than a platform—we’re shaping an ecosystem.
               From certifications and learning tools
               <br /> for professionals, to communities, marketplaces, and
@@ -146,7 +149,7 @@ className={`font-['Open_Sans'] md:text-base font-[300] text-[#64748B] mt-6 max-w
 
               {/* Right: copy + CTA */}
               <div className="flex flex-col items-center lg:items-start gap-6">
-                <p className="max-w-[620px] font-['Open_Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#64748B] font-[300]">
+                <p className="max-w-[620px] font-['Open_Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#242424] font-light">
                   We Built Our Super App To Unite Learning, Certifications,
                   Communities, And Marketplaces In One Ecosystem—Helping People
                   And Businesses Grow, Connect, And Thrive With Purpose.
@@ -169,8 +172,8 @@ className={`font-['Open_Sans'] md:text-base font-[300] text-[#64748B] mt-6 max-w
                 <h4 className="font-['Poppins'] font-medium text-[20px] md:text-[24px] leading-[1.2] text-[#111827]">
                   Mission
                 </h4>
-<p className="font-['Open_Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#64748B] font-[300]">
-                    We Built Our Super App To Unite Learning, Certifications,
+                <p className="font-['Open_Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#242424] font-light">
+                  We Built Our Super App To Unite Learning, Certifications,
                   Communities, And Marketplaces In One Ecosystem—Helping People
                   And Businesses Grow, Connect, And Thrive With Purpose.
                 </p>
@@ -180,7 +183,7 @@ className={`font-['Open_Sans'] md:text-base font-[300] text-[#64748B] mt-6 max-w
                 <h4 className="font-['Poppins'] font-medium text-[20px] md:text-[24px] leading-[1.2] text-[#111827]">
                   Vision
                 </h4>
-<p className="font-['Open_Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#64748B] font-[300]">
+                <p className="font-['Open_Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#242424] font-light">
                   To Be The World’s Most Trusted Ecosystem, Where Learning,
                   Business, And Community Come Together Seamlessly, Creating A
                   Future Where Opportunities Are Accessible To Everyone.
@@ -206,7 +209,7 @@ className={`font-['Open_Sans'] md:text-base font-[300] text-[#64748B] mt-6 max-w
                     Different
                   </span>
                 </h2>
-                <p className="mt-4 font-['Open_Sans'] text-[15px] md:text-[16px] leading-relaxed text-[#64748B] max-w-[500px] mx-auto xl:mx-0 font-[300]">
+                <p className="mt-4 font-['Open_Sans'] text-[15px] md:text-[16px] leading-relaxed text-[#242424] max-w-[500px] mx-auto xl:mx-0 font-light">
                   CNESS is a purpose-driven super app that unites
                   certifications, learning, marketplace, communities, OTT, and
                   social in one seamless ecosystem
@@ -241,7 +244,7 @@ className={`font-['Open_Sans'] md:text-base font-[300] text-[#64748B] mt-6 max-w
                         <h3 className="font-['Open_Sans'] font-semibold text-[16px] text-black">
                           {item.title}
                         </h3>
-                        <p className="font-['Open_Sans'] text-[14px] leading-[20px] text-[#64748B] mt-1 font-[300]">
+                        <p className="font-['Open_Sans'] text-[14px] leading-[20px] text-[#242424] mt-1 font-light">
                           {item.desc}
                         </p>
                       </div>
@@ -309,7 +312,7 @@ className={`font-['Open_Sans'] md:text-base font-[300] text-[#64748B] mt-6 max-w
                 We Offer
               </span>
             </h3>
-<p className="font-['Open_Sans'] pt-2 text-center w-full text-[#64748B] font-[300] text-[16px] leading-[24.38px]">
+            <p className="font-['Open_Sans'] pt-2 text-center w-full text-[#242424] font-light text-[16px] leading-[24.38px]">
               CNESS is a super app that brings together tools for professional
               growth and <br />
               personal connection in one ecosystem.
@@ -369,7 +372,7 @@ className={`font-['Open_Sans'] md:text-base font-[300] text-[#64748B] mt-6 max-w
                   </div>
 
                   {/* Number */}
-<span className="font-['Open_Sans'] block text-lg text-[#4B4B4B] font-normal mb-2">
+                  <span className="font-['Open_Sans'] block text-lg text-[#4B4B4B] font-normal mb-2">
                     {item.n}
                   </span>
 
@@ -382,7 +385,7 @@ className={`font-['Open_Sans'] md:text-base font-[300] text-[#64748B] mt-6 max-w
                   </h3>
 
                   {/* Description */}
-<p className="font-['Open_Sans'] mt-2 text-base text-[#64748B] leading-relaxed font-[300]">
+                  <p className="font-['Open_Sans'] mt-2 text-base text-[#242424] leading-relaxed font-light">
                     {item.desc}
                   </p>
                 </div>
@@ -392,7 +395,7 @@ className={`font-['Open_Sans'] md:text-base font-[300] text-[#64748B] mt-6 max-w
         </section>
       </LazySection>
 
-     {/* <LazySection effect="fade-up" delay={0.2}>
+      {/* <LazySection effect="fade-up" delay={0.2}>
         <section
           className="w-full py-12 md:py-16"
           style={{
@@ -407,7 +410,7 @@ className={`font-['Open_Sans'] md:text-base font-[300] text-[#64748B] mt-6 max-w
                 Our Team
               </span>
             </h2>
-            <p className="mt-3 font-['Open_Sans'] text-[14px] sm:text-[15px] md:text-[16px] leading-[22px] text-[#748399] font-[300]">
+            <p className="mt-3 font-['Open_Sans'] text-[14px] sm:text-[15px] md:text-[16px] leading-[22px] text-[#748399] font-light">
               we’re a team of innovators, creators, and changemakers united by
               one belief:
               <br className="hidden md:block" />
