@@ -2,10 +2,11 @@
 import { Menu } from "@headlessui/react";
 import { LiaCertificateSolid } from "react-icons/lia";
 import { FaSortAlphaUp, FaAngleDown, FaAngleUp } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 interface Option {
-  value: string;
-  label: string;
+  slug: string;
+  level: string;
 }
 
 interface CompanyFiltersProps {
@@ -15,6 +16,8 @@ interface CompanyFiltersProps {
   order: "asc" | "desc";
   setOrder: (val: "asc" | "desc") => void;
   ClassName?: string;
+  searchQuery?: string;
+  selectedDomain?: string;
 }
 
 export default function CompanyFilters({
@@ -23,11 +26,32 @@ export default function CompanyFilters({
   setSelected,
   order,
   setOrder,
-  ClassName = ""
+  ClassName = "",
+  searchQuery = "",
+  selectedDomain = ""
 }: CompanyFiltersProps) {
+  const navigate = useNavigate();
+
+  const handleCertificationSelect = (certificationSlug: string) => {
+    setSelected(certificationSlug);
+    
+    // Navigate to search listing with certification filter
+    const searchParam = searchQuery || "";
+    const professionParam = selectedDomain || "";
+    const certificationParam = certificationSlug || "";
+    
+    navigate(
+      `/dashboard/search-listing?search=${encodeURIComponent(
+        searchParam
+      )}&profession=${professionParam}&certification=${encodeURIComponent(
+        certificationParam
+      )}`
+    );
+  };
+
   const activeLabel =
     selected
-      ? (options.find(o => o.value === selected)?.label ?? "Certification Level")
+      ? (options.find(o => o.slug === selected)?.level ?? "Certification Level")
       : "Certification Level";
 
   return (
@@ -44,21 +68,21 @@ export default function CompanyFilters({
         <Menu.Items className="absolute right-0 mt-2 w-44 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg focus:outline-none z-50">
           <div className="py-2">
             {options.map((option) => (
-              <Menu.Item key={option.value}>
+              <Menu.Item key={option.slug}>
                 {({ active }) => (
                   <button
-                    onClick={() => setSelected(option.value)}
+                    onClick={() => handleCertificationSelect(option.slug)}
                     className={`flex items-center w-full px-4 py-2 text-sm ${active ? "bg-gray-100" : ""}`}
                   >
                     <span
                       className={`relative w-4 h-4 mr-3 rounded-full border
-                    ${selected === option.value ? "border-pink-600" : "border-gray-400"}`}
+                    ${selected === option.slug ? "border-pink-600" : "border-gray-400"}`}
                     >
-                      {selected === option.value && (
+                      {selected === option.slug && (
                         <span className="absolute inset-[3px] rounded-full bg-pink-600" />
                       )}
                     </span>
-                    {option.label}
+                    {option.level}
                   </button>
                 )}
               </Menu.Item>
