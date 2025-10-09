@@ -96,7 +96,7 @@ export default function Benefit() {
               className="flex items-center gap-2 rounded-full border border-[#CBD5E1] bg-white px-5 py-2 transition"
             >
               <img src={item.icon} alt={item.label} className="w-6 h-6" />
-              <span className="font-normal text-base text-[#64748B] font-['Open Sans'] openSans">
+              <span className="font-light text-base text-[#242424] font-['Open Sans'] openSans">
                 {item.label}
               </span>
             </div>
@@ -119,7 +119,7 @@ export default function Benefit() {
                 >
                   {item.title}
                 </h3>
-                <p className="openSans font-['Open Sans'] font-light text-sm lg:text-base text-[#64748B] mt-1">
+                <p className="openSans font-['Open Sans'] font-light text-sm lg:text-base text-[#242424] mt-1">
                   {item.desc}
                 </p>
               </div>

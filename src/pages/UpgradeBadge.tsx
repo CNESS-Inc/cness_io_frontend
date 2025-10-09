@@ -377,7 +377,7 @@ const UpgradeBadge = () => {
               <h1 className="font-['Poppins',Helvetica] font-medium text-base text-wrap bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                 You’re making great progress
               </h1>
-              <h5 className="py-3 font-['Open_Sans',Helvetica] text-sm font-normal text-[#7A7A7A]">
+              <h5 className="py-3 font-['Open_Sans',Helvetica] text-sm font-light text-[#242424]">
                 You've successfully achieved Aspired certification and are
                 currently working towards Inspired level. Complete the remaining
                 requirements to unlock your next milestone.
@@ -503,7 +503,7 @@ const UpgradeBadge = () => {
             <h1 className="font-['Poppins',Helvetica] font-semibold text-2xl text-wrap bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
               Unlock Your Full Potential
             </h1>
-            <h5 className="font-['Open_Sans',Helvetica] text-sm font-normal text-[#7A7A7A] w-[64%]">
+            <h5 className="font-['Open_Sans',Helvetica] text-sm font-light text-[#242424] w-[64%]">
               Advance through our certification levels to access exclusive
               features, expand your network, and amplify your conscious impact.
             </h5>
@@ -546,14 +546,6 @@ const UpgradeBadge = () => {
                     <li>Shortened reassessment form submission.</li>
                   </ul>
                 </div>
-              </div>
-
-              <div className="pt-3 flex justify-start items-center gap-3">
-                <img src={arrow} alt="icon" className="w-4 h-4" />
-                <h3 className="font-['Open_Sans',Helvetica] text-sm font-normal text-[#222224]">
-                  Organizations eligible for reassessment after 3 months if they
-                  seek a higher tier.
-                </h3>
               </div>
             </div>
           </div>

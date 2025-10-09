@@ -209,7 +209,7 @@ export default function EcoSystemApp() {
 
                   <p
                     className={`mt-2 text-base font-light font-['Open_Sans'] ${
-                      activeCard === i ? "text-white" : "text-[#64748B]"
+                      activeCard === i ? "text-white" : "text-[#242424]"
                     }`}
                   >
                     {cards[i].content}
@@ -272,7 +272,7 @@ export default function EcoSystemApp() {
                   </h3>
                   <p
                     className={`mt-2 text-base font-light font-['Open_Sans'] ${
-                      activeCard === i ? "text-white" : "text-[#64748B]"
+                      activeCard === i ? "text-white" : "text-[#242424]"
                     }`}
                   >
                     {cards[i].content}
@@ -308,7 +308,7 @@ export default function EcoSystemApp() {
               {rightCards[activeCard].list.map((item, idx) => (
                 <li
                   key={idx}
-                  className="text-[#64748B] font-light text-base leading-6 font-['Open_Sans']"
+                  className="text-[#242424] font-light text-base leading-6 font-['Open_Sans']"
                 >
                   • {item}
                 </li>
@@ -325,7 +325,7 @@ export default function EcoSystemApp() {
               >
                 {rightCards[activeCard].button}
               </button>*/}
-              <p className="flex flex-col text-[#64748B] text-base font-light font-['Open_Sans']">
+              <p className="flex flex-col text-[#242424] text-base font-light font-['Open_Sans']">
                 {rightCards[activeCard].caption.before}
                 <span className="text-black font-normal">
                   {rightCards[activeCard].caption.highlight}
