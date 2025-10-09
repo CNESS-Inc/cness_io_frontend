@@ -5,6 +5,7 @@ import { iconMap } from "../assets/icons";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
 import {
   GetAspiringCompanies,
+  GetBadgeListDetails,
   GetInspiringCompanies,
   GetPopularCompanyDetails,
   GetValidProfessionalDetails,
@@ -47,18 +48,13 @@ export default function DashboardDirectory() {
   const [selectedDomainText, setSelectedDomainText] = useState("");
   const [textWidth, setTextWidth] = useState(0);
   const [Domain, setDomain] = useState([]);
+  const [badge, setBadge] = useState<any>([]);
   const measureRef = useRef<HTMLSpanElement>(null);
+  const hasFetched = useRef(false);
 
   type Filter = "" | "popular" | "aspiring" | "inspired";
   const [selected, setSelected] = useState<Filter>(""); // All
   const [order, setOrder] = useState<"asc" | "desc">("asc");
-
-  const options = [
-    { value: "" as Filter, label: "All" },
-    { value: "popular" as Filter, label: "Popular" },
-    { value: "aspiring" as Filter, label: "Aspiring" },
-    { value: "inspired" as Filter, label: "Inspired" },
-  ];
 
   const [isLoading, setIsLoading] = useState({
     popular: false,
@@ -90,25 +86,24 @@ export default function DashboardDirectory() {
     });
 
   const [popularCompanies, setPopularCompanies] = useState<Company[]>([]);
-  console.log('popularCompanies', popularCompanies);
+  console.log("popularCompanies", popularCompanies);
   const [aspiringCompanies, setAspiringCompanies] = useState<Company[]>([]);
   const [inspiringCompanies, setInspiringCompanies] = useState<Company[]>([]);
 
-useEffect(() => {
-  if (!measureRef.current) return;
-  const el = measureRef.current;
+  useEffect(() => {
+    if (!measureRef.current) return;
+    const el = measureRef.current;
 
-  const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
-    for (const entry of entries) {
-      setTextWidth(entry.contentRect.width);
-    }
-  });
+    const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
+      for (const entry of entries) {
+        setTextWidth(entry.contentRect.width);
+      }
+    });
 
-  observer.observe(el);
+    observer.observe(el);
 
-  return () => observer.disconnect();
-}, []); // run once
-
+    return () => observer.disconnect();
+  }, []); // run once
 
   const fetchDomain = async () => {
     try {
@@ -256,11 +251,28 @@ useEffect(() => {
     }
   };
 
+  const fetchBadge = async () => {
+    try {
+      const res = await GetBadgeListDetails();
+      setBadge(res?.data?.data);
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
   useEffect(() => {
-    fetchDomain();
-    fetchPopularCompany();
-    fetchInspiringCompany();
-    fetchAspiringCompany();
+    if (!hasFetched.current) {
+      fetchBadge();
+      fetchDomain();
+      fetchPopularCompany();
+      fetchInspiringCompany();
+      fetchAspiringCompany();
+      hasFetched.current = true;
+    }
   }, []);
 
   useEffect(() => {
@@ -297,9 +309,30 @@ useEffect(() => {
     );
 
   const activeList = (() => {
-    if (selected === "popular") return { title: "Popular People", list: sortByName(popularCompanies), loading: isLoading.popular, pagination: popularPagination, onPage: fetchPopularCompany };
-    if (selected === "aspiring") return { title: "Aspiring People", list: sortByName(aspiringCompanies), loading: isLoading.aspiring, pagination: aspiringPagination, onPage: fetchAspiringCompany };
-    if (selected === "inspired") return { title: "Inspiring People", list: sortByName(inspiringCompanies), loading: isLoading.inspiring, pagination: inspiringPagination, onPage: fetchInspiringCompany };
+    if (selected === "popular")
+      return {
+        title: "Popular People",
+        list: sortByName(popularCompanies),
+        loading: isLoading.popular,
+        pagination: popularPagination,
+        onPage: fetchPopularCompany,
+      };
+    if (selected === "aspiring")
+      return {
+        title: "Aspiring People",
+        list: sortByName(aspiringCompanies),
+        loading: isLoading.aspiring,
+        pagination: aspiringPagination,
+        onPage: fetchAspiringCompany,
+      };
+    if (selected === "inspired")
+      return {
+        title: "Inspiring People",
+        list: sortByName(inspiringCompanies),
+        loading: isLoading.inspiring,
+        pagination: inspiringPagination,
+        onPage: fetchInspiringCompany,
+      };
     return null; // All
   })();
 
@@ -405,19 +438,25 @@ useEffect(() => {
 
       <section className="py-6 px-1 bg-[#f9f9f9] border-t border-gray-100 ">
         <div className="w-full mx-auto flex items-center">
-          <h2 className="text-xl font-semibold">{
-            selected === "popular" ? "Leader Board" :
-              selected === "aspiring" ? "Aspiring People" :
-                selected === "inspired" ? "Inspired People" : "All People"
-          }</h2>
+          <h2 className="text-xl font-semibold">
+            {selected === "popular"
+              ? "Leader Board"
+              : selected === "aspiring"
+              ? "Aspiring People"
+              : selected === "inspired"
+              ? "Inspired People"
+              : "All People"}
+          </h2>
 
           <CompanyFilters
-            options={options}
+            options={badge}
             selected={selected}
             setSelected={setSelected as any}
             order={order}
             setOrder={setOrder}
-            ClassName="ml-auto"   
+            ClassName="ml-auto"
+            searchQuery={searchQuery}
+            selectedDomain={selectedDomain}
           />
         </div>
       </section>

@@ -9,7 +9,7 @@ import {
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
-import { Award, ChevronUp, ChevronDown, SortAsc, SortDesc } from "lucide-react"; // Import icons
+import { Award, ChevronUp, ChevronDown, SortAsc, SortDesc } from "lucide-react";
 
 interface Company {
   id: string;
@@ -31,6 +31,7 @@ export default function DashboardTechnology() {
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search");
   const domain = searchParams.get("profession");
+  const certification = searchParams.get("certification"); // Get certification from URL
   const { showToast } = useToast();
   const [Domain, setDomain] = useState<any>([]);
   const [badge, setBadge] = useState<any>([]);
@@ -51,24 +52,31 @@ export default function DashboardTechnology() {
   );
   const [textWidth, setTextWidth] = useState(0);
   const [open, setOpen] = useState<"cert" | "sort" | null>(null);
-  const [selectedCert, setSelectedCert] = useState<string>("");
+  const [selectedCert, setSelectedCert] = useState<string>(certification || ""); // Initialize with URL parameter
   const measureRef = useRef<HTMLSpanElement>(null);
   const navigate = useNavigate();
 
-useEffect(() => {
-  if (!measureRef.current) return;
-  const el = measureRef.current;
+  useEffect(() => {
+    if (!measureRef.current) return;
+    const el = measureRef.current;
 
-  const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
-    for (const entry of entries) {
-      setTextWidth(entry.contentRect.width);
+    const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
+      for (const entry of entries) {
+        setTextWidth(entry.contentRect.width);
+      }
+    });
+
+    observer.observe(el);
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Update selected certification when URL parameter changes
+  useEffect(() => {
+    if (certification) {
+      setSelectedCert(certification);
     }
-  });
-
-  observer.observe(el);
-
-  return () => observer.disconnect();
-}, []); // run once
+  }, [certification]);
 
   useEffect(() => {
     if (domain && Domain.length > 0) {
@@ -146,6 +154,7 @@ useEffect(() => {
       });
     }
   };
+
   const fetchBadge = async () => {
     try {
       const res = await GetBadgeListDetails();
@@ -173,20 +182,53 @@ useEffect(() => {
     fetchUsersearchProfileDetails(1);
   }, [sort, selectedDomain, selectedCert]);
 
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  // Update URL when filters change to include certification
+  const updateURL = (
+    domainValue: string,
+    searchValue: string,
+    certValue: string
+  ) => {
+    const params = new URLSearchParams();
+
+    if (domainValue) params.set("profession", domainValue);
+    if (searchValue) params.set("search", searchValue);
+    if (certValue) params.set("certification", certValue);
+
+    navigate(`?${params.toString()}`);
   };
 
   const handleSearch = () => {
     if (selectedDomain || searchQuery) {
+      updateURL(selectedDomain, searchQuery, selectedCert);
       fetchUsersearchProfileDetails(1);
     }
   };
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       handleSearch();
     }
+  };
+
+  // Update certification selection handler to also update URL
+  const handleCertChange = (certSlug: string) => {
+    setSelectedCert(certSlug);
+    setOpen(null);
+    updateURL(selectedDomain, searchQuery, certSlug);
+  };
+
+  // Update domain selection handler to also update URL
+  const handleDomainChange = (domainValue: string) => {
+    setSelectedDomain(domainValue);
+    const selectedText =
+      Domain.find((d: any) => d.id === domainValue)?.title || "All Profession";
+    setSelectedDomainText(selectedText);
+    updateURL(domainValue, searchQuery, selectedCert);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -206,13 +248,12 @@ useEffect(() => {
 
           <div className="w-full mx-auto flex flex-col md:flex-row items-stretch md:items-center h-[34px] gap-2">
             <div className="relative rounded-full">
-              {/* Measurement span with exact same text styling */}
               <span
                 className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4 py-2"
                 ref={measureRef}
                 style={{
                   fontFamily: "inherit",
-                  fontSize: "12px", // Explicitly set to match select
+                  fontSize: "12px",
                 }}
               >
                 {selectedDomainText || "All Domains"}
@@ -226,18 +267,7 @@ useEffect(() => {
                   minWidth: "120px",
                 }}
                 value={selectedDomain}
-                onChange={(e) => {
-                  setSelectedDomain(e.target.value);
-                  const selectedText =
-                    e.target.options[e.target.selectedIndex].text;
-                  setSelectedDomainText(selectedText);
-                  // Update the URL when domain changes
-                  navigate(
-                    `?domain=${e.target.value}${
-                      searchQuery ? `&search=${searchQuery}` : ""
-                    }`
-                  );
-                }}
+                onChange={(e) => handleDomainChange(e.target.value)}
               >
                 <option value="" className="text-white text-[12px]">
                   All Profession
@@ -293,15 +323,21 @@ useEffect(() => {
           <div className="flex-1">
             <h4 className="poppins font-medium text-lg leading-[150%] tracking-normal">
               Search results for
-              {(selectedDomainText !== "All Profession" || searchQuery) && (
+              {(selectedDomainText !== "All Profession" ||
+                searchQuery ||
+                selectedCert) && (
                 <span className="poppins ml-1 text-[#7077FE] font-medium text-lg leading-[150%] tracking-normal">
                   "
                   {selectedDomainText !== "All Profession" &&
                     selectedDomainText}
                   {selectedDomainText !== "All Profession" &&
-                    searchQuery &&
+                    (searchQuery || selectedCert) &&
                     " "}
-                  {searchQuery}"
+                  {searchQuery}
+                  {searchQuery && selectedCert && " "}
+                  {selectedCert &&
+                    badge.find((b: any) => b.slug === selectedCert)?.level}
+                  "
                 </span>
               )}
             </h4>
@@ -309,7 +345,6 @@ useEffect(() => {
 
           {/* Filters moved here - horizontal layout */}
           <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-            {/* Certification Filter - Dropdown */}
             {/* Certification Filter - Dropdown */}
             <div className="relative">
               <div
@@ -320,7 +355,7 @@ useEffect(() => {
                   <Award className="w-4 h-4 text-purple-500" />
                   <span className="font-medium text-sm">
                     {badge.find((b: any) => b.slug === selectedCert)?.level ||
-                      "Certification Level "}
+                      "Certification Level"}
                   </span>
                 </div>
                 {open === "cert" ? (
@@ -341,10 +376,7 @@ useEffect(() => {
                         name="cert"
                         value={item.slug}
                         checked={selectedCert === item.slug}
-                        onChange={() => {
-                          setSelectedCert(item.slug);
-                          setOpen(null);
-                        }}
+                        onChange={() => handleCertChange(item.slug)}
                         className="accent-[#897AFF]"
                       />
                       <span
@@ -412,7 +444,7 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* Company Cards Grid */}
+        {/* Rest of the component remains the same */}
         <div className="w-full max-w-[2100px] mx-auto py-6">
           <main className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
             {isLoading ? (
@@ -439,7 +471,7 @@ useEffect(() => {
           </main>
         </div>
 
-        {/* Pagination */}
+        {/* Pagination remains the same */}
         {!isLoading && !error && totalCount > 0 && (
           <div className="mt-8 mb-12">
             <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-1 flex justify-center">
