@@ -478,7 +478,7 @@ export default function SellerDashboard() {
             </div>
           ) : ( */}
 <CertificationCard
-  progress={user?.assesment_progress || 100}
+  progress={user?.assesment_progress ? user?.assesment_progress : 0}
   activeLevel={user?.level} // Pass the actual user level from your API
   onContinue={() => navigate("/dashboard/assesment")}
   onOpen={() => console.log("Open Certification")}

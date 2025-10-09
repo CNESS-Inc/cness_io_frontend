@@ -173,10 +173,10 @@ export function OutlinePill({
 function Progress({ value }: { value: number }) {
   const v = Math.max(0, Math.min(100, value));
   return (
-    <div className="h-2 w-full overflow-hidden rounded-full bg-[#EEF0F5]">
-      <div className={`h-full ${GRADIENT}`} style={{ width: `${v}%` }} />
-    </div>
-  );
+      <div className="h-2 w-full overflow-hidden rounded-full bg-[#EEF0F5]">
+        <div className={`h-full ${GRADIENT}`} style={{ width: `${v}%` }} />
+      </div>
+    );
 }
 
 function MobileBreakTitle({
@@ -2413,14 +2413,19 @@ export function CertificationCard({
         <HeaderDivider />
 
         {/* Progress */}
-        <div className="mt-2 flex items-center justify-between">
-          <span className="text-[22px] sm:text-[24px] font-semibold font-['Open_Sans'] leading-[32px] text-[#222224]">
-            {progress}%
-          </span>
-        </div>
-        <div>
-          <Progress value={progress} />
-        </div>
+        {progress < 100 && (
+          <div>
+            <div className="mt-2 flex items-center justify-between">
+              <span className="text-[22px] sm:text-[24px] font-semibold font-['Open_Sans'] leading-[32px] text-[#222224]">
+                {progress}%
+              </span>
+            </div>
+            
+            <div>
+              <Progress value={progress} />
+            </div>
+          </div>
+        )}
         <p className="mt-4 text-[14px] sm:text-[16px] font-normal font-['Open_Sans'] leading-[140%] text-[#999999]">
           {description}
         </p>
