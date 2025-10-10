@@ -421,9 +421,9 @@ const DashboardHeader = ({
           <div className="relative group">
             <div
               onClick={handleLogout}
-              className="flex w-[32px] h-[32px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
+              className="flex w-[37px] h-[37px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
             >
-              <LogOutIcon className="w-[15px] h-[15px] text-[#897AFF]" />
+              <LogOutIcon className="w-[20px] h-[20px] text-[#897AFF]" />
             </div>
             <span className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
               Logout
@@ -435,9 +435,9 @@ const DashboardHeader = ({
           <div className="relative group">
             <div
               onClick={() => navigate("/dashboard/support")}
-              className="flex w-[32px] h-[32px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
+              className="flex w-[37px] h-[37px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
             >
-              <HelpCircleIcon className="w-[15px] h-[15px] text-[#897AFF]" />
+              <HelpCircleIcon className="w-[20px] h-[20px] text-[#897AFF]" />
             </div>
             <span className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
               Support
@@ -449,13 +449,13 @@ const DashboardHeader = ({
           <div className="relative group" ref={notificationDropdownRef}>
             <div
               onClick={handleNotificationClick}
-              className="flex w-[32px] h-[32px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
+              className="flex w-[37px] h-[37px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
             >
               <div className="relative">
-                <BellIcon className="w-[15px] h-[15px] text-[#897AFF]" />
+                <BellIcon className="w-[20px] h-[20px] text-[#897AFF]" />
                 {notificationCount !== "0" && (
-                  <div className="w-[12px] h-[12px] absolute -top-1 left-1 bg-[#60c750] rounded-full flex items-center justify-center">
-                    <span className="font-['Poppins',Helvetica] font-normal text-white text-[7px]">
+                  <div className="w-[15px] h-[15px] absolute -top-[4px] left-1.5 bg-[#60c750] rounded-full flex items-center justify-center">
+                    <span className="font-['Poppins',Helvetica] font-normal text-white text-[9px]">
                       {notificationCount}
                     </span>
                   </div>
@@ -525,9 +525,9 @@ const DashboardHeader = ({
           <div className="relative group">
             <div
               onClick={() => navigate("/dashboard/setting")}
-              className="flex w-[32px] h-[32px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
+              className="flex w-[37px] h-[37px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
             >
-              <SettingsIcon className="w-[15px] h-[15px] text-[#897AFF]" />
+              <SettingsIcon className="w-[20px] h-[20px] text-[#897AFF]" />
             </div>
             <span className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
               Settings
@@ -654,12 +654,21 @@ const DashboardHeader = ({
                 <HelpCircleIcon className="w-4 h-4 text-[#897AFF]" /> Support
               </button>
 
-              <button
-                onClick={handleNotificationClick}
-                className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 w-full transition"
-              >
-                <BellIcon className="w-4 h-4 text-[#897AFF]" /> Notifications
-              </button>
+              <div className="flex justify-between items-center px-4 py-2.5 hover:bg-gray-100 w-full transition">
+                <button
+                  onClick={handleNotificationClick}
+                  className="flex items-center gap-2 text-sm text-gray-700"
+                >
+                  <BellIcon className="w-4 h-4 text-[#897AFF]" /> Notifications
+                </button>
+                {notificationCount !== "0" && (
+                  <div className="w-[20px] h-[20px] bg-[#60c750] rounded-full flex items-center justify-center">
+                    <span className="font-['Poppins',Helvetica] font-normal text-white text-[10px]">
+                      {notificationCount}
+                    </span>
+                  </div>
+                )}
+              </div>
 
               <button
                 onClick={() => navigate("/dashboard/setting")}

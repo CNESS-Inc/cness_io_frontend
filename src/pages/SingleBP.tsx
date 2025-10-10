@@ -16,6 +16,7 @@ import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 import { BiComment, BiLike } from "react-icons/bi";
 import { iconMap } from "../assets/icons";
 import CommentCard from "./CommentCard";
+import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 //import { useLocation } from "react-router-dom";
 
 const dummyProfilePicture =
@@ -193,6 +194,7 @@ useEffect(() => {
           {/* Top Default Banner */}
           <div className="relative w-full min-h-[300px] bg-[#F3f1ff">
             {/* Top Banner */}
+             
             <div className="w-full h-[200px] overflow-hidden">
               <img
                 src={blush}
@@ -205,7 +207,12 @@ useEffect(() => {
                 </h1>
               </div>
             </div>
-
+            <button
+              onClick={() => window.history.back()}
+              className="absolute cursor-pointer top-4 left-4 bg-white rounded-full p-2 shadow-md"
+            >
+              <ArrowLeftIcon className="h-5 w-5 text-[#7077FE]" />
+            </button>
             {/* User Banner */}
             {media &&
               media !== "http://localhost:5026/file/" &&

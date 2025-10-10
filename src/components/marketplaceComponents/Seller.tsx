@@ -31,7 +31,7 @@ export default function SellerSection() {
                 Seller
               </span>
             </h2>
-            <p className="mt-4 font-['Open_Sans'] text-[15px] md:text-[16px] font-light leading-relaxed text-[#64748B] max-w-[500px] mx-auto xl:mx-0">
+            <p className="mt-4 font-['Open_Sans'] text-[15px] md:text-[16px] font-light leading-relaxed text-[#242424] max-w-[500px] mx-auto xl:mx-0">
               At CNESS Marketplace, we empower creators to grow their presence,
               reach conscious audiences, and turn their digital products into
               meaningful opportunities.
@@ -66,7 +66,7 @@ export default function SellerSection() {
                     <h3 className="font-['Open_Sans'] font-semibold text-[16px] text-black">
                       {item.title}
                     </h3>
-                    <p className="font-['Open_Sans'] text-[14px] leading-[20px] text-[#64748B] font-light mt-1">
+                    <p className="font-['Open_Sans'] text-[14px] leading-[20px] text-[#242424] font-light mt-1">
                       {item.desc}
                     </p>
                   </div>

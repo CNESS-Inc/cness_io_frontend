@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Check } from "lucide-react";
 import aspired from "../../../assets/aspired-upgrade.png";
 import inspired from "../../../assets/inspired-upgrade.png";
 import leader from "../../../assets/leader.png";
 import { useNavigate } from "react-router-dom";
+import Modal from "../../ui/Modal";
+import Button from "../../ui/Button";
 
 interface ApiResponse {
   is_assessment_submited: boolean;
@@ -31,23 +33,28 @@ function TopBadge({ src, alt }: { src: string; alt: string }) {
   return <img src={src} alt={alt} className="w-13 h-13" />;
 }
 
-function PricingCard({ card }: { card: Card }) {
-  const navigate = useNavigate();
+function PricingCard({
+  card,
+  onUpgrade,
+}: {
+  card: Card;
+  onUpgrade: (plan: string) => void;
+}) {
   const selected = !!card.selected;
 
   const selectedStyles: React.CSSProperties = selected
     ? {
-      borderWidth: "2.51px",
-      borderColor: "transparent",
-      backgroundImage:
-        "linear-gradient(#FFFFFF, #FFFFFF), linear-gradient(90deg, #7077FE, #F07EFF)",
-      backgroundOrigin: "border-box",
-      backgroundClip: "padding-box, border-box",
-    }
+        borderWidth: "2.51px",
+        borderColor: "transparent",
+        backgroundImage:
+          "linear-gradient(#FFFFFF, #FFFFFF), linear-gradient(90deg, #7077FE, #F07EFF)",
+        backgroundOrigin: "border-box",
+        backgroundClip: "padding-box, border-box",
+      }
     : {
-      borderWidth: "1.26px",
-      borderColor: "#E1E1E1",
-    };
+        borderWidth: "1.26px",
+        borderColor: "#E1E1E1",
+      };
 
   return (
     <div
@@ -121,7 +128,7 @@ function PricingCard({ card }: { card: Card }) {
 
           {card.ctaType === "upgrade" && (
             <button
-              onClick={() => navigate('/dashboard/assesment')}
+              onClick={() => onUpgrade(card.title)}
               className="w-full rounded-full bg-[#7077FE] hover:bg-[#897aff] font-['Plus Jakarta Sans'] px-6 py-4 text-sm font-medium text-white flex items-center justify-center"
             >
               Upgrade
@@ -134,6 +141,17 @@ function PricingCard({ card }: { card: Card }) {
 }
 
 export default function CertificationPlans({ data }: { data: ApiResponse }) {
+  const navigate = useNavigate();
+  const [isOpenModal, setIsOpenModal] = useState(false);
+
+  const handleUpgrade = (plan: string) => {
+    if (plan === "Inspired") {
+      navigate("/dashboard/assesment");
+    } else if (plan === "Leader") {
+      setIsOpenModal(true);
+    }
+  };
+
   const cards: Card[] = [
     {
       id: "left",
@@ -177,32 +195,67 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
               : "pending"
             : "upgrade"
           : "upgrade",
-    badge: inspired,
+      badge: inspired,
     },
-{
-  id: "right",
-    title: "Leader",
+    {
+      id: "right",
+      title: "Leader",
       subtitle: "Expert level certification",
-        price: "",
-          features: [
-            "Basic profile cSell your reation",
-            "Community Access",
-            "Resources Library",
-            "Basic profile creation",
-          ],
-            selected: data?.badge?.level === "Inspired",
-              ctaType: "upgrade",
-                badge: leader,
+      price: "",
+      features: [
+        "Basic profile cSell your reation",
+        "Community Access",
+        "Resources Library",
+        "Basic profile creation",
+      ],
+      selected: data?.badge?.level === "Inspired",
+      ctaType: "upgrade",
+      badge: leader,
     },
   ];
 
-return (
-  <section className="w-full mt-10">
-    <div className="w-full mt-8 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-[18px]">
-      {cards.map((c) => (
-        <PricingCard key={c.id} card={c} />
-      ))}
-    </div>
-  </section>
-);
+  return (
+    <section className="w-full mt-10">
+      <div className="w-full mt-8 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-[18px]">
+        {cards.map((c) => (
+          <PricingCard key={c.id} card={c} onUpgrade={handleUpgrade} />
+        ))}
+      </div>
+      <Modal isOpen={isOpenModal} onClose={() => setIsOpenModal(false)}>
+        <div className="text-center max-w-md">
+          <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-r from-[#7077FE] to-[#F07EFF] mb-4">
+            <svg
+              className="h-10 w-10 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+
+          <div className="openSans text-center p-4 text-[#374151]">
+            Reassessment is available only after{" "}
+            <span className="font-semibold text-[#7077FE]">3 months</span> from
+            your last completion date.
+          </div>
+
+          <div className="mt-6">
+            <Button
+              onClick={() => setIsOpenModal(false)}
+              variant="gradient-primary"
+              className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
+            >
+              Got it!
+            </Button>
+          </div>
+        </div>
+      </Modal>
+    </section>
+  );
 }

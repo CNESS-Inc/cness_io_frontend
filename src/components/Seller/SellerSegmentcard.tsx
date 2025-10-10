@@ -173,10 +173,10 @@ export function OutlinePill({
 function Progress({ value }: { value: number }) {
   const v = Math.max(0, Math.min(100, value));
   return (
-    <div className="h-2 w-full overflow-hidden rounded-full bg-[#EEF0F5]">
-      <div className={`h-full ${GRADIENT}`} style={{ width: `${v}%` }} />
-    </div>
-  );
+      <div className="h-2 w-full overflow-hidden rounded-full bg-[#EEF0F5]">
+        <div className={`h-full ${GRADIENT}`} style={{ width: `${v}%` }} />
+      </div>
+    );
 }
 
 function MobileBreakTitle({
@@ -918,7 +918,7 @@ export function GreetingBar({
           <h1 className="text-[26px] md:text-[26px] lg:text-[30px] font-semibold tracking-[-0.02em]">
             Hello, <span className="text-[#7077FE]">{name}</span>
           </h1>
-          <p className="mt-1 text-xs md:text-sm text-[#667085]">
+          <p className="mt-1 text-xs md:text-sm text-[#242424]">
             Welcome to your CNESS Dashboard
           </p>
         </div>
@@ -2286,7 +2286,7 @@ export function TrueProfileCard({
             {title}
           </h3>
 
-          <p className="mt-2 font-opensans font-normal text-[13px] sm:text-[14px] md:text-[16px] leading-[150%] text-[#7A7A7A]">
+          <p className="mt-2 font-opensans font-light text-[13px] sm:text-[14px] md:text-[16px] leading-[150%] text-[#242424]">
             {description}
           </p>
 
@@ -2413,14 +2413,19 @@ export function CertificationCard({
         <HeaderDivider />
 
         {/* Progress */}
-        <div className="mt-2 flex items-center justify-between">
-          <span className="text-[22px] sm:text-[24px] font-semibold font-['Open_Sans'] leading-[32px] text-[#222224]">
-            {progress}%
-          </span>
-        </div>
-        <div>
-          <Progress value={progress} />
-        </div>
+        {progress < 100 && (
+          <div>
+            <div className="mt-2 flex items-center justify-between">
+              <span className="text-[22px] sm:text-[24px] font-semibold font-['Open_Sans'] leading-[32px] text-[#222224]">
+                {progress}%
+              </span>
+            </div>
+            
+            <div>
+              <Progress value={progress} />
+            </div>
+          </div>
+        )}
         <p className="mt-4 text-[14px] sm:text-[16px] font-normal font-['Open_Sans'] leading-[140%] text-[#999999]">
           {description}
         </p>
@@ -2540,7 +2545,7 @@ export function CertificationCard({
                       {getUpgradeTitle()}
                     </h4>
 
-                    <p className="mt-1 font-['Open_Sans'] text-[13px] sm:text-[16px] leading-[150%] text-[#7A7A7A] max-w-[95ch]">
+                    <p className="mt-1 font-['Open_Sans'] text-[13px] sm:text-[16px] leading-[150%] text-[#242424] font-light max-w-[95ch]">
                       {upgradeText}
                     </p>
 

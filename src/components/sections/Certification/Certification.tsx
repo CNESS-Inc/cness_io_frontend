@@ -27,7 +27,7 @@ const Certification = () => {
           </h3>
           <p
             style={{ fontFamily: "Open Sans, sans-serif" }}
-            className="text-[18px] font-Regular pt-[10px] mb-2"
+            className="text-[18px] text-[#242424] font-light pt-[10px] mb-2"
           >
             Get your conscious identity verified and unlock everything CNESS has
             to offer.
@@ -54,7 +54,7 @@ const Certification = () => {
                 </div>
                 <p
                   style={{ fontFamily: "Open Sans, sans-serif" }}
-                  className="text-[18px] text-[#1A2D36] font-regular w-[90%]"
+                  className="text-[18px] text-[#242424] font-light w-[90%]"
                 >
                   {text}
                 </p>

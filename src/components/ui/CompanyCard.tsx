@@ -167,7 +167,7 @@ export default function CompanyCard({
           </div>
         </CardHeader>
 
-        <CardContent className="px-4 pt-2 pb-0">
+        <CardContent className="px-4 pt-2 pb-4">
           <div className="rounded-xl overflow-hidden mb-3">
             <img
               src={

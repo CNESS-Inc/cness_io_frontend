@@ -79,7 +79,7 @@ export default function EcoSystem() {
                   Start your journey from Loneliness to <br /> Wholeness to
                   Recognition.
                 </h2>
-                <p className="text-center w-full font-['Open Sans'] text-[#494949] font-light text-[16px] leading-[24.38px] tracking-[0px]">
+                <p className="text-center w-full font-['Open Sans'] text-[#242424] font-light text-[16px] leading-[24.38px] tracking-[0px]">
                   Join a movement that sees you, supports you, and helps your
                   conscious work shine.
                 </p>

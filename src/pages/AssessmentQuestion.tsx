@@ -787,7 +787,7 @@ const AssessmentQuestion: React.FC = () => {
                 {currentSection.suggestedUploads.map((upload, i) => (
                   <div key={i}>
                     <label className="text-[14px] flex items-start gap-3 text-[#222224] mb-2">
-                      {upload.label}
+                      {upload.label} <br />(File format: JPEG, jpg, png, pdf , Docx and doc. Max file size: 2 MB.)
                     </label>
                     <div className="flex items-center gap-4 mt-4">
                       <input
