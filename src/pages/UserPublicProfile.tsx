@@ -87,9 +87,7 @@ export default function UserProfileView() {
   const [publicUserDetails, setPublicUserDetails] = useState<any>();
   const [myBP, setMyBP] = useState<any>([]);
   const [myProfessionBP, setMyProfessionBP] = useState<any[]>([]);
-  console.log("myProfessionBP", myProfessionBP);
   const [myInterestBP, setMyInterestBP] = useState<any[]>([]);
-  console.log("myInterestBP", myInterestBP);
   const [followBP, setFollowBP] = useState<any>([]);
   const [activeTab, setActiveTab] = useState("about");
   const { id } = useParams();
