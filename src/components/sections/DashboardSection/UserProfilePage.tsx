@@ -614,7 +614,7 @@ const UserProfilePage = () => {
                   /^[a-zA-Z\s.,-]+$/,
                   "Position contains invalid characters"
                 ),
-              start_date: yup
+             start_date: yup
                 .string()
                 .required("Start date is required")
                 .test(
@@ -632,7 +632,7 @@ const UserProfilePage = () => {
                 .optional()
                 .test(
                   "min-duration",
-                  "Work duration must be at least 1 month",
+                  "Work duration must be at least 1 day",
                   function (value) {
                     if (!value) return true; // optional field
                     const startDate = this.parent.start_date;
@@ -3224,6 +3224,27 @@ const UserProfilePage = () => {
                                   </label>
                                   <input
                                     type="date"
+                                    min={
+                                    workExperienceForm.watch(
+                                      `workExperiences.${index}.start_date`
+                                    )
+                                      ? new Date(
+                                          new Date(
+                                            workExperienceForm.watch(
+                                              `workExperiences.${index}.start_date`
+                                            )
+                                          ).setDate(
+                                            new Date(
+                                              workExperienceForm.watch(
+                                                `workExperiences.${index}.start_date`
+                                              )
+                                            ).getDate() + 1
+                                          )
+                                        )
+                                          .toISOString()
+                                          .split("T")[0]
+                                      : ""
+                                  }
                                     {...workExperienceForm.register(
                                       `workExperiences.${index}.end_date`
                                     )}
