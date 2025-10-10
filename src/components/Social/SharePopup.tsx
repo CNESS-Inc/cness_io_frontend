@@ -62,6 +62,7 @@ const SharePopup: React.FC<SharePopupProps> = ({
 
   // 👇 Use current page URL dynamically if no `url` prop is provided
   const shareUrl =`${window.location.origin}/directory/user-profile/${localStorage.getItem("Id")}`;
+  console.log('shareUrl', shareUrl);
 
   const getPositionClasses = () => {
     switch (position) {
