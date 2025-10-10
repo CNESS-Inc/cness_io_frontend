@@ -24,6 +24,8 @@ import {
   CreateBestPractice,
   SendBpFollowRequest,
   GetPublicProfileDetailsById,
+  GetPrePublicProfileDetails,
+  GetPreBestpracticesByUserProfile,
   //UnFriend,
 } from "../Common/ServerAPI";
 import { useNavigate, useParams } from "react-router-dom";
@@ -131,9 +133,9 @@ export default function UserProfileView() {
     fetchUserDetails();
     fetchPublicUserDetails();
     fetchAllBestPractises();
-    fetchFollowBestPractises();
-    fetchProfession();
-    fetchIntrusts();
+    // fetchFollowBestPractises();
+    // fetchProfession();
+    // fetchIntrusts();
   }, []);
 
   useEffect(() => {
@@ -212,7 +214,7 @@ export default function UserProfileView() {
 
   const fetchPublicUserDetails = async () => {
     try {
-      const res = await GetPublicProfileDetails();
+      const res = await GetPrePublicProfileDetails();
       setPublicUserDetails(res?.data?.data);
     } catch (error: any) {
       showToast({
@@ -225,7 +227,7 @@ export default function UserProfileView() {
 
   const fetchAllBestPractises = async () => {
     try {
-      const res = await GetBestpracticesByUserProfile(id);
+      const res = await GetPreBestpracticesByUserProfile(id);
       setMyBP(res?.data?.data?.rows);
     } catch (error: any) {
       showToast({

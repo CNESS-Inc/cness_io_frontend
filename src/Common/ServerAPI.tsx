@@ -131,6 +131,7 @@ export const EndPoint = {
   score_result: "/quiz/get/score-result",
   directory_search_profile: "/profile/public-directory",
   public_user_profile: "/profile/public-user-profile",
+  pre_public_user_profile: "/profile/pre-public-user-profile",
   get_popular_company: "/profile/get-popular-company",
   get_inspire_company: "/profile/get-inspire-company",
   get_aspire_company: "/profile/get-aspire-company",
@@ -190,6 +191,7 @@ export const EndPoint = {
   save_bestpractices: "/best-practice/save",
   get_savebestpractices: "/best-practice/get/save/best-practice",
   get_bestpractice_by_user_profile: "/best-practice/get-by-user-profile",
+  get_pre_bestpractice_by_user_profile: "/best-practice/pre-get-by-user-profile",
   //get_followbestpractices:"/best-practice/folow"
   create_bestpracticescomment: "/best-practice/comment",
   get_bestpracticescomment: "/best-practice/comment",
@@ -615,6 +617,13 @@ export const GetPublicProfileDetails = (): ApiResponse => {
     EndPoint.public_user_profile
   );
 };
+export const GetPrePublicProfileDetails = (): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.pre_public_user_profile
+  );
+};
 export const GetPopularCompanyDetails = (
   page: number,
   limit: number
@@ -785,6 +794,15 @@ export const GetBestpracticesByUserProfile = (id: any): ApiResponse => {
     ServerAPI.APIMethod.GET,
     data,
     `${EndPoint.get_bestpractice_by_user_profile}/${id}`
+  );
+};
+
+export const GetPreBestpracticesByUserProfile = (id: any): ApiResponse => {
+  const data = {};
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.get_pre_bestpractice_by_user_profile}/${id}`
   );
 };
 
@@ -1447,10 +1465,10 @@ export const executeAPI = async <T = any,>(
   } catch (error: any) {
     // console.log("🚀 ~ error:", error)
 
-    if (error.response?.data?.error?.statusCode == 401) {
-      localStorage.clear();
-      window.location.href = "/";
-    }
+    // if (error.response?.data?.error?.statusCode == 401) {
+    //   localStorage.clear();
+    //   window.location.href = "/";
+    // }
 
     throw error;
   }
