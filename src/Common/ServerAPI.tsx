@@ -111,6 +111,7 @@ export const EndPoint = {
   emailverify: "/auth/email-verify",
   paymentverify: "/payment/payment-confirm",
   profile: "/profile",
+  public_profile: "/profile/public",
   profile_remove: "/profile/image/remove",
   organizationProfile: "/organization-profile",
   organizationNumber: "/organization-profile/verify-identify",
@@ -868,6 +869,10 @@ export const GetProfileDetails = (): ApiResponse => {
 export const GetProfileDetailsById = (id: any): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.profile}/${id}`);
+};
+export const GetPublicProfileDetailsById = (id: any): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.public_profile}/${id}`);
 };
 export const GetOrganiZationProfileDetails = (): ApiResponse => {
   const data = {};

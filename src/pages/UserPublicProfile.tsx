@@ -23,6 +23,7 @@ import {
   GetInterestsDetails,
   CreateBestPractice,
   SendBpFollowRequest,
+  GetPublicProfileDetailsById,
   //UnFriend,
 } from "../Common/ServerAPI";
 import { useNavigate, useParams } from "react-router-dom";
@@ -198,7 +199,7 @@ export default function UserProfileView() {
   const fetchUserDetails = async () => {
     try {
       // const res = await GetUserProfileDetails(id);
-      const res = await GetProfileDetailsById(id);
+      const res = await GetPublicProfileDetailsById(id);
       setUserDetails(res?.data?.data);
     } catch (error: any) {
       showToast({
