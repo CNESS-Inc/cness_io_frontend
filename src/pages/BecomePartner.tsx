@@ -138,82 +138,72 @@ const BecomePartner = () => {
   } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-const getFieldError = (fieldName: string, value: string): string | null => {
-  const validations: { [key: string]: (val: string) => string | null } = {
-    organization_name: (val) => {
-      if (!val.trim()) return "Organization name is required.";
-      if (val.trim().length < 2)
-        return "Organization name must be at least 2 characters.";
-      if (!/^[A-Za-z0-9&.,'()\- ]+$/.test(val.trim()))
-        return "Only letters, numbers, and basic punctuation are allowed.";
-      return null;
-    },
+  const getFieldError = (fieldName: string, value: string): string | null => {
+    const validations: { [key: string]: (val: string) => string | null } = {
+      organization_name: (val) => {
+        if (!val.trim()) return "Organization name is required.";
+        if (val.trim().length < 2)
+          return "Organization name must be at least 2 characters.";
+        if (!/^[A-Za-z0-9&.,'()\- ]+$/.test(val.trim()))
+          return "Only letters, numbers, and basic punctuation are allowed.";
+        return null;
+      },
 
-    contact_person_name: (val) => {
-      if (!val.trim()) return "Contact person name is required.";
-      if (val.trim().length < 2)
-        return "Contact person name must be at least 2 characters.";
-      if (!/^[A-Za-z\s.'-]+$/.test(val.trim()))
-        return "Only letters, spaces, and basic punctuation are allowed.";
-      return null;
-    },
+      contact_person_name: (val) => {
+        if (!val.trim()) return "Contact person name is required.";
+        if (val.trim().length < 2)
+          return "Contact person name must be at least 2 characters.";
+        if (!/^[A-Za-z\s.'-]+$/.test(val.trim()))
+          return "Only letters, spaces, and basic punctuation are allowed.";
+        return null;
+      },
 
-    email: (val) =>
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)
-        ? "Invalid email format"
-        : null,
+      email: (val) =>
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? "Invalid email format" : null,
 
-    phone_number: (val) =>
-      val.replace(/\D/g, "").length < 7
-        ? "At least 7 digits required"
-        : null,
+      phone_number: (val) =>
+        val.replace(/\D/g, "").length < 7 ? "At least 7 digits required" : null,
 
-    industry_sector: (val) =>
-      val.trim().length < 2 ? "Must be at least 2 characters" : null,
+      industry_sector: (val) =>
+        val.trim().length < 2 ? "Must be at least 2 characters" : null,
 
-    website_link: (val) => {
-      if (val.trim() === "") return null; // Optional
-      return !/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?$/.test(
-        val.trim()
-      )
-        ? "Please enter a valid website URL"
-        : null;
-    },
+      website_link: (val) => {
+        if (val.trim() === "") return null; // Optional
+        return !/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?$/.test(
+          val.trim()
+        )
+          ? "Please enter a valid website URL"
+          : null;
+      },
 
-    about: (val) => {
-      if (val.trim().length < 50) return "At least 50 characters required.";
-      if (val.trim().length > 2000)
-        return "Maximum 2000 characters allowed.";
-      return null;
-    },
+      about: (val) => {
+        if (val.trim().length < 50) return "At least 50 characters required.";
+        if (val.trim().length > 2000) return "Maximum 2000 characters allowed.";
+        return null;
+      },
 
-    reason_to_partner: (val) =>
-      val.trim().length < 20 ? "At least 20 characters required." : null,
-organization_size: (val) => {
-  const trimmed = val.trim();
-  if (!trimmed) return "Please specify your organization size.";
+      reason_to_partner: (val) =>
+        val.trim().length < 20 ? "At least 20 characters required." : null,
+      organization_size: (val) => {
+        const trimmed = val.trim();
+        if (!trimmed) return "Please specify your organization size.";
 
-  // ✅ Allow pure numbers (e.g., 25)
-  if (/^\d+$/.test(trimmed)) return null;
+        // ✅ Allow pure numbers (e.g., 25)
+        if (/^\d+$/.test(trimmed)) return null;
 
-  // ✅ Allow valid ranges (e.g., 51-200 or 5–10)
-  if (/^\d+\s*[-–]\s*\d+$/.test(trimmed)) return null;
+        // ✅ Allow valid ranges (e.g., 51-200 or 5–10)
+        if (/^\d+\s*[-–]\s*\d+$/.test(trimmed)) return null;
 
-  // ❌ Anything else is invalid (like "ten", "5 employees", "approx 100")
-  return "Enter a number (e.g., 25) or a range (e.g., 51-200).";
-},
+        // ❌ Anything else is invalid (like "ten", "5 employees", "approx 100")
+        return "Enter a number (e.g., 25) or a range (e.g., 51-200).";
+      },
 
-    areas_of_collabration: (val) =>
-      val.trim().length < 2
-        ? "Please specify areas of collaboration."
-        : null,
+      areas_of_collabration: (val) =>
+        val.trim().length < 2 ? "Please specify areas of collaboration." : null,
+    };
+
+    return validations[fieldName]?.(value) || null;
   };
-
-  return validations[fieldName]?.(value) || null;
-};
-
-
-  
 
   const handleChange: React.ChangeEventHandler<
     HTMLInputElement | HTMLTextAreaElement
@@ -417,7 +407,7 @@ organization_size: (val) => {
                   Partner With CNESS.
                 </span>
               </h1>
-              <h5 className="py-3 font-['Open_Sans',Helvetica] text-base font-light text-[#64748B] leading-[24px]">
+              <h5 className="py-3 font-['Open_Sans',Helvetica] text-base font-light text-[#242424] leading-[24px]">
                 Join hands with us to embed conscious practices in organizations
                 and communities. As a CNESS Partner, you gain visibility,
                 credibility, and the chance to co-create global impact.
@@ -447,19 +437,18 @@ organization_size: (val) => {
                 className="w-full h-[427px] lg:h-full object-cover object-top pointer-events-none select-none rounded-[40px]"
                 aria-hidden="true"
               />
-              
             </div>
           </div>
         </div>
 
         <div className="py-12 flex flex-col justify-center items-center mx-auto bg-white">
-           <h1 className="text-center font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px]">
+          <h1 className="text-center font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px]">
             <span className="text-black">Why Become a </span>
             <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
               CNESS Partner
             </span>
           </h1>
-           <h5 className="py-3 px-5 sm:px-10 md:px-20 font-['Open_Sans',Helvetica] font-light text-base text-center text-[#64748B] leading-[24px]">
+          <h5 className="py-3 px-5 sm:px-10 md:px-20 font-['Open_Sans',Helvetica] font-light text-base text-center text-[#242424] leading-[24px]">
             CNESS Partners are consultancies, agencies, and specialists who
             extend the power of the CNESS framework into organizations. From HR
             and DEI firms to ESG consultants and leadership coaches, Partners
@@ -472,7 +461,7 @@ organization_size: (val) => {
         </div>
 
         <div className="w-full flex mx-auto flex-col justify-center items-center bg-[#F5F7F9] pt-10 pb-[86px] px-5 sm:px-14">
-           <h1 className="font-['Poppins',Helvetica] text-center font-medium text-2xl md:text-[32px] sm:leading-[54px]">
+          <h1 className="font-['Poppins',Helvetica] text-center font-medium text-2xl md:text-[32px] sm:leading-[54px]">
             <span className="text-black">What does a </span>
             <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
               Partner do?
@@ -504,7 +493,7 @@ organization_size: (val) => {
                   </h3>
 
                   {/* Description */}
-                  <p className="openSans font-['Open Sans'] text-base font-light text-[#64748B] leading-relaxed lg:pe-5">
+                  <p className="openSans font-['Open Sans'] text-base font-light text-[#242424] leading-relaxed lg:pe-5">
                     {item.description}
                   </p>
                 </div>
@@ -541,7 +530,7 @@ organization_size: (val) => {
                 </span>
               </h1>
 
-              <ul className="mt-6 list-disc pl-5 text-[#64748B] text-base font-light leading-[32px] space-y-1">
+              <ul className="mt-6 list-disc pl-5 text-[#242424] text-base font-light leading-[32px] space-y-1">
                 <li>
                   Organizations with strong consulting or training backgrounds
                   (HR, DEI, ESG, leadership, or culture development).
@@ -560,8 +549,6 @@ organization_size: (val) => {
                 alt="Handshake"
                 className="w-full h-auto object-cover"
               />
-
-              
             </div>
           </div>
         </div>
@@ -613,7 +600,7 @@ organization_size: (val) => {
                   </div>
                   <p
                     className={clsx(
-                      "mt-[21px] text-center font-['Open_Sans',Helvetica] text-sm font-normal text-gray-500",
+                      "mt-[21px] text-center font-['Open_Sans',Helvetica] text-sm font-light text-[#242424]",
                       step.width
                     )}
                   >
@@ -642,8 +629,6 @@ organization_size: (val) => {
                 alt="Handshake"
                 className="h-full w-full object-cover"
               />
-
-              
             </div>
 
             <div className="rounded-[25px] bg-white p-[20px] lg:p-[30px] flex flex-col">
@@ -652,7 +637,14 @@ organization_size: (val) => {
                 onSubmit={handleSubmit}
               >
                 <div className="mx-auto w-full max-w-[760px] 2xl:max-w-none grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 items-start">
-                  <Field label={<span>Organization Name<span style={{ color: "red" }}> *</span></span>}>
+                  <Field
+                    label={
+                      <span>
+                        Organization Name
+                        <span style={{ color: "red" }}> *</span>
+                      </span>
+                    }
+                  >
                     <Input
                       name="organization_name"
                       placeholder="Enter organization name"
@@ -665,7 +657,14 @@ organization_size: (val) => {
                       }
                     />
                   </Field>
-                  <Field label={<span>Contact Person Name<span style={{ color: "red" }}> *</span></span>}>
+                  <Field
+                    label={
+                      <span>
+                        Contact Person Name
+                        <span style={{ color: "red" }}> *</span>
+                      </span>
+                    }
+                  >
                     <Input
                       name="contact_person_name"
                       placeholder="Enter your name"
@@ -678,7 +677,13 @@ organization_size: (val) => {
                       }
                     />
                   </Field>
-                  <Field label={<span>Phone Number<span style={{ color: "red" }}> *</span></span>}>
+                  <Field
+                    label={
+                      <span>
+                        Phone Number<span style={{ color: "red" }}> *</span>
+                      </span>
+                    }
+                  >
                     <PhoneInputField
                       name="phone_number"
                       value={data.phone_number}
@@ -692,7 +697,13 @@ organization_size: (val) => {
                       }
                     />
                   </Field>
-                  <Field label={<span>Email Address<span style={{ color: "red" }}> *</span></span>}>
+                  <Field
+                    label={
+                      <span>
+                        Email Address<span style={{ color: "red" }}> *</span>
+                      </span>
+                    }
+                  >
                     <Input
                       name="email"
                       value={data.email}
@@ -704,7 +715,14 @@ organization_size: (val) => {
                       }
                     />
                   </Field>
-                  <Field label={<span>Industry / Sector<span style={{ color: "red" }}> *</span></span>}>
+                  <Field
+                    label={
+                      <span>
+                        Industry / Sector
+                        <span style={{ color: "red" }}> *</span>
+                      </span>
+                    }
+                  >
                     <Input
                       name="industry_sector"
                       placeholder="Enter your years of experience"
@@ -730,7 +748,14 @@ organization_size: (val) => {
                       }
                     />
                   </Field>
-                  <Field label={<span>Brief About Your Organization (150–200 words)<span style={{ color: "red" }}> *</span></span>}>
+                  <Field
+                    label={
+                      <span>
+                        Brief About Your Organization (150–200 words)
+                        <span style={{ color: "red" }}> *</span>
+                      </span>
+                    }
+                  >
                     <TextArea
                       name="about"
                       placeholder="Add Notes..."
@@ -741,7 +766,14 @@ organization_size: (val) => {
                       }
                     />
                   </Field>
-                  <Field label={<span>Why do you want to partner with CNESS?<span style={{ color: "red" }}> *</span></span>}>
+                  <Field
+                    label={
+                      <span>
+                        Why do you want to partner with CNESS?
+                        <span style={{ color: "red" }}> *</span>
+                      </span>
+                    }
+                  >
                     <TextArea
                       name="reason_to_partner"
                       placeholder="Add Notes..."
@@ -754,7 +786,14 @@ organization_size: (val) => {
                       }
                     />
                   </Field>
-                  <Field label={<span>Organization Size (No. of employees / scale)<span style={{ color: "red" }}> *</span></span>}>
+                  <Field
+                    label={
+                      <span>
+                        Organization Size (No. of employees / scale)
+                        <span style={{ color: "red" }}> *</span>
+                      </span>
+                    }
+                  >
                     <Input
                       name="organization_size"
                       placeholder="Number of employees"
@@ -767,7 +806,14 @@ organization_size: (val) => {
                       }
                     />
                   </Field>
-                  <Field label={<span>Areas of Collaboration (e.g., Events, Tech, etc.)<span style={{ color: "red" }}> *</span></span>}>
+                  <Field
+                    label={
+                      <span>
+                        Areas of Collaboration (e.g., Events, Tech, etc.)
+                        <span style={{ color: "red" }}> *</span>
+                      </span>
+                    }
+                  >
                     <Input
                       name="areas_of_collabration"
                       placeholder="Select your Availability"
@@ -843,7 +889,7 @@ function Card({
       <h3 className="text-lg font-medium text-[#222224] leading-[24px]">
         {title}
       </h3>
-      <p className="mt-2 text-center text-base font-light leading-[24px] text-[#64748B]">
+      <p className="mt-2 text-center text-base font-light leading-[24px] text-[#242424]">
         {body}
       </p>
     </div>

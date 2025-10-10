@@ -42,7 +42,7 @@ export default function SocialMedia() {
             </h2>
           </div>
           <div className="lg:w-6/12 md:w-6/12 w-full">
-            <p style={{ fontFamily: "Open Sans, sans-serif" }} className="font-light text-[16px] leading-[24px] tracking-[0px] text-[#64748B] ">
+            <p style={{ fontFamily: "Open Sans, sans-serif" }} className="font-light text-[16px] leading-[24px] tracking-[0px] text-[#242424] ">
               Share reflections, life moments, and conscious thoughts.
               <br />
               React, repost, and respond to what moves you. CNESS is where

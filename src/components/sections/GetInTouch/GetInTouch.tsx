@@ -59,7 +59,7 @@ export default function GetInTouch() {
 
           <p
             style={{ fontFamily: "Inter, sans-serif" }}
-            className="text-[16px] font-[300]  md:text-[16px] leading-[24px] md:leading-[24px] tracking-[-0.02em] text-[#64748B] text-center"
+            className="text-[16px] font-light  md:text-[16px] leading-[24px] md:leading-[24px] tracking-[-0.02em] text-[#64748B] text-center"
           >
             Whether you’re a business, a creator, or simply curious about CNESS.
             <br />

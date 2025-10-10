@@ -74,7 +74,7 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
             </button>
 
             <div
-              className={`px-6 text-base text-[#64748B] font-normal transition-all duration-300 ease-in-out overflow-hidden ${
+              className={`px-6 text-base text-[#242424] font-light transition-all duration-300 ease-in-out overflow-hidden ${
                 isOpen
                   ? "max-h-[200px] opacity-100 py-2"
                   : "max-h-0 opacity-0 py-0"

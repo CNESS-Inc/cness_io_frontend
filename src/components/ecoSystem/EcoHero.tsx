@@ -44,7 +44,7 @@ export default function EcoHero() {
           Our Ecosystem
         </h1>
 
-        <p className="font-['Open_Sans'] font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B] pt-4 pb-7 max-w-4xl mx-auto transition-all duration-1000 ease-in-out">
+        <p className="font-['Open_Sans'] font-light text-[16px] leading-[24px] tracking-[0px] text-[#242424] pt-4 pb-7 max-w-4xl mx-auto transition-all duration-1000 ease-in-out">
           Revolutionizing digital experiences with integrated solutions for
           individuals,
           <br /> organizations, and enterprises across all platforms.

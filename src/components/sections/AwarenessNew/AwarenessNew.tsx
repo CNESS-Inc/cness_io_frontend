@@ -15,41 +15,51 @@ export default function AwarenessSection() {
       title: "E Books",
       description:
         "Discover our 21-day guided journaling ebook designed to help you reset your mindset and embrace a positive outlook.",
-      image: "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911069/ebooks_1_nbnpop.webp",
+      image:
+        "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911069/ebooks_1_nbnpop.webp",
       altText: "Individual joining certification program",
-      bg_image: "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911622/product-bg-1_y5vjzb.png')",
+      bg_image:
+        "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911622/product-bg-1_y5vjzb.png')",
     },
     {
       title: "Digital Books",
       description:
         "Join our 21-day guided journaling webinar to refresh your mindset and cultivate positivity.",
-      image: "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911353/digitalbooks_xg8gvc.webp",
+      image:
+        "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911353/digitalbooks_xg8gvc.webp",
       altText: "Organization certification process",
-      bg_image: "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911482/product-bg-2_pyjtzl.png')",
+      bg_image:
+        "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911482/product-bg-2_pyjtzl.png')",
     },
     {
       title: "Library",
       description: "High-resolution images capturing the beauty of nature",
-      image: "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911302/library_gpys6o.webp",
+      image:
+        "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911302/library_gpys6o.webp",
       altText:
         "Check out our 21-day guided journaling ebook, crafted to help you shift your mindset and cultivate a more positive perspective.",
-      bg_image: "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911591/product-bg-3_jlrbrz.png')",
+      bg_image:
+        "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911591/product-bg-3_jlrbrz.png')",
     },
     {
       title: "Our specially curated audio tapes.",
       description:
         "Listen to our 21-day guided journaling audio series, designed to help you transform your mindset and foster a more positive outlook.",
-      image: "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911382/audiotapes_pw1bsr.webp",
+      image:
+        "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911382/audiotapes_pw1bsr.webp",
       altText: "Mentorship and partnership opportunities",
-      bg_image: "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911622/product-bg-1_y5vjzb.png')",
+      bg_image:
+        "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911622/product-bg-1_y5vjzb.png')",
     },
     {
       title: "Library",
       description:
         "Discover our 21-day guided journaling ebook designed to help you reset your mindset and embrace a positive outlook",
-      image: "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911302/library_gpys6o.webp",
+      image:
+        "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911302/library_gpys6o.webp",
       altText: "Individual joining certification program",
-      bg_image: "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911622/product-bg-1_y5vjzb.png')",
+      bg_image:
+        "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911622/product-bg-1_y5vjzb.png')",
     },
   ];
 
@@ -98,13 +108,7 @@ export default function AwarenessSection() {
                 </span>
               </h1>
 
-              <p
-                className="
-                  mx-auto mt-3 md:mt-3
-font-['Open_Sans'] font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]
-                  w-full md:max-w-[707px]
-                "
-              >
+              <p className="mx-auto mt-3 md:mt-3 font-['Open_Sans'] font-light text-[16px] leading-[24px] tracking-[0px] text-[#242424] w-full md:max-w-[707px]">
                 Explore a wide range of conscious products crafted by verified
                 creators who
                 <br />
@@ -182,7 +186,7 @@ font-['Open_Sans'] font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#6
             </Swiper>
 
             <div className="flex lg:flex-row md:flex-row flex-col max-w-[550px] w-full mx-auto mt-0">
-              <p className="lg:w-8/12 md:w-5/12 w-full font-['Open_Sans'] font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#64748B]">
+              <p className="lg:w-8/12 md:w-5/12 w-full font-['Open_Sans'] font-light text-[16px] leading-[24px] tracking-[0px] text-[#242424]">
                 Showcase your products in our conscious
                 <br />
                 Marketplace, connect with the right
@@ -204,7 +208,7 @@ font-['Open_Sans'] font-[300] text-[16px] leading-[24px] tracking-[0px] text-[#6
                     text-white 
                   "
                   onClick={() => {
-                    navigate("/cness-marketplace")
+                    navigate("/cness-marketplace");
                     window.scrollTo({ top: 0, behavior: "instant" });
                   }}
                 >
