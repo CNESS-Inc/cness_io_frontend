@@ -460,6 +460,7 @@ export default function Login() {
         setIsSubmitting(false);
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);
+        localStorage.setItem("isAdult", response?.data?.data?.user?.is_adult);
         console.log(
           "🚀 ~ handleSubmit ~ response?.data?.data?.jwt:",
           response?.data?.data?.jwt

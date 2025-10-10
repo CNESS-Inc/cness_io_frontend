@@ -331,7 +331,7 @@ export default function SocialTopBar() {
   // const [addNewPost, setAddNewPost] = useState(false)
 
   const [userInfo, setUserInfo] = useState<any>();
-  const [isAdult, setIsAdult] = useState<Boolean>(false);
+  const [isAdult, setIsAdult] = useState<Boolean>(localStorage.getItem("isAdult") === "true"? true : false);
   const navigate = useNavigate();
   const { showToast } = useToast();
   const userProfilePicture = localStorage.getItem("profile_picture");
@@ -1049,6 +1049,10 @@ export default function SocialTopBar() {
   }, [page, isLoading]);
 
   const MeDetail = async () => {
+    if(localStorage.getItem("isAdult") === "true"){
+      setIsAdult(true);
+      return;
+    }
     try {
       const response = await MeDetails();
       if (response?.data?.data?.user) {
