@@ -902,10 +902,10 @@ const UserProfilePage = () => {
         type: "success",
         duration: 5000,
       });
-      
+
       const lastIndex = tabNames.length - 1;
       if (selectedIndex < lastIndex) setSelectedIndex((prev) => prev + 1);
-      
+
       const response = await MeDetails();
       localStorage.setItem(
         "profile_picture",
@@ -954,10 +954,9 @@ const UserProfilePage = () => {
         type: "success",
         duration: 5000,
       });
-      
+
       const lastIndex = tabNames.length - 1;
       if (selectedIndex < lastIndex) setSelectedIndex((prev) => prev + 1);
-      
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message,
@@ -988,10 +987,9 @@ const UserProfilePage = () => {
         type: "success",
         duration: 5000,
       });
-      
+
       const lastIndex = tabNames.length - 1;
       if (selectedIndex < lastIndex) setSelectedIndex((prev) => prev + 1);
-      
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message,
@@ -1018,10 +1016,9 @@ const UserProfilePage = () => {
         type: "success",
         duration: 5000,
       });
-      
+
       const lastIndex = tabNames.length - 1;
       if (selectedIndex < lastIndex) setSelectedIndex((prev) => prev + 1);
-      
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message,
@@ -1049,10 +1046,9 @@ const UserProfilePage = () => {
         type: "success",
         duration: 5000,
       });
-      
+
       const lastIndex = tabNames.length - 1;
       if (selectedIndex < lastIndex) setSelectedIndex((prev) => prev + 1);
-      
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message,
@@ -1346,6 +1342,19 @@ const UserProfilePage = () => {
     }
   }, [contactInfoForm.watch("country")]);
 
+  useEffect(() => {
+    const workExperiences = workExperienceForm.watch("workExperiences");
+
+    if (workExperiences && workExperiences.length > 0) {
+      // Watch for country changes in any work experience entry
+      workExperiences.forEach((exp) => {
+        if (exp.work_country) {
+          GetState(exp.work_country);
+        }
+      });
+    }
+  }, [workExperienceForm.watch("workExperiences")]);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   /*const fetchVerifyOrganizationNumber = async (file: File) => {
     try {
@@ -1420,7 +1429,7 @@ const UserProfilePage = () => {
             <div className="mt-0 bg-white rounded-xl shadow overflow-hidden">
               <div className="bg-white rounded-xl shadow overflow-hidden">
                 <div className="relative h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px] bg-gray-100">
-                      {uploadProgress.type === "banner" && (
+                  {uploadProgress.type === "banner" && (
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                       <div className="text-white text-center">
                         <svg
@@ -1445,8 +1454,8 @@ const UserProfilePage = () => {
                         </svg>
                         <p className="text-sm">{uploadProgress.message}</p>
                       </div>
-                            </div>
-                          )}
+                    </div>
+                  )}
                   <img
                     src={
                       banner &&
@@ -1621,8 +1630,8 @@ const UserProfilePage = () => {
                               }
                             >
                               {tab}
-                              </Tab>
-                            ))}
+                            </Tab>
+                          ))}
                         </Tab.List>
                       </div>
                     </div>
@@ -2338,6 +2347,9 @@ const UserProfilePage = () => {
                               placeholder="Select your state"
                               isSearchable
                               classNamePrefix="react-select"
+                              menuPortalTarget={document.body}
+                              menuPosition="fixed"
+                              maxMenuHeight={200}
                             />
                             {contactInfoForm.formState.errors.state && (
                               <p className="text-sm text-red-500 mt-1">
@@ -2859,159 +2871,388 @@ const UserProfilePage = () => {
                           handleWorkExperienceSubmit
                         )}
                       >
-                        {workExperienceForm.watch("workExperiences")?.map((_experience, index) => (
-                          <div
-                            key={index}
-                            className="flex flex-wrap bg-[#F8F3FF] gap-6 mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative"
-                          >
-                            {/* Add remove button */}
-                            {index > 0 && (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const experiences = [
-                                    ...workExperienceForm.getValues("workExperiences"),
-                                  ];
-                                  experiences.splice(index, 1);
-                                  workExperienceForm.setValue("workExperiences", experiences);
-                                }}
-                                className="absolute top-2 right-2 text-red-500 hover:text-red-700"
-                              >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                  <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                                </svg>
-                              </button>
-                            )}
-
-                            {/* Company */}
-                            <div className="lg:w-[48%] md:w-[48%] w-full">
-                              <label className="block text-sm font-medium text-gray-800 mb-2">
-                                Company <span className="text-red-500">*</span>
-                              </label>
-                              <input
-                                type="text"
-                                {...workExperienceForm.register(`workExperiences.${index}.company`)}
-                                maxLength={40}
-                                placeholder="Enter Company Name"
-                                className={`w-full h-[41px] px-4 py-2 border bg-white ${workExperienceForm.formState.errors?.workExperiences?.[index]?.company ? "border-red-500" : "border-gray-300"} rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${workExperienceForm.formState.errors?.workExperiences?.[index]?.company ? "focus:ring-red-500" : "focus:ring-purple-500"}`}
-                              />
-                              {workExperienceForm.formState.errors?.workExperiences?.[index]?.company && (
-                                <p className="text-sm text-red-500 mt-1">
-                                  {workExperienceForm.formState.errors.workExperiences[index]?.company?.message}
-                                </p>
+                        {workExperienceForm
+                          .watch("workExperiences")
+                          ?.map((_experience, index) => (
+                            <div
+                              key={index}
+                              className="flex flex-wrap bg-[#F8F3FF] gap-6 mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative"
+                            >
+                              {/* Add remove button */}
+                              {index > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const experiences = [
+                                      ...workExperienceForm.getValues(
+                                        "workExperiences"
+                                      ),
+                                    ];
+                                    experiences.splice(index, 1);
+                                    workExperienceForm.setValue(
+                                      "workExperiences",
+                                      experiences
+                                    );
+                                  }}
+                                  className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                </button>
                               )}
-                            </div>
 
-                            {/* Position */}
-                            <div className="lg:w-[48%] md:w-[48%] w-full">
-                              <label className="block text-sm font-medium text-gray-800 mb-2">
-                                Position <span className="text-red-500">*</span>
-                              </label>
-                              <input
-                                type="text"
-                                {...workExperienceForm.register(`workExperiences.${index}.position`)}
-                                maxLength={40}
-                                placeholder="Enter your Designation"
-                                className={`w-full h-[41px] px-4 py-2 border bg-white ${workExperienceForm.formState.errors?.workExperiences?.[index]?.position ? "border-red-500" : "border-gray-300"} rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${workExperienceForm.formState.errors?.workExperiences?.[index]?.position ? "focus:ring-red-500" : "focus:ring-purple-500"}`}
-                              />
-                              {workExperienceForm.formState.errors?.workExperiences?.[index]?.position && (
-                                <p className="text-sm text-red-500 mt-1">
-                                  {workExperienceForm.formState.errors.workExperiences[index]?.position?.message}
-                                </p>
-                              )}
-                            </div>
-
-                            {/* Roles & Responsibilities */}
-                            <div className="lg:w-[48%] md:w-[48%] w-full">
-                              <label className="block text-sm font-medium text-gray-800 mb-2">
-                                Roles & Responsibilities <span className="text-red-500">*</span>
-                              </label>
-                              <textarea
-                                {...workExperienceForm.register(`workExperiences.${index}.roles_responsibilities`)}
-                                rows={5}
-                                placeholder="Describe your key roles and responsibilities"
-                                className={`w-full px-4 py-2 border bg-white ${workExperienceForm.formState.errors?.workExperiences?.[index]?.roles_responsibilities ? "border-red-500" : "border-gray-300"} rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${workExperienceForm.formState.errors?.workExperiences?.[index]?.roles_responsibilities ? "focus:ring-red-500" : "focus:ring-purple-500"}`}
-                              />
-                              {workExperienceForm.formState.errors?.workExperiences?.[index]?.roles_responsibilities && (
-                                <p className="text-sm text-red-500 mt-1">
-                                  {workExperienceForm.formState.errors.workExperiences[index]?.roles_responsibilities?.message}
-                                </p>
-                              )}
-                            </div>
-
-                            {/* Country */}
-                            <div className="lg:w-[48%] md:w-[48%] w-full">
-                              <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Country <span className="text-red-500">*</span>
-                              </label>
-                              <Select
-                                options={Country?.map((country: any) => ({ value: country.name, label: country.name })) || []}
-                                value={workExperienceForm.watch(`workExperiences.${index}.work_country`) ? { value: workExperienceForm.watch(`workExperiences.${index}.work_country`), label: workExperienceForm.watch(`workExperiences.${index}.work_country`) } : null}
-                                onChange={(selectedOption) => workExperienceForm.setValue(`workExperiences.${index}.work_country`, selectedOption?.value || "")}
-                                onBlur={() => workExperienceForm.trigger(`workExperiences.${index}.work_country`)}
-                                styles={customSelectStyles}
-                                placeholder="Select your country"
-                                isSearchable
-                                classNamePrefix="react-select"
-                              />
-                            </div>
-
-                            {/* State */}
-                            <div className="lg:w-[48%] md:w-[48%] w-full relative">
-                              <label className="block text-sm font-medium text-gray-700 mb-2">
-                                State <span className="text-red-500">*</span>
-                              </label>
-                              <Select
-                                options={states?.map((state: any) => ({ value: state.name, label: state.name })) || []}
-                                value={workExperienceForm.watch(`workExperiences.${index}.work_state`) ? { value: workExperienceForm.watch(`workExperiences.${index}.work_state`), label: workExperienceForm.watch(`workExperiences.${index}.work_state`) } : null}
-                                onChange={(selectedOption) => workExperienceForm.setValue(`workExperiences.${index}.work_state`, selectedOption?.value || "")}
-                                onBlur={() => workExperienceForm.trigger(`workExperiences.${index}.work_state`)}
-                                styles={customSelectStyles}
-                                placeholder="Select your state"
-                                isSearchable
-                                classNamePrefix="react-select"
-                              />
-                            </div>
-
-                            {/* City */}
-                            <div className="lg:w-[48%] md:w-[48%] w-full">
-                              <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
-                              <input type="text" {...workExperienceForm.register(`workExperiences.${index}.work_city`)} placeholder="Enter city" className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500" />
-                            </div>
-
-                            {/* Currently Working */}
-                            <div className="w-full flex items-center gap-1">
-                              <input
-                                type="checkbox"
-                                checked={!!workExperienceForm.watch(`workExperiences.${index}.currently_working`)}
-                                onChange={(e) => {
-                                  const checked = (e.target as HTMLInputElement).checked;
-                                  workExperienceForm.setValue(`workExperiences.${index}.currently_working`, checked);
-                                  if (checked) workExperienceForm.setValue(`workExperiences.${index}.end_date`, "");
-                                }}
-                                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-                                id={`currently_working_${index}`}
-                              />
-                              <label htmlFor={`currently_working_${index}`} className="ml-2 block text-sm text-gray-800">Currently Working</label>
-                            </div>
-
-                            {/* Start Date */}
-                            <div className="lg:w-[48%] md:w-[48%] w-full">
-                              <label className="block text-sm font-medium text-gray-800 mb-2">Start Date <span className="text-red-500">*</span></label>
-                              <input type="date" {...workExperienceForm.register(`workExperiences.${index}.start_date`)} className={`w-full h-[41px] px-4 py-2 border bg-white ${workExperienceForm.formState.errors?.workExperiences?.[index]?.start_date ? "border-red-500" : "border-gray-300"} rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${workExperienceForm.formState.errors?.workExperiences?.[index]?.start_date ? "focus:ring-red-500" : "focus:ring-purple-500"}`} />
-                              {workExperienceForm.formState.errors?.workExperiences?.[index]?.start_date && (<p className="text-sm text-red-500 mt-1">{workExperienceForm.formState.errors.workExperiences[index]?.start_date?.message}</p>)}
-                            </div>
-
-                            {/* End Date (hide when currently working) */}
-                            {!workExperienceForm.watch(`workExperiences.${index}.currently_working`) && (
+                              {/* Company */}
                               <div className="lg:w-[48%] md:w-[48%] w-full">
-                                <label className="block text-sm font-medium text-gray-800 mb-2">End Date</label>
-                                <input type="date" {...workExperienceForm.register(`workExperiences.${index}.end_date`)} className={`w-full h-[41px] px-4 py-2 border bg-white ${workExperienceForm.formState.errors?.workExperiences?.[index]?.end_date ? "border-red-500" : "border-gray-300"} rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${workExperienceForm.formState.errors?.workExperiences?.[index]?.end_date ? "focus:ring-red-500" : "focus:ring-purple-500"}`} />
-                                {workExperienceForm.formState.errors?.workExperiences?.[index]?.end_date && (<p className="text-sm text-red-500 mt-1">{workExperienceForm.formState.errors.workExperiences[index]?.end_date?.message}</p>)}
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Company{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  {...workExperienceForm.register(
+                                    `workExperiences.${index}.company`
+                                  )}
+                                  maxLength={40}
+                                  placeholder="Enter Company Name"
+                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                    workExperienceForm.formState.errors
+                                      ?.workExperiences?.[index]?.company
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    workExperienceForm.formState.errors
+                                      ?.workExperiences?.[index]?.company
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {workExperienceForm.formState.errors
+                                  ?.workExperiences?.[index]?.company && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      workExperienceForm.formState.errors
+                                        .workExperiences[index]?.company
+                                        ?.message
+                                    }
+                                  </p>
+                                )}
                               </div>
-                            )}
-                          </div>
-                        ))}
+
+                              {/* Position */}
+                              <div className="lg:w-[48%] md:w-[48%] w-full">
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Position{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  {...workExperienceForm.register(
+                                    `workExperiences.${index}.position`
+                                  )}
+                                  maxLength={40}
+                                  placeholder="Enter your Designation"
+                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                    workExperienceForm.formState.errors
+                                      ?.workExperiences?.[index]?.position
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    workExperienceForm.formState.errors
+                                      ?.workExperiences?.[index]?.position
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {workExperienceForm.formState.errors
+                                  ?.workExperiences?.[index]?.position && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      workExperienceForm.formState.errors
+                                        .workExperiences[index]?.position
+                                        ?.message
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Roles & Responsibilities */}
+                              <div className="lg:w-[48%] md:w-[48%] w-full">
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Roles & Responsibilities{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <textarea
+                                  {...workExperienceForm.register(
+                                    `workExperiences.${index}.roles_responsibilities`
+                                  )}
+                                  rows={5}
+                                  placeholder="Describe your key roles and responsibilities"
+                                  className={`w-full px-4 py-2 border bg-white ${
+                                    workExperienceForm.formState.errors
+                                      ?.workExperiences?.[index]
+                                      ?.roles_responsibilities
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                    workExperienceForm.formState.errors
+                                      ?.workExperiences?.[index]
+                                      ?.roles_responsibilities
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {workExperienceForm.formState.errors
+                                  ?.workExperiences?.[index]
+                                  ?.roles_responsibilities && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      workExperienceForm.formState.errors
+                                        .workExperiences[index]
+                                        ?.roles_responsibilities?.message
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Country */}
+                              <div className="lg:w-[48%] md:w-[48%] w-full">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Country{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <Select
+                                  options={
+                                    Country?.map((country: any) => ({
+                                      value: country.name,
+                                      label: country.name,
+                                    })) || []
+                                  }
+                                  value={
+                                    workExperienceForm.watch(
+                                      `workExperiences.${index}.work_country`
+                                    )
+                                      ? {
+                                          value: workExperienceForm.watch(
+                                            `workExperiences.${index}.work_country`
+                                          ),
+                                          label: workExperienceForm.watch(
+                                            `workExperiences.${index}.work_country`
+                                          ),
+                                        }
+                                      : null
+                                  }
+                                  onChange={(selectedOption) => {
+                                    const countryName =
+                                      selectedOption?.value || "";
+                                    workExperienceForm.setValue(
+                                      `workExperiences.${index}.work_country`,
+                                      countryName
+                                    );
+                                    const countryId = Country?.find(
+                                      (c: any) => c.name === countryName
+                                    )?.id;
+                                    if (countryId) {
+                                      GetState(countryId);
+                                    } else {
+                                      setStates([]);
+                                    }
+                                    workExperienceForm.setValue(
+                                      `workExperiences.${index}.work_state`,
+                                      ""
+                                    );
+                                  }}
+                                  onBlur={() =>
+                                    workExperienceForm.trigger(
+                                      `workExperiences.${index}.work_country`
+                                    )
+                                  }
+                                  styles={customSelectStyles}
+                                  placeholder="Select your country"
+                                  isSearchable
+                                  classNamePrefix="react-select"
+                                />
+                              </div>
+
+                              {/* State */}
+                              <div className="lg:w-[48%] md:w-[48%] w-full relative">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  State <span className="text-red-500">*</span>
+                                </label>
+                                <Select
+                                  options={
+                                    states?.map((state: any) => ({
+                                      value: state.name,
+                                      label: state.name,
+                                    })) || []
+                                  }
+                                  value={
+                                    workExperienceForm.watch(
+                                      `workExperiences.${index}.work_state`
+                                    )
+                                      ? {
+                                          value: workExperienceForm.watch(
+                                            `workExperiences.${index}.work_state`
+                                          ),
+                                          label: workExperienceForm.watch(
+                                            `workExperiences.${index}.work_state`
+                                          ),
+                                        }
+                                      : null
+                                  }
+                                  onChange={(selectedOption) => {
+                                    workExperienceForm.setValue(
+                                      `workExperiences.${index}.work_state`,
+                                      selectedOption?.value || ""
+                                    );
+                                  }}
+                                  onBlur={() =>
+                                    workExperienceForm.trigger(
+                                      `workExperiences.${index}.work_state`
+                                    )
+                                  }
+                                  styles={customSelectStyles}
+                                  placeholder="Select your state"
+                                  isSearchable
+                                  classNamePrefix="react-select"
+                                  menuPortalTarget={document.body}
+                                  menuPosition="fixed"
+                                  maxMenuHeight={200}
+                                />
+                              </div>
+
+                              {/* City */}
+                              <div className="lg:w-[48%] md:w-[48%] w-full">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  City
+                                </label>
+                                <input
+                                  type="text"
+                                  {...workExperienceForm.register(
+                                    `workExperiences.${index}.work_city`
+                                  )}
+                                  placeholder="Enter city"
+                                  className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
+
+                              {/* Currently Working */}
+                              <div className="w-full flex items-center gap-1">
+                                <input
+                                  type="checkbox"
+                                  checked={
+                                    !!workExperienceForm.watch(
+                                      `workExperiences.${index}.currently_working`
+                                    )
+                                  }
+                                  onChange={(e) => {
+                                    const checked = (
+                                      e.target as HTMLInputElement
+                                    ).checked;
+                                    workExperienceForm.setValue(
+                                      `workExperiences.${index}.currently_working`,
+                                      checked
+                                    );
+                                    if (checked)
+                                      workExperienceForm.setValue(
+                                        `workExperiences.${index}.end_date`,
+                                        ""
+                                      );
+                                  }}
+                                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                                  id={`currently_working_${index}`}
+                                />
+                                <label
+                                  htmlFor={`currently_working_${index}`}
+                                  className="ml-2 block text-sm text-gray-800"
+                                >
+                                  Currently Working
+                                </label>
+                              </div>
+
+                              {/* Start Date */}
+                              <div className="lg:w-[48%] md:w-[48%] w-full">
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  Start Date{" "}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="date"
+                                  {...workExperienceForm.register(
+                                    `workExperiences.${index}.start_date`
+                                  )}
+                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                    workExperienceForm.formState.errors
+                                      ?.workExperiences?.[index]?.start_date
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
+                                    workExperienceForm.formState.errors
+                                      ?.workExperiences?.[index]?.start_date
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {workExperienceForm.formState.errors
+                                  ?.workExperiences?.[index]?.start_date && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {
+                                      workExperienceForm.formState.errors
+                                        .workExperiences[index]?.start_date
+                                        ?.message
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* End Date (hide when currently working) */}
+                              {!workExperienceForm.watch(
+                                `workExperiences.${index}.currently_working`
+                              ) && (
+                                <div className="lg:w-[48%] md:w-[48%] w-full">
+                                  <label className="block text-sm font-medium text-gray-800 mb-2">
+                                    End Date
+                                  </label>
+                                  <input
+                                    type="date"
+                                    {...workExperienceForm.register(
+                                      `workExperiences.${index}.end_date`
+                                    )}
+                                    className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                      workExperienceForm.formState.errors
+                                        ?.workExperiences?.[index]?.end_date
+                                        ? "border-red-500"
+                                        : "border-gray-300"
+                                    } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
+                                      workExperienceForm.formState.errors
+                                        ?.workExperiences?.[index]?.end_date
+                                        ? "focus:ring-red-500"
+                                        : "focus:ring-purple-500"
+                                    }`}
+                                  />
+                                  {workExperienceForm.formState.errors
+                                    ?.workExperiences?.[index]?.end_date && (
+                                    <p className="text-sm text-red-500 mt-1">
+                                      {
+                                        workExperienceForm.formState.errors
+                                          .workExperiences[index]?.end_date
+                                          ?.message
+                                      }
+                                    </p>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          ))}
 
                         <div className="flex justify-between items-center mt-4">
                           <button
