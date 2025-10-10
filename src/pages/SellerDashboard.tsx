@@ -479,12 +479,12 @@ export default function SellerDashboard() {
               </div>
             </div>
           ) : ( */}
-          <CertificationCard
-            progress={user?.assesment_progress || 100}
-            activeLevel={user?.level} // Pass the actual user level from your API
-            onContinue={() => navigate("/dashboard/assesment")}
-            onOpen={() => console.log("Open Certification")}
-          />
+<CertificationCard
+  progress={user?.assesment_progress ? user?.assesment_progress : 0}
+  activeLevel={user?.level} // Pass the actual user level from your API
+  onContinue={() => navigate("/dashboard/assesment")}
+  onOpen={() => console.log("Open Certification")}
+/>
           {/* )} */}
 
           <BestPracticesSection

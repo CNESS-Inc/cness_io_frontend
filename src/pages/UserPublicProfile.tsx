@@ -9,6 +9,7 @@ import fluent from "../assets/fluent.svg";
 import work from "../assets/work.svg";
 import bio from "../assets/bio.svg";
 import education from "../assets/education.svg";
+import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import {
   UnFriend,
   // GetUserProfileDetails,
@@ -523,6 +524,12 @@ export default function UserProfileView() {
 
   return (
     <div className="relative mx-auto w-full h-full mx-auto px-3 mt-4">
+       <button
+          onClick={() => window.history.back()}
+          className="absolute cursor-pointer top-4 left-4 bg-white rounded-full p-2 shadow-md"
+        >
+          <ArrowLeftIcon className="h-5 w-5 text-[#7077FE]" />
+        </button>
       {/* Banner */}
       <div className="w-full h-[180px] sm:h-[220px] md:h-[260px] lg:h-[300px] xl:h-[320px] rounded-[8px]">
         <img

@@ -1083,12 +1083,13 @@ export default function SocialTopBar() {
   useEffect(() => {
     const fetchInitialData = async () => {
       setIsPostsLoading(true);
+      MeDetail();
       await getUserPosts();
       setIsPostsLoading(false);
     };
-
+    
     fetchInitialData();
-    MeDetail();
+    
   }, []);
 
   // Function to save/unsave post to collection
