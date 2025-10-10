@@ -174,7 +174,7 @@ const DashboardNavbar = ({
     {
       id: "market-place",
       icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
-      label: "Market Place",
+      label: "Marketplace",
       active: true,
       path: "/dashboard/market-place",
       /*isMarketplaceDropdown: true,
@@ -188,38 +188,38 @@ const DashboardNavbar = ({
       ],*/
     },
 
-    {
-      id: "Community",
-      icon: (
-        <img src={iconMap["community"]} alt="Home Icon" className="w-5 h-5" />
-      ),
-      label: "Community",
-      active: false,
-      isCommunityDropdown: true,
-      childPaths: ["/dashboard/SearchExplore"],
-      children: [
-        { label: "Search & Explore", path: "/dashboard/SearchExplore" },
-        {
-          label: "Create Circles",
-          path: "/dashboard/ComingSoon",
-        },
-        {
-          label: "Manage Circles",
-          path: "/dashboard/ComingSoon",
-        },
-        // { label: "Messagings", path: "/dashboard/ComingSoon" },
-      ],
-    },
+    // {
+    //   id: "Community",
+    //   icon: (
+    //     <img src={iconMap["community"]} alt="Home Icon" className="w-5 h-5" />
+    //   ),
+    //   label: "Community",
+    //   active: false,
+    //   isCommunityDropdown: true,
+    //   childPaths: ["/dashboard/SearchExplore"],
+    //   children: [
+    //     { label: "Search & Explore", path: "/dashboard/SearchExplore" },
+    //     {
+    //       label: "Create Circles",
+    //       path: "/dashboard/ComingSoon",
+    //     },
+    //     {
+    //       label: "Manage Circles",
+    //       path: "/dashboard/ComingSoon",
+    //     },
+    //     // { label: "Messagings", path: "/dashboard/ComingSoon" },
+    //   ],
+    // },
     {
       id: "MentorPartnerHub",
       icon: <Zap className="w-5 h-5 text-gray-500" />,
-      label: "Mentor Partner Hub",
+      label: "Mentor & Partner Hub",
       active: false,
       isMentorDropdown: true,
       childPaths: ["/dashboard/BecomeMentor"],
       children: [
-        { label: "Become an Mentor", path: "/dashboard/become-mentor" },
-        { label: "Become a Partner", path: "/dashboard/Become_partner" },
+        { label: "Mentor", path: "/dashboard/become-mentor" },
+        { label: "Partner", path: "/dashboard/Become_partner" },
         // { label: "Mentor Dashboard", path: "/dashboard/ComingSoon" },
         // { label: "Track Progress", path: "/dashboard/ComingSoon" },
         // { label: "Partner License & Toolkit", path: "/dashboard/ComingSoon" },

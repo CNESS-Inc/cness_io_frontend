@@ -40,7 +40,7 @@ export default function SectionFaq({ faqs }: CertificationFaqProps) {
             >
               FAQs
             </h1>
-            <p className="font-['Open_Sans'] font-light text-[16px] leading-[24px] tracking-[0px] text-[#64748B] pt-4 md:pt-2">
+            <p className="font-['Open_Sans'] font-light text-[16px] leading-[24px] tracking-[0px] text-[#242424] pt-4 md:pt-2">
               Have questions? We’ve got you covered. Explore our FAQs to find
               quick answers 
               <br />about certifications, benefits, levels, and the
@@ -71,9 +71,9 @@ export default function SectionFaq({ faqs }: CertificationFaqProps) {
                       {faq.question}
                     </span>
                     {isOpen ? (
-                      <FiMinusCircle className="text-[#64748B]" size={25} />
+                      <FiMinusCircle className="text-[#242424]" size={25} />
                     ) : (
-                      <FiPlusCircle className="text-[#64748B]" size={25} />
+                      <FiPlusCircle className="text-[#242424]" size={25} />
                     )}
                   </button>
 
@@ -83,7 +83,7 @@ export default function SectionFaq({ faqs }: CertificationFaqProps) {
                       isOpen ? "max-h-40 py-2" : "max-h-0 py-0"
                     }`}
                   >
-                    <p className="font-['Open_Sans'] text-base text-[#64748B] font-light">
+                    <p className="font-['Open_Sans'] text-base text-[#242424] font-light">
                       {faq.answer}
                     </p>
                   </div>

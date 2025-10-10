@@ -137,7 +137,7 @@ export default function SellerDashboard() {
       const response = await GetRecommendedBestPractices();
       console.log("🚀 ~ fetchRecommendedBestPractices ~ response:", response);
 
-      console.log('response.data.data.rows', response.data.data.rows)
+      console.log("response.data.data.rows", response.data.data.rows);
       if (response?.data?.data?.rows) {
         // Transform the API response to match the expected BestPracticeItem format
         const transformedData: BestPracticeItem[] = response.data.data.rows.map(
@@ -227,7 +227,10 @@ export default function SellerDashboard() {
         handle: `@${item.profile.first_name} ${item.profile.last_name}`,
         avatar: item.profile.profile_picture,
       }));
-      console.log("fetchFriendSuggestions ---------------->", formattedRequests);
+      console.log(
+        "fetchFriendSuggestions ---------------->",
+        formattedRequests
+      );
       setFriendSuggestion(formattedRequests);
     } catch (error) {
       console.error("Error fetching friend requests:", error);
@@ -315,9 +318,9 @@ export default function SellerDashboard() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      const validTypes = ["image/jpeg", "image/jpg", "image/png"];
       if (!validTypes.includes(file.type)) {
-        e.target.value = '';
+        e.target.value = "";
 
         showToast?.({
           message: "Please select only JPG, JPEG or PNG files.",
@@ -387,7 +390,6 @@ export default function SellerDashboard() {
       setIsSubmitting(false);
     }
   };
-
 
   const userName =
     localStorage.getItem("name") +
@@ -540,7 +542,7 @@ export default function SellerDashboard() {
                 <h6 className="font-['Poppins',Helvetica] text-xl md:text-2xl font-medium text-black">
                   Marketplace
                 </h6>
-                <h5 className="pt-3 pe-5 font-['Open_Sans',Helvetica] font-normal text-sm text-[#898989]">
+                <h5 className="pt-3 pe-5 font-['Open_Sans',Helvetica] font-light text-sm text-[#242424]">
                   Explore a wide range of conscious products crafted by verified
                   creators who prioritize sustainability and ethical practices.
                 </h5>

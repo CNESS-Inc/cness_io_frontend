@@ -39,7 +39,7 @@ export default function JoiningSection()
              <br />
              Wholeness to Recognition
             </h2>
-            <p className="text-center w-full font-['Open Sans'] font-400 text-[16px] leading-[24.38px] text-[#494949] tracking-[0px]">Join a movement that sees you, supports you, and helps your conscious work shine.</p>
+            <p className="text-center w-full font-['Open Sans'] font-light text-[16px] leading-[24.38px] text-[#242424] tracking-[0px]">Join a movement that sees you, supports you, and helps your conscious work shine.</p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-[15px] w-full joining-btn ">

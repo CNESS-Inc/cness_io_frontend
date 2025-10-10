@@ -436,7 +436,7 @@ const BecomeMentor = () => {
                 <br /> Leaders
               </span>
             </h1>
-            <h5 className="py-3 font-['Open_Sans',Helvetica] text-base font-light text-[#64748B] leading-[24px]">
+            <h5 className="py-3 font-['Open_Sans',Helvetica] text-base font-light text-[#242424] leading-[24px]">
               Become a CNESS Mentor and turn your wisdom into a force for
               transformation.Guide professionals, empower learners, and shape
               the future of conscious leadership.
@@ -514,7 +514,7 @@ const BecomeMentor = () => {
             CNESS Mentor
           </span>
         </h1>
-        <h5 className="py-3 px-5 sm:px-10 md:px-20 font-['Open_Sans',Helvetica] font-light text-base text-center text-[#64748B] leading-[24px]">
+        <h5 className="py-3 px-5 sm:px-10 md:px-20 font-['Open_Sans',Helvetica] font-light text-base text-center text-[#242424] leading-[24px]">
           A mentor is more than a guide — they are the torchbearers of
           conscious growth. CNESS Mentors are certified professionals who
           extend their values, insights, and expertise to help others succeed
@@ -559,7 +559,7 @@ const BecomeMentor = () => {
                 </h3>
 
                 {/* Description */}
-                <p className="openSans font-['Open Sans'] text-base font-light text-[#64748B] leading-relaxed lg:pe-5">
+                <p className="openSans font-['Open Sans'] text-base font-light text-[#242424] leading-relaxed lg:pe-5">
                   {item.description}
                 </p>
               </div>
@@ -597,7 +597,7 @@ const BecomeMentor = () => {
               </span>
             </h1>
 
-            <ul className="mt-6 list-disc pl-5 text-[#64748B] text-base font-light leading-[32px] space-y-1">
+            <ul className="mt-6 list-disc pl-5 text-[#242424] text-base font-light leading-[32px] space-y-1">
               <li>
                 Hold at least an Aspiring CNESS Certification (Inspired and
                 Luminary Mentors are highly valued).
@@ -671,7 +671,7 @@ const BecomeMentor = () => {
                 </div>
                 <p
                   className={clsx(
-                    "mt-[21px] text-center font-['Open_Sans',Helvetica] text-sm font-normal text-gray-500",
+                    "mt-[21px] text-center font-['Open_Sans',Helvetica] text-sm font-light text-[#242424]",
                     step.width
                   )}
                 >
@@ -832,7 +832,7 @@ const BecomeMentor = () => {
                   />
                 </Field> */}
 
-                <Field label={<span>Areas & availability<span style={{ color: "red" }}> *</span></span>}>
+                {/* <Field label={<span>Areas & availability<span style={{ color: "red" }}> *</span></span>}>
                   <div className="relative group">
                     <select
                       name="availability"
@@ -858,7 +858,7 @@ const BecomeMentor = () => {
                       </svg>
                     </div>
                   </div>
-                </Field>
+                </Field> */}
               </div>
 
               {submitMessage && (
@@ -911,7 +911,7 @@ function BenefitCard({
       <h3 className="text-lg font-medium text-[#222224] leading-[24px]">
         {title}
       </h3>
-      <p className="mt-2 text-center text-base font-light leading-[24px] text-[#64748B]">
+      <p className="mt-2 text-center text-base font-light leading-[24px] text-[#242424]">
         {body}
       </p>
     </div>
