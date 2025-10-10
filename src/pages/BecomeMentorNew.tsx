@@ -559,7 +559,7 @@ const BecomeMentor = () => {
                 </h3>
 
                 {/* Description */}
-                <p className="openSans font-['Open Sans'] text-base font-light text-[#242424] leading-relaxed lg:pe-5">
+                <p className="font-['Open_Sans'] text-base font-light text-[#242424] leading-relaxed lg:pe-5">
                   {item.description}
                 </p>
               </div>
@@ -597,7 +597,7 @@ const BecomeMentor = () => {
               </span>
             </h1>
 
-            <ul className="mt-6 list-disc pl-5 text-[#242424] text-base font-light leading-[32px] space-y-1">
+            <ul className="font-['Open_Sans'] mt-6 list-disc pl-5 text-[#242424] text-base font-light leading-[32px] space-y-1">
               <li>
                 Hold at least an Aspiring CNESS Certification (Inspired and
                 Luminary Mentors are highly valued).
@@ -908,10 +908,10 @@ function BenefitCard({
         <img src={icon} className="w-[34px] h-[34px]" />
       </div>
 
-      <h3 className="text-lg font-medium text-[#222224] leading-[24px]">
+      <h3 className="text-lg font-poppins font-medium text-[#222224] leading-[24px]">
         {title}
       </h3>
-      <p className="mt-2 text-center text-base font-light leading-[24px] text-[#242424]">
+      <p className="mt-2 font-['Open_Sans'] text-center text-base font-light leading-[24px] text-[#242424]">
         {body}
       </p>
     </div>
