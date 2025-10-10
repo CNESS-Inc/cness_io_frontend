@@ -11,8 +11,8 @@ interface AddBestPracticeModalProps {
     file?: File | null;
     description: string;
   };
-  profession: Array<{ id: string; title: string }>;
-  interest: Array<{ id: string; name: string }>;
+  profession?: Array<{ id: string; title: string }>;
+  interest?: Array<{ id: string; name: string }>;
   tags: string[];
   inputValue: string;
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
@@ -139,7 +139,7 @@ export default function AddBestPracticeModal({
                ${newPractice.interest ? "text-black" : "text-[#6E7179]"}`}
               >
                 <option value="">Select your Interest</option>
-                {interest.map((cat) => (
+                {interest && interest.map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.name}
                   </option>
@@ -166,7 +166,7 @@ export default function AddBestPracticeModal({
                ${newPractice.profession ? "text-black" : "text-[#6E7179]"}`}
               >
                 <option value="">Select your Profession</option>
-                {profession.map((prof) => (
+                {profession && profession.map((prof) => (
                   <option key={prof.id} value={prof.id}>
                     {prof.title}
                   </option>

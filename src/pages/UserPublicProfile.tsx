@@ -15,18 +15,16 @@ import {
   UnFriend,
   // GetUserProfileDetails,
   SendConnectionRequest,
-  GetPublicProfileDetails,
-  GetProfileDetailsById,
-  GetFollowBestpractices,
+  // GetPublicProfileDetails,
+  // GetProfileDetailsById,
+  // GetFollowBestpractices,
   SendFollowRequest,
-  GetBestpracticesByUserProfile,
-  GetValidProfessionalDetails,
-  GetInterestsDetails,
+  // GetBestpracticesByUserProfile,
+  // GetValidProfessionalDetails,
+  // GetInterestsDetails,
   CreateBestPractice,
   SendBpFollowRequest,
   GetPublicProfileDetailsById,
-  GetPrePublicProfileDetails,
-  GetPreBestpracticesByUserProfile,
   //UnFriend,
 } from "../Common/ServerAPI";
 import { useNavigate, useParams } from "react-router-dom";
@@ -88,7 +86,7 @@ export const formatRange = (
 
 export default function UserProfileView() {
   const [userDetails, setUserDetails] = useState<any>();
-  const [publicUserDetails, setPublicUserDetails] = useState<any>();
+  // const [publicUserDetails, setPublicUserDetails] = useState<any>();
   const [myBP, setMyBP] = useState<any>([]);
   const [myProfessionBP, setMyProfessionBP] = useState<any[]>([]);
   const [myInterestBP, setMyInterestBP] = useState<any[]>([]);
@@ -102,8 +100,8 @@ export default function UserProfileView() {
   const handleShareClose = () => setIsShareOpen(false);
   const [activeModal, setActiveModal] = useState(false);
   const loggedInUserID = localStorage.getItem("Id");
-  const [profession, setProfession] = useState<any[]>([]);
-  const [interest, setInterestData] = useState<any[]>([]);
+  // const [profession, setProfession] = useState<any[]>([]);
+  // const [interest, setInterestData] = useState<any[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [newPractice, setNewPractice] = useState({
@@ -132,8 +130,8 @@ export default function UserProfileView() {
 
   useEffect(() => {
     fetchUserDetails();
-    fetchPublicUserDetails();
-    fetchAllBestPractises();
+    // fetchPublicUserDetails();
+    // fetchAllBestPractises();
     // fetchFollowBestPractises();
     // fetchProfession();
     // fetchIntrusts();
@@ -159,33 +157,33 @@ export default function UserProfileView() {
     }
   }, [myBP]);
 
-  const fetchProfession = async () => {
-    try {
-      const res = await GetValidProfessionalDetails();
-      setProfession(res?.data?.data);
-    } catch (error: any) {
-      console.error("Error fetching professions:", error);
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    }
-  };
+  // const fetchProfession = async () => {
+  //   try {
+  //     const res = await GetValidProfessionalDetails();
+  //     setProfession(res?.data?.data);
+  //   } catch (error: any) {
+  //     console.error("Error fetching professions:", error);
+  //     showToast({
+  //       message: error?.response?.data?.error?.message,
+  //       type: "error",
+  //       duration: 5000,
+  //     });
+  //   }
+  // };
 
-  const fetchIntrusts = async () => {
-    try {
-      const res = await GetInterestsDetails();
-      setInterestData(res?.data?.data);
-    } catch (error: any) {
-      console.error("Error fetching Intrusts:", error);
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    }
-  };
+  // const fetchIntrusts = async () => {
+  //   try {
+  //     const res = await GetInterestsDetails();
+  //     setInterestData(res?.data?.data);
+  //   } catch (error: any) {
+  //     console.error("Error fetching Intrusts:", error);
+  //     showToast({
+  //       message: error?.response?.data?.error?.message,
+  //       type: "error",
+  //       duration: 5000,
+  //     });
+  //   }
+  // };
 
   const slugify = (str: string) => {
     return str
@@ -213,44 +211,44 @@ export default function UserProfileView() {
     }
   };
 
-  const fetchPublicUserDetails = async () => {
-    try {
-      const res = await GetPrePublicProfileDetails();
-      setPublicUserDetails(res?.data?.data);
-    } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    }
-  };
+  // const fetchPublicUserDetails = async () => {
+  //   try {
+  //     const res = await GetPublicProfileDetails();
+  //     setPublicUserDetails(res?.data?.data);
+  //   } catch (error: any) {
+  //     showToast({
+  //       message: error?.response?.data?.error?.message,
+  //       type: "error",
+  //       duration: 5000,
+  //     });
+  //   }
+  // };
 
-  const fetchAllBestPractises = async () => {
-    try {
-      const res = await GetPreBestpracticesByUserProfile(id);
-      setMyBP(res?.data?.data?.rows);
-    } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    }
-  };
+  // const fetchAllBestPractises = async () => {
+  //   try {
+  //     const res = await GetBestpracticesByUserProfile(id);
+  //     setMyBP(res?.data?.data?.rows);
+  //   } catch (error: any) {
+  //     showToast({
+  //       message: error?.response?.data?.error?.message,
+  //       type: "error",
+  //       duration: 5000,
+  //     });
+  //   }
+  // };
 
-  const fetchFollowBestPractises = async () => {
-    try {
-      const res = await GetFollowBestpractices();
-      setFollowBP(res?.data?.data?.rows);
-    } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    }
-  };
+  // const fetchFollowBestPractises = async () => {
+  //   try {
+  //     const res = await GetFollowBestpractices();
+  //     setFollowBP(res?.data?.data?.rows);
+  //   } catch (error: any) {
+  //     showToast({
+  //       message: error?.response?.data?.error?.message,
+  //       type: "error",
+  //       duration: 5000,
+  //     });
+  //   }
+  // };
 
   const handleFollow = async (userId: string) => {
     try {
@@ -581,10 +579,10 @@ export default function UserProfileView() {
              bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent"
               >
                 {/* {userDetails?.public_title} */}
-                {publicUserDetails?.title}
+                {/* {publicUserDetails?.title} */}
               </p>
               <p className="mt-2 font-['Open_Sans'] font-normal text-[14px] leading-[21px] text-[#64748B] max-w-full md:max-w-[500px] break-words">
-                {publicUserDetails?.about_us}
+                {userDetails?.about_us}
               </p>
 
               {(userDetails?.address ||
@@ -1456,8 +1454,8 @@ export default function UserProfileView() {
         open={activeModal}
         onClose={closeModal}
         newPractice={newPractice}
-        profession={profession}
-        interest={interest}
+        // profession={profession}
+        // interest={interest}
         tags={tags}
         inputValue={inputValue}
         setInputValue={setInputValue}
