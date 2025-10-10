@@ -614,7 +614,7 @@ const UserProfilePage = () => {
                   /^[a-zA-Z\s.,-]+$/,
                   "Position contains invalid characters"
                 ),
-             start_date: yup
+              start_date: yup
                 .string()
                 .required("Start date is required")
                 .test(
@@ -3225,26 +3225,26 @@ const UserProfilePage = () => {
                                   <input
                                     type="date"
                                     min={
-                                    workExperienceForm.watch(
-                                      `workExperiences.${index}.start_date`
-                                    )
-                                      ? new Date(
-                                          new Date(
-                                            workExperienceForm.watch(
-                                              `workExperiences.${index}.start_date`
-                                            )
-                                          ).setDate(
+                                      workExperienceForm.watch(
+                                        `workExperiences.${index}.start_date`
+                                      )
+                                        ? new Date(
                                             new Date(
                                               workExperienceForm.watch(
                                                 `workExperiences.${index}.start_date`
                                               )
-                                            ).getDate() + 1
+                                            ).setDate(
+                                              new Date(
+                                                workExperienceForm.watch(
+                                                  `workExperiences.${index}.start_date`
+                                                )
+                                              ).getDate() + 1
+                                            )
                                           )
-                                        )
-                                          .toISOString()
-                                          .split("T")[0]
-                                      : ""
-                                  }
+                                            .toISOString()
+                                            .split("T")[0]
+                                        : ""
+                                    }
                                     {...workExperienceForm.register(
                                       `workExperiences.${index}.end_date`
                                     )}

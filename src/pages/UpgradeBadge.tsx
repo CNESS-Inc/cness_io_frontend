@@ -531,7 +531,7 @@ const UpgradeBadge = () => {
               <div className="pt-3 flex justify-start items-center gap-3">
                 <img src={arrow} alt="icon" className="w-4 h-4" />
                 <h3 className="font-['Open_Sans',Helvetica] text-sm font-normal text-[#222224]">
-                  Organizations eligible for reassessment after 3 months if they
+                  You are eligible for reassessment after 3 months if they
                   seek a higher tier.
                 </h3>
               </div>
