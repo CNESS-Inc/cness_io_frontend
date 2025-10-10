@@ -1342,6 +1342,19 @@ const UserProfilePage = () => {
     }
   }, [contactInfoForm.watch("country")]);
 
+  useEffect(() => {
+    const workExperiences = workExperienceForm.watch("workExperiences");
+
+    if (workExperiences && workExperiences.length > 0) {
+      // Watch for country changes in any work experience entry
+      workExperiences.forEach((exp) => {
+        if (exp.work_country) {
+          GetState(exp.work_country);
+        }
+      });
+    }
+  }, [workExperienceForm.watch("workExperiences")]);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   /*const fetchVerifyOrganizationNumber = async (file: File) => {
     try {
@@ -2334,6 +2347,9 @@ const UserProfilePage = () => {
                               placeholder="Select your state"
                               isSearchable
                               classNamePrefix="react-select"
+                              menuPortalTarget={document.body}
+                              menuPosition="fixed"
+                              maxMenuHeight={200}
                             />
                             {contactInfoForm.formState.errors.state && (
                               <p className="text-sm text-red-500 mt-1">
@@ -3035,12 +3051,26 @@ const UserProfilePage = () => {
                                         }
                                       : null
                                   }
-                                  onChange={(selectedOption) =>
+                                  onChange={(selectedOption) => {
+                                    const countryName =
+                                      selectedOption?.value || "";
                                     workExperienceForm.setValue(
                                       `workExperiences.${index}.work_country`,
-                                      selectedOption?.value || ""
-                                    )
-                                  }
+                                      countryName
+                                    );
+                                    const countryId = Country?.find(
+                                      (c: any) => c.name === countryName
+                                    )?.id;
+                                    if (countryId) {
+                                      GetState(countryId);
+                                    } else {
+                                      setStates([]);
+                                    }
+                                    workExperienceForm.setValue(
+                                      `workExperiences.${index}.work_state`,
+                                      ""
+                                    );
+                                  }}
                                   onBlur={() =>
                                     workExperienceForm.trigger(
                                       `workExperiences.${index}.work_country`
@@ -3079,12 +3109,12 @@ const UserProfilePage = () => {
                                         }
                                       : null
                                   }
-                                  onChange={(selectedOption) =>
+                                  onChange={(selectedOption) => {
                                     workExperienceForm.setValue(
                                       `workExperiences.${index}.work_state`,
                                       selectedOption?.value || ""
-                                    )
-                                  }
+                                    );
+                                  }}
                                   onBlur={() =>
                                     workExperienceForm.trigger(
                                       `workExperiences.${index}.work_state`
@@ -3094,6 +3124,9 @@ const UserProfilePage = () => {
                                   placeholder="Select your state"
                                   isSearchable
                                   classNamePrefix="react-select"
+                                  menuPortalTarget={document.body}
+                                  menuPosition="fixed"
+                                  maxMenuHeight={200}
                                 />
                               </div>
 
@@ -3191,27 +3224,6 @@ const UserProfilePage = () => {
                                   </label>
                                   <input
                                     type="date"
-                                    min={
-                                    workExperienceForm.watch(
-                                      `workExperiences.${index}.start_date`
-                                    )
-                                      ? new Date(
-                                          new Date(
-                                            workExperienceForm.watch(
-                                              `workExperiences.${index}.start_date`
-                                            )
-                                          ).setDate(
-                                            new Date(
-                                              workExperienceForm.watch(
-                                                `workExperiences.${index}.start_date`
-                                              )
-                                            ).getDate() + 1
-                                          )
-                                        )
-                                          .toISOString()
-                                          .split("T")[0]
-                                      : ""
-                                  }
                                     {...workExperienceForm.register(
                                       `workExperiences.${index}.end_date`
                                     )}
