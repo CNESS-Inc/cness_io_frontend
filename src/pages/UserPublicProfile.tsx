@@ -7,6 +7,7 @@ import linkedin from "../assets/linkedin.svg";
 import twitter from "../assets/twitter.svg";
 import fluent from "../assets/fluent.svg";
 import work from "../assets/work.svg";
+import service from "../assets/service.svg";
 import bio from "../assets/bio.svg";
 import education from "../assets/education.svg";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
@@ -1048,7 +1049,7 @@ export default function UserProfileView() {
                   <div className="py-6 border-b border-[#ECEEF2]">
                     <h3 className="flex items-center gap-2 font-['Poppins'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-[#000000]">
                       <span className="flex items-center gap-2">
-                        <img src={work} alt="work" className="w-6 h-6" />
+                        <img src={service} alt="service" className="w-6 h-6" />
                       </span>
                       Services
                     </h3>
