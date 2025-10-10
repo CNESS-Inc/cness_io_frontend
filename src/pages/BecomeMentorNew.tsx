@@ -32,7 +32,7 @@ interface MentorFormData {
   website: string;
   bio: string;
   motivation: string;
-  availability: string;
+  // availability: string;
 }
 
 const BecomeMentor = () => {
@@ -58,7 +58,7 @@ const BecomeMentor = () => {
     website: "",
     bio: "",
     motivation: "",
-    availability: "",
+    // availability: "",
   });
   const [_fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
@@ -269,7 +269,7 @@ const BecomeMentor = () => {
         "year_of_experience",
         "bio",
         "motivation",
-        "availability",
+        // "availability",
         "country_timezone", // Add this
       ];
 
@@ -387,7 +387,7 @@ const BecomeMentor = () => {
           website: "",
           bio: "",
           motivation: "",
-          availability: "",
+          // availability: "",
         });
         setPhone("");
         setCountryCode("");
