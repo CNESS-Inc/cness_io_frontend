@@ -212,11 +212,9 @@ export default function Login() {
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
   const location = useLocation();
-  console.log("🚀 ~ Login ~ location:", location);
 
   useEffect(() => {
     if (location.state?.autoGoogleLogin) {
-      alert();
       login(); // Trigger Google login automatically
       // Clear the state to prevent retriggering on refresh
       // window.history.replaceState({}, document.title);

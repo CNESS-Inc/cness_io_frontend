@@ -286,7 +286,6 @@ export default function SignupModal({ open = true, onClose = () => {} }: SignupM
     onSuccess: handleGoogleLoginSuccess,
     onError: () => {
       console.error("Google login failed");
-      alert("Google login failed.");
     },
   });
 
@@ -324,7 +323,7 @@ export default function SignupModal({ open = true, onClose = () => {} }: SignupM
             type="button"
             onClick={() => {
               login();
-              navigate("/log-in", {
+              navigate("/", {
                 state: { autoGoogleLogin: true },
               });
             }}

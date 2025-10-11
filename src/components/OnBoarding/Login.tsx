@@ -230,7 +230,6 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
 
   useEffect(() => {
     if (location.state?.autoGoogleLogin) {
-      alert();
       login(); // Trigger Google login automatically
       // Clear the state to prevent retriggering on refresh
       // window.history.replaceState({}, document.title);
