@@ -5,9 +5,8 @@ import { useState } from "react";
 //import Modal from "../../components/ui/Modal";
 //import SignupForm from "./SignupForm";
 //import LoginForm from "./LoginForm.tsx";
-// import SignupModel from "../../components/OnBoarding/Signup.tsx";
+import SignupModel from "../../components/OnBoarding/Signup.tsx";
 import LoginModel from "../../components/OnBoarding/Login.tsx";
-import SignupModalNew from "../../components/OnBoarding/Signup_new.tsx";
 
 const links = [
   { name: "Home", href: "/" },
@@ -120,7 +119,7 @@ export default function NavLinks({ className }: { className?: string }) {
         />
       </Modal>*/}
 
-      <SignupModalNew open={openSignup} onClose={() => setOpenSignup(false)} />
+      <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
       <LoginModel open={openLogin} onClose={() => setOpenLogin(false)} />
     </>
   );
