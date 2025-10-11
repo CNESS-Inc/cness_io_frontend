@@ -324,9 +324,9 @@ export default function SignupModal({ open = true, onClose = () => {} }: SignupM
             type="button"
             onClick={() => {
               login();
-              navigate("/log-in", {
-                state: { autoGoogleLogin: true },
-              });
+              // navigate("/log-in", {
+              //   state: { autoGoogleLogin: true },
+              // });
             }}
             className="mt-6 w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-800 shadow-sm hover:bg-gray-50"
           >
