@@ -913,6 +913,27 @@ const UserProfilePage = () => {
       );
       localStorage.setItem("name", response?.data?.data?.user.name);
       localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+      
+      let isAdult = false;
+      const dobString = response?.data?.data?.dob;
+      
+      const dob = new Date(dobString);
+      const today = new Date();
+
+      let age = today.getFullYear() - dob.getFullYear();
+      const m = today.getMonth() - dob.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+        age--;
+      }
+
+      if (age >= 18) {
+        isAdult = true;
+      } else {
+        isAdult = false;
+      }
+
+      localStorage.setItem("is_adult", JSON.stringify(isAdult));
+      
       localStorage.setItem(
         "margaret_name",
         response?.data?.data?.user.margaret_name
