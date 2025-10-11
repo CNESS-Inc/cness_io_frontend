@@ -323,7 +323,7 @@ export default function SignupModal({ open = true, onClose = () => {} }: SignupM
             type="button"
             onClick={() => {
               login();
-              navigate("/", {
+              navigate("/log-in", {
                 state: { autoGoogleLogin: true },
               });
             }}
