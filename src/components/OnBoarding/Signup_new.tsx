@@ -1,5 +1,5 @@
 // SignupModal.tsx
-import React, { useRef, useState, type FormEvent } from "react";
+import React, { useEffect, useRef, useState, type FormEvent } from "react";
 import PopupOnboardingModal from "../ui/OnBoardingModel";
 import { Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +12,7 @@ import { registerUser } from "../../pages/Signingup";
 import {
   AccountDetails,
   ForgotPasswordDetails,
+  GetAllFormDetails,
   GoogleLoginDetails,
   MeDetails,
   PaymentDetails,
@@ -114,9 +115,6 @@ interface ValidationRules {
   custom?: (value: string) => string | undefined;
 }
 
-
-
-
 export default function SignupModalNew({
   open = true,
   onClose = () => {},
@@ -138,13 +136,12 @@ export default function SignupModalNew({
   const [recaptchaTouched, setRecaptchaTouched] = useState(false);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const [openLogin, setOpenLogin] = useState(false);
-  const [readlineQuestion] = useState([]);
 
-  const [interest] = useState<Interest[]>([]);
-  const [profession] = useState<Profession[]>([]);
+  const [interest, setInterest] = useState<Interest[]>([]);
+  const [profession, setProfession] = useState<Profession[]>([]);
+  const [readlineQuestion, setReadlineQuestion] = useState([]);
 
   const RECAPTCHA_SITE_KEY = "6LcmM3YrAAAAAIoMONSmkAGazWwUXdCE6fzI473L";
-
 
   const validatePassword = (password: string): string | undefined => {
     if (!password) return "Password is required";
@@ -410,6 +407,27 @@ export default function SignupModalNew({
     return Object.keys(newErrors).length === 0;
   };
 
+  const fetchAllDataDetails = async () => {
+    try {
+      const response = await GetAllFormDetails();
+      setProfession((response as any)?.data?.data?.profession);
+      setInterest((response as any)?.data?.data?.interest);
+      setReadlineQuestion(response?.data?.data?.questions);
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (activeModal === "organization" || activeModal === "person") {
+      fetchAllDataDetails();
+    }
+  }, [activeModal]);
+
   const handleRegisterSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -559,7 +577,7 @@ export default function SignupModalNew({
           "margaret_name",
           response?.data?.data?.user.margaret_name
         );
-        onClose()
+        onClose();
         // localStorage.setItem("token", response.jwt);
         // navigate("/log-in");
         const completionStatus =
@@ -898,7 +916,6 @@ export default function SignupModalNew({
       setPersonFormStep(2);
     }
   };
-
 
   return (
     <>
