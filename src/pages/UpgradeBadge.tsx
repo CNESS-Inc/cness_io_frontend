@@ -10,6 +10,7 @@ import badge from "../assets/badge.svg";
 import bg from "../assets/certification_bg.png";
 import icon1 from "../assets/Frame 1.svg";
 import arrow from "../assets/arrow.svg";
+import shareicon from "../assets/shareicon.svg";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 import CertificationPlans from "../components/sections/Certification/CertificationPlans";
 import { FaFacebook, FaLinkedin, FaTwitter, FaWhatsapp } from "react-icons/fa";
@@ -21,12 +22,13 @@ import {
   WhatsappShareButton,
 } from "react-share";
 import html2pdf from "html2pdf.js";
+import { useNavigate } from "react-router-dom";
 
 const UpgradeBadge = () => {
   const myid = localStorage.getItem("Id");
   const urldata = `${window.location.origin}/directory/user-profile/${myid}`;
   const tweetText = `Earned the CNESS Inspired Certification! Proud to lead with conscious values. Join us at cness.io`;
-
+  const navigate = useNavigate();
   const [user, setUser] = useState<any | null>(null);
   const [scoreData, setScoreData] = useState<any>(null);
   const [showMenu, setShowMenu] = useState<boolean>(false);
@@ -145,19 +147,19 @@ const UpgradeBadge = () => {
                   <th>Percentage</th>
               </tr>
               ${data.array
-                .map(
-                  (item: any) => `
+          .map(
+            (item: any) => `
               <tr>
                   <td>${item.section.name}</td>
                   <td>${item.section.total_weight}</td>
                   <td>${item.section.weight}</td>
                   <td>${Math.round(
-                    (item.section.weight / item.section.total_weight) * 100
-                  )}%</td>
+              (item.section.weight / item.section.total_weight) * 100
+            )}%</td>
               </tr>
               `
-                )
-                .join("")}
+          )
+          .join("")}
               <tr>
                   <th colspan="2">Total Score</th>
                   <th colspan="2">${data.final_score} / 100</th>
@@ -208,13 +210,13 @@ const UpgradeBadge = () => {
     }
   };
 
-    const handleClickOutside = (event: MouseEvent) => {
+  const handleClickOutside = (event: MouseEvent) => {
     if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
       setShowMenu(false);
     }
   };
 
-    useEffect(() => {
+  useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -389,11 +391,10 @@ const UpgradeBadge = () => {
                   {user?.assesment_progress || 0}%
                 </div>
                 <div
-                  className={`font-['Poppins',Helvetica] text-sm md:text-base font-medium ${
-                    (user?.assesment_progress || 0) >= 100
-                      ? "text-[#4CAF50]" // Green color for completed
-                      : "text-[#9747ff]" // Purple color for in progress
-                  }`}
+                  className={`font-['Poppins',Helvetica] text-sm md:text-base font-medium ${(user?.assesment_progress || 0) >= 100
+                    ? "text-[#4CAF50]" // Green color for completed
+                    : "text-[#9747ff]" // Purple color for in progress
+                    }`}
                 >
                   {(user?.assesment_progress || 0) >= 100
                     ? "Completed"
@@ -404,12 +405,11 @@ const UpgradeBadge = () => {
                 {[...Array(6)].map((_, index) => (
                   <div
                     key={index}
-                    className={`flex-1 h-5 md:h-[24px] rounded ${
-                      index <
+                    className={`flex-1 h-5 md:h-[24px] rounded ${index <
                       Math.floor((user?.assesment_progress || 0) / (100 / 6))
-                        ? "bg-gradient-to-b from-[rgba(79,70,229,1)] to-[rgba(151,71,255,1)]"
-                        : "bg-[#EDEAFF]"
-                    }`}
+                      ? "bg-gradient-to-b from-[rgba(79,70,229,1)] to-[rgba(151,71,255,1)]"
+                      : "bg-[#EDEAFF]"
+                      }`}
                   />
                 ))}
               </div>
@@ -464,17 +464,32 @@ const UpgradeBadge = () => {
             </div>
           </div>
           <div className="w-1/5 bg-white rounded-xl px-3 pt-3 pb-6 flex flex-col">
-            <div className="pb-3 flex justify-start items-center gap-[14px] border-b border-black/10">
-              <div className="bg-[rgba(255,204,0,0.2)] w-8 h-8 rounded-full padding-[5px] flex justify-center items-center">
-                <img
-                  src={badge}
-                  alt="badge icon"
-                  className="w-[18px] h-[18px]"
-                />
+            <div className="pb-3 flex items-center justify-between w-full gap-[14px] border-b border-black/10">
+              <div className="flex items-center gap-2">
+                <div className="bg-[rgba(255,204,0,0.2)] w-8 h-8 rounded-full padding-[5px] flex justify-center items-center">
+                  <img
+                    src={badge}
+                    alt="badge icon"
+                    className="w-[18px] h-[18px]"
+                  />
+                </div>
+                <h5 className="py-3 font-['Poppins',Helvetica] text-base font-medium text-[#222224]">
+                  Badge
+                </h5>
               </div>
-              <h5 className="py-3 font-['Poppins',Helvetica] text-base font-medium text-[#222224]">
-                Badge
-              </h5>
+
+              <button
+                //onClick={onOpen}
+                className="inline-flex h-[32px] w-[32px] items-center justify-center rounded-full bg-white hover:bg-[#EEF0F5]"
+                onClick={() => navigate("/dashboard")}
+                style={{ boxShadow: "0px 1px 10px 0px rgba(0, 0, 0, 0.1)" }}
+              >
+                <img
+                  src={shareicon}
+                  alt="share icon"
+                  className="w-[12px] h-[12px]"
+                />
+              </button>
             </div>
             {scoreData?.badge?.level ? (
               <div className="flex-1 flex items-center justify-center ">

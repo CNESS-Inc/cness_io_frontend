@@ -11,14 +11,25 @@ import {
   ArrowRight,
   UserPlus,
   ArrowUpRight,
+  LinkIcon,
+  Bookmark,
+  MoreHorizontal,
 } from "lucide-react";
 import profileicon from "../../assets/profileicon.svg";
 import bpicon from "../../assets/bpicon.svg";
 import certicon from "../../assets/certificationicon.svg";
 import directoryicon from "../../assets/directoryicon.svg";
+import suggesticon from "../../assets/suggesticon.svg";
 import friendsicon from "../../assets/friendsicon.svg";
+import marketplaceicon from "../../assets/marketplace-icon.svg";
 import socialicon from "../../assets/socialprofileicon.svg";
 import postinsight from "../../assets/post-insights-badge.svg";
+import learninglabicon from "../../assets/learninglabicon.svg";
+import lock from "../../assets/lock.svg";
+import fire from "../../assets/fire.svg";
+import completed from "../../assets/completed.svg";
+import resume from "../../assets/resume.svg";
+import carticon from "../../assets/carticon.svg";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import {
@@ -170,13 +181,13 @@ export function OutlinePill({
   );
 }
 
-function Progress({ value }: { value: number }) {
+function Progress({ value, gradient }: { value: number, gradient?: string }) {
   const v = Math.max(0, Math.min(100, value));
   return (
-      <div className="h-2 w-full overflow-hidden rounded-full bg-[#EEF0F5]">
-        <div className={`h-full ${GRADIENT}`} style={{ width: `${v}%` }} />
-      </div>
-    );
+    <div className="h-[10px] w-full overflow-hidden rounded-full bg-[#EEF0F5]">
+      <div className={`h-full ${gradient ? gradient : GRADIENT}`} style={{ width: `${v}%` }} />
+    </div>
+  );
 }
 
 function MobileBreakTitle({
@@ -365,9 +376,9 @@ export function GreetingBar({
         // Include custom_profession in the payload if "other" is selected
         professions: personForm.professions.includes("other")
           ? [
-              ...personForm.professions.filter((p) => p !== "other"),
-              personForm.custom_profession,
-            ]
+            ...personForm.professions.filter((p) => p !== "other"),
+            personForm.custom_profession,
+          ]
           : personForm.professions,
       };
 
@@ -471,15 +482,13 @@ export function GreetingBar({
     }
 
     if (rules.minLength && value.length < rules.minLength) {
-      return `${name.replace("_", " ")} must be at least ${
-        rules.minLength
-      } characters`;
+      return `${name.replace("_", " ")} must be at least ${rules.minLength
+        } characters`;
     }
 
     if (rules.maxLength && value.length > rules.maxLength) {
-      return `${name.replace("_", " ")} must be less than ${
-        rules.maxLength
-      } characters`;
+      return `${name.replace("_", " ")} must be less than ${rules.maxLength
+        } characters`;
     }
 
     if (rules.pattern && !rules.pattern.test(value)) {
@@ -1170,11 +1179,10 @@ export function GreetingBar({
                         name="organization_name"
                         value={organizationForm.organization_name}
                         onChange={handleOrganizationFormChange}
-                        className={`w-full px-3 py-2 border ${
-                          organizationErrors.organization_name
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        } rounded-md`}
+                        className={`w-full px-3 py-2 border ${organizationErrors.organization_name
+                          ? "border-red-500"
+                          : "border-gray-300"
+                          } rounded-md`}
                         placeholder="Enter organization name"
                       />
                       {organizationErrors.organization_name && (
@@ -1193,11 +1201,10 @@ export function GreetingBar({
                         name="domain"
                         value={organizationForm.domain}
                         onChange={handleOrganizationFormChange}
-                        className={`w-full px-3 py-2 border ${
-                          organizationErrors.domain
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        } rounded-md`}
+                        className={`w-full px-3 py-2 border ${organizationErrors.domain
+                          ? "border-red-500"
+                          : "border-gray-300"
+                          } rounded-md`}
                       >
                         <option value="">Select domain</option>
                         {domains?.map((domain: any) => (
@@ -1225,11 +1232,10 @@ export function GreetingBar({
                           name="custom_domain"
                           value={organizationForm.custom_domain || ""}
                           onChange={handleOrganizationFormChange}
-                          className={`w-full px-3 py-2 border ${
-                            organizationErrors.custom_domain
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          } rounded-md`}
+                          className={`w-full px-3 py-2 border ${organizationErrors.custom_domain
+                            ? "border-red-500"
+                            : "border-gray-300"
+                            } rounded-md`}
                           placeholder="Enter your domain name"
                         />
                         {organizationErrors.custom_domain && (
@@ -1368,11 +1374,10 @@ export function GreetingBar({
                                 name={`question_${question.id}`}
                                 value={existingAnswer}
                                 onChange={handleOrganizationFormChange}
-                                className={`w-full px-3 py-2 border ${
-                                  organizationErrors[`question_${question.id}`]
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                } rounded-md`}
+                                className={`w-full px-3 py-2 border ${organizationErrors[`question_${question.id}`]
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                                  } rounded-md`}
                                 placeholder={`Enter your answer`}
                                 rows={3}
                               />
@@ -1383,7 +1388,7 @@ export function GreetingBar({
                                 <p className="mt-1 text-sm text-red-600">
                                   {
                                     organizationErrors[
-                                      `question_${question.id}`
+                                    `question_${question.id}`
                                     ]
                                   }
                                 </p>
@@ -1752,9 +1757,8 @@ export function GreetingBar({
                         className={`w-[440px] h-[41px]
                 rounded-[12px]
                 border-[0.82px]
-                p-[12px] mt-2 ${
-                  personErrors.first_name ? "border-red-500" : "border-gray-300"
-                } rounded-md`}
+                p-[12px] mt-2 ${personErrors.first_name ? "border-red-500" : "border-gray-300"
+                          } rounded-md`}
                       />
                       {personErrors.first_name && (
                         <p className="mt-1 text-sm text-red-600">
@@ -1776,9 +1780,8 @@ export function GreetingBar({
                         className={`w-[440px] h-[41px]
                 rounded-[12px]
                 border-[0.82px]
-                p-[12px] mt-2 ${
-                  personErrors.last_name ? "border-red-500" : "border-gray-300"
-                } rounded-md`}
+                p-[12px] mt-2 ${personErrors.last_name ? "border-red-500" : "border-gray-300"
+                          } rounded-md`}
                         placeholder="Enter your last name"
                       />
                       {personErrors.last_name && (
@@ -1960,11 +1963,10 @@ export function GreetingBar({
                                 name={`question_${question.id}`}
                                 value={existingAnswer}
                                 onChange={handlePersonFormChange}
-                                className={`w-full px-3 py-2 border ${
-                                  personErrors[`question_${question.id}`]
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                } rounded-md`}
+                                className={`w-full px-3 py-2 border ${personErrors[`question_${question.id}`]
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                                  } rounded-md`}
                                 placeholder={`Enter your answer`}
                                 rows={3}
                               />
@@ -2262,9 +2264,9 @@ export function TrueProfileCard({
               <img
                 src={
                   !avatar ||
-                  avatar === "null" ||
-                  avatar === "undefined" ||
-                  !avatar.startsWith("http")
+                    avatar === "null" ||
+                    avatar === "undefined" ||
+                    !avatar.startsWith("http")
                     ? "/profile.png"
                     : avatar
                 }
@@ -2377,8 +2379,7 @@ export function CertificationCard({
   };
 
   const dotCls = (on: boolean) =>
-    `h-1.5 w-1.5 rounded-full ${
-      on ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
+    `h-1.5 w-1.5 rounded-full ${on ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
     } transition-colors`;
 
   return (
@@ -2420,7 +2421,7 @@ export function CertificationCard({
                 {progress}%
               </span>
             </div>
-            
+
             <div>
               <Progress value={progress} />
             </div>
@@ -2439,11 +2440,10 @@ export function CertificationCard({
           >
             {/* Slide 1: Levels */}
             <div
-              className={`absolute inset-0 transition-opacity duration-500 ${
-                slide === 0
-                  ? "opacity-100 pointer-events-auto"
-                  : "opacity-0 pointer-events-none"
-              }`}
+              className={`absolute inset-0 transition-opacity duration-500 ${slide === 0
+                ? "opacity-100 pointer-events-auto"
+                : "opacity-0 pointer-events-none"
+                }`}
             >
               <div className="text-[16px] sm:text-[18px] font-['Open_Sans'] leading-[100%] text-[#222224] mt-1 sm:mt-2 mb-3 sm:mb-4 px-2 pt-2 sm:pt-5">
                 Certification Levels
@@ -2452,11 +2452,10 @@ export function CertificationCard({
               <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 px-1 sm:px-2">
                 {/* Aspiring */}
                 <div
-                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-[2px] ${
-                    activeLevel === "Aspiring"
-                      ? "bg-gradient-to-r from-[#7077FE] to-[#F07EFF]"
-                      : "border-[#E5E7EB] bg-white"
-                  }`}
+                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-[2px] ${activeLevel === "Aspiring"
+                    ? "bg-gradient-to-r from-[#7077FE] to-[#F07EFF]"
+                    : "border-[#E5E7EB] bg-white"
+                    }`}
                 >
                   <div className="w-full h-full rounded-[16px] bg-white flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4">
                     <img
@@ -2472,11 +2471,10 @@ export function CertificationCard({
 
                 {/* Inspired */}
                 <div
-                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-[2px] ${
-                    activeLevel === "Inspired"
-                      ? "bg-gradient-to-r from-[#7077FE] to-[#F07EFF]"
-                      : "bg-[#E5E7EB]"
-                  }`}
+                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-[2px] ${activeLevel === "Inspired"
+                    ? "bg-gradient-to-r from-[#7077FE] to-[#F07EFF]"
+                    : "bg-[#E5E7EB]"
+                    }`}
                 >
                   <div className="w-full h-full rounded-[16px] bg-white flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4">
                     <img
@@ -2492,11 +2490,10 @@ export function CertificationCard({
 
                 {/* Leader */}
                 <div
-                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-[2px] ${
-                    activeLevel === "Leader"
-                      ? "border-2 border-transparent bg-clip-padding bg-white relative before:absolute before:inset-0 before:rounded-[18px] before:p-[2px] before:bg-gradient-to-r before:from-[#7077FE] before:to-[#F07EFF] before:-z-10"
-                      : "border-[#E5E7EB] bg-white"
-                  }`}
+                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-[2px] ${activeLevel === "Leader"
+                    ? "border-2 border-transparent bg-clip-padding bg-white relative before:absolute before:inset-0 before:rounded-[18px] before:p-[2px] before:bg-gradient-to-r before:from-[#7077FE] before:to-[#F07EFF] before:-z-10"
+                    : "border-[#E5E7EB] bg-white"
+                    }`}
                 >
                   <div className="w-full h-full rounded-[16px] bg-white flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4">
                     <img
@@ -2514,11 +2511,10 @@ export function CertificationCard({
 
             {/* Slide 2: Upgrade callout */}
             <div
-              className={`absolute inset-0 transition-opacity duration-500 ${
-                slide === 1
-                  ? "opacity-100 pointer-events-auto"
-                  : "opacity-0 pointer-events-none"
-              }`}
+              className={`absolute inset-0 transition-opacity duration-500 ${slide === 1
+                ? "opacity-100 pointer-events-auto"
+                : "opacity-0 pointer-events-none"
+                }`}
             >
               <div className="h-full w-full flex items-start">
                 <div className="w-full grid grid-cols-[56px,1fr] sm:grid-cols-[64px,1fr] gap-4 sm:gap-6 p-4 sm:p-6">
@@ -2530,8 +2526,8 @@ export function CertificationCard({
                           activeLevel === "Aspiring"
                             ? "https://cdn.cness.io/inspired.webp"
                             : activeLevel === "Inspired"
-                            ? "https://cdn.cness.io/leader.webp"
-                            : "https://cdn.cness.io/leader1.webp"
+                              ? "https://cdn.cness.io/leader.webp"
+                              : "https://cdn.cness.io/leader1.webp"
                         }
                         alt={`${getNextLevel()} badge`}
                         className="h-8 w-8 sm:h-9 sm:w-9"
@@ -2812,10 +2808,10 @@ export function BestPracticesSection({
                 <img
                   src={
                     !bp.image ||
-                    bp.image === "null" ||
-                    bp.image === "undefined" ||
-                    !bp.image.startsWith("http") ||
-                    bp.image === "http://localhost:5026/file/"
+                      bp.image === "null" ||
+                      bp.image === "undefined" ||
+                      !bp.image.startsWith("http") ||
+                      bp.image === "http://localhost:5026/file/"
                       ? iconMap["companycard1"]
                       : bp.image
                   }
@@ -2898,10 +2894,10 @@ export function BestPracticesSection({
               <img
                 src={
                   !bp.image ||
-                  bp.image === "null" ||
-                  bp.image === "undefined" ||
-                  !bp.image.startsWith("http") ||
-                  bp.image === "http://localhost:5026/file/"
+                    bp.image === "null" ||
+                    bp.image === "undefined" ||
+                    !bp.image.startsWith("http") ||
+                    bp.image === "http://localhost:5026/file/"
                     ? iconMap["companycard1"]
                     : bp.image
                 }
@@ -2957,9 +2953,8 @@ export function BestPracticesSection({
         {items.map((_, i) => (
           <span
             key={i}
-            className={`h-1.5 w-1.5 rounded-full ${
-              i === mobileIndex ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
-            }`}
+            className={`h-1.5 w-1.5 rounded-full ${i === mobileIndex ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
+              }`}
           />
         ))}
       </div>
@@ -2968,9 +2963,8 @@ export function BestPracticesSection({
         {Array.from({ length: totalPages }).map((_, i) => (
           <span
             key={i}
-            className={`h-1.5 w-1.5 rounded-full ${
-              i === page ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
-            }`}
+            className={`h-1.5 w-1.5 rounded-full ${i === page ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
+              }`}
           />
         ))}
       </div>
@@ -3061,9 +3055,8 @@ export function SocialStackCard({
 
     const Rail = (
       <div
-        className={`flex flex-col gap-[3px] ${
-          reverse ? "marquee-ping-reverse" : "marquee-ping"
-        }`}
+        className={`flex flex-col gap-[3px] ${reverse ? "marquee-ping-reverse" : "marquee-ping"
+          }`}
       >
         {list.map((src, i) => (
           <div
@@ -3437,9 +3430,8 @@ export function SocialStackCard({
               key={i}
               onClick={() => setIdx(i)}
               aria-label={`Slide ${i + 1}`}
-              className={`h-1.5 w-1.5 rounded-full ${
-                i === idx ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
-              }`}
+              className={`h-1.5 w-1.5 rounded-full ${i === idx ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
+                }`}
             />
           ))}
         </div>
@@ -3481,8 +3473,8 @@ export function SocialStackCard({
         <input
           className="h-10 w-full outline-none text-sm"
           placeholder="Search…"
-          // onChange={(e) => onSearch?.(e.target.value)}
-          // onClick={(e) => e.stopPropagation()}
+        // onChange={(e) => onSearch?.(e.target.value)}
+        // onClick={(e) => e.stopPropagation()}
         />
         <SearchIcon className="h-4 w-4 text-[#667085]" />
       </div>
@@ -3502,9 +3494,9 @@ export function SocialStackCard({
           <img
             src={
               !avatar ||
-              avatar === "null" ||
-              avatar === "undefined" ||
-              !avatar.startsWith("http")
+                avatar === "null" ||
+                avatar === "undefined" ||
+                !avatar.startsWith("http")
                 ? "/profile.png"
                 : avatar
             }
@@ -3643,9 +3635,8 @@ export function SocialStackCard({
             role="tab"
             aria-selected={tab === "Suggested"}
             onClick={() => setTab("Suggested")}
-            className={`relative z-10 h-8 text-center text-sm font-semibold rounded-full transition-colors ${
-              tab === "Suggested" ? "text-white" : "text-[#222224]"
-            }`}
+            className={`relative z-10 h-8 text-center text-sm font-semibold rounded-full transition-colors ${tab === "Suggested" ? "text-white" : "text-[#222224]"
+              }`}
           >
             Suggested
           </button>
@@ -3654,9 +3645,8 @@ export function SocialStackCard({
             role="tab"
             aria-selected={tab === "Requested"}
             onClick={() => setTab("Requested")}
-            className={`relative z-10 h-8 text-center text-sm font-semibold rounded-full transition-colors ${
-              tab === "Requested" ? "text-white" : "text-[#222224]"
-            }`}
+            className={`relative z-10 h-8 text-center text-sm font-semibold rounded-full transition-colors ${tab === "Requested" ? "text-white" : "text-[#222224]"
+              }`}
           >
             Requested
           </button>
@@ -3664,7 +3654,7 @@ export function SocialStackCard({
 
         {/* list */}
         <div className="space-y-3 flex-1">
-          
+
           {list && list.length > 0 ? (
             list.slice(0, 4).map((f) => (
               <div
@@ -3675,9 +3665,9 @@ export function SocialStackCard({
                   <img
                     src={
                       !f.avatar ||
-                      f.avatar === "null" ||
-                      f.avatar === "undefined" ||
-                      !f.avatar.startsWith("http")
+                        f.avatar === "null" ||
+                        f.avatar === "undefined" ||
+                        !f.avatar.startsWith("http")
                         ? "/profile.png"
                         : f.avatar
                     }
@@ -3719,6 +3709,332 @@ export function SocialStackCard({
   );
 }
 
+export function MarketplaceCard({ suggested,
+  topRated, carted }: {
+    suggested: {
+      id: string | number;
+      name: string;
+      avatar: string;
+    }[];
+    topRated: {
+      id: string | number;
+      name: string;
+      avatar: string;
+    }[];
+    carted: {
+      id: string | number;
+      name: string;
+      image: string;
+      price: string;
+    }[];
+  }) {
+  const [openMenuId, setOpenMenuId] = useState<string | number | null>(null);
+  const [slideIndex, setSlideIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (paused) return;
+    const id = setInterval(() => setSlideIndex((s) => (s + 1) % 3), 6000);
+    return () => clearInterval(id);
+  }, [paused]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (openMenuId !== null) {
+        const target = event.target as HTMLElement;
+        if (!target.closest('.menu-container')) {
+          setOpenMenuId(null);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [openMenuId]);
+
+  const renderProductSection = (products: typeof suggested, title: string) => (
+    <div className="flex flex-col py-[18px] px-[12px] gap-[18px] border border-[#ECEEF2] rounded-xl">
+      <div className="flex justify-start items-center gap-3">
+        <img
+          src={suggesticon}
+          alt="directory Icon"
+          className="h-[20px] w-[20px]"
+        />
+        <span className="text-lg font-medium text-[#222224]">{title}</span>
+      </div>
+      <div className="flex flex-col px-[4px] gap-2 overflow-visible">
+        {products && products.length > 0 ? (
+          products.slice(0, 3).map((f) => (
+            <div
+              className="flex items-center justify-between py-[8px] ps-[8px] pr-[12px] border border-[#ECEEF2] rounded-xl gap-3"
+              style={{ boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.1)" }}
+            >
+              <div className="flex items-center gap-2">
+                <img
+                  src={f?.avatar}
+                  alt="directory Icon"
+                  className="h-[30px] w-[30px]"
+                />
+                <span className="text-sm font-medium text-[#0D0D12]">{f?.name}</span>
+              </div>
+              <div className="relative">
+                <button
+                  onClick={() => setOpenMenuId(openMenuId === f.id ? null : f.id)}
+                  className="flex items-center justify-center w-8 h-8 rounded-[5px] hover:bg-gray-100 transition-colors"
+                  title="More options"
+                  style={{ boxShadow: "0px 0px 2px 0px rgba(0, 0, 0, 0.1)" }}
+                >
+                  <MoreHorizontal className="w-5 h-5 text-gray-600" />
+                </button>
+
+                {openMenuId === f.id && (
+                  <div
+                    className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                  >
+                    <ul className="space-y-1">
+                      <li>
+                        <button
+                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                        >
+                          <LinkIcon className="w-4 h-4" />
+                          Copy
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                        >
+                          <Bookmark className="w-4 h-4" />
+                          Save
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))) : (
+          <div className="text-center text-sm text-[#667085] py-4">
+            No data available
+          </div>
+        )}
+      </div>
+      <PrimaryButton
+        className="w-full rounded-3xl"
+        onClick={() => navigate("/dashboard")}
+      >
+        Visit seller Dashboard
+      </PrimaryButton>
+    </div>
+  );
+
+  const renderTopRatedProductSection = (products: typeof topRated, title: string) => (
+    <div className="flex flex-col py-[18px] px-[12px] gap-[18px] border border-[#ECEEF2] rounded-xl bg-[linear-gradient(180deg,rgba(112,119,254,0.1)_0%,rgba(240,126,255,0.1)_100%)]">
+      <div className="flex justify-start items-center gap-3">
+        <img
+          src={fire}
+          alt="directory Icon"
+          className="h-[20px] w-[20px]"
+        />
+        <span className="text-lg font-medium text-[#222224]">{title}</span>
+      </div>
+      <div className="flex flex-col px-[4px] gap-2 overflow-visible">
+        {products && products.length > 0 ? (
+          products.slice(0, 3).map((f) => (
+            <div
+              className="flex items-center justify-between py-[8px] ps-[8px] pr-[12px] border border-[#ECEEF2] rounded-xl gap-3 bg-white"
+              style={{ boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.1)" }}
+            >
+              <div className="flex items-center gap-2">
+                <img
+                  src={f?.avatar}
+                  alt="directory Icon"
+                  className="h-[30px] w-[30px]"
+                />
+                <span className="text-sm font-medium text-[#0D0D12]">{f?.name}</span>
+              </div>
+              <div className="relative">
+                <button
+                  onClick={() => setOpenMenuId(openMenuId === f.id ? null : f.id)}
+                  className="flex items-center justify-center w-8 h-8 rounded-[5px] hover:bg-gray-100 transition-colors"
+                  title="More options"
+                  style={{ boxShadow: "0px 0px 2px 0px rgba(0, 0, 0, 0.1)" }}
+                >
+                  <MoreHorizontal className="w-5 h-5 text-gray-600" />
+                </button>
+
+                {openMenuId === f.id && (
+                  <div
+                    className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                  >
+                    <ul className="space-y-1">
+                      <li>
+                        <button
+                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                        >
+                          <LinkIcon className="w-4 h-4" />
+                          Copy
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                        >
+                          <Bookmark className="w-4 h-4" />
+                          Save
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))) : (
+          <div className="text-center text-sm text-[#667085] py-4">
+            No data available
+          </div>
+        )}
+      </div>
+      <PrimaryButton
+        className="w-full rounded-3xl"
+        onClick={() => navigate("/dashboard")}
+      >
+        View All
+      </PrimaryButton>
+    </div>
+  );
+
+  const renderCartProductSection = (products: typeof carted, title: string) => (
+    <div className="flex flex-col min-h-[300px] py-[18px] px-[12px] gap-[18px] border border-[#ECEEF2] rounded-xl"
+      style={{ background: "rgba(240, 126, 255, 0.1)" }}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#FFF4E5]">
+            <img
+              src={carticon}
+              alt="directory Icon"
+              className="h-[20px] w-[20px]"
+            />
+          </span>
+          <span className="text-lg font-medium text-[#222224]">{title}</span>
+        </div>
+
+        <button
+          className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F9FAFB] text-[#5E6573] hover:bg-[#EEF0F5]"
+        >
+          <ArrowUpRight
+            className="h-4 w-4"
+            onClick={() => navigate("/dashboard")}
+          />
+        </button>
+      </div>
+      <div className="flex px-[4px] gap-2 overflow-visible">
+        {products && products.length > 0 ? (
+          products.slice(0, 2).map((f) => (
+            <div
+              className="flex flex-col items-center p-[8px] border border-[#ECEEF2] rounded-xl gap-2 bg-white"
+              style={{ boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.1)" }}
+            >
+              <div className="w-full h-[83px]">
+                <img
+                  src={f?.image}
+                  alt="directory Icon"
+                  className="h-full w-full"
+                />
+              </div>
+              <div className="w-full flex justify-between items-center gap-2">
+                <span className="text-[10px] font-medium text-[#0D0D12]">{f?.name}</span>
+                <span className="text-[10px] font-medium text-[#F07EFF]">{f?.price}</span>
+              </div>
+              <button
+                className="w-full rounded-full bg-[#7077FE] py-[8px] px-[3px] text-[8px] font-semibold text-white"
+                onClick={() => navigate("/dashboard")}
+              >
+                Buy Now
+              </button>
+            </div>
+          ))) : (
+          <div className="text-center text-sm text-[#667085] py-4">
+            No data available
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <Card className="p-4 md:p-5 h-full">
+      {/* Header */}
+      <div className="flex flex-col">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#FFF4E5]">
+              <img
+                src={marketplaceicon}
+                alt="directory Icon"
+                className="h-10 w-10"
+              />
+            </span>
+            <span className="text-base font-semibold text-[#0F1728]">MarketPlace</span>
+          </div>
+
+          <button
+            //onClick={onOpen}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F9FAFB] text-[#5E6573] hover:bg-[#EEF0F5]"
+          >
+            <ArrowUpRight
+              className="h-4 w-4"
+              onClick={() => navigate("/dashboard/market-place")}
+            />
+          </button>
+        </div>
+        <HeaderDivider />
+      </div>
+
+      <div
+        className="mt-6 relative flex-1 overflow-hidden min-h-[320px]"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
+        {/* Slide 1: Suggested Products */}
+        <div
+          className={`absolute inset-0 transition-opacity duration-500 ${slideIndex === 0 ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+            }`}
+        >
+          {renderTopRatedProductSection(topRated, "Top Rated Products")}
+        </div>
+
+        <div
+          className={`absolute inset-0 transition-opacity duration-500 ${slideIndex === 1 ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+            }`}
+        >
+          {renderCartProductSection(carted, "Your Cart")}
+        </div>
+
+        <div
+          className={`absolute inset-0 transition-opacity duration-500 ${slideIndex === 2 ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+            }`}
+        >
+          {renderProductSection(suggested, "Featured Products")}
+        </div>
+      </div>
+      <div className="flex justify-center gap-1.5 pb-3">
+        {[0, 1, 2].map((i) => (
+          <button
+            key={i}
+            onClick={() => setSlideIndex(i)}
+            aria-label={`Slide ${i + 1}`}
+            className={`h-1.5 w-1.5 rounded-full transition-colors ${i === slideIndex ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
+              }`}
+          />
+        ))}
+      </div>
+    </Card>
+  );
+}
+
 /* ===========================================================
    7) DIRECTORY (left column, under Best Practices)
    =========================================================== */
@@ -3743,7 +4059,7 @@ export function DirectorySection({
 }) {
   const navigate = useNavigate();
   return (
-    <Card className="p-4 md:p-5">
+    <Card className="p-4 md:p-5 h-full">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -3754,7 +4070,7 @@ export function DirectorySection({
               className="h-10 w-10"
             />
           </span>
-          <span className="text-sm font-semibold text-[#0F1728]">{title}</span>
+          <span className="text-base font-semibold text-[#0F1728]">{title}</span>
         </div>
 
         <button
@@ -3781,10 +4097,10 @@ export function DirectorySection({
               <img
                 src={
                   !it.avatar ||
-                  it.avatar === "null" ||
-                  it.avatar === "undefined" ||
-                  !it.avatar.startsWith("http") ||
-                  it.avatar === "http://localhost:5026/file/"
+                    it.avatar === "null" ||
+                    it.avatar === "undefined" ||
+                    !it.avatar.startsWith("http") ||
+                    it.avatar === "http://localhost:5026/file/"
                     ? "https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=1200&auto=format&fit=crop"
                     : it.avatar
                 }
@@ -3809,6 +4125,147 @@ export function DirectorySection({
             >
               View Details
             </button>
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+type LearningLabItem = {
+  name: string | undefined;
+  id: string | number;
+  image: string;
+  title: string;
+  progress: number;
+  status: 'completed' | 'resume' | 'locked';
+  gradient?: string;
+};
+
+export function LearningLabSection({
+  items,
+  title = "Learning Lab",
+}: {
+  items: LearningLabItem[];
+  title?: string;
+  onView?: (item: LearningLabItem) => void;
+}) {
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return (
+          <div className="absolute top-2 right-1 flex items-center gap-2 px-[8px] py-[4px] rounded-full bg-[#B4B7FF] backdrop-blur-sm">
+            <img
+              src={completed}
+              alt={completed}
+              className="h-[12px] w-[12px]"
+            />
+            <span className="text-xs font-medium text-white">Completed</span>
+          </div>
+        );
+      case 'resume':
+        return (
+          <div className="absolute top-2 right-1 flex items-center gap-2 px-[8px] py-[4px] rounded-full bg-[#F3CCF3] backdrop-blur-sm">
+            <img
+              src={resume}
+              alt={resume}
+              className="h-[12px] w-[12px]"
+            />
+            <span className="text-xs font-medium text-white">In progress</span>
+          </div>
+        );
+      case 'locked':
+        return (
+          null
+        );
+      default:
+        return null;
+    }
+  };
+
+  const getActionButton = (item: LearningLabItem) => {
+    if (item.status === 'resume') {
+      return (
+        <button
+          className="w-full sm:w-auto px-[24px] py-[8px] rounded-full bg-[#897AFF] text-white font-normal font-opensans text-[14px] cursor-not-allowed flex items-center justify-center"
+        >
+          Resume
+        </button>
+      );
+    }
+
+    if (item.status === 'locked') {
+      return (
+        <button
+          className="w-full sm:w-auto px-[24px] py-[8px] rounded-full bg-[#FF708A] text-white font-opensans text-[14px] cursor-not-allowed flex items-center justify-center gap-2"
+        >
+          <img
+            src={lock}
+            alt={lock}
+            className="h-[12px] w-[12px]"
+          />
+          Locked
+        </button>
+      );
+    }
+
+    return (
+      null
+    );
+  };
+
+  return (
+    <Card className="flex flex-col p-4 md:p-5 h-full gap-6">
+      {/* Header */}
+      <div>
+        <div className="flex items-center justify-start gap-2">
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#FFF4E5]">
+            <img
+              src={learninglabicon}
+              alt="directory Icon"
+              className="h-10 w-10"
+            />
+          </span>
+          <span className="text-base font-semibold text-[#0F1728]">{title}</span>
+        </div>
+        <HeaderDivider />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[11px]">
+        {items.map((item) => (
+          <div
+            key={item.id}
+            className={`flex flex-col px-[12px] pt-[12px] pb-[24px] rounded-2xl border border-[#ECEEF2] ${item?.status === 'locked' ? 'bg-[#F7F7F7]' : 'bg-white '} overflow-hidden transition-all hover:shadow-md`}
+          >
+            {/* Image with status badge */}
+            <div className="relative h-[160px] overflow-hidden">
+              <img
+                src={item.image}
+                alt={item.name}
+                className="h-full w-full object-cover rounded-[8px]"
+              />
+              {getStatusBadge(item.status)}
+            </div>
+
+            {/* Content */}
+            <div className="pt-3 flex flex-col gap-3 flex-1">
+              <div className="flex items-center space-x-1">
+                <Progress value={item.progress} gradient={item?.gradient} />
+                <div className="flex justify-end">
+                  <span className={`text-[12px] font-medium ${item.status === 'completed' ? 'text-[#F07EFF]' : 'text-[#667085]'} `}>
+                    {item.progress}%
+                  </span>
+                </div>
+              </div>
+              <div className="flex justify-between items-center gap-2">
+                <div className="pt-2 font-poppins font-medium text-base leading-[120%] text-[#0F1728] mb-2">
+                  {item.name}
+                </div>
+                <div>
+                  {getActionButton(item)}
+                </div>
+              </div>
+            </div>
           </div>
         ))}
       </div>
