@@ -559,6 +559,7 @@ export default function SignupModalNew({
           "margaret_name",
           response?.data?.data?.user.margaret_name
         );
+        onClose()
         // localStorage.setItem("token", response.jwt);
         // navigate("/log-in");
         const completionStatus =
