@@ -35,7 +35,7 @@ type SignupModalProps = {
   onGoogle?: () => void;
 };
 
-export default function SignupModal({ open = true, onClose = () => {} }: SignupModalProps) {
+export default function SignupModal({ open = true, onClose = () => { } }: SignupModalProps) {
   // const [email, setEmail] = useState("");
   // const [pwd, setPwd] = useState("");
   // const [pwd2, setPwd2] = useState("");
@@ -282,10 +282,22 @@ export default function SignupModal({ open = true, onClose = () => {} }: SignupM
     }
   };
 
+  // const login = useGoogleLogin({
+  //   onSuccess: handleGoogleLoginSuccess,
+  //   onError: () => {
+  //     console.error("Google login failed");
+  //     alert("Google login failed.");
+  //   },
+  // });
+
   const login = useGoogleLogin({
     onSuccess: handleGoogleLoginSuccess,
     onError: () => {
-      console.error("Google login failed");
+      showToast({
+        message: "Google login failed.",
+        type: "error",
+        duration: 5000,
+      });
     },
   });
 
@@ -321,12 +333,13 @@ export default function SignupModal({ open = true, onClose = () => {} }: SignupM
 
           <button
             type="button"
-            onClick={() => {
-              login();
-              navigate("/log-in", {
-                state: { autoGoogleLogin: true },
-              });
-            }}
+            // onClick={() => {
+            //   login();
+            //   // navigate("/log-in", {
+            //   //   state: { autoGoogleLogin: true },
+            //   // });
+            // }}
+            onClick={() => login()}
             className="mt-6 w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-800 shadow-sm hover:bg-gray-50"
           >
             <span
@@ -553,10 +566,10 @@ export default function SignupModal({ open = true, onClose = () => {} }: SignupM
                 />
                 {(errors.recaptcha ||
                   (recaptchaTouched && !recaptchaValue)) && (
-                  <p className="mt-1 text-sm text-red-600">
-                    Please complete reCAPTCHA
-                  </p>
-                )}
+                    <p className="mt-1 text-sm text-red-600">
+                      Please complete reCAPTCHA
+                    </p>
+                  )}
               </div>
             </div>
           </div>
@@ -576,9 +589,8 @@ export default function SignupModal({ open = true, onClose = () => {} }: SignupM
         </form>
 
         <p
-          className={`mt-4 text-center text-[13px] text-gray-600 ${
-            formssubmitted ? "hidden" : ""
-          }`}
+          className={`mt-4 text-center text-[13px] text-gray-600 ${formssubmitted ? "hidden" : ""
+            }`}
         >
           Already have an account?{" "}
           <button
@@ -594,9 +606,8 @@ export default function SignupModal({ open = true, onClose = () => {} }: SignupM
         </p>
 
         <div
-          className={`w-full h-[730px] flex flex-col justify-center items-center ${
-            formssubmitted ? "block" : "hidden"
-          }`}
+          className={`w-full h-[730px] flex flex-col justify-center items-center ${formssubmitted ? "block" : "hidden"
+            }`}
         >
           <h2 className="text-[32px] text-black font-[500] mb-2">
             Verify Your E-Mail
