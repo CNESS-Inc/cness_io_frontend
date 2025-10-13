@@ -8,6 +8,7 @@ import facebook from "../../../assets/facebook.png";
 import insta from "../../../assets/insta.png";
 import whatsapp from "../../../assets/whatsapp.png";
 import Button from "../../ui/Button";
+import ContentModal from "../../../components/ui/ContentModal";
 
 export default function ShareModal({
   isOpen,
@@ -20,6 +21,10 @@ export default function ShareModal({
   const [activeButton, setActiveButton] = useState<"btn1" | "btn2" | "btn3">(
     "btn1"
   );
+  const [showTermModal, setShowTermModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [content, setContent] = useState("");
+  const [privacyContent, privacySetContent] = useState("");
   const [checked, setChecked] = useState(false);
   const [copied, setCopied] = useState(false);
   const fileFormats = ["PDF", "DOCX", "PNG", "JPEG"];
@@ -34,6 +39,17 @@ export default function ShareModal({
     btn2: `<div class="custom-embed"><img src="https://yourdomain.com/embed-image.png" alt="Preview" /></div>`,
     btn3: `<script src="https://yourdomain.com/embed.js" async></script>`,
   };
+
+  useEffect(() => {
+    fetch("/terms and conditions new.html")
+      .then((res) => res.text())
+      .then((data) => setContent(data));
+  }, []);
+  useEffect(() => {
+    fetch("/CNESS privacy policy.htm")
+      .then((res) => res.text())
+      .then((data) => privacySetContent(data));
+  }, []);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(codes[activeButton]);
@@ -95,12 +111,12 @@ export default function ShareModal({
 
   return (
     <div
-        onClick={onClose}
+      onClick={onClose}
       className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60"
     >
       {/* Modal Container */}
       <div
-      onClick={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-4xl bg-white rounded-xl order border-[#ECEEF2] overflow-hidden animate-fadeIn"
         style={{
           maxHeight: "90vh",
@@ -209,13 +225,19 @@ export default function ShareModal({
                     {/* Text */}
                     <span className="text-[13px] leading-none font-semibold text-xs">
                       By Selecting Agree and continue below, I agree{" "}
-                      <a href="#" className="text-[#7077FE] hover:underline">
+                      <button
+                        onClick={() => setShowTermModal(true)}
+                        className="text-[#7077FE] hover:underline"
+                      >
                         Terms of Services
-                      </a>{" "}
+                      </button>{" "}
                       <span className="text-[#3366FF">and</span>{" "}
-                      <a href="#" className="text-[#3366FF] hover:underline">
+                      <button
+                        onClick={() => setShowPrivacyModal(true)}
+                        className="text-[#3366FF] hover:underline"
+                      >
                         Privacy Policy
-                      </a>
+                      </button>
                     </span>
                   </label>
                 </div>
@@ -384,6 +406,48 @@ export default function ShareModal({
             )}
           </div>
         </div>
+        <ContentModal
+          isOpen={showTermModal}
+          onClose={() => setShowTermModal(false)}
+        >
+          <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
+            <h3 className="lg:text-[36px] md:text-[30] text-[24px] font-[500] text-black mb-4 text-center">
+              CNESS TERMS AND CONDITIONS
+            </h3>
+            <div
+              className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg w-full max-w-7xl max-h-[500px] overflow-y-auto content-container"
+              style={{
+                fontFamily: "'Open Sans', 'Poppins', sans-serif",
+                fontSize: "16px",
+                textAlign: "justify",
+                lineHeight: "1.6",
+                color: "#333",
+              }}
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
+          </div>
+        </ContentModal>
+        <ContentModal
+          isOpen={showPrivacyModal}
+          onClose={() => setShowPrivacyModal(false)}
+        >
+          <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
+            <h3 className="lg:text-[36px] md:text-[30] text-[24px] font-[500] text-black mb-4 text-center">
+              CNESS PRIVACY POLICY
+            </h3>
+            <div
+              className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg w-full max-w-7xl max-h-[500px] overflow-y-auto content-container"
+              style={{
+                fontFamily: "'Open Sans', 'Poppins', sans-serif",
+                fontSize: "16px",
+                textAlign: "justify",
+                lineHeight: "1.6",
+                color: "#333",
+              }}
+              dangerouslySetInnerHTML={{ __html: privacyContent }}
+            />
+          </div>
+        </ContentModal>
       </div>
     </div>
   );
