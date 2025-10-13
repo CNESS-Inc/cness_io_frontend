@@ -111,6 +111,7 @@ export const EndPoint = {
   emailverify: "/auth/email-verify",
   paymentverify: "/payment/payment-confirm",
   profile: "/profile",
+  public_profile: "/profile/public",
   profile_remove: "/profile/image/remove",
   organizationProfile: "/organization-profile",
   organizationNumber: "/organization-profile/verify-identify",
@@ -573,9 +574,9 @@ export const SubmitProfileDetails = (formData: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.profile);
 };
 export const removeProfileImage = (type: any): ApiResponse => {
-    let params: { [key: string]: any } = {};
+  let params: { [key: string]: any } = {};
   params["type"] = type;
-  return executeAPI(ServerAPI.APIMethod.GET, null, EndPoint.profile_remove,params);
+  return executeAPI(ServerAPI.APIMethod.GET, null, EndPoint.profile_remove, params);
 };
 export const SubmitPublicProfileDetails = (formData: any): ApiResponse => {
   return executeAPI(
@@ -868,6 +869,10 @@ export const GetProfileDetails = (): ApiResponse => {
 export const GetProfileDetailsById = (id: any): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.profile}/${id}`);
+};
+export const GetPublicProfileDetailsById = (id: any): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.public_profile}/${id}`);
 };
 export const GetOrganiZationProfileDetails = (): ApiResponse => {
   const data = {};
@@ -1176,12 +1181,12 @@ export const GetFollowingFollowerUsers = () => {
     EndPoint.following_followers
   );
 };
-export const GetConnectionUser = ( search?: string) => {
+export const GetConnectionUser = (search?: string) => {
   let data = {};
   let params: { [key: string]: any } = {};
   params["search"] = search;
 
-  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection,params);
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection, params);
 };
 export const SendConnectionRequest = (formattedData: any) => {
   return executeAPI(
@@ -1201,13 +1206,13 @@ export const GetFriendRequest = (search?: string) => {
   let data = {};
   let params: { [key: string]: any } = {};
   params["search"] = search;
-  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection_request,params);
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection_request, params);
 };
 export const GetSuggestedFriend = (search?: string) => {
   let data = {};
   let params: { [key: string]: any } = {};
   params["search"] = search;
-  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.suggested_connection,params);
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.suggested_connection, params);
 };
 export const GetFriendSuggestions = () => {
   let data = {};
@@ -1414,24 +1419,39 @@ export const executeAPI = async <T = any,>(
   try {
     const token = localStorage.getItem("jwt");
     const isFormData = data instanceof FormData;
+    const requestId = localStorage.getItem("requestId");
+    const appCatId = localStorage.getItem("appCatId");
+    const headers: Record<string, string> = {
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
+      Authorization: `Bearer ${token || ""}`,
+    };
 
+    if (requestId) {
+      headers["x-request-id"] = requestId;
+    }
+    if (appCatId) {
+      headers["x-app-cat-id"] = appCatId;
+    }
     const response: AxiosResponse<T> = await axios({
       method: method,
       url: API.BaseUrl + endpoint,
       data: data,
       params: params,
-      headers: {
-        ...(isFormData
-          ? {} // Don't set Content-Type manually for FormData
-          : { "Content-Type": "application/json" }),
-        Authorization: `Bearer ${token || ""}`,
-      },
+      headers,
       ...(API.BaseUrl.trim().toLowerCase().startsWith("https://") && {
         withCredentials: true,
       }),
     });
+    const requestIdres = response.headers["x-request-id"];
+    if (requestIdres) {
+      localStorage.setItem("requestId", requestIdres);
+    }
+    const appCatIdres = response.headers["x-app-cat-id"];
+    if (appCatIdres) {
+      localStorage.setItem("appCatId", appCatIdres);
+    }
 
-     const access_token = response.headers["access_token"];
+    const access_token = response.headers["access_token"];
 
     if (access_token != "not-provide") {
       console.log("access token response check sets", true);
@@ -1442,10 +1462,10 @@ export const executeAPI = async <T = any,>(
   } catch (error: any) {
     // console.log("🚀 ~ error:", error)
 
-    if (error.response?.data?.error?.statusCode == 401) {
-      localStorage.clear();
-      window.location.href = "/";
-    }
+    // if (error.response?.data?.error?.statusCode == 401) {
+    //   localStorage.clear();
+    //   window.location.href = "/";
+    // }
 
     throw error;
   }
