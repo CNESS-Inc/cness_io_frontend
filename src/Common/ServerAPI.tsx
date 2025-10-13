@@ -1438,8 +1438,8 @@ export const executeAPI = async <T = any,>(
         withCredentials: true,
       }),
     });
-
     const requestIdres = response.headers["x-request-id"];
+    console.log("🚀 ~ executeAPI ~ requestIdres:", requestIdres)
     if (requestIdres) {
       localStorage.setItem("requestId", requestIdres);
     }
