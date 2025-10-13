@@ -7,7 +7,6 @@ import frame from "../../../assets/bg-frame.png";
 import facebook from "../../../assets/facebook.png";
 import insta from "../../../assets/insta.png";
 import whatsapp from "../../../assets/whatsapp.png";
-import { IoCloseOutline } from "react-icons/io5";
 import Button from "../../ui/Button";
 
 export default function ShareModal({
