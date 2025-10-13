@@ -40,6 +40,7 @@ interface UserData {
   email: string;
   level: string;
   profile_progress: number;
+  cis_score: number;
   assesment_progress: number;
 }
 
@@ -553,6 +554,7 @@ export default function SellerDashboard() {
           <CertificationCard
             progress={user?.assesment_progress ? user?.assesment_progress : 0}
             activeLevel={user?.level} // Pass the actual user level from your API
+            score={user?.cis_score}
             onContinue={() => navigate("/dashboard/assesment")}
             onOpen={() => console.log("Open Certification")}
           />
