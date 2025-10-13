@@ -1430,7 +1430,7 @@ export const executeAPI = async <T = any,>(
       headers["x-request-id"] = requestId;
     }
     if (appCatId) {
-      headers["x-request-id"] = appCatId;
+      headers["x-app-cat-id"] = appCatId;
     }
     const response: AxiosResponse<T> = await axios({
       method: method,
