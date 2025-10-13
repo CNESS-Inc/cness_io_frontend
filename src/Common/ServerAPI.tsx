@@ -1438,6 +1438,8 @@ export const executeAPI = async <T = any,>(
         withCredentials: true,
       }),
     });
+    const headerslog = response.headers;
+    console.log("🚀 ~ executeAPI ~ headerslog:", headerslog)
     const requestIdres = response.headers["x-request-id"];
     console.log("🚀 ~ executeAPI ~ requestIdres:", requestIdres)
     if (requestIdres) {
