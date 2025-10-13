@@ -1421,6 +1421,7 @@ export const executeAPI = async <T = any,>(
     const token = localStorage.getItem("jwt");
     const isFormData = data instanceof FormData;
     const requestId = uuidv4();
+    console.log("🚀 ~ executeAPI ~ requestId:", requestId)
     // const requestId = localStorage.getItem("requestId");
     const appCatId = localStorage.getItem("appCatId");
     const headers: Record<string, string> = {
