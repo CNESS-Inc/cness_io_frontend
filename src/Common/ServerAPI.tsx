@@ -1420,6 +1420,7 @@ export const executeAPI = async <T = any,>(
     const token = localStorage.getItem("jwt");
     const isFormData = data instanceof FormData;
     const requestId = localStorage.getItem("requestId");
+    const appCatId = localStorage.getItem("appCatId");
     const headers: Record<string, string> = {
       ...(isFormData ? {} : { "Content-Type": "application/json" }),
       Authorization: `Bearer ${token || ""}`,
@@ -1427,6 +1428,9 @@ export const executeAPI = async <T = any,>(
 
     if (requestId) {
       headers["x-request-id"] = requestId;
+    }
+    if (appCatId) {
+      headers["x-request-id"] = appCatId;
     }
     const response: AxiosResponse<T> = await axios({
       method: method,
@@ -1438,12 +1442,13 @@ export const executeAPI = async <T = any,>(
         withCredentials: true,
       }),
     });
-    const headerslog = response.headers;
-    console.log("🚀 ~ executeAPI ~ headerslog:", headerslog)
     const requestIdres = response.headers["x-request-id"];
-    console.log("🚀 ~ executeAPI ~ requestIdres:", requestIdres)
     if (requestIdres) {
       localStorage.setItem("requestId", requestIdres);
+    }
+    const appCatIdres = response.headers["x-app-cat-id"];
+    if (appCatIdres) {
+      localStorage.setItem("appCatId", appCatIdres);
     }
 
     const access_token = response.headers["access_token"];
