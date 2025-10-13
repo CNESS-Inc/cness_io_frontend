@@ -3761,7 +3761,7 @@ export function MarketplaceCard({ suggested,
           alt="directory Icon"
           className="h-[20px] w-[20px]"
         />
-        <span className="text-lg font-medium text-[#222224]">{title}</span>
+        <span className="text-lg font-medium text-[#222224] font-poppins">{title}</span>
       </div>
       <div className="flex flex-col px-[4px] gap-2 overflow-visible">
         {products && products.length > 0 ? (
@@ -3776,7 +3776,7 @@ export function MarketplaceCard({ suggested,
                   alt="directory Icon"
                   className="h-[30px] w-[30px]"
                 />
-                <span className="text-sm font-medium text-[#0D0D12]">{f?.name}</span>
+                <span className="text-sm font-medium text-[#0D0D12] font-poppins">{f?.name}</span>
               </div>
               <div className="relative">
                 <button
@@ -3837,7 +3837,7 @@ export function MarketplaceCard({ suggested,
           alt="directory Icon"
           className="h-[20px] w-[20px]"
         />
-        <span className="text-lg font-medium text-[#222224]">{title}</span>
+        <span className="text-lg font-medium text-[#222224] font-poppins">{title}</span>
       </div>
       <div className="flex flex-col px-[4px] gap-2 overflow-visible">
         {products && products.length > 0 ? (
@@ -3852,7 +3852,7 @@ export function MarketplaceCard({ suggested,
                   alt="directory Icon"
                   className="h-[30px] w-[30px]"
                 />
-                <span className="text-sm font-medium text-[#0D0D12]">{f?.name}</span>
+                <span className="text-sm font-medium text-[#0D0D12] font-poppins">{f?.name}</span>
               </div>
               <div className="relative">
                 <button
@@ -3918,7 +3918,7 @@ export function MarketplaceCard({ suggested,
               className="h-[20px] w-[20px]"
             />
           </span>
-          <span className="text-lg font-medium text-[#222224]">{title}</span>
+          <span className="text-lg font-medium text-[#222224] font-poppins">{title}</span>
         </div>
 
         <button
@@ -3930,11 +3930,11 @@ export function MarketplaceCard({ suggested,
           />
         </button>
       </div>
-      <div className="flex px-[4px] gap-2 overflow-visible">
+      <div className="grid grid-cols-2 w-full px-[4px] gap-2 overflow-visible">
         {products && products.length > 0 ? (
           products.slice(0, 2).map((f) => (
             <div
-              className="flex flex-col items-center p-[8px] border border-[#ECEEF2] rounded-xl gap-2 bg-white"
+              className="w-full flex flex-col items-center p-[8px] border border-[#ECEEF2] rounded-xl gap-2 bg-white"
               style={{ boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.1)" }}
             >
               <div className="w-full h-[83px]">
@@ -3945,7 +3945,7 @@ export function MarketplaceCard({ suggested,
                 />
               </div>
               <div className="w-full flex justify-between items-center gap-2">
-                <span className="text-[10px] font-medium text-[#0D0D12]">{f?.name}</span>
+                <span className="text-[10px] font-medium text-[#0D0D12] font-poppins">{f?.name}</span>
                 <span className="text-[10px] font-medium text-[#F07EFF]">{f?.price}</span>
               </div>
               <button
@@ -3977,7 +3977,7 @@ export function MarketplaceCard({ suggested,
                 className="h-10 w-10"
               />
             </span>
-            <span className="text-base font-semibold text-[#0F1728]">MarketPlace</span>
+            <span className="text-base font-semibold text-[#0F1728] font-poppins">MarketPlace</span>
           </div>
 
           <button

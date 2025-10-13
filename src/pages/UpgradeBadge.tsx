@@ -22,13 +22,12 @@ import {
   WhatsappShareButton,
 } from "react-share";
 import html2pdf from "html2pdf.js";
-import { useNavigate } from "react-router-dom";
+import ShareModal from "../components/sections/Certification/ShareModal";
 
 const UpgradeBadge = () => {
   const myid = localStorage.getItem("Id");
   const urldata = `${window.location.origin}/directory/user-profile/${myid}`;
   const tweetText = `Earned the CNESS Inspired Certification! Proud to lead with conscious values. Join us at cness.io`;
-  const navigate = useNavigate();
   const [user, setUser] = useState<any | null>(null);
   const [scoreData, setScoreData] = useState<any>(null);
   const [showMenu, setShowMenu] = useState<boolean>(false);
@@ -36,6 +35,7 @@ const UpgradeBadge = () => {
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [copy, setCopy] = useState<Boolean>(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   useEffect(() => {
     fetchDashboard();
@@ -147,19 +147,19 @@ const UpgradeBadge = () => {
                   <th>Percentage</th>
               </tr>
               ${data.array
-          .map(
-            (item: any) => `
+                .map(
+                  (item: any) => `
               <tr>
                   <td>${item.section.name}</td>
                   <td>${item.section.total_weight}</td>
                   <td>${item.section.weight}</td>
                   <td>${Math.round(
-              (item.section.weight / item.section.total_weight) * 100
-            )}%</td>
+                    (item.section.weight / item.section.total_weight) * 100
+                  )}%</td>
               </tr>
               `
-          )
-          .join("")}
+                )
+                .join("")}
               <tr>
                   <th colspan="2">Total Score</th>
                   <th colspan="2">${data.final_score} / 100</th>
@@ -391,10 +391,11 @@ const UpgradeBadge = () => {
                   {user?.assesment_progress || 0}%
                 </div>
                 <div
-                  className={`font-['Poppins',Helvetica] text-sm md:text-base font-medium ${(user?.assesment_progress || 0) >= 100
-                    ? "text-[#4CAF50]" // Green color for completed
-                    : "text-[#9747ff]" // Purple color for in progress
-                    }`}
+                  className={`font-['Poppins',Helvetica] text-sm md:text-base font-medium ${
+                    (user?.assesment_progress || 0) >= 100
+                      ? "text-[#4CAF50]" // Green color for completed
+                      : "text-[#9747ff]" // Purple color for in progress
+                  }`}
                 >
                   {(user?.assesment_progress || 0) >= 100
                     ? "Completed"
@@ -405,11 +406,12 @@ const UpgradeBadge = () => {
                 {[...Array(6)].map((_, index) => (
                   <div
                     key={index}
-                    className={`flex-1 h-5 md:h-[24px] rounded ${index <
+                    className={`flex-1 h-5 md:h-[24px] rounded ${
+                      index <
                       Math.floor((user?.assesment_progress || 0) / (100 / 6))
-                      ? "bg-gradient-to-b from-[rgba(79,70,229,1)] to-[rgba(151,71,255,1)]"
-                      : "bg-[#EDEAFF]"
-                      }`}
+                        ? "bg-gradient-to-b from-[rgba(79,70,229,1)] to-[rgba(151,71,255,1)]"
+                        : "bg-[#EDEAFF]"
+                    }`}
                   />
                 ))}
               </div>
@@ -479,9 +481,8 @@ const UpgradeBadge = () => {
               </div>
 
               <button
-                //onClick={onOpen}
+                onClick={() => setShareOpen(true)}
                 className="inline-flex h-[32px] w-[32px] items-center justify-center rounded-full bg-white hover:bg-[#EEF0F5]"
-                onClick={() => navigate("/dashboard")}
                 style={{ boxShadow: "0px 1px 10px 0px rgba(0, 0, 0, 0.1)" }}
               >
                 <img
@@ -546,8 +547,8 @@ const UpgradeBadge = () => {
               <div className="pt-3 flex justify-start items-center gap-3">
                 <img src={arrow} alt="icon" className="w-4 h-4" />
                 <h3 className="font-['Open_Sans',Helvetica] text-sm font-normal text-[#222224]">
-                  You are eligible for reassessment after 3 months if they
-                  seek a higher tier.
+                  You are eligible for reassessment after 3 months if they seek
+                  a higher tier.
                 </h3>
               </div>
 
@@ -566,6 +567,7 @@ const UpgradeBadge = () => {
           </div>
         </div>
       </section>
+      <ShareModal isOpen={shareOpen} onClose={() => setShareOpen(false)} />
     </>
   );
 };
