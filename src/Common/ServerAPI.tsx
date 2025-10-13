@@ -1,4 +1,5 @@
 import axios, { type AxiosResponse } from "axios";
+import { v4 as uuidv4 } from "uuid";
 // import { Server } from "lucide-react";
 // Define types for your API
 type ApiMethod = "GET" | "POST" | "PUT" | "DELETE";
@@ -1419,7 +1420,8 @@ export const executeAPI = async <T = any,>(
   try {
     const token = localStorage.getItem("jwt");
     const isFormData = data instanceof FormData;
-    const requestId = localStorage.getItem("requestId");
+    const requestId = uuidv4();
+    // const requestId = localStorage.getItem("requestId");
     const appCatId = localStorage.getItem("appCatId");
     const headers: Record<string, string> = {
       ...(isFormData ? {} : { "Content-Type": "application/json" }),
