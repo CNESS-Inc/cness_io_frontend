@@ -2387,7 +2387,7 @@ export function CertificationCard({
     }
   };
 
-  const handleUpgradeClick = (activeLevel?: string) => {
+  const handleUpgradeClick = (activeLevel?: string | null) => {
     if (!activeLevel) {
       setShowInterestModal(true);
     } else if (activeLevel === "Aspiring") {
