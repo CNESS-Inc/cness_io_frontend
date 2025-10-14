@@ -401,6 +401,17 @@ const DashboardNavbar = ({
               >
                 Edit Profile
               </NavLink>
+              <NavLink
+                to="/dashboard/Profile"
+                end
+                className={({ isActive }) =>
+                  `px-3 py-3 rounded-lg w-full transition whitespace-nowrap ${
+                    isActive ? activeSubClasses : inactiveSubClasses
+                  }`
+                }
+              >
+                Social Profile
+              </NavLink>
              {/* <NavLink
                 to="/dashboard/company-profile"
                 className={({ isActive }) =>
