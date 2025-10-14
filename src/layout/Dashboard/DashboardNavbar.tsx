@@ -213,13 +213,17 @@ const DashboardNavbar = ({
     {
       id: "MentorPartnerHub",
       icon: <Zap className="w-5 h-5 text-gray-500" />,
-      label: "Mentor & Partner Hub",
+      label: "Business Hub",
       active: false,
       isMentorDropdown: true,
       childPaths: ["/dashboard/BecomeMentor"],
       children: [
         { label: "Mentor", path: "/dashboard/become-mentor" },
         { label: "Partner", path: "/dashboard/Become_partner" },
+           {
+          label: "Affiliate",
+          path: "/dashboard/affiliate",
+        },
         // { label: "Mentor Dashboard", path: "/dashboard/ComingSoon" },
         // { label: "Track Progress", path: "/dashboard/ComingSoon" },
         // { label: "Partner License & Toolkit", path: "/dashboard/ComingSoon" },
@@ -400,6 +404,17 @@ const DashboardNavbar = ({
                 }
               >
                 Edit Profile
+              </NavLink>
+              <NavLink
+                to="/dashboard/Profile"
+                end
+                className={({ isActive }) =>
+                  `px-3 py-3 rounded-lg w-full transition whitespace-nowrap ${
+                    isActive ? activeSubClasses : inactiveSubClasses
+                  }`
+                }
+              >
+                Social Profile
               </NavLink>
              {/* <NavLink
                 to="/dashboard/company-profile"
