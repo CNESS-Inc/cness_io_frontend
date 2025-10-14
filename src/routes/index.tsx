@@ -65,6 +65,7 @@ import Premium from "../pages/Premium";
 import WhyCness from "../pages/WhyCness";
 //import SellerDashboard from "../pages/SellerDashboard";
 import UserPublicProfile from "../pages/UserPublicProfile";
+import Affiliate from "../pages/Affiliate";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -272,6 +273,10 @@ export const router = createBrowserRouter([
           {
             path: "Become_partner",
             element: <BecomePartner />,
+          },
+          {
+            path: "affiliate",
+            element: <Affiliate />,
           },
           {
             path: "GenerateBadgeCode",
