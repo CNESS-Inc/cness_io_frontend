@@ -9,6 +9,10 @@ import insta from "../../../assets/insta.png";
 import whatsapp from "../../../assets/whatsapp.png";
 import Button from "../../ui/Button";
 import ContentModal from "../../../components/ui/ContentModal";
+import { getUserBadgeDetails } from "../../../Common/ServerAPI";
+import indv_aspiring from "../../../assets/indv_aspiring.svg";
+import indv_inspired from "../../../assets/indv_inspired.svg";
+import indv_leader from "../../../assets/indv_leader.svg";
 
 export default function ShareModal({
   isOpen,
@@ -26,6 +30,8 @@ export default function ShareModal({
   const [content, setContent] = useState("");
   const [privacyContent, privacySetContent] = useState("");
   const [checked, setChecked] = useState(false);
+  const [embedCodes, setEmbedCodes] = useState<string[]>([]);
+  const [staticImageURL, setStaticImageURL] = useState<string>("");
   const [copied, setCopied] = useState(false);
   const fileFormats = ["PDF", "DOCX", "PNG", "JPEG"];
   const ratios = [1, 1.25, 1.5, 2];
@@ -34,10 +40,101 @@ export default function ShareModal({
   const [selectedRatio, setSelectedRatio] = useState("");
   const [logoScale, setLogoScale] = useState("100%");
 
-  const codes = {
-    btn1: `<iframe srcdoc="<script>document.write(decodeURIComponent(escape(atob('CiAgICA8ZGl2IHN0eWxlPSJkaXNwbGF5OiBmbGV4OyBhbGlnbi1pdGVtczogY2VudGVyOyBmb250LWZhbWlseTogc2Fucy1zZXJpZjsiPgogICAgICA8aW1nIHNyYz0iaHR0cHM6Ly91YXQuY25lc3MuaW8vYXNzZXRzL2luZHZfYXNwaXJpbmctVHotdk5VTU8uc3ZnP2F1</script>"></iframe>`,
-    btn2: `<div class="custom-embed"><img src="https://yourdomain.com/embed-image.png" alt="Preview" /></div>`,
-    btn3: `<script src="https://yourdomain.com/embed.js" async></script>`,
+  const fetchUserBadge = async () => {
+    try {
+      const res = await getUserBadgeDetails();
+      const level = res.data.data.level;
+
+      // Set image based on user level
+      switch (level.toLowerCase()) {
+        case "aspiring":
+          setStaticImageURL(indv_aspiring);
+          break;
+        case "inspired":
+          setStaticImageURL(indv_inspired);
+          break;
+        case "leader":
+          setStaticImageURL(indv_leader);
+          break;
+        default:
+          setStaticImageURL(indv_aspiring);
+      }
+    } catch (error) {
+      console.error("Error fetching badge details:", error);
+      setStaticImageURL(indv_aspiring);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserBadge();
+  }, []);
+
+  useEffect(() => {
+    if (!staticImageURL) return;
+
+    const uniqueKey = Math.random().toString(36).substring(2, 15);
+    const securedImageURL = `${staticImageURL}?authKey=${uniqueKey}`;
+    const currentDomain = window.location.origin;
+
+    // const rawHTML = `
+    //   <div style='display: flex; align-items: center; font-family: sans-serif;'>
+    //     <img src='${securedImageURL}' alt='Badge' style='width: 40px; height: 40px; border-radius: 50%;' />
+    //   </div>
+    // `;
+    const rawHTML = `
+    <div style="display: flex; align-items: center; font-family: sans-serif;">
+      <img src="${currentDomain}${securedImageURL}" alt="Badge" style="width: 40px; height: 40px; border-radius: 50%;" />
+    </div>
+  `;
+
+    const base64HTML = btoa(unescape(encodeURIComponent(rawHTML)));
+
+    const iframeCode = `
+      <iframe 
+      srcdoc="<script>document.write(decodeURIComponent(escape(atob('${base64HTML}'))))</script>" 
+      style="border: none; width: 60px; height: 60px;"></iframe>`.trim();
+
+    const directHTMLCode = `
+      <div style="display: flex; align-items: center; font-family: sans-serif;">
+      <img 
+          src="${currentDomain}${securedImageURL}"
+          alt="Badge" 
+          style="width: 40px; height: 40px; border-radius: 50%;" 
+      />
+      </div>`.trim();
+
+    const scriptEmbedCode = `
+      <div id="badge-container"></div>
+      <script>
+      (function () {
+          var img = document.createElement("img");
+          img.src = "${currentDomain}${securedImageURL}";
+          img.alt = "Badge";
+          img.style.width = "40px";
+          img.style.height = "40px";
+          img.style.borderRadius = "50%";
+          document.getElementById("badge-container").appendChild(img);
+      })();
+      </script>`.trim();
+
+    setEmbedCodes([iframeCode, directHTMLCode, scriptEmbedCode]);
+  }, [staticImageURL]);
+
+  const activeCode =
+    activeButton === "btn1"
+      ? embedCodes[0]
+      : activeButton === "btn2"
+      ? embedCodes[1]
+      : embedCodes[2];
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(activeCode || "");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Clipboard copy failed:", err);
+    }
   };
 
   useEffect(() => {
@@ -50,12 +147,6 @@ export default function ShareModal({
       .then((res) => res.text())
       .then((data) => privacySetContent(data));
   }, []);
-
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(codes[activeButton]);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   const tabs = [
     { id: "tab1", label: "Public URL", subText: "Shared and Embed", icon: url },
@@ -184,7 +275,7 @@ export default function ShareModal({
                 <div className="flex flex-col gap-[12px]">
                   <textarea
                     readOnly
-                    value={codes[activeButton]}
+                    value={activeCode || ""}
                     rows={6}
                     className="w-full font-normal text-xs font-['Poppins',Helvetica] border border-[#E2E8F0] rounded-lg shadow-[0_0_2px_0_rgba(0,0,0,0.1)] px-4 py-2"
                   />
@@ -243,7 +334,7 @@ export default function ShareModal({
                 </div>
                 <Button
                   onClick={handleCopy}
-                  disabled={!checked}
+                  disabled={!checked || !activeCode}
                   variant="gradient-primary"
                   className="rounded-full w-full py-[12px] px-[16px] self-stretch transition-colors duration-500 ease-in-out"
                 >
