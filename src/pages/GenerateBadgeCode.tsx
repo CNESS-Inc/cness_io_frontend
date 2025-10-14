@@ -13,7 +13,7 @@ const GenerateBadgeCode = () => {
     try {
       const res = await getUserBadgeDetails();
       const level = res.data.data.level;
-      
+
       // Set image based on user level
       switch (level.toLowerCase()) {
         case "aspiring":
@@ -26,40 +26,40 @@ const GenerateBadgeCode = () => {
           setStaticImageURL(indv_leader);
           break;
         default:
-          setStaticImageURL(indv_aspiring); 
+          setStaticImageURL(indv_aspiring);
       }
     } catch (error) {
       console.error("Error fetching badge details:", error);
-      setStaticImageURL(indv_aspiring); 
+      setStaticImageURL(indv_aspiring);
     }
   };
 
-useEffect(() => {
-  if (!staticImageURL) return; 
-  
-  const uniqueKey = Math.random().toString(36).substring(2, 15);
-  const securedImageURL = `${staticImageURL}?authKey=${uniqueKey}`;
-  const currentDomain = window.location.origin;
+  useEffect(() => {
+    if (!staticImageURL) return;
 
-  // const rawHTML = `
-  //   <div style='display: flex; align-items: center; font-family: sans-serif;'>
-  //     <img src='${securedImageURL}' alt='Badge' style='width: 40px; height: 40px; border-radius: 50%;' />
-  //   </div>
-  // `;
-  const rawHTML = `
+    const uniqueKey = Math.random().toString(36).substring(2, 15);
+    const securedImageURL = `${staticImageURL}?authKey=${uniqueKey}`;
+    const currentDomain = window.location.origin;
+
+    // const rawHTML = `
+    //   <div style='display: flex; align-items: center; font-family: sans-serif;'>
+    //     <img src='${securedImageURL}' alt='Badge' style='width: 40px; height: 40px; border-radius: 50%;' />
+    //   </div>
+    // `;
+    const rawHTML = `
     <div style="display: flex; align-items: center; font-family: sans-serif;">
       <img src="${currentDomain}${securedImageURL}" alt="Badge" style="width: 40px; height: 40px; border-radius: 50%;" />
     </div>
   `;
 
-  const base64HTML = btoa(unescape(encodeURIComponent(rawHTML)));
+    const base64HTML = btoa(unescape(encodeURIComponent(rawHTML)));
 
-  const iframeCode = `
+    const iframeCode = `
       <iframe 
       srcdoc="<script>document.write(decodeURIComponent(escape(atob('${base64HTML}'))))</script>" 
       style="border: none; width: 60px; height: 60px;"></iframe>`.trim();
 
-  const directHTMLCode = `
+    const directHTMLCode = `
       <div style="display: flex; align-items: center; font-family: sans-serif;">
       <img 
           src="${currentDomain}${securedImageURL}"
@@ -68,7 +68,7 @@ useEffect(() => {
       />
       </div>`.trim();
 
-  const scriptEmbedCode = `
+    const scriptEmbedCode = `
       <div id="badge-container"></div>
       <script>
       (function () {
@@ -82,14 +82,14 @@ useEffect(() => {
       })();
       </script>`.trim();
 
-  setEmbedCodes([iframeCode, directHTMLCode, scriptEmbedCode]);
-}, [staticImageURL]);
+    setEmbedCodes([iframeCode, directHTMLCode, scriptEmbedCode]);
+  }, [staticImageURL]);
 
   useEffect(() => {
     fetchUserBadge();
   }, []);
 
-const copyToClipboard = async (code: string, index: number) => {
+  const copyToClipboard = async (code: string, index: number) => {
     try {
       await navigator.clipboard.writeText(code);
       setCopiedIndex(index);
@@ -98,7 +98,6 @@ const copyToClipboard = async (code: string, index: number) => {
       console.error("Clipboard copy failed:", err);
     }
   };
-  
 
   return (
     <>
@@ -113,16 +112,16 @@ const copyToClipboard = async (code: string, index: number) => {
                 rows={10}
                 className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
-             <button
-                    onClick={() => copyToClipboard(embedCodes[0], 0)}
-                    className={`mt-2 px-4 py-2 rounded cursor-pointer transition-colors ${
-                      copiedIndex === 0
-                        ? "bg-gray-500 text-white"
-                        : "bg-green-600 text-white hover:bg-green-700"
-                    }`}
-                  >
-                    {copiedIndex === 0 ? "Copied!" : "Copy to Clipboard"}
-                  </button>
+              <button
+                onClick={() => copyToClipboard(embedCodes[0], 0)}
+                className={`mt-2 px-4 py-2 rounded cursor-pointer transition-colors ${
+                  copiedIndex === 0
+                    ? "bg-gray-500 text-white"
+                    : "bg-green-600 text-white hover:bg-green-700"
+                }`}
+              >
+                {copiedIndex === 0 ? "Copied!" : "Copy to Clipboard"}
+              </button>
             </div>
 
             <div>
@@ -133,16 +132,16 @@ const copyToClipboard = async (code: string, index: number) => {
                 rows={10}
                 className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
-               <button
-                    onClick={() => copyToClipboard(embedCodes[1], 1)}
-                    className={`mt-2 px-4 py-2 rounded cursor-pointer transition-colors ${
-                      copiedIndex === 1
-                        ? "bg-gray-500 text-white"
-                        : "bg-green-600 text-white hover:bg-green-700"
-                    }`}
-                  >
-                    {copiedIndex === 1 ? "Copied!" : "Copy to Clipboard"}
-                  </button>
+              <button
+                onClick={() => copyToClipboard(embedCodes[1], 1)}
+                className={`mt-2 px-4 py-2 rounded cursor-pointer transition-colors ${
+                  copiedIndex === 1
+                    ? "bg-gray-500 text-white"
+                    : "bg-green-600 text-white hover:bg-green-700"
+                }`}
+              >
+                {copiedIndex === 1 ? "Copied!" : "Copy to Clipboard"}
+              </button>
             </div>
 
             <div>
@@ -153,16 +152,16 @@ const copyToClipboard = async (code: string, index: number) => {
                 rows={10}
                 className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
-             <button
-                    onClick={() => copyToClipboard(embedCodes[2], 2)}
-                    className={`mt-2 px-4 py-2 rounded cursor-pointer transition-colors ${
-                      copiedIndex === 2
-                        ? "bg-gray-500 text-white"
-                        : "bg-green-600 text-white hover:bg-green-700"
-                    }`}
-                  >
-                    {copiedIndex === 2 ? "Copied!" : "Copy to Clipboard"}
-                  </button>
+              <button
+                onClick={() => copyToClipboard(embedCodes[2], 2)}
+                className={`mt-2 px-4 py-2 rounded cursor-pointer transition-colors ${
+                  copiedIndex === 2
+                    ? "bg-gray-500 text-white"
+                    : "bg-green-600 text-white hover:bg-green-700"
+                }`}
+              >
+                {copiedIndex === 2 ? "Copied!" : "Copy to Clipboard"}
+              </button>
             </div>
           </div>
         )}
