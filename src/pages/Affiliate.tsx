@@ -16,6 +16,132 @@ import { CiBank } from "react-icons/ci";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { PiPaypalLogo } from "react-icons/pi";
 import { LiaCreditCardSolid } from "react-icons/lia";
+import AffiliateUsers from "../components/affiliate/AffiliateUsers";
+
+interface User {
+  id: number;
+  firstName: string;
+  lastName: string;
+  location: string;
+  email: string;
+  phone: string;
+  joinedDate: string;
+  revenue: string;
+  status: "Completed" | "Pending" | "Failed";
+}
+
+const users: User[] = [
+  {
+    id: 1,
+    firstName: "Michael",
+    lastName: "Johnson",
+    location: "Los Angeles, USA",
+    email: "michael.j@email.com",
+    phone: "+1 (555) 345-67890",
+    joinedDate: "Mar 10, 2024",
+    revenue: "$5,800",
+    status: "Completed",
+  },
+  {
+    id: 2,
+    firstName: "Sophia",
+    lastName: "Williams",
+    location: "New York, USA",
+    email: "sophia.w@email.com",
+    phone: "+1 (555) 987-6543",
+    joinedDate: "Jan 5, 2024",
+    revenue: "$3,200",
+    status: "Pending",
+  },
+  {
+    id: 3,
+    firstName: "Liam",
+    lastName: "Smith",
+    location: "Chicago, USA",
+    email: "liam.smith@email.com",
+    phone: "+1 (555) 123-4567",
+    joinedDate: "Feb 14, 2024",
+    revenue: "$1,500",
+    status: "Failed",
+  },
+  {
+    id: 4,
+    firstName: "Emma",
+    lastName: "Davis",
+    location: "Toronto, Canada",
+    email: "emma.davis@email.ca",
+    phone: "+1 (416) 222-3344",
+    joinedDate: "Apr 1, 2024",
+    revenue: "$4,250",
+    status: "Completed",
+  },
+  {
+    id: 5,
+    firstName: "Noah",
+    lastName: "Brown",
+    location: "London, UK",
+    email: "noah.brown@email.co.uk",
+    phone: "+44 20 7946 0958",
+    joinedDate: "May 12, 2024",
+    revenue: "$2,100",
+    status: "Pending",
+  },
+  {
+    id: 6,
+    firstName: "Ava",
+    lastName: "Wilson",
+    location: "Berlin, Germany",
+    email: "ava.wilson@email.de",
+    phone: "+49 30 123456",
+    joinedDate: "Mar 20, 2024",
+    revenue: "$3,800",
+    status: "Completed",
+  },
+  {
+    id: 7,
+    firstName: "Oliver",
+    lastName: "Martinez",
+    location: "Madrid, Spain",
+    email: "oliver.martinez@email.es",
+    phone: "+34 91 123 4567",
+    joinedDate: "Jun 2, 2024",
+    revenue: "$2,600",
+    status: "Failed",
+  },
+  {
+    id: 8,
+    firstName: "Isabella",
+    lastName: "Garcia",
+    location: "Mexico City, Mexico",
+    email: "isabella.g@email.mx",
+    phone: "+52 55 1234 5678",
+    joinedDate: "Jul 8, 2024",
+    revenue: "$6,400",
+    status: "Completed",
+  },
+  {
+    id: 9,
+    firstName: "James",
+    lastName: "Lee",
+    location: "Seoul, South Korea",
+    email: "james.lee@email.kr",
+    phone: "+82 2-312-3456",
+    joinedDate: "Aug 15, 2024",
+    revenue: "$3,900",
+    status: "Pending",
+  },
+  {
+    id: 10,
+    firstName: "Mia",
+    lastName: "Clark",
+    location: "Sydney, Australia",
+    email: "mia.clark@email.au",
+    phone: "+61 2 9876 5432",
+    joinedDate: "Sep 5, 2024",
+    revenue: "$4,100",
+    status: "Completed",
+  },
+];
 
 export default function Affiliate() {
   const { showToast } = useToast();
@@ -23,6 +149,18 @@ export default function Affiliate() {
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [selectedId, setSelectedId] = useState("bank");
   const dynamicKey = "CNESS1008443218";
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 5;
+
+  // Total number of pages
+  const totalPages = Math.ceil(users.length / usersPerPage);
+
+  // Calculate indexes for slicing
+  const startIndex = (currentPage - 1) * usersPerPage;
+  const endIndex = Math.min(startIndex + usersPerPage, users.length);
+
+  // Slice the data for current page
+  const currentUsers = users.slice(startIndex, endIndex);
 
   const handleShareToggle = () => setIsShareOpen((prev) => !prev);
   const handleShareClose = () => setIsShareOpen(false);
@@ -298,9 +436,7 @@ export default function Affiliate() {
                     <div className="flex items-center justify-between">
                       <div
                         className={` ${
-                          isSelected
-                            ? "text-[#9747FF]"
-                            : "text-black"
+                          isSelected ? "text-[#9747FF]" : "text-black"
                         }`}
                       >
                         {React.cloneElement(method.icon, {
@@ -332,7 +468,17 @@ export default function Affiliate() {
           </div>
         </div>
       ) : (
-        <div className="w-full h-full flex flex-col gap-3"></div>
+        <div className="w-full h-full">
+          <AffiliateUsers
+            users={users}
+            totalPages={totalPages}
+            currentUsers={currentUsers}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            startIndex={startIndex}
+            endIndex={endIndex}
+          />
+        </div>
       )}
     </div>
   );
