@@ -230,7 +230,6 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
 
   useEffect(() => {
     if (location.state?.autoGoogleLogin) {
-      alert();
       login(); // Trigger Google login automatically
       // Clear the state to prevent retriggering on refresh
       // window.history.replaceState({}, document.title);
@@ -474,6 +473,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
         setIsSubmitting(false);
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);
+        localStorage.setItem("isAdult", response?.data?.data?.user?.is_adult);
         console.log(
           "🚀 ~ handleSubmit ~ response?.data?.data?.jwt:",
           response?.data?.data?.jwt

@@ -335,6 +335,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
         setIsSubmitting(false);
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);
+        localStorage.setItem("isAdult", response?.data?.data?.user?.is_adult);
         localStorage.setItem(
           "is_disqualify",
           response?.data?.data?.user?.is_disqualify

@@ -10,6 +10,7 @@ import badge from "../assets/badge.svg";
 import bg from "../assets/certification_bg.png";
 import icon1 from "../assets/Frame 1.svg";
 import arrow from "../assets/arrow.svg";
+import shareicon from "../assets/shareicon.svg";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 import CertificationPlans from "../components/sections/Certification/CertificationPlans";
 import { FaFacebook, FaLinkedin, FaTwitter, FaWhatsapp } from "react-icons/fa";
@@ -21,12 +22,12 @@ import {
   WhatsappShareButton,
 } from "react-share";
 import html2pdf from "html2pdf.js";
+import ShareModal from "../components/sections/Certification/ShareModal";
 
 const UpgradeBadge = () => {
   const myid = localStorage.getItem("Id");
   const urldata = `${window.location.origin}/directory/user-profile/${myid}`;
   const tweetText = `Earned the CNESS Inspired Certification! Proud to lead with conscious values. Join us at cness.io`;
-
   const [user, setUser] = useState<any | null>(null);
   const [scoreData, setScoreData] = useState<any>(null);
   const [showMenu, setShowMenu] = useState<boolean>(false);
@@ -34,6 +35,7 @@ const UpgradeBadge = () => {
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [copy, setCopy] = useState<Boolean>(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   useEffect(() => {
     fetchDashboard();
@@ -208,13 +210,13 @@ const UpgradeBadge = () => {
     }
   };
 
-    const handleClickOutside = (event: MouseEvent) => {
+  const handleClickOutside = (event: MouseEvent) => {
     if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
       setShowMenu(false);
     }
   };
 
-    useEffect(() => {
+  useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -464,17 +466,31 @@ const UpgradeBadge = () => {
             </div>
           </div>
           <div className="w-1/5 bg-white rounded-xl px-3 pt-3 pb-6 flex flex-col">
-            <div className="pb-3 flex justify-start items-center gap-[14px] border-b border-black/10">
-              <div className="bg-[rgba(255,204,0,0.2)] w-8 h-8 rounded-full padding-[5px] flex justify-center items-center">
-                <img
-                  src={badge}
-                  alt="badge icon"
-                  className="w-[18px] h-[18px]"
-                />
+            <div className="pb-3 flex items-center justify-between w-full gap-[14px] border-b border-black/10">
+              <div className="flex items-center gap-2">
+                <div className="bg-[rgba(255,204,0,0.2)] w-8 h-8 rounded-full padding-[5px] flex justify-center items-center">
+                  <img
+                    src={badge}
+                    alt="badge icon"
+                    className="w-[18px] h-[18px]"
+                  />
+                </div>
+                <h5 className="py-3 font-['Poppins',Helvetica] text-base font-medium text-[#222224]">
+                  Badge
+                </h5>
               </div>
-              <h5 className="py-3 font-['Poppins',Helvetica] text-base font-medium text-[#222224]">
-                Badge
-              </h5>
+
+              <button
+                onClick={() => setShareOpen(true)}
+                className="inline-flex h-[32px] w-[32px] items-center justify-center rounded-full bg-white hover:bg-[#EEF0F5]"
+                style={{ boxShadow: "0px 1px 10px 0px rgba(0, 0, 0, 0.1)" }}
+              >
+                <img
+                  src={shareicon}
+                  alt="share icon"
+                  className="w-[12px] h-[12px]"
+                />
+              </button>
             </div>
             {scoreData?.badge?.level ? (
               <div className="flex-1 flex items-center justify-center ">
@@ -531,8 +547,8 @@ const UpgradeBadge = () => {
               <div className="pt-3 flex justify-start items-center gap-3">
                 <img src={arrow} alt="icon" className="w-4 h-4" />
                 <h3 className="font-['Open_Sans',Helvetica] text-sm font-normal text-[#222224]">
-                  Organizations eligible for reassessment after 3 months if they
-                  seek a higher tier.
+                  You are eligible for reassessment after 3 months if they seek
+                  a higher tier.
                 </h3>
               </div>
 
@@ -551,6 +567,7 @@ const UpgradeBadge = () => {
           </div>
         </div>
       </section>
+      <ShareModal isOpen={shareOpen} onClose={() => setShareOpen(false)} />
     </>
   );
 };

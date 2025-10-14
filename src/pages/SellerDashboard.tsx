@@ -19,10 +19,19 @@ import {
   SocialStackCard,
   BestPracticesSection,
   DirectorySection,
+  MarketplaceCard,
+  LearningLabSection,
 } from "../components/Seller/SellerSegmentcard";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { useNavigate } from "react-router-dom";
-import marketplace from "../../src/assets/marketplace.png";
+import market1 from "../../src/assets/market1.png";
+import market2 from "../../src/assets/market2.png";
+import market3 from "../../src/assets/market3.png";
+import learning1 from "../../src/assets/learning1.png";
+import learning2 from "../../src/assets/learning2.png";
+import learning3 from "../../src/assets/learning3.png";
+import cart1 from "../../src/assets/cart1.png";
+import cart2 from "../../src/assets/cart2.png";
 import AddBestPracticeModal from "../components/sections/bestPractiseHub/AddBestPractiseModal";
 
 interface UserData {
@@ -31,6 +40,7 @@ interface UserData {
   email: string;
   level: string;
   profile_progress: number;
+  cis_score: number;
   assesment_progress: number;
 }
 
@@ -54,6 +64,68 @@ interface ApiResponse<T> {
     data?: T;
   };
 }
+
+const suggested = [
+  {
+    id: 1,
+    name: "Ebook",
+    avatar: market1,
+  },
+  {
+    id: 2,
+    name: "Course",
+    avatar: market2,
+  },
+  {
+    id: 3,
+    name: "Playlist",
+    avatar: market3,
+  },
+];
+
+const carted = [
+  {
+    id: 1,
+    name: "Product Name 1",
+    image: cart1,
+    price: "$12.00",
+  },
+  {
+    id: 2,
+    name: "Product Name 2",
+    image: cart2,
+    price: "$12.00",
+  },
+];
+
+const learningLabItems = [
+  {
+    id: 1,
+    name: "Module 1: Basic",
+    image: learning1, 
+    title: "Module 1: Basic",
+    progress: 100,
+    status: 'completed' as const,
+    gradient: 'bg-[linear-gradient(90deg,#DFD6FF_0%,#E7AAFF_91.18%,#FEDBEE_182.35%)]'
+  },
+  {
+    id: 2,
+    name: "Module 2",
+    image: learning2, 
+    title: "Module 2",
+    progress: 40,
+    status: 'resume' as const,
+    gradient: 'bg-[#A392F2]'
+  },
+  {
+    id: 3,
+    name: "Module 3",
+    image: learning3,
+    title: "Module 3",
+    progress: 0,
+    status: 'locked' as const,
+  },
+];
 
 export default function SellerDashboard() {
   const [user, setUser] = useState<UserData | null>(null);
@@ -393,8 +465,8 @@ export default function SellerDashboard() {
 
   const userName =
     localStorage.getItem("name") +
-      " " +
-      localStorage.getItem("margaret_name") || "User";
+    " " +
+    localStorage.getItem("margaret_name") || "User";
 
   return (
     <div className="px-4 2xl:px-6 pt-4 md:pt-8 pb-5 md:pb-18">
@@ -479,12 +551,13 @@ export default function SellerDashboard() {
               </div>
             </div>
           ) : ( */}
-<CertificationCard
-  progress={user?.assesment_progress ? user?.assesment_progress : 0}
-  activeLevel={user?.level} // Pass the actual user level from your API
-  onContinue={() => navigate("/dashboard/assesment")}
-  onOpen={() => console.log("Open Certification")}
-/>
+          <CertificationCard
+            progress={user?.assesment_progress ? user?.assesment_progress : 0}
+            activeLevel={user?.level} // Pass the actual user level from your API
+            score={user?.cis_score}
+            onContinue={() => navigate("/dashboard/assesment")}
+            onOpen={() => console.log("Open Certification")}
+          />
           {/* )} */}
 
           <BestPracticesSection
@@ -524,54 +597,22 @@ export default function SellerDashboard() {
           />
         </div>
 
-        <div className="col-span-12 xl:col-span-4">
-          <div className="w-full flex flex-col gap-3">
-            <div
-              className="w-full h-full relative py-8 px-[20px] rounded-xl bg-[#FAFAFA]"
-              style={{
-                border: "1px solid var(--Stroke, rgba(236, 238, 242, 1))",
-              }}
-            >
-              <img
-                src={marketplace}
-                alt="star bg"
-                className="w-full max-h-[324px] 2xl:max-h-none 2xl:h-auto pointer-events-none select-none z-0 rounded-xl"
-                aria-hidden="true"
-              />
-              <div className="pt-5">
-                <h6 className="font-['Poppins',Helvetica] text-xl md:text-2xl font-medium text-black">
-                  Marketplace
-                </h6>
-                <h5 className="pt-3 pe-5 font-['Open_Sans',Helvetica] font-light text-sm text-[#242424]">
-                  Explore a wide range of conscious products crafted by verified
-                  creators who prioritize sustainability and ethical practices.
-                </h5>
-                <div className="pt-5">
-                  <button className="flex items-center gap-2 px-[18px] py-[12px] rounded-full bg-[rgba(112,119,254,0.1)] text-[#7077FE] text-sm font-normal">
-                    Coming Soon
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-4 h-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className="col-span-12 xl:col-span-4 h-full">
+          <MarketplaceCard
+            suggested={suggested}
+            topRated={suggested}
+            carted={carted}
+          />
         </div>
         <div className="col-span-12 xl:col-span-8">
           <DirectorySection
             items={directoryItems}
+            onView={(item) => navigate(`/dashboard/userprofile/${item.id}`)}
+          />
+        </div>
+        <div className="col-span-12">
+          <LearningLabSection
+            items={learningLabItems}
             onView={(item) => navigate(`/dashboard/userprofile/${item.id}`)}
           />
         </div>
