@@ -5,10 +5,17 @@ import socialmedia from "../../../assets/socialmedia.svg";
 import grouplogo from "../../../assets/grouplogo.png";
 import frame from "../../../assets/bg-frame.png";
 import facebook from "../../../assets/facebook.png";
+import linkedin from "../../../assets/linkedin.png";
+import cness from "../../../assets/cness.png";
 import insta from "../../../assets/insta.png";
 import whatsapp from "../../../assets/whatsapp.png";
 import Button from "../../ui/Button";
-import ContentModal from "../../../components/ui/ContentModal";
+import { getUserBadgeDetails } from "../../../Common/ServerAPI";
+import indv_aspiring from "../../../assets/indv_aspiring.svg";
+import indv_inspired from "../../../assets/indv_inspired.svg";
+import indv_leader from "../../../assets/indv_leader.svg";
+import jsPDF from 'jspdf';
+import { IoCloseOutline } from "react-icons/io5";
 
 export default function ShareModal({
   isOpen,
@@ -23,39 +30,120 @@ export default function ShareModal({
   );
   const [showTermModal, setShowTermModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
-  const [content, setContent] = useState("");
-  const [privacyContent, privacySetContent] = useState("");
   const [checked, setChecked] = useState(false);
+  const [embedCodes, setEmbedCodes] = useState<string[]>([]);
+  const [staticImageURL, setStaticImageURL] = useState<string>("");
   const [copied, setCopied] = useState(false);
-  const fileFormats = ["PDF", "DOCX", "PNG", "JPEG"];
-  const ratios = [1, 1.25, 1.5, 2];
 
   const [selectedFormat, setSelectedFormat] = useState("");
   const [selectedRatio, setSelectedRatio] = useState("");
-  const [logoScale, setLogoScale] = useState("100%");
+  const [logoScale, setLogoScale] = useState(100);
+  const [isDownloading, setIsDownloading] = useState(false);
 
-  const codes = {
-    btn1: `<iframe srcdoc="<script>document.write(decodeURIComponent(escape(atob('CiAgICA8ZGl2IHN0eWxlPSJkaXNwbGF5OiBmbGV4OyBhbGlnbi1pdGVtczogY2VudGVyOyBmb250LWZhbWlseTogc2Fucy1zZXJpZjsiPgogICAgICA8aW1nIHNyYz0iaHR0cHM6Ly91YXQuY25lc3MuaW8vYXNzZXRzL2luZHZfYXNwaXJpbmctVHotdk5VTU8uc3ZnP2F1</script>"></iframe>`,
-    btn2: `<div class="custom-embed"><img src="https://yourdomain.com/embed-image.png" alt="Preview" /></div>`,
-    btn3: `<script src="https://yourdomain.com/embed.js" async></script>`,
+  const fetchUserBadge = async () => {
+    try {
+      const res = await getUserBadgeDetails();
+      const level = res.data.data.level;
+
+      // Set image based on user level
+      switch (level.toLowerCase()) {
+        case "aspiring":
+          setStaticImageURL(indv_aspiring);
+          break;
+        case "inspired":
+          setStaticImageURL(indv_inspired);
+          break;
+        case "leader":
+          setStaticImageURL(indv_leader);
+          break;
+        default:
+          setStaticImageURL(indv_aspiring);
+      }
+    } catch (error) {
+      console.error("Error fetching badge details:", error);
+      setStaticImageURL(indv_aspiring);
+    }
   };
 
   useEffect(() => {
-    fetch("/terms and conditions new.html")
-      .then((res) => res.text())
-      .then((data) => setContent(data));
+    fetchUserBadge();
   }, []);
+
   useEffect(() => {
-    fetch("/CNESS privacy policy.htm")
-      .then((res) => res.text())
-      .then((data) => privacySetContent(data));
-  }, []);
+    if (!staticImageURL) return;
+
+    const uniqueKey = Math.random().toString(36).substring(2, 15);
+    const securedImageURL = `${staticImageURL}?authKey=${uniqueKey}`;
+    const currentDomain = window.location.origin;
+
+    // const rawHTML = `
+    //   <div style='display: flex; align-items: center; font-family: sans-serif;'>
+    //     <img src='${securedImageURL}' alt='Badge' style='width: 40px; height: 40px; border-radius: 50%;' />
+    //   </div>
+    // `;
+    const rawHTML = `
+    <div style="display: flex; align-items: center; font-family: sans-serif;">
+      <img src="${currentDomain}${securedImageURL}" alt="Badge" style="width: 40px; height: 40px; border-radius: 50%;" />
+    </div>
+  `;
+
+    const base64HTML = btoa(unescape(encodeURIComponent(rawHTML)));
+
+    const iframeCode = `
+      <iframe 
+      srcdoc="<script>document.write(decodeURIComponent(escape(atob('${base64HTML}'))))</script>" 
+      style="border: none; width: 60px; height: 60px;"></iframe>`.trim();
+
+    const directHTMLCode = `
+      <div style="display: flex; align-items: center; font-family: sans-serif;">
+      <img 
+          src="${currentDomain}${securedImageURL}"
+          alt="Badge" 
+          style="width: 40px; height: 40px; border-radius: 50%;" 
+      />
+      </div>`.trim();
+
+    const scriptEmbedCode = `
+      <div id="badge-container"></div>
+      <script>
+      (function () {
+          var img = document.createElement("img");
+          img.src = "${currentDomain}${securedImageURL}";
+          img.alt = "Badge";
+          img.style.width = "40px";
+          img.style.height = "40px";
+          img.style.borderRadius = "50%";
+          document.getElementById("badge-container").appendChild(img);
+      })();
+      </script>`.trim();
+
+    setEmbedCodes([iframeCode, directHTMLCode, scriptEmbedCode]);
+  }, [staticImageURL]);
+
+  const activeCode =
+    activeButton === "btn1"
+      ? embedCodes[0]
+      : activeButton === "btn2"
+        ? embedCodes[1]
+        : embedCodes[2];
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(codes[activeButton]);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(activeCode || "");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Clipboard copy failed:", err);
+    }
   };
+
+  const fileFormats = ["PNG", "JPEG", "PDF", "SVG"];
+  const ratios = [
+    { label: "1:1 (Square)", value: "1:1", width: 1080, height: 1080 },
+    { label: "16:9 (Landscape)", value: "16:9", width: 1920, height: 1080 },
+    { label: "9:16 (Portrait)", value: "9:16", width: 1080, height: 1920 },
+    { label: "4:3 (Standard)", value: "4:3", width: 1440, height: 1080 },
+  ];
 
   const tabs = [
     { id: "tab1", label: "Public URL", subText: "Shared and Embed", icon: url },
@@ -79,21 +167,209 @@ export default function ShareModal({
 
   const socialMedia = [
     {
+      id: "cness",
+      icon: cness,
+    },
+    {
       id: "facebook",
-      label: "Facebook",
       icon: facebook,
     },
     {
       id: "instagram",
-      label: "Instagram",
       icon: insta,
     },
     {
       id: "whatsapp",
-      label: "Whatsapp",
       icon: whatsapp,
     },
+    {
+      id: "linkedin",
+      icon: linkedin,
+    },
   ];
+
+  // Download handler
+  const handleDownload = async () => {
+    if (!selectedFormat) {
+      alert("Please select a file format");
+      return;
+    }
+
+    if (!selectedRatio) {
+      alert("Please select an aspect ratio");
+      return;
+    }
+
+    setIsDownloading(true);
+
+    try {
+      const ratio = ratios.find(r => r.value === selectedRatio);
+      if (!ratio) {
+        alert("Invalid ratio selected");
+        setIsDownloading(false);
+        return;
+      }
+
+      // Create a canvas with the exact dimensions user selected
+      const canvas = document.createElement('canvas');
+      canvas.width = ratio.width;
+      canvas.height = ratio.height;
+      const ctx = canvas.getContext('2d');
+
+      if (!ctx) {
+        alert("Failed to create canvas");
+        setIsDownloading(false);
+        return;
+      }
+
+      // Only add background for JPEG and PDF (not PNG or SVG)
+      const includeBackground = selectedFormat === "JPEG" || selectedFormat === "PDF";
+
+      if (includeBackground) {
+        // White background for JPEG and PDF
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const frameImg = new Image();
+        frameImg.crossOrigin = "anonymous";
+
+        await new Promise((resolve, reject) => {
+          frameImg.onload = resolve;
+          frameImg.onerror = reject;
+          frameImg.src = frame;
+        });
+
+        ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+      }
+
+      // Load and draw logo at center with user's selected scale
+      const logoImg = new Image();
+      logoImg.crossOrigin = "anonymous";
+
+      await new Promise((resolve, reject) => {
+        logoImg.onload = resolve;
+        logoImg.onerror = reject;
+        logoImg.src = grouplogo;
+      });
+
+      // Calculate logo dimensions based on user's scale
+      const maxLogoWidth = canvas.width * 0.8;
+      const maxLogoHeight = canvas.height * 0.8;
+
+      const scaledWidth = maxLogoWidth * (logoScale / 100);
+      const scaledHeight = maxLogoHeight * (logoScale / 100);
+
+      const logoAspect = logoImg.width / logoImg.height;
+      let finalWidth = scaledWidth;
+      let finalHeight = scaledWidth / logoAspect;
+
+      if (finalHeight > scaledHeight) {
+        finalHeight = scaledHeight;
+        finalWidth = scaledHeight * logoAspect;
+      }
+
+      const x = (canvas.width - finalWidth) / 2;
+      const y = (canvas.height - finalHeight) / 2;
+
+      ctx.drawImage(logoImg, x, y, finalWidth, finalHeight);
+
+      // Download based on format
+      const filename = `CNESS-Badge-${selectedRatio.replace(':', 'x')}-${logoScale}%-${Date.now()}`;
+
+      switch (selectedFormat) {
+        case "PNG":
+          // PNG with transparent background
+          canvas.toBlob((blob) => {
+            if (blob) {
+              downloadBlob(blob, `${filename}.png`);
+              setIsDownloading(false);
+            }
+          }, 'image/png');
+          break;
+
+        case "JPEG":
+          // JPEG with white background
+          canvas.toBlob((blob) => {
+            if (blob) {
+              downloadBlob(blob, `${filename}.jpeg`);
+              setIsDownloading(false);
+            }
+          }, 'image/jpeg', 0.95);
+          break;
+
+        case "PDF":
+          // PDF with white background
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jsPDF({
+            orientation: ratio.width > ratio.height ? 'landscape' : 'portrait',
+            unit: 'px',
+            format: [ratio.width, ratio.height],
+          });
+          pdf.addImage(imgData, 'PNG', 0, 0, ratio.width, ratio.height);
+          pdf.save(`${filename}.pdf`);
+          setIsDownloading(false);
+          break;
+
+        case "SVG":
+          // SVG with transparent background 
+          const svgCanvas = document.createElement('canvas');
+          svgCanvas.width = ratio.width;
+          svgCanvas.height = ratio.height;
+          const svgCtx = svgCanvas.getContext('2d');
+
+          if (svgCtx) {
+            // Draw only the logo, no background
+            svgCtx.drawImage(logoImg, x, y, finalWidth, finalHeight);
+
+            const svgContent = `
+              <svg xmlns="http://www.w3.org/2000/svg" width="${ratio.width}" height="${ratio.height}">
+                <image href="${svgCanvas.toDataURL('image/png')}" width="${ratio.width}" height="${ratio.height}"/>
+              </svg>
+            `;
+            const svgBlob = new Blob([svgContent], { type: 'image/svg+xml' });
+            downloadBlob(svgBlob, `${filename}.svg`);
+          }
+          setIsDownloading(false);
+          break;
+      }
+    } catch (error: any) {
+      console.error("Download failed:", error);
+      alert(`Failed to download: ${error.message || 'Unknown error'}`);
+      setIsDownloading(false);
+    }
+  };
+
+  const downloadBlob = (blob: Blob, filename: string) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  // File size estimation
+  const getEstimatedSize = () => {
+    const ratio = ratios.find(r => r.value === selectedRatio);
+    if (!ratio) return "Unknown";
+
+    const pixels = ratio.width * ratio.height;
+
+    switch (selectedFormat) {
+      case "PNG":
+        return `~${Math.round(pixels * 3 / 1024 / 1024 * 10) / 10} MB`;
+      case "JPEG":
+        return `~${Math.round(pixels * 0.5 / 1024 / 1024 * 10) / 10} MB`;
+      case "PDF":
+        return `~${Math.round(pixels * 3 / 1024 / 1024 * 10) / 10} MB`;
+      case "SVG":
+        return `~${Math.round(pixels * 0.1 / 1024 / 1024 * 10) / 10} MB`;
+      default:
+        return "Unknown";
+    }
+  };
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -117,13 +393,16 @@ export default function ShareModal({
       {/* Modal Container */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-4xl bg-white rounded-xl order border-[#ECEEF2] overflow-hidden animate-fadeIn"
+        className="relative w-full max-w-4xl bg-white py-[18px] px-3 rounded-xl order border-[#ECEEF2] overflow-hidden animate-fadeIn"
         style={{
           maxHeight: "90vh",
           overflowY: "auto",
         }}
       >
         <div className="w-full h-[600px] ps-[12px] pe-[14px] py-[18px]">
+          <div onClick={onClose} className="absolute top-4 right-3 w-[20px] h-[20px] rounded-full flex items-center justify-center cursor-pointer border border-[#ECEEF2] shadow-[0px_0.56px_5.63px_0px_rgba(0,0,0,0.1)]">
+            <IoCloseOutline className="text-[#E1056D]" />
+          </div>
           <div className="w-full h-full flex flex-col lg:flex-row gap-[18px]">
             <div className="w-full lg:w-[35%] h-fit lg:h-full border-r border-[#ECEEF2] pr-[12px] flex flex-col gap-[18px]">
               {tabs.map((tab) => (
@@ -133,11 +412,10 @@ export default function ShareModal({
                     setActiveTab(tab.id as "tab1" | "tab2" | "tab3")
                   }
                   className={`flex items-center py-[8px] px-[12px] gap-[12px] rounded-xl transition-all duration-200 whitespace-nowrap
-                   ${
-                     activeTab === tab.id
-                       ? "bg-[#FAFAFA]"
-                       : "bg-white hover:bg-[#FAFAFA]"
-                   }`}
+                   ${activeTab === tab.id
+                      ? "bg-[#FAFAFA]"
+                      : "bg-white hover:bg-[#FAFAFA]"
+                    }`}
                 >
                   <img
                     src={tab.icon}
@@ -165,11 +443,10 @@ export default function ShareModal({
                         setActiveButton(btn.id as "btn1" | "btn2" | "btn3")
                       }
                       className={`relative flex items-center justify-center p-[12px] rounded-lg bg-[#FAFAFA4D] transition-all duration-200 whitespace-nowrap
-                   ${
-                     activeButton === btn.id
-                       ? "shadow-[0_0_10px_0_rgba(0,0,0,0.1)]"
-                       : "bg-white hover:bg-[#FAFAFA]"
-                   }`}
+                   ${activeButton === btn.id
+                          ? "shadow-[0_0_10px_0_rgba(0,0,0,0.1)]"
+                          : "bg-white hover:bg-[#FAFAFA]"
+                        }`}
                     >
                       <p className="text-sm font-medium text-[#0D0D12] font-['Poppins',Helvetica]">
                         {btn.label}
@@ -184,7 +461,7 @@ export default function ShareModal({
                 <div className="flex flex-col gap-[12px]">
                   <textarea
                     readOnly
-                    value={codes[activeButton]}
+                    value={activeCode || ""}
                     rows={6}
                     className="w-full font-normal text-xs font-['Poppins',Helvetica] border border-[#E2E8F0] rounded-lg shadow-[0_0_2px_0_rgba(0,0,0,0.1)] px-4 py-2"
                   />
@@ -198,11 +475,10 @@ export default function ShareModal({
                     />
                     <span
                       className={`w-[16px] h-[16px] flex items-center justify-center border border-[#D0D5DD] rounded-sm transition-all
-          ${
-            checked
-              ? "border-[#E1056D] bg-[#E1056D]"
-              : "border-gray-300 bg-white"
-          } shadow-[0_0_2px_0_rgba(0,0,0,0.1)]`}
+          ${checked
+                          ? "border-[#E1056D] bg-[#E1056D]"
+                          : "border-gray-300 bg-white"
+                        } shadow-[0_0_2px_0_rgba(0,0,0,0.1)]`}
                     >
                       {checked && (
                         <svg
@@ -243,7 +519,7 @@ export default function ShareModal({
                 </div>
                 <Button
                   onClick={handleCopy}
-                  disabled={!checked}
+                  disabled={!checked || !activeCode}
                   variant="gradient-primary"
                   className="rounded-full w-full py-[12px] px-[16px] self-stretch transition-colors duration-500 ease-in-out"
                 >
@@ -286,6 +562,11 @@ export default function ShareModal({
                         </svg>
                       </div>
                     </div>
+                    {selectedFormat && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Estimated size: {getEstimatedSize()}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -302,8 +583,8 @@ export default function ShareModal({
                           Select Ratio
                         </option>
                         {ratios.map((ratio) => (
-                          <option key={ratio} value={ratio}>
-                            {ratio}
+                          <option key={ratio.value} value={ratio.value}>
+                            {ratio.label} - {ratio.width}×{ratio.height}px
                           </option>
                         ))}
                       </select>
@@ -319,6 +600,7 @@ export default function ShareModal({
                       </div>
                     </div>
                   </div>
+
                   <div>
                     <label className="text-sm font-medium font-['Poppins',Helvetica] text-[#0D0D12] mb-2 block">
                       Preview
@@ -332,49 +614,65 @@ export default function ShareModal({
                       />
 
                       {/* Centered Logo */}
-                      <img
-                        src={grouplogo}
-                        alt="Logo"
-                        className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 object-contain transition-transform duration-200 ${
-                          logoScale === "75%"
-                            ? "w-[187px] h-[75px]"
-                            : "w-[250px] h-[100px]"
-                        }`}
-                      />
+                      {staticImageURL && (
+                        <img
+                          id="badge-preview"
+                          src={staticImageURL}
+                          alt="Logo"
+                          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 object-contain transition-all duration-300"
+                          style={{
+                            width: `${logoScale}%`,
+                            height: `${logoScale}%`,
+                            maxWidth: '80%',
+                            maxHeight: '80%',
+                          }}
+                        />
+                      )}
+
+                      {!staticImageURL && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <p className="text-sm text-gray-400">Unable to fetch user badge</p>
+                        </div>
+                      )}
 
                       {/* Dropdown - Top Right */}
-                      <div className="absolute top-3 right-3 w-[50px]">
-                        <div className="relative">
-                          <select
-                            value={logoScale}
-                            onChange={(e) => setLogoScale(e.target.value)}
-                            className="w-full appearance-none px-[8px] py-[4px] text-[8px] border border-[#ECEEF2] rounded-[4px] font-['Poppins',Helvetica] text-[#0D0D12] bg-white shadow-[0_1px_4px_0_rgba(0,0,0,0.1)]"
-                          >
-                            <option value="100%">100%</option>
-                            <option value="75%">75%</option>
-                          </select>
-
-                          <div className="pointer-events-none absolute top-1/2 right-2 transform -translate-y-1/2">
-                            <svg
-                              className="w-3 h-3 text-[#94A3B8]"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                              xmlns="http://www.w3.org/2000/svg"
+                      {staticImageURL && (
+                        <div className="absolute top-3 right-3.5">
+                          <div className="relative">
+                            <select
+                              value={logoScale}
+                              onChange={(e) => setLogoScale(Number(e.target.value))}
+                              className="appearance-none px-2 py-[6px] pr-[28px] text-[10px] border border-[#ECEEF2] rounded-[6px] font-['Poppins',Helvetica] text-[#0D0D12] bg-white shadow-[0_1px_4px_0_rgba(0,0,0,0.1)] cursor-pointer hover:border-[#7077FE] transition-colors"
                             >
-                              <path d="M5.516 7.548L10 12.032l4.484-4.484L16 9.064l-6 6-6-6z" />
-                            </svg>
+                              <option value={100}>100%</option>
+                              <option value={75}>75%</option>
+                              <option value={50}>50%</option>
+                            </select>
+
+                            <div className="pointer-events-none absolute top-1/2 right-2 transform -translate-y-1/2">
+                              <svg
+                                className="w-3 h-3 text-[#94A3B8]"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path d="M5.516 7.548L10 12.032l4.484-4.484L16 9.064l-6 6-6-6z" />
+                              </svg>
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   </div>
                 </div>
                 <Button
+                  onClick={handleDownload}
+                  disabled={isDownloading}
                   variant="gradient-primary"
                   className="rounded-full w-full py-[12px] px-[16px] self-stretch transition-colors duration-500 ease-in-out"
                 >
                   <span className="font-normal text-sm font-['Poppins',Helvetica]">
-                    Share
+                    {isDownloading ? "Downloading..." : `Download`}
                   </span>
                 </Button>
               </div>
@@ -392,12 +690,9 @@ export default function ShareModal({
                       >
                         <img
                           src={media.icon}
-                          alt={media.label}
+                          alt={media.id}
                           className="w-[32px] h-[32px] object-contain"
                         />
-                        <span className="text-[#0D0D12] font-medium text-sm">
-                          {media.label}
-                        </span>
                       </button>
                     ))}
                   </div>
@@ -406,49 +701,99 @@ export default function ShareModal({
             )}
           </div>
         </div>
-        <ContentModal
-          isOpen={showTermModal}
-          onClose={() => setShowTermModal(false)}
-        >
-          <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
-            <h3 className="lg:text-[36px] md:text-[30] text-[24px] font-[500] text-black mb-4 text-center">
-              CNESS TERMS AND CONDITIONS
-            </h3>
+
+        {/* Terms Modal */}
+        {showTermModal && (
+          <div
+            onClick={() => setShowTermModal(false)}
+            className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/60"
+          >
             <div
-              className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg w-full max-w-7xl max-h-[500px] overflow-y-auto content-container"
-              style={{
-                fontFamily: "'Open Sans', 'Poppins', sans-serif",
-                fontSize: "16px",
-                textAlign: "justify",
-                lineHeight: "1.6",
-                color: "#333",
-              }}
-              dangerouslySetInnerHTML={{ __html: content }}
-            />
+              onClick={(e) => e.stopPropagation()}
+              className="relative bg-white rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+            >
+              <button
+                onClick={() => setShowTermModal(false)}
+                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <IoCloseOutline className="text-xl text-gray-600" />
+              </button>
+
+              <h2 className="text-2xl font-semibold text-[#0D0D12] mb-4 pr-8">
+                Terms of Services
+              </h2>
+              <div className="text-sm text-gray-600 space-y-3">
+                <p>
+                  This is a demo Terms of Services content. The actual terms and conditions
+                  will be integrated by the team.
+                </p>
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
+                  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                  quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                  consequat.
+                </p>
+                <p>
+                  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore
+                  eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+                  sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </p>
+                <p>
+                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
+                  doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore
+                  veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+                </p>
+              </div>
+            </div>
           </div>
-        </ContentModal>
-        <ContentModal
-          isOpen={showPrivacyModal}
-          onClose={() => setShowPrivacyModal(false)}
-        >
-          <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
-            <h3 className="lg:text-[36px] md:text-[30] text-[24px] font-[500] text-black mb-4 text-center">
-              CNESS PRIVACY POLICY
-            </h3>
+        )}
+
+        {/* Privacy Policy Modal */}
+        {showPrivacyModal && (
+          <div
+            onClick={() => setShowPrivacyModal(false)}
+            className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/60"
+          >
             <div
-              className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg w-full max-w-7xl max-h-[500px] overflow-y-auto content-container"
-              style={{
-                fontFamily: "'Open Sans', 'Poppins', sans-serif",
-                fontSize: "16px",
-                textAlign: "justify",
-                lineHeight: "1.6",
-                color: "#333",
-              }}
-              dangerouslySetInnerHTML={{ __html: privacyContent }}
-            />
+              onClick={(e) => e.stopPropagation()}
+              className="relative bg-white rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+            >
+              <button
+                onClick={() => setShowPrivacyModal(false)}
+                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <IoCloseOutline className="text-xl text-gray-600" />
+              </button>
+
+              <h2 className="text-2xl font-semibold text-[#0D0D12] mb-4 pr-8">
+                Privacy Policy
+              </h2>
+              <div className="text-sm text-gray-600 space-y-3">
+                <p>
+                  This is a demo Privacy Policy content. The actual privacy policy will be
+                  integrated by the team.
+                </p>
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
+                  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                  quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                  consequat.
+                </p>
+                <p>
+                  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore
+                  eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+                  sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </p>
+                <p>
+                  Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit,
+                  sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+                  Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.
+                </p>
+              </div>
+            </div>
           </div>
-        </ContentModal>
+        )}
       </div>
-    </div>
+    </div >
   );
 }
