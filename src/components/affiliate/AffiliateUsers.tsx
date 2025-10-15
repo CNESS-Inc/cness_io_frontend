@@ -121,7 +121,7 @@ export default function AffiliateUsers({
                 Joined Date
               </th>
               <th className="font-semibold text-base text-[#64748B] font-['Open_Sans',Helvetica]">
-                Revenue
+              Commission
               </th>
               <th className="font-semibold text-base text-[#64748B] font-['Open_Sans',Helvetica]">
                 Status

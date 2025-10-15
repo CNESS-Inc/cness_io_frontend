@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import url from "../../../assets/url.svg";
 import file from "../../../assets/file.svg";
 import socialmedia from "../../../assets/socialmedia.svg";
-import grouplogo from "../../../assets/grouplogo.png";
 import frame from "../../../assets/bg-frame.png";
 import facebook from "../../../assets/facebook.png";
 import linkedin from "../../../assets/linkedin.png";
@@ -249,7 +248,7 @@ export default function ShareModal({
       await new Promise((resolve, reject) => {
         logoImg.onload = resolve;
         logoImg.onerror = reject;
-        logoImg.src = grouplogo;
+        logoImg.src = staticImageURL;
       });
 
       // Calculate logo dimensions based on user's scale
