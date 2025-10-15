@@ -281,7 +281,7 @@ export default function ShareModal({
           // PNG with transparent background
           canvas.toBlob((blob) => {
             if (blob) {
-              downloadBlob(blob, `${filename}.png`, 'image/png');
+              downloadBlob(blob, `${filename}.png`);
               setIsDownloading(false);
             }
           }, 'image/png');
@@ -291,7 +291,7 @@ export default function ShareModal({
           // JPEG with white background
           canvas.toBlob((blob) => {
             if (blob) {
-              downloadBlob(blob, `${filename}.jpeg`, 'image/jpeg');
+              downloadBlob(blob, `${filename}.jpeg`);
               setIsDownloading(false);
             }
           }, 'image/jpeg', 0.95);
@@ -327,7 +327,7 @@ export default function ShareModal({
               </svg>
             `;
             const svgBlob = new Blob([svgContent], { type: 'image/svg+xml' });
-            downloadBlob(svgBlob, `${filename}.svg`, 'image/svg+xml');
+            downloadBlob(svgBlob, `${filename}.svg`);
           }
           setIsDownloading(false);
           break;
@@ -339,7 +339,7 @@ export default function ShareModal({
     }
   };
 
-  const downloadBlob = (blob: Blob, filename: string, mimeType: string) => {
+  const downloadBlob = (blob: Blob, filename: string) => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
