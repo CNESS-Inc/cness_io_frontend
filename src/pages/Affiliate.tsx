@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import bg from "../assets/affiliate-bg.png";
 import fund from "../assets/fund.svg";
 import affiliate from "../assets/affiliate-icon.svg";
@@ -17,6 +17,10 @@ import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { PiPaypalLogo } from "react-icons/pi";
 import { LiaCreditCardSolid } from "react-icons/lia";
 import AffiliateUsers from "../components/affiliate/AffiliateUsers";
+import { GenerateAffiliateCode, getMyRefferralCode, getReferralEarning, getReferredUsers, withdrawalAmount } from "../Common/ServerAPI";
+import Button from "../components/ui/Button";
+import Select from "react-select";
+import Modal from "../components/ui/Modal";
 
 interface User {
   id: number;
@@ -28,6 +32,13 @@ interface User {
   joinedDate: string;
   revenue: string;
   status: "Completed" | "Pending" | "Failed";
+}
+
+interface ReferredUser {
+  id: string;
+  username: string;
+  email: string;
+  completed_step?: number;
 }
 
 const users: User[] = [
@@ -143,31 +154,143 @@ const users: User[] = [
   },
 ];
 
+const tabs = [
+  { id: "overview", label: "Overview" },
+  { id: "users", label: "Affiliate Users" },
+];
+
+const cardData = [
+  {
+    title: "Referral Revenue",
+    icon: revenue,
+    value: "$ 124,576",
+    change: "+10.5% vs Last Month",
+    changeColor: "#60C750",
+  },
+  {
+    title: "Commission Amount",
+    icon: amount,
+    value: "$ 4,576",
+    change: "This Month",
+    changeColor: "#60C750",
+  },
+  {
+    title: "Affiliate",
+    icon: affiliateicon,
+    value: "156",
+    change: "-8.3% vs Last Month",
+    changeColor: "#E64646",
+  },
+  {
+    title: "Last Withdrawal",
+    icon: withdrawal,
+    value: "$ 4,576",
+    change: "This Month",
+    changeColor: "#60C750",
+  },
+];
+
+const paymentMethods = [
+  {
+    id: "bank",
+    title: "Bank Transfer",
+    maskedInfo: "******4523",
+    processingTime: "3-5 Business Days",
+    icon: <CiBank size={30} />,
+    selected: true,
+  },
+  {
+    id: "paypal",
+    title: "PayPal",
+    maskedInfo: "user@example.com",
+    processingTime: "Instant",
+    icon: <PiPaypalLogo size={30} />,
+    selected: false,
+  },
+  {
+    id: "credit-card",
+    title: "Credit Card",
+    maskedInfo: "**** **** **** 1234",
+    processingTime: "Instant",
+    icon: <LiaCreditCardSolid size={30} />,
+    selected: false,
+  },
+];
+
+const countryCode = [
+  "+1", "+20", "+30", "+32", "+33", "+34", "+36", "+39", "+44", "+44", "+44",
+  "+49", "+51", "+53", "+55", "+56", "+57", "+58", "+60", "+61", "+61", "+61",
+  "+62", "+64", "+65", "+66", "+81", "+82", "+84", "+86", "+91", "+92", "+93",
+  "+94", "+95", "+98", "+1242", "+1246", "+1264", "+1268", "+1284", "+1340",
+  "+1441", "+1473", "+1671", "+1684", "+1767", "+1849", "+1876", "+1939",
+  "+212", "+213", "+216", "+218", "+220", "+221", "+222", "+223", "+224",
+  "+225", "+226", "+227", "+228", "+229", "+230", "+231", "+232", "+233",
+  "+234", "+235", "+236", "+237", "+238", "+239", "+240", "+241", "+242",
+  "+243", "+244", "+245", "+246", "+248", "+249", "+250", "+251", "+252",
+  "+253", "+254", "+255", "+256", "+257", "+258", "+260", "+261", "+262",
+  "+263", "+264", "+265", "+266", "+267", "+268", "+269", "+290", "+291",
+  "+297", "+298", "+299", "+350", "+351", "+352", "+353", "+354", "+355",
+  "+356", "+357", "+358", "+358", "+359", "+370", "+371", "+372", "+373",
+  "+374", "+375", "+376", "+377", "+378", "+379", "+380", "+381", "+382",
+  "+383", "+385", "+386", "+387", "+389", "+420", "+421", "+423", "+500",
+  "+500", "+501", "+502", "+503", "+504", "+505", "+506", "+507", "+508",
+  "+509", "+590", "+590", "+591", "+592", "+593", "+594", "+595", "+596",
+  "+597", "+598", "+599", "+672", "+673", "+675", "+676", "+677", "+678",
+  "+679", "+680", "+681", "+682", "+683", "+685", "+686", "+687", "+688",
+  "+689", "+690", "+691", "+692", "+850", "+852", "+853", "+855", "+856",
+  "+880", "+886", "+960", "+961", "+962", "+963", "+964", "+965", "+966",
+  "+967", "+968", "+970", "+971", "+972", "+973", "+974", "+975", "+976",
+  "+977", "+992", "+993", "+994", "+995", "+996", "+998"
+];
+
 export default function Affiliate() {
+  const myReferralCode = localStorage.getItem("referral_code");
+
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<"overview" | "users">("overview");
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [selectedId, setSelectedId] = useState("bank");
-  const dynamicKey = "CNESS1008443218";
+  const [currentReferralCode, setCurrentReferralCode] = useState<string | null>(myReferralCode);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [referreEarning, setReferreEarning] = useState<string>("0");
+  const [pendingAmount, setPendingAmount] = useState<string>("0");
+  const [referredUsers, setReferredUsers] = useState<ReferredUser[]>([]);
+  console.log('referredUsers', referredUsers)
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [withdrawCountryCode, setWithdrawCountryCode] = useState('');
+  const [withdrawPhone, setWithdrawPhone] = useState('');
+  const [withdrawError, setWithdrawError] = useState('');
+
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 5;
 
-  // Total number of pages
-  const totalPages = Math.ceil(users.length / usersPerPage);
+  const countryCodeOptions = countryCode.map((code) => ({
+    value: code,
+    label: code,
+  }));
 
-  // Calculate indexes for slicing
+  const totalPages = Math.ceil(users.length / usersPerPage);
   const startIndex = (currentPage - 1) * usersPerPage;
   const endIndex = Math.min(startIndex + usersPerPage, users.length);
-
-  // Slice the data for current page
   const currentUsers = users.slice(startIndex, endIndex);
+
+  const baseUrl = window.location.origin;
 
   const handleShareToggle = () => setIsShareOpen((prev) => !prev);
   const handleShareClose = () => setIsShareOpen(false);
 
+  useEffect(() => {
+    let userID = localStorage.getItem("Id");
+    if (userID) {
+      myRefferralCode(userID);
+      loadReferralEarning();
+    }
+  }, []);
+
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(dynamicKey);
+      await navigator.clipboard.writeText(currentReferralCode ? currentReferralCode : '');
       showToast({
         message: "copied!",
         type: "success",
@@ -178,68 +301,148 @@ export default function Affiliate() {
     }
   };
 
-  const tabs = [
-    { id: "overview", label: "Overview" },
-    { id: "users", label: "Affiliate Users" },
-  ];
+  const myRefferralCode = async (userID: any) => {
+    try {
+      const payload = {
+        user_id: userID,
+      };
+      const res = await getMyRefferralCode(payload);
+      const referralCode = res.data?.data?.referral_code;
+      if (referralCode) {
+        setCurrentReferralCode(referralCode);
+        localStorage.setItem("referral_code", referralCode);
+      }
+    } catch (err) {
+      console.error("Failed to load referred users", err);
+    }
+  };
 
-  const cardData = [
-    {
-      title: "Referral Revenue",
-      icon: revenue,
-      value: "$ 124,576",
-      change: "+10.5% vs Last Month",
-      changeColor: "#60C750",
-    },
-    {
-      title: "Commission Amount",
-      icon: amount,
-      value: "$ 4,576",
-      change: "This Month",
-      changeColor: "#60C750",
-    },
-    {
-      title: "Affiliate",
-      icon: affiliateicon,
-      value: "156",
-      change: "-8.3% vs Last Month",
-      changeColor: "#E64646",
-    },
-    {
-      title: "Last Withdrawal",
-      icon: withdrawal,
-      value: "$ 4,576",
-      change: "This Month",
-      changeColor: "#60C750",
-    },
-  ];
+  const handleGenerateCode = async () => {
+    setIsRefreshing(true);
+    try {
+      const userId = localStorage.getItem("Id");
+      if (!userId) {
+        showToast({
+          message: "User ID not found. Please login again.",
+          type: "error",
+          duration: 3000,
+        });
+        setIsRefreshing(false);
+        return;
+      }
 
-  const paymentMethods = [
-    {
-      id: "bank",
-      title: "Bank Transfer",
-      maskedInfo: "******4523",
-      processingTime: "3-5 Business Days",
-      icon: <CiBank size={30} />,
-      selected: true,
-    },
-    {
-      id: "paypal",
-      title: "PayPal",
-      maskedInfo: "user@example.com",
-      processingTime: "Instant",
-      icon: <PiPaypalLogo size={30} />,
-      selected: false,
-    },
-    {
-      id: "credit-card",
-      title: "Credit Card",
-      maskedInfo: "**** **** **** 1234",
-      processingTime: "Instant",
-      icon: <LiaCreditCardSolid size={30} />,
-      selected: false,
-    },
-  ];
+      const payload = {
+        user_id: userId,
+      };
+      const response = await GenerateAffiliateCode(payload);
+
+      if (response?.data?.data?.referral_code) {
+        const referralCode = response.data.data.referral_code;
+        localStorage.setItem("referral_code", referralCode);
+        setCurrentReferralCode(referralCode);
+
+        showToast({
+          message: "Referral code refreshed successfully!",
+          type: "success",
+          duration: 2000,
+        });
+      } else {
+        showToast({
+          message: "Failed to generate referral code. Please try again.",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      console.error("Error generating code", error);
+      showToast({
+        message: "Something went wrong. Please try again.",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  const withdrawalRequest = () => {
+    setIsWithdrawModalOpen(true);
+    setWithdrawAmount('');
+    setWithdrawCountryCode(countryCode[0]); // Set default country code
+    setWithdrawPhone('');
+    setWithdrawError('');
+  };
+
+  const loadReferralEarning = async () => {
+    try {
+      const userpayload = {
+        user_id: localStorage.getItem("Id"),
+      };
+      const userData = await getReferralEarning(userpayload);
+      setReferreEarning(userData.data?.data?.available_amount || '0');
+      setPendingAmount(userData.data?.data?.pending_amount || '0');
+    } catch (err) {
+      console.error("Failed to load referral earnings", err);
+    }
+  };
+
+  const handleWithdrawSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setWithdrawError('');
+    const amountNum = Number(withdrawAmount);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      setWithdrawError('Enter a valid amount.');
+      return;
+    }
+    if (amountNum > Number(referreEarning)) {
+      setWithdrawError('Requested amount exceeds your referral earning.');
+      return;
+    }
+    if (!withdrawPhone.trim()) {
+      setWithdrawError('Enter your phone number.');
+      return;
+    }
+
+    try {
+      // Example payload
+      const payload = {
+        user_id: localStorage.getItem("Id"),
+        amount: amountNum,
+        country_code: withdrawCountryCode,
+        phone: withdrawPhone,
+      };
+      const response = await withdrawalAmount(payload); // Replace with your API
+      // console.log('Withdrawal response:', response);
+      if (response.success) {
+        setIsWithdrawModalOpen(false);
+        showToast({
+          message: 'Withdrawal request submitted successfully.',
+          type: "success",
+          duration: 5000,
+        });
+      }
+      else {
+        setIsWithdrawModalOpen(false);
+        showToast({
+          message: response.error?.message,
+          type: "error",
+          duration: 5000,
+        });
+      }
+    } catch (err) {
+      setWithdrawError('Failed to submit request. Try again.');
+    }
+  };
+
+  const loadReferredUsers = async (referralcode: string) => {
+    try {
+      const payload = { referralcode };
+      const res = await getReferredUsers(payload);
+      setReferredUsers(res.data?.data?.referralUsers || []);
+    } catch (err) {
+      console.error("Failed to load referred users", err);
+    }
+  };
 
   return (
     <div className="w-full h-full flex flex-col gap-3">
@@ -247,15 +450,19 @@ export default function Affiliate() {
         {tabs.map((tab) => (
           <button
             key={tab?.id}
-            onClick={() => setActiveTab(tab.id as "overview" | "users")}
+            onClick={() => {
+              setActiveTab(tab.id as "overview" | "users");
+              if (tab.id === "users" && currentReferralCode) {
+                loadReferredUsers(currentReferralCode);
+              }
+            }}
             style={{
               fontFamily: "Plus Jakarta Sans",
             }}
-            className={`w-fit min-w-[120px] p-3 ${
-              activeTab === tab?.id
-                ? "bg-[linear-gradient(180deg,rgba(255,255,255,0)_0%,rgba(151,71,255,0.2)_100%)] backdrop-blur-sm border-b border-[#9747FF]"
-                : "bg-transparent"
-            }  text-[#9747FF] font-medium text-sm`}
+            className={`w-fit min-w-[120px] p-3 ${activeTab === tab?.id
+              ? "bg-[linear-gradient(180deg,rgba(255,255,255,0)_0%,rgba(151,71,255,0.2)_100%)] backdrop-blur-sm border-b border-[#9747FF]"
+              : "bg-transparent"
+              }  text-[#9747FF] font-medium text-sm`}
           >
             {tab?.label}
           </button>
@@ -280,11 +487,13 @@ export default function Affiliate() {
                   alt="affiliate bg"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
-                <div className="flex items-center justify-between">
+                <div className="relative flex items-center justify-between">
                   <p className="text-base font-semibold text-white font-['Open_Sans',Helvetica]">
                     Available Balance
                   </p>
-                  <button className="bg-white py-3 px-[18px] flex gap-2 border border-[#ECEEF2] rounded-full shadow-[0px_4px_8px_0px_rgba(0,0,0,0.1)]">
+                  <button
+                    onClick={withdrawalRequest}
+                    className="bg-white py-3 px-[18px] flex gap-2 border border-[#ECEEF2] rounded-full shadow-[0px_4px_8px_0px_rgba(0,0,0,0.1)] cursor-pointer">
                     <img
                       src={fund}
                       alt="fund icon"
@@ -296,11 +505,11 @@ export default function Affiliate() {
                   </button>
                 </div>
                 <h3 className="text-[42px] font-bold font-['Open_Sans',Helvetica] text-white">
-                  $20,881.61
+                ${referreEarning}
                 </h3>
                 <div className="w-full border border-[#ECEEF2]"></div>
                 <p className="text-lg font-medium text-[#F7E074] font-['Poppins',Helvetica]">
-                  Pending: $3,686.28
+                  Pending: ${pendingAmount}
                 </p>
               </div>
               <div className="w-full md:w-[45%] bg-white border border-[#ECEEF2] p-3 rounded-xl flex flex-col gap-5">
@@ -315,14 +524,17 @@ export default function Affiliate() {
                       Affiliate
                     </p>
                   </div>
-                  <button className="bg-[#7077FE] py-[8px] px-3 flex items-center gap-2 border border-[#ECEEF2] rounded-full shadow-[0px_4px_8px_0px_rgba(0,0,0,0.1)]">
+                  <button
+                    onClick={handleGenerateCode}
+                    disabled={isRefreshing}
+                    className="bg-[#7077FE] py-[8px] px-3 flex items-center gap-2 border border-[#ECEEF2] rounded-full shadow-[0px_4px_8px_0px_rgba(0,0,0,0.1)]">
                     <img
                       src={refresh}
                       alt="fund icon"
                       className="w-[18px] h-[18px]"
                     />
                     <span className="font-normal text-base text-white font-['Open_Sans',Helvetica]">
-                      Refresh
+                      {isRefreshing ? "Refreshing..." : "Refresh"}
                     </span>
                   </button>
                 </div>
@@ -333,7 +545,7 @@ export default function Affiliate() {
                     </p>
                     <div className="flex justify-between items-center">
                       <h3 className="text-2xl font-semibold font-['Poppins',Helvetica] text-[#7077FE]">
-                        {dynamicKey}
+                        {currentReferralCode}
                       </h3>
                       <div className="py-[8px] flex gap-[11px]">
                         <img
@@ -353,7 +565,7 @@ export default function Affiliate() {
                             <SharePopup
                               isOpen={true}
                               onClose={handleShareClose}
-                              url={dynamicKey}
+                              url={currentReferralCode ? currentReferralCode : ''}
                               position="left"
                             />
                           )}
@@ -367,7 +579,7 @@ export default function Affiliate() {
                     Affiliate Link:
                   </p>
                   <p className="font-medium text-sm text-[#64748B] font-['Poppins',Helvetica]">
-                    https://cness.app/ref/cness2024-affiliate-xyz123
+                    {baseUrl}/sign-up?referral_code={currentReferralCode}
                   </p>
                 </div>
               </div>
@@ -427,17 +639,15 @@ export default function Affiliate() {
                     key={method.id}
                     onClick={() => setSelectedId(method.id)}
                     className={`w-full h-full p-[18px] flex flex-col gap-[18px] rounded-xl shadow-[0px_0px_4px_0px_rgba(0,0,0,0.1)] border cursor-pointer 
-                  ${
-                    isSelected
-                      ? "bg-[#9747FF0D] border-[#9747FF]"
-                      : "bg-white border-[#ECEEF2]"
-                  }`}
+                  ${isSelected
+                        ? "bg-[#9747FF0D] border-[#9747FF]"
+                        : "bg-white border-[#ECEEF2]"
+                      }`}
                   >
                     <div className="flex items-center justify-between">
                       <div
-                        className={` ${
-                          isSelected ? "text-[#9747FF]" : "text-black"
-                        }`}
+                        className={` ${isSelected ? "text-[#9747FF]" : "text-black"
+                          }`}
                       >
                         {React.cloneElement(method.icon, {
                           size: 30,
@@ -480,6 +690,76 @@ export default function Affiliate() {
           />
         </div>
       )}
+      <Modal isOpen={isWithdrawModalOpen} onClose={() => setIsWithdrawModalOpen(false)}>
+        <form onSubmit={handleWithdrawSubmit} className="p-0 min-w-[400px] w-full">
+          <h2 className="text-lg font-bold mb-4">Withdrawal Request</h2>
+
+          <div className="mb-4">
+            <label className="block mb-1 font-medium text-sm text-[#222224] font-['Poppins',Helvetica]">
+              Request Amount
+            </label>
+            <input
+              type="number"
+              value={withdrawAmount}
+              onChange={(e) => setWithdrawAmount(e.target.value)}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-[#7077FE] focus:border-transparent outline-none"
+              placeholder="Enter amount"
+              min="1"
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block mb-1 font-medium text-sm text-[#222224] font-['Poppins',Helvetica]">
+              Phone Number (with country code)
+            </label>
+            <div className="flex gap-2">
+              <Select
+                options={countryCodeOptions}
+                value={countryCodeOptions.find(
+                  (option) => option.value === withdrawCountryCode
+                )}
+                onChange={(selectedOption) =>
+                  setWithdrawCountryCode(selectedOption?.value ?? '')
+                }
+                isSearchable={true}
+                placeholder="Code"
+                className="w-[120px]"
+              />
+              <input
+                type="text"
+                value={withdrawPhone}
+                onChange={(e) => setWithdrawPhone(e.target.value)}
+                className="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-[#7077FE] focus:border-transparent outline-none"
+                placeholder="Enter phone number"
+                required
+              />
+            </div>
+          </div>
+
+          {withdrawError && (
+            <div className="text-red-500 text-sm mb-2">{withdrawError}</div>
+          )}
+
+          <div className="flex justify-end gap-3 mt-6">
+            <Button
+              type="button"
+              variant="white-outline"
+              onClick={() => setIsWithdrawModalOpen(false)}
+              className="px-6 py-2 rounded-full"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="gradient-primary"
+              className="px-6 py-2 rounded-full"
+            >
+              Submit Request
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
