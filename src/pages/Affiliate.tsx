@@ -22,172 +22,30 @@ import Button from "../components/ui/Button";
 import Select from "react-select";
 import Modal from "../components/ui/Modal";
 
-interface User {
-  id: number;
-  firstName: string;
-  lastName: string;
-  location: string;
-  email: string;
-  phone: string;
-  joinedDate: string;
-  revenue: string;
-  status: "Completed" | "Pending" | "Failed";
-}
-
 interface ReferredUser {
-  id: string;
+  user_id: string;
   username: string;
   email: string;
-  completed_step?: number;
+  first_name: string;
+  last_name: string;
+  phone: string;
+  address: string;
+  joined_date: string;
+  last_activity: string;
+  commission_earned: string;
+  approved_commission: string;
+  pending_commission: string;
+  commission_status: "NO_COMMISSION" | "APPROVED" | "PENDING" | "PAID";
+  total_payments: number;
+  subscription_type: string;
+  subscription_amount: string;
+  payment_status: "Completed" | "Pending" | "Failed";
+  commission_history: any[];
 }
-
-const users: User[] = [
-  {
-    id: 1,
-    firstName: "Michael",
-    lastName: "Johnson",
-    location: "Los Angeles, USA",
-    email: "michael.j@email.com",
-    phone: "+1 (555) 345-67890",
-    joinedDate: "Mar 10, 2024",
-    revenue: "$5,800",
-    status: "Completed",
-  },
-  {
-    id: 2,
-    firstName: "Sophia",
-    lastName: "Williams",
-    location: "New York, USA",
-    email: "sophia.w@email.com",
-    phone: "+1 (555) 987-6543",
-    joinedDate: "Jan 5, 2024",
-    revenue: "$3,200",
-    status: "Pending",
-  },
-  {
-    id: 3,
-    firstName: "Liam",
-    lastName: "Smith",
-    location: "Chicago, USA",
-    email: "liam.smith@email.com",
-    phone: "+1 (555) 123-4567",
-    joinedDate: "Feb 14, 2024",
-    revenue: "$1,500",
-    status: "Failed",
-  },
-  {
-    id: 4,
-    firstName: "Emma",
-    lastName: "Davis",
-    location: "Toronto, Canada",
-    email: "emma.davis@email.ca",
-    phone: "+1 (416) 222-3344",
-    joinedDate: "Apr 1, 2024",
-    revenue: "$4,250",
-    status: "Completed",
-  },
-  {
-    id: 5,
-    firstName: "Noah",
-    lastName: "Brown",
-    location: "London, UK",
-    email: "noah.brown@email.co.uk",
-    phone: "+44 20 7946 0958",
-    joinedDate: "May 12, 2024",
-    revenue: "$2,100",
-    status: "Pending",
-  },
-  {
-    id: 6,
-    firstName: "Ava",
-    lastName: "Wilson",
-    location: "Berlin, Germany",
-    email: "ava.wilson@email.de",
-    phone: "+49 30 123456",
-    joinedDate: "Mar 20, 2024",
-    revenue: "$3,800",
-    status: "Completed",
-  },
-  {
-    id: 7,
-    firstName: "Oliver",
-    lastName: "Martinez",
-    location: "Madrid, Spain",
-    email: "oliver.martinez@email.es",
-    phone: "+34 91 123 4567",
-    joinedDate: "Jun 2, 2024",
-    revenue: "$2,600",
-    status: "Failed",
-  },
-  {
-    id: 8,
-    firstName: "Isabella",
-    lastName: "Garcia",
-    location: "Mexico City, Mexico",
-    email: "isabella.g@email.mx",
-    phone: "+52 55 1234 5678",
-    joinedDate: "Jul 8, 2024",
-    revenue: "$6,400",
-    status: "Completed",
-  },
-  {
-    id: 9,
-    firstName: "James",
-    lastName: "Lee",
-    location: "Seoul, South Korea",
-    email: "james.lee@email.kr",
-    phone: "+82 2-312-3456",
-    joinedDate: "Aug 15, 2024",
-    revenue: "$3,900",
-    status: "Pending",
-  },
-  {
-    id: 10,
-    firstName: "Mia",
-    lastName: "Clark",
-    location: "Sydney, Australia",
-    email: "mia.clark@email.au",
-    phone: "+61 2 9876 5432",
-    joinedDate: "Sep 5, 2024",
-    revenue: "$4,100",
-    status: "Completed",
-  },
-];
 
 const tabs = [
   { id: "overview", label: "Overview" },
   { id: "users", label: "Affiliate Users" },
-];
-
-const cardData = [
-  {
-    title: "Referral Revenue",
-    icon: revenue,
-    value: "$ 124,576",
-    change: "+10.5% vs Last Month",
-    changeColor: "#60C750",
-  },
-  {
-    title: "Commission Amount",
-    icon: amount,
-    value: "$ 4,576",
-    change: "This Month",
-    changeColor: "#60C750",
-  },
-  {
-    title: "Affiliate",
-    icon: affiliateicon,
-    value: "156",
-    change: "-8.3% vs Last Month",
-    changeColor: "#E64646",
-  },
-  {
-    title: "Last Withdrawal",
-    icon: withdrawal,
-    value: "$ 4,576",
-    change: "This Month",
-    changeColor: "#60C750",
-  },
 ];
 
 const paymentMethods = [
@@ -245,7 +103,6 @@ const countryCode = [
 
 export default function Affiliate() {
   const myReferralCode = localStorage.getItem("referral_code");
-
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<"overview" | "users">("overview");
   const [isShareOpen, setIsShareOpen] = useState(false);
@@ -255,7 +112,12 @@ export default function Affiliate() {
   const [referreEarning, setReferreEarning] = useState<string>("0");
   const [pendingAmount, setPendingAmount] = useState<string>("0");
   const [referredUsers, setReferredUsers] = useState<ReferredUser[]>([]);
-  console.log('referredUsers', referredUsers)
+  const [statistics, setStatistics] = useState({
+    referral_revenue: { amount: "$0.00", change: "+0.0% vs Last Month", is_positive: true },
+    commission_amount: { amount: "$0.00" },
+    affiliate_count: { count: 0, change: "+0.0% vs Last Month", is_positive: true },
+    last_withdrawal: { amount: "$0.00", total_this_month: "$0.00" }
+  });
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [withdrawCountryCode, setWithdrawCountryCode] = useState('');
@@ -263,17 +125,17 @@ export default function Affiliate() {
   const [withdrawError, setWithdrawError] = useState('');
 
   const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = 5;
+  const usersPerPage = 10;
 
   const countryCodeOptions = countryCode.map((code) => ({
     value: code,
     label: code,
   }));
 
-  const totalPages = Math.ceil(users.length / usersPerPage);
+  const totalPages = Math.ceil(referredUsers.length / usersPerPage);
   const startIndex = (currentPage - 1) * usersPerPage;
-  const endIndex = Math.min(startIndex + usersPerPage, users.length);
-  const currentUsers = users.slice(startIndex, endIndex);
+  const endIndex = Math.min(startIndex + usersPerPage, referredUsers.length);
+  const currentUsers = referredUsers.slice(startIndex, endIndex);
 
   const baseUrl = window.location.origin;
 
@@ -287,6 +149,37 @@ export default function Affiliate() {
       loadReferralEarning();
     }
   }, []);
+
+  const cardData = [
+    {
+      title: "Referral Revenue",
+      icon: revenue,
+      value: statistics.referral_revenue.amount,
+      change: statistics.referral_revenue.change,
+      changeColor: statistics.referral_revenue.is_positive ? "#60C750" : "#E64646",
+    },
+    {
+      title: "Commission Amount",
+      icon: amount,
+      value: statistics.commission_amount.amount,
+      change: "This Month",
+      changeColor: "#60C750",
+    },
+    {
+      title: "Affiliate",
+      icon: affiliateicon,
+      value: statistics.affiliate_count.count.toString(),
+      change: statistics.affiliate_count.change,
+      changeColor: statistics.affiliate_count.is_positive ? "#60C750" : "#E64646",
+    },
+    {
+      title: "Last Withdrawal",
+      icon: withdrawal,
+      value: statistics.last_withdrawal.amount,
+      change: statistics.last_withdrawal.total_this_month,
+      changeColor: "#60C750",
+    },
+  ];
 
   const handleCopy = async () => {
     try {
@@ -379,8 +272,33 @@ export default function Affiliate() {
         user_id: localStorage.getItem("Id"),
       };
       const userData = await getReferralEarning(userpayload);
-      setReferreEarning(userData.data?.data?.available_amount || '0');
-      setPendingAmount(userData.data?.data?.pending_amount || '0');
+
+      const data = userData.data?.data;
+
+      setReferreEarning(data?.available_amount || '0');
+      setPendingAmount(data?.pending_commission || '0');
+
+      if (data?.statistics) {
+        setStatistics({
+          referral_revenue: data.statistics.referral_revenue || {
+            amount: "$0.00",
+            change: "+0.0% vs Last Month",
+            is_positive: true
+          },
+          commission_amount: data.statistics.commission_amount || {
+            amount: "$0.00"
+          },
+          affiliate_count: data.statistics.affiliate_count || {
+            count: 0,
+            change: "+0.0% vs Last Month",
+            is_positive: true
+          },
+          last_withdrawal: data.statistics.last_withdrawal || {
+            amount: "$0.00",
+            total_this_month: "$0.00"
+          }
+        });
+      }
     } catch (err) {
       console.error("Failed to load referral earnings", err);
     }
@@ -438,9 +356,19 @@ export default function Affiliate() {
     try {
       const payload = { referralcode };
       const res = await getReferredUsers(payload);
-      setReferredUsers(res.data?.data?.referralUsers || []);
+
+      const usersData = res.data?.data?.referrals?.map((user: any) => ({
+        ...user,
+        payment_status: user.commission_status === "PAID" || user.commission_status === "APPROVED"
+          ? "Completed"
+          : user.commission_status === "PENDING"
+            ? "Pending"
+            : "Failed"
+      })) || [];
+      setReferredUsers(usersData);
     } catch (err) {
       console.error("Failed to load referred users", err);
+      setReferredUsers([]);
     }
   };
 
@@ -505,7 +433,7 @@ export default function Affiliate() {
                   </button>
                 </div>
                 <h3 className="text-[42px] font-bold font-['Open_Sans',Helvetica] text-white">
-                ${referreEarning}
+                  ${referreEarning}
                 </h3>
                 <div className="w-full border border-[#ECEEF2]"></div>
                 <p className="text-lg font-medium text-[#F7E074] font-['Poppins',Helvetica]">
@@ -680,7 +608,7 @@ export default function Affiliate() {
       ) : (
         <div className="w-full h-full">
           <AffiliateUsers
-            users={users}
+            users={referredUsers}
             totalPages={totalPages}
             currentUsers={currentUsers}
             currentPage={currentPage}
