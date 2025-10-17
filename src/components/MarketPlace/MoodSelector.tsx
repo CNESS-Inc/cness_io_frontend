@@ -30,7 +30,7 @@ const MoodSelector: React.FC = () => {
 
     const clearSelection = () => {
     setSearchQuery("");
-    navigate(`/dashboard/market-place`);
+  navigate(`/dashboard/market-place/search`);
   };
 
   // Handle search change and redirect to marketplace page
@@ -82,9 +82,9 @@ const MoodSelector: React.FC = () => {
           {moods.map((mood, index) => (
             <button
               key={index}
-              className="bg-gray-100 hover:bg-gray-200 rounded-full px-5 py-3 text-gray-600 text-sm transition-colors"
-              onClick={() => navigate(`/dashboard/market-place?mood=${encodeURIComponent(mood)}`)}
-            >
+               className="bg-gray-100 hover:bg-gray-200 rounded-full px-5 py-3 text-gray-600 text-sm transition-colors"
+onClick={() => navigate(`/dashboard/market-place/search?search=${encodeURIComponent(mood)}`)}
+>
               {mood}
             </button>
           ))}

@@ -21,7 +21,7 @@ interface Product {
   };
 }
 
-const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
+const MPSearch = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
@@ -95,15 +95,12 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
 
   return (
     <main className="min-h-screen bg-white">
-      <Header isMobileNavOpen={isMobileNavOpen} />
+      <Header  />
 
-      <div
-        className={`transition-all duration-300 ${
-          isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
-        } pt-[70px] px-6`}
-      >
+    <div className="transition-all duration-300 pt-[20px] px-6">
+
         {/* 🔍 Search + Sort Section */}
-        <div className="w-full max-w-[2000px] mx-auto flex items-start justify-between px-5 mt-8 gap-6">
+        <div className="w-full max-w-[2000px] mx-auto flex items-start justify-between px-2 mt-0 gap-6">
           <div className="flex flex-col flex-1">
             <div className="flex items-center gap-4 max-w-[1400px]">
               {/* Search Bar */}
@@ -133,7 +130,7 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
               <div className="relative flex-shrink-0">
                 <button
                   onClick={() => setIsOpen(!isOpen)}
-                  className="flex items-center justify-between gap-2 px-4 py-3 bg-white border border-[#7077FE] rounded-full shadow-sm text-[#7077FE] font-medium text-sm md:text-base hover:shadow-md transition-all min-w-[140px] md:min-w-[180px]"
+                  className="flex items-center justify-between gap-2 px-4 py-3 bg-white border border-[#7077FE] rounded-full shadow-sm text-[#7077FE] font-medium text-sm md:text-base hover:shadow-md transition-all min-w-[140px] md:min-w-[190px]"
                 >
                   <div className="flex items-center gap-2">
                     <img src={filter} alt="filter" className="w-5 h-5" />

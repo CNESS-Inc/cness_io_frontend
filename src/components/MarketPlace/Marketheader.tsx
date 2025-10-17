@@ -1,18 +1,18 @@
-import React from "react";
 
-interface HeaderProps {
-  isMobileNavOpen?: boolean;
-}
 
-const Header: React.FC<HeaderProps> = ({ isMobileNavOpen = true }) => {
+
+const Header = () => {
   return (
     <header
-      className={`fixed z-40 bg-white transition-all duration-300 
-        top-[80px] h-[70px] 
-        ${isMobileNavOpen ? "md:left-[256px] md:w-[calc(100%-256px)]" : "md:left-0 md:w-full"}
+      className={`
+        sticky z-30 bg-white 
+    top-[0px] h-[70px] 
+  
+    transition-all duration-300
+    w-full
       `}
     >
-      <div className="h-full flex items-center justify-between px-8">
+      <div className="h-full flex items-center justify-between px-6 md:px-8">
         {/* Left Navigation */}
         <div className="hidden md:flex space-x-6">
           {[
@@ -25,7 +25,15 @@ const Header: React.FC<HeaderProps> = ({ isMobileNavOpen = true }) => {
           ].map((label) => (
             <span
               key={label}
-              className="text-gray-500 font-medium cursor-pointer hover:text-[#7077FE] transition-colors"
+              className="font-'Inter'
+        font-medium 
+        text-[16px] 
+        leading-[150%] 
+        tracking-[-1.9%] 
+        text-[#8A8A8A] 
+        cursor-pointer 
+        hover:text-[#7077FE] 
+        transition-colors"
             >
               {label}
             </span>

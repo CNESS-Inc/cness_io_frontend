@@ -7,7 +7,7 @@ import xIcon from '../assets/twittericon.svg';
 import cnessicon from '../assets/cnessicon.svg';
 
 
-const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
+const ProductDetail = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const product = location.state?.product;
@@ -79,23 +79,42 @@ const reviews = [
 
   return (
     <main className=" min-h-screen bg-white">
-  <Header isMobileNavOpen={isMobileNavOpen} />
+  <Header />
 
-<div
-        className={` transition-all duration-300 ${
-          isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
-        } pt-[80px] px-6`}
-      >
+<div className="transition-all duration-300 pt-[20px] px-6">
+
       <div className="bg-white rounded-xl shadow-md p-4">
       <div className="flex items-center space-x-8">
         {/* Product Image */}
-        <div className="flex-shrink-0">
-          <img
-            src={product.image}
-              alt={product.title}
-            className="w-[533px] h-[304px] rounded-lg object-cover"
-          />
-        </div>
+      <div className="flex-shrink-0 relative group w-[533px] h-[304px] overflow-hidden rounded-lg">
+  <img
+    src={product.image}
+    alt={product.title}
+    className="w-full h-full object-cover "
+  />
+
+  {/* ▶️ Preview Button - shows on hover */}
+  <button
+    onClick={() => console.log("Preview clicked")} // 👉 replace with actual preview logic later
+    className="
+      absolute inset-0 flex items-center justify-center 
+    "
+  >
+    <div className="flex items-center gap-2 bg-[#7077FE] px-6 py-3  shadow-md hover:scale-105 transition-transform">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+        className="w-5 h-5 text-white"
+      >
+        <path d="M8 5v14l11-7z" />
+      </svg>
+      <span className="text-white 
+        font-['Poppins'] font-normal 
+        text-[18px] leading-[100%] tracking-[0]">Preview</span>
+    </div>
+  </button>
+</div>
 
         {/* Product Info */}
         <div className="flex-1 space-y-4 -mt-7">
@@ -137,17 +156,21 @@ const reviews = [
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-3">
-            <button className="flex items-center space-x-2 bg-blue-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-600">
+            <button className="flex items-center space-x-2 bg-[#7077FE] text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-600">
               <img src="https://static.codia.ai/image/2025-10-16/LUafay60N9.png" alt="Buy" className="w-6 h-6" />
-              <span>Buy Now</span>
+              <span className="text-white 
+        font-['Poppins'] font-normal 
+        text-[18px] leading-[100%] tracking-[0]">Buy Now</span>
             </button>
             
-            <button className="flex items-center space-x-2 border border-blue-500 text-blue-500 px-6 py-3 rounded-lg font-medium hover:bg-blue-50">
+            <button className="flex items-center space-x-2 border border-[#7077FE] text-[#7077FE] px-6 py-3 rounded-lg font-medium hover:bg-blue-50">
               <img src="https://static.codia.ai/image/2025-10-16/VUQR3XLDmc.png" alt="Cart" className="w-6 h-6" />
-              <span>Add to cart</span>
+              <span className="text-[#7077FE] 
+        font-['Poppins'] font-normal 
+        text-[18px] leading-[100%] tracking-[0]">Add to cart</span>
             </button>
             
-            <button className="p-3 border border-blue-500 rounded-lg hover:bg-blue-50">
+            <button className="p-3 border border-[#7077FE] rounded-lg hover:bg-blue-50">
               <img src="https://static.codia.ai/image/2025-10-16/dB7irjkuHK.png" alt="Wishlist" className="w-6 h-6" />
             </button>
           </div>
@@ -307,7 +330,9 @@ const reviews = [
         {/* View Store Button */}
         <button className="flex items-center space-x-2 bg-[#7077FE] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#7077FE]">
           <img src="https://static.codia.ai/image/2025-10-16/t3md55f2ZY.png" alt="Store" className="w-6 h-6" />
-          <span>View Store</span>
+          <span className="text-white 
+        font-['Poppins'] font-normal 
+        text-[18px] leading-[100%] tracking-[0]">View Store</span>
         </button>
       </div>
     </div>
@@ -341,7 +366,9 @@ const reviews = [
           </div>
 
           <button className="w-full bg-[#7077FE] text-white py-3 rounded-lg font-medium hover:bg-[#7077FE]">
-            Write a review
+           <span className="text-white 
+        font-['Poppins'] font-normal 
+        text-[18px] leading-[100%] tracking-[0]" >Write a review</span>
           </button>
         </div>
 

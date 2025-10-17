@@ -43,48 +43,51 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <img
             src={product.image}
             alt={product.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
 
-          {/* Optional video preview */}
-          {product.previewVideo && (
-            <video
-              src={product.previewVideo}
-              className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10"
-              muted
-              loop
-              playsInline
-            />
-          )}
-
+         
           {/* ❤️ Heart Button */}
           <button className="absolute top-3 right-3 z-30 flex items-center justify-center transition-transform duration-300 hover:scale-110 rounded-full p-1">
             <Heart className="w-7 h-7 text-red-500 fill-red-500" />
           </button>
 
+          
+
           {/* ▶️ Preview Button */}
-          {product.previewVideo && (
-            <button
-              className="
-                absolute inset-0 flex items-center justify-center 
-                opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30
-              "
-              onClick={() => console.log('Preview clicked')}
-            >
-              <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-md hover:scale-105 transition-transform">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  className="w-5 h-5 text-black"
-                >
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-                <span className="text-sm font-semibold text-gray-800">Preview</span>
-              </div>
-            </button>
-          )}
-        </div>
+          <button
+    className="
+      absolute inset-0 flex items-center justify-center
+      opacity-0 group-hover:opacity-100
+      bg-black/40 hover:bg-black/50
+      transition-all duration-300 z-30
+    "
+    onClick={() => console.log('Preview clicked')}
+  >
+    <div className="flex items-center gap-2 bg-white/90 px-5 py-2 rounded-full shadow-md hover:scale-105 transition-transform">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+        className="w-5 h-5 text-black"
+      >
+        <path d="M8 5v14l11-7z" />
+      </svg>
+      <span className="text-sm font-semibold text-gray-800">Preview</span>
+    </div>
+  </button>
+
+  {/* 🎥 Optional video preview (fade in on hover) */}
+  {product.previewVideo && (
+    <video
+      src={product.previewVideo}
+      className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10"
+      muted
+      loop
+      playsInline
+    />
+  )}
+</div>
 
         {/* ✅ Product Info */}
         <div className="p-4 flex flex-col justify-between space-y-3 flex-1">
