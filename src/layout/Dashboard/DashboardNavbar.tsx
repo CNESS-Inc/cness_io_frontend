@@ -78,6 +78,9 @@ const DashboardNavbar = ({
     }
   };*/
 
+  const env = import.meta.env.VITE_ENV;
+const isUatOrTest = ["uat", "test"].includes(env);
+
   const mainNavItems = [
     {
       id: "dashboard",
@@ -171,22 +174,7 @@ const DashboardNavbar = ({
       ],
     },
 
-    {
-      id: "market-place",
-      icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
-      label: "Marketplace",
-      active: true,
-      path: "/dashboard/market-place",
-      /*isMarketplaceDropdown: true,
-      childPaths: ["/dashboard/DigitalProducts"],
-      children: [
-        {label: "Login To Market Place", path: "", customAction: generateSsoToken },
-        { label: "Buy Digital Products", path: "/dashboard/digital_products" },
-        { label: "Sell your Products", path: "/dashboard/SellProducts" },
-        { label: "Track Purchase & Sales", path: "/dashboard/Tracking" },
-        { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
-      ],*/
-    },
+  
 
     // {
     //   id: "Community",
@@ -210,6 +198,46 @@ const DashboardNavbar = ({
     //     // { label: "Messagings", path: "/dashboard/ComingSoon" },
     //   ],
     // },
+
+  {
+      id: "marketplace",
+      icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
+      label: "Marketplace",
+      active: true,
+      path: "/dashboard/marketplace",
+      /*isMarketplaceDropdown: true,
+      childPaths: ["/dashboard/DigitalProducts"],
+      children: [
+        {label: "Login To Market Place", path: "", customAction: generateSsoToken },
+        { label: "Buy Digital Products", path: "/dashboard/digital_products" },
+        { label: "Sell your Products", path: "/dashboard/SellProducts" },
+        { label: "Track Purchase & Sales", path: "/dashboard/Tracking" },
+        { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
+      ],*/
+    },
+  ...(isUatOrTest
+     ? [
+    {
+      id: "market-place",
+      icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
+      label: "MarketplaceNew",
+      active: true,
+      path: "/dashboard/market-place",
+      /*isMarketplaceDropdown: true,
+      childPaths: ["/dashboard/DigitalProducts"],
+      children: [
+        {label: "Login To Market Place", path: "", customAction: generateSsoToken },
+        { label: "Buy Digital Products", path: "/dashboard/digital_products" },
+        { label: "Sell your Products", path: "/dashboard/SellProducts" },
+        { label: "Track Purchase & Sales", path: "/dashboard/Tracking" },
+        { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
+      ],*/
+    },
+    ]
+    : []),
+
+
+
     {
       id: "MentorPartnerHub",
       icon: <Zap className="w-5 h-5 text-gray-500" />,
