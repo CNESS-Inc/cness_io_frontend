@@ -23,7 +23,9 @@ import UpgradeBadge from "../pages/UpgradeBadge";
 import DirectoryProfile from "../pages/DirectoryProfile";
 import Notification from "../pages/Notification";
 import Support from "../pages/Support";
+import MarketPlaceNew from "../pages/MarketPlaceNew";
 import MarketPlace from "../pages/MarketPlace";
+
 import SearchListing from "../pages/SearchListing";
 import DigitalProducts from "../pages/DigitalProducts";
 // import Feed from "../pages/Feed";
@@ -66,6 +68,8 @@ import WhyCness from "../pages/WhyCness";
 //import SellerDashboard from "../pages/SellerDashboard";
 import UserPublicProfile from "../pages/UserPublicProfile";
 import Affiliate from "../pages/Affiliate";
+import ProductDetail from "../pages/ProductDetail";
+import MPSearch from "../pages/MPsearch";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -212,9 +216,23 @@ export const router = createBrowserRouter([
             path: "support",
             element: <Support />,
           },
+          //old marketplacepage
+          {
+            path:"marketplace",
+            element:<MarketPlace />,
+          },
           {
             path: "market-place",
-            element: <MarketPlace />,
+            element: <MarketPlaceNew />,
+          },
+          {
+  path: "market-place/search",
+  element: <MPSearch />, // ← new page
+},
+
+          {
+           path: "product-detail/:id",
+            element: <ProductDetail />,
           },
           // {
           //   path: "search-listing",

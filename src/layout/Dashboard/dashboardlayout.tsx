@@ -35,10 +35,23 @@ const DashboardLayout = () => {
   const isDashboardTechPage =
     location.pathname === "/DashboardDirectory/dashboardtechnology";
 
+
+const isMarketplacePage =
+    location.pathname.includes("/dashboard/product-detail") ||
+    location.pathname.includes("/dashboard/market-place");
+
+
+
   return (
-    <div className="bg-[#f9f9f9] flex flex-col justify-center w-full min-h-screen relative">
-      <div className="bg-[#f9f9f9] w-full flex flex-col relative">
-        {/* Mobile Header */}
+    <div 
+className={`flex flex-col justify-center w-full min-h-screen relative ${
+    isMarketplacePage ? "bg-white" : "bg-[#f9f9f9]"
+  }`}
+>      <div 
+className={`w-full flex flex-col relative ${
+    isMarketplacePage ? "bg-white" : "bg-[#f9f9f9]"
+  }`}
+>        {/* Mobile Header */}
         {!isMobileNavOpen && (
           <div className="md:hidden">
             <DashboardHeader
