@@ -227,7 +227,12 @@ export const EndPoint = {
   add_partner_inquiry: "/partner-inquiry",
 
   add_mentor: "/mentor",
+
+  //marketplace endpoints
+get_products: "/api/vendor/products"
 };
+
+
 
 // Messaging endpoints
 export const GetConversations = () => {
@@ -1472,4 +1477,8 @@ export const executeAPI = async <T = any,>(
 
     throw error;
   }
+};
+
+export const GetProducts = () => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_products);
 };
