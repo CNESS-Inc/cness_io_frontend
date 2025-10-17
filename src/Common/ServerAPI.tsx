@@ -226,6 +226,9 @@ export const EndPoint = {
   get_all_topics: "/topics/get/all",
   add_partner_inquiry: "/partner-inquiry",
 
+  // payment-method endpoints
+  payment_method: "/payment-method",
+
   add_mentor: "/mentor",
 };
 
@@ -1382,6 +1385,43 @@ export const getPostByTopicId = (
     `${EndPoint.by_topic_post}/${id}`,
     params
   );
+};
+
+export const addPaymentMethod = (payload: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    payload,
+    EndPoint.payment_method
+  );
+};
+
+export const getPaymentMethods = (): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.GET, null, EndPoint.payment_method);
+};
+
+export const getPaymentMethodById = (
+  id: string,
+): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    `${EndPoint.payment_method}/${id}`
+  );
+};
+
+export const updatePaymentMethod = (
+  id: string,
+  payload: any
+): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PUT,
+    payload,
+    `${EndPoint.payment_method}/${id}`
+  );
+};
+
+export const DeletePaymentMethod = (id: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.DELETE, {}, `${EndPoint.payment_method}/${id}`);
 };
 
 export const createPartnerInquiry = (formData: any): ApiResponse => {
