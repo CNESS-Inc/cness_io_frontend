@@ -23,6 +23,7 @@ interface SharePopupProps {
 const SharePopup: React.FC<SharePopupProps> = ({
   isOpen,
   onClose,
+  url,
   position = "bottom",
   className = "",
 }) => {
@@ -61,7 +62,7 @@ const SharePopup: React.FC<SharePopupProps> = ({
   if (!visible) return null;
 
   // 👇 Use current page URL dynamically if no `url` prop is provided
-  const shareUrl =`${window.location.origin}/directory/user-profile/${localStorage.getItem("Id")}`;
+  const shareUrl = url || `${window.location.origin}/directory/user-profile/${localStorage.getItem("Id")}`;
   console.log('shareUrl', shareUrl);
 
   const getPositionClasses = () => {
