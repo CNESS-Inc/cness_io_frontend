@@ -79,7 +79,7 @@ const reviews = [
 
   return (
     <main className=" min-h-screen bg-white">
-  <Header isMobileNavOpen={isMobileNavOpen} />
+  <Header />
 
 <div
         className={` transition-all duration-300 ${
