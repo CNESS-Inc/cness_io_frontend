@@ -139,12 +139,12 @@ const products = [
   return (
     
  <main className=" min-h-screen bg-white">
-  <Header isMobileNavOpen={isMobileNavOpen} />
+  <Header />
 
 <div
         className={` transition-all duration-300 ${
           isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
-        } pt-[80px] px-6`}
+        } pt-[20px] px-6`}
       >
 
       <div className="grid grid-cols-4  gap-4 max-w-[2000px] mx-auto">

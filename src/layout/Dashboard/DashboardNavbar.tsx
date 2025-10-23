@@ -114,6 +114,7 @@ const isUatOrTest = ["uat", "test"].includes(env);
       ],
       children: [
         { label: "Get Certified", path: "/dashboard/assesment" },
+        { label: "Assessment Certification", path: "/dashboard/assesmentcertification" },
         //{ label: "Upload Proof", path: "/dashboard/UploadProof" },
         { label: "Score & Results", path: "/dashboard/score-result" },
         { label: "Upgrade Badge", path: "/dashboard/upgrade-badge" },

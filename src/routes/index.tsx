@@ -70,6 +70,9 @@ import UserPublicProfile from "../pages/UserPublicProfile";
 import Affiliate from "../pages/Affiliate";
 import ProductDetail from "../pages/ProductDetail";
 import MPSearch from "../pages/MPsearch";
+import AssessmentCertification from "../pages/AssessmentCertidications";
+import AspiringAssessment from "../pages/AspiringAssessment";
+import InspiredAssessment from "../pages/InspiredAssessment";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -181,6 +184,19 @@ export const router = createBrowserRouter([
           {
             path: "assesment",
             element: <AssessmentQuestion />,
+          },
+          {
+            path: "assesmentcertification",
+            element: <AssessmentCertification />,
+          },
+          {
+            path: "aspiring-assessment",
+            element: <AspiringAssessment />,
+          },
+
+          {
+            path: "inspired-assessment",
+            element: <InspiredAssessment />,
           },
           {
             path: "setting",

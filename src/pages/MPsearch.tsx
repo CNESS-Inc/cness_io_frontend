@@ -95,17 +95,17 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
 
   return (
     <main className="min-h-screen bg-white">
-      <Header isMobileNavOpen={isMobileNavOpen} />
+      <Header/>
 
       <div
         className={`transition-all duration-300 ${
           isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
-        } pt-[70px] px-6`}
+        } pt-[20px] px-6`}
       >
         {/* 🔍 Search + Sort Section */}
         <div className="w-full max-w-[2000px] mx-auto flex items-start justify-between px-5 mt-8 gap-6">
           <div className="flex flex-col flex-1">
-            <div className="flex items-center gap-4 max-w-[1400px]">
+            <div className="flex items-center gap-4 max-w-[1200px]">
               {/* Search Bar */}
               <div className="flex items-center bg-white border border-gray-300 rounded-full px-6 py-3 shadow-sm flex-[0.8]">
                 {searchQuery && (
@@ -223,7 +223,7 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
           </div>
 
           {/* 🧰 Filter Sidebar (RIGHT) */}
-          <div className="hidden md:block w-[300px] flex-shrink-0 -mt-25">
+          <div className="hidden md:block w-[300px] flex-shrink-0 -mt-25 px-10">
             <Filter />
           </div>
         </div>
