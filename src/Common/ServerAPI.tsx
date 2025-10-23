@@ -232,7 +232,7 @@ export const EndPoint = {
   add_mentor: "/mentor",
 
   //marketplace endpoints
-get_products: "/api/vendor/products"
+get_products: "/vendor/products"
 };
 
 

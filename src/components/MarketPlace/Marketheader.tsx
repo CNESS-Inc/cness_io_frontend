@@ -1,53 +1,64 @@
-import React from "react";
+import React, { useState } from "react";
+import { Bell, Heart, ShoppingCart, Menu, X } from "lucide-react";
 
-interface HeaderProps {
-  isMobileNavOpen?: boolean;
-}
+const Header: React.FC = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-const Header: React.FC<HeaderProps> = ({ isMobileNavOpen = true }) => {
   return (
-    <header
-      className={`fixed z-40 bg-white transition-all duration-300 
-        top-[80px] h-[70px] 
-        ${isMobileNavOpen ? "md:left-[256px] md:w-[calc(100%-256px)]" : "md:left-0 md:w-full"}
-      `}
-    >
-      <div className="h-full flex items-center justify-between px-8">
-        {/* Left Navigation */}
-        <div className="hidden md:flex space-x-6">
-          {[
-            "Top Product",
-            "Categories",
-            "Shop",
-            "My Favourites",
-            "Library",
-            "Order history",
-          ].map((label) => (
-            <span
-              key={label}
-              className="text-gray-500 font-medium cursor-pointer hover:text-[#7077FE] transition-colors"
-            >
-              {label}
-            </span>
-          ))}
-        </div>
+    <header className="bg-white  ">
+      <div className="flex items-center justify-between px-5 py-4">
+        {/* Left section - Nav links */}
+        <nav className="hidden md:flex items-center space-x-8 text-gray-600 font-medium text-sm ">
+          <a href="#" className="hover:text-[#7077FE] transition-colors">Top Product</a>
+          <a href="#" className="hover:text-[#7077FE] transition-colors">Categories</a>
+          <a href="#" className="hover:text-[#7077FE] transition-colors">Shop</a>
+          <a href="#" className="hover:text-[#7077FE] transition-colors">My Favourites</a>
+          <a href="#" className="hover:text-[#7077FE] transition-colors">Library</a>
+          <a href="#" className="hover:text-[#7077FE] transition-colors">Order History</a>
+        </nav>
 
-        {/* Right Icons */}
-        <div className="flex items-center space-x-3">
-          {[
-            "https://static.codia.ai/image/2025-10-15/CNAqQ9S27j.png",
-            "https://static.codia.ai/image/2025-10-15/Fh8OjrxnSH.png",
-            "https://static.codia.ai/image/2025-10-15/LSLZ0q2jzC.png",
-          ].map((src, i) => (
-            <img
-              key={i}
-              src={src}
-              alt={`Icon ${i + 1}`}
-              className="w-9 h-9 md:w-10 md:h-10 cursor-pointer hover:scale-105 transition-transform"
-            />
-          ))}
+        {/* Right section - Icons + Menu Toggle */}
+        <div className="flex items-center space-x-4">
+          <button className="relative p-2 rounded-lg hover:bg-gray-100 transition shadow-sm">
+            <Bell className="w-5 h-5 text-gray-600" />
+            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+          </button>
+
+          <button className="p-2 rounded-lg hover:bg-gray-100 transition shadow-sm">
+            <Heart className="w-5 h-5 text-gray-600" />
+          </button>
+
+          <button className="p-2 rounded-lg hover:bg-gray-100 transition shadow-sm">
+            <ShoppingCart className="w-5 h-5 text-gray-600" />
+          </button>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? (
+              <X className="w-6 h-6 text-gray-700" />
+            ) : (
+              <Menu className="w-6 h-6 text-gray-700" />
+            )}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="md:hidden  bg-white">
+          <nav className="flex flex-col px-5 py-4 space-y-4 text-gray-600 font-medium text-sm">
+            <a href="#" className="hover:text-[#7077FE] transition-colors">Top Product</a>
+            <a href="#" className="hover:text-[#7077FE] transition-colors">Categories</a>
+            <a href="#" className="hover:text-[#7077FE] transition-colors">Shop</a>
+            <a href="#" className="hover:text-[#7077FE] transition-colors">My Favourites</a>
+            <a href="#" className="hover:text-[#7077FE] transition-colors">Library</a>
+            <a href="#" className="hover:text-[#7077FE] transition-colors">Order History</a>
+          </nav>
+        </div>
+      )}
     </header>
   );
 };
