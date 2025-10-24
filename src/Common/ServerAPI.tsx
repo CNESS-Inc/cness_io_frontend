@@ -100,7 +100,8 @@ export const EndPoint = {
   reset: "/auth/reset-password",
   register: "/auth/sign-up",
   organization_profile: "/readiness-question/organization/answer",
-  person_profile: "/readiness-question/person/answer",
+  person_profile: "/readiness-question/person/information",
+  person_readiness: "/readiness-question/person/answer",
   acount_type: "/auth/update/person",
   payment: "/payment",
   dashboard: "/dashboard",
@@ -459,16 +460,19 @@ export const submitPersonDetails = (formData: any): ApiResponse => {
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.person_profile);
 };
+export const submitPersonReadinessDetails = (formData: any): ApiResponse => {
+  const data: Partial<any> = {
+    question: formData?.question,
+  };
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.person_readiness);
+};
 export const submitAnswerDetails = (formData: any): ApiResponse => {
-  console.log("🚀 ~ submitAnswerDetails ~ formData:", formData);
-  // Initialize the data array with the correct type
   const data: Array<{
     question_id: string;
     answer: any;
     show_answer_in_public?: boolean;
   }> = [];
 
-  // Handle selectedCheckboxIds and checkboxes_question_id
   if (formData.selectedCheckboxIds && formData.checkboxes_question_id) {
     data.push({
       question_id: formData.checkboxes_question_id,
