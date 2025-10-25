@@ -38,7 +38,10 @@ const DashboardLayout = () => {
 
 const isMarketplacePage =
     location.pathname.includes("/dashboard/product-detail") ||
-    location.pathname.includes("/dashboard/market-place");
+    location.pathname.includes("/dashboard/market-place")||
+     location.pathname.includes("/dashboard/shop-detail")||
+      location.pathname.includes("/dashboard/product-review")||
+      location.pathname.includes("/dashboard/cart");
 
 
 

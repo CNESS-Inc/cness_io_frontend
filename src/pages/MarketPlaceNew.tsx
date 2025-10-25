@@ -12,10 +12,11 @@ import MoodSelector from '../components/MarketPlace/MoodSelector';
 import ProductCard from '../components/MarketPlace/ProductCard';
 import digital from "../assets/digital.svg";
 import Button from '../components/ui/Button';
-
+import { useNavigate } from 'react-router-dom';
+import ShopCard from '../components/MarketPlace/Shopcard';
 
 const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
- 
+ const navigate = useNavigate();
 const categories = [
     { name: 'Videos', active: true },
     { name: 'Podcasts', active: false },
@@ -31,7 +32,7 @@ const products = [
       image: 'https://static.codia.ai/image/2025-10-15/oXL6MSyn60.png',
       title: 'Soft guitar moods that heals your inner pain',
       author: 'by Redtape',
-      rating: 4.8,
+      rating: 4.2,
       reviews: 123,
       originalPrice: 2444,
       currentPrice: 1299,
@@ -44,7 +45,7 @@ const products = [
       image: 'https://static.codia.ai/image/2025-10-15/uPxjuzQ1CY.png',
       title: 'Soft guitar moods that heals your inner pain',
       author: 'by Redtape',
-      rating: 4.8,
+      rating: 4.7,
       reviews: 123,
       currentPrice: 1299,
       duration: '00:23:00',
@@ -68,7 +69,7 @@ const products = [
       image: 'https://static.codia.ai/image/2025-10-15/VM7Quny2Gp.png',
       title: 'Soft guitar moods that heals your inner pain',
       author: 'by Redtape',
-      rating: 4.8,
+      rating: 4.5,
       reviews: 123,
       originalPrice: 2444,
       currentPrice: 1299,
@@ -81,7 +82,7 @@ const products = [
       image: 'https://static.codia.ai/image/2025-10-15/d9CJZoEQeE.png',
       title: 'Soft guitar moods that heals your inner pain',
       author: 'by Redtape',
-      rating: 4.8,
+      rating: 4,
       reviews: 123,
       originalPrice: 2444,
       currentPrice: 1299,
@@ -104,36 +105,96 @@ const products = [
     }
   ]
 
-  const stores = [
+  const shops = [
+    {
+      id: 1,
+      image: "https://static.codia.ai/image/2025-10-24/SeX9YKDnOo.png",
+      name: "Red Tape",
+      description: "Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.",
+      rating: 4.8,
+      logo: "https://static.codia.ai/image/2025-10-24/rbKaFihKgE.png"
+    },
+    {
+      id: 2,
+      image: "https://static.codia.ai/image/2025-10-24/zsb3OSD4Mb.png",
+      name: "Red Tape",
+      description: "Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.",
+      rating: 4.8,
+      logo: "https://static.codia.ai/image/2025-10-24/FHxbN55yap.png"
+    },
+    {
+      id:3,
+      image: "https://static.codia.ai/image/2025-10-24/COYsFisEy4.png",
+      name: "Red Tape",
+      description: "Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.",
+      rating: 4.8,
+      logo: "https://static.codia.ai/image/2025-10-24/JMEWUxwU2n.png"
+    },
+    {
+      id: 4,
+      image: "https://static.codia.ai/image/2025-10-24/JTVKiSmYDa.png",
+      name: "Red Tape",
+      description: "Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.",
+      rating: 4.8,
+      logo: "https://static.codia.ai/image/2025-10-24/yZMZNXqr5b.png"
+    },
+    {
+      id: 5,
+      image: "https://static.codia.ai/image/2025-10-24/JTVKiSmYDa.png",
+      name: "Red Tape",
+      description: "Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.",
+      rating: 4.8,
+      logo: "https://static.codia.ai/image/2025-10-24/yZMZNXqr5b.png"
+    },
+   
+  ]
+
+  {/*const stores = [
     {
       id: 1,
       image: 'https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png',
       logo: 'https://static.codia.ai/image/2025-10-15/a2gTB6iqyb.png',
       name: 'Red Tape',
-      description: 'Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.'
+      description: 'Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.',
+      products: 34,
+      ratings: 4.8,
+      reviews: "2.1k",
+      followers: "12.4k"
     },
     {
       id: 2,
       image: 'https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png',
       logo: 'https://static.codia.ai/image/2025-10-15/Sy06hyDfRJ.png',
       name: 'Red Tape',
-      description: 'Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.'
+      description: 'Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.',
+      products: 28,
+      ratings: 4.5,
+      reviews: "1.8k",
+      followers: "10.2k"
     },
     {
       id: 3,
       image: 'https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png',
       logo: 'https://static.codia.ai/image/2025-10-15/i0zSrWRgtO.png',
       name: 'Red Tape',
-      description: 'Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.'
+      description: 'Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.',
+      products: 45,
+      ratings: 4.9,
+      reviews: "3.2k",  
     },
     {
       id: 4,
       image: 'https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png',
       logo: 'https://static.codia.ai/image/2025-10-15/9Foup8c9nu.png',
       name: 'Red Tape',
-      description: 'Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.'
+      description: 'Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.',
+       products: 12,
+      ratings: "4K",
+      reviews: "3.2k", 
+        followers: "1K"
     }
   ]
+  */}
 
 
   return (
@@ -349,27 +410,34 @@ Visit store            </Button>
     <section className="px-8 py-16">
       <h2 className="font-poppins font-semibold text-3xl text-center text-black mb-12">Digital stores</h2>
       
-      <div className="grid grid-cols-4 gap-7 mb-12">
-        {stores.map((store) => (
-          <div key={store.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-            <img 
-              src={store.image} 
-              alt={store.name}
-              className="w-full h-30 object-cover rounded-t-xl"
-            />
-            <div className="p-4">
-              <div className="flex items-center space-x-2 mb-2">
-                <img src={store.logo} alt={`${store.name} logo`} className="w-6 h-6" />
-                <h3 className="font-semibold text-lg text-gray-800">{store.name}</h3>
-              </div>
-              <p className="text-xs text-gray-500 leading-relaxed">{store.description}</p>
-            </div>
-          </div>
-        ))}
-      </div>
+       <div
+    className="
+      grid
+      grid-cols-1
+      sm:grid-cols-2
+      md:grid-cols-3
+      lg:grid-cols-4
+      xl:grid-cols-5
+      2xl:grid-cols-5
+      gap-5
+      sm:gap-6
+      md:gap-8
+    "
+  >
+    {shops.map((shop, index) => (
+    <div
+      key={index}
+      onClick={() => navigate(`/dashboard/shop-detail/${shop.id}`, { state: shop })}
+      className="cursor-pointer"
+    >
+      <ShopCard {...shop} />
+    </div>
+  ))}
+</div>
 
-      <div className="flex justify-center">
-        <button className="flex items-center space-x-2 px-6 py-3 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-50 transition-colors">
+      <div className="flex justify-center mt-8">
+        <button 
+        className="flex items-center space-x-2 px-6 py-3 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-50 transition-colors">
           <span className="font-jakarta font-medium">Visit all stores</span>
           <img src="https://static.codia.ai/image/2025-10-15/4wmOKSRAa7.png" alt="Explore" className="w-6 h-6" />
         </button>

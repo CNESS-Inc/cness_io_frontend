@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Plus, Minus, Loader2, X } from "lucide-react";
 import cloud from "../assets/cloud-add.svg";
-
+import Button from "../components/ui/Button";
+import { useNavigate } from "react-router-dom";
 const InspiredAssessment = () => {
+   const navigate = useNavigate();
   const sections = [
     {
       id: 1,
@@ -57,18 +59,23 @@ const InspiredAssessment = () => {
       items: [
         "Share a leadership example where you empowered others.",
         "Provide documentation of best practices in action.",
+         "Client appreciation message, testimonial, or thank-you email.",
+        "Photo with clients, students, or community members that shows connection or collaboration.",
+        "Sample of communication such as a brochure, message, or email that represents your value-driven approach.",
       ],
     },
   ];
-  const [expanded, setExpanded] = useState<number | null>(1);
+const [expanded, setExpanded] = useState<number[]>([1]);
   const [checked, setChecked] = useState<Record<number, string[]>>({});
   const [uploads, setUploads] = useState<
     Record<number, { name: string; size: string; status: string }[]>
   >({});
 
-  const toggleSection = (id: number) => {
-    setExpanded(expanded === id ? null : id);
-  };
+ const toggleSection = (id: number) => {
+  setExpanded((prev) =>
+    prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+  );
+};
 
   const handleCheck = (sectionId: number, item: string) => {
     setChecked((prev) => {
@@ -131,16 +138,17 @@ const InspiredAssessment = () => {
                 {section.id}. {section.title}
               </span>
               <div className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-300 bg-white shadow-sm">
-                {expanded === section.id ? (
-                  <Minus className="text-gray-500" />
-                ) : (
-                  <Plus className="text-gray-500" />
-                )}
+{expanded.includes(section.id) ? (
+  <Minus className="text-gray-500" />
+) : (
+  <Plus className="text-gray-500" />
+)}
               </div>
             </button>
 
             {/* Expanded Section */}
-            {expanded === section.id && (
+           {expanded.includes(section.id) && (
+
 <div className="border-t border-[#E0E0E0] px-4 sm:px-6 py-6 sm:py-8 flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 sm:gap-8">
                 {/* Text and Checkboxes */}
                 
@@ -170,7 +178,7 @@ const InspiredAssessment = () => {
                         />
                         <label
                           htmlFor={`section-${section.id}-item-${idx}`}
-                          className="font-['Open_Sans'] font-normal text-[16px] leading-[140%] text-gray-800 cursor-pointer"
+                          className="font-['Open_Sans'] font-normal text-[16px] leading-[140%] text-[#1E1E1E] cursor-pointer"
                         >
                           {item}
                         </label>
@@ -192,7 +200,23 @@ const InspiredAssessment = () => {
                       </li>
                     ))}
                   </ul>
+                                {/* ✅ paste below this */}
+{section.id === 5 && (
+    <>
+  <p className="mt-20 text-[12px] font-['Open_Sans'] leading-[140%] text-gray-400 px-5">optional</p>
+  <div className="mt-2 w-full border border-dashed border-[#E5E5E5] rounded-[25px] py-5 px-6 flex items-center justify-between bg-[#FCFCFC]"
+     style={{ borderWidth: "3px" }}>
+    <p className="text-[14px] font-['poppins'] font-medium leading-[140%] text-transparent bg-clip-text bg-gradient-to-r from-[#7077FE] to-[#C56BFE]">
+      Share the best practices that reflect who you truly are & let your True Profile inspire the world.
+    </p>
+    <button className="ml-4 px-5 py-1.5 rounded-full border border-gray-300 bg-white text-[14px] font-medium text-gray-700 hover:bg-gray-100 transition-all">
+      Add
+    </button>
+  </div>
+  </>
+)}
                 </div>
+ 
 
                 {/* Upload Box - at the end */}
 <div className="w-full max-w-[336px] min-h-[420px] rounded-[30px] shadow-sm border border-gray-200 bg-white flex flex-col justify-between py-5 px-5 mx-auto sm:mx-0">
@@ -272,12 +296,41 @@ const InspiredAssessment = () => {
                         </div>
                       ))}
                     </div>
+   
                   </div>
+
+                  
                 </div>
              
+
             )}
+
+         
           </div>
+
+          
         ))}
+
+        <div className="flex flex-col sm:flex-row justify-end items-center gap-4 mt-8 px-4 sm:px-8 md:px-16">
+        <Button
+          onClick={() => navigate("/dashboard/assesmentcertification")}
+          variant="white-outline"
+          className="font-plusJakarta text-[14px] sm:text-[15px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
+            hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+            shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
+          type="button"
+        >
+          Back
+        </Button>
+
+        <Button
+          variant="gradient-primary"
+          className="font-openSans text-[14px] sm:text-[15px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
+          type="submit"
+        >
+          Submit
+        </Button>
+      </div>
       </div>
     </>
   );
