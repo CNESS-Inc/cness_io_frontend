@@ -612,26 +612,12 @@ if (formType === "person") {
           // Skip type selection and directly set to Person (1)
           await handleTypeSelection(1);
 
-          if (completionStatus === 0 || completed_step === 0) {
+          if (completed_step === 0) {
             // This will now directly open the person form
             setActiveModal("person");
-          } else if (completionStatus === 1) {
-            if (completed_step === 0) {
-              setActiveModal("person");
-            } else if (completed_step === 1) {
+          } else if (completed_step === 1) {
               navigate("/dashboard");
-            } else {
-              navigate("/dashboard");
-            }
-          } else if (completionStatus === 2) {
-            if (completed_step === 0) {
-              setActiveModal("organization");
-            } else if (completed_step === 1) {
-              navigate("/dashboard");
-            } else {
-              navigate("/dashboard");
-            }
-          }
+          } 
         } else {
           navigate("/dashboard");
         }
