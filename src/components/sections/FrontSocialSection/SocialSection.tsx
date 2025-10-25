@@ -92,6 +92,7 @@ export default function DashboardSection() {
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [isAnnual, setIsAnnual] = useState(true);
   const [personPricing, setPersonPricing] = useState<PersPricingPlan[]>([]);
+  console.log("🚀 ~ DashboardSection ~ personPricing:", personPricing)
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [organizationErrors, setOrganizationErrors] = useState<FormErrors>({});
   const [personErrors, setPersonErrors] = useState<FormErrors>({});
