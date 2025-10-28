@@ -51,7 +51,7 @@ interface AnswerPayload {
 
 const InspiredAssessment = () => {
   const [sections, setSections] = useState<TransformedSection[]>([]);
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<any>(null);
   const [checked, setChecked] = useState<Record<string, string[]>>({});
   const [uploads, setUploads] = useState<Record<string, UploadedFile[]>>({});
   const [loading, setLoading] = useState(true);
@@ -60,7 +60,7 @@ const InspiredAssessment = () => {
   const [activeModal, setActiveModal] = useState<"price" | null>(null);
   const completed_step = localStorage.getItem("completed_step");
   const [personPricing, setPersonPricing] = useState<any[]>([]);
-  console.log("🚀 ~ InspiredAssessment ~ personPricing:", personPricing)
+  console.log("🚀 ~ InspiredAssessment ~ personPricing:", personPricing);
   const [isAnnual, setIsAnnual] = useState(true);
 
   // Transform API data to match our component structure
@@ -223,7 +223,7 @@ const InspiredAssessment = () => {
       }
 
       const res = await submitAssesmentAnswerDetails(payload);
-      console.log("🚀 ~ handleSubmitAllAnswers ~ res:", res)
+      console.log("🚀 ~ handleSubmitAllAnswers ~ res:", res);
 
       showToast({
         message: "Answers submitted successfully!",
@@ -299,9 +299,10 @@ const InspiredAssessment = () => {
       }
       console.log("Submission result:", result);
     } catch (error: any) {
-      console.log("🚀 ~ handleSubmitAllAnswers ~ error:", error)
+      console.log("🚀 ~ handleSubmitAllAnswers ~ error:", error);
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to submit answers",
+        message:
+          error?.response?.data?.error?.message || "Failed to submit answers",
         type: "error",
         duration: 5000,
       });
@@ -369,7 +370,8 @@ const InspiredAssessment = () => {
       }));
 
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to upload file",
+        message:
+          error?.response?.data?.error?.message || "Failed to upload file",
         type: "error",
         duration: 5000,
       });
@@ -582,11 +584,11 @@ const InspiredAssessment = () => {
                 {section.order_number}. {section.name}
               </span>
               <div className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-300 bg-white shadow-sm">
-{expanded.includes(section.id) ? (
-  <Minus className="text-gray-500" />
-) : (
-  <Plus className="text-gray-500" />
-)}
+                {expanded.includes(section.id) ? (
+                  <Minus className="text-gray-500" />
+                ) : (
+                  <Plus className="text-gray-500" />
+                )}
               </div>
             </button>
 
@@ -651,23 +653,7 @@ const InspiredAssessment = () => {
                       </li>
                     ))}
                   </ul>
-                                {/* ✅ paste below this */}
-{section.id === 5 && (
-    <>
-  <p className="mt-20 text-[12px] font-['Open_Sans'] leading-[140%] text-gray-400 px-5">optional</p>
-  <div className="mt-2 w-full border border-dashed border-[#E5E5E5] rounded-[25px] py-5 px-6 flex items-center justify-between bg-[#FCFCFC]"
-     style={{ borderWidth: "3px" }}>
-    <p className="text-[14px] font-['poppins'] font-medium leading-[140%] text-transparent bg-clip-text bg-gradient-to-r from-[#7077FE] to-[#C56BFE]">
-      Share the best practices that reflect who you truly are & let your True Profile inspire the world.
-    </p>
-    <button className="ml-4 px-5 py-1.5 rounded-full border border-gray-300 bg-white text-[14px] font-medium text-gray-700 hover:bg-gray-100 transition-all">
-      Add
-    </button>
-  </div>
-  </>
-)}
                 </div>
- 
 
                 {/* Upload Box */}
                 <div className="w-full max-w-[336px] min-h-[420px] rounded-[30px] shadow-sm border border-gray-200 bg-white flex flex-col justify-between py-5 px-5 mx-auto sm:mx-0">
@@ -763,38 +749,11 @@ const InspiredAssessment = () => {
                       </div>
                     ))}
                   </div>
-
-                  
                 </div>
               </div>
             )}
-
-         
           </div>
-
-          
         ))}
-
-        <div className="flex flex-col sm:flex-row justify-end items-center gap-4 mt-8 px-4 sm:px-8 md:px-16">
-        <Button
-          onClick={() => navigate("/dashboard/assesmentcertification")}
-          variant="white-outline"
-          className="font-plusJakarta text-[14px] sm:text-[15px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-            hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-            shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
-          type="button"
-        >
-          Back
-        </Button>
-
-        <Button
-          variant="gradient-primary"
-          className="font-openSans text-[14px] sm:text-[15px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
-          type="submit"
-        >
-          Submit
-        </Button>
-      </div>
       </div>
 
       {/* Submit Button */}
