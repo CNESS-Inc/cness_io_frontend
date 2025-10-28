@@ -1517,7 +1517,7 @@ export const executeAPI = async <T = any,>(
       localStorage.setItem("appCatId", appCatIdres);
     }
 
-    const access_token = response.headers["access_token"];
+    // const access_token = response.headers["access_token"];
 
     // if (access_token != "not-provide") {
     //   console.log("access token response check sets", true);
