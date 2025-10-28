@@ -109,6 +109,7 @@ export const EndPoint = {
   subdomain: "/sub-domain/by-domain",
   readinessQuestion: "/readiness-question",
   allFormData: "/readiness-question/get-formdata",
+  getAspiringQuestion: "/readiness-question/get-aspiring-question",
   allPlanData: "/person-plan/user/plan",
   emailverify: "/auth/email-verify",
   paymentverify: "/payment/payment-confirm",
@@ -553,6 +554,10 @@ export const GetReadinessQuestionDetails = (): ApiResponse => {
 export const GetAllFormDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.allFormData);
+};
+export const GetAspiringQuestionDetails = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.getAspiringQuestion);
 };
 export const GetAllPlanDetails = (): ApiResponse => {
   const data = {};
@@ -1505,10 +1510,10 @@ export const executeAPI = async <T = any,>(
 
     const access_token = response.headers["access_token"];
 
-    if (access_token != "not-provide") {
-      console.log("access token response check sets", true);
-      localStorage.setItem("jwt", access_token);
-    }
+    // if (access_token != "not-provide") {
+    //   console.log("access token response check sets", true);
+    //   localStorage.setItem("jwt", access_token);
+    // }
 
     return response.data;
   } catch (error: any) {

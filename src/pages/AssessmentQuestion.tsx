@@ -288,7 +288,7 @@ const AssessmentQuestion: React.FC = () => {
   };
 
   useEffect(() => {
-    if (completed_step === "2") {
+    if (completed_step === "1") {
       fetchQuestions();
     }
   }, []);
@@ -668,7 +668,7 @@ const AssessmentQuestion: React.FC = () => {
         </div>
       </div>
 
-      {completed_step === "2" ? (
+      {completed_step === "1" ? (
         <div className="w-full px-4 sm:px-6 lg:px-2 pt-4 pb-10 space-y-6">
           <div className="bg-white rounded-3xl shadow-base p-4 sm:p-6 lg:p-8 space-y-8">
             {/* Section 1: Describe Your Approach */}
