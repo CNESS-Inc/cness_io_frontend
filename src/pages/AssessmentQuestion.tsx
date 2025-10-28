@@ -82,9 +82,7 @@ const AssessmentQuestion: React.FC = () => {
   const [activeModal, setActiveModal] = useState<
     "assesment" | "PricingModal" | null
   >(null);
-  console.log("🚀 ~ activeModal:", activeModal);
   const [personPricing, setPersonPricing] = useState<any[]>([]);
-  console.log("🚀 ~ AssessmentQuestion ~ personPricing:", personPricing)
   const [isAnnual, setIsAnnual] = useState(true);
   const [isFinalSubmitting, setIsFinalSubmitting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
