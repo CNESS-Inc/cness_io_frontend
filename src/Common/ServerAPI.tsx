@@ -141,6 +141,7 @@ export const EndPoint = {
   questions: "/quiz/get/question",
   questions_file: "/quiz/upload-answer-file",
   answer: "/quiz/answer",
+  removeuploadedfile: "/quiz/remove-upload-answer-file",
   final_submission: "/quiz/final-submition",
   report: "/quiz/report",
   get_front_all_post: "/user/posts/get/front/all",
@@ -528,6 +529,14 @@ export const submitAnswerDetails = (formData: any): ApiResponse => {
   // Return the formatted data
   return executeAPI(ServerAPI.APIMethod.POST, { data }, EndPoint.answer);
 };
+export const submitAssesmentAnswerDetails = (payload: any): ApiResponse => {
+
+  return executeAPI(ServerAPI.APIMethod.POST, payload, EndPoint.answer);
+};
+export const removeUploadedFile = (payload: any): ApiResponse => {
+
+  return executeAPI(ServerAPI.APIMethod.POST, payload, EndPoint.removeuploadedfile);
+};
 
 export const DashboardDetails = (): ApiResponse => {
   const data = {};
@@ -537,7 +546,7 @@ export const OrgTypeDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.org_type);
 };
-export const QuestionDetails = (sectionId: any): ApiResponse => {
+export const QuestionDetails = (sectionId?: any): ApiResponse => {
   const data: Partial<any> = {
     section_id: sectionId,
   };
