@@ -70,9 +70,14 @@ import UserPublicProfile from "../pages/UserPublicProfile";
 import Affiliate from "../pages/Affiliate";
 import ProductDetail from "../pages/ProductDetail";
 import MPSearch from "../pages/MPsearch";
-import AssessmentCertification from "../pages/AssessmentCertidications";
+import AssessmentCertification from "../pages/AssessmentCertifications";
 import AspiringAssessment from "../pages/AspiringAssessment";
 import InspiredAssessment from "../pages/InspiredAssessment";
+import ShopDetail from "../pages/ShopDetail";
+import ReviewAll from "../pages/ReviewAll";
+import CartPage from "../pages/CartPage";
+import Checkout from "../pages/Checkout";
+
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -246,10 +251,30 @@ export const router = createBrowserRouter([
   element: <MPSearch />, // ← new page
 },
 
+
+
           {
            path: "product-detail/:id",
             element: <ProductDetail />,
           },
+
+          {
+  path: "shop-detail/:id",
+  element: <ShopDetail />,
+},
+
+{
+  path: "product-review/:id",
+  element: <ReviewAll />,
+},
+{
+  path: "cart",
+  element: <CartPage />,
+},
+{
+    path: "checkout",
+  element: <Checkout />,
+},
           // {
           //   path: "search-listing",
           //   element:

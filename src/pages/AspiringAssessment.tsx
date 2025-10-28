@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import Button from "../components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import {
-  GetAllFormDetails,
   MeDetails,
   PaymentDetails,
+  GetAspiringQuestionDetails,
   submitPersonReadinessDetails,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -17,6 +17,7 @@ const AspiringAssessment = () => {
   const [selected, setSelected] = useState<string[]>([]);
   const [readlineQuestion, setReadlineQuestion] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAnswered, setIsAnswered] = useState(false);
 
   const [activeModal, setActiveModal] = useState<"price" | null>(null);
   const [personPricing, setPersonPricing] = useState<any[]>([]);
@@ -32,8 +33,16 @@ const AspiringAssessment = () => {
 
   const fetchAllDataDetails = async () => {
     try {
-      const response = await GetAllFormDetails();
-      setReadlineQuestion(response?.data?.data?.questions || []);
+      const response = await GetAspiringQuestionDetails();
+      const res = response?.data?.data || []
+      setReadlineQuestion(res?.questions || []);
+      if (res?.questions?.length == 1) {
+        if (res?.aspiring_ans_completed == true) {
+          setIsAnswered(false);
+          setSelected(res?.selectedId || []);
+        }
+      }
+
     } catch (error: any) {
       showToast({
         message:
@@ -129,7 +138,7 @@ const AspiringAssessment = () => {
               period: isAnnual ? "/year" : "/month",
               billingNote: yearlyPlan
                 ? isAnnual
-                  ? `billed annually ($${yearlyPlan.amount})`
+                  ? `Billed ${isAnnual?`annually`:`monthly`} ($${yearlyPlan.amount})`
                   : `or $${monthlyPlan?.amount}/month`
                 : undefined,
               features: [], // Add any features you need here
@@ -237,6 +246,7 @@ const AspiringAssessment = () => {
                 <input
                   type="checkbox"
                   id={`option-${index}`}
+                  disabled={isAnswered}
                   checked={selected.includes(opt.id)}
                   onChange={() => handleToggle(opt.id)}
                   className="w-5 h-5 sm:w-6 sm:h-6 cursor-pointer appearance-none border border-gray-400 rounded-sm checked:bg-[#22C55E] relative"
@@ -289,7 +299,6 @@ const AspiringAssessment = () => {
         >
           Back
         </Button>
-
         <Button
           onClick={handleSubmit}
           variant="gradient-primary"
@@ -299,6 +308,15 @@ const AspiringAssessment = () => {
         >
           {isSubmitting ? "Submitting..." : "Submit"}
         </Button>
+        {/* <Button
+          onClick={handleSubmit}
+          variant="gradient-primary"
+          className="font-openSans text-[14px] sm:text-[15px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
+          type="button"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Submitting..." : "Submit"}
+        </Button> */}
       </div>
 
       <Modal isOpen={activeModal === "price"} onClose={closeModal}>
