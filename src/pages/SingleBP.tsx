@@ -17,6 +17,8 @@ import { BiComment, BiLike } from "react-icons/bi";
 import { iconMap } from "../assets/icons";
 import CommentCard from "./CommentCard";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
+import DOMPurify from "dompurify";
+
 //import { useLocation } from "react-router-dom";
 
 const dummyProfilePicture =
@@ -356,11 +358,12 @@ useEffect(() => {
         {/* Description */}
         <div className="w-[90%] sm:w-[80%] md:w-[70%] mx-auto mt-4 sm:mt-6">
           <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6">
-           <div
+          <div
   className="text-gray-800 leading-relaxed text-sm sm:text-base whitespace-pre-line"
->
-  {singlepost.description}
-</div>
+  dangerouslySetInnerHTML={{
+    __html: DOMPurify.sanitize(singlepost.description),
+  }}
+></div>
           </div>
         </div>
         {/* Comment Section */}

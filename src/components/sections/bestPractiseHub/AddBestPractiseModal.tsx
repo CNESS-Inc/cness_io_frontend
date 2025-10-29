@@ -224,8 +224,20 @@ export default function AddBestPracticeModal({
         {/* Form */}
         <form
           onSubmit={handleSubmit}
+          // onKeyDown={(e) => {
+          //   if (e.key === "Enter") {
+          //     e.preventDefault();
+          //   }
+          // }}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            // Allow Enter key inside CKEditor only
+            const target = e.target as HTMLElement;
+            if (target.closest(".ck") && e.key === "Enter") {
+              return; // Let CKEditor handle Enter
+            }
+
+            // Prevent Enter from submitting in text fields
+            if (e.key === "Enter" && target.tagName !== "TEXTAREA") {
               e.preventDefault();
             }
           }}
