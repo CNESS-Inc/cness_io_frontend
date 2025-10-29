@@ -15,15 +15,15 @@ class Base64UploadAdapter {
 
   upload() {
     return new Promise((resolve, reject) => {
-      this.reader.addEventListener('load', () => {
+      this.reader.addEventListener("load", () => {
         resolve({ default: this.reader.result });
       });
 
-      this.reader.addEventListener('error', err => {
+      this.reader.addEventListener("error", (err) => {
         reject(err);
       });
 
-      this.reader.addEventListener('abort', () => {
+      this.reader.addEventListener("abort", () => {
         reject();
       });
 
@@ -39,7 +39,7 @@ class Base64UploadAdapter {
 }
 
 function Base64UploadAdapterPlugin(editor: any) {
-  editor.plugins.get('FileRepository').createUploadAdapter = (loader: any) => {
+  editor.plugins.get("FileRepository").createUploadAdapter = (loader: any) => {
     return new Base64UploadAdapter(loader);
   };
 }
@@ -113,13 +113,13 @@ const editorConfig = {
   },
   image: {
     toolbar: [
-      'imageTextAlternative',
-      'toggleImageCaption',
-      'imageStyle:inline',
-      'imageStyle:block',
-      'imageStyle:side'
-    ]
-  }
+      "imageTextAlternative",
+      "toggleImageCaption",
+      "imageStyle:inline",
+      "imageStyle:block",
+      "imageStyle:side",
+    ],
+  },
 };
 
 interface AddBestPracticeModalProps {
@@ -222,7 +222,15 @@ export default function AddBestPracticeModal({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+            }
+          }}
+          className="space-y-4"
+        >
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-[5px]">
               <label
@@ -362,7 +370,7 @@ export default function AddBestPracticeModal({
 
           <div className="flex justify-center pt-4">
             <Button
-              type="button"
+              type="submit"
               variant="gradient-primary"
               className="w-[104px] h-[39px] rounded-[100px] p-0 font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none flex items-center justify-center"
               disabled={isSubmitting}
