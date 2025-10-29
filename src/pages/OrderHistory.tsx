@@ -1,81 +1,91 @@
 import React, { useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import { Search, X, ChevronDown, Filter as FilterIcon } from "lucide-react";
-import ProductCard from "../components/MarketPlace/ProductCard";
+import { useSearchParams } from "react-router-dom";
+import {
+  Search,
+  X,
+  ChevronDown,
+  Filter as FilterIcon,
+  Video,
+  Clock,
+  Download,
+  WalletCards,
+} from "lucide-react";
 import Filter from "../components/MarketPlace/Filter";
 import Header from "../components/MarketPlace/Marketheader";
 import filter from "../assets/filter.svg";
 
-const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
+const OrderHistory = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const initialSearch = searchParams.get("search") || "";
   const [searchQuery, setSearchQuery] = useState(initialSearch);
 
-  // ✅ Static Products
-  const products = [
+  const orders = [
     {
-      id: "1",
-      title: "Soft Guitar Moods that Heal Your Inner Pain",
+      id: "CN000012",
+      title: "Soft guitar moods that heals your inner pain",
       author: "Redtape",
-      rating: 4.8,
-      reviews: 120,
-      currentPrice: 1259,
-      originalPrice: 2444,
-      discount: 50,
-      duration: "00:23:00",
-      category: '🕊️ Peaceful',
+      category: "Course",
+      mood: "🕊️ Peaceful",
+      date: "13 October, 2025",
+      price: 1259,
+      image: "https://cdn.cness.io/digital.svg",
+    },
+    {
+      id: "CN000013",
+      title: "Soft guitar moods that heals your inner pain",
+      author: "Redtape",
+      category: "Course",
+      mood: "🕊️ Peaceful",
+      date: "13 October, 2025",
+      price: 1259,
       image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
     },
     {
-      id: "2",
-      title: "Calming Piano Waves for Focus and Flow",
-      author: "BlueNote",
-      rating: 4.9,
-      reviews: 98,
-      currentPrice: 1599,
-      originalPrice: 2999,
-      discount: 47,
-      duration: "00:25:00",
-      category: '🧘 Spiritual',
-      image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
+      id: "CN000014",
+      title: "Soft guitar moods that heals your inner pain",
+      author: "Redtape",
+      category: "Course",
+      mood: "🕊️ Peaceful",
+      date: "13 October, 2025",
+      price: 1259,
+      image:
+        "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800",
     },
     {
-      id: "3",
-      title: "Chill Beats for Peaceful Evenings",
-      author: "MindTune",
-      rating: 4.7,
-      reviews: 80,
-      currentPrice: 999,
-      originalPrice: 1999,
-      discount: 50,
-      duration: "00:20:00",
-      category: '🧘 Spiritual',
-      image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
+      id: "CN000015",
+      title: "Soft guitar moods that heals your inner pain",
+      author: "Redtape",
+      category: "Course",
+      mood: "🕊️ Peaceful",
+      date: "13 October, 2025",
+      price: 1259,
+      image:
+        "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=800",
     },
   ];
 
-  // ✅ Handle Search
+  // Handle Search
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchQuery(value);
-    navigate(`/dashboard/market-place/search?search=${encodeURIComponent(value)}`);
+    setSearchQuery(e.target.value);
   };
 
-  // ✅ Clear Search
   const clearSelection = () => {
     setSearchQuery("");
-    navigate(`/dashboard/market-place/search`);
   };
 
-  // ✅ Filtered Products
-  const filteredProducts = products.filter((product) => {
+  // Filtered Orders
+  const filteredOrders = orders.filter((order) => {
     if (!searchQuery) return true;
     const lower = searchQuery.toLowerCase();
-    return product.title.toLowerCase().includes(lower);
+    return (
+      order.title.toLowerCase().includes(lower) ||
+      order.author.toLowerCase().includes(lower) ||
+      order.category.toLowerCase().includes(lower) ||
+      order.mood.toLowerCase().includes(lower)
+    );
   });
 
-  // ✅ Sorting Dropdown
+  // Sorting Dropdown
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState("Top Rated");
   const [showMobileFilter, setShowMobileFilter] = useState(false);
@@ -102,6 +112,10 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
           isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
         } pt-[20px] px-6`}
       >
+        <h2 className="font-[Poppins] font-semibold text-[20px] leading-[100%] text-[#242E3A] mb-6">
+          My order History
+        </h2>
+
         {/* 🔍 Search + Sort Section */}
         <div className="w-full max-w-[2000px] mx-auto flex items-start justify-between px-5 mt-8 gap-6">
           <div className="flex flex-col flex-1">
@@ -171,31 +185,85 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
         {/* 📦 Main Section */}
         <div className="flex w-full max-w-[1600px] mx-auto px-5 py-10 gap-8">
           <div className="flex-1">
-            <h1 className="text-2xl font-semibold mb-6">
-              Results for:{" "}
-              <span className="text-[#7077FE]">{searchQuery || "All"}</span>
-            </h1>
+           
+
+            {/* 🧾 Order List */}
+            <div className="space-y-5 mt-6">
+              {filteredOrders.length > 0 ? (
+                filteredOrders.map((order) => (
+                  <div
+                    key={order.id}
+                    className="bg-[#FFFFFF] border border-gray-200 rounded-xl shadow-sm p-4 flex flex-col md:flex-row items-start md:items-center gap-4 hover:shadow-md transition-all"
+                  >
+                    <img
+                      src={order.image}
+                      alt={order.title}
+                      className="w-[160px] h-[100px] object-cover rounded-lg"
+                    />
+
+                    <div className="flex-1 flex flex-col justify-between">
+                      <div className="flex justify-between items-start flex-wrap">
+                        <div>
+                          <h3 className="font-[Poppins] font-semibold text-[16px] text-[#242E3A] mb-1">
+                            {order.title}
+                          </h3>
+                          <p className="text-sm text-gray-500 mb-1">
+                            by {order.author}
+                          </p>
+                          <div className="flex flex-wrap gap-3 text-sm text-gray-600">
+                            <span className="flex items-center gap-1">
+                              <Video className="w-4 h-4 text-[#7077FE]" />{" "}
+                              {order.category}
+                            </span>
+                            <span>{order.mood}</span>
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-4 h-4 text-[#7077FE]" />
+                              Purchased on <strong>{order.date}</strong>
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="text-sm text-gray-500 font-medium">
+                          Order ID: <span className="text-[#242E3A]">{order.id}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-3 mt-4">
+                        <button className="flex items-center gap-2 bg-[#7077FE] text-white text-[14px] font-[Plus_Jakarta_Sans] font-medium px-4 py-2 rounded-lg hover:bg-[#5E65F6] transition">
+                          <WalletCards className="w-4 h-4" />
+                          View in Library
+                        </button>
+
+                        <button className="flex items-center gap-2 border border-[#7077FE] text-[#7077FE] text-[14px] font-[Plus_Jakarta_Sans] font-medium px-4 py-2 rounded-lg hover:bg-[#F3F4FF] transition">
+                          <Download className="w-4 h-4" />
+                          Download Invoice
+                        </button>
+
+                        <button className="text-[#7077FE] text-[14px] font-[Plus_Jakarta_Sans] font-medium hover:underline">
+                          Rate or leave review
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 md:mt-0 md:ml-auto font-[Poppins] font-semibold text-[18px] text-[#242E3A]">
+                      ${order.price}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-gray-500 mt-10">
+                  No orders found matching your search.
+                </p>
+              )}
+            </div>
 
             {/* Mobile Filter Button */}
             <button
-              className="md:hidden flex items-center gap-2 px-4 py-2 bg-[#7077FE] text-white rounded-full mb-6"
+              className="md:hidden flex items-center gap-2 px-4 py-2 bg-[#7077FE] text-white rounded-full mb-6 mt-6"
               onClick={() => setShowMobileFilter(true)}
             >
               <FilterIcon className="w-5 h-5" /> Filters
             </button>
-
-            {/* Product Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))
-              ) : (
-                <p className="col-span-full text-center text-gray-500">
-                  No results found
-                </p>
-              )}
-            </div>
           </div>
 
           {/* 🧰 Filter Sidebar (RIGHT) */}
@@ -223,4 +291,4 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   );
 };
 
-export default MPSearch;
+export default OrderHistory;

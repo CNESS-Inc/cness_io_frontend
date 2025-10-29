@@ -1,14 +1,13 @@
 import React, { useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { Search, X, ChevronDown, Filter as FilterIcon } from "lucide-react";
 import ProductCard from "../components/MarketPlace/ProductCard";
 import Filter from "../components/MarketPlace/Filter";
 import Header from "../components/MarketPlace/Marketheader";
 import filter from "../assets/filter.svg";
 
-const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
+const Wishlist = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const initialSearch = searchParams.get("search") || "";
   const [searchQuery, setSearchQuery] = useState(initialSearch);
 
@@ -56,17 +55,13 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   ];
 
   // ✅ Handle Search
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchQuery(value);
-    navigate(`/dashboard/market-place/search?search=${encodeURIComponent(value)}`);
-  };
+const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  setSearchQuery(e.target.value);
+};
 
-  // ✅ Clear Search
-  const clearSelection = () => {
-    setSearchQuery("");
-    navigate(`/dashboard/market-place/search`);
-  };
+const clearSelection = () => {
+  setSearchQuery("");
+};
 
   // ✅ Filtered Products
   const filteredProducts = products.filter((product) => {
@@ -102,7 +97,10 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
           isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
         } pt-[20px] px-6`}
       >
-        {/* 🔍 Search + Sort Section */}
+<h2
+  className="font-[Poppins] font-semibold text-[20px] leading-[100%] text-[#242E3A] mb-6">
+  My Wishlist
+</h2>        {/* 🔍 Search + Sort Section */}
         <div className="w-full max-w-[2000px] mx-auto flex items-start justify-between px-5 mt-8 gap-6">
           <div className="flex flex-col flex-1">
             <div className="flex items-center gap-4 max-w-[1200px]">
@@ -171,10 +169,7 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
         {/* 📦 Main Section */}
         <div className="flex w-full max-w-[1600px] mx-auto px-5 py-10 gap-8">
           <div className="flex-1">
-            <h1 className="text-2xl font-semibold mb-6">
-              Results for:{" "}
-              <span className="text-[#7077FE]">{searchQuery || "All"}</span>
-            </h1>
+           
 
             {/* Mobile Filter Button */}
             <button
@@ -185,17 +180,17 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
             </button>
 
             {/* Product Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))
-              ) : (
-                <p className="col-span-full text-center text-gray-500">
-                  No results found
-                </p>
-              )}
-            </div>
+           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+  {filteredProducts.length > 0 ? (
+    filteredProducts.map((product) => (
+      <ProductCard key={product.id} product={product} isLiked={true} />
+    ))
+  ) : (
+    <p className="col-span-full text-center text-gray-500">
+      No results found
+    </p>
+  )}
+</div>
           </div>
 
           {/* 🧰 Filter Sidebar (RIGHT) */}
@@ -223,4 +218,4 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   );
 };
 
-export default MPSearch;
+export default Wishlist;

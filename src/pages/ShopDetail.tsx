@@ -454,7 +454,7 @@ const shops = [
   {categories.map((category, index) => (
     <button
       key={index}
-      className={`flex items-center gap-3 px-8 py-3 rounded-full border font-medium text-sm transition-all duration-200 ${
+      className={`flex items-center gap-3 px-8 py-3 h-[54px] rounded-full border font-medium text-sm transition-all duration-200 ${
         category.active
           ? "border-blue-500 text-blue-500 bg-white shadow-sm"
           : "border-gray-300 text-gray-500 bg-white hover:border-gray-400"
