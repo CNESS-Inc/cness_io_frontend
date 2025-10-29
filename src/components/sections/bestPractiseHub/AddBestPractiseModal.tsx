@@ -1,5 +1,126 @@
 import cloud from "../../../assets/cloud-add.svg";
 import Button from "../../ui/Button";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+
+// Base64 upload adapter
+class Base64UploadAdapter {
+  private loader: any;
+  private reader: FileReader;
+
+  constructor(loader: any) {
+    this.loader = loader;
+    this.reader = new FileReader();
+  }
+
+  upload() {
+    return new Promise((resolve, reject) => {
+      this.reader.addEventListener('load', () => {
+        resolve({ default: this.reader.result });
+      });
+
+      this.reader.addEventListener('error', err => {
+        reject(err);
+      });
+
+      this.reader.addEventListener('abort', () => {
+        reject();
+      });
+
+      this.loader.file.then((file: File) => {
+        this.reader.readAsDataURL(file);
+      });
+    });
+  }
+
+  abort() {
+    this.reader.abort();
+  }
+}
+
+function Base64UploadAdapterPlugin(editor: any) {
+  editor.plugins.get('FileRepository').createUploadAdapter = (loader: any) => {
+    return new Base64UploadAdapter(loader);
+  };
+}
+
+const editorConfig = {
+  extraPlugins: [Base64UploadAdapterPlugin],
+  toolbar: {
+    items: [
+      "heading",
+      "|",
+      "bold",
+      "italic",
+      "underline",
+      "strikethrough",
+      "subscript",
+      "superscript",
+      "code",
+      "|",
+      "fontSize",
+      "fontFamily",
+      "fontColor",
+      "fontBackgroundColor",
+      "|",
+      "alignment",
+      "|",
+      "link",
+      "insertImage",
+      "mediaEmbed",
+      "insertTable",
+      "blockQuote",
+      "codeBlock",
+      "|",
+      "bulletedList",
+      "numberedList",
+      "todoList",
+      "|",
+      "outdent",
+      "indent",
+      "|",
+      "specialCharacters",
+      "horizontalLine",
+      "|",
+      "removeFormat",
+      "highlight",
+      "|",
+      "undo",
+      "redo",
+    ],
+    shouldNotGroupWhenFull: false,
+  },
+  fontFamily: {
+    options: [
+      "default",
+      "Arial, Helvetica, sans-serif",
+      "Courier New, Courier, monospace",
+      "Georgia, serif",
+      "Times New Roman, Times, serif",
+      "Trebuchet MS, Helvetica, sans-serif",
+      "Verdana, Geneva, sans-serif",
+    ],
+    supportAllValues: true,
+  },
+  fontSize: {
+    options: [10, 12, 14, "default", 18, 20, 22, 24],
+    supportAllValues: true,
+  },
+  placeholder: "Add your description here...",
+  link: {
+    addTargetToExternalLinks: true,
+    defaultProtocol: "https://",
+  },
+  image: {
+    toolbar: [
+      'imageTextAlternative',
+      'toggleImageCaption',
+      'imageStyle:inline',
+      'imageStyle:block',
+      'imageStyle:side'
+    ]
+  }
+};
 
 interface AddBestPracticeModalProps {
   open: boolean;
@@ -139,11 +260,12 @@ export default function AddBestPracticeModal({
                ${newPractice.interest ? "text-black" : "text-[#6E7179]"}`}
               >
                 <option value="">Select your Interest</option>
-                {interest && interest.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
+                {interest &&
+                  interest.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
               </select>
             </div>
           </div>
@@ -166,11 +288,12 @@ export default function AddBestPracticeModal({
                ${newPractice.profession ? "text-black" : "text-[#6E7179]"}`}
               >
                 <option value="">Select your Profession</option>
-                {profession && profession.map((prof) => (
-                  <option key={prof.id} value={prof.id}>
-                    {prof.title}
-                  </option>
-                ))}
+                {profession &&
+                  profession.map((prof) => (
+                    <option key={prof.id} value={prof.id}>
+                      {prof.title}
+                    </option>
+                  ))}
               </select>
             </div>
 
@@ -212,23 +335,6 @@ export default function AddBestPracticeModal({
             </div>
           </div>
 
-          {/* <div className="flex flex-col gap-[5px]">
-            <label
-              htmlFor="purpose"
-              className="block text-[15px] font-normal text-black"
-            >
-              Objective / Purpose
-            </label>
-            <textarea
-              id="purpose"
-              name="objective"
-              rows={3}
-              onChange={handleInputChange}
-              className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm placeholder:text-[#6E7179] placeholder:text-xs placeholder:font-normal"
-              placeholder="Add Notes..."
-            ></textarea>
-          </div> */}
-
           <div className="flex flex-col gap-[5px]">
             <label
               htmlFor="description"
@@ -236,15 +342,22 @@ export default function AddBestPracticeModal({
             >
               Description <span className="text-red-600">*</span>
             </label>
-            <textarea
-              id="description"
-              name="description"
-              rows={3}
-              value={newPractice.description}
-              onChange={handleInputChange}
-              className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm placeholder:text-[#6E7179] placeholder:text-xs placeholder:font-normal"
-              placeholder="Add Notes..."
-            ></textarea>
+            <div className="ckeditor-container">
+              <CKEditor
+                editor={ClassicEditor as any}
+                config={editorConfig}
+                data={newPractice.description}
+                onChange={(_event, editor) => {
+                  const data = editor.getData();
+                  handleInputChange({
+                    target: {
+                      name: "description",
+                      value: data,
+                    },
+                  } as React.ChangeEvent<HTMLTextAreaElement>);
+                }}
+              />
+            </div>
           </div>
 
           <div className="flex justify-center pt-4">
