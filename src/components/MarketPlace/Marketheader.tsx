@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Heart, ShoppingCart, Menu, X } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Mhome from "../../assets/Mhome.svg";
-import Mhome1 from "../../assets/Mhome1.svg";
+import Mhome1 from "../../assets/mhome1.svg";
 import sellbag from "../../assets/ep_sell.svg";
 
 interface MarketHeaderProps {
