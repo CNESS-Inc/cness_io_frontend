@@ -362,7 +362,7 @@ export default function AddBestPracticeModal({
 
           <div className="flex justify-center pt-4">
             <Button
-              type="submit"
+              type="button"
               variant="gradient-primary"
               className="w-[104px] h-[39px] rounded-[100px] p-0 font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none flex items-center justify-center"
               disabled={isSubmitting}
