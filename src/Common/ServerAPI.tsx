@@ -109,6 +109,7 @@ export const EndPoint = {
   subdomain: "/sub-domain/by-domain",
   readinessQuestion: "/readiness-question",
   allFormData: "/readiness-question/get-formdata",
+  getAspiringQuestion: "/readiness-question/get-aspiring-question",
   allPlanData: "/person-plan/user/plan",
   emailverify: "/auth/email-verify",
   paymentverify: "/payment/payment-confirm",
@@ -140,6 +141,7 @@ export const EndPoint = {
   questions: "/quiz/get/question",
   questions_file: "/quiz/upload-answer-file",
   answer: "/quiz/answer",
+  removeuploadedfile: "/quiz/remove-upload-answer-file",
   final_submission: "/quiz/final-submition",
   report: "/quiz/report",
   get_front_all_post: "/user/posts/get/front/all",
@@ -527,6 +529,14 @@ export const submitAnswerDetails = (formData: any): ApiResponse => {
   // Return the formatted data
   return executeAPI(ServerAPI.APIMethod.POST, { data }, EndPoint.answer);
 };
+export const submitAssesmentAnswerDetails = (payload: any): ApiResponse => {
+
+  return executeAPI(ServerAPI.APIMethod.POST, payload, EndPoint.answer);
+};
+export const removeUploadedFile = (payload: any): ApiResponse => {
+
+  return executeAPI(ServerAPI.APIMethod.POST, payload, EndPoint.removeuploadedfile);
+};
 
 export const DashboardDetails = (): ApiResponse => {
   const data = {};
@@ -536,7 +546,7 @@ export const OrgTypeDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.org_type);
 };
-export const QuestionDetails = (sectionId: any): ApiResponse => {
+export const QuestionDetails = (sectionId?: any): ApiResponse => {
   const data: Partial<any> = {
     section_id: sectionId,
   };
@@ -553,6 +563,10 @@ export const GetReadinessQuestionDetails = (): ApiResponse => {
 export const GetAllFormDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.allFormData);
+};
+export const GetAspiringQuestionDetails = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.getAspiringQuestion);
 };
 export const GetAllPlanDetails = (): ApiResponse => {
   const data = {};
@@ -1503,12 +1517,12 @@ export const executeAPI = async <T = any,>(
       localStorage.setItem("appCatId", appCatIdres);
     }
 
-    const access_token = response.headers["access_token"];
+    // const access_token = response.headers["access_token"];
 
-    if (access_token != "not-provide") {
-      console.log("access token response check sets", true);
-      localStorage.setItem("jwt", access_token);
-    }
+    // if (access_token != "not-provide") {
+    //   console.log("access token response check sets", true);
+    //   localStorage.setItem("jwt", access_token);
+    // }
 
     return response.data;
   } catch (error: any) {

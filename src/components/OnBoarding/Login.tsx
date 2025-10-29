@@ -494,8 +494,6 @@ if (formType === "person") {
             response?.data?.data?.user.my_referral_code
           );
         }
-        const completionStatus =
-          response.data.data.user.person_organization_complete;
         const completed_step = response.data.data.user.completed_step;
         const is_disqualify = response.data.data.user.is_disqualify;
 
