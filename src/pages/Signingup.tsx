@@ -6,6 +6,7 @@ import Button from "../components/ui/Button";
 import { Link, useNavigate } from "react-router-dom";
 import cnesslogo from "../assets/cnesslogo.png";
 import { FiMail, FiEye, FiEyeOff } from "react-icons/fi";
+import ReCAPTCHA from "react-google-recaptcha";
 
 
 // interface SignupFormProps {
@@ -46,7 +47,11 @@ export default function Signingup() {
     password: "",
     confirmPassword: "",
   });
+const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
+const handleCaptchaResponse = (token: string | null) => {
+  setRecaptchaToken(token);
+};
 const [emailFocused, setEmailFocused] = useState(false);
 const [showPassword, setShowPassword] = useState(false);
 const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -138,7 +143,7 @@ const [isUsernameFocused, setIsUsernameFocused] = useState(false);
       setIsSubmitting(false);
       return;
     }
-
+    
     try {
       const payload = {
         username: formData.username,
@@ -206,7 +211,7 @@ const [isUsernameFocused, setIsUsernameFocused] = useState(false);
             />
             <SignupAnimation />
           </div>
-
+          
           <div className="absolute top-40 left-10 z-10">
 <div className="fixed top-0 left-0 p-1 z-50">
   <img
@@ -259,7 +264,10 @@ onBlur={() => setIsUsernameFocused(false)}
                     errors.username ? "border-red-500" : "border-[#CBD5E1]"
                   } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                 />
-
+     <ReCAPTCHA
+    sitekey="6Lc8onQrAAAAAENjaNKNr4ARXWvE43bz_yTnhvHl" // Replace with your actual Site Key
+    onChange={handleCaptchaResponse} // Make sure you have this handler defined
+/>
   {/* Tooltip on focus/hover */}
   {isUsernameFocused && (
     <div className="absolute top-10 right-0 max-w-[240px] bg-gray-700 text-white text-xs px-3 py-2 rounded-md shadow-md z-20 animate-fadeIn">
