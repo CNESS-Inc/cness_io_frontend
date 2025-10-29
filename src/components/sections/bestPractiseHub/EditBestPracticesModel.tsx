@@ -1,6 +1,127 @@
 import cloud from "../../../assets/cloud-add.svg";
 import Button from "../../ui/Button";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { useToast } from "../../ui/Toast/ToastProvider";
+
+// Base64 upload adapter (same as in AddBestPracticeModal)
+class Base64UploadAdapter {
+  private loader: any;
+  private reader: FileReader;
+
+  constructor(loader: any) {
+    this.loader = loader;
+    this.reader = new FileReader();
+  }
+
+  upload() {
+    return new Promise((resolve, reject) => {
+      this.reader.addEventListener('load', () => {
+        resolve({ default: this.reader.result });
+      });
+
+      this.reader.addEventListener('error', err => {
+        reject(err);
+      });
+
+      this.reader.addEventListener('abort', () => {
+        reject();
+      });
+
+      this.loader.file.then((file: File) => {
+        this.reader.readAsDataURL(file);
+      });
+    });
+  }
+
+  abort() {
+    this.reader.abort();
+  }
+}
+
+function Base64UploadAdapterPlugin(editor: any) {
+  editor.plugins.get('FileRepository').createUploadAdapter = (loader: any) => {
+    return new Base64UploadAdapter(loader);
+  };
+}
+
+const editorConfig = {
+  extraPlugins: [Base64UploadAdapterPlugin],
+  toolbar: {
+    items: [
+      "heading",
+      "|",
+      "bold",
+      "italic",
+      "underline",
+      "strikethrough",
+      "subscript",
+      "superscript",
+      "code",
+      "|",
+      "fontSize",
+      "fontFamily",
+      "fontColor",
+      "fontBackgroundColor",
+      "|",
+      "alignment",
+      "|",
+      "link",
+      "insertImage",
+      "mediaEmbed",
+      "insertTable",
+      "blockQuote",
+      "codeBlock",
+      "|",
+      "bulletedList",
+      "numberedList",
+      "todoList",
+      "|",
+      "outdent",
+      "indent",
+      "|",
+      "specialCharacters",
+      "horizontalLine",
+      "|",
+      "removeFormat",
+      "highlight",
+      "|",
+      "undo",
+      "redo",
+    ],
+    shouldNotGroupWhenFull: false,
+  },
+  fontFamily: {
+    options: [
+      "default",
+      "Arial, Helvetica, sans-serif",
+      "Courier New, Courier, monospace",
+      "Georgia, serif",
+      "Times New Roman, Times, serif",
+      "Trebuchet MS, Helvetica, sans-serif",
+      "Verdana, Geneva, sans-serif",
+    ],
+    supportAllValues: true,
+  },
+  fontSize: {
+    options: [10, 12, 14, "default", 18, 20, 22, 24],
+    supportAllValues: true,
+  },
+  placeholder: "Add your description here...",
+  link: {
+    addTargetToExternalLinks: true,
+    defaultProtocol: "https://",
+  },
+  image: {
+    toolbar: [
+      'imageTextAlternative',
+      'toggleImageCaption',
+      'imageStyle:inline',
+      'imageStyle:block',
+      'imageStyle:side'
+    ]
+  }
+};
 
 interface EditBestPracticeModalProps {
   open: boolean;
@@ -33,6 +154,7 @@ export default function EditBestPracticeModal({
   handleSubmit,
   isSubmitting,
 }: EditBestPracticeModalProps) {
+  console.log("🚀 ~ EditBestPracticeModal ~ tags:", tags)
   const { showToast } = useToast();
 
   const handleEditFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -153,7 +275,6 @@ export default function EditBestPracticeModal({
               </label>
               <select
                 id="interest"
-                // value={currentPractice?.interest || ""}
                 value={currentPractice?.interest || ""}
                 onChange={(e) =>
                   setCurrentPractice({
@@ -176,7 +297,6 @@ export default function EditBestPracticeModal({
           </div>
 
           <div className="grid sm:grid-cols-2 gap-4">
-            {/* Profession */}
             {/* Profession */}
             <div className="flex flex-col gap-[5px]">
               <label
@@ -266,30 +386,7 @@ export default function EditBestPracticeModal({
             </div>
           </div>
 
-          {/* Objective / Purpose */}
-          {/* <div className="flex flex-col gap-[5px]">
-            <label
-              htmlFor="objective"
-              className="block text-[15px] font-normal text-black"
-            >
-              Objective / Purpose
-            </label>
-            <textarea
-              id="objective"
-              rows={3}
-              value={currentPractice?.objective || ""}
-              onChange={(e) =>
-                setCurrentPractice({
-                  ...currentPractice,
-                  objective: e.target.value,
-                })
-              }
-              className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm placeholder:text-[#6E7179] placeholder:text-xs placeholder:font-normal"
-              placeholder="Add Notes..."
-            ></textarea>
-          </div> */}
-
-          {/* Description */}
+          {/* Description with CKEditor */}
           <div className="flex flex-col gap-[5px]">
             <label
               htmlFor="description"
@@ -297,20 +394,20 @@ export default function EditBestPracticeModal({
             >
               Description <span className="text-red-600">*</span>
             </label>
-            <textarea
-              id="description"
-              rows={3}
-              value={currentPractice?.description || ""}
-              onChange={(e) =>
-                setCurrentPractice({
-                  ...currentPractice,
-                  description: e.target.value,
-                })
-              }
-              required
-              className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm placeholder:text-[#6E7179] placeholder:text-xs placeholder:font-normal"
-              placeholder="Add Notes..."
-            ></textarea>
+            <div className="ckeditor-container">
+              <CKEditor
+                editor={ClassicEditor as any}
+                config={editorConfig}
+                data={currentPractice?.description || ""}
+                onChange={(_event, editor) => {
+                  const data = editor.getData();
+                  setCurrentPractice({
+                    ...currentPractice,
+                    description: data,
+                  });
+                }}
+              />
+            </div>
           </div>
 
           {/* Submit */}
