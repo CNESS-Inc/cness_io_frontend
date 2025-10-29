@@ -1,8 +1,10 @@
 import React from "react";
 import Header from "../components/MarketPlace/Marketheader";
 import { Trash2, CheckCircle, CreditCard, ShoppingCart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const CheckoutPage: React.FC = () => {
+  const navigate = useNavigate();
   const cartItems = [
     {
       id: 1,
@@ -140,7 +142,9 @@ const CheckoutPage: React.FC = () => {
             </div>
 
             {/* Continue Button */}
-            <button className="mt-6 w-full bg-[#7077FE] text-white py-3 rounded-lg font-medium hover:bg-[#5E65F6] transition">
+            <button
+          onClick={() => navigate("/dashboard/payment-success")}
+             className="mt-6 w-full bg-[#7077FE] text-white py-3 rounded-lg font-medium hover:bg-[#5E65F6] transition">
               Continue
             </button>
           </div>

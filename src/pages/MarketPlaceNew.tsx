@@ -1,6 +1,6 @@
 //import React from 'react'
 //import MoodGrid from '../components/MarketPlace/MoodGrid';
-import Header from   '../components/MarketPlace/Marketheader';
+//import Header from   '../components/MarketPlace/Marketheader';
 import happy from "../assets/happy.svg";
 import motivated from "../assets/motivated.svg";
 import calm from "../assets/calm.svg";
@@ -198,10 +198,7 @@ const products = [
 
 
   return (
-    
- <main className=" min-h-screen bg-white">
-  <Header />
-
+  
 <div
         className={` transition-all duration-300 ${
           isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
@@ -448,7 +445,7 @@ Visit store            </Button>
 
 
 
-    </main>
+
   )
 }
 
