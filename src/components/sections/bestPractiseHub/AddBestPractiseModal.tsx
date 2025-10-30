@@ -1,5 +1,8 @@
 import cloud from "../../../assets/cloud-add.svg";
 import Button from "../../ui/Button";
+import Cropper from "react-easy-crop";
+import { useState, useCallback } from "react";
+import { getCroppedImg } from "../../ui/cropImage";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
@@ -18,15 +21,8 @@ class Base64UploadAdapter {
       this.reader.addEventListener("load", () => {
         resolve({ default: this.reader.result });
       });
-
-      this.reader.addEventListener("error", (err) => {
-        reject(err);
-      });
-
-      this.reader.addEventListener("abort", () => {
-        reject();
-      });
-
+      this.reader.addEventListener("error", (err) => reject(err));
+      this.reader.addEventListener("abort", () => reject());
       this.loader.file.then((file: File) => {
         this.reader.readAsDataURL(file);
       });
@@ -88,7 +84,6 @@ const editorConfig = {
       "undo",
       "redo",
     ],
-    shouldNotGroupWhenFull: false,
   },
   fontFamily: {
     options: [
@@ -100,11 +95,9 @@ const editorConfig = {
       "Trebuchet MS, Helvetica, sans-serif",
       "Verdana, Geneva, sans-serif",
     ],
-    supportAllValues: true,
   },
   fontSize: {
     options: [10, 12, 14, "default", 18, 20, 22, 24],
-    supportAllValues: true,
   },
   placeholder: "Add your description here...",
   link: {
@@ -198,6 +191,7 @@ export default function AddBestPracticeModal({
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={onClose}
       ></div>
+
       <div className="relative z-10 w-full max-w-3xl bg-white rounded-[25px] shadow-lg px-[45px] py-[30px] max-h-[95vh] overflow-y-auto scrollbar-hide">
         {/* Close Button */}
         <div className="relative">
@@ -281,29 +275,21 @@ export default function AddBestPracticeModal({
           </div>
         )}
 
-        {/* Form */}
+        {/* Form Section */}
         <form
           onSubmit={handleSubmit}
           onKeyDown={(e) => {
-            // Allow Enter key inside CKEditor only
             const target = e.target as HTMLElement;
-            if (target.closest(".ck") && e.key === "Enter") {
-              return; // Let CKEditor handle Enter
-            }
-
-            // Prevent Enter from submitting in text fields
-            if (e.key === "Enter" && target.tagName !== "TEXTAREA") {
+            if (target.closest(".ck") && e.key === "Enter") return;
+            if (e.key === "Enter" && target.tagName !== "TEXTAREA")
               e.preventDefault();
-            }
           }}
           className="space-y-4"
         >
+          {/* Title + Interest */}
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-[5px]">
-              <label
-                htmlFor="title"
-                className="block text-[15px] font-normal text-black"
-              >
+              <label htmlFor="title" className="block text-[15px] font-normal text-black">
                 Title of Best Practice <span className="text-red-600">*</span>
               </label>
               <input
@@ -313,16 +299,13 @@ export default function AddBestPracticeModal({
                 value={newPractice.title}
                 onChange={handleInputChange}
                 placeholder="Enter Title"
-                className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm placeholder:text-[#6E7179] placeholder:text-xs placeholder:font-normal"
+                className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
                 required
               />
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <label
-                htmlFor="interest"
-                className="block text-[15px] font-normal text-black"
-              >
+              <label htmlFor="interest" className="block text-[15px] font-normal text-black">
                 Interest
               </label>
               <select
@@ -330,27 +313,22 @@ export default function AddBestPracticeModal({
                 name="interest"
                 value={newPractice.interest}
                 onChange={handleInputChange}
-                className={`w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none 
-               focus:ring-2 focus:ring-indigo-500 text-sm font-normal
-               ${newPractice.interest ? "text-black" : "text-[#6E7179]"}`}
+                className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="">Select your Interest</option>
-                {interest &&
-                  interest.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
+                {interest?.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
 
+          {/* Profession + Tags */}
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-[5px]">
-              <label
-                htmlFor="profession"
-                className="block text-[15px] font-normal text-black"
-              >
+              <label htmlFor="profession" className="block text-[15px] font-normal text-black">
                 Profession
               </label>
               <select
@@ -358,28 +336,22 @@ export default function AddBestPracticeModal({
                 name="profession"
                 value={newPractice.profession}
                 onChange={handleInputChange}
-                className={`w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none 
-               focus:ring-2 focus:ring-indigo-500 text-sm font-normal
-               ${newPractice.profession ? "text-black" : "text-[#6E7179]"}`}
+                className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="">Select your Profession</option>
-                {profession &&
-                  profession.map((prof) => (
-                    <option key={prof.id} value={prof.id}>
-                      {prof.title}
-                    </option>
-                  ))}
+                {profession?.map((prof) => (
+                  <option key={prof.id} value={prof.id}>
+                    {prof.title}
+                  </option>
+                ))}
               </select>
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <label
-                htmlFor="tags"
-                className="block text-[15px] font-normal text-black"
-              >
+              <label htmlFor="tags" className="block text-[15px] font-normal text-black">
                 Tags
               </label>
-              <div className="w-full border border-gray-300 bg-white px-3 py-2">
+              <div className="w-full border border-gray-300 bg-white px-3 py-2 rounded">
                 <div className="flex flex-wrap gap-2 mb-1">
                   {tags.map((tag, idx) => (
                     <span
@@ -410,11 +382,9 @@ export default function AddBestPracticeModal({
             </div>
           </div>
 
+          {/* Description */}
           <div className="flex flex-col gap-[5px]">
-            <label
-              htmlFor="description"
-              className="block text-[15px] font-normal text-black"
-            >
+            <label htmlFor="description" className="block text-[15px] font-normal text-black">
               Description <span className="text-red-600">*</span>
             </label>
             <div className="ckeditor-container">
@@ -435,11 +405,12 @@ export default function AddBestPracticeModal({
             </div>
           </div>
 
+          {/* Submit */}
           <div className="flex justify-center pt-4">
             <Button
               type="submit"
               variant="gradient-primary"
-              className="w-[104px] h-[39px] rounded-[100px] p-0 font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none flex items-center justify-center"
+              className="w-[104px] h-[39px] rounded-[100px] text-[12px] font-medium flex items-center justify-center"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Submitting..." : "Submit"}

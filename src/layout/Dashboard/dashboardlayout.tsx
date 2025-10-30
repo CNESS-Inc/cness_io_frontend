@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import DashboardHeader from "./DashboardHeader";
 import DashboardNavbar from "./DashboardNavbar";
-import MarketHeader from "../../components/MarketPlace/Marketheader";
+import MarketHeader from "../../components/MarketPlace/Buyerheader";
 import DashboardFilterSidebar from "./DashboardFilterSidebar";
 import hambur from "../../assets/hambur.png";
 import DashboardFooter from "../Footer/DashboardFooter";
 import { MessagingProvider } from "../../components/Messaging/MessagingContext";
 import PersistentMessagingWidget from "../../components/Messaging/PersistentMessagingWidget";
+import SellerHeader from "../../components/MarketPlace/SellerHeader";
 
 const DashboardLayout = () => {
   const location = useLocation();
@@ -45,6 +46,9 @@ const DashboardLayout = () => {
     location.pathname.includes("/dashboard/faqs") ||
     location.pathname.includes("/dashboard/categories")||
     location.pathname.includes("/dashboard/shops");
+    
+    const isSellerPage=
+    location.pathname.includes("/dashboard/seller-dashboard");
 
   return (
     <div
@@ -94,17 +98,38 @@ const DashboardLayout = () => {
                 />
               </div>
 
-              {/* Fixed Market Header directly below */}
-             <div
-  className={`fixed top-[80px] right-0 z-40 bg-white  transition-all duration-300 ${
-    isMobileNavOpen ? "left-[256px]" : "left-0"
-  }`}
->
-  <MarketHeader
-    toggleMobileNav={toggleMobileNav}
-    isMobileNavOpen={isMobileNavOpen}
-  />
-</div>
+              {/* Market Header below */}
+              <div
+                className={`fixed top-[80px] right-0 z-40 bg-white transition-all duration-300 ${
+                  isMobileNavOpen ? "left-[256px]" : "left-0"
+                }`}
+              >
+                <MarketHeader
+                  toggleMobileNav={toggleMobileNav}
+                  isMobileNavOpen={isMobileNavOpen}
+                />
+              </div>
+            </>
+          ) : isSellerPage ? (
+            <>
+              {/* Fixed Dashboard Header */}
+              <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
+                <DashboardHeader
+                  toggleMobileNav={toggleMobileNav}
+                  isMobileNavOpen={isMobileNavOpen}
+                />
+              </div>
+
+              {/* Seller Header below */}
+              <div
+                className={`fixed top-[80px] right-0 z-40 bg-white transition-all duration-300 ${
+                  isMobileNavOpen ? "left-[256px]" : "left-0"
+                }`}
+              >
+                <SellerHeader
+                  toggleMobileNav={toggleMobileNav}
+                />
+              </div>
             </>
           ) : (
             <div className="relative">

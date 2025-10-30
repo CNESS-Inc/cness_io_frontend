@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { Search, X, ChevronDown, Filter as FilterIcon } from "lucide-react";
 import ProductCard from "../components/MarketPlace/ProductCard";
 import Filter from "../components/MarketPlace/Filter";
-import Header from "../components/MarketPlace/Marketheader";
+import Header from "../components/MarketPlace/Buyerheader";
 import filter from "../assets/filter.svg";
 
 const Wishlist = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {

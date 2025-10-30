@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "../components/MarketPlace/Marketheader";
+import Header from "../components/MarketPlace/Buyerheader";
 import { Trash2, CheckCircle, CreditCard, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
