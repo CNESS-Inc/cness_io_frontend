@@ -591,6 +591,17 @@ export default function DashboardSection() {
     }
   };
 
+    const getBillingNote = (plan: any) => {
+    if (!plan.yearlyPrice || !plan.monthlyPrice) return undefined;
+
+    if (isAnnual) {
+      // For annual billing: show "billed annually (yearly price)"
+      return `billed annually ($${plan.yearlyPrice.replace("$", "") * 12})`;
+    } else {
+      return `or ${plan.monthlyPrice}/month`;
+    }
+  };
+
   return (
     <>
       <section className="w-full px-2 sm:px-4 lg:px-0.5 pt-4 pb-10">
@@ -1178,11 +1189,11 @@ export default function DashboardSection() {
                         : plan.monthlyPrice}
                     </span>
                     <span className="text-gray-500">/month</span>
-                    {plan.billingNote && (
-                      <p className="text-sm text-gray-500 mt-1">
-                        {plan.billingNote}
-                      </p>
-                    )}
+                    {getBillingNote(plan) && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {getBillingNote(plan)}
+                        </p>
+                      )}
                   </div>
                   <Button
                     variant="gradient-primary"

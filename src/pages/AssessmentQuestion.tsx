@@ -543,6 +543,17 @@ const AssessmentQuestion: React.FC = () => {
         });
       }
     };
+
+      const getBillingNote = (plan: any) => {
+    if (!plan.yearlyPrice || !plan.monthlyPrice) return undefined;
+
+    if (isAnnual) {
+      // For annual billing: show "billed annually (yearly price)"
+      return `billed annually ($${plan.yearlyPrice.replace("$", "") * 12})`;
+    } else {
+      return `or ${plan.monthlyPrice}/month`;
+    }
+  };
     return (
       <>
         <div className="mx-5 bg-[rgba(255,204,0,0.05)] text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
@@ -594,11 +605,11 @@ const AssessmentQuestion: React.FC = () => {
                         : plan.monthlyPrice}
                     </span>
                     <span className="text-gray-500">/month</span>
-                    {plan.billingNote && (
-                      <p className="text-sm text-gray-500 mt-1">
-                        {plan.billingNote}
-                      </p>
-                    )}
+                    {getBillingNote(plan) && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {getBillingNote(plan)}
+                        </p>
+                      )}
                   </div>
                   <Button
                     variant="gradient-primary"

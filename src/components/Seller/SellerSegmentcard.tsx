@@ -929,6 +929,17 @@ export function GreetingBar({
     }
   };
 
+    const getBillingNote = (plan: any) => {
+    if (!plan.yearlyPrice || !plan.monthlyPrice) return undefined;
+
+    if (isAnnual) {
+      // For annual billing: show "billed annually (yearly price)"
+      return `billed annually ($${plan.yearlyPrice.replace("$", "") * 12})`;
+    } else {
+      return `or ${plan.monthlyPrice}/month`;
+    }
+  };
+
   return (
     <>
       <div className="mb-5 grid grid-cols-12 gap-5">
@@ -1034,11 +1045,11 @@ export function GreetingBar({
                       : plan.monthlyPrice}
                   </span>
                   <span className="text-gray-500">/month</span>
-                  {plan.billingNote && (
-                    <p className="text-sm text-gray-500 mt-1">
-                      {plan.billingNote}
-                    </p>
-                  )}
+                  {getBillingNote(plan) && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {getBillingNote(plan)}
+                        </p>
+                      )}
                 </div>
                 <Button
                   variant="gradient-primary"
@@ -1664,9 +1675,9 @@ export function GreetingBar({
                           : plan.monthlyPrice}
                       </span>
                       <span className="text-gray-500">/month</span>
-                      {plan.billingNote && (
+                      {getBillingNote(plan) && (
                         <p className="text-sm text-gray-500 mt-1">
-                          {plan.billingNote}
+                          {getBillingNote(plan)}
                         </p>
                       )}
                     </div>
@@ -2137,9 +2148,9 @@ export function GreetingBar({
                           : plan.monthlyPrice}
                       </span>
                       <span className="text-gray-500">/month</span>
-                      {plan.billingNote && (
+                      {getBillingNote(plan) && (
                         <p className="text-sm text-gray-500 mt-1">
-                          {plan.billingNote}
+                          {getBillingNote(plan)}
                         </p>
                       )}
                     </div>

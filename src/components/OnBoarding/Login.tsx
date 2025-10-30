@@ -200,7 +200,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
   const [loginErrors, setLoginErrors] = useState<FormErrors>({});
   const [organizationErrors, setOrganizationErrors] = useState<FormErrors>({});
   const [personErrors, setPersonErrors] = useState<FormErrors>({});
-  console.log("🚀 ~ Login ~ personErrors:", personErrors)
+  console.log("🚀 ~ Login ~ personErrors:", personErrors);
   const [resetPasswordErrors] = useState<FormErrors>({});
   const [apiMessage, setApiMessage] = useState<string | null>(null);
   const [isOrgFormSubmitted, setIsOrgFormSubmitted] = useState(false);
@@ -288,7 +288,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
   ): boolean => {
     let isValid = true;
     const newErrors: FormErrors = {};
-    
+
     if (formType === "login") {
       const emailError = validateField("email", formData.email, {
         required: true,
@@ -298,7 +298,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
         newErrors.email = emailError;
         isValid = false;
       }
-      
+
       const passwordError = validateField("password", formData.password, {
         required: true,
         minLength: 6,
@@ -307,10 +307,10 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
         newErrors.password = passwordError;
         isValid = false;
       }
-      
+
       setLoginErrors(newErrors);
     }
-    
+
     if (formType === "organization") {
       // Always validate step 1 fields if we're on step 1 or validating all steps
       if (step === 1) {
@@ -368,34 +368,33 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
     }
 
     // In the validateForm function, update the "person" section:
-if (formType === "person") {
-  const requiredFields: Array<
-    "first_name" | "last_name" | "interests" | "professions"
-  > = ["first_name", "last_name", "interests", "professions"];
+    if (formType === "person") {
+      const requiredFields: Array<
+        "first_name" | "last_name" | "interests" | "professions"
+      > = ["first_name", "last_name", "interests", "professions"];
 
-  requiredFields.forEach((field) => {
-    const error = validateField(field, formData[field], {
-      required: true,
-    });
-    if (error) {
-      newErrors[field] = error;
-      isValid = false;
-    }
-    if (field === "interests" || field === "professions") {
-      if (!formData[field] || formData[field].length === 0) {
-        newErrors[field] = `${field} is required`;
-        isValid = false;
+      requiredFields.forEach((field) => {
+        const error = validateField(field, formData[field], {
+          required: true,
+        });
+        if (error) {
+          newErrors[field] = error;
+          isValid = false;
+        }
+        if (field === "interests" || field === "professions") {
+          if (!formData[field] || formData[field].length === 0) {
+            newErrors[field] = `${field} is required`;
+            isValid = false;
+          }
+        }
+      });
+      console.log("🚀 ~ validateForm ~ newErrors:", newErrors);
+
+      if (setErrors) {
+        setPersonErrors(newErrors);
       }
+      return isValid;
     }
-  });
-          console.log("🚀 ~ validateForm ~ newErrors:", newErrors)
-
-
-  if (setErrors) {
-    setPersonErrors(newErrors);
-  }
-  return isValid;
-}
 
     if (formType === "forgotpassword") {
       const emailError = validateField("email", formData.email, {
@@ -614,8 +613,8 @@ if (formType === "person") {
             // This will now directly open the person form
             setActiveModal("person");
           } else if (completed_step === 1) {
-              navigate("/dashboard");
-          } 
+            navigate("/dashboard");
+          }
         } else {
           navigate("/dashboard");
         }
@@ -826,63 +825,63 @@ if (formType === "person") {
     }
   };
 
-const handlePersonSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setIsSubmitting(true);
+  const handlePersonSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-  if (
-    personForm.professions?.includes("other") &&
-    !personForm.custom_profession?.trim()
-  ) {
-    setPersonErrors({
-      ...personErrors,
-      custom_profession: "Please specify your profession",
-    });
-    setIsSubmitting(false);
-    return;
-  }
+    if (
+      personForm.professions?.includes("other") &&
+      !personForm.custom_profession?.trim()
+    ) {
+      setPersonErrors({
+        ...personErrors,
+        custom_profession: "Please specify your profession",
+      });
+      setIsSubmitting(false);
+      return;
+    }
 
-  // Remove step parameter from validation
-  if (!validateForm(personForm, "person", 1,true)) {
-    setIsSubmitting(false);
-    return;
-  }
+    // Remove step parameter from validation
+    if (!validateForm(personForm, "person", 1, true)) {
+      setIsSubmitting(false);
+      return;
+    }
 
-  // Rest of your handlePersonSubmit function remains the same...
-  try {
-    const payload = {
-      ...personForm,
-      professions: personForm.professions.includes("other")
-        ? [
-            ...personForm.professions.filter((p) => p !== "other"),
-            personForm.custom_profession,
-          ]
-        : personForm.professions,
-    };
+    // Rest of your handlePersonSubmit function remains the same...
+    try {
+      const payload = {
+        ...personForm,
+        professions: personForm.professions.includes("other")
+          ? [
+              ...personForm.professions.filter((p) => p !== "other"),
+              personForm.custom_profession,
+            ]
+          : personForm.professions,
+      };
 
-   const res = await submitPersonDetails(payload);
-   
-         if (res?.success) {
-           // showToast({
-           //   message: "Assessment submitted successfully!",
-           //   type: "success",
-           //   duration: 4000,
-           // });
-           navigate("/dashboard");
-         } else {
-           showToast({
-             message: res?.data?.message || "Failed to submit assessment.",
-             type: "error",
-             duration: 4000,
-           });
-         }
-    // ... rest of your code
-  } catch (error) {
-    console.error("Error submitting organization form:", error);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+      const res = await submitPersonDetails(payload);
+
+      if (res?.success) {
+        // showToast({
+        //   message: "Assessment submitted successfully!",
+        //   type: "success",
+        //   duration: 4000,
+        // });
+        navigate("/dashboard");
+      } else {
+        showToast({
+          message: res?.data?.message || "Failed to submit assessment.",
+          type: "error",
+          duration: 4000,
+        });
+      }
+      // ... rest of your code
+    } catch (error) {
+      console.error("Error submitting organization form:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handlePersonFormChange = (
     e: React.ChangeEvent<
@@ -897,7 +896,6 @@ const handlePersonSubmit = async (e: React.FormEvent) => {
       //   const existingQuestionIndex = prev.question.findIndex(
       //     (q) => q.question_id === questionId
       //   );
-
       //   if (existingQuestionIndex >= 0) {
       //     const updatedQuestions = [...prev.question];
       //     updatedQuestions[existingQuestionIndex] = {
@@ -1140,6 +1138,17 @@ const handlePersonSubmit = async (e: React.FormEvent) => {
       });
     },
   });
+
+  const getBillingNote = (plan: any) => {
+    if (!plan.yearlyPrice || !plan.monthlyPrice) return undefined;
+
+    if (isAnnual) {
+      // For annual billing: show "billed annually (yearly price)"
+      return `billed annually ($${plan.yearlyPrice.replace("$", "") * 12})`;
+    } else {
+      return `or ${plan.monthlyPrice}/month`;
+    }
+  };
 
   if (!open) return null;
 
@@ -1871,251 +1880,245 @@ const handlePersonSubmit = async (e: React.FormEvent) => {
         </div>
       </Modal>
 
-<Modal
-  isOpen={activeModal === "person"}
-  onClose={() => closeByKey("person")}
-  modalKey="person"
->
-  <div className="fixed inset-0 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
-    <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
-      {/* LEFT PANEL */}
-      <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2]  w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
-        <div>
-          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-15 h-15 text-gray-700"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-              />
-            </svg>
-          </div>
+      <Modal
+        isOpen={activeModal === "person"}
+        onClose={() => closeByKey("person")}
+        modalKey="person"
+      >
+        <div className="fixed inset-0 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
+          <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
+            {/* LEFT PANEL */}
+            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2]  w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+              <div>
+                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-15 h-15 text-gray-700"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </div>
 
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            Let's Get to <br></br>
-            Know You Better
-          </h2>
-          <p className="text-[#f3f1ff] text-sm">
-            This information helps us understand your conscious impact
-            better.
-          </p>
-        </div>
-      </div>
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                  Let's Get to <br></br>
+                  Know You Better
+                </h2>
+                <p className="text-[#f3f1ff] text-sm">
+                  This information helps us understand your conscious impact
+                  better.
+                </p>
+              </div>
+            </div>
 
-      {/* Right Form Panel */}
-      <div className="w-full lg:w-[60%] bg-white px-4 py-6 sm:px-6 sm:py-8 md:p-10 overflow-y-auto">
-        <h2 className="text-xl font-bold text-gray-800 mb-6">
-          Tell Us About Yourself
-        </h2>
-        <form onSubmit={handlePersonSubmit} className="space-y-6">
-          {/* Single form without steps */}
-          <div className="mb-4">
-            <label className="block openSans text-base font-medium text-gray-800 mb-1">
-              First Name
-              <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="first_name"
-              placeholder="Enter your first name"
-              value={personForm.first_name}
-              onChange={handlePersonFormChange}
-              className={`w-[440px] h-[41px]
+            {/* Right Form Panel */}
+            <div className="w-full lg:w-[60%] bg-white px-4 py-6 sm:px-6 sm:py-8 md:p-10 overflow-y-auto">
+              <h2 className="text-xl font-bold text-gray-800 mb-6">
+                Tell Us About Yourself
+              </h2>
+              <form onSubmit={handlePersonSubmit} className="space-y-6">
+                {/* Single form without steps */}
+                <div className="mb-4">
+                  <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                    First Name
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="first_name"
+                    placeholder="Enter your first name"
+                    value={personForm.first_name}
+                    onChange={handlePersonFormChange}
+                    className={`w-[440px] h-[41px]
     rounded-[12px]
     border-[0.82px]
     p-[12px] mt-2 ${
       personErrors.first_name ? "border-red-500" : "border-gray-300"
     } rounded-md`}
-            />
-            {personErrors.first_name && (
-              <p className="mt-1 text-sm text-red-600">
-                {personErrors.first_name}
-              </p>
-            )}
-          </div>
+                  />
+                  {personErrors.first_name && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {personErrors.first_name}
+                    </p>
+                  )}
+                </div>
 
-          <div className="mb-4">
-            <label className="block openSans text-base font-medium text-gray-800 mb-1">
-              Last Name
-              <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="last_name"
-              value={personForm.last_name}
-              onChange={handlePersonFormChange}
-              className={`w-[440px] h-[41px]
+                <div className="mb-4">
+                  <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                    Last Name
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="last_name"
+                    value={personForm.last_name}
+                    onChange={handlePersonFormChange}
+                    className={`w-[440px] h-[41px]
     rounded-[12px]
     border-[0.82px]
     p-[12px] mt-2 ${
       personErrors.last_name ? "border-red-500" : "border-gray-300"
     } rounded-md`}
-              placeholder="Enter your last name"
-            />
-            {personErrors.last_name && (
-              <p className="mt-1 text-sm text-red-600">
-                {personErrors.last_name}
-              </p>
-            )}
-          </div>
+                    placeholder="Enter your last name"
+                  />
+                  {personErrors.last_name && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {personErrors.last_name}
+                    </p>
+                  )}
+                </div>
 
-          <div className="mb-4">
-            <label className="block openSans text-base font-medium text-gray-800 mb-1 ">
-              Interests
-              <span className="text-red-500">*</span>
-            </label>
-            <div className="mt-4">
-              <Select
-                isMulti
-                options={interest?.map((interestItem: Interest) => ({
-                  value: interestItem.id,
-                  label: interestItem.name,
-                }))}
-                value={
-                  personForm.interests?.map((interestId: any) => ({
-                    value: interestId,
-                    label: interest?.find(
-                      (i: any) => i.id === interestId
-                    )?.name,
-                  })) || []
-                }
-                onChange={(selectedOptions) => {
-                  const selectedValues = selectedOptions?.map(
-                    (option) => option.value
-                  );
-                  setPersonForm({
-                    ...personForm,
-                    interests: selectedValues,
-                  });
-                }}
-                className="react-select-container"
-                classNamePrefix="react-select"
-                placeholder="Select interests..."
-                menuPortalTarget={document.body}
-                styles={{
-                  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                }}
-              />
-            </div>
-            {personErrors.interests && (
-              <p className="mt-1 text-sm text-red-600">
-                {personErrors.interests}
-              </p>
-            )}
-          </div>
+                <div className="mb-4">
+                  <label className="block openSans text-base font-medium text-gray-800 mb-1 ">
+                    Interests
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <div className="mt-4">
+                    <Select
+                      isMulti
+                      options={interest?.map((interestItem: Interest) => ({
+                        value: interestItem.id,
+                        label: interestItem.name,
+                      }))}
+                      value={
+                        personForm.interests?.map((interestId: any) => ({
+                          value: interestId,
+                          label: interest?.find((i: any) => i.id === interestId)
+                            ?.name,
+                        })) || []
+                      }
+                      onChange={(selectedOptions) => {
+                        const selectedValues = selectedOptions?.map(
+                          (option) => option.value
+                        );
+                        setPersonForm({
+                          ...personForm,
+                          interests: selectedValues,
+                        });
+                      }}
+                      className="react-select-container"
+                      classNamePrefix="react-select"
+                      placeholder="Select interests..."
+                      menuPortalTarget={document.body}
+                      styles={{
+                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                      }}
+                    />
+                  </div>
+                  {personErrors.interests && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {personErrors.interests}
+                    </p>
+                  )}
+                </div>
 
-          <div className="mb-4">
-            <label className="block openSans text-base font-medium text-gray-800 mb-1">
-              Professions
-              <span className="text-red-500">*</span>
-            </label>
-            <div className="mt-4">
-              <Select
-                isMulti
-                options={[
-                  ...profession?.map(
-                    (professionItem: Profession) => ({
-                      value: professionItem.id,
-                      label: professionItem.title,
-                    })
-                  ),
-                  { value: "other", label: "Other (please specify)" },
-                ]}
-                value={
-                  personForm.professions?.map(
-                    (professionId: any) => ({
-                      value: professionId,
-                      label:
-                        profession?.find(
-                          (p: any) => p.id === professionId
-                        )?.title ||
-                        (professionId === "other" ? "Other" : ""),
-                    })
-                  ) || []
-                }
-                onChange={(selectedOptions) => {
-                  const selectedValues = selectedOptions?.map(
-                    (option) => option.value
-                  );
-                  setPersonForm({
-                    ...personForm,
-                    professions: selectedValues,
-                  });
-                }}
-                className="react-select-container"
-                classNamePrefix="react-select"
-                placeholder="Select professions..."
-                menuPortalTarget={document.body}
-                styles={{
-                  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                }}
-              />
-            </div>
-            {personErrors.professions && (
-              <p className="mt-1 text-sm text-red-600">
-                {personErrors.professions}
-              </p>
-            )}
-          </div>
+                <div className="mb-4">
+                  <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                    Professions
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <div className="mt-4">
+                    <Select
+                      isMulti
+                      options={[
+                        ...profession?.map((professionItem: Profession) => ({
+                          value: professionItem.id,
+                          label: professionItem.title,
+                        })),
+                        { value: "other", label: "Other (please specify)" },
+                      ]}
+                      value={
+                        personForm.professions?.map((professionId: any) => ({
+                          value: professionId,
+                          label:
+                            profession?.find((p: any) => p.id === professionId)
+                              ?.title ||
+                            (professionId === "other" ? "Other" : ""),
+                        })) || []
+                      }
+                      onChange={(selectedOptions) => {
+                        const selectedValues = selectedOptions?.map(
+                          (option) => option.value
+                        );
+                        setPersonForm({
+                          ...personForm,
+                          professions: selectedValues,
+                        });
+                      }}
+                      className="react-select-container"
+                      classNamePrefix="react-select"
+                      placeholder="Select professions..."
+                      menuPortalTarget={document.body}
+                      styles={{
+                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                      }}
+                    />
+                  </div>
+                  {personErrors.professions && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {personErrors.professions}
+                    </p>
+                  )}
+                </div>
 
-          {/* Add this after the Select component */}
-          {personForm.professions?.includes("other") && (
-            <div className="mb-4 mt-2">
-              <label className="block openSans text-base font-medium text-gray-800 mb-1">
-                Specify Your Profession
-              </label>
-              <input
-                type="text"
-                name="custom_profession"
-                value={personForm.custom_profession || ""}
-                onChange={(e) =>
-                  setPersonForm({
-                    ...personForm,
-                    custom_profession: e.target.value,
-                  })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="Enter your profession"
-              />
-            </div>
-          )}
+                {/* Add this after the Select component */}
+                {personForm.professions?.includes("other") && (
+                  <div className="mb-4 mt-2">
+                    <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                      Specify Your Profession
+                    </label>
+                    <input
+                      type="text"
+                      name="custom_profession"
+                      value={personForm.custom_profession || ""}
+                      onChange={(e) =>
+                        setPersonForm({
+                          ...personForm,
+                          custom_profession: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      placeholder="Enter your profession"
+                    />
+                  </div>
+                )}
 
-          {/* Form Footer Actions - simplified for single form */}
-          <div className="flex justify-end mt-6 gap-3 flex-wrap">
-            <Button
-              type="button"
-              onClick={closeModal}
-              variant="white-outline"
-              className="w-[104px] h-[39px] rounded-[100px] p-0
+                {/* Form Footer Actions - simplified for single form */}
+                <div className="flex justify-end mt-6 gap-3 flex-wrap">
+                  <Button
+                    type="button"
+                    onClick={closeModal}
+                    variant="white-outline"
+                    className="w-[104px] h-[39px] rounded-[100px] p-0
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
     flex items-center justify-center"
-            >
-              Cancel
-            </Button>
+                  >
+                    Cancel
+                  </Button>
 
-            <Button
-              type="submit"
-              variant="gradient-primary"
-              className="w-[104px] h-[39px] rounded-[100px] p-0
+                  <Button
+                    type="submit"
+                    variant="gradient-primary"
+                    className="w-[104px] h-[39px] rounded-[100px] p-0
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
     flex items-center justify-center"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Submitting..." : "Submit"}
-            </Button>
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Submitting..." : "Submit"}
+                  </Button>
+                </div>
+              </form>
+            </div>
           </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</Modal>
+        </div>
+      </Modal>
 
       <Modal
         isOpen={activeModal === "personPricing"}
@@ -2185,9 +2188,9 @@ const handlePersonSubmit = async (e: React.FormEvent) => {
                           : plan.monthlyPrice}
                       </span>
                       <span className="text-gray-500">/month</span>
-                      {plan.billingNote && (
+                      {getBillingNote(plan) && (
                         <p className="text-sm text-gray-500 mt-1">
-                          {plan.billingNote}
+                          {getBillingNote(plan)}
                         </p>
                       )}
                     </div>
