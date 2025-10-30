@@ -1,4 +1,4 @@
-import Header from '../components/MarketPlace/Marketheader';
+import Header from '../components/MarketPlace/Buyerheader';
 import { useLocation, useNavigate } from 'react-router-dom';
 import instagramIcon from '../assets/instagramicon.svg';
 import youtubeIcon from '../assets/youtubeicon.svg';

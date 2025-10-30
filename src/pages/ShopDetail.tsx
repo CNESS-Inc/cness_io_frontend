@@ -1,5 +1,5 @@
 import { useLocation, useParams } from "react-router-dom";
-import Header from   '../components/MarketPlace/Marketheader';
+import Header from   '../components/MarketPlace/Buyerheader';
 import ProductCard from '../components/MarketPlace/ProductCard';
 import ShopCard from '../components/MarketPlace/Shopcard';
 //import React, { useRef,useState  } from "react";
