@@ -145,9 +145,7 @@ export default function UserProfileView() {
       );
 
       // Separate interest-aligned BPs
-      const interestData = myBP.filter(
-        (bp: any) => bp?.interest !== null
-      );
+      const interestData = myBP.filter((bp: any) => bp?.interest !== null);
 
       setMyProfessionBP(professionData);
       setMyInterestBP(interestData);
@@ -371,15 +369,11 @@ export default function UserProfileView() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      // Your existing file validation and setting logic
+      const validTypes = ["image/jpeg", "image/jpg", "image/png"];
       if (!validTypes.includes(file.type)) {
-        e.target.value = '';
-
-        showToast?.({
-          message: "Please select only JPG, JPEG or PNG files.",
-          type: "error",
-          duration: 3000,
-        });
+        e.target.value = "";
+        // Show error toast if needed
         return;
       }
 
@@ -387,7 +381,20 @@ export default function UserProfileView() {
         ...prev,
         file: file,
       }));
+    } else {
+      // Clear the file when no file is selected
+      setNewPractice((prev) => ({
+        ...prev,
+        file: null,
+      }));
     }
+  };
+
+  const handleRemoveFile = () => {
+    setNewPractice((prev) => ({
+      ...prev,
+      file: null,
+    }));
   };
 
   const closeModal = () => {
@@ -427,18 +434,24 @@ export default function UserProfileView() {
 
         setFollowBP((prev: any) =>
           prev.map((item: any) =>
-            item.id === bpId ? { ...item, is_bp_following: isNowFollowing } : item
+            item.id === bpId
+              ? { ...item, is_bp_following: isNowFollowing }
+              : item
           )
         );
 
         setMyBP((prev: any) =>
           prev.map((item: any) =>
-            item.id === bpId ? { ...item, is_bp_following: isNowFollowing } : item
+            item.id === bpId
+              ? { ...item, is_bp_following: isNowFollowing }
+              : item
           )
         );
 
         showToast({
-          message: isNowFollowing ? "Added to followed practices" : "Removed from followed practices",
+          message: isNowFollowing
+            ? "Added to followed practices"
+            : "Removed from followed practices",
           type: "success",
           duration: 2000,
         });
@@ -523,22 +536,22 @@ export default function UserProfileView() {
   }
 
   return (
-    <div className="relative mx-auto w-full h-full mx-auto px-3 mt-4">
-       <button
-          onClick={() => window.history.back()}
-          className="absolute cursor-pointer top-4 left-4 bg-white rounded-full p-2 shadow-md"
-        >
-          <ArrowLeftIcon className="h-5 w-5 text-[#7077FE]" />
-        </button>
+    <div className="relative w-full h-full mx-auto px-3 mt-4">
+      <button
+        onClick={() => window.history.back()}
+        className="absolute cursor-pointer top-4 left-4 bg-white rounded-full p-2 shadow-md"
+      >
+        <ArrowLeftIcon className="h-5 w-5 text-[#7077FE]" />
+      </button>
       {/* Banner */}
       <div className="w-full h-[180px] sm:h-[220px] md:h-[260px] lg:h-[300px] xl:h-[320px] rounded-[8px]">
         <img
           src={
             !userDetails?.profile_banner ||
-              userDetails?.profile_banner === "null" ||
-              userDetails?.profile_banner === "undefined" ||
-              !userDetails?.profile_banner.startsWith("http") ||
-              userDetails?.profile_banner === "http://localhost:5026/file/"
+            userDetails?.profile_banner === "null" ||
+            userDetails?.profile_banner === "undefined" ||
+            !userDetails?.profile_banner.startsWith("http") ||
+            userDetails?.profile_banner === "http://localhost:5026/file/"
               ? "https://cdn.cness.io/banner.webp"
               : userDetails?.profile_banner
           }
@@ -554,10 +567,10 @@ export default function UserProfileView() {
               <img
                 src={
                   !userDetails?.profile_picture ||
-                    userDetails?.profile_picture === "null" ||
-                    userDetails?.profile_picture === "undefined" ||
-                    !userDetails?.profile_picture.startsWith("http") ||
-                    userDetails?.profile_picture === "http://localhost:5026/file/"
+                  userDetails?.profile_picture === "null" ||
+                  userDetails?.profile_picture === "undefined" ||
+                  !userDetails?.profile_picture.startsWith("http") ||
+                  userDetails?.profile_picture === "http://localhost:5026/file/"
                     ? "/profile.png"
                     : userDetails?.profile_picture
                 }
@@ -588,19 +601,19 @@ export default function UserProfileView() {
               {(userDetails?.address ||
                 userDetails?.location?.city ||
                 userDetails?.country?.name) && (
-                  <div className="mt-3 font-['Open_Sans'] font-normal text-[16px] leading-[100%] text-[#64748B]">
-                    <div className="flex items-start gap-1 text-[#64748B] text-sm">
-                      <div className="pt-[4px] flex-shrink-0 flex items-center">
-                        <FaLocationDot className="w-3 h-3" stroke="#64748B" />
-                      </div>
-                      <div className="leading-snug">
-                        {userDetails?.address},{" "}
-                        {userDetails?.location?.city || ""},{" "}
-                        {userDetails?.country?.name}
-                      </div>
+                <div className="mt-3 font-['Open_Sans'] font-normal text-[16px] leading-[100%] text-[#64748B]">
+                  <div className="flex items-start gap-1 text-[#64748B] text-sm">
+                    <div className="pt-[4px] flex-shrink-0 flex items-center">
+                      <FaLocationDot className="w-3 h-3" stroke="#64748B" />
+                    </div>
+                    <div className="leading-snug">
+                      {userDetails?.address},{" "}
+                      {userDetails?.location?.city || ""},{" "}
+                      {userDetails?.country?.name}
                     </div>
                   </div>
-                )}
+                </div>
+              )}
 
               {/* <div className="mt-3 flex gap-3 text-center">
                 <span>
@@ -631,10 +644,11 @@ export default function UserProfileView() {
                     bg-gradient-to-r from-[#7077FE] via-[#9747FF] to-[#F07EFF] 
                     font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
                     text-white align-middle
-                    ${userDetails?.is_bp_following
+                    ${
+                      userDetails?.is_bp_following
                         ? "bg-gray-200 text-gray-800"
                         : "bg-[#7C81FF] text-white"
-                      } hover:bg-indigo-600 hover:text-white`}
+                    } hover:bg-indigo-600 hover:text-white`}
                   >
                     {userDetails?.is_bp_following ? "Resonating" : "+ Resonate"}
                   </button>
@@ -657,25 +671,26 @@ export default function UserProfileView() {
                     className={`w-full h-9 rounded-full border border-[#ECEEF2] 
              font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
              flex items-center justify-center gap-2
-             ${userDetails?.user_id === loggedInUserID
-                        ? "bg-gray-200 text-gray-500 cursor-not-allowed" // 👈 styling when disabled
-                        : userDetails?.if_friend &&
-                          userDetails?.friend_request_status === "ACCEPT"
-                          ? "bg-green-100 text-green-700"
-                          : !userDetails?.if_friend &&
-                            userDetails?.friend_request_status === "PENDING"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : "bg-[#FFFFFF] text-[#0B3449] hover:bg-indigo-600"
-                      }`}
+             ${
+               userDetails?.user_id === loggedInUserID
+                 ? "bg-gray-200 text-gray-500 cursor-not-allowed" // 👈 styling when disabled
+                 : userDetails?.if_friend &&
+                   userDetails?.friend_request_status === "ACCEPT"
+                 ? "bg-green-100 text-green-700"
+                 : !userDetails?.if_friend &&
+                   userDetails?.friend_request_status === "PENDING"
+                 ? "bg-yellow-100 text-yellow-700"
+                 : "bg-[#FFFFFF] text-[#0B3449] hover:bg-indigo-600"
+             }`}
                   >
                     <UserRoundPlus className="w-4 h-4" />
                     {userDetails?.if_friend &&
-                      userDetails?.friend_request_status === "ACCEPT"
+                    userDetails?.friend_request_status === "ACCEPT"
                       ? "Connected"
                       : !userDetails?.if_friend &&
                         userDetails?.friend_request_status === "PENDING"
-                        ? "Requested..."
-                        : "Connect"}
+                      ? "Requested..."
+                      : "Connect"}
                   </button>
                 )}
 
@@ -729,9 +744,12 @@ export default function UserProfileView() {
 
               {/* On The Web */}
               {userDetails?.social_links &&
-                Object.keys(userDetails.social_links).some(key =>
-                  userDetails.social_links[key] &&
-                  ["linkedin", "facebook", "twitter", "instagram"].includes(key)
+                Object.keys(userDetails.social_links).some(
+                  (key) =>
+                    userDetails.social_links[key] &&
+                    ["linkedin", "facebook", "twitter", "instagram"].includes(
+                      key
+                    )
                 ) && (
                   <div className="border-b border-[#E5E5E5] pt-10 pb-10">
                     <h3 className="font-['Poppins'] font-semibold text-[16px] leading-[150%] text-[#000000] mb-3">
@@ -762,7 +780,8 @@ export default function UserProfileView() {
                         },
                       ]
                         .filter(
-                          (platform) => userDetails?.social_links?.[platform.key]
+                          (platform) =>
+                            userDetails?.social_links?.[platform.key]
                         )
                         .map((platform) => (
                           <a
@@ -803,8 +822,10 @@ export default function UserProfileView() {
                   My Interests
                 </h3>
                 {userDetails?.interests?.length === 0 && (
-                  <p className="font-['Open_Sans'] font-normal text-[12px] leading-[21px]
-                  tracking-[0px] text-[#64748B]">
+                  <p
+                    className="font-['Open_Sans'] font-normal text-[12px] leading-[21px]
+                  tracking-[0px] text-[#64748B]"
+                  >
                     No Interests shared yet
                   </p>
                 )}
@@ -821,7 +842,6 @@ export default function UserProfileView() {
                       </span>
                     )
                   )}
-
                 </div>
               </div>
 
@@ -834,8 +854,10 @@ export default function UserProfileView() {
                   My Professions
                 </h3>
                 {userDetails?.professions?.length === 0 && (
-                  <p className="font-['Open_Sans'] font-normal text-[12px] leading-[21px]
-                  tracking-[0px] text-[#64748B]">
+                  <p
+                    className="font-['Open_Sans'] font-normal text-[12px] leading-[21px]
+                  tracking-[0px] text-[#64748B]"
+                  >
                     No professions shared yet
                   </p>
                 )}
@@ -865,10 +887,11 @@ export default function UserProfileView() {
             <div className="flex justify-center gap-6 -mt-2">
               <Button
                 onClick={() => setActiveTab("about")}
-                className={`relative py-3 font-['Open_Sans'] text-[14px] leading-[100%] ${activeTab === "about"
-                  ? "font-bold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent"
-                  : "font-normal text-[#64748B]"
-                  }`}
+                className={`relative py-3 font-['Open_Sans'] text-[14px] leading-[100%] ${
+                  activeTab === "about"
+                    ? "font-bold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent"
+                    : "font-normal text-[#64748B]"
+                }`}
               >
                 About Me
                 {activeTab === "about" && (
@@ -878,10 +901,11 @@ export default function UserProfileView() {
 
               <Button
                 onClick={() => setActiveTab("best")}
-                className={`relative py-3 font-['Open_Sans'] text-[14px] leading-[100%] ${activeTab === "best"
-                  ? "font-bold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent"
-                  : "font-normal text-[#64748B]"
-                  }`}
+                className={`relative py-3 font-['Open_Sans'] text-[14px] leading-[100%] ${
+                  activeTab === "best"
+                    ? "font-bold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent"
+                    : "font-normal text-[#64748B]"
+                }`}
               >
                 My Best Practices
                 {activeTab === "best" && (
@@ -955,14 +979,14 @@ export default function UserProfileView() {
                         {(edu.start_date ||
                           edu.end_date ||
                           edu.currently_studying) && (
-                            <span className="text-xs text-gray-400 mt-1 block">
-                              {formatRange(
-                                edu.start_date,
-                                edu.end_date,
-                                edu.currently_studying
-                              )}
-                            </span>
-                          )}
+                          <span className="text-xs text-gray-400 mt-1 block">
+                            {formatRange(
+                              edu.start_date,
+                              edu.end_date,
+                              edu.currently_studying
+                            )}
+                          </span>
+                        )}
                       </li>
                     ))}
                   </ul>
@@ -1010,14 +1034,14 @@ export default function UserProfileView() {
                           {(job.start_date ||
                             job.end_date ||
                             job.currently_working) && (
-                              <span className="text-xs text-gray-400 mt-1 block">
-                                {formatRange(
-                                  job.start_date,
-                                  job.end_date,
-                                  job.currently_working
-                                )}
-                              </span>
-                            )}
+                            <span className="text-xs text-gray-400 mt-1 block">
+                              {formatRange(
+                                job.start_date,
+                                job.end_date,
+                                job.currently_working
+                              )}
+                            </span>
+                          )}
                         </p>
 
                         {/* Responsibilities (if array) */}
@@ -1073,8 +1097,8 @@ export default function UserProfileView() {
             {/* Best Practices Tab */}
             {activeTab === "best" &&
               (userDetails?.best_practices_questions?.length > 0 ||
-                myBP?.length > 0 ||
-                followBP?.length > 0 ? (
+              myBP?.length > 0 ||
+              followBP?.length > 0 ? (
                 <div>
                   {userDetails?.best_practices_questions?.length > 0 && (
                     <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
@@ -1083,7 +1107,7 @@ export default function UserProfileView() {
                       </h3>
 
                       {/* <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3"> */}
-                       <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 mt-4">
+                      <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 mt-4">
                         {userDetails.best_practices_questions.map(
                           (section: any, index: number) => {
                             const allQuestions = section.sub_sections?.flatMap(
@@ -1114,12 +1138,12 @@ export default function UserProfileView() {
                                   username={userDetails.first_name}
                                   profileImage={
                                     !userDetails.profile_picture ||
-                                      userDetails.profile_picture === "null" ||
-                                      userDetails.profile_picture ===
+                                    userDetails.profile_picture === "null" ||
+                                    userDetails.profile_picture ===
                                       "undefined" ||
-                                      !userDetails.profile_picture.startsWith(
-                                        "http"
-                                      )
+                                    !userDetails.profile_picture.startsWith(
+                                      "http"
+                                    )
                                       ? "/profile.png"
                                       : userDetails.profile_picture
                                   }
@@ -1151,7 +1175,7 @@ export default function UserProfileView() {
                       </h3>
 
                       <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 mt-4">
-                      {/* <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3"> */}
+                        {/* <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3"> */}
                         {myProfessionBP?.map((practice: any) => {
                           return (
                             <div
@@ -1164,7 +1188,8 @@ export default function UserProfileView() {
                                   )
                                 ) {
                                   navigate(
-                                    `/dashboard/bestpractices/${practice.id
+                                    `/dashboard/bestpractices/${
+                                      practice.id
                                     }/${slugify(practice.title)}`,
                                     {
                                       state: {
@@ -1179,27 +1204,28 @@ export default function UserProfileView() {
                               <BestPracticeCard
                                 id={practice?.id}
                                 name={
-                                  `${practice?.profile?.first_name || ""} ${practice?.profile?.last_name || ""
-                                    }`.trim() || "CNESS User"
+                                  `${practice?.profile?.first_name || ""} ${
+                                    practice?.profile?.last_name || ""
+                                  }`.trim() || "CNESS User"
                                 }
                                 username={practice?.user?.username || "user"}
                                 profileImage={
                                   !practice?.profile?.profile_picture ||
-                                    practice?.profile?.profile_picture ===
+                                  practice?.profile?.profile_picture ===
                                     "null" ||
-                                    practice?.profile?.profile_picture ===
+                                  practice?.profile?.profile_picture ===
                                     "undefined" ||
-                                    !practice?.profile?.profile_picture.startsWith(
-                                      "http"
-                                    )
+                                  !practice?.profile?.profile_picture.startsWith(
+                                    "http"
+                                  )
                                     ? "/profile.png"
                                     : practice?.profile?.profile_picture
                                 }
                                 coverImage={
                                   !practice?.file ||
-                                    practice?.file === "null" ||
-                                    practice?.file === "undefined" ||
-                                    !practice?.file.startsWith("http")
+                                  practice?.file === "null" ||
+                                  practice?.file === "undefined" ||
+                                  !practice?.file.startsWith("http")
                                     ? "https://cdn.cness.io/banner.webp"
                                     : practice?.file
                                 }
@@ -1209,8 +1235,9 @@ export default function UserProfileView() {
                                   "Untitled"
                                 }
                                 description={practice?.description || ""}
-                                link={`/dashboard/bestpractices/${practice.id
-                                  }/${slugify(practice.title)}`}
+                                link={`/dashboard/bestpractices/${
+                                  practice.id
+                                }/${slugify(practice.title)}`}
                                 ifFollowing={practice.is_bp_following}
                                 onToggleFollow={handleToggleFollow}
                               />
@@ -1228,7 +1255,7 @@ export default function UserProfileView() {
                       </h3>
 
                       {/* <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3"> */}
-                       <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 mt-4">
+                      <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 mt-4">
                         {myInterestBP?.map((practice: any) => {
                           return (
                             <div
@@ -1241,7 +1268,8 @@ export default function UserProfileView() {
                                   )
                                 ) {
                                   navigate(
-                                    `/dashboard/bestpractices/${practice.id
+                                    `/dashboard/bestpractices/${
+                                      practice.id
                                     }/${slugify(practice.title)}`,
                                     {
                                       state: {
@@ -1256,27 +1284,28 @@ export default function UserProfileView() {
                               <BestPracticeCard
                                 id={practice?.id}
                                 name={
-                                  `${practice?.profile?.first_name || ""} ${practice?.profile?.last_name || ""
-                                    }`.trim() || "CNESS User"
+                                  `${practice?.profile?.first_name || ""} ${
+                                    practice?.profile?.last_name || ""
+                                  }`.trim() || "CNESS User"
                                 }
                                 username={practice?.user?.username || "user"}
                                 profileImage={
                                   !practice?.profile?.profile_picture ||
-                                    practice?.profile?.profile_picture ===
+                                  practice?.profile?.profile_picture ===
                                     "null" ||
-                                    practice?.profile?.profile_picture ===
+                                  practice?.profile?.profile_picture ===
                                     "undefined" ||
-                                    !practice?.profile?.profile_picture.startsWith(
-                                      "http"
-                                    )
+                                  !practice?.profile?.profile_picture.startsWith(
+                                    "http"
+                                  )
                                     ? "/profile.png"
                                     : practice?.profile?.profile_picture
                                 }
                                 coverImage={
                                   !practice?.file ||
-                                    practice?.file === "null" ||
-                                    practice?.file === "undefined" ||
-                                    !practice?.file.startsWith("http")
+                                  practice?.file === "null" ||
+                                  practice?.file === "undefined" ||
+                                  !practice?.file.startsWith("http")
                                     ? "https://cdn.cness.io/banner.webp"
                                     : practice?.file
                                 }
@@ -1286,8 +1315,9 @@ export default function UserProfileView() {
                                   "Untitled"
                                 }
                                 description={practice?.description || ""}
-                                link={`/dashboard/bestpractices/${practice.id
-                                  }/${slugify(practice.title)}`}
+                                link={`/dashboard/bestpractices/${
+                                  practice.id
+                                }/${slugify(practice.title)}`}
                                 ifFollowing={practice.is_bp_following}
                                 onToggleFollow={handleToggleFollow}
                               />
@@ -1305,9 +1335,9 @@ export default function UserProfileView() {
                       </h3>
 
                       {/* <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3"> */}
-                       <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 mt-4">
+                      <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 mt-4">
                         {followBP?.map((practice: any) => {
-                          console.log('practice', practice)
+                          console.log("practice", practice);
                           return (
                             <div
                               key={practice?.id}
@@ -1319,7 +1349,8 @@ export default function UserProfileView() {
                                   )
                                 ) {
                                   navigate(
-                                    `/dashboard/bestpractices/${practice.id
+                                    `/dashboard/bestpractices/${
+                                      practice.id
                                     }/${slugify(practice.title)}`,
                                     {
                                       state: {
@@ -1334,27 +1365,28 @@ export default function UserProfileView() {
                               <BestPracticeCard
                                 id={practice?.id}
                                 name={
-                                  `${practice?.profile?.first_name || ""} ${practice?.profile?.last_name || ""
-                                    }`.trim() || "CNESS User"
+                                  `${practice?.profile?.first_name || ""} ${
+                                    practice?.profile?.last_name || ""
+                                  }`.trim() || "CNESS User"
                                 }
                                 username={practice?.user?.username || "user"}
                                 profileImage={
                                   !practice?.profile?.profile_picture ||
-                                    practice?.profile?.profile_picture ===
+                                  practice?.profile?.profile_picture ===
                                     "null" ||
-                                    practice?.profile?.profile_picture ===
+                                  practice?.profile?.profile_picture ===
                                     "undefined" ||
-                                    !practice?.profile?.profile_picture.startsWith(
-                                      "http"
-                                    )
+                                  !practice?.profile?.profile_picture.startsWith(
+                                    "http"
+                                  )
                                     ? "/profile.png"
                                     : practice?.profile?.profile_picture
                                 }
                                 coverImage={
                                   !practice?.file ||
-                                    practice?.file === "null" ||
-                                    practice?.file === "undefined" ||
-                                    !practice?.file.startsWith("http")
+                                  practice?.file === "null" ||
+                                  practice?.file === "undefined" ||
+                                  !practice?.file.startsWith("http")
                                     ? "https://cdn.cness.io/banner.webp"
                                     : practice?.file
                                 }
@@ -1364,8 +1396,9 @@ export default function UserProfileView() {
                                   "Untitled"
                                 }
                                 description={practice?.description || ""}
-                                link={`/dashboard/bestpractices/${practice.id
-                                  }/${slugify(practice.title)}`}
+                                link={`/dashboard/bestpractices/${
+                                  practice.id
+                                }/${slugify(practice.title)}`}
                                 ifFollowing={practice.is_bp_following}
                                 onToggleFollow={handleToggleFollow}
                               />
@@ -1394,14 +1427,14 @@ export default function UserProfileView() {
                   <div className="mt-4 flex justify-center gap-2 w-full mx-auto place-items-center">
                     <PrimaryButton
                       className="px-6 py-2 rounded-lg whitespace-nowrap shrink-0
-                      !justify-center text-white rounded-lg shadow"
+                      !justify-center text-white shadow"
                       onClick={() => setActiveModal(true)}
                     >
                       Add Best Practice
                     </PrimaryButton>
                     <OutlinePill
                       className="px-6 py-2 rounded-lg whitespace-nowrap shrink-0
-                      !justify-center rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50"
+                      !justify-center border border-gray-300 text-gray-600 hover:bg-gray-50"
                       onClick={() => navigate("/dashboard/bestpractices")}
                     >
                       Explore Examples
@@ -1416,7 +1449,7 @@ export default function UserProfileView() {
                   </h2>
                   <PrimaryButton
                     className="mt-6 px-6 py-2 rounded-lg whitespace-nowrap shrink-0
-                      !justify-center rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50"
+                      !justify-center border border-gray-300 text-gray-600 hover:bg-gray-50"
                     onClick={() => navigate("/dashboard/bestpractices")}
                   >
                     Explore Best Practices Hub
@@ -1434,10 +1467,10 @@ export default function UserProfileView() {
               Member Since:{" "}
               {userDetails?.createdAt
                 ? new Date(userDetails.createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })
                 : "—"}
             </p>
             {/* <a
@@ -1463,6 +1496,7 @@ export default function UserProfileView() {
         handleTagKeyDown={handleTagKeyDown}
         handleInputChange={handleInputChange}
         handleFileChange={handleFileChange}
+        handleRemoveFile={handleRemoveFile}
         handleSubmit={handleSubmit}
         isSubmitting={isSubmitting}
       />

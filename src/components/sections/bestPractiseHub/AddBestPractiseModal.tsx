@@ -139,6 +139,7 @@ interface AddBestPracticeModalProps {
   ) => void;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  handleRemoveFile: () => void;
   isSubmitting: boolean;
 }
 
@@ -155,28 +156,33 @@ export default function AddBestPracticeModal({
   handleTagKeyDown,
   handleInputChange,
   handleFileChange,
+  handleRemoveFile,
   handleSubmit,
   isSubmitting,
 }: AddBestPracticeModalProps) {
   if (!open) return null;
 
-  // 🧠 Local state for image crop/preview
-  const [imageSrc, setImageSrc] = useState<string | null>(null);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+  // Create object URL for image preview
+  const imagePreviewUrl = newPractice.file
+    ? URL.createObjectURL(newPractice.file)
+    : null;
 
-  const onCropComplete = useCallback((_: any, croppedAreaPixels: any) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  }, []);
-
-  const handleSubmitWithCrop = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (imageSrc && croppedAreaPixels) {
-      const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels);
-      newPractice.file = croppedFile;
+  const handleRemoveImage = () => {
+    // Clear the file input
+    const fileInput = document.getElementById(
+      "uploadFile1"
+    ) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = "";
     }
-    handleSubmit(e);
+
+    // Call the remove file function
+    handleRemoveFile();
+
+    // Clean up object URL
+    if (imagePreviewUrl) {
+      URL.revokeObjectURL(imagePreviewUrl);
+    }
   };
 
   return (
@@ -200,118 +206,78 @@ export default function AddBestPracticeModal({
           </h2>
         </div>
 
-        {/* ✅ Always available hidden file input */}
-        <input
-          type="file"
-          id="uploadFile1"
-          className="hidden"
-          accept=".jpg,.jpeg,.png"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) {
-              const reader = new FileReader();
-              reader.onload = () => {
-                setImageSrc(reader.result as string);
-                handleFileChange(e);
-              };
-              reader.readAsDataURL(file);
-            }
-          }}
-        />
+        {/* Upload Section - Conditionally render based on whether file is selected */}
+        {!newPractice.file ? (
+          // Original upload section when no file is selected
+          <div className="mt-2 text-center py-6 px-4 rounded-[26px] border-2 border-[#CBD0DC] border-dashed flex flex-col items-center justify-center cursor-pointer mb-6">
+            <div className="pb-4 flex flex-col items-center">
+              <img src={cloud} alt="Upload" className="w-12" />
+              <h4 className="pt-2 text-base font-medium text-[#292D32]">
+                Choose your image <span className="text-red-600">*</span>
+              </h4>
+              <h4 className="pt-2 font-normal text-sm text-[#A9ACB4]">
+                JPEG, PNG formats, up to 2MB
+              </h4>
+            </div>
 
-        {/* Upload + Crop Section */}
-        <div className="mt-2 text-center py-6 px-4 rounded-[26px] border-2 border-[#CBD0DC] border-dashed flex flex-col items-center justify-center cursor-pointer mb-6">
-          {!imageSrc ? (
-            <>
-              <div className="pb-4 flex flex-col items-center">
-                <img src={cloud} alt="Upload" className="w-12" />
-                <h4 className="pt-2 text-base font-medium text-[#292D32]">
-                  Choose your image <span className="text-red-600">*</span>
-                </h4>
-                <h4 className="pt-2 font-normal text-sm text-[#A9ACB4]">
-                  JPEG, PNG formats, up to 2MB
-                </h4>
-              </div>
-
+            <div className="">
+              <input
+                type="file"
+                id="uploadFile1"
+                className="hidden"
+                accept=".jpg,.jpeg,.png"
+                onChange={handleFileChange}
+              />
               <label
                 htmlFor="uploadFile1"
-                className="block px-[33px] py-4 rounded-full text-[#54575C] text-base tracking-wider font-medium border border-[#CBD0DC] outline-none cursor-pointer hover:bg-gray-50"
+                className="block px-[33px] py-4 rounded-full text-[#54575C] text-base tracking-wider font-medium border border-[#CBD0DC] outline-none cursor-pointer"
               >
                 Browse Files
               </label>
+            </div>
+          </div>
+        ) : (
+          // Image preview section when file is selected - Takes full upload section
+          <div className="mt-2 rounded-[26px] border-2 border-[#CBD0DC] border-dashed mb-6 relative overflow-hidden">
+            {/* Image Preview - Full section */}
+            {imagePreviewUrl && (
+              <div className="relative w-full h-64">
+                <img
+                  src={imagePreviewUrl}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
 
-              {newPractice.file && (
-                <p className="mt-2 text-sm text-gray-700">
-                  Selected:{" "}
-                  {newPractice.file.name.replace(/(\.jpg|\.jpeg|\.png){2,}$/i, "$1")}
-                </p>
-              )}
-            </>
-          ) : (
-            <div className="relative w-full h-[320px] bg-gray-100 rounded-[20px] overflow-hidden shadow-md">
-              <Cropper
-                image={imageSrc}
-                crop={crop}
-                zoom={zoom}
-                aspect={16 / 5}
-                onCropChange={setCrop}
-                onZoomChange={setZoom}
-                onCropComplete={onCropComplete}
-                zoomWithScroll
-                minZoom={0.4}
-                maxZoom={3}
-                restrictPosition={false}
-                objectFit="cover"
-                showGrid={false}
-              />
-              <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex flex-col sm:flex-row items-center gap-3 bg-white/80 backdrop-blur-md px-4 py-2 rounded-lg shadow-lg border border-gray-200">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-600">Zoom</span>
-                  <input
-                    type="range"
-                    min={0.4}
-                    max={3}
-                    step={0.05}
-                    value={zoom}
-                    onChange={(e) => setZoom(Number(e.target.value))}
-                    className="w-32 accent-[#6269FF]"
-                  />
-                </div>
-                <div className="hidden sm:block w-px h-5 bg-gray-300" />
-
+                {/* Cross button to remove image */}
                 <button
                   type="button"
-                  onClick={() => {
-                    const input = document.getElementById("uploadFile1") as HTMLInputElement;
-                    if (input) input.value = ""; // allow reselecting same file
-                    input?.click();
-                  }}
-                  className="flex items-center gap-2 text-xs font-medium text-[#6269FF] hover:text-[#4E57E0] transition-all"
+                  onClick={handleRemoveImage}
+                  className="absolute top-3 right-3 w-8 h-8 bg-white/80 hover:bg-white rounded-full flex items-center justify-center text-xl text-gray-700 hover:text-red-600 transition-all duration-200 shadow-md"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    className="w-4 h-4"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15.75 9V5.25m0 0L18 7.5m-2.25-2.25L13.5 7.5m4.5 4.5v4.25a2.25 2.25 0 01-2.25 2.25h-9A2.25 2.25 0 014.5 16V8.25A2.25 2.25 0 016.75 6H12"
-                    />
-                  </svg>
-                  Change Image
+                  ✕
                 </button>
+
+                {/* Hidden file input for change functionality on double click */}
+                <input
+                  type="file"
+                  id="uploadFile1"
+                  className="hidden"
+                  accept=".jpg,.jpeg,.png"
+                  onChange={handleFileChange}
+                />
+
+                {/* Double click instruction (optional) */}
+                <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1 rounded-full opacity-0 hover:opacity-100 transition-opacity duration-200">
+                  Double click to change image
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
         {/* Form Section */}
         <form
-          onSubmit={handleSubmitWithCrop}
+          onSubmit={handleSubmit}
           onKeyDown={(e) => {
             const target = e.target as HTMLElement;
             if (target.closest(".ck") && e.key === "Enter") return;
