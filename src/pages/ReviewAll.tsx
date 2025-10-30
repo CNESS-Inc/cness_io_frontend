@@ -1,4 +1,4 @@
-import Header from "../components/MarketPlace/Marketheader";
+import Header from "../components/MarketPlace/Buyerheader";
 import { useLocation } from 'react-router-dom';
 
 import ProductCard from '../components/MarketPlace/ProductCard';

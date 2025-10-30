@@ -83,6 +83,8 @@ import Wishlist from "../pages/Wishlist";
 import OrderHistory from "../pages/OrderHistory";
 import Category from "../pages/Category";
 import ShopsList from "../pages/Shops";
+import VendorDashboard from "../pages/VendorDashboard";
+import CreateShopForm from "../pages/CreateShopForm";
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
 const DirectoryPage = lazy(() => import("../pages/DirectoryPage"));
@@ -302,6 +304,16 @@ export const router = createBrowserRouter([
 {
   path:"shops",
   element:<ShopsList />
+},
+
+{
+  path:"seller-dashboard",
+  element:<VendorDashboard />
+},
+
+{
+path:"createshop",
+element:<CreateShopForm />
 },
           // {
           //   path: "search-listing",
