@@ -554,6 +554,16 @@ const InspiredAssessment = () => {
     setActiveModal(null);
   };
 
+  const getBillingNote = (plan: any) => {
+    if (!plan.yearlyPrice || !plan.monthlyPrice) return undefined;
+
+    if (isAnnual) {
+      // For annual billing: show "billed annually (yearly price)"
+      return `billed annually ($${plan.yearlyPrice.replace("$", "") * 12})`;
+    } else {
+      return `or ${plan.monthlyPrice}/month`;
+    }
+  };
   return (
     <>
       {/* Page Header */}
@@ -795,13 +805,16 @@ const InspiredAssessment = () => {
                       ? plan.yearlyPrice || plan.monthlyPrice
                       : plan.monthlyPrice}
                   </span>
-                  <span className="text-gray-500">/month</span>
-                  {plan.billingNote && (
+                  <span className="text-gray-500">
+                    {isAnnual ? "/year" : "/month"}
+                  </span>
+                  {getBillingNote(plan) && (
                     <p className="text-sm text-gray-500 mt-1">
-                      {plan.billingNote}
+                      {getBillingNote(plan)}
                     </p>
                   )}
                 </div>
+
                 <Button
                   variant="gradient-primary"
                   className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"

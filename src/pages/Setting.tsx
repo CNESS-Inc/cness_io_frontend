@@ -233,6 +233,17 @@ const Setting = () => {
     }
   };
 
+    const getBillingNote = (plan: any) => {
+    if (!plan.yearlyPrice || !plan.monthlyPrice) return undefined;
+
+    if (isAnnual) {
+      // For annual billing: show "billed annually (yearly price)"
+      return `billed annually ($${plan.yearlyPrice.replace("$", "") * 12})`;
+    } else {
+      return `or ${plan.monthlyPrice}/month`;
+    }
+  };
+
   return (
     <>
       <div className="w-full min-h-screen mt-8">
@@ -560,11 +571,11 @@ const Setting = () => {
                       : plan.monthlyPrice}
                   </span>
                   <span className="text-gray-500">/month</span>
-                  {plan.billingNote && (
-                    <p className="text-sm text-gray-500 mt-1">
-                      {plan.billingNote}
-                    </p>
-                  )}
+                  {getBillingNote(plan) && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {getBillingNote(plan)}
+                        </p>
+                      )}
                 </div>
                 <Button
                   variant="gradient-primary"
