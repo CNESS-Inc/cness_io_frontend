@@ -196,7 +196,7 @@ useEffect(() => {
           {/* Top Default Banner */}
           <div className="relative w-full min-h-[300px] bg-[#F3f1ff">
             {/* Top Banner */}
-             
+
             <div className="w-full h-[200px] overflow-hidden">
               <img
                 src={blush}
@@ -219,32 +219,32 @@ useEffect(() => {
             {media &&
               media !== "http://localhost:5026/file/" &&
               !media.endsWith("/file/") && (
+                <div className="absolute top-[140px] left-1/2 transform -translate-x-1/2 w-[90%] sm:w-[80%] md:w-[70%] z-10">
+                  <div className="relative w-full h-[320px] md:h-[350px] overflow-hidden rounded-xl shadow-xl bg-gray-100">
+                    <img
+                      src={media}
+                      alt="Best Practice Banner"
+                      className="absolute inset-0 w-full h-full object-cover rounded-xl transition-all duration-300 ease-in-out"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          iconMap["companycard1"];
+                      }}
+                      onLoad={(e) => {
+                        const img = e.currentTarget;
+                        const aspect = img.naturalWidth / img.naturalHeight;
 
- <div className="absolute top-[140px] left-1/2 transform -translate-x-1/2 w-[90%] sm:w-[80%] md:w-[70%] z-10">
-  <div className="relative w-full h-[320px] md:h-[350px] overflow-hidden rounded-xl shadow-xl bg-gray-100">
-    <img
-      src={media}
-      alt="Best Practice Banner"
-      className="absolute inset-0 w-full h-full object-cover rounded-xl transition-all duration-300 ease-in-out"
-      onError={(e) => {
-        (e.target as HTMLImageElement).src = iconMap["companycard1"];
-      }}
-      onLoad={(e) => {
-        const img = e.currentTarget;
-        const aspect = img.naturalWidth / img.naturalHeight;
-
-        // 🌟 Adjust positioning only — no contain
-        if (aspect < 1.2) {
-          img.style.objectPosition = "top center"; // portrait — show top
-        } else if (aspect > 2.5) {
-          img.style.objectPosition = "center center"; // ultra-wide
-        } else {
-          img.style.objectPosition = "center 30%"; // normal banners
-        }
-      }}
-    />
-  </div>
-</div>
+                        // 🌟 Adjust positioning only — no contain
+                        if (aspect < 1.2) {
+                          img.style.objectPosition = "top center"; // portrait — show top
+                        } else if (aspect > 2.5) {
+                          img.style.objectPosition = "center center"; // ultra-wide
+                        } else {
+                          img.style.objectPosition = "center 30%"; // normal banners
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
               )}
 
             {/* Profile Image - correctly centered between top and user banner */}
@@ -281,10 +281,10 @@ useEffect(() => {
   </div>*/}
         </div>
         {/* Interaction Icons */}
-       <div
-  className="relative z-20 w-[90%] sm:w-[80%] md:w-[70%] mx-auto
+        <div
+          className="relative z-20 w-[90%] sm:w-[80%] md:w-[70%] mx-auto
         mt-[200px] sm:mt-[360px] md:mt-[200px] mb-4"
->
+        >
           <div className="flex items-center justify-between">
             {/* LEFT: Like + Comment */}
             <div className="flex items-center gap-6">
@@ -372,15 +372,24 @@ useEffect(() => {
         {/* Description */}
         <div className="w-[90%] sm:w-[80%] md:w-[70%] mx-auto mt-4 sm:mt-6">
           <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6">
-          <div
-  className="text-gray-800 leading-relaxed text-sm sm:text-base whitespace-pre-line"
-  dangerouslySetInnerHTML={{
-    __html: DOMPurify.sanitize(singlepost.description),
-  }}
-></div>
+            <div
+              className="rich-text-content text-gray-800 leading-relaxed text-sm sm:text-base
+             [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3
+             [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3
+             [&_li]:my-1 [&_li]:pl-1
+             [&_p]:my-3
+             [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:my-4
+             [&_h2]:text-xl [&_h2]:font-bold [&_h2]:my-3
+             [&_h3]:text-lg [&_h3]:font-bold [&_h3]:my-2
+             [&_strong]:font-bold
+             [&_em]:italic
+             [&_u]:underline"
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(singlepost.description),
+              }}
+            ></div>
           </div>
         </div>
-        {/* Comment Section */}
         {/* Comment Section */}
         <div className="w-[90%] sm:w-[80%] md:w-[70%] mx-auto mt-4 sm:mt-6">
           <div className="bg-white border border-gray-200 rounded-xl shadow-md px-4 sm:px-6 py-4">
