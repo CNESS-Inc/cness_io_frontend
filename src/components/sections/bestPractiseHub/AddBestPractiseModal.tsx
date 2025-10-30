@@ -146,6 +146,7 @@ interface AddBestPracticeModalProps {
   ) => void;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  handleRemoveFile: () => void;
   isSubmitting: boolean;
 }
 
@@ -162,10 +163,34 @@ export default function AddBestPracticeModal({
   handleTagKeyDown,
   handleInputChange,
   handleFileChange,
+  handleRemoveFile,
   handleSubmit,
   isSubmitting,
 }: AddBestPracticeModalProps) {
   if (!open) return null;
+
+  // Create object URL for image preview
+  const imagePreviewUrl = newPractice.file
+    ? URL.createObjectURL(newPractice.file)
+    : null;
+
+  const handleRemoveImage = () => {
+    // Clear the file input
+    const fileInput = document.getElementById(
+      "uploadFile1"
+    ) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = "";
+    }
+
+    // Call the remove file function
+    handleRemoveFile();
+
+    // Clean up object URL
+    if (imagePreviewUrl) {
+      URL.revokeObjectURL(imagePreviewUrl);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -187,48 +212,78 @@ export default function AddBestPracticeModal({
           </h2>
         </div>
 
-        {/* Upload Section */}
-        <div className="mt-2 text-center py-6 px-4 rounded-[26px] border-2 border-[#CBD0DC] border-dashed flex flex-col items-center justify-center cursor-pointer mb-6">
-          <div className="pb-4 flex flex-col items-center">
-            <img src={cloud} alt="Upload" className="w-12" />
-            <h4 className="pt-2 text-base font-medium text-[#292D32]">
-              Choose your image <span className="text-red-600">*</span>
-            </h4>
-            <h4 className="pt-2 font-normal text-sm text-[#A9ACB4]">
-              JPEG, PNG formats, up to 2MB
-            </h4>
-          </div>
+        {/* Upload Section - Conditionally render based on whether file is selected */}
+        {!newPractice.file ? (
+          // Original upload section when no file is selected
+          <div className="mt-2 text-center py-6 px-4 rounded-[26px] border-2 border-[#CBD0DC] border-dashed flex flex-col items-center justify-center cursor-pointer mb-6">
+            <div className="pb-4 flex flex-col items-center">
+              <img src={cloud} alt="Upload" className="w-12" />
+              <h4 className="pt-2 text-base font-medium text-[#292D32]">
+                Choose your image <span className="text-red-600">*</span>
+              </h4>
+              <h4 className="pt-2 font-normal text-sm text-[#A9ACB4]">
+                JPEG, PNG formats, up to 2MB
+              </h4>
+            </div>
 
-          <div className="">
-            <input
-              type="file"
-              id="uploadFile1"
-              className="hidden"
-              accept=".jpg,.jpeg,.png"
-              onChange={handleFileChange}
-            />
-            <label
-              htmlFor="uploadFile1"
-              className="block px-[33px] py-4 rounded-full text-[#54575C] text-base tracking-wider font-medium border border-[#CBD0DC] outline-none cursor-pointer"
-            >
-              Browse Files
-            </label>
-            {newPractice.file && (
-              <p className="mt-2 text-sm text-gray-700">
-                Selected: {newPractice.file.name}
-              </p>
+            <div className="">
+              <input
+                type="file"
+                id="uploadFile1"
+                className="hidden"
+                accept=".jpg,.jpeg,.png"
+                onChange={handleFileChange}
+              />
+              <label
+                htmlFor="uploadFile1"
+                className="block px-[33px] py-4 rounded-full text-[#54575C] text-base tracking-wider font-medium border border-[#CBD0DC] outline-none cursor-pointer"
+              >
+                Browse Files
+              </label>
+            </div>
+          </div>
+        ) : (
+          // Image preview section when file is selected - Takes full upload section
+          <div className="mt-2 rounded-[26px] border-2 border-[#CBD0DC] border-dashed mb-6 relative overflow-hidden">
+            {/* Image Preview - Full section */}
+            {imagePreviewUrl && (
+              <div className="relative w-full h-64">
+                <img
+                  src={imagePreviewUrl}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+
+                {/* Cross button to remove image */}
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="absolute top-3 right-3 w-8 h-8 bg-white/80 hover:bg-white rounded-full flex items-center justify-center text-xl text-gray-700 hover:text-red-600 transition-all duration-200 shadow-md"
+                >
+                  ✕
+                </button>
+
+                {/* Hidden file input for change functionality on double click */}
+                <input
+                  type="file"
+                  id="uploadFile1"
+                  className="hidden"
+                  accept=".jpg,.jpeg,.png"
+                  onChange={handleFileChange}
+                />
+
+                {/* Double click instruction (optional) */}
+                <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1 rounded-full opacity-0 hover:opacity-100 transition-opacity duration-200">
+                  Double click to change image
+                </div>
+              </div>
             )}
           </div>
-        </div>
+        )}
 
         {/* Form */}
         <form
           onSubmit={handleSubmit}
-          // onKeyDown={(e) => {
-          //   if (e.key === "Enter") {
-          //     e.preventDefault();
-          //   }
-          // }}
           onKeyDown={(e) => {
             // Allow Enter key inside CKEditor only
             const target = e.target as HTMLElement;

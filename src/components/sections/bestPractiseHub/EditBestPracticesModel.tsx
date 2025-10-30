@@ -2,7 +2,6 @@ import cloud from "../../../assets/cloud-add.svg";
 import Button from "../../ui/Button";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { useToast } from "../../ui/Toast/ToastProvider";
 
 // Base64 upload adapter (same as in AddBestPracticeModal)
 class Base64UploadAdapter {
@@ -136,6 +135,7 @@ interface EditBestPracticeModalProps {
   removeTag: (idx: number) => void;
   handleTagKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isSubmitting: boolean;
 }
 
@@ -151,32 +151,35 @@ export default function EditBestPracticeModal({
   setEditInputValue,
   removeTag,
   handleTagKeyDown,
+  handleFileChange,
   handleSubmit,
   isSubmitting,
 }: EditBestPracticeModalProps) {
-  console.log("🚀 ~ EditBestPracticeModal ~ tags:", tags)
-  const { showToast } = useToast();
 
-  const handleEditFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  // Create object URL for image preview
+  const imagePreviewUrl = currentPractice?.file 
+    ? (typeof currentPractice.file === 'string' 
+        ? currentPractice.file 
+        : URL.createObjectURL(currentPractice.file))
+    : null;
 
-    if (!file) return;
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-    if (!validTypes.includes(file.type)) {
-      e.target.value = '';
-
-      showToast?.({
-        message: "Please select only JPG, JPEG or PNG files.",
-        type: "error",
-        duration: 3000,
-      });
-      return;
+  const handleRemoveImage = () => {
+    // Clear the file input
+    const fileInput = document.getElementById('editUploadFile') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
     }
-
+    
+    // Remove file from current practice
     setCurrentPractice({
       ...currentPractice,
-      file: file,
+      file: null,
     });
+    
+    // Clean up object URL if it was created from a new file
+    if (currentPractice?.file && typeof currentPractice.file !== 'string') {
+      URL.revokeObjectURL(imagePreviewUrl!);
+    }
   };
 
   if (!open) return null;
@@ -201,45 +204,90 @@ export default function EditBestPracticeModal({
           </h2>
         </div>
 
-        {/* Upload Section */}
-        <div className="mt-2 text-center py-6 px-4 rounded-[26px] border-2 border-[#CBD0DC] border-dashed flex flex-col items-center justify-center cursor-pointer mb-6">
-          <div className="pb-4 flex flex-col items-center">
-            <img src={cloud} alt="Upload" className="w-12" />
-            <h4 className="pt-2 text-base font-medium text-[#292D32]">
-              Change your image <span className="text-red-600">*</span>
-            </h4>
-            <h4 className="pt-2 font-normal text-sm text-[#A9ACB4]">
-              JPEG, PNG formats, up to 2MB
-            </h4>
-          </div>
+        {/* Upload Section - Conditionally render based on whether file is selected */}
+        {!currentPractice?.file ? (
+          // Original upload section when no file is selected
+          <div className="mt-2 text-center py-6 px-4 rounded-[26px] border-2 border-[#CBD0DC] border-dashed flex flex-col items-center justify-center cursor-pointer mb-6">
+            <div className="pb-4 flex flex-col items-center">
+              <img src={cloud} alt="Upload" className="w-12" />
+              <h4 className="pt-2 text-base font-medium text-[#292D32]">
+                Change your image <span className="text-red-600">*</span>
+              </h4>
+              <h4 className="pt-2 font-normal text-sm text-[#A9ACB4]">
+                JPEG, PNG formats, up to 2MB
+              </h4>
+            </div>
 
-          <div>
-            <input
-              type="file"
-              id="editUploadFile"
-              className="hidden"
-              accept="image/*"
-              onChange={handleEditFileChange}
-            />
-            <label
-              htmlFor="editUploadFile"
-              className="block px-[33px] py-4 rounded-full text-[#54575C] text-base tracking-wider font-medium border border-[#CBD0DC] outline-none cursor-pointer"
-            >
-              Browse Files
-            </label>
-            {currentPractice?.file && (
-              <p className="mt-2 text-sm text-gray-700 break-all">
-                Selected:{" "}
-                {typeof currentPractice.file === "string"
-                  ? currentPractice.file.split("/").pop()
-                  : currentPractice.file.name}
-              </p>
+            <div>
+              <input
+                type="file"
+                id="editUploadFile"
+                className="hidden"
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+              <label
+                htmlFor="editUploadFile"
+                className="block px-[33px] py-4 rounded-full text-[#54575C] text-base tracking-wider font-medium border border-[#CBD0DC] outline-none cursor-pointer"
+              >
+                Browse Files
+              </label>
+            </div>
+          </div>
+        ) : (
+          // Image preview section when file is selected - Takes full upload section
+          <div className="mt-2 rounded-[26px] border-2 border-[#CBD0DC] border-dashed mb-6 relative overflow-hidden">
+            {/* Image Preview - Full section */}
+            {imagePreviewUrl && (
+              <div className="relative w-full h-64">
+                <img
+                  src={imagePreviewUrl}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+                
+                {/* Cross button to remove image */}
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="absolute top-3 right-3 w-8 h-8 bg-white/80 hover:bg-white rounded-full flex items-center justify-center text-xl text-gray-700 hover:text-red-600 transition-all duration-200 shadow-md"
+                >
+                  ✕
+                </button>
+
+                {/* Hidden file input for change functionality */}
+                <input
+                  type="file"
+                  id="editUploadFile"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
+                
+                {/* Double click instruction (optional) */}
+                <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1 rounded-full opacity-0 hover:opacity-100 transition-opacity duration-200">
+                  Double click to change image
+                </div>
+              </div>
             )}
           </div>
-        </div>
+        )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit}
+        onKeyDown={(e) => {
+            // Allow Enter key inside CKEditor only
+            const target = e.target as HTMLElement;
+            if (target.closest(".ck") && e.key === "Enter") {
+              return; // Let CKEditor handle Enter
+            }
+
+            // Prevent Enter from submitting in text fields
+            if (e.key === "Enter" && target.tagName !== "TEXTAREA") {
+              e.preventDefault();
+            }
+          }}
+        className="space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">
             {/* Title */}
             <div className="flex flex-col gap-[5px]">

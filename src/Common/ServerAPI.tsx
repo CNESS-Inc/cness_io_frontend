@@ -718,15 +718,10 @@ export const GetRecommendedBestPractices = (): ApiResponse => {
     `${EndPoint.bp_recommended}`
   );
 };
-export const UpdateBestPractice = (payload: {
-  id: string;
-  profession: string;
-  title: string;
-  description: string;
-}): ApiResponse => {
+export const UpdateBestPractice = (formData:any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST, // or PATCH depending on your API
-    payload,
+    formData,
     `${EndPoint.bp}/update`
   );
 };
