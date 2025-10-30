@@ -113,7 +113,8 @@ const isUatOrTest = ["uat", "test"].includes(env);
         "/dashboard/upgrade-badge",
       ],
       children: [
-        { label: "Get Certified", path: "/dashboard/assesment" },
+        { label: "Get Certified", path: "/dashboard/assesmentcertification" },
+        // { label: "Assessment Certification", path: "/dashboard/assesmentcertification" },
         //{ label: "Upload Proof", path: "/dashboard/UploadProof" },
         { label: "Score & Results", path: "/dashboard/score-result" },
         { label: "Upgrade Badge", path: "/dashboard/upgrade-badge" },
@@ -221,17 +222,17 @@ const isUatOrTest = ["uat", "test"].includes(env);
       id: "market-place",
       icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
       label: "MarketplaceNew",
-      active: true,
-      path: "/dashboard/market-place",
-      /*isMarketplaceDropdown: true,
+      active: false,
+      //path: "/dashboard/market-place",
+      isMarketplaceDropdown: true,
       childPaths: ["/dashboard/DigitalProducts"],
       children: [
-        {label: "Login To Market Place", path: "", customAction: generateSsoToken },
-        { label: "Buy Digital Products", path: "/dashboard/digital_products" },
-        { label: "Sell your Products", path: "/dashboard/SellProducts" },
+        { label: "Buy Digital Products", path: "/dashboard/market-place" },
+        { label: "Sell your Products", path: "/dashboard/createshop" },
         { label: "Track Purchase & Sales", path: "/dashboard/Tracking" },
         { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
-      ],*/
+        
+      ]
     },
     ]
     : []),

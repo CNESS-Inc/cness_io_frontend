@@ -1,22 +1,59 @@
-import Header from '../components/MarketPlace/Marketheader';
+import Header from '../components/MarketPlace/Buyerheader';
 import { useLocation, useNavigate } from 'react-router-dom';
 import instagramIcon from '../assets/instagramicon.svg';
 import youtubeIcon from '../assets/youtubeicon.svg';
 import facebookIcon from '../assets/facebookicon.svg';
 import xIcon from '../assets/twittericon.svg';
 import cnessicon from '../assets/cnessicon.svg';
-
+import ProductCard from '../components/MarketPlace/ProductCard';
+import { ChevronDown, ChevronUp, PlayCircle } from "lucide-react";
+import  { useState,useEffect } from "react";
 
 const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const product = location.state?.product;
+  const [openChapter, setOpenChapter] = useState<number | null>(0);
 
  const highlights = [
     '20 premium royalty-free tracks',
     'High-quality WAV + MP3 downloads', 
     'License for personal or commercial use'
   ]
+
+  const chapters = [
+    {
+      title: "Chapter 1",
+      lessonsCount: 3,
+      duration: "30 mins",
+      lessons: [
+        { title: "01: Learn the basic Guitar", duration: "Completed", completed: true },
+        { title: "02: Learn the next class", duration: "12 mins" },
+        { title: "03: Learn the next class", duration: "12 mins" },
+      ],
+    },
+    {
+      title: "Chapter 2",
+      lessonsCount: 6,
+      duration: "40 mins",
+      lessons: [
+        { title: "01: Learn the rhythm pattern", duration: "10 mins" },
+        { title: "02: Guitar strumming basics", duration: "15 mins" },
+      ],
+    },
+    {
+      title: "Chapter 3",
+      lessonsCount: 2,
+      duration: "10 mins",
+      lessons: [
+        { title: "01: Practice Exercises", duration: "6 mins" },
+        { title: "02: Melody Demo", duration: "4 mins" },
+      ],
+    },
+  ];
+
+const toggleChapter = (index: number) =>
+    setOpenChapter(openChapter === index ? null : index);
 
   const details = [
     { icon: 'https://static.codia.ai/image/2025-10-16/wo8469r2jf.png', label: 'Duration', value: '12 hours' },
@@ -26,6 +63,57 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
     { icon: 'https://static.codia.ai/image/2025-10-16/9eNhkyRAT7.png', label: 'Requirements', value: 'Basic computer with drawing tablet or mouse' },
   ]
   
+
+   const products = [
+    {
+        id:1,
+      image: "https://static.codia.ai/image/2025-10-24/HGO1tqkC4d.png",
+      title: "Soft guitar moods that heals your inner pain",
+      author: "by Redtape",
+      rating: 4.8,
+      reviews: 123,
+      originalPrice: 2444,
+      currentPrice: 1299,
+      discount: 50,
+      duration: "00:23:00",
+      category: "Peaceful"
+    },
+    {
+         id:2,
+      image: "https://static.codia.ai/image/2025-10-24/dv9CKSATxB.png",
+      title: "Soft guitar moods that heals your inner pain",
+      author: "by Redtape",
+      rating: 4.8,
+      reviews: 123,
+      currentPrice: 1299,
+      duration: "00:23:00",
+      category: "Peaceful"
+    },
+    {
+         id:3,
+      image: "https://static.codia.ai/image/2025-10-24/mafhkbz4P3.png",
+      title: "Soft guitar moods that heals your inner pain",
+      author: "by Redtape",
+      rating: 4.8,
+      reviews: 123,
+      currentPrice: 1299,
+      duration: "00:23:00",
+      category: "Peaceful"
+    },
+    {
+        id:4,
+      image: "https://static.codia.ai/image/2025-10-24/7XBKRowdN1.png",
+      title: "Soft guitar moods that heals your inner pain",
+      author: "by Redtape",
+      rating: 4.8,
+      reviews: 123,
+      originalPrice: 2444,
+      currentPrice: 1299,
+      discount: 50,
+      duration: "00:23:00",
+      category: "Peaceful"
+    }
+  ]
 
   console.log("Location state:", location.state); // 👈 check if product exists
 
@@ -45,7 +133,9 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
     );
   }
 
-   
+   useEffect(() => {
+  if (product) localStorage.setItem("selectedProduct", JSON.stringify(product));
+}, [product]);
 
 const reviews = [
     {
@@ -79,7 +169,7 @@ const reviews = [
 
   return (
     <main className=" min-h-screen bg-white">
-  <Header isMobileNavOpen={isMobileNavOpen} />
+  <Header />
 
 <div
         className={` transition-all duration-300 ${
@@ -312,13 +402,79 @@ const reviews = [
       </div>
     </div>
 
+     <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 mt-6 ">
+      <h2 className="font-[Poppins] font-semibold text-[20px] sm:text-[22px] font-semibold text-[#242E3A] mb-6 ">
+        Course Content
+      </h2>
+<div className="border border-gray-100 ">
+        </div>
+
+      <div className="divide-y divide-gray-200 ">
+        {chapters.map((chapter, i) => (
+          <div key={i} className="py-4">
+            {/* Chapter Header */}
+            <button
+              onClick={() => toggleChapter(i)}
+              className="w-full flex justify-between items-center text-left"
+            >
+              <div>
+                <h3 className="font-[Poppins] font-semibold text-[#242E3A] text-[16px]">
+                  {chapter.title}
+                </h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  {chapter.lessonsCount} Lessons • {chapter.duration}
+                </p>
+              </div>
+              {openChapter === i ? (
+                <ChevronUp className="text-gray-500" />
+              ) : (
+                <ChevronDown className="text-gray-500" />
+              )}
+            </button>
+
+            {/* Lessons */}
+            <div
+              className={`transition-all duration-300 overflow-hidden ${
+                openChapter === i ? "max-h-[500px] mt-4" : "max-h-0"
+              }`}
+            >
+              <div className="flex flex-col gap-3 pl-6 mt-2">
+                {chapter.lessons.map((lesson, j) => (
+                  <div
+                    key={j}
+                    className="flex justify-between items-center bg-[#F9FAFB] px-4 py-3 rounded-lg hover:bg-[#EEF2FF] transition"
+                  >
+                    <div className="flex items-center gap-3">
+                      <PlayCircle
+                        className={`w-5 h-5 ${
+                          lesson.completed ? "text-green-500" : "text-[#7077FE]"
+                        }`}
+                      />
+                      <p
+                        className={`text-[15px] ${
+                          lesson.completed ? "text-gray-400 line-through" : "text-[#242E3A]"
+                        }`}
+                      >
+                        {lesson.title}
+                      </p>
+                    </div>
+                    <p className="text-sm text-gray-500">{lesson.duration}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
 {/* Reviews Section */}
 <div className="bg-white rounded-xl shadow-md p-4 mt-6">
       <div className="flex space-x-8">
         <div className="w-96 border border-gray-200 rounded-xl p-6">
           <div className="text-center mb-6">
-            <div className="text-4xl font-semibold text-gray-900 mb-2">4.8</div>
-            <div className="text-gray-500">Based on 123 reviews</div>
+            <div className="text-4xl font-semibold text-gray-900 mb-2">{product.rating}</div>
+            <div className="text-gray-500">Based on {product.reviews} reviews</div>
           </div>
 
           {/* Rating Breakdown */}
@@ -368,16 +524,47 @@ const reviews = [
                   >
                     {tag}
                   </span>
+                  
                 ))}
+                
               </div>
+              
             </div>
+            
           ))}
+<div className="flex justify-center mt-4">
+ <button
+  onClick={() =>
+    navigate(`/dashboard/product-review/${product.id}`, {
+      state: { product },
+    })
+  }
+  className="flex justify-center items-center w-[102px] bg-[#7077FE] text-white py-3 rounded-lg font-medium hover:bg-[#5E65F6] transition-colors duration-200"
+>
+  View All
+</button>
+</div>
           
-          {/* Scrollbar */}
-          <div className="flex justify-end">
-            <img src="https://static.codia.ai/image/2025-10-16/Xv0h9wjHjQ.png" alt="Scrollbar" className="w-2 h-full" />
-          </div>
         </div>
+        
+      </div>
+      
+    </div>
+
+    {/* recommended Products Section */}
+
+ <div className="flex flex-col justify-center items-center gap-[34px] mt-8">
+  <div className="flex flex-col gap-5">
+    <h2 className="font-[Poppins] font-semibold text-[20px] leading-[30px] text-[#242E3A] text-center">
+      Recommended products
+    </h2>
+ 
+        
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+        {products.map((product) => (
+<ProductCard key={String(product.id)} product={{ ...product, id: String(product.id) }} />
+        ))}
+      </div>
       </div>
     </div>
 

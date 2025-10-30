@@ -390,15 +390,11 @@ export default function SellerDashboard() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Your existing file validation and setting logic
       const validTypes = ["image/jpeg", "image/jpg", "image/png"];
       if (!validTypes.includes(file.type)) {
         e.target.value = "";
-
-        showToast?.({
-          message: "Please select only JPG, JPEG or PNG files.",
-          type: "error",
-          duration: 3000,
-        });
+        // Show error toast if needed
         return;
       }
 
@@ -406,7 +402,19 @@ export default function SellerDashboard() {
         ...prev,
         file: file,
       }));
+    } else {
+      // Clear the file when no file is selected
+      setNewPractice((prev) => ({
+        ...prev,
+        file: null,
+      }));
     }
+  };
+  const handleRemoveFile = () => {
+    setNewPractice((prev) => ({
+      ...prev,
+      file: null,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -631,6 +639,7 @@ export default function SellerDashboard() {
         handleTagKeyDown={handleTagKeyDown}
         handleInputChange={handleInputChange}
         handleFileChange={handleFileChange}
+        handleRemoveFile={handleRemoveFile}
         handleSubmit={handleSubmit}
         isSubmitting={isSubmitting}
       />

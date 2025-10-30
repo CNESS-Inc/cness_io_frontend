@@ -17,6 +17,8 @@ import { BiComment, BiLike } from "react-icons/bi";
 import { iconMap } from "../assets/icons";
 import CommentCard from "./CommentCard";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
+import DOMPurify from "dompurify";
+
 //import { useLocation } from "react-router-dom";
 
 const dummyProfilePicture =
@@ -217,18 +219,32 @@ useEffect(() => {
             {media &&
               media !== "http://localhost:5026/file/" &&
               !media.endsWith("/file/") && (
-                <div className="absolute top-[140px] left-1/2 transform -translate-x-1/2 w-[90%] sm:w-[80%] md:w-[70%] z-10">
-                  <img
-                    src={media}
-                    alt="Best Practice Banner"
-                    className="w-full max-h-[300px] object-cover rounded-xl shadow-xl"
-                    onError={(e) => {
-                      // Fallback in case the image fails to load
-                      (e.target as HTMLImageElement).src =
-                        iconMap["companycard1"];
-                    }}
-                  />
-                </div>
+
+ <div className="absolute top-[140px] left-1/2 transform -translate-x-1/2 w-[90%] sm:w-[80%] md:w-[70%] z-10">
+  <div className="relative w-full h-[320px] md:h-[350px] overflow-hidden rounded-xl shadow-xl bg-gray-100">
+    <img
+      src={media}
+      alt="Best Practice Banner"
+      className="absolute inset-0 w-full h-full object-cover rounded-xl transition-all duration-300 ease-in-out"
+      onError={(e) => {
+        (e.target as HTMLImageElement).src = iconMap["companycard1"];
+      }}
+      onLoad={(e) => {
+        const img = e.currentTarget;
+        const aspect = img.naturalWidth / img.naturalHeight;
+
+        // 🌟 Adjust positioning only — no contain
+        if (aspect < 1.2) {
+          img.style.objectPosition = "top center"; // portrait — show top
+        } else if (aspect > 2.5) {
+          img.style.objectPosition = "center center"; // ultra-wide
+        } else {
+          img.style.objectPosition = "center 30%"; // normal banners
+        }
+      }}
+    />
+  </div>
+</div>
               )}
 
             {/* Profile Image - correctly centered between top and user banner */}
@@ -265,10 +281,10 @@ useEffect(() => {
   </div>*/}
         </div>
         {/* Interaction Icons */}
-        <div
-          className="relative z-20 w-[90%] sm:w-[80%] md:w-[70%] mx-auto
-                mt-[150px] sm:mt-[120px] md:mt-[160px] mb-4"
-        >
+       <div
+  className="relative z-20 w-[90%] sm:w-[80%] md:w-[70%] mx-auto
+        mt-[200px] sm:mt-[360px] md:mt-[200px] mb-4"
+>
           <div className="flex items-center justify-between">
             {/* LEFT: Like + Comment */}
             <div className="flex items-center gap-6">
@@ -356,11 +372,12 @@ useEffect(() => {
         {/* Description */}
         <div className="w-[90%] sm:w-[80%] md:w-[70%] mx-auto mt-4 sm:mt-6">
           <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6">
-           <div
+          <div
   className="text-gray-800 leading-relaxed text-sm sm:text-base whitespace-pre-line"
->
-  {singlepost.description}
-</div>
+  dangerouslySetInnerHTML={{
+    __html: DOMPurify.sanitize(singlepost.description),
+  }}
+></div>
           </div>
         </div>
         {/* Comment Section */}

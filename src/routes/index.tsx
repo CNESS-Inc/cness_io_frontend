@@ -70,7 +70,21 @@ import UserPublicProfile from "../pages/UserPublicProfile";
 import Affiliate from "../pages/Affiliate";
 import ProductDetail from "../pages/ProductDetail";
 import MPSearch from "../pages/MPsearch";
-
+import AssessmentCertification from "../pages/AssessmentCertifications";
+import AspiringAssessment from "../pages/AspiringAssessment";
+import InspiredAssessment from "../pages/InspiredAssessment";
+import ShopDetail from "../pages/ShopDetail";
+import ReviewAll from "../pages/ReviewAll";
+import CartPage from "../pages/CartPage";
+import Checkout from "../pages/Checkout";
+import PaymentSuccess from "../pages/PaymentSuccess";
+import PaymentFailed from "../pages/PaymentFailed";
+import Wishlist from "../pages/Wishlist";
+import OrderHistory from "../pages/OrderHistory";
+import Category from "../pages/Category";
+import ShopsList from "../pages/Shops";
+import VendorDashboard from "../pages/VendorDashboard";
+import CreateShopForm from "../pages/CreateShopForm";
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
 const DirectoryPage = lazy(() => import("../pages/DirectoryPage"));
@@ -183,6 +197,19 @@ export const router = createBrowserRouter([
             element: <AssessmentQuestion />,
           },
           {
+            path: "assesmentcertification",
+            element: <AssessmentCertification />,
+          },
+          {
+            path: "aspiring-assessment",
+            element: <AspiringAssessment />,
+          },
+
+          {
+            path: "inspired-assessment",
+            element: <InspiredAssessment />,
+          },
+          {
             path: "setting",
             element: (
               // import.meta.env.VITE_ENV_STAGE === "test" ? (
@@ -230,10 +257,64 @@ export const router = createBrowserRouter([
   element: <MPSearch />, // ← new page
 },
 
+{
+  path: "categories",
+  element: <Category />,
+},
+
           {
            path: "product-detail/:id",
             element: <ProductDetail />,
           },
+
+          {
+  path: "shop-detail/:id",
+  element: <ShopDetail />,
+},
+
+{
+  path: "product-review/:id",
+  element: <ReviewAll />,
+},
+{
+  path: "cart",
+  element: <CartPage />,
+},
+{
+    path: "checkout",
+  element: <Checkout />,
+},
+{
+    path: "payment-success",
+  element: <PaymentSuccess />,
+},
+
+{
+  path: "payment-failed",
+  element: <PaymentFailed />,
+},
+{
+  path: "wishlist",
+  element: <Wishlist />,
+},
+{
+  path:"order-history",
+  element:<OrderHistory />
+},
+{
+  path:"shops",
+  element:<ShopsList />
+},
+
+{
+  path:"seller-dashboard",
+  element:<VendorDashboard />
+},
+
+{
+path:"createshop",
+element:<CreateShopForm />
+},
           // {
           //   path: "search-listing",
           //   element:
