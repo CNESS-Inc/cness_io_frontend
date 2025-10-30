@@ -1,8 +1,5 @@
 import cloud from "../../../assets/cloud-add.svg";
 import Button from "../../ui/Button";
-import Cropper from "react-easy-crop";
-import { useState, useCallback } from "react";
-import { getCroppedImg } from "../../ui/cropImage";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
