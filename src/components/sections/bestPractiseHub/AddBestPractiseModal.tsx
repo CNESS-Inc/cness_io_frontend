@@ -1,8 +1,132 @@
 import cloud from "../../../assets/cloud-add.svg";
 import Button from "../../ui/Button";
+<<<<<<< HEAD
 import Cropper from "react-easy-crop";
 import { useState, useCallback } from "react";
 import { getCroppedImg } from "../../ui/cropImage";
+=======
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+
+// Base64 upload adapter
+class Base64UploadAdapter {
+  private loader: any;
+  private reader: FileReader;
+
+  constructor(loader: any) {
+    this.loader = loader;
+    this.reader = new FileReader();
+  }
+
+  upload() {
+    return new Promise((resolve, reject) => {
+      this.reader.addEventListener("load", () => {
+        resolve({ default: this.reader.result });
+      });
+
+      this.reader.addEventListener("error", (err) => {
+        reject(err);
+      });
+
+      this.reader.addEventListener("abort", () => {
+        reject();
+      });
+
+      this.loader.file.then((file: File) => {
+        this.reader.readAsDataURL(file);
+      });
+    });
+  }
+
+  abort() {
+    this.reader.abort();
+  }
+}
+
+function Base64UploadAdapterPlugin(editor: any) {
+  editor.plugins.get("FileRepository").createUploadAdapter = (loader: any) => {
+    return new Base64UploadAdapter(loader);
+  };
+}
+
+const editorConfig = {
+  extraPlugins: [Base64UploadAdapterPlugin],
+  toolbar: {
+    items: [
+      "heading",
+      "|",
+      "bold",
+      "italic",
+      "underline",
+      "strikethrough",
+      "subscript",
+      "superscript",
+      "code",
+      "|",
+      "fontSize",
+      "fontFamily",
+      "fontColor",
+      "fontBackgroundColor",
+      "|",
+      "alignment",
+      "|",
+      "link",
+      "insertImage",
+      "mediaEmbed",
+      "insertTable",
+      "blockQuote",
+      "codeBlock",
+      "|",
+      "bulletedList",
+      "numberedList",
+      "todoList",
+      "|",
+      "outdent",
+      "indent",
+      "|",
+      "specialCharacters",
+      "horizontalLine",
+      "|",
+      "removeFormat",
+      "highlight",
+      "|",
+      "undo",
+      "redo",
+    ],
+    shouldNotGroupWhenFull: false,
+  },
+  fontFamily: {
+    options: [
+      "default",
+      "Arial, Helvetica, sans-serif",
+      "Courier New, Courier, monospace",
+      "Georgia, serif",
+      "Times New Roman, Times, serif",
+      "Trebuchet MS, Helvetica, sans-serif",
+      "Verdana, Geneva, sans-serif",
+    ],
+    supportAllValues: true,
+  },
+  fontSize: {
+    options: [10, 12, 14, "default", 18, 20, 22, 24],
+    supportAllValues: true,
+  },
+  placeholder: "Add your description here...",
+  link: {
+    addTargetToExternalLinks: true,
+    defaultProtocol: "https://",
+  },
+  image: {
+    toolbar: [
+      "imageTextAlternative",
+      "toggleImageCaption",
+      "imageStyle:inline",
+      "imageStyle:block",
+      "imageStyle:side",
+    ],
+  },
+};
+>>>>>>> 32de9ff152cdc280777a8f9e0c2a1124cf99c67c
 
 interface AddBestPracticeModalProps {
   open: boolean;
@@ -125,6 +249,7 @@ export default function AddBestPracticeModal({
         }}
       />
 
+<<<<<<< HEAD
       <label
         htmlFor="uploadFile1"
         className="block px-[33px] py-4 rounded-full text-[#54575C] text-base tracking-wider font-medium border border-[#CBD0DC] outline-none cursor-pointer"
@@ -181,6 +306,30 @@ export default function AddBestPracticeModal({
         {/* Form Section */}
         <form onSubmit={handleSubmitWithCrop} className="space-y-4">
           {/* Title + Interest */}
+=======
+        {/* Form */}
+        <form
+          onSubmit={handleSubmit}
+          // onKeyDown={(e) => {
+          //   if (e.key === "Enter") {
+          //     e.preventDefault();
+          //   }
+          // }}
+          onKeyDown={(e) => {
+            // Allow Enter key inside CKEditor only
+            const target = e.target as HTMLElement;
+            if (target.closest(".ck") && e.key === "Enter") {
+              return; // Let CKEditor handle Enter
+            }
+
+            // Prevent Enter from submitting in text fields
+            if (e.key === "Enter" && target.tagName !== "TEXTAREA") {
+              e.preventDefault();
+            }
+          }}
+          className="space-y-4"
+        >
+>>>>>>> 32de9ff152cdc280777a8f9e0c2a1124cf99c67c
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-[5px]">
               <label
@@ -294,7 +443,10 @@ export default function AddBestPracticeModal({
             </div>
           </div>
 
+<<<<<<< HEAD
           {/* Description */}
+=======
+>>>>>>> 32de9ff152cdc280777a8f9e0c2a1124cf99c67c
           <div className="flex flex-col gap-[5px]">
             <label
               htmlFor="description"
@@ -302,15 +454,22 @@ export default function AddBestPracticeModal({
             >
               Description <span className="text-red-600">*</span>
             </label>
-            <textarea
-              id="description"
-              name="description"
-              rows={3}
-              value={newPractice.description}
-              onChange={handleInputChange}
-              className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm placeholder:text-[#6E7179] placeholder:text-xs placeholder:font-normal"
-              placeholder="Add Notes..."
-            ></textarea>
+            <div className="ckeditor-container">
+              <CKEditor
+                editor={ClassicEditor as any}
+                config={editorConfig}
+                data={newPractice.description}
+                onChange={(_event, editor) => {
+                  const data = editor.getData();
+                  handleInputChange({
+                    target: {
+                      name: "description",
+                      value: data,
+                    },
+                  } as React.ChangeEvent<HTMLTextAreaElement>);
+                }}
+              />
+            </div>
           </div>
 
           {/* Submit */}

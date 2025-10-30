@@ -25,6 +25,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/DashboardCard";
+import DOMPurify from "dompurify";
 import AddBestPracticeModal from "../components/sections/bestPractiseHub/AddBestPractiseModal";
 //import {  ChevronUp, ChevronDown, SortAsc, SortDesc } from "lucide-react"; // Import icons
 
@@ -914,20 +915,24 @@ useEffect(() => {
                         )}
                       </p> */}
                         <p className="text-sm text-gray-600 leading-snug break-words whitespace-pre-line">
-                          {expandedDescriptions[company.id]
-                            ? company.description
-                            : truncateText(company.description, 100)}
-                          {company.description.length > 100 && (
-                            <span
-                              className="text-purple-600 underline cursor-pointer ml-1"
-                            // onClick={(e) => toggleDescription(e, company.id)}
-                            >
-                              {expandedDescriptions[company.id]
-                                ? "Read Less"
-                                : "Read More"}
-                            </span>
-                          )}
-                        </p>
+  <span
+    dangerouslySetInnerHTML={{
+      __html: DOMPurify.sanitize(
+        expandedDescriptions[company.id]
+          ? company.description
+          : truncateText(company.description, 100)
+      ),
+    }}
+  />
+  {company.description.length > 100 && (
+    <span
+      className="text-purple-600 underline cursor-pointer ml-1"
+      // onClick={(e) => toggleDescription(e, company.id)}
+    >
+      {expandedDescriptions[company.id] ? "Read Less" : "Read More"}
+    </span>
+  )}
+</p>
                       </div>
                       <div className="flex items-end justify-between px-4 py-2 mt-2 text-xs sm:text-sm text-gray-600 ">
                         {/* Likes & Comments */}
