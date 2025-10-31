@@ -2502,7 +2502,7 @@ export function CertificationCard({
               {underProgressDescription}
             </p>
           </>
-        ) : activeLevel === "Inspired" && progress === 100 && score === 0  ? (
+        ) : activeLevel === "Aspiring" && progress === 100 && score === 0  ? (
           <>
             <div className="flex items-center gap-2">
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F2EAFE]">
@@ -2551,7 +2551,7 @@ export function CertificationCard({
               {completeProgressDescription}
             </p>
           </>
-        ) : activeLevel === "Inspired" && progress === 100 && score < 60 ? (
+        ) : activeLevel === "Aspiring" && progress === 100 && score < 60 ? (
           <>
             <div className="flex items-center gap-2">
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F2EAFE]">
