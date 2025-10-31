@@ -10,7 +10,7 @@ const resonanceTags = ["Motivated", "Greatful", "Funny", "Focused", "Emotional"]
 
 
 const priceDetails = [
-  { label: "Subtotal", value: "$1259" },
+  { label: "Subtotal", value: "$1259",isDiscount:"" },
   { label: "Platform Fee", value: "$01" },
   { label: "Discount(10%)", value: "-$1260" },
   { label: "Total", value: "$1260", bold: true }
@@ -21,7 +21,7 @@ export default function ProductSummery() {
   const [selectedTags, setSelectedTags] = useState(["Motivated", "Greatful", "Funny"]);
   const [review, setReview] = useState("");
 
-  const toggleTag = tag =>
+  const toggleTag = (tag: string) =>
     setSelectedTags(selectedTags.includes(tag)
       ? selectedTags.filter(t => t !== tag)
       : [...selectedTags, tag]
@@ -148,7 +148,7 @@ export default function ProductSummery() {
         <div className="bg-white rounded-lg shadow p-6 mb-4">
           <div className="font-bold text-gray-900 mb-2">Price Details</div>
           <div className="space-y-2 mb-4">
-            {priceDetails.map(({ label, value, bold, isDiscount }, idx) => (
+            {priceDetails.map(({ label, value, bold, isDiscount }) => (
                 <div
                 key={label}
                 className={`

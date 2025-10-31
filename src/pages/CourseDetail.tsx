@@ -5,7 +5,6 @@ import { IoIosArrowForward } from "react-icons/io";
 import { BsBookmarkFill } from "react-icons/bs";
 import { FaVideo, FaPodcast } from "react-icons/fa";
 //import { ChevronDown } from "lucide-react";
-import { FaStar } from "react-icons/fa";
 import { FaRegClock, FaRegStar, FaRegCommentAlt, FaRegFileVideo, FaRegKeyboard } from "react-icons/fa"; // Or use preferred icons
 
 // Demo/static data
@@ -15,9 +14,6 @@ const reviews = 123;
 const purchases = 2100;
 const chaptersCount = 5;
 const purchaseDate = "13 October,2025";
-const resonanceTags = [
-  "Motivated", "Greatful", "Funny", "Focused", "Emotional"
-];
 
 
 const tabs = [
@@ -177,7 +173,7 @@ export default function CourseDetail() {
               </button>
               {openChapter === i && c.lessons.length > 0 && (
                 <div className="bg-slate-50 px-2 pb-3 space-y-1">
-                  {c.lessons.map((l, li) => (
+                  {c.lessons.map((l) => (
                     <div
                       key={l.title}
                       className={`
