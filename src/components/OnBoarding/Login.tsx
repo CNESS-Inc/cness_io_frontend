@@ -459,10 +459,6 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);
         localStorage.setItem("isAdult", response?.data?.data?.user?.is_adult);
-        console.log(
-          "🚀 ~ handleSubmit ~ response?.data?.data?.jwt:",
-          response?.data?.data?.jwt
-        );
         localStorage.setItem(
           "is_disqualify",
           response?.data?.data?.user?.is_disqualify
@@ -494,6 +490,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
           );
         }
         const completed_step = response.data.data.user.completed_step;
+        console.log("🚀 ~ handleSubmit ~ completed_step:", completed_step)
         const is_disqualify = response.data.data.user.is_disqualify;
 
         //   if (!is_disqualify) {
@@ -613,6 +610,8 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
             // This will now directly open the person form
             setActiveModal("person");
           } else if (completed_step === 1) {
+            navigate("/dashboard");
+          } else if (completed_step === 2) {
             navigate("/dashboard");
           }
         } else {
@@ -1094,7 +1093,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
           } else if (completionStatus === 1) {
             if (completed_step === 0) {
               setActiveModal("person");
-            } else if (completed_step === 1) {
+            } else if (completed_step === 2) {
               navigate("/dashboard");
             } else {
               navigate("/dashboard");

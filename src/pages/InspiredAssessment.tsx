@@ -62,6 +62,33 @@ const InspiredAssessment = () => {
   const [personPricing, setPersonPricing] = useState<any[]>([]);
   console.log("🚀 ~ InspiredAssessment ~ personPricing:", personPricing);
   const [isAnnual, setIsAnnual] = useState(true);
+  const [validationErrors, setValidationErrors] = useState<Record<string, boolean>>({});
+
+  // File validation constants
+  const SUPPORTED_FORMATS = ['.jpg', '.jpeg', '.png', '.pdf', '.mp4'];
+  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB in bytes
+
+  // File validation function
+  const validateFile = (file: File): { isValid: boolean; error?: string } => {
+    // Check file extension
+    const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+    if (!SUPPORTED_FORMATS.includes(fileExtension || '')) {
+      return {
+        isValid: false,
+        error: `File format not supported. Please upload only ${SUPPORTED_FORMATS.join(', ')} files.`
+      };
+    }
+
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      return {
+        isValid: false,
+        error: `File size too large. Maximum allowed size is 50MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB.`
+      };
+    }
+
+    return { isValid: true };
+  };
 
   // Transform API data to match our component structure
   const transformApiData = (apiData: any): TransformedSection[] => {
@@ -177,6 +204,14 @@ const InspiredAssessment = () => {
       [sectionId]: newChecked,
     }));
 
+    // Clear validation error for this section when a checkbox is checked
+    if (newChecked.length > 0) {
+      setValidationErrors((prev) => ({
+        ...prev,
+        [sectionId]: false,
+      }));
+    }
+
     // // Save to API
     // try {
     //   await saveCheckboxAnswers(section.checkboxes_question_id, newChecked);
@@ -195,8 +230,45 @@ const InspiredAssessment = () => {
     // }
   };
 
+  // Validate all sections have at least one checkbox checked
+  const validateSections = (): boolean => {
+    const errors: Record<string, boolean> = {};
+    let isValid = true;
+
+    sections.forEach((section) => {
+      // Only validate sections that have checkboxes
+      if (section.checkboxes.length > 0) {
+        const sectionChecked = checked[section.id] || [];
+        if (sectionChecked.length === 0) {
+          errors[section.id] = true;
+          isValid = false;
+        }
+      }
+    });
+
+    setValidationErrors(errors);
+    return isValid;
+  };
+
   // Submit all answers
   const handleSubmitAllAnswers = async () => {
+    // Validate before submission
+    if (!validateSections()) {
+      showToast({
+        message: "Please select at least one option in each section before submitting.",
+        type: "error",
+        duration: 5000,
+      });
+      
+      // Expand the first section with error for better UX
+      const firstErrorSection = sections.find(section => validationErrors[section.id]);
+      if (firstErrorSection) {
+        setExpanded(firstErrorSection.id);
+      }
+      
+      return;
+    }
+
     setSubmitting(true);
     try {
       // Prepare payload with all checkbox answers
@@ -284,12 +356,6 @@ const InspiredAssessment = () => {
 
         setPersonPricing(updatedPlans);
         localStorage.setItem("is_disqualify", "fasle");
-        // showToast({
-        //   message: "Assessment submitted successfully!",
-        //   type: "success",
-        //   duration: 4000,
-        // });
-        // navigate("/dashboard/assesmentcertification");
       } else {
         showToast({
           message: res?.data?.message || "Failed to submit assessment.",
@@ -397,9 +463,40 @@ const InspiredAssessment = () => {
       return;
     }
 
-    const newFiles: UploadedFile[] = Array.from(selectedFiles).map((file) => ({
+    // Validate each file before processing
+    const validFiles: File[] = [];
+    const invalidFiles: { file: File; error: string }[] = [];
+
+    Array.from(selectedFiles).forEach((file) => {
+      const validation = validateFile(file);
+      if (validation.isValid) {
+        validFiles.push(file);
+      } else {
+        invalidFiles.push({ file, error: validation.error! });
+      }
+    });
+
+    // Show errors for invalid files
+    if (invalidFiles.length > 0) {
+      invalidFiles.forEach(({ file, error }) => {
+        showToast({
+          message: `"${file.name}" - ${error}`,
+          type: "error",
+          duration: 5000,
+        });
+      });
+    }
+
+    // If no valid files, return early
+    if (validFiles.length === 0) {
+      // Clear the file input
+      e.target.value = "";
+      return;
+    }
+
+    const newFiles: UploadedFile[] = validFiles.map((file) => ({
       name: file.name,
-      size: `${Math.round(file.size / 1024)} KB of 120 KB`,
+      size: `${(file.size / (1024 * 1024)).toFixed(2)} MB of 50 MB`,
       status: "Pending Upload",
       file: file,
       uploadProgress: 0,
@@ -411,7 +508,7 @@ const InspiredAssessment = () => {
       [sectionId]: [...(prev[sectionId] || []), ...newFiles],
     }));
 
-    // Upload each file
+    // Upload each valid file
     for (const newFile of newFiles) {
       try {
         await uploadFileToServer(
@@ -427,6 +524,85 @@ const InspiredAssessment = () => {
 
     // Clear the file input
     e.target.value = "";
+  };
+
+  // Enhanced drag and drop handler
+  const handleDrop = async (
+    e: React.DragEvent<HTMLDivElement>,
+    sectionId: string
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const droppedFiles = e.dataTransfer.files;
+    if (!droppedFiles || droppedFiles.length === 0) return;
+
+    const section = sections.find((s) => s.id === sectionId);
+    if (!section || !section.uploadQuestion.id) {
+      showToast({
+        message: "Unable to find upload question for this section",
+        type: "error",
+        duration: 5000,
+      });
+      return;
+    }
+
+    // Validate each dropped file
+    const validFiles: File[] = [];
+    const invalidFiles: { file: File; error: string }[] = [];
+
+    Array.from(droppedFiles).forEach((file) => {
+      const validation = validateFile(file);
+      if (validation.isValid) {
+        validFiles.push(file);
+      } else {
+        invalidFiles.push({ file, error: validation.error! });
+      }
+    });
+
+    // Show errors for invalid files
+    if (invalidFiles.length > 0) {
+      invalidFiles.forEach(({ file, error }) => {
+        showToast({
+          message: `"${file.name}" - ${error}`,
+          type: "error",
+          duration: 5000,
+        });
+      });
+    }
+
+    // If no valid files, return early
+    if (validFiles.length === 0) {
+      return;
+    }
+
+    const newFiles: UploadedFile[] = validFiles.map((file) => ({
+      name: file.name,
+      size: `${(file.size / (1024 * 1024)).toFixed(2)} MB of 50 MB`,
+      status: "Pending Upload",
+      file: file,
+      uploadProgress: 0,
+    }));
+
+    // Add files to state
+    setUploads((prev) => ({
+      ...prev,
+      [sectionId]: [...(prev[sectionId] || []), ...newFiles],
+    }));
+
+    // Upload each valid file
+    for (const newFile of newFiles) {
+      try {
+        await uploadFileToServer(
+          section.uploadQuestion.id,
+          newFile.file,
+          sectionId,
+          newFile.name
+        );
+      } catch (error) {
+        console.error(`Failed to upload file: ${newFile.name}`, error);
+      }
+    }
   };
 
   const handleRemove = async (
@@ -564,6 +740,7 @@ const InspiredAssessment = () => {
       return `or ${plan.monthlyPrice}/month`;
     }
   };
+
   return (
     <>
       {/* Page Header */}
@@ -594,7 +771,7 @@ const InspiredAssessment = () => {
                 {section.order_number}. {section.name}
               </span>
               <div className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-300 bg-white shadow-sm">
-                {expanded.includes(section.id) ? (
+                {expanded === section.id ? (
                   <Minus className="text-gray-500" />
                 ) : (
                   <Plus className="text-gray-500" />
@@ -619,6 +796,15 @@ const InspiredAssessment = () => {
                       (choose at least one option)
                     </span>
                   </p>
+
+                  {/* Validation Error Message */}
+                  {validationErrors[section.id] && (
+                    <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-red-600 text-sm font-medium">
+                        Please select at least one option in this section.
+                      </p>
+                    </div>
+                  )}
 
                   <ul className="space-y-3 px-4 sm:px-8 mb-6 mt-5">
                     {section.checkboxes.map((checkbox) => (
@@ -678,6 +864,11 @@ const InspiredAssessment = () => {
                     <div
                       className="text-center py-6 px-4 rounded-[26px] border-2 border-[#CBD0DC] border-dashed flex flex-col items-center justify-center cursor-pointer bg-[#FAFAFA] mb-6 gap-[10px]"
                       style={{ borderWidth: "3px" }}
+                      onDrop={(e) => handleDrop(e, section.id)}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
                     >
                       <div className="flex flex-col items-center pb-4">
                         <img
