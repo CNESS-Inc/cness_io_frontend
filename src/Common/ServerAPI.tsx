@@ -110,6 +110,8 @@ export const EndPoint = {
   readinessQuestion: "/readiness-question",
   allFormData: "/readiness-question/get-formdata",
   getAspiringQuestion: "/readiness-question/get-aspiring-question",
+  get_certification_details:"/quiz/certifications",
+  get_retake_assensment:"/quiz/retake-assessment",
   allPlanData: "/person-plan/user/plan",
   emailverify: "/auth/email-verify",
   paymentverify: "/payment/payment-confirm",
@@ -568,6 +570,14 @@ export const GetAspiringQuestionDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.getAspiringQuestion);
 };
+export const GetCertificationDetails = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.get_certification_details);
+};
+export const GetRetakeAssesment = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.get_retake_assensment);
+};
 export const GetAllPlanDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.allPlanData);
@@ -718,15 +728,10 @@ export const GetRecommendedBestPractices = (): ApiResponse => {
     `${EndPoint.bp_recommended}`
   );
 };
-export const UpdateBestPractice = (payload: {
-  id: string;
-  profession: string;
-  title: string;
-  description: string;
-}): ApiResponse => {
+export const UpdateBestPractice = (formData:any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST, // or PATCH depending on your API
-    payload,
+    formData,
     `${EndPoint.bp}/update`
   );
 };

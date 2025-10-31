@@ -10,6 +10,7 @@ import {
   GetPopularCompanyDetails,
   GetProfileDetailsById,
   GetRecommendedBestPractices,
+  GetRetakeAssesment,
   GetValidProfessionalDetails,
 } from "../Common/ServerAPI";
 import {
@@ -102,20 +103,21 @@ const learningLabItems = [
   {
     id: 1,
     name: "Module 1: Basic",
-    image: learning1, 
+    image: learning1,
     title: "Module 1: Basic",
     progress: 100,
-    status: 'completed' as const,
-    gradient: 'bg-[linear-gradient(90deg,#DFD6FF_0%,#E7AAFF_91.18%,#FEDBEE_182.35%)]'
+    status: "completed" as const,
+    gradient:
+      "bg-[linear-gradient(90deg,#DFD6FF_0%,#E7AAFF_91.18%,#FEDBEE_182.35%)]",
   },
   {
     id: 2,
     name: "Module 2",
-    image: learning2, 
+    image: learning2,
     title: "Module 2",
     progress: 40,
-    status: 'resume' as const,
-    gradient: 'bg-[#A392F2]'
+    status: "resume" as const,
+    gradient: "bg-[#A392F2]",
   },
   {
     id: 3,
@@ -123,7 +125,7 @@ const learningLabItems = [
     image: learning3,
     title: "Module 3",
     progress: 0,
-    status: 'locked' as const,
+    status: "locked" as const,
   },
 ];
 
@@ -390,15 +392,11 @@ export default function SellerDashboard() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Your existing file validation and setting logic
       const validTypes = ["image/jpeg", "image/jpg", "image/png"];
       if (!validTypes.includes(file.type)) {
         e.target.value = "";
-
-        showToast?.({
-          message: "Please select only JPG, JPEG or PNG files.",
-          type: "error",
-          duration: 3000,
-        });
+        // Show error toast if needed
         return;
       }
 
@@ -406,7 +404,19 @@ export default function SellerDashboard() {
         ...prev,
         file: file,
       }));
+    } else {
+      // Clear the file when no file is selected
+      setNewPractice((prev) => ({
+        ...prev,
+        file: null,
+      }));
     }
+  };
+  const handleRemoveFile = () => {
+    setNewPractice((prev) => ({
+      ...prev,
+      file: null,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -463,10 +473,25 @@ export default function SellerDashboard() {
     }
   };
 
+  const RetakeAssesment = async () => {
+    try {
+      const res = await GetRetakeAssesment();
+      if (res) {
+        navigate("/dashboard/inspired-assessment");
+      }
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
   const userName =
     localStorage.getItem("name") +
-    " " +
-    localStorage.getItem("margaret_name") || "User";
+      " " +
+      localStorage.getItem("margaret_name") || "User";
 
   return (
     <div className="px-4 2xl:px-6 pt-4 md:pt-8 pb-5 md:pb-18">
@@ -555,7 +580,7 @@ export default function SellerDashboard() {
             progress={user?.assesment_progress ? user?.assesment_progress : 0}
             activeLevel={user?.level} // Pass the actual user level from your API
             score={user?.cis_score}
-            onContinue={() => navigate("/dashboard/assesment")}
+            onContinue={RetakeAssesment}
             onOpen={() => console.log("Open Certification")}
           />
           {/* )} */}
@@ -631,6 +656,7 @@ export default function SellerDashboard() {
         handleTagKeyDown={handleTagKeyDown}
         handleInputChange={handleInputChange}
         handleFileChange={handleFileChange}
+        handleRemoveFile={handleRemoveFile}
         handleSubmit={handleSubmit}
         isSubmitting={isSubmitting}
       />

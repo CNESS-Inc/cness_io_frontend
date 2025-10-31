@@ -929,6 +929,17 @@ export function GreetingBar({
     }
   };
 
+  const getBillingNote = (plan: any) => {
+    if (!plan.yearlyPrice || !plan.monthlyPrice) return undefined;
+
+    if (isAnnual) {
+      // For annual billing: show "billed annually (yearly price)"
+      return `billed annually ($${plan.yearlyPrice.replace("$", "") * 12})`;
+    } else {
+      return `or ${plan.monthlyPrice}/month`;
+    }
+  };
+
   return (
     <>
       <div className="mb-5 grid grid-cols-12 gap-5">
@@ -1034,9 +1045,9 @@ export function GreetingBar({
                       : plan.monthlyPrice}
                   </span>
                   <span className="text-gray-500">/month</span>
-                  {plan.billingNote && (
+                  {getBillingNote(plan) && (
                     <p className="text-sm text-gray-500 mt-1">
-                      {plan.billingNote}
+                      {getBillingNote(plan)}
                     </p>
                   )}
                 </div>
@@ -1664,9 +1675,9 @@ export function GreetingBar({
                           : plan.monthlyPrice}
                       </span>
                       <span className="text-gray-500">/month</span>
-                      {plan.billingNote && (
+                      {getBillingNote(plan) && (
                         <p className="text-sm text-gray-500 mt-1">
-                          {plan.billingNote}
+                          {getBillingNote(plan)}
                         </p>
                       )}
                     </div>
@@ -2137,9 +2148,9 @@ export function GreetingBar({
                           : plan.monthlyPrice}
                       </span>
                       <span className="text-gray-500">/month</span>
-                      {plan.billingNote && (
+                      {getBillingNote(plan) && (
                         <p className="text-sm text-gray-500 mt-1">
-                          {plan.billingNote}
+                          {getBillingNote(plan)}
                         </p>
                       )}
                     </div>
@@ -2350,6 +2361,7 @@ export function CertificationCard({
   upgradeCtaLabel?: string;
   onUpgrade?: () => void;
 }) {
+  console.log("🚀 ~ CertificationCard ~ score:", score)
   const [slide, setSlide] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
   const [showiInterestModal, setShowInterestModal] = useState(false);
@@ -2391,9 +2403,9 @@ export function CertificationCard({
     if (!activeLevel) {
       setShowInterestModal(true);
     } else if (activeLevel === "Aspiring") {
-      navigate("/dashboard/assesment");
+      navigate("/dashboard/aspiring-assessment");
     } else if (activeLevel === "Inspired") {
-      navigate("/dashboard/upgrade-badge");
+      navigate("/dashboard/inspired-assessment");
     } else {
       onUpgrade?.();
     }
@@ -2490,7 +2502,7 @@ export function CertificationCard({
               {underProgressDescription}
             </p>
           </>
-        ) : activeLevel === "Aspiring" && progress === 100 ? (
+        ) : activeLevel === "Aspiring" && progress === 100 && score === 0  ? (
           <>
             <div className="flex items-center gap-2">
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F2EAFE]">
@@ -2539,7 +2551,7 @@ export function CertificationCard({
               {completeProgressDescription}
             </p>
           </>
-        ) : (
+        ) : activeLevel === "Aspiring" && progress === 100 && score < 60 ? (
           <>
             <div className="flex items-center gap-2">
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F2EAFE]">
@@ -2567,23 +2579,26 @@ export function CertificationCard({
                   </sub>
                 </span>
               </div>
-
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <button
-                  onClick={onContinue}
-                  className="relative w-full sm:w-[194px] h-[40px] rounded-full px-5 py-[10px] flex items-center justify-center text-center font-[600] text-[14px] text-[#222224] font-['Open_Sans'] leading-[100%] bg-white"
-                >
-                  <span className="relative z-10">Retake Assessment</span>
-                  <span className="absolute inset-0 rounded-full p-[1px] bg-gradient-to-r from-[#9747FF] to-[#F07EFF]"></span>
-                  <span className="absolute inset-[1px] rounded-full bg-white"></span>
-                </button>
-              </div>
+              {score < 60 ? (
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <button
+                    onClick={onContinue}
+                    className="relative w-full sm:w-[194px] h-[40px] rounded-full px-5 py-[10px] flex items-center justify-center text-center font-[600] text-[14px] text-[#222224] font-['Open_Sans'] leading-[100%] bg-white"
+                  >
+                    <span className="relative z-10">Retake Assessment</span>
+                    <span className="absolute inset-0 rounded-full p-[1px] bg-gradient-to-r from-[#9747FF] to-[#F07EFF]"></span>
+                    <span className="absolute inset-[1px] rounded-full bg-white"></span>
+                  </button>
+                </div>
+              ) : (
+                ""
+              )}
             </div>
             <p className="text-sm font-normal font-['Open_Sans'] leading-[140%] text-[#242424]">
               {inspiredDescription}
             </p>
           </>
-        )}
+        ) : ""}
 
         {/* Slides container */}
         <div className="mt-8">
@@ -2615,7 +2630,11 @@ export function CertificationCard({
                 >
                   <div className="w-full h-full rounded-[16px] bg-white flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4">
                     <img
-                      src={activeLevel === null ? aspired : "https://cdn.cness.io/aspiring.webp"} 
+                      src={
+                        activeLevel === null
+                          ? aspired
+                          : "https://cdn.cness.io/aspiring.webp"
+                      }
                       alt="Aspiring"
                       className="h-[34px] w-[34px] sm:h-[39px] sm:w-[39px]"
                     />
@@ -2636,7 +2655,12 @@ export function CertificationCard({
                 >
                   <div className="w-full h-full rounded-[16px] bg-white flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4">
                     <img
-                      src={activeLevel === null || (activeLevel === "Aspiring" && progress === 0) ? inspired : "https://cdn.cness.io/inspired.webp"}
+                      src={
+                        activeLevel === null ||
+                        (activeLevel === "Aspiring" && progress === 0)
+                          ? inspired
+                          : "https://cdn.cness.io/inspired.webp"
+                      }
                       alt="Inspired"
                       className="h-[34px] w-[34px] sm:h-[39px] sm:w-[39px]"
                     />
@@ -3549,7 +3573,7 @@ export function SocialStackCard({
     rounded-[100px]
     px-[12px] pr-[8px]
     whitespace-nowrap shrink-0
-    !justify-center     /* use !justify-between if you add an icon */
+    !justify-center     
     text-[12px] mr-2   
   "
                     onClick={onPrimary}

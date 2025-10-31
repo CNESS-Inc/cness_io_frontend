@@ -271,7 +271,7 @@ useEffect(() => {
         type === "interest" ? id : "",
         searchText
       );
-      console.log('res.data.data.rowsfghghggg', res.data.data.rows)
+      console.log("res.data.data.rowsfghghggg", res.data.data.rows);
       if (res?.data?.data) {
         const transformedCompanies = res.data.data.rows.map(
           (practice: any) => ({
@@ -362,15 +362,11 @@ useEffect(() => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      // Your existing file validation and setting logic
+      const validTypes = ["image/jpeg", "image/jpg", "image/png"];
       if (!validTypes.includes(file.type)) {
-        e.target.value = '';
-
-        showToast?.({
-          message: "Please select only JPG, JPEG or PNG files.",
-          type: "error",
-          duration: 3000,
-        });
+        e.target.value = "";
+        // Show error toast if needed
         return;
       }
 
@@ -378,7 +374,20 @@ useEffect(() => {
         ...prev,
         file: file,
       }));
+    } else {
+      // Clear the file when no file is selected
+      setNewPractice((prev) => ({
+        ...prev,
+        file: null,
+      }));
     }
+  };
+
+  const handleRemoveFile = () => {
+    setNewPractice((prev) => ({
+      ...prev,
+      file: null,
+    }));
   };
 
   // Sample like handler (replace with your actual API call)
@@ -509,7 +518,6 @@ useEffect(() => {
       const res = await SendBpFollowRequest({ bp_id: id });
 
       if (res?.success?.statusCode === 200) {
-
         const isFollowing = res?.data?.data !== null;
         setBestPractices((prev) =>
           prev.map((practice) => {
@@ -521,7 +529,9 @@ useEffect(() => {
         );
 
         showToast({
-          message: isFollowing ? "Added to followed practices" : "Removed from followed practices",
+          message: isFollowing
+            ? "Added to followed practices"
+            : "Removed from followed practices",
           type: "success",
           duration: 2000,
         });
@@ -673,9 +683,9 @@ useEffect(() => {
                     "
                     {selectedFilter.type === "profession"
                       ? profession.find((p) => p.id === selectedFilter.id)
-                        ?.title
+                          ?.title
                       : interest.find((i: any) => i.id === selectedFilter.id)
-                        ?.name}
+                          ?.name}
                     "
                   </span>
                 )}
@@ -824,10 +834,10 @@ useEffect(() => {
                         <img
                           src={
                             !company?.user?.profilePicture ||
-                              company?.user?.profilePicture === "null" ||
-                              company?.user?.profilePicture === "undefined" ||
-                              !company?.user?.profilePicture.startsWith("http") ||
-                              company?.user?.profilePicture ===
+                            company?.user?.profilePicture === "null" ||
+                            company?.user?.profilePicture === "undefined" ||
+                            !company?.user?.profilePicture.startsWith("http") ||
+                            company?.user?.profilePicture ===
                               "http://localhost:5026/file/"
                               ? "/profile.jpg"
                               : company?.user?.profilePicture
@@ -857,10 +867,10 @@ useEffect(() => {
                             <img
                               src={
                                 !company.file ||
-                                  company.file === "null" ||
-                                  company.file === "undefined" ||
-                                  !company.file.startsWith("http") ||
-                                  company.file === "http://localhost:5026/file/"
+                                company.file === "null" ||
+                                company.file === "undefined" ||
+                                !company.file.startsWith("http") ||
+                                company.file === "http://localhost:5026/file/"
                                   ? "/profile.jpg"
                                   : company.file
                               }
@@ -915,24 +925,26 @@ useEffect(() => {
                         )}
                       </p> */}
                         <p className="text-sm text-gray-600 leading-snug break-words whitespace-pre-line">
-  <span
-    dangerouslySetInnerHTML={{
-      __html: DOMPurify.sanitize(
-        expandedDescriptions[company.id]
-          ? company.description
-          : truncateText(company.description, 100)
-      ),
-    }}
-  />
-  {company.description.length > 100 && (
-    <span
-      className="text-purple-600 underline cursor-pointer ml-1"
-      // onClick={(e) => toggleDescription(e, company.id)}
-    >
-      {expandedDescriptions[company.id] ? "Read Less" : "Read More"}
-    </span>
-  )}
-</p>
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: DOMPurify.sanitize(
+                                expandedDescriptions[company.id]
+                                  ? company.description
+                                  : truncateText(company.description, 100)
+                              ),
+                            }}
+                          />
+                          {company.description.length > 100 && (
+                            <span
+                              className="text-purple-600 underline cursor-pointer ml-1"
+                              // onClick={(e) => toggleDescription(e, company.id)}
+                            >
+                              {expandedDescriptions[company.id]
+                                ? "Read Less"
+                                : "Read More"}
+                            </span>
+                          )}
+                        </p>
                       </div>
                       <div className="flex items-end justify-between px-4 py-2 mt-2 text-xs sm:text-sm text-gray-600 ">
                         {/* Likes & Comments */}
@@ -1031,10 +1043,11 @@ useEffect(() => {
                           )
                         }
                         disabled={isLoading.popular}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${1 === pagination.currentPage
-                          ? "bg-indigo-500 text-white"
-                          : "bg-white text-gray-700 hover:bg-gray-100"
-                          }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
+                          1 === pagination.currentPage
+                            ? "bg-indigo-500 text-white"
+                            : "bg-white text-gray-700 hover:bg-gray-100"
+                        }`}
                       >
                         1
                       </button>
@@ -1067,10 +1080,11 @@ useEffect(() => {
                           )
                         }
                         disabled={isLoading.popular}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${page === pagination.currentPage
-                          ? "bg-indigo-500 text-white"
-                          : "bg-white text-gray-700 hover:bg-gray-100"
-                          }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
+                          page === pagination.currentPage
+                            ? "bg-indigo-500 text-white"
+                            : "bg-white text-gray-700 hover:bg-gray-100"
+                        }`}
                       >
                         {page}
                       </button>
@@ -1097,10 +1111,11 @@ useEffect(() => {
                             )
                           }
                           disabled={isLoading.popular}
-                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${pagination.totalPages === pagination.currentPage
-                            ? "bg-indigo-500 text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-100"
-                            }`}
+                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${
+                            pagination.totalPages === pagination.currentPage
+                              ? "bg-indigo-500 text-white"
+                              : "bg-white text-gray-700 hover:bg-gray-100"
+                          }`}
                         >
                           {pagination.totalPages}
                         </button>
@@ -1145,6 +1160,7 @@ useEffect(() => {
         handleTagKeyDown={handleTagKeyDown}
         handleInputChange={handleInputChange}
         handleFileChange={handleFileChange}
+        handleRemoveFile={handleRemoveFile}
         handleSubmit={handleSubmit}
         isSubmitting={isSubmitting}
       />

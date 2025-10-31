@@ -13,7 +13,7 @@ const AssessmentCertification = () => {
 
   return (
     <>
-<h2 className="font-[poppins] font-medium text-[20px] md:text-[24px] text-[#000000] mb-8 mt-5 text-center md:text-left">
+<h2 className="font-[poppins] font-medium text-[20px] md:text-[24px] text-gray-900 mb-8 mt-5 text-center md:text-left">
         Know Our Certifications
       </h2>
 <section className="bg-white rounded-2xl py-12 px-4 sm:px-8 md:px-16 border-b border-gray-100">
@@ -29,10 +29,10 @@ const AssessmentCertification = () => {
             className="w-15 h-15"
           />
           <div>
-<h3 className="font-[poppins] font-medium text-[24px] leading-[115%] tracking-[0] text-[#000000]">
+<h3 className="font-[poppins] font-medium text-[24px] leading-[115%] tracking-[0] text-gray-900 ">
               Aspiring Certification
             </h3>
-          <p className="font-[poppins] font-medium text-[14px] leading-[100%] tracking-[0] text-[#242424] mt-2">
+          <p className="font-[poppins] font-medium text-[14px] leading-[100%] tracking-[0] text-black-500 mt-2">
   Start your conscious journey
 </p>
           </div>
@@ -45,12 +45,12 @@ const AssessmentCertification = () => {
           {/* Left Section */}
           <div>
             <h4
-  className="font-[poppins] font-semibold text-[26px] md:text-[34px] leading-[100%] tracking-[0] text-[#000000] mb-3"
+  className="font-[poppins] font-semibold text-[26px] md:text-[34px] leading-[100%] tracking-[0] text-gray-900 mb-3"
 >
   Get Your Aspiring Certification in 2 Steps
 </h4>
 
-<ol className="list-decimal list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] text-[#1E1E1E] space-y-2 mb-6">
+<ol className="list-decimal list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] text-gray-700 space-y-2 mb-6">
   <li>Complete your True Profile (photo, bio, contact, profession, interests)</li>
   <li>Select 5 Conscious Values you aspire to follow</li>
 </ol>
@@ -63,9 +63,9 @@ onClick={() => navigate("/dashboard/aspiring-assessment")}
 
             {/* Description */}
             <div className="mt-8">
-<h5 className="font-[poppins] font-medium text-[16px] leading-[100%] tracking-[0] text-[#000000] mb-2">
+<h5 className="font-[poppins] font-medium text-[16px] leading-[100%] tracking-[0] text-gray-900 mb-2">
   What It Means:
-</h5>              <ul className="list-disc list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-[#1E1E1E] space-y-2 mb-6">
+</h5>              <ul className="list-disc list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-gray-700 space-y-2 mb-6">
                 <li>Your first step toward a conscious professional identity.</li>
                 <li>
                   Aspiring certification represents your intent and alignment with
@@ -76,14 +76,14 @@ onClick={() => navigate("/dashboard/aspiring-assessment")}
           </div>
 
           {/* Right Section */}
-<div className="flex flex-col md:items-end items-center mt-1 sm:mt-4 md:mt-8">
+<div className="flex flex-col  space-y-3 md:items-end items-center mt-8">
   <div className="flex flex-col items-center space-y-2">
     <img
       src="https://cdn.cness.io/aspiring1.svg"
       alt="Aspiring Certification Card"
       className="w-[250px] h-[271px] md:w-[275px] md:h-[271px] drop-shadow-md"
     />
-<div className="font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-center translate-x-2 sm:translate-x-3 md:translate-x-4">
+<div className="font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-center">
       Price: $9/month
     </div>
   </div>
@@ -93,7 +93,7 @@ onClick={() => navigate("/dashboard/aspiring-assessment")}
 
         {/* Footer Info */}
         <div className="mt-10">
-<h5 className="font-[poppins] font-semibold text-[20px] leading-[100%] tracking-[0] text-[#000000] mb-4">
+<h5 className="font-[poppins] font-semibold text-[20px] leading-[100%] tracking-[0] text-gray-900 mb-4">
             Unlocks Trust, Growth, and Purpose
           </h5>
 
@@ -125,10 +125,10 @@ onClick={() => navigate("/dashboard/aspiring-assessment")}
   }}
 >
               
-              <h6 className="font-[poppins] font-medium text-[14.76px] leading-[22.14px] tracking-[-0.03em] text-[#000000] mb-2 align-middle">
+              <h6 className="font-[poppins] font-medium text-[14.76px] leading-[22.14px] tracking-[-0.03em] text-gray-900 mb-2 align-middle">
   {item.title}
 </h6>
-<p className="font-['Open_Sans'] font-normal text-[12px] leading-[18.01px] tracking-[0px] text-[#64748B]">
+<p className="font-['Open_Sans'] font-normal text-[12px] leading-[18.01px] tracking-[0px] text-gray-600">
   {item.desc}
 </p>              </div>
             ))}
@@ -149,7 +149,7 @@ onClick={() => navigate("/dashboard/aspiring-assessment")}
             className="w-15 h-15"
           />
           <div>
-<h3 className="font-[poppins] font-medium text-[24px] leading-[115%] tracking-[0] text-[#000000]">
+<h3 className="font-[poppins] font-medium text-[24px] leading-[115%] tracking-[0] text-gray-900">
               Inspired Certification
             </h3>
        <p className="font-[poppins] font-medium text-[14px] leading-[100%] tracking-[0] text-black-500 mt-2">
@@ -165,12 +165,12 @@ onClick={() => navigate("/dashboard/aspiring-assessment")}
           {/* Left Section */}
           <div>
             <h4
-  className="font-[poppins] font-semibold text-[34px] leading-[100%] tracking-[0] text-[#000000] mb-3"
+  className="font-[poppins] font-semibold text-[34px] leading-[100%] tracking-[0] text-gray-900 mb-3"
 >
   Get Your Aspiring Certification in 1 Steps
 </h4>
 
-            <ol className="list-decimal list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-[#1E1E1E] space-y-2 mb-6">
+            <ol className="list-decimal list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-gray-700 space-y-2 mb-6">
   <li>Upload proofs under Conscious Pillars <br></br>
      (Mission, Ethics, Team Spirit, Community, and Leadership) </li>
 </ol>
@@ -184,9 +184,9 @@ onClick={() => navigate("/dashboard/aspiring-assessment")}
 
             {/* Description */}
             <div className="mt-8">
-<h5 className="font-[poppins] font-medium text-[16px] leading-[100%] tracking-[0] text-[#000000] mb-2">
+<h5 className="font-[poppins] font-medium text-[16px] leading-[100%] tracking-[0] text-gray-900 mb-2">
   What It Means:
-</h5>              <ul className="list-disc list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-[#1E1E1E] space-y-2 mb-6">
+</h5>              <ul className="list-disc list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-gray-700 space-y-2 mb-6">
                 <li>The Inspired level validates your conscious actions and professional contributions.
 </li>
                 <li>
@@ -197,15 +197,15 @@ onClick={() => navigate("/dashboard/aspiring-assessment")}
           </div>
 
           {/* Right Section */}
-<div className="flex flex-col md:items-end items-center mt-1 sm:mt-4 md:mt-8">
+<div className="flex flex-col  space-y-3 md:items-end items-center mt-8">
   <div className="flex flex-col items-center space-y-2">
     <img
       src="https://cdn.cness.io/inspired.svg"
       alt="Aspiring Certification Card"
       className="w-[250px] h-[271px] md:w-[275px] md:h-[271px] drop-shadow-md"
     />
-<div className="font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-center translate-x-2 sm:translate-x-3 md:translate-x-4">
-      Price: $108
+<div className="font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-center">
+      Price: $108/month
     </div>
   </div>
 </div>
@@ -214,7 +214,7 @@ onClick={() => navigate("/dashboard/aspiring-assessment")}
 
         {/* Footer Info */}
         <div className="mt-10">
-<h5 className="font-[poppins] font-semibold text-[20px] leading-[100%] tracking-[0] text-[#000000] mb-4">
+<h5 className="font-[poppins] font-semibold text-[20px] leading-[100%] tracking-[0] text-gray-900 mb-4">
             Unlocks Trust, Growth, and Purpose
           </h5>
 
@@ -243,10 +243,10 @@ onClick={() => navigate("/dashboard/aspiring-assessment")}
   }}
 >
               
-              <h6 className="font-[poppins] font-medium text-[14.76px] leading-[22.14px] tracking-[-0.03em] text-[#000000] mb-2 align-middle">
+              <h6 className="font-[poppins] font-medium text-[14.76px] leading-[22.14px] tracking-[-0.03em] text-gray-900 mb-2 align-middle">
   {item.title}
 </h6>
-<p className="font-['Open_Sans'] font-normal text-[12px] leading-[18.01px] tracking-[0px] text-[#64748B]">
+<p className="font-['Open_Sans'] font-normal text-[12px] leading-[18.01px] tracking-[0px] text-gray-600">
   {item.desc}
 </p>              </div>
             ))}
@@ -265,7 +265,7 @@ onClick={() => navigate("/dashboard/aspiring-assessment")}
             className="w-15 h-15"
           />
           <div>
-<h3 className="font-[poppins] font-medium text-[24px] leading-[115%] tracking-[0] text-[#000000]">
+<h3 className="font-[poppins] font-medium text-[24px] leading-[115%] tracking-[0] text-gray-900">
               Leader Certification
             </h3>
        <p className="font-[poppins] font-medium text-[14px] leading-[100%] tracking-[0] text-black-500 mt-2">
@@ -281,13 +281,13 @@ onClick={() => navigate("/dashboard/aspiring-assessment")}
           {/* Left Section */}
           <div>
             <h4
-  className="font-[poppins] font-semibold text-[34px] leading-[100%] tracking-[0] text-[#000000] mb-3"
+  className="font-[poppins] font-semibold text-[34px] leading-[100%] tracking-[0] text-gray-900 mb-3"
 >
   Who Is Eligible for This Level 
 of Certification?
 </h4>
 
-            <ol className="list-decimal list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-[#1E1E1E] space-y-2 mb-6">
+            <ol className="list-decimal list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-gray-700 space-y-2 mb-6">
   <li>Demonstrated leadership or community impact</li>
 <li>Must be nominated by another certified user or self-nominated with justification </li>
 </ol>
@@ -310,23 +310,23 @@ of Certification?
 </div>
 
 <div className="w-full max-w-[639px] rounded-[30px] border border-gray-200 bg-[#FAFAFA] flex flex-col gap-[14px] p-6 md:p-[30px] px-[40px] mt-10">
-  <h4 className="font-[poppins] font-medium text-[18px] leading-[120%] text-[#000000] mb-3">
+  <h4 className="font-[poppins] font-semibold text-[18px] leading-[120%] text-gray-900 mb-3">
     Nomination Process
   </h4>
 
-  <p className="font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-[#1E1E1E] space-y-1">
+  <p className="font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-gray-700 space-y-1">
     There are two paths to becoming a Leader:
   </p>
 
   {/* Apply as a Leader */}
   <div className="mb-4">
-    <h5 className="font-[poppins] font-medium text-[16px] leading-[120%] text-[#000000] mb-2">
+    <h5 className="font-[poppins] font-medium text-[16px] leading-[120%] text-gray-900 mb-2">
       Apply as a Leader (Self-Nomination):
     </h5>
     <ul className="font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-gray-700 space-y-1">
    <li className="flex items-start gap-3">
   <img src={list1} alt="bullet" className="w-7 h-7 mt-1 flex-shrink-0" />
-  <span className="font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-[#1E1E1E]">
+  <span className="font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-gray-700">
     Inspired users can apply for Leader Certification directly.
   </span>
 </li>
@@ -337,7 +337,7 @@ of Certification?
     alt="bullet"
     className="w-7 h-7 mt-1 flex-shrink-0"
   />
-  <span className="font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-[#1E1E1E]">
+  <span className="font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-gray-700">
     They fill out a reflection-based form and submit their conscious leadership story.
   </span>
 </li>
@@ -346,7 +346,7 @@ of Certification?
 
   {/* Nominate a Leader */}
   <div>
-    <h5 className="font-[poppins] font-medium text-[16px] leading-[120%] text-[#000000] mb-2">
+    <h5 className="font-[poppins] font-medium text-[16px] leading-[120%] text-gray-900 mb-2">
       Nominate a Leader:
     </h5>
     <ul className="font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-gray-700 space-y-1">
@@ -356,7 +356,7 @@ of Certification?
     alt="bullet"
     className="w-7 h-7 mt-[2px] flex-shrink-0"
   />
-  <span className="font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-[#1E1E1E]">
+  <span className="font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-gray-700">
     Any certified (Aspiring/Inspired) user can nominate a deserving individual.
   </span>
 </li>
@@ -366,7 +366,7 @@ of Certification?
     alt="bullet"
     className="w-7 h-7 mt-[2px] flex-shrink-0"
   />
-    <span className="font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-[#1E1E1E]">
+    <span className="font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-gray-700">
         The form captures the nominee’s profile, reason for nomination, and evidence of impact.
           </span>
 
@@ -377,9 +377,9 @@ of Certification?
 
             {/* Description */}
             <div className="mt-8">
-<h5 className="font-[poppins] font-medium text-[16px] leading-[100%] tracking-[0] text-[#000000] mb-2">
+<h5 className="font-[poppins] font-medium text-[16px] leading-[100%] tracking-[0] text-gray-900 mb-2">
   What It Means:
-</h5>              <ul className="list-disc list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-[#1E1E1E] space-y-2 mb-6">
+</h5>              <ul className="list-disc list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-gray-700 space-y-2 mb-6">
                 <li>The Leader Certification honors visionaries and changemakers who inspire others through conscious leadership, measurable impact, and authentic influence.
 </li>
                 <li>
@@ -390,15 +390,15 @@ of Certification?
           </div>
 
           {/* Right Section */}
-<div className="flex flex-col md:items-end items-center mt-1 sm:mt-4 md:mt-8">
+<div className="flex flex-col  space-y-3 md:items-end items-center mt-8">
   <div className="flex flex-col items-center space-y-2">
     <img
       src="https://cdn.cness.io/leader1.svg"
       alt="Aspiring Certification Card"
-      className="w-[250px] h-[271px] md:w-[275px] md:h-[271px] drop-shadow-md"
+      className="w-[200px] h-auto md:w-[275px] md:h-[271px] drop-shadow-md"
     />
-<div className="font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-center translate-x-2 sm:translate-x-3 md:translate-x-4">
-      Price: $508
+<div className="font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-center">
+      Price: $508/month
     </div>
   </div>
 </div>
@@ -407,7 +407,7 @@ of Certification?
 
         {/* Footer Info */}
         <div className="mt-10">
-<h5 className="font-[poppins] font-semibold text-[20px] leading-[100%] tracking-[0] text-[#000000] mb-4">
+<h5 className="font-[poppins] font-semibold text-[20px] leading-[100%] tracking-[0] text-gray-900 mb-4">
             Unlocks Trust, Growth, and Purpose
           </h5>
 
@@ -436,10 +436,10 @@ of Certification?
   }}
 >
               
-              <h6 className="font-[poppins] font-medium text-[14.76px] leading-[22.14px] tracking-[-0.03em] text-[#000000] mb-2 align-middle">
+              <h6 className="font-[poppins] font-medium text-[14.76px] leading-[22.14px] tracking-[-0.03em] text-gray-900 mb-2 align-middle">
   {item.title}
 </h6>
-<p className="font-['Open_Sans'] font-normal text-[12px] leading-[18.01px] tracking-[0px] text-[#64748B]">
+<p className="font-['Open_Sans'] font-normal text-[12px] leading-[18.01px] tracking-[0px] text-gray-600">
   {item.desc}
 </p>              </div>
             ))}

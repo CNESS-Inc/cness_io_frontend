@@ -72,6 +72,7 @@ export default function Pricing() {
     if (url) window.location.href = url;
   };
 
+
   return (
     <div className="relative min-h-screen bg-white">
       {/* Hero / diagonal gradient */}

@@ -347,9 +347,34 @@ body {
 
 }
 
+/* CKEditor custom styles */
+.ckeditor-container .ck.ck-editor {
+  border: 1px solid #CBD0DC;
+  border-radius: 4px;
+}
 
-.ck-editor__editable {
+.ckeditor-container .ck.ck-editor__editable {
   min-height: 200px;
   max-height: 400px;
   overflow-y: auto;
+  padding: 12px;
+  border: none !important;
+}
+
+/* Fix for lists showing outside the editor */
+.ckeditor-container .ck.ck-editor__editable.ck-focused {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Ensure list items are properly contained */
+.ckeditor-container .ck.ck-editor__editable ul,
+.ckeditor-container .ck.ck-editor__editable ol {
+  margin-left: 16px;
+  padding-left: 0;
+}
+
+/* Fix for the editor dropdowns */
+.ckeditor-container .ck.ck-dropdown__panel {
+  z-index: 10000 !important;
 }
