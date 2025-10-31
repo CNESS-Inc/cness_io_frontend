@@ -110,6 +110,8 @@ export const EndPoint = {
   readinessQuestion: "/readiness-question",
   allFormData: "/readiness-question/get-formdata",
   getAspiringQuestion: "/readiness-question/get-aspiring-question",
+  get_certification_details:"/quiz/certifications",
+  get_retake_assensment:"/quiz/retake-assessment",
   allPlanData: "/person-plan/user/plan",
   emailverify: "/auth/email-verify",
   paymentverify: "/payment/payment-confirm",
@@ -567,6 +569,14 @@ export const GetAllFormDetails = (): ApiResponse => {
 export const GetAspiringQuestionDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.getAspiringQuestion);
+};
+export const GetCertificationDetails = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.get_certification_details);
+};
+export const GetRetakeAssesment = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.get_retake_assensment);
 };
 export const GetAllPlanDetails = (): ApiResponse => {
   const data = {};
