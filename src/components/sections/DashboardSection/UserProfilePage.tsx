@@ -1490,13 +1490,13 @@ const UserProfilePage = () => {
                           banner.startsWith("http") &&
                           banner !== "http://localhost:5026/file/"
                         ? banner
-                        : "/banner.jpg"
+                        : "https://cdn.cness.io/userprofilebanner.svg"
                     }
                     alt="Banner"
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      target.src = "/banner.jpg";
+                      target.src = "https://cdn.cness.io/userprofilebanner.svg";
                     }}
                   />
                   <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex gap-2 z-10">
