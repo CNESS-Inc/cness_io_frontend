@@ -11,7 +11,6 @@ import {
   WalletCards,
 } from "lucide-react";
 import Filter from "../components/MarketPlace/Filter";
-import Header from "../components/MarketPlace/Buyerheader";
 import filter from "../assets/filter.svg";
 
 const OrderHistory = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
