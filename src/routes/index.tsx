@@ -29,6 +29,7 @@ import MarketPlace from "../pages/MarketPlace";
 import SearchListing from "../pages/SearchListing";
 import DigitalProducts from "../pages/DigitalProducts";
 // import Feed from "../pages/Feed";
+import CourseDetail from "../pages/CourseDetail";
 import SearchExplore from "../pages/SearchExplore";
 import BecomeMentor from "../pages/BecomeMentorNew";
 //import DashboardDirectoryPage from "../pages/DashboardDirectoryPage";
@@ -352,6 +353,11 @@ element:<CreateShopForm />
           {
             path: "digital_products",
             element: <DigitalProducts />,
+          },
+
+          {
+            path: "library/course/:id",
+            element: <CourseDetail />,
           },
 
           {
