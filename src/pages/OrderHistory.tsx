@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 import {
   Search,
   X,
@@ -18,6 +20,16 @@ const OrderHistory = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   const [searchParams] = useSearchParams();
   const initialSearch = searchParams.get("search") || "";
   const [searchQuery, setSearchQuery] = useState(initialSearch);
+  
+const navigate = useNavigate();
+const handleImageClick = (id: string) => {
+  navigate(`/dashboard/order-history/${id}`);
+};
+
+const handleTitleClick = (id: string) => {
+  navigate(`/dashboard/order-history/${id}`);
+};
+
 
   const orders = [
     {
@@ -105,8 +117,7 @@ const OrderHistory = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
 
   return (
     <main className="min-h-screen bg-white">
-      <Header />
-
+     
       <div
         className={`transition-all duration-300 ${
           isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
@@ -198,15 +209,21 @@ const OrderHistory = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                     <img
                       src={order.image}
                       alt={order.title}
-                      className="w-[160px] h-[100px] object-cover rounded-lg"
+                      className="w-[160px] h-[100px] object-cover rounded-lg cursor-pointer"
+                      onClick={() => handleImageClick(order.id)}
                     />
+
 
                     <div className="flex-1 flex flex-col justify-between">
                       <div className="flex justify-between items-start flex-wrap">
                         <div>
-                          <h3 className="font-[Poppins] font-semibold text-[16px] text-[#242E3A] mb-1">
-                            {order.title}
-                          </h3>
+                          <h3
+                          className="font-[Poppins] font-semibold text-[16px] text-[#242E3A] mb-1 cursor-pointer hover:underline"
+                          onClick={() => handleTitleClick(order.id)}
+                        >
+                          {order.title}
+                        </h3>
+
                           <p className="text-sm text-gray-500 mb-1">
                             by {order.author}
                           </p>

@@ -29,6 +29,7 @@ import MarketPlace from "../pages/MarketPlace";
 import SearchListing from "../pages/SearchListing";
 import DigitalProducts from "../pages/DigitalProducts";
 // import Feed from "../pages/Feed";
+import CourseDetail from "../pages/CourseDetail";
 import SearchExplore from "../pages/SearchExplore";
 import BecomeMentor from "../pages/BecomeMentorNew";
 //import DashboardDirectoryPage from "../pages/DashboardDirectoryPage";
@@ -65,6 +66,8 @@ import Faqs from "../pages/Faqs";
 import EcoSystem from "../pages/EcoSystem";
 import Premium from "../pages/Premium";
 import WhyCness from "../pages/WhyCness";
+import MyCollections from "../pages/MyCollections";
+
 //import SellerDashboard from "../pages/SellerDashboard";
 import UserPublicProfile from "../pages/UserPublicProfile";
 import Affiliate from "../pages/Affiliate";
@@ -81,6 +84,7 @@ import PaymentSuccess from "../pages/PaymentSuccess";
 import PaymentFailed from "../pages/PaymentFailed";
 import Wishlist from "../pages/Wishlist";
 import OrderHistory from "../pages/OrderHistory";
+import ProductSummery from "../pages/ProductSummery";
 import Category from "../pages/Category";
 import ShopsList from "../pages/Shops";
 import VendorDashboard from "../pages/VendorDashboard";
@@ -137,6 +141,7 @@ export const router = createBrowserRouter([
         path: "certifications",
         element: <Certifications />,
       },
+     
       {
         path: "ecosystem",
         element: <EcoSystem />,
@@ -175,6 +180,14 @@ export const router = createBrowserRouter([
           {
             path: "score-result",
             element: <ScoreResult />,
+          },
+           {
+      path: "collections",
+      element: <MyCollections />
+    },
+          {
+            path: "MyCollection/:id",
+            element: <Mycollectionview />,
           },
           {
             path: "user-profile",
@@ -302,6 +315,10 @@ export const router = createBrowserRouter([
   element:<OrderHistory />
 },
 {
+     path: "order-history/:id",
+     element: <ProductSummery />,
+  },
+{
   path:"shops",
   element:<ShopsList />
 },
@@ -336,6 +353,11 @@ element:<CreateShopForm />
           {
             path: "digital_products",
             element: <DigitalProducts />,
+          },
+
+          {
+            path: "library/course/:id",
+            element: <CourseDetail />,
           },
 
           {
@@ -428,10 +450,7 @@ element:<CreateShopForm />
             element: <Profile />,
           },
 
-          {
-            path: "MyCollection/:id",
-            element: <Mycollectionview />,
-          },
+          
           {
             path: "MyConnection",
             element: <MyConnection />,
