@@ -238,7 +238,7 @@ const chartData = [
   return (
     <>
       {/* Top Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 -mt-30">
         <StatCard
           title="Total Revenue"
           value="$23,456"

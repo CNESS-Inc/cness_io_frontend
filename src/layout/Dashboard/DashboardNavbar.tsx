@@ -231,7 +231,8 @@ const isUatOrTest = ["uat", "test"].includes(env);
         { label: "Sell your Products", path: "/dashboard/createshop" },
         { label: "Track Purchase & Sales", path: "/dashboard/Tracking" },
         { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
-        
+        { label: "Seller Dashboard", path: "/dashboard/seller-dashboard" }
+
       ]
     },
     ]

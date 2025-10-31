@@ -85,6 +85,16 @@ import Category from "../pages/Category";
 import ShopsList from "../pages/Shops";
 import VendorDashboard from "../pages/VendorDashboard";
 import CreateShopForm from "../pages/CreateShopForm";
+import SellerProductList from "../pages/SellerProductList";
+import AddVideoForm from "../pages/AddVideo";
+import AddPodcastsForm from "../pages/AddPodcasts";
+import AddEbookForm from "../pages/AddEbook";
+import AddMusicForm from "../pages/AddMusic";
+import AddCourseForm from "../pages/AddCourse";
+import AddArtsForm from "../pages/AddArts";
+import SellerOrderList from "../pages/SellerOrderList";
+import SellerOrderDetail from "../pages/SellerOrderDetail";
+
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
 const DirectoryPage = lazy(() => import("../pages/DirectoryPage"));
@@ -314,6 +324,46 @@ export const router = createBrowserRouter([
 {
 path:"createshop",
 element:<CreateShopForm />
+},
+{
+path:"products",
+element:<SellerProductList />
+},
+{
+  path:"products/add-video",
+  element:<AddVideoForm />
+},
+{
+  path:"products/add-podcast",
+  element:<AddPodcastsForm />
+},
+{
+  path:"products/add-ebook",
+  element:<AddEbookForm />
+},
+{
+  path:"products/add-music",
+  element:<AddMusicForm />
+},
+
+{
+  path:"products/add-course",
+  element:<AddCourseForm />
+},
+
+{
+  path:"products/add-arts",
+  element:<AddArtsForm />
+},
+
+{
+  path:"orderlist",
+  element:<SellerOrderList />
+},
+
+{
+  path :"orderlist/:id",
+  element:<SellerOrderDetail />
 },
           // {
           //   path: "search-listing",
