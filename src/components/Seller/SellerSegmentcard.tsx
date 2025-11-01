@@ -3,7 +3,6 @@ import {
   //ChevronRight,
 
   Search as SearchIcon,
-  Lightbulb,
   X,
   Bell,
   Plus,
@@ -765,30 +764,31 @@ export function GreetingBar({
   };
 
   const completedStep = localStorage.getItem("completed_step");
-  const is_disqualify = localStorage.getItem("is_disqualify");
+  console.log("🚀 ~ GreetingBar ~ completedStep:", completedStep)
+  // const is_disqualify = localStorage.getItem("is_disqualify");
 
-  const openRetakeAssesmentModal = async () => {
-    console.log("1");
-    try {
-      console.log("2");
-      const personOrganization = localStorage.getItem("person_organization");
-      console.log("personOrganization", personOrganization);
-      if (personOrganization === "2") {
-        setActiveModal("organization");
-      } else {
-        setActiveModal("person");
-      }
+  // const openRetakeAssesmentModal = async () => {
+  //   console.log("1");
+  //   try {
+  //     console.log("2");
+  //     const personOrganization = localStorage.getItem("person_organization");
+  //     console.log("personOrganization", personOrganization);
+  //     if (personOrganization === "2") {
+  //       setActiveModal("organization");
+  //     } else {
+  //       setActiveModal("person");
+  //     }
 
-      const response = await GetAllFormDetails();
-      setReadlineQuestion(response?.data?.data?.questions);
-    } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    }
-  };
+  //     const response = await GetAllFormDetails();
+  //     setReadlineQuestion(response?.data?.data?.questions);
+  //   } catch (error: any) {
+  //     showToast({
+  //       message: error?.response?.data?.error?.message,
+  //       type: "error",
+  //       duration: 5000,
+  //     });
+  //   }
+  // };
 
   const handleOrganizationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -940,6 +940,74 @@ export function GreetingBar({
     }
   };
 
+  const getBadgeStatusInfo = (badgePaymentStatus: any[]) => {
+    const aspiring = badgePaymentStatus.find(
+      (badge) => badge.slug === "aspiring"
+    );
+    const inspired = badgePaymentStatus.find(
+      (badge) => badge.slug === "inspired"
+    );
+    const luminary = badgePaymentStatus.find(
+      (badge) => badge.slug === "luminary"
+    );
+
+    // Check in order: aspiring -> inspired -> luminary
+    if (aspiring && !aspiring.payment_status) {
+      alert(1);
+      return {
+        message:
+          "To start the certification journey into our platform, please complete the payment for Aspiring badge.",
+        route: "/dashboard/aspiring-assessment",
+        level: "aspiring",
+      };
+    } else if (
+      aspiring?.payment_status &&
+      inspired &&
+      !inspired.payment_status
+    ) {
+      return {
+        message:
+          "To continue your certification journey, please complete the payment for Inspired badge.",
+        route: "/dashboard/inspired-assessment",
+        level: "inspired",
+      };
+    } else if (
+      inspired?.payment_status &&
+      luminary &&
+      !luminary.payment_status
+    ) {
+      return {
+        message:
+          "To advance to the highest level, please complete the payment for Luminary badge.",
+        route: "/dashboard/luminary-assessment",
+        level: "luminary",
+      };
+    } else if (luminary?.payment_status) {
+      return {
+        message: "You have completed all certification levels!",
+        route: null,
+        level: "completed",
+      };
+    }
+
+    // Default fallback
+    return {
+      message:
+        "To start the certification journey into our platform, please complete the payment here.",
+      route: "/dashboard/aspiring-assessment",
+      level: "aspiring",
+    };
+  };
+
+  const badgeStatusInfo = user?.badge_payment_status
+    ? getBadgeStatusInfo(user.badge_payment_status)
+    : {
+        message:
+          "To start the certification journey into our platform, please complete the payment here.",
+        route: "/dashboard/aspiring-assessment",
+        level: "aspiring",
+      };
+
   return (
     <>
       <div className="mb-5 grid grid-cols-12 gap-5">
@@ -953,10 +1021,10 @@ export function GreetingBar({
         </div>
 
         <div className="col-span-12 lg:col-span-4 flex items-start lg:justify-end justify-start">
-          {completedStep !== "2" && (
+          {/* {completedStep !== "2" && ( */}
             <div className="mx-5 bg-[rgba(255,204,0,0.05)] text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
               <div className="flex items-center gap-2">
-                {is_disqualify === "true" ? (
+                {/* {is_disqualify === "true" ? (
                   Number(user?.daysRemaining) <= 0 ? (
                     <span className="text-green-500">
                       You are eligible for the Aspiration badge. Please{" "}
@@ -977,31 +1045,28 @@ export function GreetingBar({
                       again after {user?.daysRemaining} days!
                     </span>
                   )
-                ) : (
-                  <>
-                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full">
-                      <Lightbulb
-                        className="h-4 w-4"
-                        stroke="#FFCC00"
-                        fill="#FFCC00"
-                      />
+                ) : ( */}
+                    <span className="text-yellow-500">💡</span>
+                    <span>
+                      {badgeStatusInfo.message}{" "}
+                      {badgeStatusInfo.route && (
+                        <a
+                          href="#"
+                          className="text-blue-600 underline"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            // Use the dynamic route based on badge status
+                            if (badgeStatusInfo.route) {
+                              navigate(badgeStatusInfo.route);
+                            } else {
+                              openPricingModal();
+                            }
+                          }}
+                        >
+                          Click here
+                        </a>
+                      )}
                     </span>
-                    <div>
-                      <span className="text-[12px] font-medium text-black leading-[0%] tracking-[0%] font-poppins">
-                        To start the certification journey into our platform,
-                        please complete the payment here.{" "}
-                      </span>
-                      <a
-                        href="#"
-                        className="text-blue-600 text-[12px] underline"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          openPricingModal();
-                        }}
-                      >
-                        Click here
-                      </a>
-                    </div>
                     <button
                       aria-label="Dismiss"
                       onClick={onCloseSuggestion}
@@ -1009,11 +1074,10 @@ export function GreetingBar({
                     >
                       <X className="h-4 w-4" />
                     </button>
-                  </>
-                )}
+                {/* // )} */}
               </div>
             </div>
-          )}
+          {/* // )} */}
           {/* <div className="w-full lg:min-w-[363px] lg:max-w-[400px] flex items-center gap-[10px] rounded-lg bg-[#FFCC00]/10 px-3 py-[10px] text-[#7A5A00]"></div> */}
         </div>
       </div>
@@ -2361,7 +2425,7 @@ export function CertificationCard({
   upgradeCtaLabel?: string;
   onUpgrade?: () => void;
 }) {
-  console.log("🚀 ~ CertificationCard ~ score:", score)
+  console.log("🚀 ~ CertificationCard ~ score:", score);
   const [slide, setSlide] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
   const [showiInterestModal, setShowInterestModal] = useState(false);
@@ -2480,7 +2544,7 @@ export function CertificationCard({
                   </div>
                   <div className="flex items-center gap-2 w-full sm:w-auto">
                     <button
-                      onClick={onContinue}
+                      onClick={()=>navigate("/dashboard/inspired-assessment")}
                       className="relative w-full sm:w-[194px] h-[40px] rounded-full px-5 py-[10px] flex items-center justify-center text-center font-[600] text-[14px] text-[#222224] font-['Open_Sans'] leading-[100%] bg-white"
                     >
                       <span className="relative z-10">Continue Assessment</span>
@@ -2502,7 +2566,7 @@ export function CertificationCard({
               {underProgressDescription}
             </p>
           </>
-        ) : activeLevel === "Aspiring" && progress === 100 && score === 0  ? (
+        ) : activeLevel === "Aspiring" && progress === 100 && score === 0 ? (
           <>
             <div className="flex items-center gap-2">
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F2EAFE]">
@@ -2598,7 +2662,9 @@ export function CertificationCard({
               {inspiredDescription}
             </p>
           </>
-        ) : ""}
+        ) : (
+          ""
+        )}
 
         {/* Slides container */}
         <div className="mt-8">

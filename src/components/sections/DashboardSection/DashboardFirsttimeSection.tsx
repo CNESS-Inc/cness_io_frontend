@@ -19,6 +19,7 @@ export default function DashboardFirsttimeSection() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [user, setUser] = useState<any | null>(null);
+  console.log("🚀 ~ DashboardFirsttimeSection ~ user:", user)
   const [isVisible, setIsVisible] = useState(true);
 
   const fetchDashboard = async () => {

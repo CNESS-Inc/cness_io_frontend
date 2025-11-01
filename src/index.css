@@ -25,3 +25,28 @@ a {
 .react-tel-input .form-control{
   padding-left: 65px !important;
 }
+
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-10px) scale(1.1); }
+}
+
+@keyframes sparkle {
+  0% { transform: scale(0) rotate(0deg); opacity: 0; }
+  50% { transform: scale(1) rotate(180deg); opacity: 1; }
+  100% { transform: scale(0) rotate(360deg); opacity: 0; }
+}
+
+.appreciate-animation {
+  animation: float 0.6s ease-in-out;
+}
+
+.sparkle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: radial-gradient(circle, #7077FE 20%, transparent 70%);
+  border-radius: 50%;
+  animation: sparkle 0.8s ease-out forwards;
+}
