@@ -31,6 +31,8 @@ const DashboardLayout = () => {
     }
   }, []);
 
+
+
   const isDashboardTechPage =
     location.pathname === "/DashboardDirectory/dashboardtechnology";
 
@@ -47,20 +49,40 @@ const DashboardLayout = () => {
     location.pathname.includes("/dashboard/categories")||
     location.pathname.includes("/dashboard/shops");
     
+
     const isSellerPage=
-    location.pathname.includes("/dashboard/seller-dashboard");
+    location.pathname.includes("/dashboard/seller-dashboard") ||
+    location.pathname.includes("/dashboard/products") ||
+    location.pathname.includes("/dashboard/orderlist");
+
+    const isCreateShopPage =
+     location.pathname.includes("/dashboard/createshop")||
+      location.pathname.includes("/dashboard/products/add-video") ||
+    location.pathname.includes("/dashboard/products/add-ebook") ||
+    location.pathname.includes("/dashboard/products/add-podcast") ||
+   location.pathname.includes("/dashboard/products/add-music") ||
+    location.pathname.includes("/dashboard/products/add-course") ||
+    location.pathname.includes("/dashboard/products/add-arts");
+
+
+let pageBackground = "bg-[#f9f9f9]"; 
+
+if (isMarketplacePage) {
+  pageBackground = "bg-white";
+} else if (isCreateShopPage || isSellerPage) {
+  pageBackground = "bg-[#EEF3FF]"; // light blue background for seller pages
+}
+
 
   return (
     <div
-      className={`flex flex-col justify-center w-full min-h-screen relative ${
-        isMarketplacePage ? "bg-white" : "bg-[#f9f9f9]"
-      }`}
+     className={`flex flex-col justify-center w-full min-h-screen relative ${pageBackground}`}
+
     >
       {/* Outer container */}
       <div
-        className={`w-full flex flex-col relative ${
-          isMarketplacePage ? "bg-white" : "bg-[#f9f9f9]"
-        }`}
+        className={`w-full flex flex-col relative ${pageBackground}`}
+
       >
         {/* Mobile Header */}
         {!isMobileNavOpen && (
@@ -158,11 +180,18 @@ const DashboardLayout = () => {
             isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
           }`}
         >
-          <main
-            className={`flex-1 min-h-screen overflow-y-auto transition-all duration-300 ${
-              hasNoPadding ? "" : "px-4 py-3 pb-14"
-            } ${isMarketplacePage ? "pt-[160px]" : ""}`}
-          >
+         <main
+  className={`flex-1 min-h-screen overflow-y-auto transition-all duration-300 ${
+hasNoPadding || isCreateShopPage ? "px-0 py-3 pb-14" : "px-4 py-3 pb-14"  } ${
+    isMarketplacePage
+      ? "pt-[160px]" // for MarketHeader
+      : isSellerPage
+      ? "pt-[160px]" // for SellerHeader
+      : isCreateShopPage
+      ? "pt-0" // ✅ attach directly under topbar
+      : "" // default DashboardHeader height
+  }`}
+>
             {/* ↑ adjust this padding to match the total header height (72 + 60) */}
             <div className="flex min-h-screen mb-auto">
               {isDashboardTechPage && (
