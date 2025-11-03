@@ -1,12 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const categories = ["Music", "Podcasts", "Arts", "Videos", "Courses", "Ebook"];
-const languages = ["English", "Spanish", "French"];
+// Per latest design, show status-like labels under Language section
+const languages = ["Not Started", "In progress", "Completed"];
+const orderedTime = ["Last 3 days", "Last week", "Last month", "2025", "2024", "2023"];
 const durations = ["< 30 min", "30 - 120 min", "> 2 hrs"];
-const ratings = ["4+ Stars", "3+ Stars", "2+ Stars"];
 
-const FilterSidebar: React.FC = () => {
+interface FilterSidebarProps {
+  // When used under fixed headers, set the mobile top offset (in px) so the sheet starts below headers
+  mobileTopOffset?: number;
+}
+
+const FilterSidebar: React.FC<FilterSidebarProps> = ({ mobileTopOffset = 0 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const update = () => setIsMobile(window.innerWidth < 768);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
 
   return (
     <>
@@ -24,23 +38,35 @@ const FilterSidebar: React.FC = () => {
       {isOpen && (
         <div
           onClick={() => setIsOpen(false)}
-          className="fixed inset-0 bg-black/40 z-40 md:hidden"
+          className="fixed left-0 right-0 bottom-0 md:hidden"
+          style={
+            isMobile
+              ? { top: mobileTopOffset, height: `calc(100vh - ${mobileTopOffset}px)`, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 20 }
+              : undefined
+          }
         ></div>
       )}
 
       {/* 🧭 Sidebar */}
       <aside
         className={`
-          fixed md:static top-0 left-0 z-50 
-          h-full md:h-auto
-          w-[80%] sm:w-[300px] md:w-[250px]
-          bg-white border border-gray-200 rounded-none md:rounded-xl
+          fixed md:sticky left-0 md:left-0 z-30 md:z-auto 
+          h-full md:h-[1031px]
+          w-[80%] sm:w-[300px] md:w-[267px]
+          box-border
+          bg-white border border-[#CBD5E1] rounded-none md:rounded-[16px]
           shadow-lg md:shadow-sm
-          p-5 md:p-6
-          overflow-y-auto
+          p-5 md:pt-[18px] md:pr-[15px] md:pb-[12px] md:pl-[11px]
+          overflow-y-auto md:overflow-visible
           transform transition-transform duration-300 ease-in-out
           ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+          md:top-0
         `}
+        style={
+          isMobile
+            ? { top: mobileTopOffset, height: `calc(100vh - ${mobileTopOffset}px)` }
+            : undefined
+        }
       >
         {/* ❌ Close Button (Mobile Only) */}
         <div className="md:hidden flex justify-end mb-3">
@@ -52,52 +78,41 @@ const FilterSidebar: React.FC = () => {
           </button>
         </div>
 
-        {/* 🏷️ Filters Title */}
-        <div>
-          <h3 className="text-lg font-bold mb-4">Filters</h3>
-          <div className="border-t border-gray-200 mb-5"></div>
-        </div>
-
-        {/* 📂 Category */}
-        <FilterGroup title="Category" items={categories} />
-
-        {/* 💲 Price */}
-        <div className="space-y-2 mb-8">
-          <h3 className="text-[16px] font-semibold">Price</h3>
-          <div className="flex items-center space-x-2">
-            <input
-              type="number"
-              placeholder="$0"
-              className="w-[90px] px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
-            />
-            <span className="text-gray-500">-</span>
-            <input
-              type="number"
-              placeholder="$50"
-              className="w-[90px] px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
-            />
+        {/* Content wrapper sized to design (inner) including header */}
+        <div className="mx-auto w-[211px] h-[1001px] space-y-[2px]">
+          {/* 🏷️ Filters Title */}
+          <div>
+            <h3 className="text-lg font-bold mb-2">Filters</h3>
+            <div className="border-t border-gray-200"></div>
           </div>
-        </div>
+          {/* 📂 Category */}
+          <FilterGroup title="Category" items={categories} heightPx={220} />
+          <div className="border-t border-gray-200 mb-[10px]" />
 
-        {/* 🌍 Language */}
-        <FilterGroup title="Language" items={languages} />
+          {/* 🌍 Language */}
+          <FilterGroup title="Language" items={languages} heightPx={145} />
+          <div className="border-t border-gray-200 mb-[10px]" />
 
-        {/* ⏱️ Duration */}
-        <FilterGroup title="Duration" items={durations} />
+          {/* 🗓️ Ordered Time */}
+          <FilterGroup title="Ordered Time" items={orderedTime} heightPx={225} />
+          <div className="border-t border-gray-200 mb-[10px]" />
 
-        {/* ⭐ Ratings */}
-        <FilterGroup title="Ratings" items={ratings} />
+          {/* ⏱️ Duration */}
+          <FilterGroup title="Duration" items={durations} heightPx={150} />
+          <div className="border-t border-gray-200 mb-[10px]" />
 
-        {/* 🧑‍🎨 Creator Search */}
-        <div className="mt-8">
-          <h3 className="text-[16px] font-semibold mb-3">
-            Creators / Publisher
-          </h3>
-          <input
-            type="text"
-            placeholder="Search"
-            className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
-          />
+          {/* 🧑‍🎨 Creator Search */}
+          <div className="w-[211px] h-[90px]">
+            <h3 className="text-[16px] font-semibold mb-2">Creators / Publisher</h3>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search"
+                className="w-full h-[40px] pl-3 pr-8 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
+              />
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400"></span>
+            </div>
+          </div>
         </div>
       </aside>
     </>
@@ -110,23 +125,27 @@ export default FilterSidebar;
 const FilterGroup = ({
   title,
   items,
+  heightPx,
 }: {
   title: string;
   items: string[];
+  heightPx?: number;
 }) => (
-  <div className="space-y-2 mb-8">
-    <h3 className="text-[16px] font-semibold">{title}</h3>
-    {items.map((item) => (
-      <label
-        key={item}
-        className="flex items-center space-x-2 text-sm text-gray-700 cursor-pointer"
-      >
-        <input
-          type="checkbox"
-          className="w-4 h-4 rounded border-gray-300 text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
-        />
-        <span>{item}</span>
-      </label>
-    ))}
+  <div style={heightPx ? { height: `${heightPx}px` } : undefined}>
+    <h3 className="text-[16px] font-semibold mb-[6px] mt-[10px]">{title}</h3>
+    <div className="flex flex-col gap-[7px]">
+      {items.map((item) => (
+        <label
+          key={item}
+          className="flex items-center gap-[10px] text-[14px] font-medium leading-[150%] tracking-[-0.019em] text-gray-700 cursor-pointer"
+        >
+          <input
+            type="checkbox"
+            className="w-4 h-4 rounded border-gray-300 text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
+          />
+          <span style={{ fontFamily: 'poppins' }}>{item}</span>
+        </label>
+      ))}
+    </div>
   </div>
 );
