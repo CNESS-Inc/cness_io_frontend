@@ -21,16 +21,16 @@ import {
   BestPracticesSection,
   DirectorySection,
   MarketplaceCard,
-  LearningLabSection,
+  // LearningLabSection,
 } from "../components/Seller/SellerSegmentcard";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { useNavigate } from "react-router-dom";
 import market1 from "../../src/assets/market1.png";
 import market2 from "../../src/assets/market2.png";
 import market3 from "../../src/assets/market3.png";
-import learning1 from "../../src/assets/learning1.png";
-import learning2 from "../../src/assets/learning2.png";
-import learning3 from "../../src/assets/learning3.png";
+// import learning1 from "../../src/assets/learning1.png";
+// import learning2 from "../../src/assets/learning2.png";
+// import learning3 from "../../src/assets/learning3.png";
 import cart1 from "../../src/assets/cart1.png";
 import cart2 from "../../src/assets/cart2.png";
 import AddBestPracticeModal from "../components/sections/bestPractiseHub/AddBestPractiseModal";
@@ -99,35 +99,35 @@ const carted = [
   },
 ];
 
-const learningLabItems = [
-  {
-    id: 1,
-    name: "Module 1: Basic",
-    image: learning1,
-    title: "Module 1: Basic",
-    progress: 100,
-    status: "completed" as const,
-    gradient:
-      "bg-[linear-gradient(90deg,#DFD6FF_0%,#E7AAFF_91.18%,#FEDBEE_182.35%)]",
-  },
-  {
-    id: 2,
-    name: "Module 2",
-    image: learning2,
-    title: "Module 2",
-    progress: 40,
-    status: "resume" as const,
-    gradient: "bg-[#A392F2]",
-  },
-  {
-    id: 3,
-    name: "Module 3",
-    image: learning3,
-    title: "Module 3",
-    progress: 0,
-    status: "locked" as const,
-  },
-];
+// const learningLabItems = [
+//   {
+//     id: 1,
+//     name: "Module 1: Basic",
+//     image: learning1,
+//     title: "Module 1: Basic",
+//     progress: 100,
+//     status: "completed" as const,
+//     gradient:
+//       "bg-[linear-gradient(90deg,#DFD6FF_0%,#E7AAFF_91.18%,#FEDBEE_182.35%)]",
+//   },
+//   {
+//     id: 2,
+//     name: "Module 2",
+//     image: learning2,
+//     title: "Module 2",
+//     progress: 40,
+//     status: "resume" as const,
+//     gradient: "bg-[#A392F2]",
+//   },
+//   {
+//     id: 3,
+//     name: "Module 3",
+//     image: learning3,
+//     title: "Module 3",
+//     progress: 0,
+//     status: "locked" as const,
+//   },
+// ];
 
 export default function SellerDashboard() {
   const [user, setUser] = useState<UserData | null>(null);

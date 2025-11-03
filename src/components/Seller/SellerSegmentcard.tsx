@@ -3,7 +3,7 @@ import {
   //ChevronRight,
 
   Search as SearchIcon,
-  X,
+  // X,
   Bell,
   Plus,
   ArrowLeft,
@@ -37,7 +37,7 @@ import Select from "react-select";
 import {
   DashboardDetails,
   GetAllFormDetails,
-  GetAllPlanDetails,
+  // GetAllPlanDetails,
   GetSubDomainDetails,
   GetUserNotification,
   MeDetails,
@@ -241,7 +241,7 @@ function HeaderDivider() {
    =========================================================== */
 export function GreetingBar({
   name,
-  onCloseSuggestion,
+  // onCloseSuggestion,
 }: {
   name: string;
   onCloseSuggestion?: () => void;
@@ -259,6 +259,7 @@ export function GreetingBar({
   const [isAnnual, setIsAnnual] = useState(true);
   const [personPricing, setPersonPricing] = useState<any[]>([]);
   const [user, setUser] = useState<any | null>(null);
+  console.log("🚀 ~ GreetingBar ~ user:", user)
   const [readlineQuestion, setReadlineQuestion] = useState([]);
   const { showToast } = useToast();
   const [domains, setDomains] = useState([]);
@@ -661,53 +662,53 @@ export function GreetingBar({
     }
   };
 
-  const openPricingModal = async () => {
-    try {
-      setActiveModal("PricingModal");
-      const res = await GetAllPlanDetails();
-      const plansByRange: Record<string, any> = {};
-      res?.data?.data?.forEach((plan: any) => {
-        if (!plansByRange[plan.plan_range]) {
-          plansByRange[plan.plan_range] = {};
-        }
-        plansByRange[plan.plan_range][plan.plan_type] = plan;
-      });
-      // Create combined plan objects with both monthly and yearly data
-      const updatedPlans = Object.values(plansByRange).map((planGroup: any) => {
-        const monthlyPlan = planGroup.monthly;
-        const yearlyPlan = planGroup.yearly;
+  // const openPricingModal = async () => {
+  //   try {
+  //     setActiveModal("PricingModal");
+  //     const res = await GetAllPlanDetails();
+  //     const plansByRange: Record<string, any> = {};
+  //     res?.data?.data?.forEach((plan: any) => {
+  //       if (!plansByRange[plan.plan_range]) {
+  //         plansByRange[plan.plan_range] = {};
+  //       }
+  //       plansByRange[plan.plan_range][plan.plan_type] = plan;
+  //     });
+  //     // Create combined plan objects with both monthly and yearly data
+  //     const updatedPlans = Object.values(plansByRange).map((planGroup: any) => {
+  //       const monthlyPlan = planGroup.monthly;
+  //       const yearlyPlan = planGroup.yearly;
 
-        return {
-          id: monthlyPlan?.id || yearlyPlan?.id,
-          title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-          description: "Customized pricing based on your selection",
-          monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
-          yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-          period: isAnnual ? "/year" : "/month",
-          billingNote: yearlyPlan
-            ? isAnnual
-              ? `billed annually ($${yearlyPlan.amount})`
-              : `or $${monthlyPlan?.amount}/month`
-            : undefined,
-          features: [], // Add any features you need here
-          buttonText: "Get Started",
-          buttonClass: yearlyPlan
-            ? ""
-            : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-          borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
-          popular: !!yearlyPlan,
-        };
-      });
+  //       return {
+  //         id: monthlyPlan?.id || yearlyPlan?.id,
+  //         title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+  //         description: "Customized pricing based on your selection",
+  //         monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
+  //         yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+  //         period: isAnnual ? "/year" : "/month",
+  //         billingNote: yearlyPlan
+  //           ? isAnnual
+  //             ? `billed annually ($${yearlyPlan.amount})`
+  //             : `or $${monthlyPlan?.amount}/month`
+  //           : undefined,
+  //         features: [], // Add any features you need here
+  //         buttonText: "Get Started",
+  //         buttonClass: yearlyPlan
+  //           ? ""
+  //           : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+  //         borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
+  //         popular: !!yearlyPlan,
+  //       };
+  //     });
 
-      setPersonPricing(updatedPlans);
-    } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    }
-  };
+  //     setPersonPricing(updatedPlans);
+  //   } catch (error: any) {
+  //     showToast({
+  //       message: error?.response?.data?.error?.message,
+  //       type: "error",
+  //       duration: 5000,
+  //     });
+  //   }
+  // };
   const closeModal = async () => {
     setActiveModal(null);
     await fetchDashboard();
@@ -940,52 +941,52 @@ export function GreetingBar({
     }
   };
 
-  const getBadgeStatusInfo = (badgePaymentStatus: any[]) => {
-    // If badgePaymentStatus is not provided or empty, return null
-    if (!badgePaymentStatus || badgePaymentStatus.length === 0) {
-      return null;
-    }
+  // const getBadgeStatusInfo = (badgePaymentStatus: any[]) => {
+  //   // If badgePaymentStatus is not provided or empty, return null
+  //   if (!badgePaymentStatus || badgePaymentStatus.length === 0) {
+  //     return null;
+  //   }
 
-    const aspiring = badgePaymentStatus.find(
-      (badge) => badge.slug === "aspiring"
-    );
-    const inspired = badgePaymentStatus.find(
-      (badge) => badge.slug === "inspired"
-    );
+  //   const aspiring = badgePaymentStatus.find(
+  //     (badge) => badge.slug === "aspiring"
+  //   );
+  //   const inspired = badgePaymentStatus.find(
+  //     (badge) => badge.slug === "inspired"
+  //   );
 
-    // Check in order: aspiring -> inspired
-    if (aspiring && !aspiring.payment_status) {
-      return {
-        message:
-          "To start the certification journey into our platform, please complete the payment for Aspiring badge.",
-        route: "/dashboard/aspiring-assessment",
-        level: "aspiring",
-      };
-    } else if (
-      aspiring?.payment_status &&
-      inspired &&
-      !inspired.payment_status
-    ) {
-      return {
-        message:
-          "To continue your certification journey, please complete the payment for Inspired badge.",
-        route: "/dashboard/inspired-assessment",
-        level: "inspired",
-      };
-    }
+  //   // Check in order: aspiring -> inspired
+  //   if (aspiring && !aspiring.payment_status) {
+  //     return {
+  //       message:
+  //         "To start the certification journey into our platform, please complete the payment for Aspiring badge.",
+  //       route: "/dashboard/aspiring-assessment",
+  //       level: "aspiring",
+  //     };
+  //   } else if (
+  //     aspiring?.payment_status &&
+  //     inspired &&
+  //     !inspired.payment_status
+  //   ) {
+  //     return {
+  //       message:
+  //         "To continue your certification journey, please complete the payment for Inspired badge.",
+  //       route: "/dashboard/inspired-assessment",
+  //       level: "inspired",
+  //     };
+  //   }
 
-    // If none of the above conditions are met, return null
-    return null;
-  };
+  //   // If none of the above conditions are met, return null
+  //   return null;
+  // };
 
-  const badgeStatusInfo = user?.badge_payment_status
-    ? getBadgeStatusInfo(user.badge_payment_status)
-    : {
-        message:
-          "To start the certification journey into our platform, please complete the payment here.",
-        route: "/dashboard/aspiring-assessment",
-        level: "aspiring",
-      };
+  // const badgeStatusInfo = user?.badge_payment_status
+  //   ? getBadgeStatusInfo(user.badge_payment_status)
+  //   : {
+  //       message:
+  //         "To start the certification journey into our platform, please complete the payment here.",
+  //       route: "/dashboard/aspiring-assessment",
+  //       level: "aspiring",
+  //     };
 
   return (
     <>
