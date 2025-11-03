@@ -1537,10 +1537,10 @@ export const executeAPI = async <T = any,>(
   } catch (error: any) {
     // console.log("🚀 ~ error:", error)
 
-    // if (error.response?.data?.error?.statusCode == 401) {
-    //   localStorage.clear();
-    //   window.location.href = "/";
-    // }
+    if (error.response?.data?.error?.statusCode == 401) {
+      localStorage.clear();
+      window.location.href = "/";
+    }
 
     throw error;
   }
