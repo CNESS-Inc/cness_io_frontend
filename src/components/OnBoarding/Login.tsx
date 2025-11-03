@@ -477,7 +477,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
           response?.data?.data?.user.profile_picture
         );
         localStorage.setItem("name", response?.data?.data?.user.name);
-        localStorage.setItem("karma_credits", response?.data?.data?.user.karma_credits);
+        localStorage.setItem("karma_credits", response?.data?.data?.user.karma_credits || 0);
         localStorage.setItem("main_name", response?.data?.data?.user.main_name);
         localStorage.setItem(
           "margaret_name",
