@@ -1,5 +1,4 @@
 import React from "react";
-import Header from "../components/MarketPlace/Buyerheader";
 import { Trash2, Heart, Star, ClockFading, Video,ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -39,7 +38,6 @@ const CartPage: React.FC = () => {
 
   return (
     <main className="min-h-screen bg-white">
-      <Header />
 
       {/* ===== PAGE CONTAINER ===== */}
       <div className="w-full mx-auto px-6 py-8 flex flex-col lg:flex-row gap-8">
