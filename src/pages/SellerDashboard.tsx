@@ -636,10 +636,10 @@ export default function SellerDashboard() {
           />
         </div>
         <div className="col-span-12">
-          <LearningLabSection
+          {/* <LearningLabSection
             items={learningLabItems}
             onView={(item) => navigate(`/dashboard/userprofile/${item.id}`)}
-          />
+          /> */}
         </div>
       </div>
 

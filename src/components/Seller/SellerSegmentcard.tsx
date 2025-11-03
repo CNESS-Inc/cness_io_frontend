@@ -1001,8 +1001,8 @@ export function GreetingBar({
 
         <div className="col-span-12 lg:col-span-4 flex items-start lg:justify-end justify-start">
           {/* {completedStep !== "2" && ( */}
-          <div className="mx-5 bg-[rgba(255,204,0,0.05)] text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
-            <div className="flex items-center gap-2">
+          {/* <div className="mx-5 bg-[rgba(255,204,0,0.05)] text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-2"> */}
               {/* {is_disqualify === "true" ? (
                   Number(user?.daysRemaining) <= 0 ? (
                     <span className="text-green-500">
@@ -1025,7 +1025,7 @@ export function GreetingBar({
                     </span>
                   )
                 ) : ( */}
-              {badgeStatusInfo?.message ? (
+              {/* {badgeStatusInfo?.message ? (
                 <>
                   <span className="text-yellow-500">💡</span>
                   <span>
@@ -1058,10 +1058,10 @@ export function GreetingBar({
                 </>
               ) : (
                 ""
-              )}
+              )} */}
               {/* // )} */}
-            </div>
-          </div>
+            {/* </div>
+          </div> */}
           {/* // )} */}
           {/* <div className="w-full lg:min-w-[363px] lg:max-w-[400px] flex items-center gap-[10px] rounded-lg bg-[#FFCC00]/10 px-3 py-[10px] text-[#7A5A00]"></div> */}
         </div>
@@ -2450,11 +2450,11 @@ export function CertificationCard({
 
   const handleUpgradeClick = (activeLevel?: string | null) => {
     if (!activeLevel) {
-      setShowInterestModal(true);
+      navigate("/dashboard/assesmentcertification");
     } else if (activeLevel === "Aspiring") {
-      navigate("/dashboard/aspiring-assessment");
+      navigate("/dashboard/assesmentcertification");
     } else if (activeLevel === "Inspired") {
-      navigate("/dashboard/inspired-assessment");
+      navigate("/dashboard/assesmentcertification");
     } else {
       onUpgrade?.();
     }
@@ -2484,7 +2484,7 @@ export function CertificationCard({
             <div className="w-fit">
               <button
                 className="flex items-center gap-3 bg-white text-black text-sm font-normal py-2 ps-3 pe-2 rounded-full w-fit"
-                onClick={() => navigate("/dashboard/assesment")}
+                onClick={() => navigate("/dashboard/assesmentcertification")}
                 style={{
                   border: "1px solid rgba(236, 238, 242, 1)",
                   boxShadow: "0px 1px 10px 0px rgba(0, 0, 0, 0.05)",
