@@ -77,9 +77,11 @@ const DashboardNavbar = ({
       console.error("Failed to load referred users", err);
     }
   };*/
+// Automatically detect environment based on domain (no .env needed)
+const hostname = window.location.hostname.toLowerCase();
 
-  const env = import.meta.env.VITE_ENV;
-const isUatOrTest = ["uat", "test"].includes(env);
+const showMarketplaceNew =
+  hostname.includes("localhost") || hostname.includes("dev");
 
   const mainNavItems = [
     {
@@ -216,7 +218,7 @@ const isUatOrTest = ["uat", "test"].includes(env);
         { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
       ],*/
     },
-  ...(isUatOrTest
+  ...(showMarketplaceNew 
      ? [
     {
       id: "market-place",
