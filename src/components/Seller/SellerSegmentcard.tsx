@@ -3,7 +3,7 @@ import {
   //ChevronRight,
 
   Search as SearchIcon,
-  X,
+  // X,
   Bell,
   Plus,
   ArrowLeft,
@@ -37,7 +37,7 @@ import Select from "react-select";
 import {
   DashboardDetails,
   GetAllFormDetails,
-  GetAllPlanDetails,
+  // GetAllPlanDetails,
   GetSubDomainDetails,
   GetUserNotification,
   MeDetails,
@@ -241,7 +241,7 @@ function HeaderDivider() {
    =========================================================== */
 export function GreetingBar({
   name,
-  onCloseSuggestion,
+  // onCloseSuggestion,
 }: {
   name: string;
   onCloseSuggestion?: () => void;
@@ -259,6 +259,7 @@ export function GreetingBar({
   const [isAnnual, setIsAnnual] = useState(true);
   const [personPricing, setPersonPricing] = useState<any[]>([]);
   const [user, setUser] = useState<any | null>(null);
+  console.log("🚀 ~ GreetingBar ~ user:", user)
   const [readlineQuestion, setReadlineQuestion] = useState([]);
   const { showToast } = useToast();
   const [domains, setDomains] = useState([]);
@@ -661,53 +662,53 @@ export function GreetingBar({
     }
   };
 
-  const openPricingModal = async () => {
-    try {
-      setActiveModal("PricingModal");
-      const res = await GetAllPlanDetails();
-      const plansByRange: Record<string, any> = {};
-      res?.data?.data?.forEach((plan: any) => {
-        if (!plansByRange[plan.plan_range]) {
-          plansByRange[plan.plan_range] = {};
-        }
-        plansByRange[plan.plan_range][plan.plan_type] = plan;
-      });
-      // Create combined plan objects with both monthly and yearly data
-      const updatedPlans = Object.values(plansByRange).map((planGroup: any) => {
-        const monthlyPlan = planGroup.monthly;
-        const yearlyPlan = planGroup.yearly;
+  // const openPricingModal = async () => {
+  //   try {
+  //     setActiveModal("PricingModal");
+  //     const res = await GetAllPlanDetails();
+  //     const plansByRange: Record<string, any> = {};
+  //     res?.data?.data?.forEach((plan: any) => {
+  //       if (!plansByRange[plan.plan_range]) {
+  //         plansByRange[plan.plan_range] = {};
+  //       }
+  //       plansByRange[plan.plan_range][plan.plan_type] = plan;
+  //     });
+  //     // Create combined plan objects with both monthly and yearly data
+  //     const updatedPlans = Object.values(plansByRange).map((planGroup: any) => {
+  //       const monthlyPlan = planGroup.monthly;
+  //       const yearlyPlan = planGroup.yearly;
 
-        return {
-          id: monthlyPlan?.id || yearlyPlan?.id,
-          title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-          description: "Customized pricing based on your selection",
-          monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
-          yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-          period: isAnnual ? "/year" : "/month",
-          billingNote: yearlyPlan
-            ? isAnnual
-              ? `billed annually ($${yearlyPlan.amount})`
-              : `or $${monthlyPlan?.amount}/month`
-            : undefined,
-          features: [], // Add any features you need here
-          buttonText: "Get Started",
-          buttonClass: yearlyPlan
-            ? ""
-            : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-          borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
-          popular: !!yearlyPlan,
-        };
-      });
+  //       return {
+  //         id: monthlyPlan?.id || yearlyPlan?.id,
+  //         title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+  //         description: "Customized pricing based on your selection",
+  //         monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
+  //         yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+  //         period: isAnnual ? "/year" : "/month",
+  //         billingNote: yearlyPlan
+  //           ? isAnnual
+  //             ? `billed annually ($${yearlyPlan.amount})`
+  //             : `or $${monthlyPlan?.amount}/month`
+  //           : undefined,
+  //         features: [], // Add any features you need here
+  //         buttonText: "Get Started",
+  //         buttonClass: yearlyPlan
+  //           ? ""
+  //           : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+  //         borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
+  //         popular: !!yearlyPlan,
+  //       };
+  //     });
 
-      setPersonPricing(updatedPlans);
-    } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    }
-  };
+  //     setPersonPricing(updatedPlans);
+  //   } catch (error: any) {
+  //     showToast({
+  //       message: error?.response?.data?.error?.message,
+  //       type: "error",
+  //       duration: 5000,
+  //     });
+  //   }
+  // };
   const closeModal = async () => {
     setActiveModal(null);
     await fetchDashboard();
@@ -940,52 +941,52 @@ export function GreetingBar({
     }
   };
 
-  const getBadgeStatusInfo = (badgePaymentStatus: any[]) => {
-    // If badgePaymentStatus is not provided or empty, return null
-    if (!badgePaymentStatus || badgePaymentStatus.length === 0) {
-      return null;
-    }
+  // const getBadgeStatusInfo = (badgePaymentStatus: any[]) => {
+  //   // If badgePaymentStatus is not provided or empty, return null
+  //   if (!badgePaymentStatus || badgePaymentStatus.length === 0) {
+  //     return null;
+  //   }
 
-    const aspiring = badgePaymentStatus.find(
-      (badge) => badge.slug === "aspiring"
-    );
-    const inspired = badgePaymentStatus.find(
-      (badge) => badge.slug === "inspired"
-    );
+  //   const aspiring = badgePaymentStatus.find(
+  //     (badge) => badge.slug === "aspiring"
+  //   );
+  //   const inspired = badgePaymentStatus.find(
+  //     (badge) => badge.slug === "inspired"
+  //   );
 
-    // Check in order: aspiring -> inspired
-    if (aspiring && !aspiring.payment_status) {
-      return {
-        message:
-          "To start the certification journey into our platform, please complete the payment for Aspiring badge.",
-        route: "/dashboard/aspiring-assessment",
-        level: "aspiring",
-      };
-    } else if (
-      aspiring?.payment_status &&
-      inspired &&
-      !inspired.payment_status
-    ) {
-      return {
-        message:
-          "To continue your certification journey, please complete the payment for Inspired badge.",
-        route: "/dashboard/inspired-assessment",
-        level: "inspired",
-      };
-    }
+  //   // Check in order: aspiring -> inspired
+  //   if (aspiring && !aspiring.payment_status) {
+  //     return {
+  //       message:
+  //         "To start the certification journey into our platform, please complete the payment for Aspiring badge.",
+  //       route: "/dashboard/aspiring-assessment",
+  //       level: "aspiring",
+  //     };
+  //   } else if (
+  //     aspiring?.payment_status &&
+  //     inspired &&
+  //     !inspired.payment_status
+  //   ) {
+  //     return {
+  //       message:
+  //         "To continue your certification journey, please complete the payment for Inspired badge.",
+  //       route: "/dashboard/inspired-assessment",
+  //       level: "inspired",
+  //     };
+  //   }
 
-    // If none of the above conditions are met, return null
-    return null;
-  };
+  //   // If none of the above conditions are met, return null
+  //   return null;
+  // };
 
-  const badgeStatusInfo = user?.badge_payment_status
-    ? getBadgeStatusInfo(user.badge_payment_status)
-    : {
-        message:
-          "To start the certification journey into our platform, please complete the payment here.",
-        route: "/dashboard/aspiring-assessment",
-        level: "aspiring",
-      };
+  // const badgeStatusInfo = user?.badge_payment_status
+  //   ? getBadgeStatusInfo(user.badge_payment_status)
+  //   : {
+  //       message:
+  //         "To start the certification journey into our platform, please complete the payment here.",
+  //       route: "/dashboard/aspiring-assessment",
+  //       level: "aspiring",
+  //     };
 
   return (
     <>
@@ -1001,8 +1002,8 @@ export function GreetingBar({
 
         <div className="col-span-12 lg:col-span-4 flex items-start lg:justify-end justify-start">
           {/* {completedStep !== "2" && ( */}
-          <div className="mx-5 bg-[rgba(255,204,0,0.05)] text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
-            <div className="flex items-center gap-2">
+          {/* <div className="mx-5 bg-[rgba(255,204,0,0.05)] text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-2"> */}
               {/* {is_disqualify === "true" ? (
                   Number(user?.daysRemaining) <= 0 ? (
                     <span className="text-green-500">
@@ -1025,7 +1026,7 @@ export function GreetingBar({
                     </span>
                   )
                 ) : ( */}
-              {badgeStatusInfo?.message ? (
+              {/* {badgeStatusInfo?.message ? (
                 <>
                   <span className="text-yellow-500">💡</span>
                   <span>
@@ -1058,10 +1059,10 @@ export function GreetingBar({
                 </>
               ) : (
                 ""
-              )}
+              )} */}
               {/* // )} */}
-            </div>
-          </div>
+            {/* </div>
+          </div> */}
           {/* // )} */}
           {/* <div className="w-full lg:min-w-[363px] lg:max-w-[400px] flex items-center gap-[10px] rounded-lg bg-[#FFCC00]/10 px-3 py-[10px] text-[#7A5A00]"></div> */}
         </div>
@@ -2450,11 +2451,11 @@ export function CertificationCard({
 
   const handleUpgradeClick = (activeLevel?: string | null) => {
     if (!activeLevel) {
-      setShowInterestModal(true);
+      navigate("/dashboard/assesmentcertification");
     } else if (activeLevel === "Aspiring") {
-      navigate("/dashboard/aspiring-assessment");
+      navigate("/dashboard/assesmentcertification");
     } else if (activeLevel === "Inspired") {
-      navigate("/dashboard/inspired-assessment");
+      navigate("/dashboard/assesmentcertification");
     } else {
       onUpgrade?.();
     }
@@ -2484,7 +2485,7 @@ export function CertificationCard({
             <div className="w-fit">
               <button
                 className="flex items-center gap-3 bg-white text-black text-sm font-normal py-2 ps-3 pe-2 rounded-full w-fit"
-                onClick={() => navigate("/dashboard/assesment")}
+                onClick={() => navigate("/dashboard/assesmentcertification")}
                 style={{
                   border: "1px solid rgba(236, 238, 242, 1)",
                   boxShadow: "0px 1px 10px 0px rgba(0, 0, 0, 0.05)",

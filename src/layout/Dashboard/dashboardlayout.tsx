@@ -186,7 +186,7 @@ hasNoPadding || isCreateShopPage ? "px-0 py-3 pb-14" : "px-4 py-3 pb-14"  } ${
     isMarketplacePage
       ? "pt-[160px]" // for MarketHeader
       : isSellerPage
-      ? "pt-[160px]" // for SellerHeader
+      ? "pt-[10px]" // for SellerHeader
       : isCreateShopPage
       ? "pt-0" // ✅ attach directly under topbar
       : "" // default DashboardHeader height

@@ -459,9 +459,9 @@ export default function Login() {
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);
         localStorage.setItem("isAdult", response?.data?.data?.user?.is_adult);
-        console.log(
-          "🚀 ~ handleSubmit ~ response?.data?.data?.jwt:",
-          response?.data?.data?.jwt
+        localStorage.setItem(
+          "karma_credits",
+          response?.data?.data?.user.karma_credits
         );
         localStorage.setItem(
           "is_disqualify",

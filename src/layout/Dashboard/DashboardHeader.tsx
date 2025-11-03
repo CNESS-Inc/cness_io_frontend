@@ -15,6 +15,7 @@ import {
   GetUserNotification,
   LogOut,
   GetUserNotificationCount,
+  MeDetails,
 } from "../../Common/ServerAPI";
 import { useToast } from "../../components/ui/Toast/ToastProvider";
 import { initSocket } from "../../Common/socket";
@@ -72,6 +73,11 @@ const DashboardHeader = ({
   const [profilePic, setProfilePic] = useState(
     localStorage.getItem("profile_picture")
   );
+
+
+  const [karmaCredits, setKarmaCredits] = useState(
+  localStorage.getItem("karma_credits") || "0"
+);
 
   // State for notifications from API
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -168,6 +174,7 @@ const DashboardHeader = ({
       setMargaretName(localStorage.getItem("margaret_name") || "");
       setProfilePic(localStorage.getItem("profile_picture") || "");
       setNotificationCount(localStorage.getItem("notification_count") || "0");
+      setKarmaCredits(localStorage.getItem("karma_credits") || "0");
     };
 
     window.addEventListener("storage", handleStorageChange);
@@ -324,8 +331,26 @@ const DashboardHeader = ({
     return "System";
   };
 
+  const fetchMeDetails = async () => {
+    try {
+      const res = await MeDetails();
+      localStorage.setItem(
+        "profile_picture",
+        res?.data?.data?.user.profile_picture
+      );
+      localStorage.setItem("name", res?.data?.data?.user.name);
+      localStorage.setItem("main_name", res?.data?.data?.user.main_name);
+      localStorage.setItem("karma_credits", res?.data?.data?.user?.karma_credits || 0);
+      localStorage.setItem(
+        "margaret_name",
+        res?.data?.data?.user.margaret_name
+      );
+    } catch (error) {}
+  };
+
   useEffect(() => {
     getNotification();
+    fetchMeDetails();
   }, []);
 
   const fetchNotificationCount = async () => {
@@ -418,13 +443,6 @@ const DashboardHeader = ({
       {/* Right side - Icons and User Profile */}
       <div className="flex items-center justify-end sm:justify-cneter gap-3">
         <div className="hidden sm:flex items-center gap-2">
-          <div
-            data-wallet-icon
-            className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white px-4 py-2 rounded-full shadow-lg"
-          >
-            <Wallet className="w-5 h-5" />
-            <span className="font-bold text-lg">{0}</span>
-          </div>
           {/* Logout Button */}
           <div className="relative group">
             <div
@@ -543,7 +561,13 @@ const DashboardHeader = ({
             </span>
           </div>
         </div>
-
+<div
+            data-wallet-icon
+            className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white px-4 py-2 rounded-full shadow-lg"
+          >
+            <Wallet className="w-5 h-5" />
+            <span className="font-bold text-lg">{karmaCredits || 0}</span>
+          </div>
         <div className="hidden md:flex items-center relative" ref={dropdownRef}>
           <button
             onClick={handleProfile}
