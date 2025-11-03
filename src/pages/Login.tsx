@@ -459,9 +459,9 @@ export default function Login() {
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);
         localStorage.setItem("isAdult", response?.data?.data?.user?.is_adult);
-        console.log(
-          "🚀 ~ handleSubmit ~ response?.data?.data?.jwt:",
-          response?.data?.data?.jwt
+        localStorage.setItem(
+          "karma_credits",
+          response?.data?.data?.user.karma_credits
         );
         localStorage.setItem(
           "is_disqualify",
@@ -493,10 +493,23 @@ export default function Login() {
             response?.data?.data?.user.my_referral_code
           );
         }
+
         const completionStatus =
           response.data.data.user.person_organization_complete;
         const completed_step = response.data.data.user.completed_step;
         const is_disqualify = response.data.data.user.is_disqualify;
+
+        const res = await MeDetails();
+        localStorage.setItem(
+          "profile_picture",
+          res?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem("name", res?.data?.data?.user.name);
+        localStorage.setItem("main_name", res?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          res?.data?.data?.user.margaret_name
+        );
 
         //   if (!is_disqualify) {
         //     if (completionStatus === 0 || completed_step === 0) {
@@ -1213,7 +1226,7 @@ export default function Login() {
     },
   });
 
-    const getBillingNote = (plan: any) => {
+  const getBillingNote = (plan: any) => {
     if (!plan.yearlyPrice || !plan.monthlyPrice) return undefined;
 
     if (isAnnual) {
@@ -2560,7 +2573,6 @@ export default function Login() {
                           {getBillingNote(plan)}
                         </p>
                       )}
-                      
                     </div>
                     <Button
                       variant="gradient-primary"

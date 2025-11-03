@@ -13,7 +13,7 @@ const links = [
   { name: "Ecosystem", href: "/ecosystem" },
   { name: "Social", href: "/social" },
   { name: "Certifications", href: "/certifications" },
-  { name: "Premium", href: "/premium" },
+  // { name: "Premium", href: "/premium" },
   { name: "WhyCNESS", href: "/whycness" },
   { name: "FAQs", href: "/faq" },
 ];

@@ -111,6 +111,7 @@ export const EndPoint = {
   allFormData: "/readiness-question/get-formdata",
   getAspiringQuestion: "/readiness-question/get-aspiring-question",
   get_certification_details:"/quiz/certifications",
+  nomination_application:"/nomination-application",
   get_retake_assensment:"/quiz/retake-assessment",
   allPlanData: "/person-plan/user/plan",
   emailverify: "/auth/email-verify",
@@ -581,6 +582,9 @@ export const GetRetakeAssesment = (): ApiResponse => {
 export const GetAllPlanDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.allPlanData);
+};
+export const AddNomination = (formDataToSend: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.POST, formDataToSend, EndPoint.nomination_application);
 };
 export const GetEmailVerify = (formData: EmailVerifyData): ApiResponse => {
   const data: Partial<EmailVerifyData> = {

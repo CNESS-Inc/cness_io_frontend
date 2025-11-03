@@ -177,16 +177,18 @@ const DashboardLayout = () => {
           className={`flex-1 flex flex-col transition-all duration-300 ${isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
             }`}
         >
-          <main
-            className={`flex-1 min-h-screen overflow-y-auto transition-all duration-300 ${hasNoPadding || isCreateShopPage ? "px-0 py-3 pb-14" : "px-4 py-3 pb-14"} ${isMarketplacePage
-              ? "pt-[160px]" // for MarketHeader
-              : isSellerPage
-                ? "pt-[160px]" // for SellerHeader
-                : isCreateShopPage
-                  ? "pt-0" // ✅ attach directly under topbar
-                  : "" // default DashboardHeader height
-              }`}
-          >
+         <main
+  className={`flex-1 min-h-screen overflow-y-auto transition-all duration-300 ${
+hasNoPadding || isCreateShopPage ? "px-0 py-3 pb-14" : "px-4 py-3 pb-14"  } ${
+    isMarketplacePage
+      ? "pt-[160px]" // for MarketHeader
+      : isSellerPage
+      ? "pt-[10px]" // for SellerHeader
+      : isCreateShopPage
+      ? "pt-0" // ✅ attach directly under topbar
+      : "" // default DashboardHeader height
+  }`}
+>
             {/* ↑ adjust this padding to match the total header height (72 + 60) */}
             <div className="flex min-h-screen mb-auto">
               {isDashboardTechPage && (

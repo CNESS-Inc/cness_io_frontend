@@ -23,7 +23,7 @@ const ShopCard: React.FC<ShopCardProps> = ({
   return (
     <div
       onClick={() => navigate(`/dashboard/shop-detail/${id}`, { state: { id, image, name, description, rating, logo } })}
-      className="w-[267px] flex flex-col items-center cursor-pointer hover:shadow-lg transition-shadow duration-300"
+      className="w-full flex flex-col items-center cursor-pointer hover:shadow-lg transition-shadow duration-300"
     >
       <img
         src={image}

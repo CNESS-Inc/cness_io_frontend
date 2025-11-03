@@ -477,6 +477,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
           response?.data?.data?.user.profile_picture
         );
         localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("karma_credits", response?.data?.data?.user?.karma_credits || 0);
         localStorage.setItem("main_name", response?.data?.data?.user.main_name);
         localStorage.setItem(
           "margaret_name",
@@ -490,8 +491,19 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
           );
         }
         const completed_step = response.data.data.user.completed_step;
-        console.log("🚀 ~ handleSubmit ~ completed_step:", completed_step)
         const is_disqualify = response.data.data.user.is_disqualify;
+
+        const res = await MeDetails();
+        localStorage.setItem(
+          "profile_picture",
+          res?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem("name", res?.data?.data?.user.name);
+        localStorage.setItem("main_name", res?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          res?.data?.data?.user.margaret_name
+        );
 
         //   if (!is_disqualify) {
         //     if (completionStatus === 0 || completed_step === 0) {
@@ -859,8 +871,10 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
       };
 
       const res = await submitPersonDetails(payload);
+      
 
       if (res?.success) {
+      localStorage.setItem("completed_step", "1");
         // showToast({
         //   message: "Assessment submitted successfully!",
         //   type: "success",
