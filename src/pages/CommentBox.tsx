@@ -12,6 +12,8 @@ import { useToast } from "../components/ui/Toast/ToastProvider";
 import { useMention } from "../hooks/useMention";
 import FriendSuggestion from "../components/ui/FriendSuggestion";
 import TextWithMentions from "../components/ui/TextWithMentions";
+import Lottie, { type LottieRefCurrentProps } from "lottie-react";
+import likeAnimationData from "../assets/like.json";
 
 interface Comment {
   child_comment_count: number;
@@ -77,6 +79,8 @@ const CommentBox = ({
   const [replySuggestions, setReplySuggestions] = useState<any[]>([]);
   const [showReplySuggestions, setShowReplySuggestions] = useState(false);
   const [selectedReplyMentionIndex, setSelectedReplyMentionIndex] = useState(0);
+  const postLottieRef = useRef<LottieRefCurrentProps | null>(null);
+  const [showPostAnimation, setShowPostAnimation] = useState(false);
 
   // Mention functionality for comments
   const {
@@ -220,6 +224,7 @@ const CommentBox = ({
     if (!commentText.trim()) return;
 
     try {
+
       const formattedData = {
         text: commentText,
         post_id: postId,
@@ -229,6 +234,8 @@ const CommentBox = ({
       const response = await PostComments(formattedData);
 
       if (response?.data?.data) {
+      setShowPostAnimation(true);
+
         console.log("response.data.data", response.data.data);
         setComments((prev) => [
           {
@@ -272,7 +279,9 @@ const CommentBox = ({
           child_comment_count: 0,
         };
         setComments((prev) => [newComment, ...prev]);
+      setShowPostAnimation(true);
       }
+
       setCommentText("");
       setCommentMentions([]);
 
@@ -280,6 +289,11 @@ const CommentBox = ({
       if (onCommentAdded) {
         onCommentAdded();
       }
+
+      // Auto-hide animation after it plays
+      setTimeout(() => {
+        setShowPostAnimation(false);
+      }, 2000);
     } catch (error: any) {
       console.error("Error posting comment:", error.message || error);
       showToast({
@@ -287,7 +301,13 @@ const CommentBox = ({
         type: "error",
         duration: 5000,
       });
+      setShowPostAnimation(false);
     }
+  };
+
+  // Handle when Lottie animation completes
+  const handlePostAnimationComplete = () => {
+    setShowPostAnimation(false);
   };
 
   const handleReplySubmit = async (commentId: string) => {
@@ -332,7 +352,8 @@ const CommentBox = ({
           profile: {
             first_name: "Your",
             last_name: "Name",
-            profile_picture:  !profilePicture ||
+            profile_picture:
+              !profilePicture ||
               profilePicture === "null" ||
               profilePicture === "undefined" ||
               !profilePicture.startsWith("http")
@@ -675,12 +696,14 @@ const CommentBox = ({
                   {showReply === comment.id && (
                     <div className="ml-12 mb-2 flex gap-2">
                       <img
-                        src={ !profilePicture ||
-              profilePicture === "null" ||
-              profilePicture === "undefined" ||
-              !profilePicture.startsWith("http")
-                ? "/profile.png"
-                : profilePicture}
+                        src={
+                          !profilePicture ||
+                          profilePicture === "null" ||
+                          profilePicture === "undefined" ||
+                          !profilePicture.startsWith("http")
+                            ? "/profile.png"
+                            : profilePicture
+                        }
                         alt="Your profile"
                         className="w-8 h-8 rounded-full object-cover flex-shrink-0"
                         onError={(e) => {
@@ -895,7 +918,7 @@ const CommentBox = ({
               )}
             </div>
             <button
-              className={`px-4 py-2 rounded-full font-medium ${
+              className={`px-4 py-2 rounded-full font-medium relative ${
                 commentText
                   ? "text-purple-600 hover:text-purple-700"
                   : "text-purple-300 cursor-not-allowed"
@@ -904,6 +927,25 @@ const CommentBox = ({
               onClick={handleSubmitComment}
             >
               Post
+              {showPostAnimation && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                  <Lottie
+                    lottieRef={postLottieRef}
+                    animationData={likeAnimationData} // You can use the same like animation or create a new one
+                    loop={false}
+                    autoplay={true}
+                    style={{
+                      width: 200,
+                      height: 200,
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                    }}
+                    onComplete={handlePostAnimationComplete}
+                  />
+                </div>
+              )}
             </button>
           </div>
         </div>

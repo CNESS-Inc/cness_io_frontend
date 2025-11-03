@@ -647,7 +647,7 @@ const ScoreResult = () => {
                   100%
                 </div>
                 <div className="text-xs font-medium text-[#818181]">
-                  Above 70 is considered inspired
+                  Above 60 is considered inspired
                 </div>
               </div>
 

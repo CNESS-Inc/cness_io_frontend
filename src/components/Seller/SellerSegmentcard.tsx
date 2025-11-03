@@ -3,7 +3,6 @@ import {
   //ChevronRight,
 
   Search as SearchIcon,
-  Lightbulb,
   X,
   Bell,
   Plus,
@@ -765,30 +764,31 @@ export function GreetingBar({
   };
 
   const completedStep = localStorage.getItem("completed_step");
-  const is_disqualify = localStorage.getItem("is_disqualify");
+  console.log("🚀 ~ GreetingBar ~ completedStep:", completedStep)
+  // const is_disqualify = localStorage.getItem("is_disqualify");
 
-  const openRetakeAssesmentModal = async () => {
-    console.log("1");
-    try {
-      console.log("2");
-      const personOrganization = localStorage.getItem("person_organization");
-      console.log("personOrganization", personOrganization);
-      if (personOrganization === "2") {
-        setActiveModal("organization");
-      } else {
-        setActiveModal("person");
-      }
+  // const openRetakeAssesmentModal = async () => {
+  //   console.log("1");
+  //   try {
+  //     console.log("2");
+  //     const personOrganization = localStorage.getItem("person_organization");
+  //     console.log("personOrganization", personOrganization);
+  //     if (personOrganization === "2") {
+  //       setActiveModal("organization");
+  //     } else {
+  //       setActiveModal("person");
+  //     }
 
-      const response = await GetAllFormDetails();
-      setReadlineQuestion(response?.data?.data?.questions);
-    } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    }
-  };
+  //     const response = await GetAllFormDetails();
+  //     setReadlineQuestion(response?.data?.data?.questions);
+  //   } catch (error: any) {
+  //     showToast({
+  //       message: error?.response?.data?.error?.message,
+  //       type: "error",
+  //       duration: 5000,
+  //     });
+  //   }
+  // };
 
   const handleOrganizationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -929,7 +929,7 @@ export function GreetingBar({
     }
   };
 
-    const getBillingNote = (plan: any) => {
+  const getBillingNote = (plan: any) => {
     if (!plan.yearlyPrice || !plan.monthlyPrice) return undefined;
 
     if (isAnnual) {
@@ -939,6 +939,74 @@ export function GreetingBar({
       return `or ${plan.monthlyPrice}/month`;
     }
   };
+
+  const getBadgeStatusInfo = (badgePaymentStatus: any[]) => {
+    const aspiring = badgePaymentStatus.find(
+      (badge) => badge.slug === "aspiring"
+    );
+    const inspired = badgePaymentStatus.find(
+      (badge) => badge.slug === "inspired"
+    );
+    const luminary = badgePaymentStatus.find(
+      (badge) => badge.slug === "luminary"
+    );
+
+    // Check in order: aspiring -> inspired -> luminary
+    if (aspiring && !aspiring.payment_status) {
+      alert(1);
+      return {
+        message:
+          "To start the certification journey into our platform, please complete the payment for Aspiring badge.",
+        route: "/dashboard/aspiring-assessment",
+        level: "aspiring",
+      };
+    } else if (
+      aspiring?.payment_status &&
+      inspired &&
+      !inspired.payment_status
+    ) {
+      return {
+        message:
+          "To continue your certification journey, please complete the payment for Inspired badge.",
+        route: "/dashboard/inspired-assessment",
+        level: "inspired",
+      };
+    } else if (
+      inspired?.payment_status &&
+      luminary &&
+      !luminary.payment_status
+    ) {
+      return {
+        message:
+          "To advance to the highest level, please complete the payment for Luminary badge.",
+        route: "/dashboard/luminary-assessment",
+        level: "luminary",
+      };
+    } else if (luminary?.payment_status) {
+      return {
+        message: "You have completed all certification levels!",
+        route: null,
+        level: "completed",
+      };
+    }
+
+    // Default fallback
+    return {
+      message:
+        "To start the certification journey into our platform, please complete the payment here.",
+      route: "/dashboard/aspiring-assessment",
+      level: "aspiring",
+    };
+  };
+
+  const badgeStatusInfo = user?.badge_payment_status
+    ? getBadgeStatusInfo(user.badge_payment_status)
+    : {
+        message:
+          "To start the certification journey into our platform, please complete the payment here.",
+        route: "/dashboard/aspiring-assessment",
+        level: "aspiring",
+      };
 
   return (
     <>
@@ -953,10 +1021,10 @@ export function GreetingBar({
         </div>
 
         <div className="col-span-12 lg:col-span-4 flex items-start lg:justify-end justify-start">
-          {completedStep !== "2" && (
+          {/* {completedStep !== "2" && ( */}
             <div className="mx-5 bg-[rgba(255,204,0,0.05)] text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
               <div className="flex items-center gap-2">
-                {is_disqualify === "true" ? (
+                {/* {is_disqualify === "true" ? (
                   Number(user?.daysRemaining) <= 0 ? (
                     <span className="text-green-500">
                       You are eligible for the Aspiration badge. Please{" "}
@@ -977,31 +1045,28 @@ export function GreetingBar({
                       again after {user?.daysRemaining} days!
                     </span>
                   )
-                ) : (
-                  <>
-                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full">
-                      <Lightbulb
-                        className="h-4 w-4"
-                        stroke="#FFCC00"
-                        fill="#FFCC00"
-                      />
+                ) : ( */}
+                    <span className="text-yellow-500">💡</span>
+                    <span>
+                      {badgeStatusInfo.message}{" "}
+                      {badgeStatusInfo.route && (
+                        <a
+                          href="#"
+                          className="text-blue-600 underline"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            // Use the dynamic route based on badge status
+                            if (badgeStatusInfo.route) {
+                              navigate(badgeStatusInfo.route);
+                            } else {
+                              openPricingModal();
+                            }
+                          }}
+                        >
+                          Click here
+                        </a>
+                      )}
                     </span>
-                    <div>
-                      <span className="text-[12px] font-medium text-black leading-[0%] tracking-[0%] font-poppins">
-                        To start the certification journey into our platform,
-                        please complete the payment here.{" "}
-                      </span>
-                      <a
-                        href="#"
-                        className="text-blue-600 text-[12px] underline"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          openPricingModal();
-                        }}
-                      >
-                        Click here
-                      </a>
-                    </div>
                     <button
                       aria-label="Dismiss"
                       onClick={onCloseSuggestion}
@@ -1009,11 +1074,10 @@ export function GreetingBar({
                     >
                       <X className="h-4 w-4" />
                     </button>
-                  </>
-                )}
+                {/* // )} */}
               </div>
             </div>
-          )}
+          {/* // )} */}
           {/* <div className="w-full lg:min-w-[363px] lg:max-w-[400px] flex items-center gap-[10px] rounded-lg bg-[#FFCC00]/10 px-3 py-[10px] text-[#7A5A00]"></div> */}
         </div>
       </div>
@@ -1046,10 +1110,10 @@ export function GreetingBar({
                   </span>
                   <span className="text-gray-500">/month</span>
                   {getBillingNote(plan) && (
-                        <p className="text-sm text-gray-500 mt-1">
-                          {getBillingNote(plan)}
-                        </p>
-                      )}
+                    <p className="text-sm text-gray-500 mt-1">
+                      {getBillingNote(plan)}
+                    </p>
+                  )}
                 </div>
                 <Button
                   variant="gradient-primary"
@@ -2361,6 +2425,7 @@ export function CertificationCard({
   upgradeCtaLabel?: string;
   onUpgrade?: () => void;
 }) {
+  console.log("🚀 ~ CertificationCard ~ score:", score);
   const [slide, setSlide] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
   const [showiInterestModal, setShowInterestModal] = useState(false);
@@ -2402,9 +2467,9 @@ export function CertificationCard({
     if (!activeLevel) {
       setShowInterestModal(true);
     } else if (activeLevel === "Aspiring") {
-      navigate("/dashboard/assesment");
+      navigate("/dashboard/aspiring-assessment");
     } else if (activeLevel === "Inspired") {
-      navigate("/dashboard/upgrade-badge");
+      navigate("/dashboard/inspired-assessment");
     } else {
       onUpgrade?.();
     }
@@ -2479,7 +2544,7 @@ export function CertificationCard({
                   </div>
                   <div className="flex items-center gap-2 w-full sm:w-auto">
                     <button
-                      onClick={onContinue}
+                      onClick={()=>navigate("/dashboard/inspired-assessment")}
                       className="relative w-full sm:w-[194px] h-[40px] rounded-full px-5 py-[10px] flex items-center justify-center text-center font-[600] text-[14px] text-[#222224] font-['Open_Sans'] leading-[100%] bg-white"
                     >
                       <span className="relative z-10">Continue Assessment</span>
@@ -2501,7 +2566,7 @@ export function CertificationCard({
               {underProgressDescription}
             </p>
           </>
-        ) : activeLevel === "Aspiring" && progress === 100 ? (
+        ) : activeLevel === "Aspiring" && progress === 100 && score === 0 ? (
           <>
             <div className="flex items-center gap-2">
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F2EAFE]">
@@ -2550,7 +2615,7 @@ export function CertificationCard({
               {completeProgressDescription}
             </p>
           </>
-        ) : (
+        ) : activeLevel === "Aspiring" && progress === 100 && score < 60 ? (
           <>
             <div className="flex items-center gap-2">
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F2EAFE]">
@@ -2578,22 +2643,27 @@ export function CertificationCard({
                   </sub>
                 </span>
               </div>
-
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <button
-                  onClick={onContinue}
-                  className="relative w-full sm:w-[194px] h-[40px] rounded-full px-5 py-[10px] flex items-center justify-center text-center font-[600] text-[14px] text-[#222224] font-['Open_Sans'] leading-[100%] bg-white"
-                >
-                  <span className="relative z-10">Retake Assessment</span>
-                  <span className="absolute inset-0 rounded-full p-[1px] bg-gradient-to-r from-[#9747FF] to-[#F07EFF]"></span>
-                  <span className="absolute inset-[1px] rounded-full bg-white"></span>
-                </button>
-              </div>
+              {score < 60 ? (
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <button
+                    onClick={onContinue}
+                    className="relative w-full sm:w-[194px] h-[40px] rounded-full px-5 py-[10px] flex items-center justify-center text-center font-[600] text-[14px] text-[#222224] font-['Open_Sans'] leading-[100%] bg-white"
+                  >
+                    <span className="relative z-10">Retake Assessment</span>
+                    <span className="absolute inset-0 rounded-full p-[1px] bg-gradient-to-r from-[#9747FF] to-[#F07EFF]"></span>
+                    <span className="absolute inset-[1px] rounded-full bg-white"></span>
+                  </button>
+                </div>
+              ) : (
+                ""
+              )}
             </div>
             <p className="text-sm font-normal font-['Open_Sans'] leading-[140%] text-[#242424]">
               {inspiredDescription}
             </p>
           </>
+        ) : (
+          ""
         )}
 
         {/* Slides container */}
@@ -2626,7 +2696,11 @@ export function CertificationCard({
                 >
                   <div className="w-full h-full rounded-[16px] bg-white flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4">
                     <img
-                      src={activeLevel === null ? aspired : "https://cdn.cness.io/aspiring.webp"} 
+                      src={
+                        activeLevel === null
+                          ? aspired
+                          : "https://cdn.cness.io/aspiring.webp"
+                      }
                       alt="Aspiring"
                       className="h-[34px] w-[34px] sm:h-[39px] sm:w-[39px]"
                     />
@@ -2647,7 +2721,12 @@ export function CertificationCard({
                 >
                   <div className="w-full h-full rounded-[16px] bg-white flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4">
                     <img
-                      src={activeLevel === null || (activeLevel === "Aspiring" && progress === 0) ? inspired : "https://cdn.cness.io/inspired.webp"}
+                      src={
+                        activeLevel === null ||
+                        (activeLevel === "Aspiring" && progress === 0)
+                          ? inspired
+                          : "https://cdn.cness.io/inspired.webp"
+                      }
                       alt="Inspired"
                       className="h-[34px] w-[34px] sm:h-[39px] sm:w-[39px]"
                     />
@@ -3560,7 +3639,7 @@ export function SocialStackCard({
     rounded-[100px]
     px-[12px] pr-[8px]
     whitespace-nowrap shrink-0
-    !justify-center     /* use !justify-between if you add an icon */
+    !justify-center     
     text-[12px] mr-2   
   "
                     onClick={onPrimary}
