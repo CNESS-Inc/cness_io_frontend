@@ -1418,8 +1418,8 @@ const UserProfilePage = () => {
   return (
     <>
       <section className="w-full px-2 sm:px-4 lg:px-2 pt-4 pb-10">
-        {public_organization === "1" ? (
-          is_disqualify === "true" ? (
+        {/* {public_organization === "1" ? ( */}
+          {/* is_disqualify === "true" ? (
             <div className="mt-0 shadow overflow-hidden p-6 sm:p-8 text-center">
               <div className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
@@ -1446,7 +1446,7 @@ const UserProfilePage = () => {
                 </div>
               </div>
             </div>
-          ) : (
+          ) : ( */}
             <div className="mt-0 bg-white rounded-xl shadow overflow-hidden">
               <div className="bg-white rounded-xl shadow overflow-hidden">
                 <div className="relative h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px] bg-gray-100">
@@ -3719,36 +3719,36 @@ const UserProfilePage = () => {
                 </div>
               </div>
             </div>
-          )
-        ) : (
-          <div className="max-w-6xl mt-0 shadow overflow-hidden p-8 text-center">
-            <div className="py-12">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                Person Profile Feature Coming Soon
-              </h2>
-              <p className="text-gray-600 mb-6">
-                We're working hard to bring this feature to you. Please check
-                back later!
-              </p>
-              <div className="flex justify-center">
-                <svg
-                  className="w-24 h-24 text-purple-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
-        )}
+          {/* ) */}
+        {/* // ) : (
+        //   <div className="max-w-6xl mt-0 shadow overflow-hidden p-8 text-center">
+        //     <div className="py-12">
+        //       <h2 className="text-2xl font-bold text-gray-800 mb-4">
+        //         Person Profile Feature Coming Soon
+        //       </h2>
+        //       <p className="text-gray-600 mb-6">
+        //         We're working hard to bring this feature to you. Please check
+        //         back later!
+        //       </p>
+        //       <div className="flex justify-center">
+        //         <svg
+        //           className="w-24 h-24 text-purple-500"
+        //           fill="none"
+        //           stroke="currentColor"
+        //           viewBox="0 0 24 24"
+        //           xmlns="http://www.w3.org/2000/svg"
+        //         >
+        //           <path
+        //             strokeLinecap="round"
+        //             strokeLinejoin="round"
+        //             strokeWidth={2}
+        //             d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+        //           />
+        //         </svg>
+        //       </div>
+        //     </div>
+        //   </div>
+        // )} */}
       </section>
     </>
   );

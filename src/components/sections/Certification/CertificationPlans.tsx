@@ -250,7 +250,7 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
 
           <div className="mt-6">
             <Button
-              onClick={() => setIsOpenModal(false)}
+              onClick={() => navigate("/dashboard/assesmentcertification")}
               variant="gradient-primary"
               className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
             >

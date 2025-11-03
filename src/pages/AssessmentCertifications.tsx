@@ -10,6 +10,7 @@ import { GetCertificationDetails } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 
 interface Certification {
+  profile_progress: number;
   level: string;
   slug: string;
   message: string | null;
@@ -51,50 +52,73 @@ const AssessmentCertification = () => {
   };
 
   // Helper function to render button or message based on status
-  const renderCertificationStatus = (
-    slug: string,
-    buttonText: string,
-    navigateTo: string
-  ) => {
-    const cert = getCertificationBySlug(slug);
-    if (!cert) return null;
+const renderCertificationStatus = (
+  slug: string,
+  buttonText: string,
+  navigateTo: string
+) => {
+  const cert = getCertificationBySlug(slug);
+  if (!cert) return null;
 
-    // Disable leader button when status is 0
-    const isLeaderDisabled = slug === "leader" && cert.status === 0;
+  // Disable leader button when status is 0
+  const isLeaderDisabled = slug === "leader" && cert.status === 0;
 
-    if (cert.status === 0) {
-      return (
+  const handleButtonClick = () => {
+    // Check if profile is complete before proceeding
+    if (cert.profile_progress !== 100) {
+      showToast({
+        message:"Please complete your profile first before applying for certification",
+        type: "error",
+        duration: 5000,
+      });
+      return;
+    }
+    
+    if (isLeaderDisabled) {
+      setIsModalOpen(true);
+    } else {
+      navigate(navigateTo);
+    }
+  };
+
+  if (cert.status === 0) {
+    return (
+      <>
         <button
-          onClick={() => !isLeaderDisabled && navigate(navigateTo)}
-          disabled={isLeaderDisabled}
-          className={`font-plusJakarta font-medium text-[16px] leading-[100%] text-center text-white px-5 py-2.5 rounded-full transition-all duration-300 ease-out
-          ${
-            isLeaderDisabled
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-gradient-to-r from-[#7077FE] to-[#F07EFF] hover:opacity-90"
-          }`}
+          onClick={handleButtonClick}
+          className={`font-plusJakarta font-medium text-[16px] leading-[100%] text-center text-white px-5 py-2.5 rounded-full transition-all duration-300 ease-out bg-gradient-to-r from-[#7077FE] to-[#F07EFF] hover:opacity-90`}
         >
           {buttonText}
         </button>
-      );
-    } else if (cert.status === 1 || cert.status === 2) {
-      return (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-          <p className="font-['Open_Sans'] font-normal text-[14px] leading-[160%] text-blue-800">
-            {cert.message}
-          </p>
-          {cert.start_date && cert.end_date && (
-            <p className="font-['Open_Sans'] font-normal text-[12px] leading-[160%] text-blue-600 mt-2">
-              Valid from {new Date(cert.start_date).toLocaleDateString()} to{" "}
-              {new Date(cert.end_date).toLocaleDateString()}
+        
+        {/* Optional: Show profile completion message */}
+        {/* {cert.profile_progress !== 100 && (
+          <div className="mt-2 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+            <p className="font-['Open_Sans'] font-normal text-[12px] leading-[160%] text-yellow-800">
+              Complete your profile ({cert.profile_progress}%) to apply for this certification
             </p>
-          )}
-        </div>
-      );
-    }
+          </div>
+        )} */}
+      </>
+    );
+  } else if (cert.status === 1 || cert.status === 2) {
+    return (
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+        <p className="font-['Open_Sans'] font-normal text-[14px] leading-[160%] text-blue-800">
+          {cert.message}
+        </p>
+        {cert.start_date && cert.end_date && (
+          <p className="font-['Open_Sans'] font-normal text-[12px] leading-[160%] text-blue-600 mt-2">
+            Valid from {new Date(cert.start_date).toLocaleDateString()} to{" "}
+            {new Date(cert.end_date).toLocaleDateString()}
+          </p>
+        )}
+      </div>
+    );
+  }
 
-    return null;
-  };
+  return null;
+};
 
   // Helper function specifically for Leader nomination button
   // Helper function specifically for Leader nomination button
