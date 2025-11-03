@@ -18,7 +18,6 @@ import Modal from "../components/ui/Modal";
 import TopicModal from "../components/Social/Topicmodel";
 import { iconMap } from "../assets/icons";
 // import { MdContentCopy } from "react-icons/md";
-import likeAnimationData from "../assets/like.json";
 
 import {
   AddPost,
@@ -63,7 +62,6 @@ import CollectionList from "./CollectionList";
 import Button from "../components/ui/Button";
 import SharePopup from "../components/Social/SharePopup";
 import { buildShareUrl, copyPostLink } from "../lib/utils";
-import Lottie from "lottie-react";
 import CreditAnimation from "../Common/CreditAnimation";
 // import { buildShareUrl } from "../lib/utils";
 
@@ -752,8 +750,6 @@ export default function SocialTopBar() {
   const handleRemoveImage = (index: number) => {
     setSelectedImages((prev) => prev.filter((_, i) => i !== index));
   };
-  const [showPostSuccessAnimation, setShowPostSuccessAnimation] =
-    useState(false);
 
   const handleSubmitPost = async () => {
     // Check if message is required and validate character limits
@@ -821,10 +817,20 @@ export default function SocialTopBar() {
     try {
       const response = await AddPost(formData);
       if (response) {
-        setShowPostSuccessAnimation(true);
-        setTimeout(() => {
-          setShowPostSuccessAnimation(false);
-        }, 2000);
+
+        // Get the post button element to use as animation source
+        const postButton = document.querySelector(
+          "[data-post-button]"
+        ) as HTMLElement;
+
+        if (postButton) {
+          localStorage.setItem(
+          "karma_credits",
+          response.data.data.karma_credits.toString()
+        );
+          // Trigger credit animation for creating a post (more credits than a like)
+          triggerCreditAnimation(postButton, 20); // 20 credits for creating a post
+        }
 
         showToast({
           message: "Post created successfully",
@@ -1005,17 +1011,29 @@ export default function SocialTopBar() {
   const handleLike = async (postId: string, event: React.MouseEvent) => {
     try {
       const formattedData = { post_id: postId };
-      PostsLike(formattedData);
 
       // Find the current post to check its like status
       const currentPost = userPosts.find((post) => post.id === postId);
       const isCurrentlyLiked = currentPost?.is_liked || false;
 
-      // Only trigger animation when LIKING (not unliking)
+      // Store the button element reference for later use
+      const buttonElement = event.currentTarget as HTMLElement;
+
+      // Make the API call first
+      const res = await PostsLike(formattedData);
+
+      // Update karma_credits in localStorage from API response
+      if (res?.data?.data?.karma_credits !== undefined) {
+        localStorage.setItem(
+          "karma_credits",
+          res.data.data.karma_credits.toString()
+        );
+        window.dispatchEvent(new Event("karmaCreditsUpdated"));
+      }
+
+      // Only trigger animation when LIKING (not unliking) - AFTER API call
       if (!isCurrentlyLiked) {
-        // Store the element reference before the async operation
-        const buttonElement = event.currentTarget;
-        triggerCreditAnimation(buttonElement as HTMLElement, 10); // 10 credits for like
+        triggerCreditAnimation(buttonElement, 5); // 5 credits for like
       }
 
       // Update post data
@@ -1032,18 +1050,10 @@ export default function SocialTopBar() {
             : post
         )
       );
-
-      // Update credits after animation (you'll need to implement this based on your API)
-      setTimeout(async () => {
-        // Add your credit update logic here
-        // For example:
-        // const creditsResponse = await getUserCredits();
-        // setCredits(creditsResponse.data.credits);
-      }, 800);
     } catch (error) {
       console.error("Error fetching like details:", error);
     }
-  }
+  };
 
   const handleFollow = async (userId: string) => {
     try {
@@ -1998,14 +2008,14 @@ export default function SocialTopBar() {
                           >
                             Appreciate
                           </span>
-                          {animations.map(anim => (
-      <CreditAnimation 
-        key={anim.id} 
-        from={anim.from} 
-        to={anim.to} 
-        amount={anim.amount} 
-      />
-    ))}
+                          {animations.map((anim) => (
+                            <CreditAnimation
+                              key={anim.id}
+                              from={anim.from}
+                              to={anim.to}
+                              amount={anim.amount}
+                            />
+                          ))}
                         </button>
                         <button
                           onClick={() => {
@@ -2296,12 +2306,12 @@ export default function SocialTopBar() {
                   <Link to={`/dashboard/userprofile/${userInfo?.id}`}>
                     <img
                       src={
-                        !userInfo.profile_picture ||
-                        userInfo.profile_picture === "null" ||
-                        userInfo.profile_picture === "undefined" ||
-                        !userInfo.profile_picture.startsWith("http")
+                        !userInfo?.profile_picture ||
+                        userInfo?.profile_picture === "null" ||
+                        userInfo?.profile_picture === "undefined" ||
+                        !userInfo?.profile_picture.startsWith("http")
                           ? "/profile.png"
-                          : userInfo.profile_picture
+                          : userInfo?.profile_picture
                       }
                       className="w-8 h-8 md:w-10 md:h-10 rounded-full"
                       alt="User"
@@ -2314,7 +2324,7 @@ export default function SocialTopBar() {
                   <div>
                     <p className="font-semibold text-sm md:text-base text-black">
                       <Link to={`/dashboard/userprofile/${userInfo?.id}`}>
-                        {userInfo.name}
+                        {userInfo?.name}
                       </Link>
                     </p>
                   </div>
@@ -2335,7 +2345,7 @@ export default function SocialTopBar() {
                   <textarea
                     rows={4}
                     className="w-full p-3 border border-[#ECEEF2] text-black placeholder:text-[#64748B] text-sm rounded-md resize-none mb-3 outline-none focus:border-[#897AFF1A]"
-                    placeholder={`What's on your mind? ${userInfo.main_name}...`}
+                    placeholder={`What's on your mind? ${userInfo?.main_name}...`}
                     value={postMessage}
                     onChange={(e) => {
                       if (e.target.value.length <= maxChars) {
@@ -2495,22 +2505,13 @@ export default function SocialTopBar() {
                     <button
                       onClick={handleSubmitPost}
                       className="bg-[#7077FE] text-white px-6 py-2 rounded-full hover:bg-[#5b63e6] relative"
+                      data-post-button // Add this attribute
                     >
                       Post
                     </button>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
-          {showPostSuccessAnimation && (
-            <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
-              <Lottie
-                animationData={likeAnimationData}
-                loop={false}
-                autoplay={true}
-                style={{ width: 800, height: 800 }}
-              />
             </div>
           )}
 
@@ -2635,6 +2636,7 @@ export default function SocialTopBar() {
                 setShowCommentBox(false);
                 setSelectedPostId(null);
               }}
+              triggerCreditAnimation={triggerCreditAnimation}
             />
           )}
 

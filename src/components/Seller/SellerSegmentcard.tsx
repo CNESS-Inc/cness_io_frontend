@@ -1025,7 +1025,7 @@ export function GreetingBar({
                     </span>
                   )
                 ) : ( */}
-              {badgeStatusInfo?.message ? (
+              {/* {badgeStatusInfo?.message ? (
                 <>
                   <span className="text-yellow-500">💡</span>
                   <span>
@@ -1058,7 +1058,7 @@ export function GreetingBar({
                 </>
               ) : (
                 ""
-              )}
+              )} */}
               {/* // )} */}
             </div>
           </div>
@@ -2452,9 +2452,9 @@ export function CertificationCard({
     if (!activeLevel) {
       setShowInterestModal(true);
     } else if (activeLevel === "Aspiring") {
-      navigate("/dashboard/aspiring-assessment");
+      navigate("/dashboard/assesmentcertification");
     } else if (activeLevel === "Inspired") {
-      navigate("/dashboard/inspired-assessment");
+      navigate("/dashboard/assesmentcertification");
     } else {
       onUpgrade?.();
     }

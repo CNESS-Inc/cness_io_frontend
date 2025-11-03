@@ -477,6 +477,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
           response?.data?.data?.user.profile_picture
         );
         localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("karma_credits", response?.data?.data?.user.karma_credits);
         localStorage.setItem("main_name", response?.data?.data?.user.main_name);
         localStorage.setItem(
           "margaret_name",
@@ -492,7 +493,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
         const completed_step = response.data.data.user.completed_step;
         const is_disqualify = response.data.data.user.is_disqualify;
 
-                 const res = await MeDetails();
+        const res = await MeDetails();
         localStorage.setItem(
           "profile_picture",
           res?.data?.data?.user.profile_picture

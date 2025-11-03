@@ -40,6 +40,7 @@ function PricingCard({
   card: Card;
   onUpgrade: (plan: string) => void;
 }) {
+  console.log("🚀 ~ PricingCard ~ card:", card)
   const selected = !!card.selected;
 
   const selectedStyles: React.CSSProperties = selected
@@ -146,7 +147,9 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
 
   const handleUpgrade = (plan: string) => {
     if (plan === "Inspired") {
-      navigate("/dashboard/assesment");
+      navigate("/dashboard/assesmentcertification");
+    } else if (plan === "Aspired") {
+      navigate("/dashboard/assesmentcertification");
     } else if (plan === "Leader") {
       setIsOpenModal(true);
     }
