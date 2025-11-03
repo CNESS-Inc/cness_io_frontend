@@ -940,63 +940,41 @@ export function GreetingBar({
     }
   };
 
-  const getBadgeStatusInfo = (badgePaymentStatus: any[]) => {
-    const aspiring = badgePaymentStatus.find(
-      (badge) => badge.slug === "aspiring"
-    );
-    const inspired = badgePaymentStatus.find(
-      (badge) => badge.slug === "inspired"
-    );
-    const luminary = badgePaymentStatus.find(
-      (badge) => badge.slug === "luminary"
-    );
+const getBadgeStatusInfo = (badgePaymentStatus: any[]) => {
+  // If badgePaymentStatus is not provided or empty, return null
+  if (!badgePaymentStatus || badgePaymentStatus.length === 0) {
+    return null;
+  }
 
-    // Check in order: aspiring -> inspired -> luminary
-    if (aspiring && !aspiring.payment_status) {
-      return {
-        message:
-          "To start the certification journey into our platform, please complete the payment for Aspiring badge.",
-        route: "/dashboard/aspiring-assessment",
-        level: "aspiring",
-      };
-    } else if (
-      aspiring?.payment_status &&
-      inspired &&
-      !inspired.payment_status
-    ) {
-      return {
-        message:
-          "To continue your certification journey, please complete the payment for Inspired badge.",
-        route: "/dashboard/inspired-assessment",
-        level: "inspired",
-      };
-    } else if (
-      inspired?.payment_status &&
-      luminary &&
-      !luminary.payment_status
-    ) {
-      return {
-        message:
-          "To advance to the highest level, please complete the payment for Luminary badge.",
-        route: "/dashboard/luminary-assessment",
-        level: "luminary",
-      };
-    } else if (luminary?.payment_status) {
-      return {
-        message: "You have completed all certification levels!",
-        route: null,
-        level: "completed",
-      };
-    }
+  const aspiring = badgePaymentStatus.find(
+    (badge) => badge.slug === "aspiring"
+  );
+  const inspired = badgePaymentStatus.find(
+    (badge) => badge.slug === "inspired"
+  );
 
-    // Default fallback
+  // Check in order: aspiring -> inspired
+  if (aspiring && !aspiring.payment_status) {
     return {
-      message:
-        "To start the certification journey into our platform, please complete the payment here.",
+      message: "To start the certification journey into our platform, please complete the payment for Aspiring badge.",
       route: "/dashboard/aspiring-assessment",
       level: "aspiring",
     };
-  };
+  } else if (
+    aspiring?.payment_status &&
+    inspired &&
+    !inspired.payment_status
+  ) {
+    return {
+      message: "To continue your certification journey, please complete the payment for Inspired badge.",
+      route: "/dashboard/inspired-assessment",
+      level: "inspired",
+    };
+  }
+
+  // If none of the above conditions are met, return null
+  return null;
+};
 
   const badgeStatusInfo = user?.badge_payment_status
     ? getBadgeStatusInfo(user.badge_payment_status)
@@ -1045,10 +1023,11 @@ export function GreetingBar({
                     </span>
                   )
                 ) : ( */}
+                {badgeStatusInfo?.message ? <>
                     <span className="text-yellow-500">💡</span>
                     <span>
-                      {badgeStatusInfo.message}{" "}
-                      {badgeStatusInfo.route && (
+                      {badgeStatusInfo?.message}{" "}
+                      {badgeStatusInfo?.route && (
                         <a
                           href="#"
                           className="text-blue-600 underline"
@@ -1073,6 +1052,7 @@ export function GreetingBar({
                     >
                       <X className="h-4 w-4" />
                     </button>
+                </> : ""}
                 {/* // )} */}
               </div>
             </div>
