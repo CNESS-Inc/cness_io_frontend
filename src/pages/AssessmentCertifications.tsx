@@ -353,7 +353,7 @@ const AssessmentCertification = () => {
 
             {/* Conditionally render buttons or message for Leader */}
             {(() => {
-              const leaderCert = getCertificationBySlug("luminary"); // Note: using "luminary" slug from API
+              const leaderCert = getCertificationBySlug("leader"); // Note: using "luminary" slug from API
               
               if (!leaderCert) return null;
 
