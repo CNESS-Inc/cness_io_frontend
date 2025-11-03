@@ -18,6 +18,7 @@ import Modal from "../components/ui/Modal";
 import TopicModal from "../components/Social/Topicmodel";
 import { iconMap } from "../assets/icons";
 // import { MdContentCopy } from "react-icons/md";
+import likeAnimationData from "../assets/like.json";
 
 import {
   AddPost,
@@ -62,6 +63,7 @@ import CollectionList from "./CollectionList";
 import Button from "../components/ui/Button";
 import SharePopup from "../components/Social/SharePopup";
 import { buildShareUrl, copyPostLink } from "../lib/utils";
+import Lottie from "lottie-react";
 // import { buildShareUrl } from "../lib/utils";
 
 interface Post {
@@ -276,6 +278,10 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
   );
 }
 
+interface AnimationStates {
+  [postId: string]: boolean;
+}
+
 //const [isExpanded, setIsExpanded] = useState(false);
 //const toggleExpand = () => setIsExpanded(!isExpanded);
 
@@ -331,7 +337,9 @@ export default function SocialTopBar() {
   // const [addNewPost, setAddNewPost] = useState(false)
 
   const [userInfo, setUserInfo] = useState<any>();
-  const [isAdult, setIsAdult] = useState<Boolean>(localStorage.getItem("isAdult") === "true"? true : false);
+  const [isAdult, setIsAdult] = useState<Boolean>(
+    localStorage.getItem("isAdult") === "true" ? true : false
+  );
   const navigate = useNavigate();
   const { showToast } = useToast();
   const userProfilePicture = localStorage.getItem("profile_picture");
@@ -352,6 +360,8 @@ export default function SocialTopBar() {
   // const [isSavingPost, setIsSavingPost] = useState<string | null>(null);
   const [isReportingPost, setIsReportingPost] = useState<string | null>(null);
   //const [showTopicModal, setShowTopicModal] = useState(false);
+
+  const [animationStates, setAnimationStates] = useState<AnimationStates>({});
 
   const maxChars = 2000;
 
@@ -713,6 +723,8 @@ export default function SocialTopBar() {
   const handleRemoveImage = (index: number) => {
     setSelectedImages((prev) => prev.filter((_, i) => i !== index));
   };
+  const [showPostSuccessAnimation, setShowPostSuccessAnimation] =
+    useState(false);
 
   const handleSubmitPost = async () => {
     // Check if message is required and validate character limits
@@ -780,6 +792,11 @@ export default function SocialTopBar() {
     try {
       const response = await AddPost(formData);
       if (response) {
+        setShowPostSuccessAnimation(true);
+        setTimeout(() => {
+          setShowPostSuccessAnimation(false);
+        }, 2000);
+
         showToast({
           message: "Post created successfully",
           type: "success",
@@ -788,7 +805,6 @@ export default function SocialTopBar() {
 
         getFreshPosts();
 
-        setShowPopup(false);
         // Reset form
         setPostMessage("");
         setSelectedTopic("");
@@ -798,6 +814,7 @@ export default function SocialTopBar() {
           URL.revokeObjectURL(postVideoPreviewUrl);
           setPostVideoPreviewUrl(null);
         }
+        setShowPopup(false);
       }
     } catch (err: any) {
       console.error(err);
@@ -960,6 +977,20 @@ export default function SocialTopBar() {
     try {
       const formattedData = { post_id: postId };
       PostsLike(formattedData);
+
+      // Find the current post to check its like status
+      const currentPost = userPosts.find((post) => post.id === postId);
+      const isCurrentlyLiked = currentPost?.is_liked || false;
+
+      // Only trigger animation when LIKING (not unliking)
+      if (!isCurrentlyLiked) {
+        setAnimationStates((prev) => ({
+          ...prev,
+          [postId]: true,
+        }));
+      }
+
+      // Update post data
       setUserPosts((prevPosts) =>
         prevPosts.map((post) =>
           post.id === postId
@@ -973,9 +1004,27 @@ export default function SocialTopBar() {
             : post
         )
       );
+
+      // Auto-hide animation after it plays (only if it was triggered)
+      if (!isCurrentlyLiked) {
+        setTimeout(() => {
+          setAnimationStates((prev) => ({
+            ...prev,
+            [postId]: false,
+          }));
+        }, 2000); // Adjust timing based on your animation duration
+      }
     } catch (error) {
       console.error("Error fetching like details:", error);
     }
+  };
+
+  // Handle when Lottie animation completes
+  const handleAnimationComplete = (postId: string) => {
+    setAnimationStates((prev) => ({
+      ...prev,
+      [postId]: false,
+    }));
   };
 
   const handleFollow = async (userId: string) => {
@@ -1049,7 +1098,7 @@ export default function SocialTopBar() {
   }, [page, isLoading]);
 
   const MeDetail = async () => {
-    if(localStorage.getItem("isAdult") === "true"){
+    if (localStorage.getItem("isAdult") === "true") {
       setIsAdult(true);
       return;
     }
@@ -1091,9 +1140,8 @@ export default function SocialTopBar() {
       await getUserPosts();
       setIsPostsLoading(false);
     };
-    
+
     fetchInitialData();
-    
   }, []);
 
   // Function to save/unsave post to collection
@@ -1590,8 +1638,8 @@ export default function SocialTopBar() {
                                 ${
                                   getFriendStatus(post.user_id) === "connected"
                                     ? "bg-gray-400 text-white cursor-not-allowed"
-                                    :
-                                  getFriendStatus(post.user_id) === "requested"
+                                    : getFriendStatus(post.user_id) ===
+                                      "requested"
                                     ? "bg-gray-400 text-white cursor-not-allowed"
                                     : "bg-white text-black shadow-md"
                                 }`}
@@ -1604,9 +1652,11 @@ export default function SocialTopBar() {
                                 />
                                 {connectingUsers[post.user_id]
                                   ? "Loading..."
-                                  :  getFriendStatus(post.user_id) === "connected"
-                                  ? "Connected" : 
-                                  getFriendStatus(post.user_id) === "requested"
+                                  : getFriendStatus(post.user_id) ===
+                                    "connected"
+                                  ? "Connected"
+                                  : getFriendStatus(post.user_id) ===
+                                    "requested"
                                   ? "Requested"
                                   : "Connect"}
                               </span>
@@ -1910,26 +1960,41 @@ export default function SocialTopBar() {
                         )}
                       </div>
 
-                     <div className="border-t border-[#ECEEF2] pt-4 grid grid-cols-3  gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
+                      <div className="border-t border-[#ECEEF2] pt-4 grid grid-cols-3  gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
                         <button
                           onClick={() => handleLike(post.id)}
                           disabled={isLoading}
-                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 ${
+                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 relative ${
                             isLoading ? "opacity-50 cursor-not-allowed" : ""
                           }`}
                         >
                           <ThumbsUp
                             className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0"
-                            fill={post.is_liked ? "#7077FE" : "none"} // <-- condition here
-                            stroke={post.is_liked ? "#7077FE" : "#000"} // keeps border visible
+                            fill={post.is_liked ? "#7077FE" : "none"}
+                            stroke={post.is_liked ? "#7077FE" : "#000"}
                           />
                           <span
                             className={`hidden sm:flex ${
-                              post.is_liked ? "#7077FE" : "text-black"
+                              post.is_liked ? "text-[#7077FE]" : "text-black"
                             }`}
                           >
                             Appreciate
                           </span>
+
+                          {/* Lottie Animation Overlay - Positioned relative to the button */}
+                          {animationStates[post.id] && (
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                              <Lottie
+                                animationData={likeAnimationData}
+                                loop={false}
+                                autoplay={true}
+                                style={{ width: 800, height: 800 }} // Reduced size to fit better
+                                onComplete={() =>
+                                  handleAnimationComplete(post.id)
+                                }
+                              />
+                            </div>
+                          )}
                         </button>
                         <button
                           onClick={() => {
@@ -1968,7 +2033,9 @@ export default function SocialTopBar() {
                             className={`flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 text-black`}
                           >
                             <Share2 className="w-5 h-5 md:w-6 md:h-6" />
-                            <span className="hidden sm:flex text-black">Share</span>
+                            <span className="hidden sm:flex text-black">
+                              Share
+                            </span>
                           </button>
                           {openMenu.postId === post.id &&
                             openMenu.type === "share" && (
@@ -2416,13 +2483,23 @@ export default function SocialTopBar() {
 
                     <button
                       onClick={handleSubmitPost}
-                      className="bg-[#7077FE] text-white px-6 py-2 rounded-full hover:bg-[#5b63e6]"
+                      className="bg-[#7077FE] text-white px-6 py-2 rounded-full hover:bg-[#5b63e6] relative"
                     >
                       Post
                     </button>
                   </div>
                 </div>
               </div>
+            </div>
+          )}
+          {showPostSuccessAnimation && (
+            <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+              <Lottie
+                animationData={likeAnimationData}
+                loop={false}
+                autoplay={true}
+                style={{ width: 800, height: 800 }}
+              />
             </div>
           )}
 

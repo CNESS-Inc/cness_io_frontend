@@ -137,7 +137,7 @@ export const router = createBrowserRouter([
 
       //{
       // // path: "why",
-       // element: <Why />,
+      // element: <Why />,
       //},
       // {
       //   path: "what",
@@ -151,7 +151,7 @@ export const router = createBrowserRouter([
         path: "certifications",
         element: <Certifications />,
       },
-     
+
       {
         path: "ecosystem",
         element: <EcoSystem />,
@@ -169,16 +169,15 @@ export const router = createBrowserRouter([
         path: "cness-marketplace",
         element: <CnessMarketplace />,
       },
-    {
-      path: "premium",
-      element: <Premium />,
-    },
-    {
-      path:"whycness",
-      element:<WhyCness />
-    },
       {
-      
+        path: "premium",
+        element: <Premium />,
+      },
+      {
+        path: "whycness",
+        element: <WhyCness />,
+      },
+      {
         path: "dashboard",
         element: <DashboardLayout />, // ✅ now it's wrapped!
         children: [
@@ -191,10 +190,10 @@ export const router = createBrowserRouter([
             path: "score-result",
             element: <ScoreResult />,
           },
-           {
-      path: "collections",
-      element: <MyCollections />
-    },
+          {
+            path: "collections",
+            element: <MyCollections />,
+          },
           {
             path: "MyCollection/:id",
             element: <Mycollectionview />,
@@ -268,25 +267,25 @@ export const router = createBrowserRouter([
           },
           //old marketplacepage
           {
-            path:"marketplace",
-            element:<MarketPlace />,
+            path: "marketplace",
+            element: <MarketPlace />,
           },
           {
             path: "market-place",
             element: <MarketPlaceNew />,
           },
           {
-  path: "market-place/search",
-  element: <MPSearch />, // ← new page
-},
-
-{
-  path: "categories",
-  element: <Category />,
-},
+            path: "market-place/search",
+            element: <MPSearch />, // ← new page
+          },
 
           {
-           path: "product-detail/:id",
+            path: "categories",
+            element: <Category />,
+          },
+
+          {
+            path: "product-detail/:id",
             element: <ProductDetail />,
           },
 
@@ -382,6 +381,57 @@ element:<SellerProductList />
   path :"orderlist/:id",
   element:<SellerOrderDetail />
 },
+            path: "shop-detail/:id",
+            element: <ShopDetail />,
+          },
+
+          {
+            path: "product-review/:id",
+            element: <ReviewAll />,
+          },
+          {
+            path: "cart",
+            element: <CartPage />,
+          },
+          {
+            path: "checkout",
+            element: <Checkout />,
+          },
+          {
+            path: "payment-success",
+            element: <PaymentSuccess />,
+          },
+
+          {
+            path: "payment-failed",
+            element: <PaymentFailed />,
+          },
+          {
+            path: "wishlist",
+            element: <Wishlist />,
+          },
+          {
+            path: "order-history",
+            element: <OrderHistory />,
+          },
+          {
+            path: "order-history/:id",
+            element: <ProductSummery />,
+          },
+          {
+            path: "shops",
+            element: <ShopsList />,
+          },
+
+          {
+            path: "seller-dashboard",
+            element: <VendorDashboard />,
+          },
+
+          {
+            path: "createshop",
+            element: <CreateShopForm />,
+          },
           // {
           //   path: "search-listing",
           //   element:
@@ -398,7 +448,7 @@ element:<SellerProductList />
           {
             path: "userprofile/:id",
             //element: <DashboardUserProfile />,
-            element:<UserPublicProfile />,
+            element: <UserPublicProfile />,
           },
           {
             path: "digital_products",
@@ -500,7 +550,6 @@ element:<SellerProductList />
             element: <Profile />,
           },
 
-          
           {
             path: "MyConnection",
             element: <MyConnection />,
