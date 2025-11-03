@@ -126,6 +126,15 @@ export default function HeroSection() {
               </Button>
             </div>
           </div>
+          <br />
+          <div className="text-center w-full max-w-screen-lg">
+            <p className="poppins text-base sm:text-lg md:text-xl lg:text-2xl font-bold uppercase  mb-3 sm:mb-4 text-gray-800">
+          Coming Soon: CNESS SuperApp and B2B Certification Portal
+          </p>
+           <p className="openSans text-base sm:text-lg md:text-xl text-[#000] mb-10 max-w-2xl mx-auto">
+           Email at support@cness.io  for career, investor, vendor
+          </p>
+            </div>
         </div>
 
   <div className="flex justify-center pb-12 pt-20">
