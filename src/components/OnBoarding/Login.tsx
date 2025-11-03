@@ -490,7 +490,6 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
           );
         }
         const completed_step = response.data.data.user.completed_step;
-        console.log("🚀 ~ handleSubmit ~ completed_step:", completed_step)
         const is_disqualify = response.data.data.user.is_disqualify;
 
         //   if (!is_disqualify) {
@@ -859,8 +858,10 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
       };
 
       const res = await submitPersonDetails(payload);
+      
 
       if (res?.success) {
+      localStorage.setItem("completed_step", "1");
         // showToast({
         //   message: "Assessment submitted successfully!",
         //   type: "success",
