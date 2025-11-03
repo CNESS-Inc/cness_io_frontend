@@ -178,6 +178,11 @@ export const router = createBrowserRouter([
         path: "whycness",
         element: <WhyCness />,
       },
+
+        {
+    path: "social",
+    element: <Social />,
+  },
       {
         path: "dashboard",
         element: <DashboardLayout />, // ✅ now it's wrapped!
@@ -389,7 +394,7 @@ element:<SellerProductList />
 {
   path :"orderlist/:id",
   element:<SellerOrderDetail />
-},        {
+},{
             path: "shop-detail/:id",
             element: <ShopDetail />,
           },
@@ -664,10 +669,7 @@ element:<SellerProductList />
       },
     ],
   },*/
-  {
-    path: "social",
-    element: <Social />,
-  },
+
   {
     path: "/email-verify",
     element: <EmailVerify />,
