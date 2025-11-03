@@ -98,7 +98,7 @@ const AssessmentCertification = () => {
     
     if (leaderCert?.nomination_form_submited) {
       return (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-1">
           <p className="font-['Open_Sans'] font-normal text-[14px] leading-[160%] text-blue-800">
             Your nomination details have been submitted.
           </p>
@@ -377,9 +377,9 @@ const AssessmentCertification = () => {
         <hr className="border-gray-200 mb-8" />
 
         {/* Content Grid */}
-        <div className="grid md:grid-cols-2 gap-10 items-start">
+        <div className="grid md:grid-cols-3 gap-10 items-start">
           {/* Left Section */}
-          <div>
+          <div className="md:col-span-2">
             <h4 className="font-[poppins] font-semibold text-[34px] leading-[100%] tracking-[0] text-gray-900 mb-3">
               Who Is Eligible for This Level of Certification?
             </h4>
@@ -393,7 +393,7 @@ const AssessmentCertification = () => {
             </ol>
 
             {/* Conditionally render buttons or message for Leader */}
-            <div className="flex flex-col md:flex-row gap-3">
+            <div className="flex flex-col md:flex-row items-center gap-3">
               {renderCertificationStatus(
                 "leader",
                 "Apply for Leader Certification",
@@ -401,8 +401,8 @@ const AssessmentCertification = () => {
               )}
               
               {/* Use the separate helper for nomination button */}
-            </div>
               {renderLeaderNominationButton()}
+            </div>
 
             {/* Nomination Process */}
             <div className="w-full max-w-[639px] rounded-[30px] border border-gray-200 bg-[#FAFAFA] flex flex-col gap-[14px] p-6 md:p-[30px] px-[40px] mt-10">
@@ -498,7 +498,7 @@ const AssessmentCertification = () => {
           </div>
 
           {/* Right Section */}
-          <div className="flex flex-col space-y-3 md:items-end items-center mt-8">
+          <div className="flex flex-col space-y-3 md:items-end items-center mt-8 md:col-span-1">
             <div className="flex flex-col items-center space-y-2">
               <img
                 src="https://cdn.cness.io/leader1.svg"
