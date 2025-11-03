@@ -51,7 +51,7 @@ interface AnswerPayload {
 
 const InspiredAssessment = () => {
   const [sections, setSections] = useState<TransformedSection[]>([]);
-  const [expanded, setExpanded] = useState<any>(null);
+const [expanded, setExpanded] = useState<string[]>([]);
   const [checked, setChecked] = useState<Record<string, string[]>>({});
   const [uploads, setUploads] = useState<Record<string, UploadedFile[]>>({});
   const [loading, setLoading] = useState(true);
@@ -90,6 +90,14 @@ const InspiredAssessment = () => {
     return { isValid: true };
   };
 
+
+  const handleToggle = (id: string) => {
+  setExpanded((prev) =>
+    prev.includes(id)
+      ? prev.filter((item) => item !== id) // close if already open
+      : [...prev, id] // open new
+  );
+};
   // Transform API data to match our component structure
   const transformApiData = (apiData: any): TransformedSection[] => {
     if (!apiData?.all_sections) return [];
@@ -185,10 +193,7 @@ const InspiredAssessment = () => {
     );
   };
 
-  const toggleSection = (id: string) => {
-    setExpanded(expanded === id ? null : id);
-  };
-
+ 
   const handleCheck = async (sectionId: string, checkboxId: string) => {
     const section = sections.find((s) => s.id === sectionId);
     if (!section) return;
@@ -263,7 +268,7 @@ const InspiredAssessment = () => {
       // Expand the first section with error for better UX
       const firstErrorSection = sections.find(section => validationErrors[section.id]);
       if (firstErrorSection) {
-        setExpanded(firstErrorSection.id);
+setExpanded([firstErrorSection.id]);
       }
       
       return;
@@ -671,7 +676,7 @@ const InspiredAssessment = () => {
 
         // Expand the first section by default
         if (transformedSections.length > 0) {
-          setExpanded(transformedSections[0].id);
+          setExpanded([transformedSections[0].id]);
         }
       }
     } catch (error: any) {
@@ -764,14 +769,14 @@ const InspiredAssessment = () => {
           >
             {/* Accordion Header */}
             <button
-              onClick={() => toggleSection(section.id)}
+onClick={() => handleToggle(section.id)}
               className="w-full flex justify-between items-center px-4 sm:px-6 py-5 sm:py-6 text-left"
             >
               <span className="font-[poppins] font-semibold text-[18px] sm:text-[18px] leading-[100%] text-gray-900">
                 {section.order_number}. {section.name}
               </span>
               <div className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-300 bg-white shadow-sm">
-                {expanded === section.id ? (
+                {expanded.includes(section.id) ? (
                   <Minus className="text-gray-500" />
                 ) : (
                   <Plus className="text-gray-500" />
@@ -780,7 +785,7 @@ const InspiredAssessment = () => {
             </button>
 
             {/* Expanded Section */}
-            {expanded === section.id && (
+            {expanded.includes(section.id) && (
               <div className="border-t border-[#E0E0E0] px-4 sm:px-6 py-6 sm:py-8 flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 sm:gap-8">
                 {/* Text and Checkboxes */}
                 <div className="flex-1">

@@ -1,21 +1,25 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 
 interface NavButtonProps {
   label: string;
-  isActive?: boolean;
+  to: string;
 }
 
-const NavButton: React.FC<NavButtonProps> = ({ label, isActive = false }) => {
+const NavButton: React.FC<NavButtonProps> = ({ label, to }) => {
   return (
-    <button
-      className={`px-2.5 py-3 font-poppins text-sm font-normal transition-colors ${
-        isActive
-          ? "text-[#9747FF] border-b-[3px] border-[#9747FF]"
-          : "text-gray-600 hover:text-gray-800"
-      }`}
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        `px-2.5 py-3 font-poppins text-sm font-normal transition-colors ${
+          isActive
+            ? "text-[#9747FF] border-b-[3px] border-[#9747FF]"
+            : "text-gray-600 hover:text-gray-800"
+        }`
+      }
     >
       {label}
-    </button>
+    </NavLink>
   );
 };
 
@@ -23,18 +27,16 @@ interface SellerHeaderProps {
   toggleMobileNav: () => void;
 }
 
-const SellerHeader: React.FC<SellerHeaderProps> = ({
-  toggleMobileNav,
-}) => {
+const SellerHeader: React.FC<SellerHeaderProps> = ({ toggleMobileNav }) => {
   return (
     <nav className="bg-white border-b border-gray-200 px-8 flex items-center justify-between">
       {/* Left Section: Navigation Tabs */}
       <div className="flex items-center gap-3">
-        <NavButton label="Dashboard" isActive />
-        <NavButton label="Products" />
-        <NavButton label="Order List" />
-        <NavButton label="Sales" />
-        <NavButton label="Help" />
+        <NavButton label="Dashboard" to="/dashboard/seller-dashboard" />
+        <NavButton label="Products" to="/dashboard/products" />
+        <NavButton label="Order List" to="/dashboard/orderlist" />
+        <NavButton label="Sales" to="/dashboard/seller-sales" />
+        <NavButton label="Help" to="/dashboard/seller-help" />
       </div>
 
       {/* Right Section: Optional — Add toggle or user info */}

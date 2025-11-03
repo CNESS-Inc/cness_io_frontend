@@ -239,7 +239,7 @@ const AspiringAssessment = () => {
       <section className="bg-white rounded-2xl py-10 sm:py-16 px-4 sm:px-8 md:px-16 border border-gray-100 shadow-sm">
         {/* Heading */}
         <div className="flex items-center mb-6">
-          <h3 className="font-poppins font-medium text-[15px] sm:text-[16px] leading-snug text-gray-900">
+          <h3 className="font-poppins font-medium text-[15px] sm:text-[16px] leading-snug text-[gray-900]">
             {questionText}
           </h3>
         </div>
@@ -284,7 +284,7 @@ const AspiringAssessment = () => {
 
               <label
                 htmlFor={`option-${index}`}
-                className="font-openSans text-[14px] sm:text-[16px] leading-[160%] text-gray-800 cursor-pointer"
+                className="font-['Open_Sans'] text-[14px] sm:text-[16px] leading-[160%] text-[#1E1E1E] cursor-pointer"
               >
                 {opt.option}
               </label>
