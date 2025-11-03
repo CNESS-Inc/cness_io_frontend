@@ -1417,7 +1417,7 @@ const UserProfilePage = () => {
 
   return (
     <>
-      <section className="w-full px-2 sm:px-4 lg:px-2 pt-4 pb-10">
+      <section className="w-full px-1 sm:px-2 lg:px-1 pt-2 pb-10">
         {/* {public_organization === "1" ? ( */}
           {/* is_disqualify === "true" ? (
             <div className="mt-0 shadow overflow-hidden p-6 sm:p-8 text-center">

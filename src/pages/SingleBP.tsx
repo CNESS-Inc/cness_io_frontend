@@ -189,7 +189,9 @@ useEffect(() => {
   }
   return (
     <>
-      <div className="w-full min-h-screen bg-[#F3f1ff] pb-10">
+        <div className="px-2 sm:px-2 lg:px-1">
+
+      <div className="w-full min-h-screen bg-[#F3f1ff] pb-10 mt-2">
         {" "}
         {/* ← Gray background wrapper */}
         <div className="w-full flex flex-col gap-6">
@@ -458,6 +460,7 @@ useEffect(() => {
             </div>
           </div>
         )}
+      </div>
       </div>
     </>
   );

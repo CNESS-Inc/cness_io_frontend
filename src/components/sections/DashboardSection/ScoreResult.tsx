@@ -423,7 +423,7 @@ const ScoreResult = () => {
     <>
       {scoreData ? (
         <div className="w-full overflow-x-hidden">
-          <div className="flex flex-col w-full min-h-screen bg-[#f9f9f9] pt-1 pb-10 px-2 sm:px-3 md:px-4 lg:pl-6 lg:pr-4 xl:px-6 font-[Poppins] overflow-x-hidden max-w-full lg:max-w-none">
+          <div className="flex flex-col w-full min-h-screen bg-[#f9f9f9] pt-1 pb-10 px-2 sm:px-2 md:px-2 lg:pl-6 lg:pr-4 xl:px-1 font-[Poppins] overflow-x-hidden max-w-full lg:max-w-none">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
               <p className="text-[20px] sm:text-[22px] md:text-[24px] font-semibold text-[#000]">
@@ -700,8 +700,8 @@ const ScoreResult = () => {
                       <img
                         src={
                           scoreData.badge.level === "Aspiring"
-                            ? "https://cdn.cness.io/aspiring.webp"
-                            : "https://cdn.cness.io/inspired.webp"
+                            ? 'https://cdn.cness.io/aspiringlogo.svg'
+                            : 'https://cdn.cness.io/inspired1.svg'
                         }
                         // src={
                         //   scoreData.badge.level === "Aspiring"

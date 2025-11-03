@@ -528,7 +528,7 @@ const Managebestpractices = () => {
 
   return (
     <>
-      <div className="w-full min-h-screen mt-8">
+      <div className="w-full min-h-screen mt-8 px-1">
         {/* Tab Navigation */}
         <div className="flex border-b border-gray-200 mb-6 mt-8">
           <button

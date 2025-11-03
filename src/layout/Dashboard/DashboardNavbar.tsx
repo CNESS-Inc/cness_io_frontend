@@ -4,7 +4,7 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   // LogOutIcon,
-  BadgePlus,
+  //BadgePlus,
   TrendingUp,
   Zap,
 } from "lucide-react";
@@ -277,20 +277,20 @@ const isUatOrTest = ["uat", "test"].includes(env);
     //   ],
     // },
 
-    {
-      icon: <BadgePlus className="w-5 h-5" />,
-      label: "Generate Badge Code",
-      active: false,
-      path: "/dashboard/GenerateBadgeCode",
-    },
-    {
-      icon: (
-        <img src={iconMap["community"]} alt="Home Icon" className="w-5 h-5" />
-      ),
-      label: "Affiliate",
-      active: false,
-      path: "/dashboard/GenerateAffiliateCode",
-    },
+    //{
+     // icon: <BadgePlus className="w-5 h-5" />,
+     // label: "Generate Badge Code",
+      //active: false,
+      //path: "/dashboard/GenerateBadgeCode",
+    //},
+   // {
+      //icon: (
+       // <img src={iconMap["community"]} alt="Home Icon" className="w-5 h-5" />
+      //),
+      //label: "Affiliate",
+     // active: false,
+    //  path: "/dashboard/GenerateAffiliateCode",
+    //},
   ];
 
   // const secondaryNavItems = [

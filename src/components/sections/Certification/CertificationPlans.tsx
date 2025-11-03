@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Check } from "lucide-react";
-import aspired from "../../../assets/aspired-upgrade.png";
-import inspired from "../../../assets/inspired-upgrade.png";
+import aspired from "../../../assets/aspiring1.svg";
+import inspired from "../../../assets/inspired1.svg";
 import leader from "../../../assets/leader.png";
 import { useNavigate } from "react-router-dom";
 import Modal from "../../ui/Modal";

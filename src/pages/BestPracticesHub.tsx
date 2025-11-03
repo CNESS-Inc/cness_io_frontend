@@ -555,7 +555,9 @@ useEffect(() => {
 
   return (
     <>
-      <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] mx-auto rounded-[12px] overflow-hidden">
+        <div className="px-2 sm:px-2 lg:px-1">
+
+      <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] mx-auto rounded-[12px] overflow-hidden mt-2">
         <AnimatedBackground />
 
         {/* Background Image (city illustration) */}
@@ -670,6 +672,7 @@ useEffect(() => {
           </p>
         </div>
       </section>
+      </div>
 
       {/* Best Practices Section */}
       <section className="py-8 px-1 sm:py-16 bg-[#f9f9f9] border-t border-gray-100">

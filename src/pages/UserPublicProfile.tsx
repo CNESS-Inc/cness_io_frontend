@@ -50,12 +50,12 @@ const levels = [
   {
     key: "Aspiring",
     label: "ASPIRED",
-    img: "https://cdn.cness.io/aspiring.webp",
+    img: "https://cdn.cness.io/aspiringlogo.svg",
   },
   {
     key: "Inspired",
     label: "INSPIRED",
-    img: "https://cdn.cness.io/inspired.webp",
+    img: "https://cdn.cness.io/inspired1.svg",
   },
   {
     key: "Leader",
@@ -536,7 +536,7 @@ export default function UserProfileView() {
   }
 
   return (
-    <div className="relative w-full h-full mx-auto px-3 mt-4">
+    <div className="relative w-full h-full mx-auto px-1 pt-2">
       <button
         onClick={() => window.history.back()}
         className="absolute cursor-pointer top-4 left-4 bg-white rounded-full p-2 shadow-md"

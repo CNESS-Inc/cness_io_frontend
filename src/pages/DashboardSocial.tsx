@@ -1420,7 +1420,7 @@ export default function SocialTopBar() {
   return (
     <>
       {isAdult ? (
-        <div className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-2 px-2 md:px-2 lg:px-0 w-full">
+        <div className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-2 px-2 md:px-2 lg:px-1 w-full pt-2">
           {/* Left Side: Post & Stories - Full width on mobile */}
           <div className="w-full lg:max-w-[75%]" ref={containerRef}>
             {activeView === "posts" ? (
