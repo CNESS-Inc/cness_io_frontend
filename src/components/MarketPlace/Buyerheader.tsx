@@ -25,7 +25,16 @@ const MarketHeader: React.FC<MarketHeaderProps> = ({}) => {
     { name: "FAQs", path: "/dashboard/faqs" },
   ];
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => {
+    // Treat Continue Watching as part of Library
+    if (path === "/dashboard/library") {
+      return (
+        location.pathname === "/dashboard/library" ||
+        location.pathname === "/dashboard/continue-watching"
+      );
+    }
+    return location.pathname === path;
+  };
 
   return (
     <header className="bg-white border-b border-gray-200 z-40 relative w-full ">

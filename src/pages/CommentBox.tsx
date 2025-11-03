@@ -12,8 +12,6 @@ import { useToast } from "../components/ui/Toast/ToastProvider";
 import { useMention } from "../hooks/useMention";
 import FriendSuggestion from "../components/ui/FriendSuggestion";
 import TextWithMentions from "../components/ui/TextWithMentions";
-import Lottie, { type LottieRefCurrentProps } from "lottie-react";
-import likeAnimationData from "../assets/like.json";
 
 interface Comment {
   child_comment_count: number;
@@ -51,6 +49,7 @@ interface CommentBoxProps {
   userPosts?: any;
   onClose: () => void;
   onCommentAdded?: () => void;
+  triggerCreditAnimation?: (element: HTMLElement, amount?: number) => void;
 }
 
 const CommentBox = ({
@@ -58,6 +57,7 @@ const CommentBox = ({
   onClose,
   onCommentAdded,
   setUserPosts,
+  triggerCreditAnimation,
 }: CommentBoxProps) => {
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
@@ -79,8 +79,9 @@ const CommentBox = ({
   const [replySuggestions, setReplySuggestions] = useState<any[]>([]);
   const [showReplySuggestions, setShowReplySuggestions] = useState(false);
   const [selectedReplyMentionIndex, setSelectedReplyMentionIndex] = useState(0);
-  const postLottieRef = useRef<LottieRefCurrentProps | null>(null);
-  const [showPostAnimation, setShowPostAnimation] = useState(false);
+  //const postLottieRef = useRef<LottieRefCurrentProps | null>(null);
+//const [showPostAnimation, setShowPostAnimation] = useState(false);
+
 
   // Mention functionality for comments
   const {
@@ -224,7 +225,6 @@ const CommentBox = ({
     if (!commentText.trim()) return;
 
     try {
-
       const formattedData = {
         text: commentText,
         post_id: postId,
@@ -234,9 +234,22 @@ const CommentBox = ({
       const response = await PostComments(formattedData);
 
       if (response?.data?.data) {
-      setShowPostAnimation(true);
-
         console.log("response.data.data", response.data.data);
+
+        // Get the comment button element to use as animation source
+        const commentButton = document.querySelector(
+          "[data-comment-button]"
+        ) as HTMLElement;
+
+        // Trigger credit animation for creating a comment if the function is provided
+        if (triggerCreditAnimation && commentButton) {
+          localStorage.setItem(
+          "karma_credits",
+          response.data.data.karma_credits.toString()
+        );
+          triggerCreditAnimation(commentButton, 10); // 10 credits for creating a comment
+        }
+
         setComments((prev) => [
           {
             ...response.data.data,
@@ -279,7 +292,6 @@ const CommentBox = ({
           child_comment_count: 0,
         };
         setComments((prev) => [newComment, ...prev]);
-      setShowPostAnimation(true);
       }
 
       setCommentText("");
@@ -289,11 +301,6 @@ const CommentBox = ({
       if (onCommentAdded) {
         onCommentAdded();
       }
-
-      // Auto-hide animation after it plays
-      setTimeout(() => {
-        setShowPostAnimation(false);
-      }, 2000);
     } catch (error: any) {
       console.error("Error posting comment:", error.message || error);
       showToast({
@@ -301,13 +308,7 @@ const CommentBox = ({
         type: "error",
         duration: 5000,
       });
-      setShowPostAnimation(false);
     }
-  };
-
-  // Handle when Lottie animation completes
-  const handlePostAnimationComplete = () => {
-    setShowPostAnimation(false);
   };
 
   const handleReplySubmit = async (commentId: string) => {
@@ -925,27 +926,9 @@ const CommentBox = ({
               }`}
               disabled={!commentText}
               onClick={handleSubmitComment}
+              data-comment-button
             >
               Post
-              {showPostAnimation && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-                  <Lottie
-                    lottieRef={postLottieRef}
-                    animationData={likeAnimationData} // You can use the same like animation or create a new one
-                    loop={false}
-                    autoplay={true}
-                    style={{
-                      width: 200,
-                      height: 200,
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                    }}
-                    onComplete={handlePostAnimationComplete}
-                  />
-                </div>
-              )}
             </button>
           </div>
         </div>

@@ -67,7 +67,8 @@ import EcoSystem from "../pages/EcoSystem";
 import Premium from "../pages/Premium";
 import WhyCness from "../pages/WhyCness";
 import MyCollections from "../pages/MyCollections";
-
+import Library from "../pages/Library";
+import ContinueWatching from "../pages/ContinueWatching";
 //import SellerDashboard from "../pages/SellerDashboard";
 import UserPublicProfile from "../pages/UserPublicProfile";
 import Affiliate from "../pages/Affiliate";
@@ -179,6 +180,11 @@ export const router = createBrowserRouter([
         path: "whycness",
         element: <WhyCness />,
       },
+
+        {
+    path: "social",
+    element: <Social />,
+  },
       {
         path: "dashboard",
         element: <DashboardLayout />, // ✅ now it's wrapped!
@@ -275,6 +281,14 @@ export const router = createBrowserRouter([
           {
             path: "market-place",
             element: <MarketPlaceNew />,
+          },
+          {
+            path: "library",
+            element: <Library />,
+          },
+          {
+            path: "continue-watching",
+            element: <ContinueWatching />,
           },
           {
             path: "market-place/search",
@@ -665,10 +679,7 @@ export const router = createBrowserRouter([
       },
     ],
   },*/
-  {
-    path: "social",
-    element: <Social />,
-  },
+ 
   {
     path: "/email-verify",
     element: <EmailVerify />,
