@@ -669,7 +669,7 @@ element:<SellerProductList />
       },
     ],
   },*/
-
+ 
   {
     path: "/email-verify",
     element: <EmailVerify />,
