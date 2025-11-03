@@ -368,8 +368,8 @@ const UserProfilePage = () => {
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [services, setServices] = useState<any[]>([]);
   const [serviceInput, setServiceInput] = useState("");
-  const public_organization = localStorage.getItem("person_organization");
-  const is_disqualify = localStorage.getItem("is_disqualify");
+  // const public_organization = localStorage.getItem("person_organization");
+  // const is_disqualify = localStorage.getItem("is_disqualify");
   const [searchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
   const [uploadProgress, setUploadProgress] = useState<{
