@@ -953,7 +953,6 @@ export function GreetingBar({
 
     // Check in order: aspiring -> inspired -> luminary
     if (aspiring && !aspiring.payment_status) {
-      alert(1);
       return {
         message:
           "To start the certification journey into our platform, please complete the payment for Aspiring badge.",

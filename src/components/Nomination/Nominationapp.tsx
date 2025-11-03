@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import Button from "../ui/Button";
+import { AddNomination, GetBadgeListDetails } from "../../Common/ServerAPI";
+import { useToast } from "../ui/Toast/ToastProvider";
 
 // ✅ Define props for the modal
 interface NominationFormModalProps {
@@ -19,9 +21,10 @@ interface FormData {
   confirm: boolean;
 }
 
-const NominationFormModal: React.FC<NominationFormModalProps> = ({ 
-  onClose 
+const NominationFormModal: React.FC<NominationFormModalProps> = ({
+  onClose,
 }) => {
+  const { showToast } = useToast();
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
     email: "",
@@ -34,9 +37,29 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [badge, setBadge] = useState<any>([]);
+
+  const fetchBadge = async () => {
+    try {
+      const res = await GetBadgeListDetails();
+      setBadge(res?.data?.data);
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchBadge();
+  }, []);
 
   // ✅ Proper typing for input change events
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value, type, checked, files } = e.target as HTMLInputElement;
     setFormData((prev) => ({
       ...prev,
@@ -62,22 +85,41 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
   };
 
   // ✅ Proper typing for form submit
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log(formData);
-      alert("Nomination submitted successfully!");
-      onClose();
-    } catch (error) {
-      console.error("Submission error:", error);
-    } finally {
-      setIsSubmitting(false);
+const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+
+  try {
+    const formDataToSend = new FormData();
+    formDataToSend.append('full_name', formData.fullName);
+    formDataToSend.append('email', formData.email);
+    formDataToSend.append('badge_id', formData.certificationLevel);
+    formDataToSend.append('nominator_name', formData.nominatorName);
+    formDataToSend.append('recognition_reason', formData.reason);
+    formDataToSend.append('initiative_description', formData.project);
+    if (formData.file) {
+      formDataToSend.append('file', formData.file);
     }
-  };
+
+    // Using fetch
+    const response = await AddNomination(formDataToSend)
+    console.log("🚀 ~ handleSubmit ~ response:", response)
+    showToast({
+      message: 'Nomination submitted successfully!',
+      type: 'success',
+      duration: 5000,
+    });
+    onClose();
+  } catch (error: any) {
+    showToast({
+      message: error?.response?.data?.error?.message || 'An error occurred while submitting the nomination.',
+      type: 'error',
+      duration: 5000,
+    });
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   if (!open) return null;
 
@@ -106,17 +148,17 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
         {!formData.file ? (
           <div className="mt-2 text-center py-6 px-4 rounded-[26px] border-2 border-[#CBD0DC] border-dashed flex flex-col items-center justify-center cursor-pointer mb-6">
             <div className="pb-4 flex flex-col items-center">
-              <svg 
-                className="w-12 h-12 text-[#CBD0DC]" 
-                fill="none" 
-                stroke="currentColor" 
+              <svg
+                className="w-12 h-12 text-[#CBD0DC]"
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={1.5} 
-                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" 
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                 />
               </svg>
               <h4 className="pt-2 text-base font-medium text-[#292D32]">
@@ -147,17 +189,17 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
           <div className="mt-2 rounded-[26px] border-2 border-[#CBD0DC] border-dashed mb-6 relative overflow-hidden">
             <div className="relative w-full h-32 bg-gray-50 flex items-center justify-center">
               <div className="flex items-center space-x-3">
-                <svg 
-                  className="w-8 h-8 text-green-500" 
-                  fill="none" 
-                  stroke="currentColor" 
+                <svg
+                  className="w-8 h-8 text-green-500"
+                  fill="none"
+                  stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2} 
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" 
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
                 <span className="text-sm font-medium text-gray-700">
@@ -199,7 +241,10 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
           {/* Grid Layout for Inputs */}
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-[5px]">
-              <label htmlFor="fullName" className="block text-[15px] font-normal text-black">
+              <label
+                htmlFor="fullName"
+                className="block text-[15px] font-normal text-black"
+              >
                 Full Name <span className="text-red-600">*</span>
               </label>
               <input
@@ -215,7 +260,10 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <label htmlFor="email" className="block text-[15px] font-normal text-black">
+              <label
+                htmlFor="email"
+                className="block text-[15px] font-normal text-black"
+              >
                 Email ID <span className="text-red-600">*</span>
               </label>
               <input
@@ -233,8 +281,12 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
 
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-[5px]">
-              <label htmlFor="certificationLevel" className="block text-[15px] font-normal text-black">
-                Current Certification Level <span className="text-red-600">*</span>
+              <label
+                htmlFor="certificationLevel"
+                className="block text-[15px] font-normal text-black"
+              >
+                Current Certification Level{" "}
+                <span className="text-red-600">*</span>
               </label>
               <select
                 id="certificationLevel"
@@ -245,13 +297,19 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
                 required
               >
                 <option value="">Choose your certification level</option>
-                <option value="Aspiring">Aspiring</option>
-                <option value="Inspired">Inspired</option>
+                {badge.map((level: any) => (
+                  <option key={level.id} value={level.id}>
+                    {level.level}
+                  </option>
+                ))}
               </select>
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <label htmlFor="nominatorName" className="block text-[15px] font-normal text-black">
+              <label
+                htmlFor="nominatorName"
+                className="block text-[15px] font-normal text-black"
+              >
                 Nominator's Name (if applicable)
               </label>
               <input
@@ -268,8 +326,12 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
 
           {/* Textareas */}
           <div className="flex flex-col gap-[5px]">
-            <label htmlFor="reason" className="block text-[15px] font-normal text-black">
-              Why do you believe you/they should be recognized as a Conscious Leader? <span className="text-red-600">*</span>
+            <label
+              htmlFor="reason"
+              className="block text-[15px] font-normal text-black"
+            >
+              Why do you believe you/they should be recognized as a Conscious
+              Leader? <span className="text-red-600">*</span>
             </label>
             <textarea
               id="reason"
@@ -284,8 +346,12 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
           </div>
 
           <div className="flex flex-col gap-[5px]">
-            <label htmlFor="project" className="block text-[15px] font-normal text-black">
-              Describe one initiative or project that reflects conscious leadership. <span className="text-red-600">*</span>
+            <label
+              htmlFor="project"
+              className="block text-[15px] font-normal text-black"
+            >
+              Describe one initiative or project that reflects conscious
+              leadership. <span className="text-red-600">*</span>
             </label>
             <textarea
               id="project"
@@ -311,7 +377,8 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
               required
             />
             <label htmlFor="confirm" className="ml-2 text-sm text-gray-700">
-              I confirm the information provided is accurate and aligns with CNESS values.
+              I confirm the information provided is accurate and aligns with
+              CNESS values.
             </label>
           </div>
 
