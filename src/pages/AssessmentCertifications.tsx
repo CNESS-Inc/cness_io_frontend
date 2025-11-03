@@ -57,23 +57,27 @@ const AssessmentCertification = () => {
     navigateTo: string
   ) => {
     const cert = getCertificationBySlug(slug);
-
     if (!cert) return null;
 
-    
+    // Disable leader button when status is 0
+    const isLeaderDisabled = slug === "leader" && cert.status === 0;
 
     if (cert.status === 0) {
-      // Show button for status 0
       return (
         <button
-          onClick={() => navigate(navigateTo)}
-          className="font-plusJakarta font-medium text-[16px] leading-[100%] tracking-[0] text-center text-white bg-gradient-to-r from-[#7077FE] to-[#F07EFF] hover:opacity-90 transition-all duration-300 ease-out px-5 py-2.5 rounded-full"
+          onClick={() => !isLeaderDisabled && navigate(navigateTo)}
+          disabled={isLeaderDisabled}
+          className={`font-plusJakarta font-medium text-[16px] leading-[100%] text-center text-white px-5 py-2.5 rounded-full transition-all duration-300 ease-out
+          ${
+            isLeaderDisabled
+              ? "bg-gray-300 cursor-not-allowed"
+              : "bg-gradient-to-r from-[#7077FE] to-[#F07EFF] hover:opacity-90"
+          }`}
         >
           {buttonText}
         </button>
       );
     } else if (cert.status === 1 || cert.status === 2) {
-      // Show message for status 1 or 2
       return (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
           <p className="font-['Open_Sans'] font-normal text-[14px] leading-[160%] text-blue-800">
@@ -93,12 +97,15 @@ const AssessmentCertification = () => {
   };
 
   // Helper function specifically for Leader nomination button
+  // Helper function specifically for Leader nomination button
   const renderLeaderNominationButton = () => {
     const leaderCert = getCertificationBySlug("leader");
-    
+    const aspiringCert = getCertificationBySlug("aspiring");
+
+    // Check if nomination form has been submitted
     if (leaderCert?.nomination_form_submited) {
       return (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-1">
           <p className="font-['Open_Sans'] font-normal text-[14px] leading-[160%] text-blue-800">
             Your nomination details have been submitted.
           </p>
@@ -106,11 +113,20 @@ const AssessmentCertification = () => {
       );
     }
 
+    // Check if Aspiring certification has status 1 or 2 (enabled condition)
+    const isAspiringCompleted =
+      aspiringCert && (aspiringCert.status === 1 || aspiringCert.status === 2);
+
     return (
       <Button
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => isAspiringCompleted && setIsModalOpen(true)}
         variant="white-outline"
-        className="font-plusJakarta font-medium text-[16px] leading-[100%] tracking-[0] text-center text-black border border-[#9C4DF4] bg-gray-50 hover:bg-gray-100 px-5 py-2.5 rounded-full"
+        disabled={!isAspiringCompleted}
+        className={`font-plusJakarta font-medium text-[16px] leading-[100%] tracking-[0] text-center px-5 py-2.5 rounded-full ${
+          isAspiringCompleted
+            ? "text-black border border-[#9C4DF4] bg-gray-50 hover:bg-gray-100 cursor-pointer"
+            : "text-gray-400 border border-gray-300 bg-gray-100 cursor-not-allowed"
+        }`}
       >
         Nominate a Leader
       </Button>
@@ -377,10 +393,10 @@ const AssessmentCertification = () => {
         <hr className="border-gray-200 mb-8" />
 
         {/* Content Grid */}
-        <div className="grid md:grid-cols-2 gap-10 items-start">
+        <div className="grid md:grid-cols-3 gap-10 items-start">
           {/* Left Section */}
-          <div>
-            <h4 className="font-[poppins] font-semibold text-[34px] leading-[100%] tracking-[0] text[#000000] mb-3">
+          <div className="md:col-span-2">
+            <h4 className="font-[poppins] font-semibold text-[34px] leading-[100%] tracking-[0] text-gray-900 mb-3">
               Who Is Eligible for This Level of Certification?
             </h4>
 
@@ -393,16 +409,16 @@ const AssessmentCertification = () => {
             </ol>
 
             {/* Conditionally render buttons or message for Leader */}
-            <div className="flex flex-col md:flex-row gap-3">
+            <div className="flex flex-col md:flex-row items-center gap-3">
               {renderCertificationStatus(
                 "leader",
                 "Apply for Leader Certification",
                 "/dashboard/leader-application"
               )}
-              
+
               {/* Use the separate helper for nomination button */}
-            </div>
               {renderLeaderNominationButton()}
+            </div>
 
             {/* Nomination Process */}
             <div className="w-full max-w-[639px] rounded-[30px] border border-gray-200 bg-[#FAFAFA] flex flex-col gap-[14px] p-6 md:p-[30px] px-[40px] mt-10">
@@ -498,7 +514,7 @@ const AssessmentCertification = () => {
           </div>
 
           {/* Right Section */}
-          <div className="flex flex-col space-y-3 md:items-end items-center mt-4 sm:mt-4 md:mt-8">
+          <div className="flex flex-col space-y-3 md:items-end items-center mt-8 md:col-span-1">
             <div className="flex flex-col items-center space-y-2">
               <img
                 src="https://cdn.cness.io/leader1.svg"

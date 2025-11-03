@@ -492,6 +492,18 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
         const completed_step = response.data.data.user.completed_step;
         const is_disqualify = response.data.data.user.is_disqualify;
 
+                 const res = await MeDetails();
+        localStorage.setItem(
+          "profile_picture",
+          res?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem("name", res?.data?.data?.user.name);
+        localStorage.setItem("main_name", res?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          res?.data?.data?.user.margaret_name
+        );
+
         //   if (!is_disqualify) {
         //     if (completionStatus === 0 || completed_step === 0) {
         //       setActiveModal("type");
