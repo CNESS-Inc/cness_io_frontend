@@ -31,7 +31,7 @@ const Home = () => {
       </LazySection>
       <LazySection effect="fade-up" delay={0.2}>
         <FeaturedSection/>
-      </LazySection>
+        </LazySection>
       <LazySection effect="fade-up" delay={0.1} className="belowFold">
         <MobileSection />
       </LazySection>

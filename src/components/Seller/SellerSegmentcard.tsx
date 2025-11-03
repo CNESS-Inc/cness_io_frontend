@@ -763,8 +763,8 @@ export function GreetingBar({
     }
   };
 
-  const completedStep = localStorage.getItem("completed_step");
-  console.log("🚀 ~ GreetingBar ~ completedStep:", completedStep)
+  // const completedStep = localStorage.getItem("completed_step");
+  // console.log("🚀 ~ GreetingBar ~ completedStep:", completedStep);
   // const is_disqualify = localStorage.getItem("is_disqualify");
 
   // const openRetakeAssesmentModal = async () => {
@@ -940,41 +940,43 @@ export function GreetingBar({
     }
   };
 
-const getBadgeStatusInfo = (badgePaymentStatus: any[]) => {
-  // If badgePaymentStatus is not provided or empty, return null
-  if (!badgePaymentStatus || badgePaymentStatus.length === 0) {
+  const getBadgeStatusInfo = (badgePaymentStatus: any[]) => {
+    // If badgePaymentStatus is not provided or empty, return null
+    if (!badgePaymentStatus || badgePaymentStatus.length === 0) {
+      return null;
+    }
+
+    const aspiring = badgePaymentStatus.find(
+      (badge) => badge.slug === "aspiring"
+    );
+    const inspired = badgePaymentStatus.find(
+      (badge) => badge.slug === "inspired"
+    );
+
+    // Check in order: aspiring -> inspired
+    if (aspiring && !aspiring.payment_status) {
+      return {
+        message:
+          "To start the certification journey into our platform, please complete the payment for Aspiring badge.",
+        route: "/dashboard/aspiring-assessment",
+        level: "aspiring",
+      };
+    } else if (
+      aspiring?.payment_status &&
+      inspired &&
+      !inspired.payment_status
+    ) {
+      return {
+        message:
+          "To continue your certification journey, please complete the payment for Inspired badge.",
+        route: "/dashboard/inspired-assessment",
+        level: "inspired",
+      };
+    }
+
+    // If none of the above conditions are met, return null
     return null;
-  }
-
-  const aspiring = badgePaymentStatus.find(
-    (badge) => badge.slug === "aspiring"
-  );
-  const inspired = badgePaymentStatus.find(
-    (badge) => badge.slug === "inspired"
-  );
-
-  // Check in order: aspiring -> inspired
-  if (aspiring && !aspiring.payment_status) {
-    return {
-      message: "To start the certification journey into our platform, please complete the payment for Aspiring badge.",
-      route: "/dashboard/aspiring-assessment",
-      level: "aspiring",
-    };
-  } else if (
-    aspiring?.payment_status &&
-    inspired &&
-    !inspired.payment_status
-  ) {
-    return {
-      message: "To continue your certification journey, please complete the payment for Inspired badge.",
-      route: "/dashboard/inspired-assessment",
-      level: "inspired",
-    };
-  }
-
-  // If none of the above conditions are met, return null
-  return null;
-};
+  };
 
   const badgeStatusInfo = user?.badge_payment_status
     ? getBadgeStatusInfo(user.badge_payment_status)
@@ -999,9 +1001,9 @@ const getBadgeStatusInfo = (badgePaymentStatus: any[]) => {
 
         <div className="col-span-12 lg:col-span-4 flex items-start lg:justify-end justify-start">
           {/* {completedStep !== "2" && ( */}
-            <div className="mx-5 bg-[rgba(255,204,0,0.05)] text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
-              <div className="flex items-center gap-2">
-                {/* {is_disqualify === "true" ? (
+          <div className="mx-5 bg-[rgba(255,204,0,0.05)] text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-2">
+              {/* {is_disqualify === "true" ? (
                   Number(user?.daysRemaining) <= 0 ? (
                     <span className="text-green-500">
                       You are eligible for the Aspiration badge. Please{" "}
@@ -1023,39 +1025,43 @@ const getBadgeStatusInfo = (badgePaymentStatus: any[]) => {
                     </span>
                   )
                 ) : ( */}
-                {badgeStatusInfo?.message ? <>
-                    <span className="text-yellow-500">💡</span>
-                    <span>
-                      {badgeStatusInfo?.message}{" "}
-                      {badgeStatusInfo?.route && (
-                        <a
-                          href="#"
-                          className="text-blue-600 underline"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            // Use the dynamic route based on badge status
-                            if (badgeStatusInfo.route) {
-                              navigate(badgeStatusInfo.route);
-                            } else {
-                              openPricingModal();
-                            }
-                          }}
-                        >
-                          Click here
-                        </a>
-                      )}
-                    </span>
-                    <button
-                      aria-label="Dismiss"
-                      onClick={onCloseSuggestion}
-                      className="ml-auto inline-flex h-6 w-6 items-center justify-center rounded-full text-[#7A5A00]/70 hover:bg-white/50"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                </> : ""}
-                {/* // )} */}
-              </div>
+              {badgeStatusInfo?.message ? (
+                <>
+                  <span className="text-yellow-500">💡</span>
+                  <span>
+                    {badgeStatusInfo?.message}{" "}
+                    {badgeStatusInfo?.route && (
+                      <a
+                        href="#"
+                        className="text-blue-600 underline"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          // Use the dynamic route based on badge status
+                          if (badgeStatusInfo.route) {
+                            navigate(badgeStatusInfo.route);
+                          } else {
+                            openPricingModal();
+                          }
+                        }}
+                      >
+                        Click here
+                      </a>
+                    )}
+                  </span>
+                  <button
+                    aria-label="Dismiss"
+                    onClick={onCloseSuggestion}
+                    className="ml-auto inline-flex h-6 w-6 items-center justify-center rounded-full text-[#7A5A00]/70 hover:bg-white/50"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </>
+              ) : (
+                ""
+              )}
+              {/* // )} */}
             </div>
+          </div>
           {/* // )} */}
           {/* <div className="w-full lg:min-w-[363px] lg:max-w-[400px] flex items-center gap-[10px] rounded-lg bg-[#FFCC00]/10 px-3 py-[10px] text-[#7A5A00]"></div> */}
         </div>
@@ -2523,7 +2529,7 @@ export function CertificationCard({
                   </div>
                   <div className="flex items-center gap-2 w-full sm:w-auto">
                     <button
-                      onClick={()=>navigate("/dashboard/inspired-assessment")}
+                      onClick={() => navigate("/dashboard/inspired-assessment")}
                       className="relative w-full sm:w-[194px] h-[40px] rounded-full px-5 py-[10px] flex items-center justify-center text-center font-[600] text-[14px] text-[#222224] font-['Open_Sans'] leading-[100%] bg-white"
                     >
                       <span className="relative z-10">Continue Assessment</span>

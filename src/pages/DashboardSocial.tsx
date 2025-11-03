@@ -64,6 +64,7 @@ import Button from "../components/ui/Button";
 import SharePopup from "../components/Social/SharePopup";
 import { buildShareUrl, copyPostLink } from "../lib/utils";
 import Lottie from "lottie-react";
+import CreditAnimation from "../Common/CreditAnimation";
 // import { buildShareUrl } from "../lib/utils";
 
 interface Post {
@@ -278,10 +279,6 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
   );
 }
 
-interface AnimationStates {
-  [postId: string]: boolean;
-}
-
 //const [isExpanded, setIsExpanded] = useState(false);
 //const toggleExpand = () => setIsExpanded(!isExpanded);
 
@@ -361,9 +358,41 @@ export default function SocialTopBar() {
   const [isReportingPost, setIsReportingPost] = useState<string | null>(null);
   //const [showTopicModal, setShowTopicModal] = useState(false);
 
-  const [animationStates, setAnimationStates] = useState<AnimationStates>({});
+  const [animations, setAnimations] = useState<any[]>([]);
 
   const maxChars = 2000;
+
+  const triggerCreditAnimation = (fromElement: HTMLElement, amount = 10) => {
+    const walletIcon = document.querySelector(
+      "[data-wallet-icon]"
+    ) as HTMLElement;
+    if (!walletIcon || !fromElement) return;
+
+    const fromRect = fromElement.getBoundingClientRect();
+    const toRect = walletIcon.getBoundingClientRect();
+
+    const animationId = Date.now();
+    setAnimations((prev) => [
+      ...prev,
+      {
+        id: animationId,
+        from: {
+          x: fromRect.left + fromRect.width / 2,
+          y: fromRect.top + fromRect.height / 2,
+        },
+        to: {
+          x: toRect.left + toRect.width / 2,
+          y: toRect.top + toRect.height / 2,
+        },
+        amount: amount,
+      },
+    ]);
+
+    // Remove animation after completion
+    setTimeout(() => {
+      setAnimations((prev) => prev.filter((a) => a.id !== animationId));
+    }, 1400);
+  };
 
   const handleConnect = async (userId: string) => {
     try {
@@ -973,7 +1002,7 @@ export default function SocialTopBar() {
     setApiStoryMessage(null);
   };
 
-  const handleLike = async (postId: string) => {
+  const handleLike = async (postId: string, event: React.MouseEvent) => {
     try {
       const formattedData = { post_id: postId };
       PostsLike(formattedData);
@@ -984,10 +1013,9 @@ export default function SocialTopBar() {
 
       // Only trigger animation when LIKING (not unliking)
       if (!isCurrentlyLiked) {
-        setAnimationStates((prev) => ({
-          ...prev,
-          [postId]: true,
-        }));
+        // Store the element reference before the async operation
+        const buttonElement = event.currentTarget;
+        triggerCreditAnimation(buttonElement as HTMLElement, 10); // 10 credits for like
       }
 
       // Update post data
@@ -1005,27 +1033,17 @@ export default function SocialTopBar() {
         )
       );
 
-      // Auto-hide animation after it plays (only if it was triggered)
-      if (!isCurrentlyLiked) {
-        setTimeout(() => {
-          setAnimationStates((prev) => ({
-            ...prev,
-            [postId]: false,
-          }));
-        }, 2000); // Adjust timing based on your animation duration
-      }
+      // Update credits after animation (you'll need to implement this based on your API)
+      setTimeout(async () => {
+        // Add your credit update logic here
+        // For example:
+        // const creditsResponse = await getUserCredits();
+        // setCredits(creditsResponse.data.credits);
+      }, 800);
     } catch (error) {
       console.error("Error fetching like details:", error);
     }
-  };
-
-  // Handle when Lottie animation completes
-  const handleAnimationComplete = (postId: string) => {
-    setAnimationStates((prev) => ({
-      ...prev,
-      [postId]: false,
-    }));
-  };
+  }
 
   const handleFollow = async (userId: string) => {
     try {
@@ -1962,7 +1980,7 @@ export default function SocialTopBar() {
 
                       <div className="border-t border-[#ECEEF2] pt-4 grid grid-cols-3  gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
                         <button
-                          onClick={() => handleLike(post.id)}
+                          onClick={(e) => handleLike(post.id, e)}
                           disabled={isLoading}
                           className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 relative ${
                             isLoading ? "opacity-50 cursor-not-allowed" : ""
@@ -1980,21 +1998,14 @@ export default function SocialTopBar() {
                           >
                             Appreciate
                           </span>
-
-                          {/* Lottie Animation Overlay - Positioned relative to the button */}
-                          {animationStates[post.id] && (
-                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-                              <Lottie
-                                animationData={likeAnimationData}
-                                loop={false}
-                                autoplay={true}
-                                style={{ width: 800, height: 800 }} // Reduced size to fit better
-                                onComplete={() =>
-                                  handleAnimationComplete(post.id)
-                                }
-                              />
-                            </div>
-                          )}
+                          {animations.map(anim => (
+      <CreditAnimation 
+        key={anim.id} 
+        from={anim.from} 
+        to={anim.to} 
+        amount={anim.amount} 
+      />
+    ))}
                         </button>
                         <button
                           onClick={() => {

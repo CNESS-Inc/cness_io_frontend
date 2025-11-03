@@ -80,7 +80,7 @@ const CommentBox = ({
   const [showReplySuggestions, setShowReplySuggestions] = useState(false);
   const [selectedReplyMentionIndex, setSelectedReplyMentionIndex] = useState(0);
   const postLottieRef = useRef<LottieRefCurrentProps | null>(null);
-  const [showPostAnimation, setShowPostAnimation] = useState(false);
+
 
   // Mention functionality for comments
   const {

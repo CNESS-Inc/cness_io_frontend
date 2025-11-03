@@ -8,11 +8,11 @@ export default function CertificationsHero() {
 
   useEffect(() => {
     const timers: number[] = [];
-    timers.push(window.setTimeout(() => setStep(1), 300));
-    timers.push(window.setTimeout(() => setStep(2), 500));
-    timers.push(window.setTimeout(() => setStep(3), 800));
-    timers.push(window.setTimeout(() => setStep(4), 1000));
-    timers.push(window.setTimeout(() => setStep(5), 1200));
+    timers.push(window.setTimeout(() => setStep(1), 50));
+  timers.push(window.setTimeout(() => setStep(2), 150));
+  timers.push(window.setTimeout(() => setStep(3), 250));
+  timers.push(window.setTimeout(() => setStep(4), 350));
+  timers.push(window.setTimeout(() => setStep(5), 450));
     return () => timers.forEach(clearTimeout);
   }, []);
 
