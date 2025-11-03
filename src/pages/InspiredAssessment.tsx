@@ -268,7 +268,7 @@ const [expanded, setExpanded] = useState<string[]>([]);
       // Expand the first section with error for better UX
       const firstErrorSection = sections.find(section => validationErrors[section.id]);
       if (firstErrorSection) {
-        setExpanded(firstErrorSection.id);
+setExpanded([firstErrorSection.id]);
       }
       
       return;
@@ -776,7 +776,7 @@ onClick={() => handleToggle(section.id)}
                 {section.order_number}. {section.name}
               </span>
               <div className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-300 bg-white shadow-sm">
-                {expanded === section.id ? (
+                {expanded.includes(section.id) ? (
                   <Minus className="text-gray-500" />
                 ) : (
                   <Plus className="text-gray-500" />

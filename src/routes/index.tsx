@@ -380,7 +380,7 @@ element:<SellerProductList />
 {
   path :"orderlist/:id",
   element:<SellerOrderDetail />
-},
+},{
             path: "shop-detail/:id",
             element: <ShopDetail />,
           },
