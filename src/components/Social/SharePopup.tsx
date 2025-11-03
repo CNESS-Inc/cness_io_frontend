@@ -5,12 +5,8 @@ import {
   TwitterShareButton,
   WhatsappShareButton,
 } from "react-share";
-import {
-  FaFacebook,
-  FaLinkedin,
-  FaTwitter,
-  FaWhatsapp,
-} from "react-icons/fa";
+import { FaFacebook, FaLinkedin, FaTwitter, FaWhatsapp } from "react-icons/fa";
+import { MdContentCopy } from "react-icons/md";
 
 interface SharePopupProps {
   isOpen: boolean;
@@ -27,7 +23,10 @@ const SharePopup: React.FC<SharePopupProps> = ({
   position = "bottom",
   className = "",
 }) => {
+  const myid = localStorage.getItem("Id");
+  const urldata = `${window.location.origin}/directory/user-profile/${myid}`;
   const [visible, setVisible] = useState(isOpen);
+  const [copy, setCopy] = useState<Boolean>(false);
   const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -62,8 +61,12 @@ const SharePopup: React.FC<SharePopupProps> = ({
   if (!visible) return null;
 
   // 👇 Use current page URL dynamically if no `url` prop is provided
-  const shareUrl = url || `${window.location.origin}/directory/user-profile/${localStorage.getItem("Id")}`;
-  console.log('shareUrl', shareUrl);
+  const shareUrl =
+    url ||
+    `${window.location.origin}/directory/user-profile/${localStorage.getItem(
+      "Id"
+    )}`;
+  console.log("shareUrl", shareUrl);
 
   const getPositionClasses = () => {
     switch (position) {
@@ -105,6 +108,24 @@ const SharePopup: React.FC<SharePopupProps> = ({
           <WhatsappShareButton url={shareUrl}>
             <FaWhatsapp size={32} color="#25D366" />
           </WhatsappShareButton>
+        </li>
+        <li>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(urldata);
+              setCopy(true);
+              setTimeout(() => setCopy(false), 1500);
+            }}
+            className="flex items-center relative"
+            title="Copy link"
+          >
+            <MdContentCopy size={30} className="text-gray-600" />
+            {copy && (
+              <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
+                Link Copied!
+              </div>
+            )}
+          </button>
         </li>
       </ul>
     </div>
