@@ -16,6 +16,7 @@ interface Certification {
   status: number;
   start_date: string | null;
   end_date: string | null;
+  nomination_form_submited?: boolean; // Add this optional field
 }
 
 const AssessmentCertification = () => {
@@ -46,14 +47,20 @@ const AssessmentCertification = () => {
 
   // Helper function to get certification by slug
   const getCertificationBySlug = (slug: string): Certification | undefined => {
-    return certifications.find(cert => cert.slug === slug);
+    return certifications.find((cert) => cert.slug === slug);
   };
 
   // Helper function to render button or message based on status
-  const renderCertificationStatus = (slug: string, buttonText: string, navigateTo: string) => {
+  const renderCertificationStatus = (
+    slug: string,
+    buttonText: string,
+    navigateTo: string
+  ) => {
     const cert = getCertificationBySlug(slug);
-    
+
     if (!cert) return null;
+
+    
 
     if (cert.status === 0) {
       // Show button for status 0
@@ -74,14 +81,40 @@ const AssessmentCertification = () => {
           </p>
           {cert.start_date && cert.end_date && (
             <p className="font-['Open_Sans'] font-normal text-[12px] leading-[160%] text-blue-600 mt-2">
-              Valid from {new Date(cert.start_date).toLocaleDateString()} to {new Date(cert.end_date).toLocaleDateString()}
+              Valid from {new Date(cert.start_date).toLocaleDateString()} to{" "}
+              {new Date(cert.end_date).toLocaleDateString()}
             </p>
           )}
         </div>
       );
     }
-    
+
     return null;
+  };
+
+  // Helper function specifically for Leader nomination button
+  const renderLeaderNominationButton = () => {
+    const leaderCert = getCertificationBySlug("leader");
+    
+    if (leaderCert?.nomination_form_submited) {
+      return (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+          <p className="font-['Open_Sans'] font-normal text-[14px] leading-[160%] text-blue-800">
+            Your nomination details have been submitted.
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <Button
+        onClick={() => setIsModalOpen(true)}
+        variant="white-outline"
+        className="font-plusJakarta font-medium text-[16px] leading-[100%] tracking-[0] text-center text-black border border-[#9C4DF4] bg-gray-50 hover:bg-gray-100 px-5 py-2.5 rounded-full"
+      >
+        Nominate a Leader
+      </Button>
+    );
   };
 
   return (
@@ -89,7 +122,7 @@ const AssessmentCertification = () => {
       <h2 className="font-[poppins] font-medium text-[20px] md:text-[24px] text[#000000] mb-8 mt-5 text-center md:text-left">
         Know Our Certifications
       </h2>
-      
+
       {/* Aspiring Section */}
       <section className="bg-white rounded-2xl py-12 px-4 sm:px-8 md:px-16 border-b border-gray-100">
         {/* Header */}
@@ -128,7 +161,11 @@ const AssessmentCertification = () => {
             </ol>
 
             {/* Conditionally render button or message */}
-            {renderCertificationStatus("aspiring", "Get Aspiring Badge", "/dashboard/aspiring-assessment")}
+            {renderCertificationStatus(
+              "aspiring",
+              "Get Aspiring Badge",
+              "/dashboard/aspiring-assessment"
+            )}
 
             {/* Description */}
             <div className="mt-8">
@@ -241,7 +278,11 @@ const AssessmentCertification = () => {
             </ol>
 
             {/* Conditionally render button or message */}
-            {renderCertificationStatus("inspired", "Upgrade To Inspired", "/dashboard/inspired-assessment")}
+            {renderCertificationStatus(
+              "inspired",
+              "Upgrade To Inspired",
+              "/dashboard/inspired-assessment"
+            )}
 
             {/* Description */}
             <div className="mt-8">
@@ -352,47 +393,16 @@ const AssessmentCertification = () => {
             </ol>
 
             {/* Conditionally render buttons or message for Leader */}
-            {(() => {
-              const leaderCert = getCertificationBySlug("luminary"); // Note: using "luminary" slug from API
+            <div className="flex flex-col md:flex-row gap-3">
+              {renderCertificationStatus(
+                "leader",
+                "Apply for Leader Certification",
+                "/dashboard/leader-application"
+              )}
               
-              if (!leaderCert) return null;
-
-              if (leaderCert.status === 0) {
-                return (
-                  <div className="flex flex-col md:flex-row gap-3">
-                    <button
-                      onClick={() => navigate("/dashboard/leader-application")}
-                      className="font-plusJakarta font-medium text-[16px] leading-[100%] tracking-[0] text-center text-white bg-gradient-to-r from-[#7077FE] to-[#F07EFF] hover:opacity-90 transition-all duration-300 ease-out px-5 py-2.5 rounded-full"
-                    >
-                      Apply for Leader Certification
-                    </button>
-
-                    <Button
-                      onClick={() => setIsModalOpen(true)}
-                      variant="white-outline"
-                      className="font-plusJakarta font-medium text-[16px] leading-[100%] tracking-[0] text-center text-black border border-[#9C4DF4] bg-gray-50 hover:bg-gray-100 px-5 py-2.5 rounded-full"
-                    >
-                      Nominate a Leader
-                    </Button>
-                  </div>
-                );
-              } else if (leaderCert.status === 1 || leaderCert.status === 2) {
-                return (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                    <p className="font-['Open_Sans'] font-normal text-[14px] leading-[160%] text-blue-800">
-                      {leaderCert.message || "Your Leader certification is being processed."}
-                    </p>
-                    {leaderCert.start_date && leaderCert.end_date && (
-                      <p className="font-['Open_Sans'] font-normal text-[12px] leading-[160%] text-blue-600 mt-2">
-                        Valid from {new Date(leaderCert.start_date).toLocaleDateString()} to {new Date(leaderCert.end_date).toLocaleDateString()}
-                      </p>
-                    )}
-                  </div>
-                );
-              }
-              
-              return null;
-            })()}
+              {/* Use the separate helper for nomination button */}
+            </div>
+              {renderLeaderNominationButton()}
 
             {/* Nomination Process */}
             <div className="w-full max-w-[639px] rounded-[30px] border border-gray-200 bg-[#FAFAFA] flex flex-col gap-[14px] p-6 md:p-[30px] px-[40px] mt-10">
