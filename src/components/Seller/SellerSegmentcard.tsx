@@ -2685,7 +2685,7 @@ export function CertificationCard({
                       src={
                         activeLevel === null
                           ? aspired
-                          : "https://cdn.cness.io/aspiring.webp"
+                          : "https://cdn.cness.io/aspiringlogo.svg"
                       }
                       alt="Aspiring"
                       className="h-[34px] w-[34px] sm:h-[39px] sm:w-[39px]"
@@ -2711,7 +2711,7 @@ export function CertificationCard({
                         activeLevel === null ||
                         (activeLevel === "Aspiring" && progress === 0)
                           ? inspired
-                          : "https://cdn.cness.io/inspired.webp"
+                          : "https://cdn.cness.io/inspired1.svg"
                       }
                       alt="Inspired"
                       className="h-[34px] w-[34px] sm:h-[39px] sm:w-[39px]"
@@ -2760,7 +2760,7 @@ export function CertificationCard({
                       <img
                         src={
                           activeLevel === "Aspiring"
-                            ? "https://cdn.cness.io/inspired.webp"
+                            ? "https://cdn.cness.io/inspired1.svg"
                             : activeLevel === "Inspired"
                             ? "https://cdn.cness.io/leader.webp"
                             : "https://cdn.cness.io/leader1.webp"

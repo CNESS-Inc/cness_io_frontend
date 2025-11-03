@@ -459,7 +459,7 @@ export default function Profile() {
   }, [activeTab, boards.length]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f9f9fb]">
+    <div className="flex flex-col min-h-screen bg-[#f9f9fb] pt-2 px-2 sm:px-2 md:px-1 lg:px-1">
       {profiles.map((profile, index) => (
         <ProfileCard
           key={index}

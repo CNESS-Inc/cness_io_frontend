@@ -159,12 +159,12 @@ const renderCertificationStatus = (
 
   return (
     <>
-      <h2 className="font-[poppins] font-medium text-[20px] md:text-[24px] text[#000000] mb-8 mt-5 text-center md:text-left">
+      <h2 className="font-[poppins] font-medium text-[20px] md:text-[24px] text[#000000] mb-8 mt-2 text-center md:text-left px-2">
         Know Our Certifications
       </h2>
 
       {/* Aspiring Section */}
-      <section className="bg-white rounded-2xl py-12 px-4 sm:px-8 md:px-16 border-b border-gray-100">
+      <section className="bg-white rounded-2xl py-12 px-5 sm:px-8 md:px-16 border-b border-gray-100">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:space-x-3 space-y-2 md:space-y-0 mb-6">
           <img
@@ -176,7 +176,7 @@ const renderCertificationStatus = (
             <h3 className="font-[poppins] font-medium text-[24px] leading-[115%] tracking-[0] text[#000000] ">
               Aspiring Certification
             </h3>
-            <p className="font-[poppins] font-medium text-[14px] leading-[100%] tracking-[0] text-black-500 mt-2">
+            <p className="font-[poppins] font-medium text-[14px] leading-[100%] tracking-[0] text-black-500 mt-3">
               Start your conscious journey
             </p>
           </div>
@@ -188,7 +188,7 @@ const renderCertificationStatus = (
         <div className="grid md:grid-cols-2 gap-10 items-start">
           {/* Left Section */}
           <div>
-            <h4 className="font-[poppins] font-semibold text-[26px] md:text-[34px] leading-[100%] tracking-[0] text[#000000] mb-3">
+            <h4 className="font-[poppins] font-semibold text-[26px] md:text-[34px] leading-[140%] tracking-[0] text[#000000] mb-3">
               Get Your Aspiring Certification in 2 Steps
             </h4>
 
@@ -228,7 +228,7 @@ const renderCertificationStatus = (
           <div className="flex flex-col space-y-3 md:items-end items-center mt-4 sm:mt-4 md:mt-8">
             <div className="flex flex-col items-center space-y-2">
               <img
-                src="https://cdn.cness.io/aspiring1.svg"
+                src="https://cdn.cness.io/aspiringcard.svg"
                 alt="Aspiring Certification Card"
                 className="w-[250px] h-[271px] md:w-[275px] md:h-[271px] drop-shadow-md"
               />
@@ -264,18 +264,43 @@ const renderCertificationStatus = (
                 desc: "Join discussions and connect with like-minded members.",
               },
             ].map((item, i) => (
-              <div
-                key={i}
-                className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-5"
-                style={{ borderWidth: "3px" }}
-              >
-                <h6 className="font-[poppins] font-medium text-[14.76px] leading-[22.14px] tracking-[-0.03em] text[#000000] mb-2 align-middle">
-                  {item.title}
-                </h6>
-                <p className="font-['Open_Sans'] font-normal text-[12px] leading-[18.01px] tracking-[0px] text-[#64748B]">
-                  {item.desc}
-                </p>
-              </div>
+             <div
+               key={i} 
+                style={{ position: "relative", borderRadius: "12px", background: "#F9FAFB", padding: "20px" }}>
+  <svg
+    key={i} 
+    
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      borderRadius: "12px",
+      pointerEvents: "none",
+    }}
+  >
+    <rect
+      x="1"
+      y="1"
+      width="calc(100% - 2px)"
+      height="calc(100% - 2px)"
+      rx="12"
+      ry="12"
+      stroke="#D1D5DB"
+      strokeWidth="1"
+      strokeDasharray="5,7"
+      fill="none"
+    />
+  </svg>
+
+  <h6 className="font-[poppins] font-medium text-[14.76px] leading-[22.14px] tracking-[-0.03em] text-[#000000] mb-2 align-middle">
+    {item.title}
+  </h6>
+  <p className="font-['Open_Sans'] font-normal text-[12px] leading-[18.01px] tracking-[0px] text-[#64748B]">
+    {item.desc}
+  </p>
+</div>
             ))}
           </div>
         </div>
@@ -294,7 +319,7 @@ const renderCertificationStatus = (
             <h3 className="font-[poppins] font-medium text-[24px] leading-[115%] tracking-[0] text[#000000]">
               Inspired Certification
             </h3>
-            <p className="font-[poppins] font-medium text-[14px] leading-[100%] tracking-[0] text-black-500 mt-2">
+            <p className="font-[poppins] font-medium text-[14px] leading-[100%] tracking-[0] text-black-500 mt-3">
               Start your conscious journey
             </p>
           </div>
@@ -306,7 +331,7 @@ const renderCertificationStatus = (
         <div className="grid md:grid-cols-2 gap-10 items-start">
           {/* Left Section */}
           <div>
-            <h4 className="font-[poppins] font-semibold text-[34px] leading-[100%] tracking-[0] text[#000000] mb-3">
+            <h4 className="font-[poppins] font-semibold text-[34px] leading-[140%] tracking-[0] text[#000000] mb-3">
               Get Your Inspired Certification in 1 Step
             </h4>
 
@@ -378,18 +403,43 @@ const renderCertificationStatus = (
                 desc: "Featured stories, collaborations, and partner projects",
               },
             ].map((item, i) => (
-              <div
-                key={i}
-                className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-5"
-                style={{ borderWidth: "3px" }}
-              >
-                <h6 className="font-[poppins] font-medium text-[14.76px] leading-[22.14px] tracking-[-0.03em] text[#000000] mb-2 align-middle">
-                  {item.title}
-                </h6>
-                <p className="font-['Open_Sans'] font-normal text-[12px] leading-[18.01px] tracking-[0px] text-[#64748B]">
-                  {item.desc}
-                </p>
-              </div>
+             <div
+               key={i} 
+                style={{ position: "relative", borderRadius: "12px", background: "#F9FAFB", padding: "20px" }}>
+  <svg
+    key={i} 
+    
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      borderRadius: "12px",
+      pointerEvents: "none",
+    }}
+  >
+    <rect
+      x="1"
+      y="1"
+      width="calc(100% - 2px)"
+      height="calc(100% - 2px)"
+      rx="12"
+      ry="12"
+      stroke="#D1D5DB"
+      strokeWidth="1"
+      strokeDasharray="5,7"
+      fill="none"
+    />
+  </svg>
+
+  <h6 className="font-[poppins] font-medium text-[14.76px] leading-[22.14px] tracking-[-0.03em] text-[#000000] mb-2 align-middle">
+    {item.title}
+  </h6>
+  <p className="font-['Open_Sans'] font-normal text-[12px] leading-[18.01px] tracking-[0px] text-[#64748B]">
+    {item.desc}
+  </p>
+</div>
             ))}
           </div>
         </div>
@@ -408,7 +458,7 @@ const renderCertificationStatus = (
             <h3 className="font-[poppins] font-medium text-[24px] leading-[115%] tracking-[0] text[#000000]">
               Leader Certification
             </h3>
-            <p className="font-[poppins] font-medium text-[14px] leading-[100%] tracking-[0] text-black-500 mt-2">
+            <p className="font-[poppins] font-medium text-[14px] leading-[100%] tracking-[0] text-black-500 mt-3">
               Lead the conscious revolution.
             </p>
           </div>
@@ -420,7 +470,7 @@ const renderCertificationStatus = (
         <div className="grid md:grid-cols-3 gap-10 items-start">
           {/* Left Section */}
           <div className="md:col-span-2">
-            <h4 className="font-[poppins] font-semibold text-[34px] leading-[100%] tracking-[0] text-gray-900 mb-3">
+            <h4 className="font-[poppins] font-semibold text-[34px] leading-[140%] tracking-[0] text-gray-900 mb-3">
               Who Is Eligible for This Level of Certification?
             </h4>
 
@@ -573,18 +623,43 @@ const renderCertificationStatus = (
                 desc: " collaboration opportunities with top professionals.",
               },
             ].map((item, i) => (
-              <div
-                key={i}
-                className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-5"
-                style={{ borderWidth: "3px" }}
-              >
-                <h6 className="font-[poppins] font-medium text-[14.76px] leading-[22.14px] tracking-[-0.03em] text[#000000] mb-2 align-middle">
-                  {item.title}
-                </h6>
-                <p className="font-['Open_Sans'] font-normal text-[12px] leading-[18.01px] tracking-[0px] text-[#64748B]">
-                  {item.desc}
-                </p>
-              </div>
+             <div
+               key={i} 
+                style={{ position: "relative", borderRadius: "12px", background: "#F9FAFB", padding: "20px" }}>
+  <svg
+    key={i} 
+    
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      borderRadius: "12px",
+      pointerEvents: "none",
+    }}
+  >
+    <rect
+      x="1"
+      y="1"
+      width="calc(100% - 2px)"
+      height="calc(100% - 2px)"
+      rx="12"
+      ry="12"
+      stroke="#D1D5DB"
+      strokeWidth="1"
+      strokeDasharray="5,7"
+      fill="none"
+    />
+  </svg>
+
+  <h6 className="font-[poppins] font-medium text-[14.76px] leading-[22.14px] tracking-[-0.03em] text-[#000000] mb-2 align-middle">
+    {item.title}
+  </h6>
+  <p className="font-['Open_Sans'] font-normal text-[12px] leading-[18.01px] tracking-[0px] text-[#64748B]">
+    {item.desc}
+  </p>
+</div>
             ))}
           </div>
         </div>

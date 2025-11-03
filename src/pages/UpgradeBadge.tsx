@@ -256,7 +256,7 @@ const UpgradeBadge = () => {
 
   return (
     <>
-      <section className="w-full px-2 sm:px-4 lg:px-0.5 pt-4 pb-10">
+      <section className="w-full px-2 sm:px-4 lg:px-0.5 pt-2 pb-10">
         <header className="w-full">
           <div className="flex items-center justify-between">
             <div className="">
@@ -498,8 +498,8 @@ const UpgradeBadge = () => {
                 <img
                   src={
                     scoreData.badge.level === "Aspiring"
-                      ? "https://cdn.cness.io/aspiring.webp"
-                      : "https://cdn.cness.io/inspired.webp"
+                      ? "https://cdn.cness.io/aspiringlogo.svg"
+                      : "https://cdn.cness.io/inspired1.svg"
                   }
                   alt={`${scoreData.badge.level} Badge`}
                   className="max-w-[136px] h-auto object-contain"

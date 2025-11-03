@@ -107,8 +107,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
       </div>
 
       {/* Tabs */}
+      
       <div
-        className="flex border-t border-gray-200 -mx-6 px-6"
+        className="flex border-t border-gray-200"
         style={{
           height: "50px",
           gap: "20px",

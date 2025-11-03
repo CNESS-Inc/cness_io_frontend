@@ -13,6 +13,7 @@ import { result } from "lodash";
 import { Plus, Minus, Loader2, X } from "lucide-react";
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
+import { useNavigate } from "react-router-dom";
 
 interface TransformedSection {
   id: string;
@@ -63,7 +64,11 @@ const [expanded, setExpanded] = useState<string[]>([]);
   console.log("🚀 ~ InspiredAssessment ~ personPricing:", personPricing);
   const [isAnnual, setIsAnnual] = useState(true);
   const [validationErrors, setValidationErrors] = useState<Record<string, boolean>>({});
+  const navigate = useNavigate();
 
+  const handleBack = () => {
+    navigate(-1); // 👈 goes back one page
+  };
   // File validation constants
   const SUPPORTED_FORMATS = ['.jpg', '.jpeg', '.png', '.pdf', '.mp4'];
   const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB in bytes
@@ -765,7 +770,7 @@ setExpanded([firstErrorSection.id]);
         {sections.map((section) => (
           <div
             key={section.id}
-            className="bg-white border border-gray-200 rounded-3xl shadow-sm overflow-hidden"
+            className="bg-white rounded-3xl shadow-sm overflow-hidden"
           >
             {/* Accordion Header */}
             <button
@@ -789,15 +794,15 @@ onClick={() => handleToggle(section.id)}
               <div className="border-t border-[#E0E0E0] px-4 sm:px-6 py-6 sm:py-8 flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 sm:gap-8">
                 {/* Text and Checkboxes */}
                 <div className="flex-1">
-                  <p className="font-[poppins] font-medium text-[16px] leading-[140%] text-gray-800 mb-1">
+                  <p className="font-[poppins] font-medium text-[16px] leading-[150%] text-[#000000] mb-1">
                     Conscious Reflection:
                   </p>
-                  <p className="font-['Open_Sans'] font-normal text-[14px] leading-[120%] text-[#6E6E6E] mb-4">
+                  <p className="font-['Open_Sans'] font-normal text-[14px] leading-[150%] text-[#242424] mb-4">
                     {section.consciousReflection}
                   </p>
                   <p className="font-[poppins] font-medium text-[16px] leading-[140%] text-gray-800 mb-2">
                     {section.checkboxes_question}{" "}
-                    <span className="font-['Open_Sans'] font-normal text-[12px] leading-[140%] text-gray-600">
+                    <span className="font-['Open_Sans'] font-normal text-[12px] leading-[140%] text-[#767676]">
                       (choose at least one option)
                     </span>
                   </p>
@@ -811,7 +816,7 @@ onClick={() => handleToggle(section.id)}
                     </div>
                   )}
 
-                  <ul className="space-y-3 px-4 sm:px-8 mb-6 mt-5">
+                  <ul className="space-y-6 px-4 sm:px-8 mb-6 mt-5">
                     {section.checkboxes.map((checkbox) => (
                       <li
                         key={checkbox.id}
@@ -828,7 +833,7 @@ onClick={() => handleToggle(section.id)}
                         />
                         <label
                           htmlFor={`checkbox-${checkbox.id}`}
-                          className="font-['Open_Sans'] font-normal text-[16px] leading-[140%] text-gray-800 cursor-pointer"
+                          className="font-['Open_Sans'] font-normal text-[16px] leading-[140%] text-[#1E1E1E] cursor-pointer"
                         >
                           {checkbox.option}
                         </label>
@@ -857,9 +862,9 @@ onClick={() => handleToggle(section.id)}
                 </div>
 
                 {/* Upload Box */}
-                <div className="w-full max-w-[336px] min-h-[420px] rounded-[30px] shadow-sm border border-gray-200 bg-white flex flex-col justify-between py-5 px-5 mx-auto sm:mx-0">
+                <div className="w-full max-w-[336px] min-h-[420px] rounded-[30px]  bg-[#F9F9F9] flex flex-col justify-between py-5 px-5 mx-auto sm:mx-0">
                   <div>
-                    <h4 className="font-[poppins] font-semibold text-[16px] text-gray-900 mb-1">
+                    <h4 className="font-Inter font-semibold text-[16px] text-[#292D32] mb-1">
                       {section.uploadQuestion.question}
                     </h4>
                     <p className="font-['Open_Sans'] text-[14px] text-gray-400 mb-5">
@@ -867,14 +872,32 @@ onClick={() => handleToggle(section.id)}
                     </p>
 
                     <div
-                      className="text-center py-6 px-4 rounded-[26px] border-2 border-[#CBD0DC] border-dashed flex flex-col items-center justify-center cursor-pointer bg-[#FAFAFA] mb-6 gap-[10px]"
-                      style={{ borderWidth: "3px" }}
+      className="relative text-center py-6 px-4 rounded-[26px] flex flex-col items-center justify-center cursor-pointer bg-white mb-6 gap-[10px]"
+                      
                       onDrop={(e) => handleDrop(e, section.id)}
                       onDragOver={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                       }}
                     >
+                       {/* SVG Dashed Border */}
+      <svg
+        className="absolute top-0 left-0 w-full h-full pointer-events-none"
+        style={{ borderRadius: "26px" }}
+      >
+        <rect
+          x="2"
+          y="2"
+          width="calc(100% - 3px)"
+          height="calc(100% - 3px)"
+          rx="26"
+          ry="26"
+          stroke="#CBD0DC"
+          strokeWidth="1"
+          strokeDasharray="7,7"
+          fill="none"
+        />
+      </svg>
                       <div className="flex flex-col items-center pb-4">
                         <img
                           src={cloud}
@@ -899,7 +922,7 @@ onClick={() => handleToggle(section.id)}
                       />
                       <label
                         htmlFor={`uploadFiles-${section.id}`}
-                        className="block px-8 py-2.5 rounded-full text-[#54575C] text-[14px] font-[plus-jakarta-sans] font-medium border border-[#CBD0DC] hover:bg-gray-100 transition-all cursor-pointer"
+                        className="block px-8 py-2.5 rounded-full text-[#54575C] text-[14px] font-Inter font-medium border border-[#CBD0DC] hover:bg-gray-100 transition-all cursor-pointer"
                       >
                         Browse File
                       </label>
@@ -907,22 +930,22 @@ onClick={() => handleToggle(section.id)}
                   </div>
 
                   {/* Uploaded Files */}
-                  <div className="space-y-3 overflow-y-auto pr-1">
+<div className="space-y-3 overflow-y-auto overflow-x-hidden pr-1 max-h-[300px]">
                     {uploads[section.id]?.map((file, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl px-4 py-3"
+      className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 overflow-hidden"
                       >
-                        <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 flex items-center justify-center bg-[#FFECEC] rounded-md">
+                        <div className="flex items-center space-x-3 min-w-0">
+                          <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center bg-[#FFECEC] rounded-md">
                             <img
                               src="https://cdn-icons-png.flaticon.com/512/337/337946.png"
                               alt="PDF"
                               className="w-4 h-4"
                             />
                           </div>
-                          <div>
-                            <p className="font-['Open_Sans'] text-[14px] text-gray-800">
+                          <div className="min-w-0">
+                            <p className="font-['Open_Sans'] text-[14px] text-gray-800 truncate">
                               {file.name}
                             </p>
                             <p className="font-['Open_Sans'] text-[12px] text-gray-500">
@@ -930,7 +953,7 @@ onClick={() => handleToggle(section.id)}
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-2 flex-shrink-0">
                           {file.status === "Uploading..." && (
                             <Loader2 className="w-4 h-4 text-[#7077FE] animate-spin" />
                           )}
@@ -963,14 +986,21 @@ onClick={() => handleToggle(section.id)}
       </div>
 
       {/* Submit Button */}
-      <div className="flex justify-center mt-8">
+<div className="flex justify-end gap-4 mt-10">
+
+  <button
+    onClick={handleBack} // <-- define this function
+    className="px-6 py-2 rounded-full border border-gray-300 text-gray-700 font-[poppins] font-medium text-[16px] bg-white hover:bg-gray-100 transition-all duration-200"
+  >
+    Back
+  </button>
         <button
           onClick={handleSubmitAllAnswers}
           disabled={submitting}
-          className="px-8 py-3 bg-[#7077FE] text-white rounded-full font-[poppins] font-medium text-[16px] hover:bg-[#5b62d4] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+    className="px-6 py-2 rounded-full bg-gradient-to-r from-[#7077FE] to-[#A066FF] text-white font-[poppins] font-medium text-[16px] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
         >
           {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-          {submitting ? "Submitting..." : "Submit Answers"}
+          {submitting ? "Submitting..." : "Submit"}
         </button>
       </div>
 

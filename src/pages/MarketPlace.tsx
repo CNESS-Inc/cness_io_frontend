@@ -164,6 +164,8 @@ export default function MarketplacePage() {
 
   return (
     <>
+               <div className="px-1 2xl:px-1 pt-2 md:pt-2 pb-2 md:pb-10 ">
+
       {/* <div className="w-full bg-[#f9f9f9] flex">
         <div className="w-full max-w-[1600px] px-2 sm:px-4 lg:px-6">
           <div className="pt-4 flex flex-col lg:flex-row gap-6 w-full">
@@ -277,12 +279,13 @@ export default function MarketplacePage() {
       </div> */}
 
       <LazySection effect="fade-up" delay={0.2}>
+
         <MarketplaceHero />
       </LazySection>
       <LazySection effect="fade-up" delay={0.1}>
         <Seller />
       </LazySection>
-
+\
        <section className="bg-[linear-gradient(135deg,rgba(255,255,255,1)_10%,rgba(253,237,237,1)_70%,rgba(249,211,242,1)_100%)] pt-18 pb-18 max-[767px]:ml-[-16px] max-[767px]:mr-[-16px]">
         <div className="max-w-[1500px] mx-auto px-4 flex flex-col lg:flex-row items-stretch gap-8 lg:gap-12 ">
               <div className="w-full shadow-lg rounded-[28px] max-[767px]:h-[800px] max-[767px]:overflow-y-auto  lg:w-[60%] bg-white  p-4 sm:p-6 md:p-10 flex flex-col">
@@ -302,6 +305,7 @@ export default function MarketplacePage() {
               </div>
             </div>
       </section>
+     </div>
     </>
   );
 }

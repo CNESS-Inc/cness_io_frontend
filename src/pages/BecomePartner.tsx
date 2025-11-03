@@ -393,6 +393,8 @@ const BecomePartner = () => {
 
   return (
     <>
+            <div className="px-5 2xl:px-5 pt-2 md:pt-2 pb-5 md:pb-18">
+
       <div className="m-0 p-0">
         <div
           className="py-[33px] px-10"
@@ -868,6 +870,7 @@ const BecomePartner = () => {
             minHeight={900}
           />
         </div> */}
+      </div>
       </div>
     </>
   );
