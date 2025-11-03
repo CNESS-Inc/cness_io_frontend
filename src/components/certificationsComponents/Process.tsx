@@ -55,7 +55,7 @@ export default function Process() {
           >
             Our Certification Process
           </h1>
-          <p className="font-['Open_Sans'] text-base text-[#242424] font-light mt-2">
+          <p className="font-['Open_Sans'] text-[16px] text-[#242424] font-light mt-2">
             We’ve made the path to certification clear and straightforward — so
             you can focus on learning, growing, and getting recognized without
             complications.

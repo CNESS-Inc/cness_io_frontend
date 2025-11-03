@@ -71,7 +71,7 @@ export default function WhatOffer() {
             We Offer
           </span>
         </h3>
-        <p className="font-['Open_Sans'] pt-2 text-center w-full font-['Open Sans'] text-[#242424] font-light text-[16px] leading-[24.38px] tracking-[0px]">
+        <p className="font-['Open_Sans'] pt-2 text-center w-full text-[#242424] font-light text-[16px] leading-[24.38px] tracking-[0px]">
           CNESS is a super app that brings together tools for professional
           growth and <br />
           personal connection in one ecosystem.

@@ -78,12 +78,14 @@ export default function WhyCness() {
         >
           {/* Text container */}
           <div className="mx-auto max-w-[1100px] px-6 text-center">
-            <h1
-              style={{ fontFamily: "Poppins, sans-serif" }}
-              className={`font-medium text-[32px] md:text-[42px] leading-[115%] tracking-[-0.02em] text-center antialiased bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text transition-all duration-1000 ease-in-out`}
-            >
-              Empowering Growth. <br /> Connecting People. Creating Impact.
-            </h1>
+          <h1
+  style={{ fontFamily: "Poppins, sans-serif" }}
+  className="font-medium text-[32px] md:text-[42px] leading-[120%] md:leading-[130%] tracking-[-0.02em] text-center antialiased bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
+>
+  Empowering Growth.
+  <br />
+  Connecting People. Creating Impact.
+</h1>
 
             <p
               className={`font-['Open_Sans'] md:text-base font-light text-[#242424] mt-6 max-w-4xl mx-auto transition-all duration-1000 ease-in-out`}
