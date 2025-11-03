@@ -98,6 +98,8 @@ import AddCourseForm from "../pages/AddCourse";
 import AddArtsForm from "../pages/AddArts";
 import SellerOrderList from "../pages/SellerOrderList";
 import SellerOrderDetail from "../pages/SellerOrderDetail";
+import SellerSales from "../pages/SellerSales";
+import SellerWithdrawal from "../pages/SellerWithdrawal";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -290,97 +292,105 @@ export const router = createBrowserRouter([
           },
 
           {
-  path: "shop-detail/:id",
-  element: <ShopDetail />,
-},
+            path: "shop-detail/:id",
+            element: <ShopDetail />,
+          },
 
-{
-  path: "product-review/:id",
-  element: <ReviewAll />,
-},
-{
-  path: "cart",
-  element: <CartPage />,
-},
-{
-    path: "checkout",
-  element: <Checkout />,
-},
-{
-    path: "payment-success",
-  element: <PaymentSuccess />,
-},
+          {
+            path: "product-review/:id",
+            element: <ReviewAll />,
+          },
+          {
+            path: "cart",
+            element: <CartPage />,
+          },
+          {
+            path: "checkout",
+            element: <Checkout />,
+          },
+          {
+            path: "payment-success",
+            element: <PaymentSuccess />,
+          },
 
-{
-  path: "payment-failed",
-  element: <PaymentFailed />,
-},
-{
-  path: "wishlist",
-  element: <Wishlist />,
-},
-{
-  path:"order-history",
-  element:<OrderHistory />
-},
-{
-     path: "order-history/:id",
-     element: <ProductSummery />,
-  },
-{
-  path:"shops",
-  element:<ShopsList />
-},
+          {
+            path: "payment-failed",
+            element: <PaymentFailed />,
+          },
+          {
+            path: "wishlist",
+            element: <Wishlist />,
+          },
+          {
+            path: "order-history",
+            element: <OrderHistory />
+          },
+          {
+            path: "order-history/:id",
+            element: <ProductSummery />,
+          },
+          {
+            path: "shops",
+            element: <ShopsList />
+          },
 
-{
-  path:"seller-dashboard",
-  element:<VendorDashboard />
-},
+          {
+            path: "seller-dashboard",
+            element: <VendorDashboard />
+          },
 
-{
-path:"createshop",
-element:<CreateShopForm />
-},
-{
-path:"products",
-element:<SellerProductList />
-},
-{
-  path:"products/add-video",
-  element:<AddVideoForm />
-},
-{
-  path:"products/add-podcast",
-  element:<AddPodcastsForm />
-},
-{
-  path:"products/add-ebook",
-  element:<AddEbookForm />
-},
-{
-  path:"products/add-music",
-  element:<AddMusicForm />
-},
+          {
+            path: "createshop",
+            element: <CreateShopForm />
+          },
+          {
+            path: "products",
+            element: <SellerProductList />
+          },
+          {
+            path: "products/add-video",
+            element: <AddVideoForm />
+          },
+          {
+            path: "products/add-podcast",
+            element: <AddPodcastsForm />
+          },
+          {
+            path: "products/add-ebook",
+            element: <AddEbookForm />
+          },
+          {
+            path: "products/add-music",
+            element: <AddMusicForm />
+          },
 
-{
-  path:"products/add-course",
-  element:<AddCourseForm />
-},
+          {
+            path: "products/add-course",
+            element: <AddCourseForm />
+          },
 
-{
-  path:"products/add-arts",
-  element:<AddArtsForm />
-},
+          {
+            path: "products/add-arts",
+            element: <AddArtsForm />
+          },
 
-{
-  path:"orderlist",
-  element:<SellerOrderList />
-},
+          {
+            path: "orderlist",
+            element: <SellerOrderList />
+          },
+          {
+            path: "seller-sales",
+            element: <SellerSales />
+          },
+          {
+            path: "seller-sales/withdrawal",
+            element: <SellerWithdrawal />
+          },
 
-{
-  path :"orderlist/:id",
-  element:<SellerOrderDetail />
-},{
+          {
+            path: "orderlist/:id",
+            element: <SellerOrderDetail />
+          }, {
             path: "shop-detail/:id",
             element: <ShopDetail />,
           },

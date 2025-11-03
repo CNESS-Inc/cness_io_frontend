@@ -46,37 +46,38 @@ const DashboardLayout = () => {
     location.pathname.includes("/dashboard/library") ||
     location.pathname.includes("/dashboard/order-history") ||
     location.pathname.includes("/dashboard/faqs") ||
-    location.pathname.includes("/dashboard/categories")||
+    location.pathname.includes("/dashboard/categories") ||
     location.pathname.includes("/dashboard/shops");
-    
 
-    const isSellerPage=
+
+  const isSellerPage =
     location.pathname.includes("/dashboard/seller-dashboard") ||
     location.pathname.includes("/dashboard/products") ||
-    location.pathname.includes("/dashboard/orderlist");
+    location.pathname.includes("/dashboard/orderlist") ||
+    location.pathname.includes("/dashboard/seller-sales");
 
-    const isCreateShopPage =
-     location.pathname.includes("/dashboard/createshop")||
-      location.pathname.includes("/dashboard/products/add-video") ||
+  const isCreateShopPage =
+    location.pathname.includes("/dashboard/createshop") ||
+    location.pathname.includes("/dashboard/products/add-video") ||
     location.pathname.includes("/dashboard/products/add-ebook") ||
     location.pathname.includes("/dashboard/products/add-podcast") ||
-   location.pathname.includes("/dashboard/products/add-music") ||
+    location.pathname.includes("/dashboard/products/add-music") ||
     location.pathname.includes("/dashboard/products/add-course") ||
     location.pathname.includes("/dashboard/products/add-arts");
 
 
-let pageBackground = "bg-[#f9f9f9]"; 
+  let pageBackground = "bg-[#f9f9f9]";
 
-if (isMarketplacePage) {
-  pageBackground = "bg-white";
-} else if (isCreateShopPage || isSellerPage) {
-  pageBackground = "bg-[#EEF3FF]"; // light blue background for seller pages
-}
+  if (isMarketplacePage) {
+    pageBackground = "bg-white";
+  } else if (isCreateShopPage || isSellerPage) {
+    pageBackground = "bg-[#EEF3FF]"; // light blue background for seller pages
+  }
 
 
   return (
     <div
-     className={`flex flex-col justify-center w-full min-h-screen relative ${pageBackground}`}
+      className={`flex flex-col justify-center w-full min-h-screen relative ${pageBackground}`}
 
     >
       {/* Outer container */}
@@ -106,9 +107,8 @@ if (isMarketplacePage) {
 
         {/* Desktop Headers */}
         <div
-          className={`hidden md:block transition-all duration-300 ${
-            isMobileNavOpen ? "md:ml-[240px]" : "md:ml-0"
-          }`}
+          className={`hidden md:block transition-all duration-300 ${isMobileNavOpen ? "md:ml-[240px]" : "md:ml-0"
+            }`}
         >
           {isMarketplacePage ? (
             <>
@@ -122,9 +122,8 @@ if (isMarketplacePage) {
 
               {/* Market Header below */}
               <div
-                className={`fixed top-[80px] right-0 z-40 bg-white transition-all duration-300 ${
-                  isMobileNavOpen ? "left-[256px]" : "left-0"
-                }`}
+                className={`fixed top-[80px] right-0 z-40 bg-white transition-all duration-300 ${isMobileNavOpen ? "left-[256px]" : "left-0"
+                  }`}
               >
                 <MarketHeader
                   toggleMobileNav={toggleMobileNav}
@@ -144,9 +143,8 @@ if (isMarketplacePage) {
 
               {/* Seller Header below */}
               <div
-                className={`fixed top-[80px] right-0 z-40 bg-white transition-all duration-300 ${
-                  isMobileNavOpen ? "left-[256px]" : "left-0"
-                }`}
+                className={`fixed top-[80px] right-0 z-40 bg-white transition-all duration-300 ${isMobileNavOpen ? "left-[256px]" : "left-0"
+                  }`}
               >
                 <SellerHeader
                   toggleMobileNav={toggleMobileNav}
@@ -176,22 +174,19 @@ if (isMarketplacePage) {
 
         {/* Main Content */}
         <div
-          className={`flex-1 flex flex-col transition-all duration-300 ${
-            isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
-          }`}
+          className={`flex-1 flex flex-col transition-all duration-300 ${isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
+            }`}
         >
-         <main
-  className={`flex-1 min-h-screen overflow-y-auto transition-all duration-300 ${
-hasNoPadding || isCreateShopPage ? "px-0 py-3 pb-14" : "px-4 py-3 pb-14"  } ${
-    isMarketplacePage
-      ? "pt-[160px]" // for MarketHeader
-      : isSellerPage
-      ? "pt-[160px]" // for SellerHeader
-      : isCreateShopPage
-      ? "pt-0" // ✅ attach directly under topbar
-      : "" // default DashboardHeader height
-  }`}
->
+          <main
+            className={`flex-1 min-h-screen overflow-y-auto transition-all duration-300 ${hasNoPadding || isCreateShopPage ? "px-0 py-3 pb-14" : "px-4 py-3 pb-14"} ${isMarketplacePage
+              ? "pt-[160px]" // for MarketHeader
+              : isSellerPage
+                ? "pt-[160px]" // for SellerHeader
+                : isCreateShopPage
+                  ? "pt-0" // ✅ attach directly under topbar
+                  : "" // default DashboardHeader height
+              }`}
+          >
             {/* ↑ adjust this padding to match the total header height (72 + 60) */}
             <div className="flex min-h-screen mb-auto">
               {isDashboardTechPage && (
@@ -214,9 +209,8 @@ hasNoPadding || isCreateShopPage ? "px-0 py-3 pb-14" : "px-4 py-3 pb-14"  } ${
 
       {/* Footer & Messaging */}
       <div
-        className={`transition-all duration-300 ${
-          isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
-        }`}
+        className={`transition-all duration-300 ${isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
+          }`}
       >
         <MessagingProvider>
           <PersistentMessagingWidget />

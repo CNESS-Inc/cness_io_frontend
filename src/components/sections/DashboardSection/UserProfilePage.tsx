@@ -1368,7 +1368,7 @@ const UserProfilePage = () => {
 
     if (workExperiences && workExperiences.length > 0) {
       // Watch for country changes in any work experience entry
-      workExperiences.forEach((exp) => {
+      workExperiences.forEach((exp: any) => {
         if (exp.work_country) {
           GetState(exp.work_country);
         }
@@ -2644,7 +2644,7 @@ const UserProfilePage = () => {
                       >
                         {educationForm
                           .watch("educations")
-                          ?.map((_education, index) => (
+                          ?.map((_education: any, index) => (
                             <div
                               key={index}
                               className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative"
