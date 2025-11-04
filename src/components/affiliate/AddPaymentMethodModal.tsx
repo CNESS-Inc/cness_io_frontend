@@ -496,7 +496,8 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({ isOpen, o
                                     <Button
                                         type="submit"
                                         variant="gradient-primary"
-                                        className="px-6 py-3 rounded-full"
+                                        className="rounded-full px-[20px] py-[10px] text-[16px] leading-[100%] tracking-[0px] text-center text-white font-['Open_Sans'] font-semibold  disabled:opacity-60"
+
                                         disabled={isSubmitting}
                                     >
                                         {isSubmitting ? (editMode ? 'Updating...' : 'Adding...') : (editMode ? 'Update Payment Method' : 'Add Payment Method')}

@@ -16,9 +16,9 @@ const Certification = () => {
   // }, []);
 
   return (
-    <div className="py-20 w-full bg-[#FAFAFA] px-6 pb-28">
-      <div className="max-w-[1336px] w-full mx-auto flex lg:flex-row flex-col justify-between">
-        <div className="lg:w-[60%] w-full flex flex-col justify-center items-start">
+<div className="bg-[#FAFAFA] w-full px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+<div className="max-w-[1336px] w-full mx-auto flex flex-col-reverse lg:flex-row items-center justify-between gap-10 lg:gap-20">
+<div className="w-full lg:w-[60%] flex flex-col justify-center items-start text-left">
           <h3
             style={{ fontFamily: "Poppins, sans-serif" }}
             className=" leading-10 text-[42px] font-medium text-black"
@@ -78,13 +78,13 @@ const Certification = () => {
           </Button>
         </div>
 
-        <div className="certificate-animation md:h-[100%] rounded-2xl lg:w-[40%] w-full lg:mt-0 mt-15">
+<div className="certificate-animation w-full lg:w-[40%] mt-10 lg:mt-10 flex justify-center items-center">
           {/* {animationData && ( */}
           <LottieOnView
             // animationData={animationData}
             src="https://cnessioassets.project-69e.workers.dev/badgecard.json"
             loop
-            className="w-full lg:h-full lg:scale-120"
+className="w-[300px] sm:w-[380px] md:w-[600px] lg:w-[700px] xl:w-[800px] h-auto mx-auto transition-all duration-500"
           />
           {/* )} */}
         </div>

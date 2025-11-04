@@ -437,7 +437,7 @@ const showMarketplaceNew =
               >
                 Edit Profile
               </NavLink>
-              <NavLink
+              {/*<NavLink
                 to="/dashboard/Profile"
                 end
                 className={({ isActive }) =>
