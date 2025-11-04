@@ -2396,7 +2396,7 @@ export function CertificationCard({
   auto = true,
   intervalMs = 6000,
   upgradeText = "To achieve the next level certification, you need to create a basic profile that includes selling your reactions, accessing the community, and utilizing the resources library.",
-  onUpgrade,
+  // onUpgrade,
 }: {
   progress?: number;
   score?: number;
@@ -2413,7 +2413,7 @@ export function CertificationCard({
   upgradeCtaLabel?: string;
   onUpgrade?: () => void;
 }) {
-  console.log("🚀 ~ CertificationCard ~ score:", score);
+  console.log("🚀 ~ CertificationCard ~ activeLevel:", activeLevel);
   const [slide, setSlide] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
   const [showiInterestModal, setShowInterestModal] = useState(false);
@@ -2459,7 +2459,7 @@ export function CertificationCard({
     } else if (activeLevel === "Inspired") {
       navigate("/dashboard/assesmentcertification");
     } else {
-      onUpgrade?.();
+      navigate("/dashboard/assesmentcertification");
     }
   };
 
@@ -3233,8 +3233,8 @@ export function SocialStackCard({
   // friends
   suggested,
   requested,
-  // onConnect,
-}: {
+}: // onConnect,
+{
   coverUrl: string;
   avatar: string;
   name: string;
@@ -4008,11 +4008,9 @@ export function SocialStackCard({
                   disabled={connectingUsers[f.id] || false}
                   className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-[12px] py-[6px] rounded-full transition-colors font-family-open-sans h-[35px]
                   ${
-                    getFriendStatus(f.id) ===
-                    "connected"
+                    getFriendStatus(f.id) === "connected"
                       ? "bg-gray-400 text-white cursor-not-allowed"
-                      : getFriendStatus(f.id) ===
-                        "requested"
+                      : getFriendStatus(f.id) === "requested"
                       ? "bg-gray-400 text-white cursor-not-allowed"
                       : "bg-white text-black shadow-md"
                   }`}

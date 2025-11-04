@@ -194,171 +194,231 @@ const ScoreResult = () => {
     }
   };
 
-  const handleReportDownload = async () => {
-    try {
-      setIsGeneratingPDF(true);
-      const response = await GetReport();
-      const data = {
-        array: response.data.data.array,
-        final_score: response.data.data.final_score,
-      };
+const handleReportDownload = async () => {
+  try {
+    setIsGeneratingPDF(true);
+    const response = await GetReport();
+    console.log("🚀 ~ handleReportDownload ~ response:", response)
+    
+    // Updated data extraction to match new response structure
+    const data = {
+      array: response.data.data.array,
+      final_score: response.data.data.final_score,
+    };
 
-      let html = "";
+    let html = "";
 
-      // Generate HTML content for sections
-      for (const section of data.array) {
-        html += `<div style="margin-bottom: 25px;"><h2 style="margin-bottom: 10px;">Section: ${section.section.name} - (${section.section.weight} / ${section.section.total_weight})</h2>`;
-        for (const sub of section.question_data) {
-          html += `<div style="margin-bottom: 25px;"><h3>Sub Section: ${sub.sub_section.name} - (${sub.sub_section.weight} / 5)</h3>`;
-          for (const ques of sub.questions) {
-            html += `<p><b>Question:</b> ${ques.question}</p><ul>`;
+    // Generate HTML content for sections
+    for (const section of data.array) {
+      html += `<div style="margin-bottom: 25px;"><h2 style="margin-bottom: 10px;">Section: ${section.section.name} - (${section.section.weight} / ${section.section.total_weight})</h2>`;
+      
+      for (const sub of section.question_data) {
+        html += `<div style="margin-bottom: 25px;"><h3>Sub Section: ${sub.sub_section.name} - (${sub.sub_section.weight} / 5)</h3>`;
+        
+        for (const ques of sub.questions) {
+          console.log("🚀 ~ handleReportDownload ~ ques:", ques)
+          html += `<p><b>Question:</b> ${ques.question}</p><ul>`;
+          
+          // Handle different answer scenarios
+          if (ques.answer && ques.answer.length > 0) {
             for (const ans of ques.answer) {
-              if (ques.is_link) {
+              if (ans === null || ans === undefined) {
+                html += `<li>No answer provided</li>`;
+              } else if (ques.is_link) {
                 html += `<li><a href="${ans}" target="_blank">Click To View Uploaded File</a></li>`;
               } else {
                 html += `<li>${ans}</li>`;
               }
             }
-            html += `</ul>`;
+          } else {
+            html += `<li>No answer provided</li>`;
           }
-          html += ` </div><br/> `;
+          
+          html += `</ul>`;
         }
         html += ` </div><br/> `;
       }
-
-      // Complete HTML template
-      const template = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-          <meta charset="utf-8">
-          <title>CNESS Inspired Certification</title>
-          <style>
-              body {
-                  font-family: Arial, sans-serif;
-              }
-              h1 {
-                  color: #4CAF50;
-              }
-              h2 {
-                  color: #333;
-                  margin-top: 30px;
-              }
-              h3 {
-                  color: #555;
-              }
-              table {
-                  width: 100%;
-                  border-collapse: collapse;
-                  margin-top: 20px;
-                  margin-bottom: 30px;
-              }
-              th, td {
-                  border: 1px solid #ddd;
-                  padding: 12px;
-                  text-align: left;
-              }
-              th {
-                  background-color: #4CAF50;
-                  color: white;
-              }
-              tr:nth-child(even) {
-                  background-color: #f2f2f2;
-              }
-              li {
-                  color: #666;
-              }
-              a {
-                  color: blue;
-                  text-decoration: underline;
-              }
-              .footer {
-                  margin-top: 20px;
-                  font-style: italic;
-                  color: #666;
-              }
-              .mb {
-                  margin-bottom: 20px;
-              }
-          </style>
-      </head>
-      <body>
-          <h1>CNESS Inspired Certification – Self-Assessment Report</h1>
-          <p>This report is auto-generated based on your self-assessment for the CNESS Inspired Certification.</p>
-
-          ${html}
-
-          <h2 id='summary-table'>Summary Table</h2>
-          <table>
-              <tr>
-                  <th>Pillar</th>
-                  <th>Max Points</th>
-                  <th>Score</th>
-                  <th>Percentage</th>
-              </tr>
-              ${data.array
-                .map(
-                  (item: any) => `
-              <tr>
-                  <td>${item.section.name}</td>
-                  <td>${item.section.total_weight}</td>
-                  <td>${item.section.weight}</td>
-                  <td>${Math.round(
-                    (item.section.weight / item.section.total_weight) * 100
-                  )}%</td>
-              </tr>
-              `
-                )
-                .join("")}
-              <tr>
-                  <th colspan="2">Total Score</th>
-                  <th colspan="2">${data.final_score} / 100</th>
-              </tr>
-          </table>
-
-          <div class="footer">
-              <p>Thank you for your dedication to conscious growth.</p>
-              <p class="mb">Generated on: ${new Date().toLocaleDateString()}</p>
-          </div>
-      </body>
-      </html>`;
-
-      // Generate PDF from HTML with correct typing
-      const options = {
-        margin: 10,
-        filename: `CNESS_Report_${new Date().toISOString().split("T")[0]}.pdf`,
-        image: { type: "jpeg" as const, quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          async: true,
-        },
-        jsPDF: {
-          unit: "mm" as const,
-          format: "a4" as const,
-          orientation: "portrait" as const,
-        },
-        pagebreak: {
-          mode: "avoid-all" as const,
-          before: ".section , #summary-table",
-          avoid: "img, table",
-        },
-      };
-
-      // Generate and download PDF
-      await html2pdf().set(options).from(template).save();
-    } catch (error: any) {
-      showToast({
-        message:
-          error?.response?.data?.error?.message || "Failed to generate report",
-        type: "error",
-        duration: 5000,
-      });
-    } finally {
-      setIsGeneratingPDF(false);
+      html += ` </div><br/> `;
     }
-  };
+
+    // Complete HTML template
+    const template = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <title>CNESS Inspired Certification</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+            }
+            h1 {
+                color: #4CAF50;
+                text-align: center;
+                margin-bottom: 30px;
+            }
+            .mb{
+                margin-bottom: 30px;
+            }
+            h2 {
+                color: #333;
+                margin-top: 30px;
+                border-bottom: 2px solid #4CAF50;
+                padding-bottom: 5px;
+            }
+            h3 {
+                color: #555;
+                margin-top: 20px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+                margin-bottom: 30px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+            th, td {
+                border: 1px solid #ddd;
+                padding: 12px;
+                text-align: left;
+            }
+            th {
+                background-color: #4CAF50;
+                color: white;
+                font-weight: bold;
+            }
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            tr:hover {
+                background-color: #f5f5f5;
+            }
+            li {
+                color: #666;
+                margin-bottom: 5px;
+            }
+            a {
+                color: #2196F3;
+                text-decoration: underline;
+            }
+            a:hover {
+                color: #1976D2;
+            }
+            .footer {
+                margin-top: 40px;
+                font-style: italic;
+                color: #666;
+                text-align: center;
+                border-top: 1px solid #ddd;
+                padding-top: 20px;
+            }
+            .mb {
+                margin-bottom: 20px;
+            }
+            .section-container {
+                background-color: #f8f9fa;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 25px;
+                border-left: 4px solid #4CAF50;
+            }
+            .question-container {
+                background-color: white;
+                padding: 15px;
+                border-radius: 5px;
+                margin: 10px 0;
+                border: 1px solid #e0e0e0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>CNESS Inspired Certification – Self-Assessment Report</h1>
+        <p class="mb">This report is auto-generated based on your self-assessment for the CNESS Inspired Certification.</p>
+
+        <div class="section-container">
+        ${html}
+        </div>
+
+        <h2 id='summary-table'>Summary Table</h2>
+        <table>
+            <tr>
+                <th>Pillar</th>
+                <th>Max Points</th>
+                <th>Score</th>
+                <th>Percentage</th>
+            </tr>
+            ${data.array
+              .map(
+                (item: any) => `
+            <tr>
+                <td>${item.section.name}</td>
+                <td>${item.section.total_weight}</td>
+                <td>${item.section.weight}</td>
+                <td>${Math.round(
+                  (item.section.weight / item.section.total_weight) * 100
+                )}%</td>
+            </tr>
+            `
+              )
+              .join("")}
+            <tr style="background-color: #e8f5e8;">
+                <td colspan="2"><strong>Total Score</strong></td>
+                <td colspan="2"><strong>${data.final_score} / 100</strong></td>
+            </tr>
+        </table>
+
+        <div class="footer">
+            <p>Thank you for your dedication to conscious growth.</p>
+            <p class="mb">Generated on: ${new Date().toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}</p>
+        </div>
+    </body>
+    </html>`;
+
+    // Generate PDF from HTML with correct typing
+    const options = {
+      margin: 15,
+      filename: `CNESS_Report_${new Date().toISOString().split("T")[0]}.pdf`,
+      image: { type: "jpeg" as const, quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        async: true,
+      },
+      jsPDF: {
+        unit: "mm" as const,
+        format: "a4" as const,
+        orientation: "portrait" as const,
+      },
+      pagebreak: {
+        mode: "avoid-all" as const,
+        before: " #summary-table",
+        avoid: "img, table",
+      },
+    };
+
+    // Generate and download PDF
+    await html2pdf().set(options).from(template).save();
+    
+  } catch (error: any) {
+    showToast({
+      message:
+        error?.response?.data?.error?.message || "Failed to generate report",
+      type: "error",
+      duration: 5000,
+    });
+  } finally {
+    setIsGeneratingPDF(false);
+  }
+};
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);

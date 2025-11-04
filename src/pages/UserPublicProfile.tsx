@@ -25,6 +25,8 @@ import {
   CreateBestPractice,
   SendBpFollowRequest,
   GetPublicProfileDetailsById,
+  GetInterestsDetails,
+  GetValidProfessionalDetails,
   //UnFriend,
 } from "../Common/ServerAPI";
 import { useNavigate, useParams } from "react-router-dom";
@@ -100,8 +102,8 @@ export default function UserProfileView() {
   const handleShareClose = () => setIsShareOpen(false);
   const [activeModal, setActiveModal] = useState(false);
   const loggedInUserID = localStorage.getItem("Id");
-  // const [profession, setProfession] = useState<any[]>([]);
-  // const [interest, setInterestData] = useState<any[]>([]);
+  const [profession, setProfession] = useState<any[]>([]);
+  const [interest, setInterestData] = useState<any[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [newPractice, setNewPractice] = useState({
@@ -133,8 +135,8 @@ export default function UserProfileView() {
     // fetchPublicUserDetails();
     // fetchAllBestPractises();
     // fetchFollowBestPractises();
-    // fetchProfession();
-    // fetchIntrusts();
+    fetchProfession();
+    fetchIntrusts();
   }, []);
 
   useEffect(() => {
@@ -155,33 +157,33 @@ export default function UserProfileView() {
     }
   }, [myBP]);
 
-  // const fetchProfession = async () => {
-  //   try {
-  //     const res = await GetValidProfessionalDetails();
-  //     setProfession(res?.data?.data);
-  //   } catch (error: any) {
-  //     console.error("Error fetching professions:", error);
-  //     showToast({
-  //       message: error?.response?.data?.error?.message,
-  //       type: "error",
-  //       duration: 5000,
-  //     });
-  //   }
-  // };
+  const fetchProfession = async () => {
+    try {
+      const res = await GetValidProfessionalDetails();
+      setProfession(res?.data?.data);
+    } catch (error: any) {
+      console.error("Error fetching professions:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
 
-  // const fetchIntrusts = async () => {
-  //   try {
-  //     const res = await GetInterestsDetails();
-  //     setInterestData(res?.data?.data);
-  //   } catch (error: any) {
-  //     console.error("Error fetching Intrusts:", error);
-  //     showToast({
-  //       message: error?.response?.data?.error?.message,
-  //       type: "error",
-  //       duration: 5000,
-  //     });
-  //   }
-  // };
+  const fetchIntrusts = async () => {
+    try {
+      const res = await GetInterestsDetails();
+      setInterestData(res?.data?.data);
+    } catch (error: any) {
+      console.error("Error fetching Intrusts:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
 
   const slugify = (str: string) => {
     return str
@@ -1487,8 +1489,8 @@ export default function UserProfileView() {
         open={activeModal}
         onClose={closeModal}
         newPractice={newPractice}
-        // profession={profession}
-        // interest={interest}
+        profession={profession}
+        interest={interest}
         tags={tags}
         inputValue={inputValue}
         setInputValue={setInputValue}
