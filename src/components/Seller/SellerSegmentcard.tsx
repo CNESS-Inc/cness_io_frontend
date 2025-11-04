@@ -14,8 +14,8 @@ import {
   MoreHorizontal,
 } from "lucide-react";
 import profileicon from "../../assets/profileicon.svg";
-import aspired from "../../assets/aspired.png";
-import inspired from "../../assets/inspired.png";
+import aspired from "../../assets/asplocked1.svg";
+import inspired from "../../assets/insplocked1.svg";
 import bpicon from "../../assets/bpicon.svg";
 import certicon from "../../assets/certificationicon.svg";
 import directoryicon from "../../assets/directoryicon.svg";

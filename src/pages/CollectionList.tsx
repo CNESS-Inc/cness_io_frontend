@@ -7,6 +7,7 @@ import like from "../assets/like.png";
 
 import { MoreHorizontal, Bookmark } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
+import defaultProfile from "../assets/altprofile.png";
 import { Link } from "react-router-dom";
 import SharePopup from "../components/Social/SharePopup";
 
@@ -344,26 +345,28 @@ const CollectionList = ({ items }: { items: any[] }) => {
           {/* Header */}
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 md:gap-3">
-              <Link
-                to={`/dashboard/userprofile/${item.originalData.profile.user_id}`}
-              >
-                <img
-                  src={
-                    !item.originalData.profile.profile_picture ||
-                    item.originalData.profile.profile_picture === "null" ||
-                    item.originalData.profile.profile_picture === "undefined" ||
-                    !item.originalData.profile.profile_picture.startsWith("http")
-                      ? "/profile.png"
-                      : item.originalData.profile.profile_picture
-                  }
-                  className="w-8 h-8 md:w-[63px] md:h-[63px] rounded-full"
-                  alt="User"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = "/profile.png";
-                  }}
-                />
-              </Link>
+           <Link
+  to={`/dashboard/userprofile/${item.originalData.profile.user_id}`}
+  className="flex-shrink-0"
+>
+  <img
+    src={
+      item.originalData.profile.profile_picture &&
+      item.originalData.profile.profile_picture !== "null" &&
+      item.originalData.profile.profile_picture !== "undefined" &&
+      item.originalData.profile.profile_picture.trim() !== ""
+        ? item.originalData.profile.profile_picture
+        : defaultProfile
+    }
+    alt={`${item.originalData.profile.first_name} ${item.originalData.profile.last_name}`}
+    className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
+    onError={(e) => {
+      const target = e.target as HTMLImageElement;
+      target.src = defaultProfile;
+    }}
+  />
+</Link>
+
               <div>
                 <p className="font-semibold text-sm md:text-base text-black">
                   <Link
