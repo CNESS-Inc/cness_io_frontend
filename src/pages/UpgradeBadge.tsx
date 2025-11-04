@@ -30,7 +30,6 @@ const UpgradeBadge = () => {
   const tweetText = `Earned the CNESS Inspired Certification! Proud to lead with conscious values. Join us at cness.io`;
   const [user, setUser] = useState<any | null>(null);
   const [scoreData, setScoreData] = useState<any>(null);
-  console.log("🚀 ~ UpgradeBadge ~ scoreData:", scoreData)
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const { showToast } = useToast();
   const menuRef = useRef<HTMLDivElement | null>(null);
