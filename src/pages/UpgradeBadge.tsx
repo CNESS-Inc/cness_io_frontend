@@ -515,7 +515,7 @@ const UpgradeBadge = () => {
             <div className="pt-5 flex justify-center">
               <div className="relative w-[90px] h-[90px] sm:w-[120px] sm:h-[120px] md:w-[147px] md:h-[147px]">
                 <CircularProgressbar
-                  value={user?.profile_progress}
+                  value={user?.cis_score}
                   strokeWidth={10}
                   styles={buildStyles({
                     rotation: 0.6,
@@ -527,7 +527,7 @@ const UpgradeBadge = () => {
                 />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="font-['open sans'] font-bold text-[28px] sm:text-[31.51px] text-[#242731]">
-                    {user?.profile_progress}%
+                    {user?.cis_score}%
                   </span>
                 </div>
                 <svg style={{ height: 0 }}>
