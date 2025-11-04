@@ -23,6 +23,7 @@ import comment1 from "../assets/comment1.png";
 
 import { MoreHorizontal, Bookmark } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
+import defaultProfile from "../assets/altprofile.png";
 
 interface CollectionItem {
   id: string;
@@ -258,15 +259,22 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
           {/* Header */}
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 md:gap-3">
-              <img
-                src={item.originalData.profile.profile_picture}
-                className="w-8 h-8 md:w-10 md:h-10 rounded-full"
-                alt="User"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = "/profile.png";
-                }}
-              />
+            <img
+  src={
+    item.originalData.profile.profile_picture &&
+    item.originalData.profile.profile_picture !== "null" &&
+    item.originalData.profile.profile_picture !== "undefined" &&
+    item.originalData.profile.profile_picture.trim() !== ""
+      ? item.originalData.profile.profile_picture
+      : defaultProfile
+  }
+  alt={`${item.originalData.profile.first_name} ${item.originalData.profile.last_name}`}
+  className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
+  onError={(e) => {
+    const target = e.target as HTMLImageElement;
+    target.src = defaultProfile;
+  }}
+/>
               <div>
                 <p className="font-semibold text-sm md:text-base text-gray-800">
                   {item.originalData.profile.first_name} {item.originalData.profile.last_name}

@@ -359,29 +359,41 @@ useEffect(() => {
     }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Your existing file validation and setting logic
-      const validTypes = ["image/jpeg", "image/jpg", "image/png"];
-      if (!validTypes.includes(file.type)) {
-        e.target.value = "";
-        // Show error toast if needed
-        return;
-      }
+ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-      setNewPractice((prev) => ({
-        ...prev,
-        file: file,
-      }));
-    } else {
-      // Clear the file when no file is selected
-      setNewPractice((prev) => ({
-        ...prev,
-        file: null,
-      }));
-    }
-  };
+  const allowedTypes = ["image/jpeg", "image/png"];
+  const maxSize = 2 * 1024 * 1024; // 2MB
+
+  // ❌ Invalid file type
+  if (!allowedTypes.includes(file.type)) {
+    showToast({
+      message: "Invalid file type. Please upload JPEG or PNG only.",
+      type: "error",
+      duration: 4000,
+    });
+    e.target.value = "";
+    return;
+  }
+
+  // ❌ File too large
+  if (file.size > maxSize) {
+    showToast({
+      message: "File size exceeds 2MB. Please upload a smaller image.",
+      type: "error",
+      duration: 4000,
+    });
+    e.target.value = "";
+    return;
+  }
+
+  // ✅ Valid file
+  setNewPractice((prev) => ({
+    ...prev,
+    file,
+  }));
+};
 
   const handleRemoveFile = () => {
     setNewPractice((prev) => ({
