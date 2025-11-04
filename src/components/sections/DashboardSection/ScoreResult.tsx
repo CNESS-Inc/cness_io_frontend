@@ -216,6 +216,7 @@ const handleReportDownload = async () => {
         html += `<div style="margin-bottom: 25px;"><h3>Sub Section: ${sub.sub_section.name} - (${sub.sub_section.weight} / 5)</h3>`;
         
         for (const ques of sub.questions) {
+          console.log("🚀 ~ handleReportDownload ~ ques:", ques)
           html += `<p><b>Question:</b> ${ques.question}</p><ul>`;
           
           // Handle different answer scenarios

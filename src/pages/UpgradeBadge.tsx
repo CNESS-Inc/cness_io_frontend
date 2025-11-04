@@ -48,6 +48,9 @@ const UpgradeBadge = () => {
     try {
       setIsGeneratingPDF(true);
       const response = await GetReport();
+      console.log("🚀 ~ handleReportDownload ~ response:", response);
+
+      // Updated data extraction to match new response structure
       const data = {
         array: response.data.data.array,
         final_score: response.data.data.final_score,
@@ -58,17 +61,28 @@ const UpgradeBadge = () => {
       // Generate HTML content for sections
       for (const section of data.array) {
         html += `<div style="margin-bottom: 25px;"><h2 style="margin-bottom: 10px;">Section: ${section.section.name} - (${section.section.weight} / ${section.section.total_weight})</h2>`;
+
         for (const sub of section.question_data) {
           html += `<div style="margin-bottom: 25px;"><h3>Sub Section: ${sub.sub_section.name} - (${sub.sub_section.weight} / 5)</h3>`;
+
           for (const ques of sub.questions) {
             html += `<p><b>Question:</b> ${ques.question}</p><ul>`;
-            for (const ans of ques.answer) {
-              if (ques.is_link) {
-                html += `<li><a href="${ans}" target="_blank">Click To View Uploaded File</a></li>`;
-              } else {
-                html += `<li>${ans}</li>`;
+
+            // Handle different answer scenarios
+            if (ques.answer && ques.answer.length > 0) {
+              for (const ans of ques.answer) {
+                if (ans === null || ans === undefined) {
+                  html += `<li>No answer provided</li>`;
+                } else if (ques.is_link) {
+                  html += `<li><a href="${ans}" target="_blank">Click To View Uploaded File</a></li>`;
+                } else {
+                  html += `<li>${ans}</li>`;
+                }
               }
+            } else {
+              html += `<li>No answer provided</li>`;
             }
+
             html += `</ul>`;
           }
           html += ` </div><br/> `;
@@ -78,104 +92,151 @@ const UpgradeBadge = () => {
 
       // Complete HTML template
       const template = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-          <meta charset="utf-8">
-          <title>CNESS Inspired Certification</title>
-          <style>
-              body {
-                  font-family: Arial, sans-serif;
-              }
-              h1 {
-                  color: #4CAF50;
-              }
-              h2 {
-                  color: #333;
-                  margin-top: 30px;
-              }
-              h3 {
-                  color: #555;
-              }
-              table {
-                  width: 100%;
-                  border-collapse: collapse;
-                  margin-top: 20px;
-                  margin-bottom: 30px;
-              }
-              th, td {
-                  border: 1px solid #ddd;
-                  padding: 12px;
-                  text-align: left;
-              }
-              th {
-                  background-color: #4CAF50;
-                  color: white;
-              }
-              tr:nth-child(even) {
-                  background-color: #f2f2f2;
-              }
-              li {
-                  color: #666;
-              }
-              a {
-                  color: blue;
-                  text-decoration: underline;
-              }
-              .footer {
-                  margin-top: 20px;
-                  font-style: italic;
-                  color: #666;
-              }
-              .mb {
-                  margin-bottom: 20px;
-              }
-          </style>
-      </head>
-      <body>
-          <h1>CNESS Inspired Certification – Self-Assessment Report</h1>
-          <p>This report is auto-generated based on your self-assessment for the CNESS Inspired Certification.</p>
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <title>CNESS Inspired Certification</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+            }
+            h1 {
+                color: #4CAF50;
+                text-align: center;
+                margin-bottom: 30px;
+            }
+            .mb{
+                margin-bottom: 30px;
+            }
+            h2 {
+                color: #333;
+                margin-top: 30px;
+                border-bottom: 2px solid #4CAF50;
+                padding-bottom: 5px;
+            }
+            h3 {
+                color: #555;
+                margin-top: 20px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+                margin-bottom: 30px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+            th, td {
+                border: 1px solid #ddd;
+                padding: 12px;
+                text-align: left;
+            }
+            th {
+                background-color: #4CAF50;
+                color: white;
+                font-weight: bold;
+            }
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            tr:hover {
+                background-color: #f5f5f5;
+            }
+            li {
+                color: #666;
+                margin-bottom: 5px;
+            }
+            a {
+                color: #2196F3;
+                text-decoration: underline;
+            }
+            a:hover {
+                color: #1976D2;
+            }
+            .footer {
+                margin-top: 40px;
+                font-style: italic;
+                color: #666;
+                text-align: center;
+                border-top: 1px solid #ddd;
+                padding-top: 20px;
+            }
+            .mb {
+                margin-bottom: 20px;
+            }
+            .section-container {
+                background-color: #f8f9fa;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 25px;
+                border-left: 4px solid #4CAF50;
+            }
+            .question-container {
+                background-color: white;
+                padding: 15px;
+                border-radius: 5px;
+                margin: 10px 0;
+                border: 1px solid #e0e0e0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>CNESS Inspired Certification – Self-Assessment Report</h1>
+        <p class="mb">This report is auto-generated based on your self-assessment for the CNESS Inspired Certification.</p>
 
-          ${html}
+        <div class="section-container">
+        ${html}
+        </div>
 
-          <h2 id='summary-table'>Summary Table</h2>
-          <table>
-              <tr>
-                  <th>Pillar</th>
-                  <th>Max Points</th>
-                  <th>Score</th>
-                  <th>Percentage</th>
-              </tr>
-              ${data.array
-                .map(
-                  (item: any) => `
-              <tr>
-                  <td>${item.section.name}</td>
-                  <td>${item.section.total_weight}</td>
-                  <td>${item.section.weight}</td>
-                  <td>${Math.round(
-                    (item.section.weight / item.section.total_weight) * 100
-                  )}%</td>
-              </tr>
-              `
-                )
-                .join("")}
-              <tr>
-                  <th colspan="2">Total Score</th>
-                  <th colspan="2">${data.final_score} / 100</th>
-              </tr>
-          </table>
+        <h2 id='summary-table'>Summary Table</h2>
+        <table>
+            <tr>
+                <th>Pillar</th>
+                <th>Max Points</th>
+                <th>Score</th>
+                <th>Percentage</th>
+            </tr>
+            ${data.array
+              .map(
+                (item: any) => `
+            <tr>
+                <td>${item.section.name}</td>
+                <td>${item.section.total_weight}</td>
+                <td>${item.section.weight}</td>
+                <td>${Math.round(
+                  (item.section.weight / item.section.total_weight) * 100
+                )}%</td>
+            </tr>
+            `
+              )
+              .join("")}
+            <tr style="background-color: #e8f5e8;">
+                <td colspan="2"><strong>Total Score</strong></td>
+                <td colspan="2"><strong>${data.final_score} / 100</strong></td>
+            </tr>
+        </table>
 
-          <div class="footer">
-              <p>Thank you for your dedication to conscious growth.</p>
-              <p class="mb">Generated on: ${new Date().toLocaleDateString()}</p>
-          </div>
-      </body>
-      </html>`;
+        <div class="footer">
+            <p>Thank you for your dedication to conscious growth.</p>
+            <p class="mb">Generated on: ${new Date().toLocaleDateString(
+              "en-US",
+              {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              }
+            )}</p>
+        </div>
+    </body>
+    </html>`;
 
       // Generate PDF from HTML with correct typing
       const options = {
-        margin: 10,
+        margin: 15,
         filename: `CNESS_Report_${new Date().toISOString().split("T")[0]}.pdf`,
         image: { type: "jpeg" as const, quality: 0.98 },
         html2canvas: {
@@ -191,7 +252,7 @@ const UpgradeBadge = () => {
         },
         pagebreak: {
           mode: "avoid-all" as const,
-          before: ".section , #summary-table",
+          before: " #summary-table",
           avoid: "img, table",
         },
       };
@@ -275,7 +336,10 @@ const UpgradeBadge = () => {
 
   // Conditions for showing lock overlays
   const showProgressLock = !scoreData?.is_assessment_submited;
-  const showCISScoreLock = !scoreData?.is_assessment_submited || !scoreData?.is_submitted_by_head || scoreData?.cis_score === 0;
+  const showCISScoreLock =
+    !scoreData?.is_assessment_submited ||
+    !scoreData?.is_submitted_by_head ||
+    scoreData?.cis_score === 0;
   const showBadgeLock = !scoreData?.badge?.level;
 
   return (
@@ -288,151 +352,150 @@ const UpgradeBadge = () => {
                 Certification Journey
               </p>
             </div>
-                          {
-              scoreData?.cis_result.length > 0 ? (
-                <div className="flex gap-2">
-                  <div className="relative">
-                    <button
-                      className="bg-white border cursor-pointer border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 rounded-full shadow-md"
-                      onClick={toggleMenu}
-                      style={{ cursor: "pointer" }}
+            {scoreData?.cis_result.length > 0 ? (
+              <div className="flex gap-2">
+                <div className="relative">
+                  <button
+                    className="bg-white border cursor-pointer border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 rounded-full shadow-md"
+                    onClick={toggleMenu}
+                    style={{ cursor: "pointer" }}
+                  >
+                    Share
+                  </button>
+                  {showMenu && (
+                    <div
+                      className="absolute top-10 sm:left-auto sm:right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
+                      ref={menuRef}
                     >
-                      Share
-                    </button>
-                    {showMenu && (
-                      <div
-                        className="absolute top-10 sm:left-auto sm:right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
-                        ref={menuRef}
-                      >
-                        <ul className="flex items-center gap-4">
-                          <li>
-                            <FacebookShareButton url={urldata}>
-                              <FaFacebook size={32} color="#4267B2" />
-                            </FacebookShareButton>
-                          </li>
-                          <li>
-                            <LinkedinShareButton url={urldata}>
-                              <FaLinkedin size={32} color="#0077B5" />
-                            </LinkedinShareButton>
-                          </li>
-                          {/* <li>
+                      <ul className="flex items-center gap-4">
+                        <li>
+                          <FacebookShareButton url={urldata}>
+                            <FaFacebook size={32} color="#4267B2" />
+                          </FacebookShareButton>
+                        </li>
+                        <li>
+                          <LinkedinShareButton url={urldata}>
+                            <FaLinkedin size={32} color="#0077B5" />
+                          </LinkedinShareButton>
+                        </li>
+                        {/* <li>
                             <FaInstagram size={32} color="#C13584" />
                           </li> */}
-                          <TwitterShareButton url={urldata} title={tweetText}>
-                            <FaTwitter size={32} color="#1DA1F2" />
-                          </TwitterShareButton>
-                          <li>
-                            <WhatsappShareButton url={urldata}>
-                              <FaWhatsapp size={32} color="#1DA1F2" />
-                            </WhatsappShareButton>
-                          </li>
-                          <li>
-                            <button
-                              onClick={() => {
-                                navigator.clipboard.writeText(urldata);
-                                setCopy(true);
-                                setTimeout(() => setCopy(false), 1500);
-                              }}
-                              className="flex items-center relative"
-                              title="Copy link"
-                            >
-                              <MdContentCopy
-                                size={30}
-                                className="text-gray-600"
-                              />
-                              {copy && (
-                                <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
-                                  Link Copied!
-                                </div>
-                              )}
-                            </button>
-                          </li>
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                  <button
-                    className="bg-[#FF6B81] text-white cursor-pointer text-sm font-medium px-5 py-2 rounded-full shadow-md flex items-center justify-center gap-2"
-                    onClick={handleReportDownload}
-                    disabled={isGeneratingPDF}
-                  >
-                    {isGeneratingPDF ? (
-                      <>
-                        <svg
-                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        Generating...
-                      </>
-                    ) : (
-                      <>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                          />
-                        </svg>
-                        Report
-                      </>
-                    )}
-                  </button>
+                        <TwitterShareButton url={urldata} title={tweetText}>
+                          <FaTwitter size={32} color="#1DA1F2" />
+                        </TwitterShareButton>
+                        <li>
+                          <WhatsappShareButton url={urldata}>
+                            <FaWhatsapp size={32} color="#1DA1F2" />
+                          </WhatsappShareButton>
+                        </li>
+                        <li>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(urldata);
+                              setCopy(true);
+                              setTimeout(() => setCopy(false), 1500);
+                            }}
+                            className="flex items-center relative"
+                            title="Copy link"
+                          >
+                            <MdContentCopy
+                              size={30}
+                              className="text-gray-600"
+                            />
+                            {copy && (
+                              <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
+                                Link Copied!
+                              </div>
+                            )}
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div className="flex gap-2 items-center hidden">
-                  <div className="relative">
-                    <button
-                      className="bg-white border cursor-not-allowed border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 rounded-full shadow-md"
-                      disabled
-                    >
-                      Share
-                    </button>
-                  </div>
+                <button
+                  className="bg-[#FF6B81] text-white cursor-pointer text-sm font-medium px-5 py-2 rounded-full shadow-md flex items-center justify-center gap-2"
+                  onClick={handleReportDownload}
+                  disabled={isGeneratingPDF}
+                >
+                  {isGeneratingPDF ? (
+                    <>
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                        />
+                      </svg>
+                      Report
+                    </>
+                  )}
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2 items-center hidden">
+                <div className="relative">
                   <button
-                    className="bg-[#FF6B81] text-white cursor-not-allowed text-sm font-medium px-5 py-2 rounded-full shadow-md flex items-center justify-center gap-2"
+                    className="bg-white border cursor-not-allowed border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 rounded-full shadow-md"
                     disabled
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                      />
-                    </svg>
-                    Report
+                    Share
                   </button>
                 </div>
-              )}
+                <button
+                  className="bg-[#FF6B81] text-white cursor-not-allowed text-sm font-medium px-5 py-2 rounded-full shadow-md flex items-center justify-center gap-2"
+                  disabled
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                    />
+                  </svg>
+                  Report
+                </button>
+              </div>
+            )}
           </div>
         </header>
         <div className="pt-5 flex items-scretch justify-center w-full gap-3">
@@ -490,14 +553,14 @@ const UpgradeBadge = () => {
           {/* CIS Score Card with Lock Overlay */}
           <div className="w-1/5 bg-white rounded-xl px-3 pt-3 pb-6 relative">
             {showCISScoreLock && (
-              <LockOverlay 
+              <LockOverlay
                 message={
-                  !scoreData?.is_assessment_submited 
-                    ? "Complete Inspired Assessment to Unlock" 
-                    : !scoreData?.is_submitted_by_head 
-                    ? "Score Under Review" 
+                  !scoreData?.is_assessment_submited
+                    ? "Complete Inspired Assessment to Unlock"
+                    : !scoreData?.is_submitted_by_head
+                    ? "Score Under Review"
                     : "Score Not Available"
-                } 
+                }
               />
             )}
             <div className="pb-3 flex justify-start items-center gap-[14px] border-b border-black/10">
@@ -544,9 +607,7 @@ const UpgradeBadge = () => {
 
           {/* Badge Card with Lock Overlay */}
           <div className="w-1/5 bg-white rounded-xl px-3 pt-3 pb-6 flex flex-col relative">
-            {showBadgeLock && (
-              <LockOverlay message="Badge Locked" />
-            )}
+            {showBadgeLock && <LockOverlay message="Badge Locked" />}
             <div className="pb-3 flex items-center justify-between w-full gap-[14px] border-b border-black/10">
               <div className="flex items-center gap-2">
                 <div className="bg-[rgba(255,204,0,0.2)] w-8 h-8 rounded-full padding-[5px] flex justify-center items-center">
@@ -590,7 +651,7 @@ const UpgradeBadge = () => {
             )}
           </div>
         </div>
-        
+
         {/* Rest of your component remains the same */}
         <div className="relative my-5 flex flex-col items-center justify-center w-full h-full px-6 pt-6 pb-8 md:pb-12 rounded-xl">
           <img
