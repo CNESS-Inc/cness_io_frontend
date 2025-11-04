@@ -11,13 +11,21 @@ import {
   SendBpFollowRequest,
   //GetBestpracticesComment
 } from "../Common/ServerAPI";
-import blush from "../assets/Blush.png";
-import { FaBookmark, FaRegBookmark } from "react-icons/fa";
+import blush from "../assets/bg-one.png";
+import moon from "../assets/moon.png";
+import image1 from "../assets/image1.png";
+
+import thumbs from "../assets/prime_thumbs.png";
+import home from "../assets/home.png";
+
+
+import { FaBookmark, FaFacebookF, FaLinkedinIn, FaRegBookmark, FaTwitter } from "react-icons/fa";
 import { BiComment, BiLike } from "react-icons/bi";
-import { iconMap } from "../assets/icons";
-import CommentCard from "./CommentCard";
-import { ArrowLeftIcon } from "@heroicons/react/24/solid";
-import DOMPurify from "dompurify";
+import { HiArrowLeft } from "react-icons/hi2";
+import { FiMoon, FiSun } from "react-icons/fi";
+import { ChatBubbleLeftIcon, HandThumbUpIcon } from "@heroicons/react/24/solid";
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+
 
 //import { useLocation } from "react-router-dom";
 
@@ -43,7 +51,8 @@ const SingleBP = () => {
   const [isLiked, setIsLiked] = useState(false);
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
   //const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
-
+  const [sortLatest, setSortLatest] = useState(true);
+  const toggleSort = () => setSortLatest(!sortLatest);
   const handleCommentChange = (event: any) => {
     setComment(event.target.value);
 
@@ -189,277 +198,337 @@ useEffect(() => {
   }
   return (
     <>
-        <div className="px-2 sm:px-2 lg:px-1">
+   <div className="w-full min-h-screen bg-[#F9F9FF]">
+      {/* ======= Top Banner ======= */}
+      <div className="w-full h-[220px] sm:h-[260px] md:h-[300px] overflow-hidden relative">
+        <img
+          src={blush}
+          alt="Banner"
+          className="w-full h-full object-cover"
+        />
+      </div>
 
-      <div className="w-full min-h-screen bg-[#F3f1ff] pb-10 mt-2">
-        {" "}
-        {/* ← Gray background wrapper */}
-        <div className="w-full flex flex-col gap-6">
-          {/* Top Default Banner */}
-          <div className="relative w-full min-h-[300px] bg-[#F3f1ff">
-            {/* Top Banner */}
-
-            <div className="w-full h-[200px] overflow-hidden">
-              <img
-                src={blush}
-                alt="banner"
-                className="w-full h-full object-cover rounded-lg shadow-md"
-              />
-              <div className="absolute inset-0 flex items-start justify-center pt-6 sm:pt-8">
-                <h1 className="text-white text-xl sm:text-3xl md:text-4xl font-semibold drop-shadow-lg text-center">
-                  {singlepost.title || "Best Practices"}
-                </h1>
-              </div>
+      {/* ======= Page Container ======= */}
+      <div className="max-w-7xl mx-auto -mt-10 sm:-mt-14 md:-mt-16 px-3 sm:px-6 md:px-8 relative z-10">
+        <div className="bg-white rounded-[30px] shadow-lg border border-gray-200 p-5 sm:p-6 md:p-8">
+          {/* ======= Breadcrumb + Icons ======= */}
+          <div className="flex flex-wrap items-center justify-between text-sm text-gray-600 mb-6 gap-3">
+            {/* Breadcrumb */}
+            <div className="flex flex-wrap items-center gap-2 text-gray-500">
+              <img src="/home.png" alt="Home" className="w-[15px] h-[15px]" />
+              <span className="text-dark text-[24px] sm:text-[30px] mt-[-6px] mx-1">
+                ›
+              </span>
+              <span className="text-[#000] cursor-pointer hover:underline whitespace-nowrap">
+                Best Practices
+              </span>
+              <span className="text-dark text-[24px] sm:text-[30px] mt-[-6px] mx-1">
+                ›
+              </span>
+              <span className="truncate">
+                Photography: Capturing Moments, Telling Stories
+              </span>
             </div>
-            <button
-              onClick={() => window.history.back()}
-              className="absolute cursor-pointer top-4 left-4 bg-white rounded-full p-2 shadow-md"
-            >
-              <ArrowLeftIcon className="h-5 w-5 text-[#7077FE]" />
-            </button>
-            {/* User Banner */}
-            {media &&
-              media !== "http://localhost:5026/file/" &&
-              !media.endsWith("/file/") && (
-                <div className="absolute top-[140px] left-1/2 transform -translate-x-1/2 w-[90%] sm:w-[80%] md:w-[70%] z-10">
-                  <div className="relative w-full h-[320px] md:h-[350px] overflow-hidden rounded-xl shadow-xl bg-gray-100">
-                    <img
-                      src={media}
-                      alt="Best Practice Banner"
-                      className="absolute inset-0 w-full h-full object-cover rounded-xl transition-all duration-300 ease-in-out"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src =
-                          iconMap["companycard1"];
-                      }}
-                      onLoad={(e) => {
-                        const img = e.currentTarget;
-                        const aspect = img.naturalWidth / img.naturalHeight;
 
-                        // 🌟 Adjust positioning only — no contain
-                        if (aspect < 1.2) {
-                          img.style.objectPosition = "top center"; // portrait — show top
-                        } else if (aspect > 2.5) {
-                          img.style.objectPosition = "center center"; // ultra-wide
-                        } else {
-                          img.style.objectPosition = "center 30%"; // normal banners
-                        }
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
+            {/* Icons + Go Back */}
+            <div className="flex flex-wrap items-center gap-3 text-gray-500">
+              {/* Social Icons */}
+              <div className="flex items-center gap-1 pr-4 border-r border-gray-300">
+                <button className="p-2 hover:text-[#7077FE] rounded-full transition">
+                  <img src={moon} alt="Light Mode" className="w-4 h-4" />
+                </button>
+                <button className="p-2 hover:text-[#7077FE] rounded-full transition">
+                  <FaFacebookF className="text-base" />
+                </button>
+                <button className="p-2 hover:text-[#7077FE] rounded-full transition">
+                  <FaTwitter className="text-base" />
+                </button>
+                <button className="p-2 hover:text-[#7077FE] rounded-full transition">
+                  <FaLinkedinIn className="text-base" />
+                </button>
+              </div>
 
-            {/* Profile Image - correctly centered between top and user banner */}
-            <div className="absolute z-20 top-[90px] left-1/2 transform -translate-x-1/2">
-              <img
-                src={
-                  !singlepost.profile?.profile_picture ||
-                  singlepost.profile?.profile_picture === "null" ||
-                  singlepost.profile?.profile_picture === "undefined" ||
-                  !singlepost.profile?.profile_picture.startsWith("http") ||
-                  singlepost.profile?.profile_picture ===
-                    "http://localhost:5026/file/"
-                    ? "/profile.png"
-                    : singlepost.profile?.profile_picture
-                }
-                alt="Profile"
-                className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full border-4 border-white object-cover shadow-xl"
-                onError={(e) => {
-                  // Fallback if the image fails to load
-                  const target = e.target as HTMLImageElement;
-                  target.src = "/profile.png";
-                }}
-              />
+              {/* Go Back Button */}
+              <button className="flex items-center gap-1 text-[#000] border border-[#D77CFF] rounded-full px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium hover:bg-gray-50 transition">
+                Go Back
+              </button>
             </div>
           </div>
-          {/* <div>
-      <h4 className="font-semibold">
-        {singlepost.profile?.first_name} {singlepost.profile?.last_name}
-      </h4>
-      <p className="text-sm text-gray-600">
-        {singlepost.followers_count || 0} followers
-      </p>
-    
-  </div>*/}
-        </div>
-        {/* Interaction Icons */}
-        <div
-          className="relative z-20 w-[90%] sm:w-[80%] md:w-[70%] mx-auto
-        mt-[200px] sm:mt-[360px] md:mt-[200px] mb-4"
-        >
-          <div className="flex items-center justify-between">
-            {/* LEFT: Like + Comment */}
-            <div className="flex items-center gap-6">
-              <button
-                onClick={handleLike}
-                className="flex items-center gap-2"
-                aria-label={isLiked ? "Unlike" : "Like"}
-              >
-                <div
-                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center ${
-                    isLiked ? "bg-[#6269FF]" : "bg-[#7077EF]"
-                  }`}
-                >
-                  <BiLike className="text-white text-base sm:text-lg" />
-                </div>
-                <span className="text-sm text-gray-800">
-                  {_localLikeCount || 0}
-                </span>
-              </button>
 
-              <button className="flex items-center gap-2" aria-label="Comments">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#F07EFF] flex items-center justify-center">
-                  <BiComment className="text-white text-base sm:text-lg" />
-                </div>
-                <span className="text-sm text-gray-800">
-                  {commentCount || 0}
-                </span>
-              </button>
+          {/* ======= Header Section ======= */}
+          <div className="border-t border-gray-200 pt-6">
+            <div className="mb-8">
+              <p className="text-[#7177FE] text-sm font-medium">
+                Creativity & Expression
+              </p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#000000] mt-1 leading-snug">
+                Photography – Capturing Moments, Telling Stories
+              </h1>
+              <p className="text-gray-600 mt-3 text-sm sm:text-base">
+                Explore how conscious photography transforms ordinary moments
+                into meaningful stories, capturing emotion, perspective, and
+                purpose through every frame.
+              </p>
             </div>
 
-            {/* RIGHT: Save + Follow */}
-            {/* RIGHT: Save + Follow */}
-            <div className="flex items-center gap-4 sm:gap-6">
-              <button
-                onClick={fetchSavedPost}
-                className="flex items-center gap-2"
-                aria-label={isSaved ? "Unsave" : "Save"}
-              >
-                {isSaved ? (
-                  <>
-                    <FaBookmark className="text-[#72DBF2] text-xl" />
-                    <span className="text-sm text-gray-800">Saved</span>
-                  </>
-                ) : (
-                  <>
-                    <FaRegBookmark className="text-[#72DBF2] text-xl" />
-                    <span className="text-sm text-gray-800">Save</span>
-                  </>
-                )}
-              </button>
+            {/* ======= Info Row ======= */}
+            <div className="flex flex-wrap justify-between items-center text-sm gap-4 mb-10">
+              {/* Created By */}
+              <div className="flex items-center gap-3 border-r border-gray-200 pr-6 py-2">
+                <img
+                  src="/profile.png"
+                  alt="Author"
+                  className="w-10 h-10 rounded-full border object-cover"
+                />
+                <div>
+                  <p className="font-medium text-gray-800">CNESS Admin</p>
+                  <p className="text-xs text-gray-500">Created By</p>
+                </div>
+              </div>
 
-              {!isFollowing ? (
+              {/* Last Updated */}
+              <div className="flex flex-col items-center justify-center border-r border-gray-200 px-6 py-2">
+                <p className="font-semibold text-gray-900">July 12, 2025</p>
+                <p className="text-xs text-gray-500">Last Updated</p>
+              </div>
+
+              {/* Appreciate */}
+              <div className="flex items-center border-r border-gray-200 px-6 py-2">
+                <div
+                  className="flex items-center gap-1 text-base font-medium"
+                  style={{
+                    background:
+                      "linear-gradient(129.46deg, #DB7DFF 4.29%, #7178FF 95.71%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
+                  <img src="/thumbs.png" />
+                  14.3k
+                </div>
+                <button className="flex ms-2 border border-[#7B78FE] items-center gap-1 text-dark text-sm font-medium px-3 py-1.5 rounded-full transition hover:bg-gray-100">
+                  Appreciate
+                </button>
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-wrap items-center gap-3">
+                <button className="flex items-center gap-2 text-[#000] text-sm font-medium px-3 py-1.5 rounded-full hover:bg-gray-50">
+                  <FaRegBookmark className="text-base text-[#D77CFF]" />
+                  Save Best Practise
+                </button>
+
                 <button
-                  className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap"
-                  onClick={toggleFollowPost}
+                  className="text-white px-4 sm:px-5 py-1.5 rounded-full text-sm font-medium transition"
+                  style={{
+                    background:
+                      "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
+                  }}
                 >
                   + Follow
                 </button>
-              ) : (
-                <button
-                  className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF] whitespace-nowrap"
-                  onClick={toggleFollowPost}
-                >
-                  Following
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-        {/* Main Content Area */}
-        {/* Image/Video Section
-      {media?.file_type === "video/mp4" ? (
-        <video className="w-full max-h-[500px] rounded-xl" controls>
-          <source src={media} type="video/mp4" />
-        </video>
-      ) : (
-        <LazyLoadImage
-          src={media}
-          effect="blur"
-          alt="Post media"
-          className="w-full rounded-xl max-h-[500px] object-cover"
-        />
-      )}
- */}
-        {/* Description */}
-        <div className="w-[90%] sm:w-[80%] md:w-[70%] mx-auto mt-4 sm:mt-6">
-          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6">
-            <div
-              className="rich-text-content text-gray-800 leading-relaxed text-sm sm:text-base
-             [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3
-             [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3
-             [&_li]:my-1 [&_li]:pl-1
-             [&_p]:my-3
-             [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:my-4
-             [&_h2]:text-xl [&_h2]:font-bold [&_h2]:my-3
-             [&_h3]:text-lg [&_h3]:font-bold [&_h3]:my-2
-             [&_strong]:font-bold
-             [&_em]:italic
-             [&_u]:underline"
-              dangerouslySetInnerHTML={{
-                __html: DOMPurify.sanitize(singlepost.description),
-              }}
-            ></div>
-          </div>
-        </div>
-        {/* Comment Section */}
-        <div className="w-[90%] sm:w-[80%] md:w-[70%] mx-auto mt-4 sm:mt-6">
-          <div className="bg-white border border-gray-200 rounded-xl shadow-md px-4 sm:px-6 py-4">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-              <LazyLoadImage
-                src={
-                  localStorage.getItem("profile_picture") || dummyProfilePicture
-                }
-                alt="User"
-                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
-                onError={(e) => {
-                  // Fallback if the image fails to load
-                  const target = e.target as HTMLImageElement;
-                  target.src = "/profile.png";
-                }}
-              />
-
-              <div className="flex-1 flex flex-col sm:flex-row gap-3">
-                <input
-                  type="text"
-                  value={comment}
-                  onChange={handleCommentChange}
-                  placeholder="Write a comment..."
-                  className="w-full rounded-full border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6269FF] shadow-sm "
-                />
-                <button
-                  onClick={() => handleCommentSubmit(id || 0)}
-                  className="bg-[#7077FE] hover:bg-[#6269FF] text-white text-sm font-medium px-5 py-2 rounded-full shadow cursor-pointer"
-                >
-                  Comment
-                </button>
               </div>
             </div>
-            {commentError && (
-              <p className="ps-16 text-red-600 text-xs mt-1">{commentError}</p>
-            )}
-          </div>
-        </div>
-        {postComment?.length > 0 && (
-          <div className="w-[90%] sm:w-[80%] md:w-[70%] mx-auto mt-4 sm:mt-6 ">
-            <div className="bg-white border border-gray-200 rounded-xl shadow-md px-4 sm:px-6 py-4 space-y-4 ">
-              <>
-                {postComment?.map((comment: any, index: any) => (
-                  <>
-                    <CommentCard
-                      key={index}
-                      comment={comment}
-                      fetchComments={fetchComments}
-                    />
 
-                    {/* <div className="bg-white shadow-md rounded-lg p-2 mt-2 mb-2">
-                      <div
-                        key={index}
-                        className="border-b border-gray-200 last:border-none"
+            {/* ======= Main Content Grid ======= */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              {/* LEFT: Article Section */}
+              <div className="lg:col-span-8">
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {["Creativity", "Perspective", "Mindfulness", "Awareness"].map(
+                    (tag) => (
+                      <span
+                        key={tag}
+                        className="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full"
                       >
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html: comment.content,
-                          }}
-                        />
+                        {tag}
+                      </span>
+                    )
+                  )}
+                </div>
+
+                {/* Article Body */}
+                <ol className="list-decimal list-inside text-gray-800 leading-relaxed space-y-3 text-sm md:text-base">
+                  <li>
+                    Photography is more than pressing a shutter — it’s the art
+                    of seeing the world through a creative lens and freezing
+                    time in meaningful ways. It blends technical skill with
+                    artistic vision, allowing you to capture stories, emotions,
+                    and beauty in everyday moments. Whether as a hobby or
+                    profession, photography sharpens your observation, nurtures
+                    creativity, and deepens your connection with the world
+                    around you.
+                  </li>
+                  <li>
+                    Master the Basics: Understand core principles like lighting,
+                    composition, exposure, and focus. A strong technical
+                    foundation allows greater creative freedom.
+                  </li>
+                  <li>
+                    Learn to See Differently: Pay attention to details,
+                    patterns, and perspectives. Great photography often comes
+                    from noticing what others overlook.
+                  </li>
+                  <li>
+                    Use Natural Light: Experiment with different times of day
+                    and lighting conditions to enhance mood and depth in your
+                    shots.
+                  </li>
+                  <li>
+                    Practice Composition: Apply techniques like the rule of
+                    thirds, leading lines, and framing to make your images
+                    visually compelling.
+                  </li>
+                  <li>
+                    Experiment and Evolve: Try various genres — portraits,
+                    landscapes, street, macro, or abstract — to discover your
+                    style and broaden your skills.
+                  </li>
+                  <li>
+                    Edit with Intention: Post-processing should enhance your
+                    image, not overpower it. Use editing tools to fine-tune
+                    colors, contrast, and balance while preserving authenticity.
+                  </li>
+                  <li>
+                    Tell a Story: Go beyond aesthetics — think about the
+                    emotion, message, or narrative behind each photo.
+                    Photography is a journey of patience, curiosity, and
+                    creativity. Each frame is an opportunity to share your
+                    unique perspective and connect with others through visual
+                    storytelling.
+                  </li>
+                </ol>
+
+                {/* ======= Comment Section ======= */}
+                <div className="mt-10 border-t border-gray-200 pt-6">
+                  <div className="text-xs text-gray-500 mb-2 flex items-center space-x-2">
+                    <span>Signed in as:</span>
+                    <img
+                      src="/profile.png"
+                      alt="User avatar"
+                      className="w-5 h-5 rounded-full"
+                    />
+                    <span className="font-semibold text-gray-700">Jhon Doe</span>
+                  </div>
+
+                  {/* Comment Input */}
+                  <div className="border border-[#E0E0E0] rounded-lg p-3 mb-3">
+                    <textarea
+                      placeholder="Post a comment..."
+                      rows={4}
+                      className="w-full border-none focus:ring-0 text-sm resize-none"
+                    ></textarea>
+                    <div className="flex flex-col sm:flex-row justify-end items-end text-xs text-gray-400 gap-2">
+                      <span>2000 Characters remaining</span>
+                      <button className="bg-gradient-to-r me-2 from-purple-500 to-pink-400 text-white px-4 py-2 pb-2 rounded-full text-sm"
+                       style={{
+                    background:
+                      "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
+                  }}>
+                        Submit
+                      </button>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-gray-500 mb-4 italic">
+                    Please note that this community is actively moderated
+                    according to{" "}
+                    <span className="text-indigo-500 cursor-pointer hover:underline">
+                      CNESS
+                    </span>{" "}
+                    community rules.
+                  </p>
+
+                  {/* Comments List Header */}
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-sm font-semibold text-gray-700">
+                      All Comments (23)
+                    </h3>
+                    <button
+                      onClick={toggleSort}
+                      className="flex items-center space-x-1 text-xs text-[#000] hover:text-gray-700 transition"
+                    >
+                      <span>
+                        {sortLatest ? "Latest Comments" : "Oldest Comments"}
+                      </span>
+                      {sortLatest ? (
+                        <ChevronDownIcon className="w-4 h-4" />
+                      ) : (
+                        <ChevronUpIcon className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Single Comment */}
+                  <div className="flex items-start space-x-3">
+                    <img
+                      src="/profile.png"
+                      alt="avatar"
+                      className="w-10 h-10 rounded-full"
+                    />
+                    <div className="flex-1 bg-[#F9F9F9] p-3 rounded-lg">
+                      <div className="flex items-center">
+                        <span className="font-semibold me-2 text-sm text-gray-800">
+                          John Doe
+                        </span>
+                        <span className="bg-[#A1A1A1] p-[2px] me-2 rounded-full"></span>
+                        <span className="text-xs text-gray-500">Today</span>
                       </div>
-                    </div> */}
-                  </>
-                ))}
-              </>
+
+                      <p className="text-sm text-gray-700 mt-1">
+                        We should also take into consideration other factors in
+                        detecting hate speech. In case the algorithm mistakenly
+                        flags a comment as hate speech.
+                      </p>
+
+                      <div className="flex items-center space-x-4 mt-4 text-xs text-gray-600 my-3">
+                        <button className="flex items-center space-x-1 hover:text-gray-700">
+                          <HandThumbUpIcon className="w-4 h-4" />
+                        </button>
+                        <div className="h-4 border-l border-gray-300"></div>
+                        <button className="flex items-center space-x-1 hover:text-gray-700">
+                          <ChatBubbleLeftIcon className="w-4 h-4" />
+                          <span>Reply</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ======= RIGHT: Related Section ======= */}
+              <aside className="lg:col-span-4 bg-[#F9F9F9] rounded-[30px] shadow-sm p-4 h-fit">
+                <h3 className="font-semibold text-gray-900 text-lg mb-4">
+                  Related Best Practises
+                </h3>
+                <div className="space-y-3">
+                  {[1, 2, 3, 4, 5].map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex gap-3 items-start p-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 cursor-pointer"
+                    >
+                      <img
+                        src={image1}
+                        alt="Related"
+                        className="w-14 h-14 rounded-md object-cover"
+                      />
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-800 text-sm">
+                          The Foundation of IT Security
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          employees access countless digital assets — emails,
+                          data...
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </aside>
             </div>
           </div>
-        )}
+        </div>
       </div>
       </div>
     </>
