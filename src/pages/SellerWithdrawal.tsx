@@ -184,7 +184,7 @@ const SellerWithdrawal: React.FC = () => {
                         className="cursor-pointer hover:text-[#7077FE] transition"
                         onClick={() => navigate(-1)}
                     >
-                        Order list
+                       Sales
                     </span>
                     <span>›</span>
                     <span className="font-['Open_Sans'] font-normal text-[14px] leading-[26px] tracking-[0] text-[#8A8A8A]">
