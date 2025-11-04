@@ -463,7 +463,7 @@ export default function Affiliate() {
   };
 
   return (
-    <div className="w-full h-full flex flex-col gap-3">
+    <div className="w-full h-full flex flex-col gap-3 mt-2 px-1">
       <div className="flex gap-3">
         {tabs.map((tab) => (
           <button

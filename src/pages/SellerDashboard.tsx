@@ -494,7 +494,7 @@ export default function SellerDashboard() {
       localStorage.getItem("margaret_name") || "User";
 
   return (
-    <div className="px-4 2xl:px-6 pt-4 md:pt-8 pb-5 md:pb-18">
+    <div className="px-5 2xl:px-5 pt-1 md:pt-1">
       <GreetingBar
         name={user?.name || ""}
         onCloseSuggestion={() => console.log("close suggestion")}
@@ -578,7 +578,7 @@ export default function SellerDashboard() {
           ) : ( */}
           <CertificationCard
             progress={user?.assesment_progress ? user?.assesment_progress : 0}
-            activeLevel={user?.level} // Pass the actual user level from your API
+            activeLevel={user?.level}
             score={user?.cis_score}
             onContinue={RetakeAssesment}
             onOpen={() => console.log("Open Certification")}

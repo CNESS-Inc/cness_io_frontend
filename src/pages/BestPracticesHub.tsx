@@ -359,29 +359,41 @@ useEffect(() => {
     }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Your existing file validation and setting logic
-      const validTypes = ["image/jpeg", "image/jpg", "image/png"];
-      if (!validTypes.includes(file.type)) {
-        e.target.value = "";
-        // Show error toast if needed
-        return;
-      }
+ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-      setNewPractice((prev) => ({
-        ...prev,
-        file: file,
-      }));
-    } else {
-      // Clear the file when no file is selected
-      setNewPractice((prev) => ({
-        ...prev,
-        file: null,
-      }));
-    }
-  };
+  const allowedTypes = ["image/jpeg", "image/png"];
+  const maxSize = 2 * 1024 * 1024; // 2MB
+
+  // ❌ Invalid file type
+  if (!allowedTypes.includes(file.type)) {
+    showToast({
+      message: "Invalid file type. Please upload JPEG or PNG only.",
+      type: "error",
+      duration: 4000,
+    });
+    e.target.value = "";
+    return;
+  }
+
+  // ❌ File too large
+  if (file.size > maxSize) {
+    showToast({
+      message: "File size exceeds 2MB. Please upload a smaller image.",
+      type: "error",
+      duration: 4000,
+    });
+    e.target.value = "";
+    return;
+  }
+
+  // ✅ Valid file
+  setNewPractice((prev) => ({
+    ...prev,
+    file,
+  }));
+};
 
   const handleRemoveFile = () => {
     setNewPractice((prev) => ({
@@ -555,7 +567,9 @@ useEffect(() => {
 
   return (
     <>
-      <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] mx-auto rounded-[12px] overflow-hidden">
+        <div className="px-2 sm:px-2 lg:px-1">
+
+      <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] mx-auto rounded-[12px] overflow-hidden mt-2">
         <AnimatedBackground />
 
         {/* Background Image (city illustration) */}
@@ -670,6 +684,7 @@ useEffect(() => {
           </p>
         </div>
       </section>
+      </div>
 
       {/* Best Practices Section */}
       <section className="py-8 px-1 sm:py-16 bg-[#f9f9f9] border-t border-gray-100">

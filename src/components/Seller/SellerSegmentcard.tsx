@@ -8,15 +8,14 @@ import {
   Plus,
   ArrowLeft,
   ArrowRight,
-  UserPlus,
   ArrowUpRight,
   LinkIcon,
   Bookmark,
   MoreHorizontal,
 } from "lucide-react";
 import profileicon from "../../assets/profileicon.svg";
-import aspired from "../../assets/aspired.png";
-import inspired from "../../assets/inspired.png";
+import aspired from "../../assets/asplocked1.svg";
+import inspired from "../../assets/insplocked1.svg";
 import bpicon from "../../assets/bpicon.svg";
 import certicon from "../../assets/certificationicon.svg";
 import directoryicon from "../../assets/directoryicon.svg";
@@ -43,8 +42,10 @@ import {
   MeDetails,
   PaymentDetails,
   SendBpFollowRequest,
+  SendFriendRequest,
   submitOrganizationDetails,
   submitPersonDetails,
+  UnFriend,
 } from "../../Common/ServerAPI";
 import { useToast } from "../ui/Toast/ToastProvider";
 import Modal from "../ui/Modal";
@@ -241,8 +242,8 @@ function HeaderDivider() {
    =========================================================== */
 export function GreetingBar({
   name,
-  // onCloseSuggestion,
-}: {
+}: // onCloseSuggestion,
+{
   name: string;
   onCloseSuggestion?: () => void;
 }) {
@@ -259,7 +260,7 @@ export function GreetingBar({
   const [isAnnual, setIsAnnual] = useState(true);
   const [personPricing, setPersonPricing] = useState<any[]>([]);
   const [user, setUser] = useState<any | null>(null);
-  console.log("🚀 ~ GreetingBar ~ user:", user)
+  console.log("🚀 ~ GreetingBar ~ user:", user);
   const [readlineQuestion, setReadlineQuestion] = useState([]);
   const { showToast } = useToast();
   const [domains, setDomains] = useState([]);
@@ -1004,7 +1005,7 @@ export function GreetingBar({
           {/* {completedStep !== "2" && ( */}
           {/* <div className="mx-5 bg-[rgba(255,204,0,0.05)] text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
             <div className="flex items-center gap-2"> */}
-              {/* {is_disqualify === "true" ? (
+          {/* {is_disqualify === "true" ? (
                   Number(user?.daysRemaining) <= 0 ? (
                     <span className="text-green-500">
                       You are eligible for the Aspiration badge. Please{" "}
@@ -1026,7 +1027,7 @@ export function GreetingBar({
                     </span>
                   )
                 ) : ( */}
-              {/* {badgeStatusInfo?.message ? (
+          {/* {badgeStatusInfo?.message ? (
                 <>
                   <span className="text-yellow-500">💡</span>
                   <span>
@@ -1060,8 +1061,8 @@ export function GreetingBar({
               ) : (
                 ""
               )} */}
-              {/* // )} */}
-            {/* </div>
+          {/* // )} */}
+          {/* </div>
           </div> */}
           {/* // )} */}
           {/* <div className="w-full lg:min-w-[363px] lg:max-w-[400px] flex items-center gap-[10px] rounded-lg bg-[#FFCC00]/10 px-3 py-[10px] text-[#7A5A00]"></div> */}
@@ -2394,7 +2395,7 @@ export function CertificationCard({
   auto = true,
   intervalMs = 6000,
   upgradeText = "To achieve the next level certification, you need to create a basic profile that includes selling your reactions, accessing the community, and utilizing the resources library.",
-  onUpgrade,
+  // onUpgrade,
 }: {
   progress?: number;
   score?: number;
@@ -2411,7 +2412,7 @@ export function CertificationCard({
   upgradeCtaLabel?: string;
   onUpgrade?: () => void;
 }) {
-  console.log("🚀 ~ CertificationCard ~ score:", score);
+  console.log("🚀 ~ CertificationCard ~ activeLevel:", activeLevel);
   const [slide, setSlide] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
   const [showiInterestModal, setShowInterestModal] = useState(false);
@@ -2457,7 +2458,7 @@ export function CertificationCard({
     } else if (activeLevel === "Inspired") {
       navigate("/dashboard/assesmentcertification");
     } else {
-      onUpgrade?.();
+      navigate("/dashboard/assesmentcertification");
     }
   };
 
@@ -2685,7 +2686,7 @@ export function CertificationCard({
                       src={
                         activeLevel === null
                           ? aspired
-                          : "https://cdn.cness.io/aspiring.webp"
+                          : "https://cdn.cness.io/aspiringlogo.svg"
                       }
                       alt="Aspiring"
                       className="h-[34px] w-[34px] sm:h-[39px] sm:w-[39px]"
@@ -2711,7 +2712,7 @@ export function CertificationCard({
                         activeLevel === null ||
                         (activeLevel === "Aspiring" && progress === 0)
                           ? inspired
-                          : "https://cdn.cness.io/inspired.webp"
+                          : "https://cdn.cness.io/inspired1.svg"
                       }
                       alt="Inspired"
                       className="h-[34px] w-[34px] sm:h-[39px] sm:w-[39px]"
@@ -2760,7 +2761,7 @@ export function CertificationCard({
                       <img
                         src={
                           activeLevel === "Aspiring"
-                            ? "https://cdn.cness.io/inspired.webp"
+                            ? "https://cdn.cness.io/inspired1.svg"
                             : activeLevel === "Inspired"
                             ? "https://cdn.cness.io/leader.webp"
                             : "https://cdn.cness.io/leader1.webp"
@@ -3231,8 +3232,8 @@ export function SocialStackCard({
   // friends
   suggested,
   requested,
-  onConnect,
-}: {
+}: // onConnect,
+{
   coverUrl: string;
   avatar: string;
   name: string;
@@ -3249,6 +3250,7 @@ export function SocialStackCard({
   onViewFeed?: () => void;
 
   suggested: {
+    user_id(user_id: any): void;
     id: string | number;
     name: string;
     handle: string;
@@ -3270,6 +3272,7 @@ export function SocialStackCard({
   const [tab, setTab] = React.useState<"Suggested" | "Requested">("Suggested");
   const list = tab === "Suggested" ? suggested : requested;
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   type AdventureSlide = {
     title: string;
@@ -3679,6 +3682,75 @@ export function SocialStackCard({
     );
   }
 
+  const [friendRequests, setFriendRequests] = useState<{
+    [key: string]: string;
+  }>({});
+  const [connectingUsers, setConnectingUsers] = useState<{
+    [key: string]: boolean;
+  }>({});
+
+  const handleConnect = async (userId: string) => {
+    try {
+      setConnectingUsers((prev) => ({ ...prev, [userId]: true }));
+
+      // Check if already connected
+      if (friendRequests[userId] === "connected") {
+        // If connected, delete friend
+        const formattedData = {
+          friend_id: userId,
+        };
+
+        const response = await UnFriend(formattedData);
+
+        if (response.success) {
+          setFriendRequests((prev) => ({
+            ...prev,
+            [userId]: "connect",
+          }));
+          showToast({
+            message: "Friend removed successfully",
+            type: "success",
+            duration: 3000,
+          });
+        }
+      } else {
+        // If not connected, send friend request
+        const formattedData = {
+          friend_id: userId,
+        };
+
+        const response = await SendFriendRequest(formattedData);
+
+        if (response.success) {
+          // Immediately update the button state to "requested"
+          setFriendRequests((prev) => ({
+            ...prev,
+            [userId]: "requested",
+          }));
+          showToast({
+            message:
+              response.success.message || "Friend request sent successfully",
+            type: "success",
+            duration: 3000,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error handling connect:", error);
+      showToast({
+        message: "Something went wrong. Please try again.",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setConnectingUsers((prev) => ({ ...prev, [userId]: false }));
+    }
+  };
+
+  const getFriendStatus = (userId: string) => {
+    return friendRequests[userId] || "connect";
+  };
+
   return (
     <Card className="p-4 md:p-5">
       {/* Header */}
@@ -3897,7 +3969,7 @@ export function SocialStackCard({
         {/* list */}
         <div className="space-y-3 flex-1">
           {list && list.length > 0 ? (
-            list.slice(0, 4).map((f) => (
+            list.slice(0, 4).map((f: any) => (
               <div
                 key={f.id}
                 className="flex items-center justify-between gap-3"
@@ -3923,13 +3995,40 @@ export function SocialStackCard({
                     </div>
                   </div>
                 </div>
-                <OutlinePill
+                {/* <OutlinePill
                   className="h-9 px-3"
                   onClick={() => onConnect?.(f)}
                 >
                   <UserPlus className="h-4 w-4" />
                   Connect
-                </OutlinePill>
+                </OutlinePill> */}
+                <button
+                  onClick={() => handleConnect(f.id)}
+                  disabled={connectingUsers[f.id] || false}
+                  className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-[12px] py-[6px] rounded-full transition-colors font-family-open-sans h-[35px]
+                  ${
+                    getFriendStatus(f.id) === "connected"
+                      ? "bg-gray-400 text-white cursor-not-allowed"
+                      : getFriendStatus(f.id) === "requested"
+                      ? "bg-gray-400 text-white cursor-not-allowed"
+                      : "bg-white text-black shadow-md"
+                  }`}
+                >
+                  <span className="flex items-center gap-1 text-[#0B3449]">
+                    <img
+                      src={iconMap["userplus"]}
+                      alt="userplus"
+                      className="w-4 h-4"
+                    />
+                    {connectingUsers[f.id]
+                      ? "Loading..."
+                      : getFriendStatus(f.id) === "connected"
+                      ? "Connected"
+                      : getFriendStatus(f.id) === "requested"
+                      ? "Requested"
+                      : "Connect"}
+                  </span>
+                </button>
               </div>
             ))
           ) : (

@@ -110,9 +110,9 @@ export const EndPoint = {
   readinessQuestion: "/readiness-question",
   allFormData: "/readiness-question/get-formdata",
   getAspiringQuestion: "/readiness-question/get-aspiring-question",
-  get_certification_details:"/quiz/certifications",
-  nomination_application:"/nomination-application",
-  get_retake_assensment:"/quiz/retake-assessment",
+  get_certification_details: "/quiz/certifications",
+  nomination_application: "/nomination-application",
+  get_retake_assensment: "/quiz/retake-assessment",
   allPlanData: "/person-plan/user/plan",
   emailverify: "/auth/email-verify",
   paymentverify: "/payment/payment-confirm",
@@ -238,10 +238,8 @@ export const EndPoint = {
   add_mentor: "/mentor",
 
   //marketplace endpoints
-get_products: "/vendor/products"
+  get_products: "/vendor/products"
 };
-
-
 
 // Messaging endpoints
 export const GetConversations = () => {
@@ -256,7 +254,7 @@ export const GetConversationMessages = (conversationId: string | number) => {
   );
 };
 
-export const SendMessage = (formData: FormData) => {
+export const HandleSendMessage = (formData: FormData) => {
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.sendMessage);
 };
 
@@ -732,7 +730,7 @@ export const GetRecommendedBestPractices = (): ApiResponse => {
     `${EndPoint.bp_recommended}`
   );
 };
-export const UpdateBestPractice = (formData:any): ApiResponse => {
+export const UpdateBestPractice = (formData: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST, // or PATCH depending on your API
     formData,

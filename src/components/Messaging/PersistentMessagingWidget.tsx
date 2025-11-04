@@ -37,7 +37,7 @@ interface Message {
 }
 
 const PersistentMessagingWidget: React.FC = () => {
-  
+
   const [isOpen, setIsOpen] = useState(false);
   const [selectedConnection, setSelectedConnection] = useState<Connection | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -56,16 +56,25 @@ const PersistentMessagingWidget: React.FC = () => {
   // Add new state for conversation panel
   const [showConversationPanel, setShowConversationPanel] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  
+
   const { showToast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleScroll = () => {
+    if (messagesContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
+      const isAtBottom = scrollHeight - scrollTop - clientHeight < 50;
+      setShouldAutoScroll(isAtBottom);
+    }
   };
 
   // Add this function after existing functions
@@ -74,10 +83,10 @@ const PersistentMessagingWidget: React.FC = () => {
     setShowEmojiPicker(false);
   };
 
-  const { 
-    loadConversationMessages, 
-    sendMessage, 
-    conversations, 
+  const {
+    loadConversationMessages,
+    sendMessage,
+    conversations,
     activeConversation,
     setActiveConversation,
     refreshConversations,
@@ -113,37 +122,37 @@ const PersistentMessagingWidget: React.FC = () => {
       console.log(`${selectedConnection.name} is typing...`);
     }
   }, [typingUsers, selectedConnection]);
-  
+
   useEffect(() => {
     if (isOpen) {
-        loadConversations();
+      loadConversations();
     }
   }, [isOpen]);
 
   useEffect(() => {
     const handleOpenMessaging = async (event: CustomEvent) => {
       const { connection } = event.detail;
-      
+
       // Open the messaging widget if it's not already open
       if (!isOpen) {
         setIsOpen(true);
       }
-      
+
       // Set the connection and show conversation panel
       setSelectedConnection(connection);
       setShowConversationPanel(true);
-      
+
       try {
         // Set the active conversation in context
         const conversation = conversations.find(conv => conv.id === connection.conversationId);
         if (conversation) {
           setActiveConversation(conversation);
         }
-        
+
         // Load messages for this specific conversation
         if (connection.conversationId) {
           const loadedMessages = await loadConversationMessages(connection.conversationId);
-          
+
           // Transform messages to the format expected by the widget
           if (loadedMessages && loadedMessages.length > 0) {
             const transformedMessages = loadedMessages.map(msg => ({
@@ -157,14 +166,14 @@ const PersistentMessagingWidget: React.FC = () => {
               conversation_id: msg.conversationId?.toString() || "",
               attachments: msg.attachments
             }));
-            
+
             setMessages(transformedMessages);
           } else {
             console.log("No messages found for this conversation");
             setMessages([]);
           }
         }
-        
+
       } catch (error) {
         console.error("Error loading conversation data:", error);
         showToast({
@@ -174,7 +183,7 @@ const PersistentMessagingWidget: React.FC = () => {
         });
       }
     };
-  
+
     // Add event listener
     window.addEventListener('openMessaging', handleOpenMessaging as unknown as EventListener);
     // Cleanup
@@ -182,11 +191,18 @@ const PersistentMessagingWidget: React.FC = () => {
       window.removeEventListener('openMessaging', handleOpenMessaging as unknown as EventListener);
     };
   }, [isOpen, conversations, loadConversationMessages, setActiveConversation, showToast]); // Add dependencies
-  
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (selectedConnection) {
+      setShouldAutoScroll(true);
+    }
+  }, [selectedConnection?.id]);
+
+  useEffect(() => {
+    if (shouldAutoScroll) {
+      scrollToBottom();
+    }
+  }, [messages, shouldAutoScroll]);
 
   // Sync local messages with activeConversation messages
   useEffect(() => {
@@ -203,7 +219,7 @@ const PersistentMessagingWidget: React.FC = () => {
         conversation_id: msg.conversationId?.toString() || "",
         attachments: msg.attachments
       }));
-      
+
       setMessages(transformedMessages);
     }
   }, [activeConversation?.messages]);
@@ -225,14 +241,14 @@ const PersistentMessagingWidget: React.FC = () => {
             conversation_id: msg.conversationId?.toString() || "",
             attachments: msg.attachments
           }));
-          
+
           setMessages(transformedMessages);
         }
       });
     }
   }, [activeConversation, selectedConnection, loadConversationMessages]);
 
-   
+
   const handleConnectionClick = async (connection: Connection) => {
     setSelectedConnection(connection);
     setShowConversationPanel(true); // Show conversation panel instead of changing tab
@@ -241,20 +257,20 @@ const PersistentMessagingWidget: React.FC = () => {
     if (connection.conversationId) {
       joinConversation(connection.conversationId.toString());
     }
-    
+
     try {
       // Set the active conversation in context
       const conversation = conversations.find(conv => conv.id === connection.conversationId);
       if (conversation) {
         setActiveConversation(conversation);
       }
-      
+
       // Then load messages for this specific conversation
       const loadedMessages = await loadConversationMessages(connection.conversationId ?? "");
-      
+
       // Use the loaded messages directly instead of waiting for state updates
       if (loadedMessages && loadedMessages.length > 0) {
-        
+
         // Transform messages to the format expected by the widget
         const transformedMessages = loadedMessages.map(msg => ({
           id: msg.id,
@@ -267,13 +283,13 @@ const PersistentMessagingWidget: React.FC = () => {
           conversation_id: msg.conversationId?.toString() || "",
           attachments: msg.attachments
         }));
-        
+
         setMessages(transformedMessages);
       } else {
         console.log("No messages found for this conversation");
         setMessages([]);
       }
-      
+
     } catch (error) {
       console.error("Error loading conversation data:", error);
       showToast({
@@ -290,7 +306,7 @@ const PersistentMessagingWidget: React.FC = () => {
   };
 
   // Add new image modal functions
-  
+
   // Function to open image modal
   const openImageModal = (imageUrl: string) => {
     setSelectedImageForModal(imageUrl);
@@ -324,13 +340,13 @@ const PersistentMessagingWidget: React.FC = () => {
     if (selectedConnection?.conversationId) {
       leaveConversation(selectedConnection.conversationId.toString());
     }
-    
+
     // Clear the active conversation
     setActiveConversation(null);
     setSelectedConnection(null);
     setMessages([]);
     setShowConversationPanel(false); // Hide conversation panel instead of changing tab
-    
+
     // Refresh conversations to get updated unread counts
     try {
       await refreshConversations();
@@ -342,16 +358,16 @@ const PersistentMessagingWidget: React.FC = () => {
   const handleTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setNewMessage(value);
-    
+
     if (selectedConnection?.conversationId && selectedConnection?.id) {
       // Send typing indicator
       sendTypingIndicator(selectedConnection.conversationId.toString(), selectedConnection.id.toString(), true);
-      
+
       // Clear existing timeout
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
-      
+
       // Set new timeout to stop typing indicator
       typingTimeoutRef.current = setTimeout(() => {
         // Add null check here
@@ -368,27 +384,27 @@ const PersistentMessagingWidget: React.FC = () => {
 
     try {
       setIsUploading(true);
-      
+
       let messageContent = newMessage.trim();
-      
+
       // Send message with or without attachments using FormData
       if (messageContent || selectedImages.length > 0) {
         // Use the sendMessage function from context with attachments
         // This will create FormData internally and send to API
         await sendMessage(selectedConnection.id, messageContent, selectedImages);
-        
+
         // Note: The message will be added to the UI via the socket real-time update
         // No need to manually add it here since the context handles it
         setNewMessage("");
         clearImagePreviews(); // Clear image previews after sending
-        
+        scrollToBottom();
         showToast({
           message: "Message sent!",
           type: "success",
           duration: 5000
         });
       }
-      
+
     } catch (error) {
       console.error("Error sending message:", error);
       showToast({
@@ -418,10 +434,10 @@ const PersistentMessagingWidget: React.FC = () => {
   // Function to handle image selection
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    
+
     // Filter only image files
     const imageFiles = files.filter(file => file.type.startsWith('image/'));
-    
+
     if (imageFiles.length === 0) {
       showToast({
         message: "Please select only image files",
@@ -430,7 +446,7 @@ const PersistentMessagingWidget: React.FC = () => {
       });
       return;
     }
-    
+
     // Limit to 5 images
     if (selectedImages.length + imageFiles.length > 5) {
       showToast({
@@ -440,10 +456,10 @@ const PersistentMessagingWidget: React.FC = () => {
       });
       return;
     }
-    
+
     // Add new images to existing ones
     setSelectedImages(prev => [...prev, ...imageFiles]);
-    
+
     // Create preview URLs for new images
     imageFiles.forEach(file => {
       const reader = new FileReader();
@@ -480,10 +496,10 @@ const PersistentMessagingWidget: React.FC = () => {
     } else if (diffInDays < 7) {
       return date.toLocaleDateString('en-US', { weekday: 'long' });
     } else {
-      return date.toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric' 
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
       });
     }
   };
@@ -493,22 +509,22 @@ const PersistentMessagingWidget: React.FC = () => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  const shouldShowDateSeparator = (currentMessage: Message,               previousMessage: Message | null) => {
+  const shouldShowDateSeparator = (currentMessage: Message, previousMessage: Message | null) => {
     if (!previousMessage) return true;
-    
+
     const currentDate = new Date(currentMessage.createdAt);
     const previousDate = new Date(previousMessage.createdAt);
-    
+
     const currentDay = currentDate.toDateString();
     const previousDay = previousDate.toDateString();
-    
+
     return currentDay !== previousDay;
   };
-  
+
   useEffect(() => {
     const loggedInUser = localStorage.getItem("Id");
-    
-    if(loggedInUser) {
+
+    if (loggedInUser) {
       setLoggedInUser(loggedInUser);
     }
   }, []);
@@ -522,7 +538,7 @@ const PersistentMessagingWidget: React.FC = () => {
     };
   }, []);
 
-  if(!loggedInUser) {
+  if (!loggedInUser) {
     return null;
   }
 
@@ -573,14 +589,18 @@ const PersistentMessagingWidget: React.FC = () => {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 min-h-60 overflow-y-auto p-3 space-y-3">
+          <div
+            ref={messagesContainerRef}
+            onScroll={handleScroll}
+            className="flex-1 min-h-60 overflow-y-auto p-3 space-y-3"
+          >
             {messages.map((message, index) => {
               const currentUserId = localStorage.getItem("Id");
               const profileImage = localStorage.getItem("profile_picture");
-              
+
               const isOwnMessage = message.sender_id === currentUserId;
               const previousMessage = index > 0 ? messages[index - 1] : null;
-              
+
               return (
                 <div key={message.id} className="space-y-3">
                   {/* Date Separator */}
@@ -591,7 +611,7 @@ const PersistentMessagingWidget: React.FC = () => {
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Message */}
                   <div className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`}>
                     <div className={`flex items-start gap-2 max-w-xs ${isOwnMessage ? "flex-row-reverse" : "flex-row"}`}>
@@ -616,20 +636,19 @@ const PersistentMessagingWidget: React.FC = () => {
                             {formatMessageTimeOnly(message.createdAt)}
                           </span>
                         </div>
-                        
+
                         {/* Message Bubble */}
                         <div
-                          className={`px-3 py-2 rounded-lg text-sm ${
-                            isOwnMessage
-                              ? "bg-blue-600 text-white"
-                              : "bg-gray-200 text-gray-900"
-                          }`}
+                          className={`px-3 py-2 rounded-lg text-sm ${isOwnMessage
+                            ? "bg-blue-600 text-white"
+                            : "bg-gray-200 text-gray-900"
+                            }`}
                         >
                           {/* Message content - only show if there's content */}
                           {message.content && message.content.trim() !== "" && (
                             <p className="mb-2">{message.content}</p>
                           )}
-                          
+
                           {/* Message attachments - show if attachments exist */}
                           {message.attachments && message.attachments.length > 0 && (
                             <div className="space-y-2">
@@ -705,16 +724,16 @@ const PersistentMessagingWidget: React.FC = () => {
                 </div>
               </div>
             )}
-            
+
             <div className="flex items-center gap-2 relative">
-              <button 
+              <button
                 className="p-1 h-9 w-9 flex justify-center items-center border-[#ECEEF2] border rounded  hover:bg-[#F8F3FF] transitions-all transition-colors transition-duration-300"
                 onClick={handleImageButtonClick}
                 disabled={isUploading}
               >
                 <Paperclip size={16} className="text-purple-600 " />
               </button>
-              
+
               {/* Emoji Button */}
               <button
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
@@ -723,7 +742,7 @@ const PersistentMessagingWidget: React.FC = () => {
               >
                 <span className="text-white text-lg">😊</span>
               </button>
-               {/* Emoji Picker */}
+              {/* Emoji Picker */}
               {showEmojiPicker && (
                 <div className="absolute bottom-full left-0 mb-2">
                   <EmojiPicker
@@ -756,9 +775,9 @@ const PersistentMessagingWidget: React.FC = () => {
                 )}
               </button>
             </div>
-            
-           
-            
+
+
+
             {/* Hidden file input */}
             <input
               ref={fileInputRef}
@@ -780,7 +799,7 @@ const PersistentMessagingWidget: React.FC = () => {
                 <span>{selectedConnection.name} is typing...</span>
               </div>
             )}
-            
+
             <div className="flex items-center justify-between mt-2">
               <div className="flex items-center gap-2">
                 {/* Existing buttons can stay here */}
@@ -797,16 +816,16 @@ const PersistentMessagingWidget: React.FC = () => {
         <div className="flex items-center justify-between p-4 border-b border-[#ddd] bg-[#7C81FF] rounded-t-lg">
           <div className="flex items-center gap-3">
             <img
-              src={ !localStorage.getItem("profile_picture") || localStorage.getItem("profile_picture") === "undefined" || localStorage.getItem("profile_picture") === "null" ? "/profile.png" : localStorage.getItem("profile_picture") || "/profile.png"}
+              src={!localStorage.getItem("profile_picture") || localStorage.getItem("profile_picture") === "undefined" || localStorage.getItem("profile_picture") === "null" ? "/profile.png" : localStorage.getItem("profile_picture") || "/profile.png"}
               alt="Your profile"
               className="w-8 h-8 rounded-full"
             />
-            </div>
-            <div>
-              <h3 className="font-semibold text-[#fff]">Messaging</h3>
-              {/* <p className="text-xs text-white">Your conversations</p> */}
-            </div>
-          
+          </div>
+          <div>
+            <h3 className="font-semibold text-[#fff]">Messaging</h3>
+            {/* <p className="text-xs text-white">Your conversations</p> */}
+          </div>
+
           <div className="flex items-center gap-2">
             <button
               onClick={handleCloseWidget}
@@ -867,7 +886,7 @@ const PersistentMessagingWidget: React.FC = () => {
 
       {/* Image Modal */}
       {isImageModalOpen && selectedImageForModal && (
-        <div 
+        <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
           onClick={closeImageModal} // Close modal when clicking outside
           onKeyDown={handleModalKeyDown} // Handle escape key
@@ -883,7 +902,7 @@ const PersistentMessagingWidget: React.FC = () => {
             >
               <X size={20} />
             </button>
-            
+
             {/* Image Container */}
             <div className="relative">
               <img
@@ -893,7 +912,7 @@ const PersistentMessagingWidget: React.FC = () => {
                 onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on image
               />
             </div>
-            
+
             {/* Image Info */}
             <div className="mt-4 text-center text-white">
               <p className="text-sm opacity-80">

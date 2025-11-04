@@ -4,7 +4,7 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   // LogOutIcon,
-  BadgePlus,
+  //BadgePlus,
   TrendingUp,
   Zap,
 } from "lucide-react";
@@ -77,9 +77,11 @@ const DashboardNavbar = ({
       console.error("Failed to load referred users", err);
     }
   };*/
+// Automatically detect environment based on domain (no .env needed)
+const hostname = window.location.hostname.toLowerCase();
 
-  const env = import.meta.env.VITE_ENV;
-const isUatOrTest = ["uat", "test"].includes(env);
+const showMarketplaceNew =
+  hostname.includes("localhost") || hostname.includes("dev");
 
   const mainNavItems = [
     {
@@ -216,25 +218,25 @@ const isUatOrTest = ["uat", "test"].includes(env);
         { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
       ],*/
     },
-  ...(isUatOrTest
+  ...(showMarketplaceNew 
      ? [
-    {
-      id: "market-place",
-      icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
-      label: "MarketplaceNew",
-      active: false,
-      //path: "/dashboard/market-place",
-      isMarketplaceDropdown: true,
-      childPaths: ["/dashboard/DigitalProducts"],
-      children: [
-        { label: "Buy Digital Products", path: "/dashboard/market-place" },
-        { label: "Sell your Products", path: "/dashboard/createshop" },
-        { label: "Track Purchase & Sales", path: "/dashboard/Tracking" },
-        { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
-        { label: "Seller Dashboard", path: "/dashboard/seller-dashboard" }
+    // {
+    //   id: "market-place",
+    //   icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
+    //   label: "MarketplaceNew",
+    //   active: false,
+    //   //path: "/dashboard/market-place",
+    //   isMarketplaceDropdown: true,
+    //   childPaths: ["/dashboard/DigitalProducts"],
+    //   children: [
+    //     { label: "Buy Digital Products", path: "/dashboard/market-place" },
+    //     { label: "Sell your Products", path: "/dashboard/createshop" },
+    //     { label: "Track Purchase & Sales", path: "/dashboard/Tracking" },
+    //     { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
+    //     { label: "Seller Dashboard", path: "/dashboard/seller-dashboard" }
 
-      ]
-    },
+    //   ]
+    // },
     ]
     : []),
 
@@ -277,20 +279,20 @@ const isUatOrTest = ["uat", "test"].includes(env);
     //   ],
     // },
 
-    {
-      icon: <BadgePlus className="w-5 h-5" />,
-      label: "Generate Badge Code",
-      active: false,
-      path: "/dashboard/GenerateBadgeCode",
-    },
-    {
-      icon: (
-        <img src={iconMap["community"]} alt="Home Icon" className="w-5 h-5" />
-      ),
-      label: "Affiliate",
-      active: false,
-      path: "/dashboard/GenerateAffiliateCode",
-    },
+    //{
+     // icon: <BadgePlus className="w-5 h-5" />,
+     // label: "Generate Badge Code",
+      //active: false,
+      //path: "/dashboard/GenerateBadgeCode",
+    //},
+   // {
+      //icon: (
+       // <img src={iconMap["community"]} alt="Home Icon" className="w-5 h-5" />
+      //),
+      //label: "Affiliate",
+     // active: false,
+    //  path: "/dashboard/GenerateAffiliateCode",
+    //},
   ];
 
   // const secondaryNavItems = [

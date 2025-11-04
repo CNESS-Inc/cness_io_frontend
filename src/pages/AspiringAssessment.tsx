@@ -224,7 +224,7 @@ const AspiringAssessment = () => {
   return (
     <>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-start space-y-3 sm:space-y-0 sm:space-x-3 mb-8 px-6 md:px-16 mt-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-start space-y-3 sm:space-y-0 sm:space-x-3 mb-8 px-2 md:px-2 mt-8">
         <img
           src="https://cdn.cness.io/aspiringlogo.svg"
           alt="Aspiring Certification"
@@ -247,7 +247,7 @@ const AspiringAssessment = () => {
         <hr className="border-gray-200 mb-8" />
 
         {/* Checkboxes */}
-        <ul className="space-y-4 sm:space-y-3">
+        <ul className="space-y-4 sm:space-y-4">
           {options.map((opt: any, index: number) => (
             <li
               key={opt.id || index}

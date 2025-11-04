@@ -415,6 +415,8 @@ const BecomeMentor = () => {
   };
 
   return (
+        <div className="px-5 2xl:px-5 pt-2 md:pt-2 pb-5 md:pb-18">
+
     <div className="overflow-x-hidden">
       {/* Hero Section */}
       <div
@@ -889,6 +891,7 @@ const BecomeMentor = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };

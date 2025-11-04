@@ -13,6 +13,7 @@ import { result } from "lodash";
 import { Plus, Minus, Loader2, X } from "lucide-react";
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
+import { useNavigate } from "react-router-dom";
 
 interface TransformedSection {
   id: string;
@@ -49,9 +50,16 @@ interface AnswerPayload {
   }>;
 }
 
+interface ValidationErrors {
+  [sectionId: string]: {
+    checkboxes: boolean;
+    files: boolean;
+  };
+}
+
 const InspiredAssessment = () => {
   const [sections, setSections] = useState<TransformedSection[]>([]);
-const [expanded, setExpanded] = useState<string[]>([]);
+  const [expanded, setExpanded] = useState<string[]>([]);
   const [checked, setChecked] = useState<Record<string, string[]>>({});
   const [uploads, setUploads] = useState<Record<string, UploadedFile[]>>({});
   const [loading, setLoading] = useState(true);
@@ -62,20 +70,26 @@ const [expanded, setExpanded] = useState<string[]>([]);
   const [personPricing, setPersonPricing] = useState<any[]>([]);
   console.log("🚀 ~ InspiredAssessment ~ personPricing:", personPricing);
   const [isAnnual, setIsAnnual] = useState(true);
-  const [validationErrors, setValidationErrors] = useState<Record<string, boolean>>({});
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  const navigate = useNavigate();
 
+  const handleBack = () => {
+    navigate(-1); // 👈 goes back one page
+  };
   // File validation constants
-  const SUPPORTED_FORMATS = ['.jpg', '.jpeg', '.png', '.pdf', '.mp4'];
+  const SUPPORTED_FORMATS = [".jpg", ".jpeg", ".png", ".pdf", ".mp4"];
   const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB in bytes
 
   // File validation function
   const validateFile = (file: File): { isValid: boolean; error?: string } => {
     // Check file extension
-    const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
-    if (!SUPPORTED_FORMATS.includes(fileExtension || '')) {
+    const fileExtension = "." + file.name.split(".").pop()?.toLowerCase();
+    if (!SUPPORTED_FORMATS.includes(fileExtension || "")) {
       return {
         isValid: false,
-        error: `File format not supported. Please upload only ${SUPPORTED_FORMATS.join(', ')} files.`
+        error: `File format not supported. Please upload only ${SUPPORTED_FORMATS.join(
+          ", "
+        )} files.`,
       };
     }
 
@@ -83,21 +97,25 @@ const [expanded, setExpanded] = useState<string[]>([]);
     if (file.size > MAX_FILE_SIZE) {
       return {
         isValid: false,
-        error: `File size too large. Maximum allowed size is 50MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB.`
+        error: `File size too large. Maximum allowed size is 50MB. Your file is ${(
+          file.size /
+          (1024 * 1024)
+        ).toFixed(2)}MB.`,
       };
     }
 
     return { isValid: true };
   };
 
-
   const handleToggle = (id: string) => {
-  setExpanded((prev) =>
-    prev.includes(id)
-      ? prev.filter((item) => item !== id) // close if already open
-      : [...prev, id] // open new
-  );
-};
+    setExpanded(
+      (prev) =>
+        prev.includes(id)
+          ? prev.filter((item) => item !== id) // close if already open
+          : [...prev, id] // open new
+    );
+  };
+
   // Transform API data to match our component structure
   const transformApiData = (apiData: any): TransformedSection[] => {
     if (!apiData?.all_sections) return [];
@@ -193,7 +211,6 @@ const [expanded, setExpanded] = useState<string[]>([]);
     );
   };
 
- 
   const handleCheck = async (sectionId: string, checkboxId: string) => {
     const section = sections.find((s) => s.id === sectionId);
     if (!section) return;
@@ -209,11 +226,14 @@ const [expanded, setExpanded] = useState<string[]>([]);
       [sectionId]: newChecked,
     }));
 
-    // Clear validation error for this section when a checkbox is checked
+    // Clear checkbox validation error for this section when a checkbox is checked
     if (newChecked.length > 0) {
       setValidationErrors((prev) => ({
         ...prev,
-        [sectionId]: false,
+        [sectionId]: {
+          ...prev[sectionId],
+          checkboxes: false,
+        },
       }));
     }
 
@@ -235,19 +255,41 @@ const [expanded, setExpanded] = useState<string[]>([]);
     // }
   };
 
-  // Validate all sections have at least one checkbox checked
+  // Validate all sections have at least one checkbox checked and one file uploaded
   const validateSections = (): boolean => {
-    const errors: Record<string, boolean> = {};
+    const errors: ValidationErrors = {};
     let isValid = true;
 
     sections.forEach((section) => {
-      // Only validate sections that have checkboxes
+      const sectionErrors = {
+        checkboxes: false,
+        files: false,
+      };
+
+      // Validate checkboxes - only for sections that have checkboxes
       if (section.checkboxes.length > 0) {
         const sectionChecked = checked[section.id] || [];
         if (sectionChecked.length === 0) {
-          errors[section.id] = true;
+          sectionErrors.checkboxes = true;
           isValid = false;
         }
+      }
+
+      // Validate file uploads - only for sections that have upload questions
+      if (section.uploadQuestion.id) {
+        const sectionUploads = uploads[section.id] || [];
+        const hasUploadedFile = sectionUploads.some(
+          (file) => file.status === "Uploaded"
+        );
+        if (!hasUploadedFile) {
+          sectionErrors.files = true;
+          isValid = false;
+        }
+      }
+
+      // Only add to errors if there are actual errors
+      if (sectionErrors.checkboxes || sectionErrors.files) {
+        errors[section.id] = sectionErrors;
       }
     });
 
@@ -255,22 +297,48 @@ const [expanded, setExpanded] = useState<string[]>([]);
     return isValid;
   };
 
+  // Get validation error message for a section
+  const getSectionValidationMessage = (sectionId: string): string | null => {
+    const errors = validationErrors[sectionId];
+    if (!errors) return null;
+
+    const section = sections.find((s) => s.id === sectionId);
+    if (!section) return null;
+
+    const errorMessages: string[] = [];
+
+    if (errors.checkboxes && section.checkboxes.length > 0) {
+      errorMessages.push("select at least one option");
+    }
+
+    if (errors.files && section.uploadQuestion.id) {
+      errorMessages.push("upload at least one file");
+    }
+
+    return errorMessages.length > 0
+      ? `Please ${errorMessages.join(" and ")} in this section.`
+      : null;
+  };
+
   // Submit all answers
   const handleSubmitAllAnswers = async () => {
     // Validate before submission
     if (!validateSections()) {
       showToast({
-        message: "Please select at least one option in each section before submitting.",
+        message:
+          "Please complete all required fields in each section before submitting.",
         type: "error",
         duration: 5000,
       });
-      
+
       // Expand the first section with error for better UX
-      const firstErrorSection = sections.find(section => validationErrors[section.id]);
+      const firstErrorSection = sections.find(
+        (section) => validationErrors[section.id]
+      );
       if (firstErrorSection) {
-setExpanded([firstErrorSection.id]);
+        setExpanded([firstErrorSection.id]);
       }
-      
+
       return;
     }
 
@@ -420,6 +488,15 @@ setExpanded([firstErrorSection.id]);
               }
             : f
         ),
+      }));
+
+      // Clear file validation error for this section when a file is successfully uploaded
+      setValidationErrors((prev) => ({
+        ...prev,
+        [sectionId]: {
+          ...prev[sectionId],
+          files: false,
+        },
       }));
 
       showToast({
@@ -653,6 +730,22 @@ setExpanded([firstErrorSection.id]);
       ...prev,
       [sectionId]: prev[sectionId].filter((f) => f.name !== fileName),
     }));
+
+    // Check if this removal causes validation error
+    const sectionUploads = uploads[sectionId]?.filter((f) => f.name !== fileName) || [];
+    const hasUploadedFile = sectionUploads.some(
+      (file) => file.status === "Uploaded"
+    );
+
+    if (!hasUploadedFile) {
+      setValidationErrors((prev) => ({
+        ...prev,
+        [sectionId]: {
+          ...prev[sectionId],
+          files: true,
+        },
+      }));
+    }
   };
 
   const fetchQuestions = async () => {
@@ -765,11 +858,11 @@ setExpanded([firstErrorSection.id]);
         {sections.map((section) => (
           <div
             key={section.id}
-            className="bg-white border border-gray-200 rounded-3xl shadow-sm overflow-hidden"
+            className="bg-white rounded-3xl shadow-sm overflow-hidden"
           >
             {/* Accordion Header */}
             <button
-onClick={() => handleToggle(section.id)}
+              onClick={() => handleToggle(section.id)}
               className="w-full flex justify-between items-center px-4 sm:px-6 py-5 sm:py-6 text-left"
             >
               <span className="font-[poppins] font-semibold text-[18px] sm:text-[18px] leading-[100%] text-gray-900">
@@ -789,29 +882,29 @@ onClick={() => handleToggle(section.id)}
               <div className="border-t border-[#E0E0E0] px-4 sm:px-6 py-6 sm:py-8 flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 sm:gap-8">
                 {/* Text and Checkboxes */}
                 <div className="flex-1">
-                  <p className="font-[poppins] font-medium text-[16px] leading-[140%] text-gray-800 mb-1">
+                  <p className="font-[poppins] font-medium text-[16px] leading-[150%] text-[#000000] mb-1">
                     Conscious Reflection:
                   </p>
-                  <p className="font-['Open_Sans'] font-normal text-[14px] leading-[120%] text-[#6E6E6E] mb-4">
+                  <p className="font-['Open_Sans'] font-normal text-[14px] leading-[150%] text-[#242424] mb-4">
                     {section.consciousReflection}
                   </p>
                   <p className="font-[poppins] font-medium text-[16px] leading-[140%] text-gray-800 mb-2">
                     {section.checkboxes_question}{" "}
-                    <span className="font-['Open_Sans'] font-normal text-[12px] leading-[140%] text-gray-600">
+                    <span className="font-['Open_Sans'] font-normal text-[12px] leading-[140%] text-[#767676]">
                       (choose at least one option)
                     </span>
                   </p>
 
                   {/* Validation Error Message */}
-                  {validationErrors[section.id] && (
+                  {getSectionValidationMessage(section.id) && (
                     <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
                       <p className="text-red-600 text-sm font-medium">
-                        Please select at least one option in this section.
+                        {getSectionValidationMessage(section.id)}
                       </p>
                     </div>
                   )}
 
-                  <ul className="space-y-3 px-4 sm:px-8 mb-6 mt-5">
+                  <ul className="space-y-6 px-4 sm:px-8 mb-6 mt-5">
                     {section.checkboxes.map((checkbox) => (
                       <li
                         key={checkbox.id}
@@ -828,7 +921,7 @@ onClick={() => handleToggle(section.id)}
                         />
                         <label
                           htmlFor={`checkbox-${checkbox.id}`}
-                          className="font-['Open_Sans'] font-normal text-[16px] leading-[140%] text-gray-800 cursor-pointer"
+                          className="font-['Open_Sans'] font-normal text-[16px] leading-[140%] text-[#1E1E1E] cursor-pointer"
                         >
                           {checkbox.option}
                         </label>
@@ -857,9 +950,9 @@ onClick={() => handleToggle(section.id)}
                 </div>
 
                 {/* Upload Box */}
-                <div className="w-full max-w-[336px] min-h-[420px] rounded-[30px] shadow-sm border border-gray-200 bg-white flex flex-col justify-between py-5 px-5 mx-auto sm:mx-0">
+                <div className="w-full max-w-[336px] min-h-[420px] rounded-[30px]  bg-[#F9F9F9] flex flex-col justify-between py-5 px-5 mx-auto sm:mx-0">
                   <div>
-                    <h4 className="font-[poppins] font-semibold text-[16px] text-gray-900 mb-1">
+                    <h4 className="font-Inter font-semibold text-[16px] text-[#292D32] mb-1">
                       {section.uploadQuestion.question}
                     </h4>
                     <p className="font-['Open_Sans'] text-[14px] text-gray-400 mb-5">
@@ -867,14 +960,31 @@ onClick={() => handleToggle(section.id)}
                     </p>
 
                     <div
-                      className="text-center py-6 px-4 rounded-[26px] border-2 border-[#CBD0DC] border-dashed flex flex-col items-center justify-center cursor-pointer bg-[#FAFAFA] mb-6 gap-[10px]"
-                      style={{ borderWidth: "3px" }}
+                      className="relative text-center py-6 px-4 rounded-[26px] flex flex-col items-center justify-center cursor-pointer bg-white mb-6 gap-[10px]"
                       onDrop={(e) => handleDrop(e, section.id)}
                       onDragOver={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                       }}
                     >
+                      {/* SVG Dashed Border */}
+                      <svg
+                        className="absolute top-0 left-0 w-full h-full pointer-events-none"
+                        style={{ borderRadius: "26px" }}
+                      >
+                        <rect
+                          x="2"
+                          y="2"
+                          width="calc(100% - 3px)"
+                          height="calc(100% - 3px)"
+                          rx="26"
+                          ry="26"
+                          stroke="#CBD0DC"
+                          strokeWidth="1"
+                          strokeDasharray="7,7"
+                          fill="none"
+                        />
+                      </svg>
                       <div className="flex flex-col items-center pb-4">
                         <img
                           src={cloud}
@@ -899,7 +1009,7 @@ onClick={() => handleToggle(section.id)}
                       />
                       <label
                         htmlFor={`uploadFiles-${section.id}`}
-                        className="block px-8 py-2.5 rounded-full text-[#54575C] text-[14px] font-[plus-jakarta-sans] font-medium border border-[#CBD0DC] hover:bg-gray-100 transition-all cursor-pointer"
+                        className="block px-8 py-2.5 rounded-full text-[#54575C] text-[14px] font-Inter font-medium border border-[#CBD0DC] hover:bg-gray-100 transition-all cursor-pointer"
                       >
                         Browse File
                       </label>
@@ -907,22 +1017,22 @@ onClick={() => handleToggle(section.id)}
                   </div>
 
                   {/* Uploaded Files */}
-                  <div className="space-y-3 overflow-y-auto pr-1">
+                  <div className="space-y-3 overflow-y-auto overflow-x-hidden pr-1 max-h-[300px]">
                     {uploads[section.id]?.map((file, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl px-4 py-3"
+                        className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 overflow-hidden"
                       >
-                        <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 flex items-center justify-center bg-[#FFECEC] rounded-md">
+                        <div className="flex items-center space-x-3 min-w-0">
+                          <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center bg-[#FFECEC] rounded-md">
                             <img
                               src="https://cdn-icons-png.flaticon.com/512/337/337946.png"
                               alt="PDF"
                               className="w-4 h-4"
                             />
                           </div>
-                          <div>
-                            <p className="font-['Open_Sans'] text-[14px] text-gray-800">
+                          <div className="min-w-0">
+                            <p className="font-['Open_Sans'] text-[14px] text-gray-800 truncate">
                               {file.name}
                             </p>
                             <p className="font-['Open_Sans'] text-[12px] text-gray-500">
@@ -930,7 +1040,7 @@ onClick={() => handleToggle(section.id)}
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-2 flex-shrink-0">
                           {file.status === "Uploading..." && (
                             <Loader2 className="w-4 h-4 text-[#7077FE] animate-spin" />
                           )}
@@ -963,14 +1073,20 @@ onClick={() => handleToggle(section.id)}
       </div>
 
       {/* Submit Button */}
-      <div className="flex justify-center mt-8">
+      <div className="flex justify-end gap-4 mt-10">
+        <button
+          onClick={handleBack} // <-- define this function
+          className="px-6 py-2 rounded-full border border-gray-300 text-gray-700 font-[poppins] font-medium text-[16px] bg-white hover:bg-gray-100 transition-all duration-200"
+        >
+          Back
+        </button>
         <button
           onClick={handleSubmitAllAnswers}
           disabled={submitting}
-          className="px-8 py-3 bg-[#7077FE] text-white rounded-full font-[poppins] font-medium text-[16px] hover:bg-[#5b62d4] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+          className="px-6 py-2 rounded-full bg-gradient-to-r from-[#7077FE] to-[#A066FF] text-white font-[poppins] font-medium text-[16px] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
         >
           {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-          {submitting ? "Submitting..." : "Submit Answers"}
+          {submitting ? "Submitting..." : "Submit"}
         </button>
       </div>
 

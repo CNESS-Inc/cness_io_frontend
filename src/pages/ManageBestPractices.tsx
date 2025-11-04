@@ -284,26 +284,40 @@ const Managebestpractices = () => {
   };
 
   const handleEditFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-    if (!file) return;
-    const validTypes = ["image/jpeg", "image/jpg", "image/png"];
-    if (!validTypes.includes(file.type)) {
-      e.target.value = "";
+  const allowedTypes = ["image/jpeg", "image/png"];
+  const maxSize = 2 * 1024 * 1024; // 2 MB
 
-      showToast?.({
-        message: "Please select only JPG, JPEG or PNG files.",
-        type: "error",
-        duration: 3000,
-      });
-      return;
-    }
-
-    setCurrentPractice({
-      ...currentPractice,
-      file: file, // This will be a File object, not a string
+  // ❌ Invalid file type
+  if (!allowedTypes.includes(file.type)) {
+    showToast({
+      message: "Invalid file type. Please upload JPEG or PNG only.",
+      type: "error",
+      duration: 4000,
     });
-  };
+    e.target.value = "";
+    return;
+  }
+
+  // ❌ File too large
+  if (file.size > maxSize) {
+    showToast({
+      message: "File size exceeds 2MB. Please upload a smaller image.",
+      type: "error",
+      duration: 4000,
+    });
+    e.target.value = "";
+    return;
+  }
+
+  // ✅ Valid file
+  setCurrentPractice({
+    ...currentPractice,
+    file,
+  });
+};
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -405,29 +419,41 @@ const Managebestpractices = () => {
   };
 
   // Function to handle file change for create form
-  const handleCreateFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Your existing file validation and setting logic
-      const validTypes = ["image/jpeg", "image/jpg", "image/png"];
-      if (!validTypes.includes(file.type)) {
-        e.target.value = "";
-        // Show error toast if needed
-        return;
-      }
+const handleCreateFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-      setNewPractice((prev) => ({
-        ...prev,
-        file: file,
-      }));
-    } else {
-      // Clear the file when no file is selected
-      setNewPractice((prev) => ({
-        ...prev,
-        file: null,
-      }));
-    }
-  };
+  const allowedTypes = ["image/jpeg", "image/png"];
+  const maxSize = 2 * 1024 * 1024; // 2 MB
+
+  // ❌ Invalid file type
+  if (!allowedTypes.includes(file.type)) {
+    showToast({
+      message: "Invalid file type. Please upload JPEG or PNG only.",
+      type: "error",
+      duration: 4000,
+    });
+    e.target.value = "";
+    return;
+  }
+
+  // ❌ File too large
+  if (file.size > maxSize) {
+    showToast({
+      message: "File size exceeds 2MB. Please upload a smaller image.",
+      type: "error",
+      duration: 4000,
+    });
+    e.target.value = "";
+    return;
+  }
+
+  // ✅ Valid file
+  setNewPractice((prev) => ({
+    ...prev,
+    file,
+  }));
+};
 
   const handleRemoveFile = () => {
     setNewPractice((prev) => ({
@@ -528,7 +554,7 @@ const Managebestpractices = () => {
 
   return (
     <>
-      <div className="w-full min-h-screen mt-8">
+      <div className="w-full min-h-screen mt-8 px-1">
         {/* Tab Navigation */}
         <div className="flex border-b border-gray-200 mb-6 mt-8">
           <button

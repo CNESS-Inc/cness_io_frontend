@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Check } from "lucide-react";
-import aspired from "../../../assets/aspired-upgrade.png";
-import inspired from "../../../assets/inspired-upgrade.png";
+import aspired from "../../../assets/aspiring1.svg";
+import inspired from "../../../assets/inspired1.svg";
 import leader from "../../../assets/leader.png";
 import { useNavigate } from "react-router-dom";
 import Modal from "../../ui/Modal";
@@ -79,7 +79,7 @@ function PricingCard({
 
       <div className="flex flex-col justify-start text-left gap-[32px]">
         <div className="flex flex-col justify-start text-left gap-6">
-          <h3 className="font-['Poppins',Helvetica] text-base text-base text-[#102821]">
+          <h3 className="font-['Poppins',Helvetica] text-base text-[#102821]">
             Includes:
           </h3>
 
@@ -142,6 +142,7 @@ function PricingCard({
 }
 
 export default function CertificationPlans({ data }: { data: ApiResponse }) {
+  console.log("🚀 ~ CertificationPlans ~ data:", data)
   const navigate = useNavigate();
   const [isOpenModal, setIsOpenModal] = useState(false);
 
@@ -153,6 +154,78 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
     } else if (plan === "Leader") {
       setIsOpenModal(true);
     }
+  };
+
+  // Helper function to determine card states based on API data
+  const getCardState = (cardTitle: string) => {
+    const userBadgeLevel = data?.badge?.level;
+    const isAssessmentSubmitted = data?.is_assessment_submited;
+    const isSubmittedByHead = data?.is_submitted_by_head;
+
+    // If user has no badge at all
+    if (!userBadgeLevel) {
+      if (cardTitle === "Aspired") {
+        return {
+          selected: true,
+          ctaType: isAssessmentSubmitted 
+            ? (isSubmittedByHead ? "completed" : "pending") 
+            : "upgrade"
+        };
+      } else {
+        return {
+          selected: false,
+          ctaType: "upgrade"
+        };
+      }
+    }
+
+    // User has Aspiring badge
+    if (userBadgeLevel === "Aspiring") {
+      if (cardTitle === "Aspired") {
+        return {
+          selected: false,
+          ctaType: "completed"
+        };
+      } else if (cardTitle === "Inspired") {
+        return {
+          selected: true,
+          ctaType: isAssessmentSubmitted 
+            ? (isSubmittedByHead ? "completed" : "pending") 
+            : "upgrade"
+        };
+      } else if (cardTitle === "Leader") {
+        return {
+          selected: false,
+          ctaType: "upgrade"
+        };
+      }
+    }
+
+    // User has Inspired badge (from your API data)
+    if (userBadgeLevel === "Inspired") {
+      if (cardTitle === "Aspired") {
+        return {
+          selected: false,
+          ctaType: "completed"
+        };
+      } else if (cardTitle === "Inspired") {
+        return {
+          selected: false,
+          ctaType: "completed"
+        };
+      } else if (cardTitle === "Leader") {
+        return {
+          selected: true,
+          ctaType: "upgrade"
+        };
+      }
+    }
+
+    // Default fallback
+    return {
+      selected: false,
+      ctaType: "upgrade"
+    };
   };
 
   const cards: Card[] = [
@@ -167,15 +240,7 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
         "Resources Library",
         "Basic profile creation",
       ],
-      selected: data?.badge === null,
-      ctaType:
-        data?.badge === null
-          ? data?.is_assessment_submited
-            ? data?.is_submitted_by_head
-              ? "completed"
-              : "pending"
-            : "upgrade"
-          : "completed",
+      ...getCardState("Aspired"),
       badge: aspired,
     },
     {
@@ -189,15 +254,7 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
         "Resources Library",
         "Social media Access",
       ],
-      selected: data?.badge?.level === "Aspiring",
-      ctaType:
-        data?.badge?.level === "Aspiring"
-          ? data?.is_assessment_submited
-            ? data?.is_submitted_by_head
-              ? "completed"
-              : "pending"
-            : "upgrade"
-          : "upgrade",
+      ...getCardState("Inspired"),
       badge: inspired,
     },
     {
@@ -206,13 +263,12 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
       subtitle: "Expert level certification",
       price: "",
       features: [
-        "Basic profile cSell your reation",
+        "Basic profile creation",
         "Community Access",
         "Resources Library",
         "Basic profile creation",
       ],
-      selected: data?.badge?.level === "Inspired",
-      ctaType: "upgrade",
+      ...getCardState("Leader"),
       badge: leader,
     },
   ];

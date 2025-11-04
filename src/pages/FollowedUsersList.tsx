@@ -1,3 +1,6 @@
+
+import defaultProfile from "../assets/altprofile.png"; // use your default image path
+
 interface FollowedUser {
   id: string;
   username: string;
@@ -19,12 +22,20 @@ const FollowedUsersList = ({ users,
       {users.map(user => (
         <div key={user.id} className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm">
           <div className="flex items-center gap-3">
-            <img 
-              src={user.profile_picture} 
+            <img
+              src={
+                user.profile_picture &&
+                user.profile_picture !== "null" &&
+                user.profile_picture !== "undefined" &&
+                user.profile_picture.trim() !== ""
+                  ? user.profile_picture
+                  : defaultProfile
+              }
+              alt={`${user.first_name} ${user.last_name}`}
               className="w-10 h-10 rounded-full object-cover"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.src = "/profile.png";
+                target.src = defaultProfile;
               }}
             />
             <div>

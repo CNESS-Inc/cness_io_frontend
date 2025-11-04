@@ -396,9 +396,10 @@ export default function SocialTopBar() {
     try {
       setConnectingUsers((prev) => ({ ...prev, [userId]: true }));
 
-      // Check if already connected
-      if (friendRequests[userId] === "connected") {
-        // If connected, delete friend
+      const currentStatus = friendRequests[userId];
+
+      // If already connected or requested, remove the connection/request
+      if (currentStatus === "connected" || currentStatus === "requested") {
         const formattedData = {
           friend_id: userId,
         };
@@ -408,10 +409,10 @@ export default function SocialTopBar() {
         if (response.success) {
           setFriendRequests((prev) => ({
             ...prev,
-            [userId]: "connect",
+            [userId]: "connect", // Change back to "connect" after removing
           }));
           showToast({
-            message: "Friend removed successfully",
+            message: "Friend request removed successfully",
             type: "success",
             duration: 3000,
           });
@@ -425,7 +426,6 @@ export default function SocialTopBar() {
         const response = await SendFriendRequest(formattedData);
 
         if (response.success) {
-          // Immediately update the button state to "requested"
           setFriendRequests((prev) => ({
             ...prev,
             [userId]: "requested",
@@ -634,39 +634,39 @@ export default function SocialTopBar() {
     }
   };
 
-  const getFreshPosts = async () => {
-    if (isLoading || !hasMore) return;
+  // const getFreshPosts = async () => {
+  //   if (isLoading || !hasMore) return;
 
-    setIsLoading(true);
-    setIsPostsLoading(true);
-    try {
-      // Call the API to get the posts for the current page
-      // const res = await PostsDetails(1);
-      const res = await FeedPostsDetails(1);
-      if (res?.data) {
-        const newPosts = res?.data.data.rows || [];
-        const totalPages = res?.data?.data?.count / 10 || 0;
+  //   setIsLoading(true);
+  //   setIsPostsLoading(true);
+  //   try {
+  //     // Call the API to get the posts for the current page
+  //     // const res = await PostsDetails(1);
+  //     const res = await FeedPostsDetails(1);
+  //     if (res?.data) {
+  //       const newPosts = res?.data.data.rows || [];
+  //       const totalPages = res?.data?.data?.count / 10 || 0;
 
-        if (newPosts.length === 0) {
-          setHasMore(false); // No more posts to load
-        } else {
-          setUserPosts(newPosts);
+  //       if (newPosts.length === 0) {
+  //         setHasMore(false); // No more posts to load
+  //       } else {
+  //         setUserPosts(newPosts);
 
-          // Check if the current page is the last page
-          if (page >= totalPages) {
-            setHasMore(false); // We've loaded all available pages
-          } else {
-            setPage(2); // Load the next page
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    } finally {
-      setIsLoading(false);
-      setIsPostsLoading(false);
-    }
-  };
+  //         // Check if the current page is the last page
+  //         if (page >= totalPages) {
+  //           setHasMore(false); // We've loaded all available pages
+  //         } else {
+  //           setPage(2); // Load the next page
+  //         }
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching posts:", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //     setIsPostsLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
     getUserPosts();
@@ -817,7 +817,6 @@ export default function SocialTopBar() {
     try {
       const response = await AddPost(formData);
       if (response) {
-
         // Get the post button element to use as animation source
         const postButton = document.querySelector(
           "[data-post-button]"
@@ -825,9 +824,9 @@ export default function SocialTopBar() {
 
         if (postButton) {
           localStorage.setItem(
-          "karma_credits",
-          response.data.data.karma_credits.toString()
-        );
+            "karma_credits",
+            response.data.data.karma_credits.toString()
+          );
           // Trigger credit animation for creating a post (more credits than a like)
           triggerCreditAnimation(postButton, 20); // 20 credits for creating a post
         }
@@ -838,7 +837,43 @@ export default function SocialTopBar() {
           duration: 3000,
         });
 
-        getFreshPosts();
+        // Create a new post object from the response
+        const newPost: Post = {
+          id: response.data.data.id, // Assuming the API returns the created post ID
+          user_id: loggedInUserID || "", // Use the logged-in user's ID
+          content: postMessage,
+          file: response.data.data.file || null, // Assuming API returns file URLs
+          file_type: response.data.data.file_type || null,
+          is_poll: false,
+          poll_id: null,
+          createdAt: new Date().toISOString(), // Use current time or API response time
+          likes_count: 0,
+          comments_count: 0,
+          if_following: false,
+          if_friend: false,
+          is_liked: false,
+          is_saved: false,
+          is_requested: false,
+          user: {
+            id: loggedInUserID || "",
+            username: userInfo?.username || "current_user", // Use actual username from userInfo
+          },
+          profile: {
+            id: userInfo?.profile?.id || "",
+            user_id: loggedInUserID || "",
+            first_name:
+              userInfo?.profile?.first_name ||
+              userInfo?.first_name ||
+              "Current",
+            last_name:
+              userInfo?.profile?.last_name || userInfo?.last_name || "User",
+            profile_picture:
+              userInfo?.profile_picture || userProfilePicture || "/profile.png",
+          },
+        };
+
+        // Add the new post at the beginning of the userPosts array
+        setUserPosts((prevPosts) => [newPost, ...prevPosts]);
 
         // Reset form
         setPostMessage("");
@@ -1420,7 +1455,7 @@ export default function SocialTopBar() {
   return (
     <>
       {isAdult ? (
-        <div className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-2 px-2 md:px-2 lg:px-0 w-full">
+        <div className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-2 px-2 md:px-2 lg:px-1 w-full pt-2">
           {/* Left Side: Post & Stories - Full width on mobile */}
           <div className="w-full lg:max-w-[75%]" ref={containerRef}>
             {activeView === "posts" ? (
@@ -1663,14 +1698,14 @@ export default function SocialTopBar() {
                               onClick={() => handleConnect(post.user_id)}
                               disabled={connectingUsers[post.user_id] || false}
                               className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-[12px] py-[6px] rounded-full transition-colors font-family-open-sans h-[35px]
-                                ${
-                                  getFriendStatus(post.user_id) === "connected"
-                                    ? "bg-gray-400 text-white cursor-not-allowed"
-                                    : getFriendStatus(post.user_id) ===
-                                      "requested"
-                                    ? "bg-gray-400 text-white cursor-not-allowed"
-                                    : "bg-white text-black shadow-md"
-                                }`}
+                              ${
+                                getFriendStatus(post.user_id) === "connected"
+                                  ? "bg-gray-400 text-white cursor-not-allowed"
+                                  : getFriendStatus(post.user_id) ===
+                                    "requested"
+                                  ? "bg-gray-400 text-white" // Remove cursor-not-allowed to make it clickable
+                                  : "bg-white text-black shadow-md"
+                              }`}
                             >
                               <span className="flex items-center gap-1 text-[#0B3449]">
                                 <img
@@ -1685,7 +1720,7 @@ export default function SocialTopBar() {
                                   ? "Connected"
                                   : getFriendStatus(post.user_id) ===
                                     "requested"
-                                  ? "Requested"
+                                  ? "Requested" // This will now change back to "Connect" when clicked again
                                   : "Connect"}
                               </span>
                             </button>
@@ -1751,7 +1786,7 @@ export default function SocialTopBar() {
                                             ? "Loading..."
                                             : getFriendStatus(post.user_id) ===
                                               "requested"
-                                            ? "Requested"
+                                            ? "Requested" // This will now change back to "Connect" when clicked again
                                             : "Connect"}
                                         </button>
                                       </li>

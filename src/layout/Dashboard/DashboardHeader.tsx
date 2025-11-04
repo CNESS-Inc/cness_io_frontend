@@ -74,10 +74,9 @@ const DashboardHeader = ({
     localStorage.getItem("profile_picture")
   );
 
-
   const [karmaCredits, setKarmaCredits] = useState(
-  localStorage.getItem("karma_credits") || "0"
-);
+    localStorage.getItem("karma_credits") || "0"
+  );
 
   // State for notifications from API
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -340,7 +339,11 @@ const DashboardHeader = ({
       );
       localStorage.setItem("name", res?.data?.data?.user.name);
       localStorage.setItem("main_name", res?.data?.data?.user.main_name);
-      localStorage.setItem("karma_credits", res?.data?.data?.user?.karma_credits || 0);
+      localStorage.setItem(
+        "karma_credits",
+        res?.data?.data?.user?.karma_credits || 0
+      );
+      localStorage.setItem("username", res?.data?.data?.user?.username);
       localStorage.setItem(
         "margaret_name",
         res?.data?.data?.user.margaret_name
@@ -561,13 +564,13 @@ const DashboardHeader = ({
             </span>
           </div>
         </div>
-<div
-            data-wallet-icon
-            className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white px-4 py-2 rounded-full shadow-lg"
-          >
-            <Wallet className="w-5 h-5" />
-            <span className="font-bold text-lg">{karmaCredits || 0}</span>
-          </div>
+        <div
+          data-wallet-icon
+          className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white px-4 py-2 rounded-full shadow-lg"
+        >
+          <Wallet className="w-5 h-5" />
+          <span className="font-bold text-lg">{karmaCredits || 0}</span>
+        </div>
         <div className="hidden md:flex items-center relative" ref={dropdownRef}>
           <button
             onClick={handleProfile}

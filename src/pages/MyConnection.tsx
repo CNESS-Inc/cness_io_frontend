@@ -259,7 +259,7 @@ const MyConnection = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 mt-2 px-1">
       {/* Top Tabs + Search */}
       <ConnectionsCard
         title="My Connections"
