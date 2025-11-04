@@ -2395,7 +2395,7 @@ export function CertificationCard({
   auto = true,
   intervalMs = 6000,
   upgradeText = "To achieve the next level certification, you need to create a basic profile that includes selling your reactions, accessing the community, and utilizing the resources library.",
-  onUpgrade,
+  // onUpgrade,
 }: {
   progress?: number;
   score?: number;
