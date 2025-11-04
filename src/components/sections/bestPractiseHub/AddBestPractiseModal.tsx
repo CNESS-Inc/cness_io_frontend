@@ -383,7 +383,7 @@ export default function AddBestPracticeModal({
       URL.revokeObjectURL(imagePreviewUrl);
     }
 
-  
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
