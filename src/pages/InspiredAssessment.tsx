@@ -50,9 +50,16 @@ interface AnswerPayload {
   }>;
 }
 
+interface ValidationErrors {
+  [sectionId: string]: {
+    checkboxes: boolean;
+    files: boolean;
+  };
+}
+
 const InspiredAssessment = () => {
   const [sections, setSections] = useState<TransformedSection[]>([]);
-const [expanded, setExpanded] = useState<string[]>([]);
+  const [expanded, setExpanded] = useState<string[]>([]);
   const [checked, setChecked] = useState<Record<string, string[]>>({});
   const [uploads, setUploads] = useState<Record<string, UploadedFile[]>>({});
   const [loading, setLoading] = useState(true);
@@ -63,24 +70,26 @@ const [expanded, setExpanded] = useState<string[]>([]);
   const [personPricing, setPersonPricing] = useState<any[]>([]);
   console.log("🚀 ~ InspiredAssessment ~ personPricing:", personPricing);
   const [isAnnual, setIsAnnual] = useState(true);
-  const [validationErrors, setValidationErrors] = useState<Record<string, boolean>>({});
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const navigate = useNavigate();
 
   const handleBack = () => {
     navigate(-1); // 👈 goes back one page
   };
   // File validation constants
-  const SUPPORTED_FORMATS = ['.jpg', '.jpeg', '.png', '.pdf', '.mp4'];
+  const SUPPORTED_FORMATS = [".jpg", ".jpeg", ".png", ".pdf", ".mp4"];
   const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB in bytes
 
   // File validation function
   const validateFile = (file: File): { isValid: boolean; error?: string } => {
     // Check file extension
-    const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
-    if (!SUPPORTED_FORMATS.includes(fileExtension || '')) {
+    const fileExtension = "." + file.name.split(".").pop()?.toLowerCase();
+    if (!SUPPORTED_FORMATS.includes(fileExtension || "")) {
       return {
         isValid: false,
-        error: `File format not supported. Please upload only ${SUPPORTED_FORMATS.join(', ')} files.`
+        error: `File format not supported. Please upload only ${SUPPORTED_FORMATS.join(
+          ", "
+        )} files.`,
       };
     }
 
@@ -88,21 +97,25 @@ const [expanded, setExpanded] = useState<string[]>([]);
     if (file.size > MAX_FILE_SIZE) {
       return {
         isValid: false,
-        error: `File size too large. Maximum allowed size is 50MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB.`
+        error: `File size too large. Maximum allowed size is 50MB. Your file is ${(
+          file.size /
+          (1024 * 1024)
+        ).toFixed(2)}MB.`,
       };
     }
 
     return { isValid: true };
   };
 
-
   const handleToggle = (id: string) => {
-  setExpanded((prev) =>
-    prev.includes(id)
-      ? prev.filter((item) => item !== id) // close if already open
-      : [...prev, id] // open new
-  );
-};
+    setExpanded(
+      (prev) =>
+        prev.includes(id)
+          ? prev.filter((item) => item !== id) // close if already open
+          : [...prev, id] // open new
+    );
+  };
+
   // Transform API data to match our component structure
   const transformApiData = (apiData: any): TransformedSection[] => {
     if (!apiData?.all_sections) return [];
@@ -198,7 +211,6 @@ const [expanded, setExpanded] = useState<string[]>([]);
     );
   };
 
- 
   const handleCheck = async (sectionId: string, checkboxId: string) => {
     const section = sections.find((s) => s.id === sectionId);
     if (!section) return;
@@ -214,11 +226,14 @@ const [expanded, setExpanded] = useState<string[]>([]);
       [sectionId]: newChecked,
     }));
 
-    // Clear validation error for this section when a checkbox is checked
+    // Clear checkbox validation error for this section when a checkbox is checked
     if (newChecked.length > 0) {
       setValidationErrors((prev) => ({
         ...prev,
-        [sectionId]: false,
+        [sectionId]: {
+          ...prev[sectionId],
+          checkboxes: false,
+        },
       }));
     }
 
@@ -240,19 +255,41 @@ const [expanded, setExpanded] = useState<string[]>([]);
     // }
   };
 
-  // Validate all sections have at least one checkbox checked
+  // Validate all sections have at least one checkbox checked and one file uploaded
   const validateSections = (): boolean => {
-    const errors: Record<string, boolean> = {};
+    const errors: ValidationErrors = {};
     let isValid = true;
 
     sections.forEach((section) => {
-      // Only validate sections that have checkboxes
+      const sectionErrors = {
+        checkboxes: false,
+        files: false,
+      };
+
+      // Validate checkboxes - only for sections that have checkboxes
       if (section.checkboxes.length > 0) {
         const sectionChecked = checked[section.id] || [];
         if (sectionChecked.length === 0) {
-          errors[section.id] = true;
+          sectionErrors.checkboxes = true;
           isValid = false;
         }
+      }
+
+      // Validate file uploads - only for sections that have upload questions
+      if (section.uploadQuestion.id) {
+        const sectionUploads = uploads[section.id] || [];
+        const hasUploadedFile = sectionUploads.some(
+          (file) => file.status === "Uploaded"
+        );
+        if (!hasUploadedFile) {
+          sectionErrors.files = true;
+          isValid = false;
+        }
+      }
+
+      // Only add to errors if there are actual errors
+      if (sectionErrors.checkboxes || sectionErrors.files) {
+        errors[section.id] = sectionErrors;
       }
     });
 
@@ -260,22 +297,48 @@ const [expanded, setExpanded] = useState<string[]>([]);
     return isValid;
   };
 
+  // Get validation error message for a section
+  const getSectionValidationMessage = (sectionId: string): string | null => {
+    const errors = validationErrors[sectionId];
+    if (!errors) return null;
+
+    const section = sections.find((s) => s.id === sectionId);
+    if (!section) return null;
+
+    const errorMessages: string[] = [];
+
+    if (errors.checkboxes && section.checkboxes.length > 0) {
+      errorMessages.push("select at least one option");
+    }
+
+    if (errors.files && section.uploadQuestion.id) {
+      errorMessages.push("upload at least one file");
+    }
+
+    return errorMessages.length > 0
+      ? `Please ${errorMessages.join(" and ")} in this section.`
+      : null;
+  };
+
   // Submit all answers
   const handleSubmitAllAnswers = async () => {
     // Validate before submission
     if (!validateSections()) {
       showToast({
-        message: "Please select at least one option in each section before submitting.",
+        message:
+          "Please complete all required fields in each section before submitting.",
         type: "error",
         duration: 5000,
       });
-      
+
       // Expand the first section with error for better UX
-      const firstErrorSection = sections.find(section => validationErrors[section.id]);
+      const firstErrorSection = sections.find(
+        (section) => validationErrors[section.id]
+      );
       if (firstErrorSection) {
-setExpanded([firstErrorSection.id]);
+        setExpanded([firstErrorSection.id]);
       }
-      
+
       return;
     }
 
@@ -425,6 +488,15 @@ setExpanded([firstErrorSection.id]);
               }
             : f
         ),
+      }));
+
+      // Clear file validation error for this section when a file is successfully uploaded
+      setValidationErrors((prev) => ({
+        ...prev,
+        [sectionId]: {
+          ...prev[sectionId],
+          files: false,
+        },
       }));
 
       showToast({
@@ -658,6 +730,22 @@ setExpanded([firstErrorSection.id]);
       ...prev,
       [sectionId]: prev[sectionId].filter((f) => f.name !== fileName),
     }));
+
+    // Check if this removal causes validation error
+    const sectionUploads = uploads[sectionId]?.filter((f) => f.name !== fileName) || [];
+    const hasUploadedFile = sectionUploads.some(
+      (file) => file.status === "Uploaded"
+    );
+
+    if (!hasUploadedFile) {
+      setValidationErrors((prev) => ({
+        ...prev,
+        [sectionId]: {
+          ...prev[sectionId],
+          files: true,
+        },
+      }));
+    }
   };
 
   const fetchQuestions = async () => {
@@ -774,7 +862,7 @@ setExpanded([firstErrorSection.id]);
           >
             {/* Accordion Header */}
             <button
-onClick={() => handleToggle(section.id)}
+              onClick={() => handleToggle(section.id)}
               className="w-full flex justify-between items-center px-4 sm:px-6 py-5 sm:py-6 text-left"
             >
               <span className="font-[poppins] font-semibold text-[18px] sm:text-[18px] leading-[100%] text-gray-900">
@@ -808,10 +896,10 @@ onClick={() => handleToggle(section.id)}
                   </p>
 
                   {/* Validation Error Message */}
-                  {validationErrors[section.id] && (
+                  {getSectionValidationMessage(section.id) && (
                     <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
                       <p className="text-red-600 text-sm font-medium">
-                        Please select at least one option in this section.
+                        {getSectionValidationMessage(section.id)}
                       </p>
                     </div>
                   )}
@@ -872,32 +960,31 @@ onClick={() => handleToggle(section.id)}
                     </p>
 
                     <div
-      className="relative text-center py-6 px-4 rounded-[26px] flex flex-col items-center justify-center cursor-pointer bg-white mb-6 gap-[10px]"
-                      
+                      className="relative text-center py-6 px-4 rounded-[26px] flex flex-col items-center justify-center cursor-pointer bg-white mb-6 gap-[10px]"
                       onDrop={(e) => handleDrop(e, section.id)}
                       onDragOver={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                       }}
                     >
-                       {/* SVG Dashed Border */}
-      <svg
-        className="absolute top-0 left-0 w-full h-full pointer-events-none"
-        style={{ borderRadius: "26px" }}
-      >
-        <rect
-          x="2"
-          y="2"
-          width="calc(100% - 3px)"
-          height="calc(100% - 3px)"
-          rx="26"
-          ry="26"
-          stroke="#CBD0DC"
-          strokeWidth="1"
-          strokeDasharray="7,7"
-          fill="none"
-        />
-      </svg>
+                      {/* SVG Dashed Border */}
+                      <svg
+                        className="absolute top-0 left-0 w-full h-full pointer-events-none"
+                        style={{ borderRadius: "26px" }}
+                      >
+                        <rect
+                          x="2"
+                          y="2"
+                          width="calc(100% - 3px)"
+                          height="calc(100% - 3px)"
+                          rx="26"
+                          ry="26"
+                          stroke="#CBD0DC"
+                          strokeWidth="1"
+                          strokeDasharray="7,7"
+                          fill="none"
+                        />
+                      </svg>
                       <div className="flex flex-col items-center pb-4">
                         <img
                           src={cloud}
@@ -930,11 +1017,11 @@ onClick={() => handleToggle(section.id)}
                   </div>
 
                   {/* Uploaded Files */}
-<div className="space-y-3 overflow-y-auto overflow-x-hidden pr-1 max-h-[300px]">
+                  <div className="space-y-3 overflow-y-auto overflow-x-hidden pr-1 max-h-[300px]">
                     {uploads[section.id]?.map((file, index) => (
                       <div
                         key={index}
-      className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 overflow-hidden"
+                        className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 overflow-hidden"
                       >
                         <div className="flex items-center space-x-3 min-w-0">
                           <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center bg-[#FFECEC] rounded-md">
@@ -986,18 +1073,17 @@ onClick={() => handleToggle(section.id)}
       </div>
 
       {/* Submit Button */}
-<div className="flex justify-end gap-4 mt-10">
-
-  <button
-    onClick={handleBack} // <-- define this function
-    className="px-6 py-2 rounded-full border border-gray-300 text-gray-700 font-[poppins] font-medium text-[16px] bg-white hover:bg-gray-100 transition-all duration-200"
-  >
-    Back
-  </button>
+      <div className="flex justify-end gap-4 mt-10">
+        <button
+          onClick={handleBack} // <-- define this function
+          className="px-6 py-2 rounded-full border border-gray-300 text-gray-700 font-[poppins] font-medium text-[16px] bg-white hover:bg-gray-100 transition-all duration-200"
+        >
+          Back
+        </button>
         <button
           onClick={handleSubmitAllAnswers}
           disabled={submitting}
-    className="px-6 py-2 rounded-full bg-gradient-to-r from-[#7077FE] to-[#A066FF] text-white font-[poppins] font-medium text-[16px] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+          className="px-6 py-2 rounded-full bg-gradient-to-r from-[#7077FE] to-[#A066FF] text-white font-[poppins] font-medium text-[16px] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
         >
           {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
           {submitting ? "Submitting..." : "Submit"}

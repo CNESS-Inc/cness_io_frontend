@@ -105,9 +105,13 @@ const Setting = () => {
       } else {
         setMessage("Password updated successfully.");
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log("🚀 ~ handleSubmit ~ error:", error);
-      setMessage("An error occurred while updating the password.");
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
 
     setCurrentPassword("");
