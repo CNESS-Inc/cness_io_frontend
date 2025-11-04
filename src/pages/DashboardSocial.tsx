@@ -634,39 +634,39 @@ export default function SocialTopBar() {
     }
   };
 
-  const getFreshPosts = async () => {
-    if (isLoading || !hasMore) return;
+  // const getFreshPosts = async () => {
+  //   if (isLoading || !hasMore) return;
 
-    setIsLoading(true);
-    setIsPostsLoading(true);
-    try {
-      // Call the API to get the posts for the current page
-      // const res = await PostsDetails(1);
-      const res = await FeedPostsDetails(1);
-      if (res?.data) {
-        const newPosts = res?.data.data.rows || [];
-        const totalPages = res?.data?.data?.count / 10 || 0;
+  //   setIsLoading(true);
+  //   setIsPostsLoading(true);
+  //   try {
+  //     // Call the API to get the posts for the current page
+  //     // const res = await PostsDetails(1);
+  //     const res = await FeedPostsDetails(1);
+  //     if (res?.data) {
+  //       const newPosts = res?.data.data.rows || [];
+  //       const totalPages = res?.data?.data?.count / 10 || 0;
 
-        if (newPosts.length === 0) {
-          setHasMore(false); // No more posts to load
-        } else {
-          setUserPosts(newPosts);
+  //       if (newPosts.length === 0) {
+  //         setHasMore(false); // No more posts to load
+  //       } else {
+  //         setUserPosts(newPosts);
 
-          // Check if the current page is the last page
-          if (page >= totalPages) {
-            setHasMore(false); // We've loaded all available pages
-          } else {
-            setPage(2); // Load the next page
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    } finally {
-      setIsLoading(false);
-      setIsPostsLoading(false);
-    }
-  };
+  //         // Check if the current page is the last page
+  //         if (page >= totalPages) {
+  //           setHasMore(false); // We've loaded all available pages
+  //         } else {
+  //           setPage(2); // Load the next page
+  //         }
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching posts:", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //     setIsPostsLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
     getUserPosts();
