@@ -301,9 +301,12 @@ const UpgradeBadge = () => {
                     </button>
                     {showMenu && (
                       <div
-                        className="absolute top-10 sm:left-auto sm:right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
-                        ref={menuRef}
-                      >
+    className="absolute top-10 sm:left-auto sm:right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-[9999]"
+    ref={menuRef}
+    style={{
+      boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.15)",
+    }}
+  >
                         <ul className="flex items-center gap-4">
                           <li>
                             <FacebookShareButton url={urldata}>

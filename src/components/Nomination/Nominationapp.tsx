@@ -51,6 +51,7 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [badge, setBadge] = useState<any>([]);
+const [showFileError, setShowFileError] = useState(false);
 
   // ✅ Validation rules - UPDATED: Proper file validation
   const validateField = (
@@ -212,13 +213,30 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
   };
 
   // ✅ Handle file change separately for better control
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
+const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0] || null;
+
+  if (file) {
+    const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+
+    if (file.size > maxSize) {
+      showToast({
+        message: "File size exceeds 2MB. Please upload a smaller file.",
+        type: "error",
+        duration: 4000,
+      });
+      setShowFileError(true);
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
       file,
     }));
 
+    setShowFileError(false); // clear error if valid file
+  }
+};
     // Mark file as touched and validate immediately
     setTouched((prev) => ({ ...prev, file: true }));
     const error = validateField("file", "", file);
@@ -245,6 +263,30 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
   };
 
   // ✅ Proper typing for form submit
+const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  if (!formData.file) {
+    setShowFileError(true);
+    showToast({
+      message: "Please upload supporting evidence before submitting.",
+      type: "error",
+      duration: 4000,
+    });
+    return;
+  }
+
+  setIsSubmitting(true);
+
+  try {
+    const formDataToSend = new FormData();
+    formDataToSend.append('full_name', formData.fullName);
+    formDataToSend.append('email', formData.email);
+    formDataToSend.append('badge_id', formData.certificationLevel);
+    formDataToSend.append('nominator_name', formData.nominatorName);
+    formDataToSend.append('recognition_reason', formData.reason);
+    formDataToSend.append('initiative_description', formData.project);
+    formDataToSend.append("file", formData.file);
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -331,6 +373,10 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
 
         {/* Upload Section */}
         {!formData.file ? (
+          <div className={`mt-2 text-center py-6 px-4 rounded-[26px] border-2 ${
+    showFileError ? "border-red-500" : "border-[#CBD0DC]"
+  } border-dashed flex flex-col items-center justify-center cursor-pointer mb-6 transition-all`}
+>
           <div
             className="mt-2 text-center py-6 px-4 rounded-[26px] border-2 border-[#CBD0DC] border-dashed flex flex-col items-center justify-center cursor-pointer mb-6"
             onClick={() => document.getElementById("nominationFile")?.click()}
@@ -363,6 +409,10 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
                 id="nominationFile"
                 className="hidden"
                 accept=".pdf,.jpg,.jpeg,.png"
+                onChange={(e) => {
+          handleFileChange(e);
+          setShowFileError(false); // clear error once file is uploaded
+        }}
                 onChange={handleFileChange}
                 onBlur={handleFileBlur} // FIXED: Use separate file blur handler
               />
@@ -427,6 +477,12 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
             )}
           </div>
         )}
+        {/* Show inline error message */}
+{showFileError && (
+  <p className="text-red-500 text-sm text-center mb-4">
+    * Uploading supporting evidence is required.
+  </p>
+)}
 
         {/* Form Section */}
         <form
