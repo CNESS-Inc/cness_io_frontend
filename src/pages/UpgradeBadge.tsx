@@ -585,7 +585,7 @@ const UpgradeBadge = () => {
                       : "https://cdn.cness.io/inspired1.svg"
                   }
                   alt={`${scoreData.badge.level} Badge`}
-                  className="max-w-[136px] h-auto object-contain"
+                  className="w-[100px] sm:w-[100px] md:w-[100px] lg:w-[100px] h-auto object-contain"
                 />
               </div>
             ) : (
