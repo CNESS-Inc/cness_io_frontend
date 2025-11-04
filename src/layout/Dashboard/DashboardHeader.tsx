@@ -341,6 +341,7 @@ const DashboardHeader = ({
       localStorage.setItem("name", res?.data?.data?.user.name);
       localStorage.setItem("main_name", res?.data?.data?.user.main_name);
       localStorage.setItem("karma_credits", res?.data?.data?.user?.karma_credits || 0);
+      localStorage.setItem("username", res?.data?.data?.user?.username);
       localStorage.setItem(
         "margaret_name",
         res?.data?.data?.user.margaret_name

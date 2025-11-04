@@ -1,29 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { iconMap } from "../assets/icons";
-import { ChevronLeft, ChevronRight, Share2 } from "lucide-react";
-import { MdContentCopy } from "react-icons/md";
-import {
-  FaFacebook,
-  FaLinkedin,
-  FaTwitter,
-  FaWhatsapp,
-} from "react-icons/fa";
-import {
-  FacebookShareButton,
-  LinkedinShareButton,
-  TwitterShareButton,
-  WhatsappShareButton,
-} from "react-share";
-import { PostsLike, UnsavePost } from "../Common/ServerAPI";
+import { ChevronLeft, ChevronRight, Flag, LinkIcon, MessageSquare, Share2, ThumbsUp, TrendingUp } from "lucide-react";
+import { PostsLike, SendConnectionRequest, SendFollowRequest, UnsavePost } from "../Common/ServerAPI";
 import CommentBox from "./CommentBox";
 import like from "../assets/like.png";
-import Like1 from "../assets/Like1.png";
-import comment from "../assets/comment.png";
-import comment1 from "../assets/comment1.png";
 
 import { MoreHorizontal, Bookmark } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import defaultProfile from "../assets/altprofile.png";
+import { Link } from "react-router-dom";
+import SharePopup from "../components/Social/SharePopup";
 
 interface CollectionItem {
   id: string;
@@ -32,6 +18,7 @@ interface CollectionItem {
   image_url: string;
   created_at: string;
   originalData: {
+    if_following: any;
     id: string;
     content: string;
     file: string;
@@ -41,6 +28,7 @@ interface CollectionItem {
     comments_count: number;
     is_liked: boolean;
     profile: {
+      user_id: any;
       first_name: string;
       last_name: string;
       profile_picture: string;
@@ -161,20 +149,34 @@ const PostCarousel = ({ mediaItems }: { mediaItems: MediaItem[] }) => {
   );
 };
 
-const CollectionList = ({ items }: { items: CollectionItem[] }) => {
+const CollectionList = ({ items }: { items: any[] }) => {
   const CONTENT_LIMIT = 150;
   const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>({});
-  const [openMenuPostId, setOpenMenuPostId] = useState<string | null>(null);
+  const [openMenu, setOpenMenu] = useState<{ postId: string | null; type: string | null }>({ postId: null, type: null });
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [collectionItems, setCollectionItems] = useState<CollectionItem[]>(items);
-  const menuRef = useRef<HTMLDivElement | null>(null);
+  const [connectingUsers, setConnectingUsers] = useState<Record<string, boolean>>({});
+  const [friendStatus, setFriendStatus] = useState<any>({});
+  const menuRef = useRef<Record<string, HTMLDivElement | null>>({});
   const loggedInUserID = localStorage.getItem("Id");
-  const [copy, setCopy] = useState<Boolean>(false);
-
-  const [openActionMenuPostId, setOpenActionMenuPostId] = useState<string | null>(null); // for three dots
-  const actionMenuRef = useRef<HTMLDivElement | null>(null);
+  // const [copy, setCopy] = useState<Boolean>(false);
   const { showToast } = useToast();
+
+  const formatMessageTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+    
+    if (diffInHours < 1) {
+      const diffInMinutes = Math.floor(diffInHours * 60);
+      return `${diffInMinutes}m ago`;
+    } else if (diffInHours < 24) {
+      return `${Math.floor(diffInHours)}h ago`;
+    } else {
+      return date.toLocaleDateString();
+    }
+  };
 
   const toggleExpand = (postId: string) => {
     setExpandedPosts(prev => ({
@@ -210,18 +212,89 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
       );
     } catch (error) {
       console.error("Error handling like:", error);
+      showToast({
+        type: "error",
+        message: "Failed to like post",
+        duration: 2000,
+      });
     }
   };
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-      setOpenMenuPostId(null);
+  const handleFollow = async (userId: string) => {
+    try {
+       const formattedData = {
+        following_id: userId,
+      };
+      const response:any = await SendFollowRequest(formattedData);
+      if (response.success) {
+        setCollectionItems(prevItems =>
+          prevItems.map(item =>
+            item.originalData.user.id === userId
+              ? {
+                ...item,
+                originalData: {
+                  ...item.originalData,
+                  if_following: !item.originalData.if_following,
+                },
+              }
+              : item
+          )
+        );
+        
+        showToast({
+          type: "success",
+          message: response.message || "Follow status updated",
+          duration: 2000,
+        });
+      }
+    } catch (error) {
+      console.error("Error following user:", error);
+      showToast({
+        type: "error",
+        message: "Failed to update follow status",
+        duration: 2000,
+      });
     }
-    if (
-        actionMenuRef.current &&
-        !actionMenuRef.current.contains(event.target as Node)
-      ) {
-      setOpenActionMenuPostId(null);
+  };
+
+  const handleConnect = async (userId: string) => {
+    try {
+      setConnectingUsers(prev => ({ ...prev, [userId]: true }));
+      
+      const response = await SendConnectionRequest(userId);
+      if (response.success) {
+        setFriendStatus((prev:any) => ({ ...prev, [userId]: "requested" }));
+        
+        showToast({
+          type: "success",
+          message: "Connection request sent successfully",
+          duration: 2000,
+        });
+      }
+    } catch (error) {
+      console.error("Error sending connection request:", error);
+      showToast({
+        type: "error",
+        message: "Failed to send connection request",
+        duration: 2000,
+      });
+    } finally {
+      setConnectingUsers(prev => ({ ...prev, [userId]: false }));
+    }
+  };
+
+  const getFriendStatus = (userId: string): string => {
+    return friendStatus[userId] || "none";
+  };
+
+  const handleClickOutside = (event: MouseEvent) => {
+    const target = event.target as Node;
+    const isOutsideAllMenus = Object.values(menuRef.current).every(
+      ref => !ref?.contains(target)
+    );
+    
+    if (isOutsideAllMenus) {
+      setOpenMenu({ postId: null, type: null });
     }
   };
 
@@ -232,30 +305,43 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
     };
   }, []);
 
-  const toggleMenu = (postId: string) => {
-    setOpenMenuPostId((prev) => (prev === postId ? null : postId));
+  const toggleMenu = (postId: string, type: string) => {
+    setOpenMenu(prev => ({
+      postId: prev.postId === postId && prev.type === type ? null : postId,
+      type: prev.postId === postId && prev.type === type ? null : type
+    }));
   };
 
-  const myid = localStorage.getItem("Id");
-  const urldata = `https://dev.cness.io/directory/user-profile/${myid}`;
+  // const myid = localStorage.getItem("Id");
+  // const urldata = `https://dev.cness.io/directory/user-profile/${myid}`;
 
   const handleUnsave = async (postId: string) => {
     setCollectionItems(prevItems => prevItems.filter(item => item.originalData.id !== postId));
-    setOpenActionMenuPostId(null);
-    const response =  await UnsavePost(postId);
+    setOpenMenu({ postId: null, type: null });
+    const response = await UnsavePost(postId);
     if (response.success) {
-        showToast({
-          type: "success",
-          message: "Post removed from collection!",
-          duration: 2000,
-        });
+      showToast({
+        type: "success",
+        message: "Post removed from collection!",
+        duration: 2000,
+      });
     }
+  };
+
+  const copyPostLink = (url: string, onSuccess: (msg: string) => void, onError: (msg: string) => void) => {
+    navigator.clipboard.writeText(url)
+      .then(() => onSuccess("Link copied to clipboard!"))
+      .catch(() => onError("Failed to copy link"));
+  };
+
+  const buildShareUrl = () => {
+    return `${window.location.origin}/post/${selectedPostId}`;
   };
 
   return (
     <div className="space-y-4">
       {collectionItems.map((item) => (
-        <div key={item.id} className="bg-white rounded-xl shadow-md p-4 w-full">
+        <div key={item.id} className="bg-white rounded-xl shadow-md p-3 md:p-4 w-full mx-auto mt-4 md:mt-5">
           {/* Header */}
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 md:gap-3">
@@ -275,54 +361,229 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
     target.src = defaultProfile;
   }}
 />
+              <Link
+                to={`/dashboard/userprofile/${item.originalData.profile.user_id}`}
+              >
+                <img
+                  src={
+                    !item.originalData.profile.profile_picture ||
+                    item.originalData.profile.profile_picture === "null" ||
+                    item.originalData.profile.profile_picture === "undefined" ||
+                    !item.originalData.profile.profile_picture.startsWith("http")
+                      ? "/profile.png"
+                      : item.originalData.profile.profile_picture
+                  }
+                  className="w-8 h-8 md:w-[63px] md:h-[63px] rounded-full"
+                  alt="User"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "/profile.png";
+                  }}
+                />
+              </Link>
               <div>
-                <p className="font-semibold text-sm md:text-base text-gray-800">
-                  {item.originalData.profile.first_name} {item.originalData.profile.last_name}
-                  <span className="text-gray-500 text-xs md:text-sm">
+                <p className="font-semibold text-sm md:text-base text-black">
+                  <Link
+                    to={`/dashboard/userprofile/${item.originalData.profile.user_id}`}
+                  >
+                    {item.originalData.profile.first_name}{" "}
+                    {item.originalData.profile.last_name}
+                  </Link>
+                  <span className="text-[#999999] text-xs md:text-[12px] font-[300]">
                     {" "}
-                    @{item.originalData.user.username}
+                    <Link
+                      to={`/dashboard/userprofile/${item.originalData.profile.user_id}`}
+                    >
+                      @{item.originalData.user.username}
+                    </Link>
                   </span>
                 </p>
-                <p className="text-xs md:text-sm text-gray-400">
-                  {new Date(item.created_at).toLocaleString()}
+                <p className="text-xs md:text-[12px] text-[#606060]">
+                  {formatMessageTime(item.originalData.createdAt)}
                 </p>
               </div>
             </div>
-            <div className="relative">
-              <button
-                onClick={() => setOpenActionMenuPostId(item.originalData.id)}
-                className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-[8px] hover:bg-gray-100 transition-colors"
-                title="More options"
-              >
-                <MoreHorizontal size={20} />
-              </button>
-              {openActionMenuPostId === item.originalData.id && (
-                <div
-                  className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
-                  ref={actionMenuRef}
-                >
-                  <ul className="space-y-1">
-                    <li>
-                      <button
-                        onClick={() => handleUnsave(item.originalData.id)}
-                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
-                      >
-                      <Bookmark className="w-4 h-4" /> Unsave
-                      </button>
-                    </li>
-                  </ul>
-                  
-                </div>
-              )}
-            </div>
+
             {item.originalData.user.id !== loggedInUserID && (
-              <button
-                className={`text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full bg-gray-200 text-gray-800 hover:bg-indigo-600 hover:text-white`}
-              >
-                Follow
-              </button>
+              <div className="flex gap-2">
+                {/* Connect Button */}
+                <button
+                  onClick={() => handleConnect(item.originalData.user.id)}
+                  disabled={connectingUsers[item.originalData.user.id] || false}
+                  className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-[12px] py-[6px] rounded-full transition-colors font-family-open-sans h-[35px]
+                    ${
+                      getFriendStatus(item.originalData.user.id) === "connected"
+                        ? "bg-gray-400 text-white cursor-not-allowed"
+                        : getFriendStatus(item.originalData.user.id) === "requested"
+                        ? "bg-gray-400 text-white cursor-not-allowed"
+                        : "bg-white text-black shadow-md"
+                    }`}
+                >
+                  <span className="flex items-center gap-1 text-[#0B3449]">
+                    <img
+                      src={iconMap["userplus"]}
+                      alt="userplus"
+                      className="w-4 h-4"
+                    />
+                    {connectingUsers[item.originalData.user.id]
+                      ? "Loading..."
+                      : getFriendStatus(item.originalData.user.id) === "connected"
+                      ? "Connected"
+                      : getFriendStatus(item.originalData.user.id) === "requested"
+                      ? "Requested"
+                      : "Connect"}
+                  </span>
+                </button>
+                
+                {/* Follow Button */}
+                <button
+                  onClick={() => handleFollow(item.originalData.user.id)}
+                  className={`flex w-[100px] justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
+                    ${
+                      item.originalData.if_following
+                        ? "bg-transparent text-[#7077FE] hover:text-[#7077FE]/80"
+                        : "bg-[#7077FE] text-white hover:bg-indigo-600 h-[35px]"
+                    }`}
+                >
+                  {item.originalData.if_following ? (
+                    <>
+                      <TrendingUp className="w-5 h-5 text-[#7077FE]" /> 
+                      Resonating
+                    </>
+                  ) : (
+                    "+ Resonate"
+                  )}
+                </button>
+
+                {/* Three Dots Menu */}
+                <div className="relative">
+                  <button
+                    onClick={() => toggleMenu(item.originalData.id, "options")}
+                    className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-[8px] hover:bg-gray-100 transition-colors"
+                    title="More options"
+                  >
+                    <MoreHorizontal className="w-5 h-5 text-gray-600" />
+                  </button>
+
+                  {openMenu.postId === item.originalData.id && openMenu.type === "options" && (
+                    <div
+                      className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                      ref={(el) => {
+                        const key = `${item.originalData.id}-options`;
+                        if (el) menuRef.current[key] = el;
+                        else delete menuRef.current[key];
+                      }}
+                    >
+                      <ul className="space-y-1">
+                        <li className="lg:hidden">
+                          <button
+                            onClick={() => handleConnect(item.originalData.user.id)}
+                            disabled={connectingUsers[item.originalData.user.id] || false}
+                            className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                          >
+                            <img
+                              src={iconMap["userplus"]}
+                              alt="userplus"
+                              className="w-4 h-4"
+                            />
+                            {connectingUsers[item.originalData.user.id]
+                              ? "Loading..."
+                              : getFriendStatus(item.originalData.user.id) === "requested"
+                              ? "Requested"
+                              : "Connect"}
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            onClick={() => {
+                              copyPostLink(
+                                `${window.location.origin}/post/${item.originalData.id}`,
+                                (msg) => showToast({ type: "success", message: msg, duration: 2000 }),
+                                (msg) => showToast({ type: "error", message: msg, duration: 2000 })
+                              );
+                            }}
+                            className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                          >
+                            <LinkIcon className="w-4 h-4" />
+                            Copy Post Act
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            onClick={() => handleUnsave(item.originalData.id)}
+                            className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                          >
+                            <Bookmark className="w-4 h-4" />
+                            Unsave Act
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                          >
+                            <Flag className="w-4 h-4" />
+                            Report Act
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
-            
+
+            {item.originalData.user.id === loggedInUserID && (
+              <div className="flex gap-2">
+                {/* Three Dots Menu */}
+                <div className="relative">
+                  <button
+                    onClick={() => toggleMenu(item.originalData.id, "options")}
+                    className="flex items-center border-[#ECEEF2] border shadow-sm justify-center w-8 h-8 rounded-[8px] hover:bg-gray-100 transition-colors"
+                    title="More options"
+                  >
+                    <MoreHorizontal className="w-5 h-5 text-gray-600" />
+                  </button>
+
+                  {openMenu.postId === item.originalData.id && openMenu.type === "options" && (
+                    <div
+                      className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                      ref={(el) => {
+                        const key = `${item.originalData.id}-options`;
+                        if (el) menuRef.current[key] = el;
+                        else delete menuRef.current[key];
+                      }}
+                    >
+                      <ul className="space-y-1">
+                        <li>
+                          <button
+                            onClick={() => {
+                              copyPostLink(
+                                `${window.location.origin}/post/${item.originalData.id}`,
+                                (msg) => showToast({ type: "success", message: msg, duration: 2000 }),
+                                (msg) => showToast({ type: "error", message: msg, duration: 2000 })
+                              );
+                            }}
+                            className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                          >
+                            <LinkIcon className="w-4 h-4" />
+                            Copy Post Link
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            onClick={() => handleUnsave(item.originalData.id)}
+                            className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                          >
+                            <Bookmark className="w-4 h-4" />
+                            Unsave Post
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Post Content */}
@@ -360,7 +621,7 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
                   const singleItem = mediaItems[0];
                   return singleItem.type === "video" ? (
                     <video
-                      className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-lg"
+                      className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl"
                       controls
                       muted
                       autoPlay
@@ -373,7 +634,7 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
                     <img
                       src={singleItem.url}
                       alt="Post content"
-                      className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-lg mb-2"
+                      className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl mb-2"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = iconMap["companycard1"];
@@ -386,109 +647,89 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
           </div>
 
           {/* Reactions and Action Buttons */}
-          <div className="flex justify-between items-center mt-3 px-1 text-xs md:text-sm text-gray-600">
-            <div className="flex items-center gap-1 md:gap-2">
-              <div className="flex items-center -space-x-2 md:-space-x-3">
-                <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
-                  <img
-                    src={like}
-                    alt="Like"
-                    className="w-6 h-6 md:w-8 md:h-8"
-                  />
+          <div className="flex justify-between items-center mt-6 px-1 text-xs md:text-sm text-gray-600 gap-2">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 md:gap-2">
+                <div className="flex items-center -space-x-2 md:-space-x-3">
+                  <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                    <img
+                      src={like}
+                      alt="Like"
+                      className="w-6 h-6 md:w-8 md:h-8"
+                    />
+                  </div>
+                  <span className="text-xs md:text-sm text-gray-500 pl-3 md:pl-5">
+                    {item.originalData.likes_count}
+                  </span>
                 </div>
-                <span className="text-xs md:text-sm text-gray-500 pl-3 md:pl-5">
-                  {item.originalData.likes_count}
+              </div>
+            </div>
+            {item.originalData.comments_count > 0 && (
+              <div>
+                <span className="text-sm text-[#64748B]">
+                  {item.originalData.comments_count} Reflections
                 </span>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span>{item.originalData.comments_count}</span>
-              <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
-                <img
-                  src={comment}
-                  alt="Comment"
-                  className="w-6 h-6 md:w-8 md:h-8"
-                />
-              </div>
-            </div>
+            )}
           </div>
 
-          <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
+          <div className="border-t border-[#ECEEF2] pt-4 grid grid-cols-3 gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
             <button
               onClick={() => handleLike(item.originalData.id)}
-              className={`flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base ${item.originalData.is_liked ? "text-blue-600" : "text-blue-500"
-                } hover:bg-blue-50 shadow-sm`}
+              className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50`}
             >
-              <img
-                src={item.originalData.is_liked ? like : Like1}
-                className="w-5 h-5 md:w-6 md:h-6"
+              <ThumbsUp
+                className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0"
+                fill={item.originalData.is_liked ? "#7077FE" : "none"}
+                stroke={item.originalData.is_liked ? "#7077FE" : "#000"}
               />
-              Like
+              <span
+                className={`hidden sm:flex ${item.originalData.is_liked ? "text-[#7077FE]" : "text-black"
+                  }`}
+              >
+                Appreciate
+              </span>
             </button>
             <button
               onClick={() => {
                 setSelectedPostId(item.originalData.id);
                 setShowCommentBox(true);
               }}
-              className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-blue-500 hover:bg-blue-50 shadow-sm"
+              className={`flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 ${selectedPostId === item.originalData.id
+                ? "text-[#7077FE]"
+                : "text-black"
+                }`}
             >
-              <img src={comment1} className="w-5 h-5 md:w-6 md:h-6" />{" "}
-              Comments
+              <MessageSquare
+                className="w-5 h-5 md:w-6 md:h-6 filter transiton-all"
+                fill={selectedPostId === item.originalData.id ? "#7077FE" : "none"}
+                stroke={selectedPostId === item.originalData.id ? "#7077FE" : "#000"}
+              />{" "}
+              <span
+                className={`hidden sm:flex ${selectedPostId === item.originalData.id ? "#7077FE" : "text-black"
+                  }`}
+              >
+                Reflections
+              </span>
             </button>
+
             <div className="relative">
               <button
-                onClick={() => toggleMenu(item.originalData.id)}
-                className="flex items-center w-full justify-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 border border-[#E5E7EB] rounded-xl text-xs md:text-base text-purple-500 hover:bg-blue-50 shadow-sm"
+                onClick={() => toggleMenu(item.originalData.id, "share")}
+                className={`flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 text-black`}
               >
-                <Share2 size={18} className="md:w-5 md:h-5" />
+                <Share2 className="w-5 h-5 md:w-6 md:h-6" />
+                <span className="hidden sm:flex text-black">
+                  Share
+                </span>
               </button>
-              {openMenuPostId === item.originalData.id && (
-                <div
-                  className="absolute top-10 sm:left-0 md:left-[auto] md:right-0 bg-white shadow-lg rounded-lg p-3 z-10"
-                  ref={menuRef}
-                >
-                  <ul className="flex items-center gap-4">
-                    <li>
-                      <FacebookShareButton url={urldata}>
-                        <FaFacebook size={32} color="#4267B2" />
-                      </FacebookShareButton>
-                    </li>
-                    <li>
-                      <LinkedinShareButton url={urldata}>
-                        <FaLinkedin size={32} color="#0077B5" />
-                      </LinkedinShareButton>
-                    </li>
-                    {/* <li>
-                      <FaInstagram size={32} color="#C13584" />
-                    </li> */}
-                    <li>
-                      <TwitterShareButton url={urldata}>
-                        <FaTwitter size={32} color="#1DA1F2" />
-                      </TwitterShareButton>
-                    </li>
-                    <li>
-                      <WhatsappShareButton url={urldata}>
-                        <FaWhatsapp size={32} color="#1DA1F2" />
-                      </WhatsappShareButton>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(urldata);
-                          setCopy(true);
-                          setTimeout(() => setCopy(false), 1500);
-                        }}
-                        className="flex items-center relative"
-                        title="Copy link"
-                      >
-                        <MdContentCopy size={30} className="text-gray-600" />
-                        {copy && <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
-                          Link Copied!
-                        </div>}
-                      </button>
-                    </li>
-                  </ul>
-                </div>
+              {openMenu.postId === item.originalData.id && openMenu.type === "share" && (
+                <SharePopup
+                  isOpen={true}
+                  onClose={() => toggleMenu(item.originalData.id, "share")}
+                  url={buildShareUrl()}
+                  position="bottom"
+                />
               )}
             </div>
           </div>
@@ -502,7 +743,7 @@ const CollectionList = ({ items }: { items: CollectionItem[] }) => {
             setShowCommentBox(false);
             setSelectedPostId(null);
           }}
-          onCommentAdded={() => // Update the comments count when a new comment is added
+          onCommentAdded={() =>
             setCollectionItems(prevItems => prevItems.map(item => item.originalData.id === selectedPostId
               ? {
                 ...item,

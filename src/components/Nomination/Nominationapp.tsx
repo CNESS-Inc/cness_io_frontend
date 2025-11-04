@@ -21,6 +21,17 @@ interface FormData {
   confirm: boolean;
 }
 
+// ✅ Define a type for form errors
+interface FormErrors {
+  fullName?: string;
+  email?: string;
+  certificationLevel?: string;
+  reason?: string;
+  project?: string;
+  file?: string;
+  confirm?: string;
+}
+
 const NominationFormModal: React.FC<NominationFormModalProps> = ({
   onClose,
 }) => {
@@ -36,9 +47,128 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
     confirm: false,
   });
 
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [badge, setBadge] = useState<any>([]);
 const [showFileError, setShowFileError] = useState(false);
+
+  // ✅ Validation rules - UPDATED: Proper file validation
+  const validateField = (
+    name: string,
+    value: any,
+    file?: File | null
+  ): string => {
+    switch (name) {
+      case "fullName":
+        if (!value.trim()) return "Full name is required";
+        if (value.trim().length < 2)
+          return "Full name must be at least 2 characters";
+        if (!/^[a-zA-Z\s]*$/.test(value.trim()))
+          return "Full name can only contain letters and spaces";
+        return "";
+
+      case "email":
+        if (!value) return "Email is required";
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
+          return "Please enter a valid email address";
+        return "";
+
+      case "certificationLevel":
+        if (!value) return "Certification level is required";
+        return "";
+
+      case "reason":
+        if (!value.trim()) return "Recognition reason is required";
+        if (value.trim().length < 100)
+          return "Reason must be at least 100 characters";
+        if (value.trim().length > 1000)
+          return "Reason must not exceed 1000 characters";
+        return "";
+
+      case "project":
+        if (!value.trim()) return "Project description is required";
+        if (value.trim().length < 50)
+          return "Project description must be at least 50 characters";
+        if (value.trim().length > 1000)
+          return "Project description must not exceed 1000 characters";
+        return "";
+
+      case "file":
+        // FIXED: Check if file is required and not provided
+        if (!file) {
+          return "Supporting evidence file is required";
+        }
+
+        // If file is provided, validate its type and size
+        const validTypes = [
+          "application/pdf",
+          "image/jpeg",
+          "image/jpg",
+          "image/png",
+        ];
+        const maxSize = 2 * 1024 * 1024; // 2MB
+
+        if (!validTypes.includes(file.type)) {
+          return "File must be PDF, JPEG, or PNG format";
+        }
+        if (file.size > maxSize) {
+          return "File size must be less than 2MB";
+        }
+        return "";
+
+      case "confirm":
+        if (!value) return "You must confirm the information is accurate";
+        return "";
+
+      default:
+        return "";
+    }
+  };
+
+  // ✅ Validate entire form
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+
+    newErrors.fullName = validateField("fullName", formData.fullName);
+    newErrors.email = validateField("email", formData.email);
+    newErrors.certificationLevel = validateField(
+      "certificationLevel",
+      formData.certificationLevel
+    );
+    newErrors.reason = validateField("reason", formData.reason);
+    newErrors.project = validateField("project", formData.project);
+    newErrors.file = validateField("file", "", formData.file); // FIXED: This will now validate file presence
+    newErrors.confirm = validateField("confirm", formData.confirm);
+
+    setErrors(newErrors);
+    return !Object.values(newErrors).some((error) => error !== "");
+  };
+
+  // ✅ Field blur handler for real-time validation
+  const handleBlur = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+
+    // FIXED: Handle file field validation on blur
+    if (name === "file") {
+      const error = validateField(name, "", formData.file);
+      setErrors((prev) => ({ ...prev, [name]: error }));
+    } else {
+      const value = (e.target as HTMLInputElement).value;
+      const error = validateField(name, value);
+      setErrors((prev) => ({ ...prev, [name]: error }));
+    }
+  };
+
+  // ✅ Handle file input blur specifically
+  const handleFileBlur = () => {
+    setTouched((prev) => ({ ...prev, file: true }));
+    const error = validateField("file", "", formData.file);
+    setErrors((prev) => ({ ...prev, file: error }));
+  };
 
   const fetchBadge = async () => {
     try {
@@ -62,10 +192,24 @@ const [showFileError, setShowFileError] = useState(false);
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value, type, checked, files } = e.target as HTMLInputElement;
+    const newValue = type === "checkbox" ? checked : files ? files[0] : value;
+
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : files ? files[0] : value,
+      [name]: newValue,
     }));
+
+    // Real-time validation for touched fields
+    if (touched[name]) {
+      if (name === "file") {
+        const file = files ? files[0] : null;
+        const error = validateField(name, "", file);
+        setErrors((prev) => ({ ...prev, [name]: error }));
+      } else {
+        const error = validateField(name, newValue);
+        setErrors((prev) => ({ ...prev, [name]: error }));
+      }
+    }
   };
 
   // ✅ Handle file change separately for better control
@@ -93,6 +237,11 @@ const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     setShowFileError(false); // clear error if valid file
   }
 };
+    // Mark file as touched and validate immediately
+    setTouched((prev) => ({ ...prev, file: true }));
+    const error = validateField("file", "", file);
+    setErrors((prev) => ({ ...prev, file: error }));
+  };
 
   // ✅ Handle file removal
   const handleRemoveFile = () => {
@@ -100,6 +249,17 @@ const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
       ...prev,
       file: null,
     }));
+
+    // Validate after removal (will show required error)
+    setTouched((prev) => ({ ...prev, file: true }));
+    const error = validateField("file", "", null);
+    setErrors((prev) => ({ ...prev, file: error }));
+  };
+
+
+  // ✅ Character count utility
+  const getCharacterCount = (text: string): number => {
+    return text.length;
   };
 
   // ✅ Proper typing for form submit
@@ -127,26 +287,66 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     formDataToSend.append('initiative_description', formData.project);
     formDataToSend.append("file", formData.file);
 
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-    // Using fetch
-    const response = await AddNomination(formDataToSend)
-    console.log("🚀 ~ handleSubmit ~ response:", response)
-    showToast({
-      message: 'Nomination submitted successfully!',
-      type: 'success',
-      duration: 5000,
-    });
-    onClose();
-  } catch (error: any) {
-    showToast({
-      message: error?.response?.data?.error?.message || 'An error occurred while submitting the nomination.',
-      type: 'error',
-      duration: 5000,
-    });
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    // Mark all fields as touched
+    const allTouched = {
+      fullName: true,
+      email: true,
+      certificationLevel: true,
+      reason: true,
+      project: true,
+      file: true, // FIXED: Ensure file field is marked as touched
+      confirm: true,
+    };
+    setTouched(allTouched);
+
+    // Validate form
+    if (!validateForm()) {
+      showToast({
+        message: "Please fix the errors in the form before submitting.",
+        type: "error",
+        duration: 5000,
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("full_name", formData.fullName.trim());
+      formDataToSend.append("email", formData.email.trim());
+      formDataToSend.append("badge_id", formData.certificationLevel);
+      formDataToSend.append("nominator_name", formData.nominatorName.trim());
+      formDataToSend.append("recognition_reason", formData.reason.trim());
+      formDataToSend.append("initiative_description", formData.project.trim());
+      if (formData.file) {
+        formDataToSend.append("file", formData.file);
+      }
+
+      const response = await AddNomination(formDataToSend);
+      console.log("🚀 ~ handleSubmit ~ response:", response);
+
+      showToast({
+        message: "Nomination submitted successfully!",
+        type: "success",
+        duration: 5000,
+      });
+      onClose();
+    } catch (error: any) {
+      showToast({
+        message:
+          error?.response?.data?.error?.message ||
+          "An error occurred while submitting the nomination.",
+        type: "error",
+        duration: 5000,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (!open) return null;
 
@@ -177,6 +377,10 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     showFileError ? "border-red-500" : "border-[#CBD0DC]"
   } border-dashed flex flex-col items-center justify-center cursor-pointer mb-6 transition-all`}
 >
+          <div
+            className="mt-2 text-center py-6 px-4 rounded-[26px] border-2 border-[#CBD0DC] border-dashed flex flex-col items-center justify-center cursor-pointer mb-6"
+            onClick={() => document.getElementById("nominationFile")?.click()}
+          >
             <div className="pb-4 flex flex-col items-center">
               <svg
                 className="w-12 h-12 text-[#CBD0DC]"
@@ -209,14 +413,21 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
           handleFileChange(e);
           setShowFileError(false); // clear error once file is uploaded
         }}
+                onChange={handleFileChange}
+                onBlur={handleFileBlur} // FIXED: Use separate file blur handler
               />
               <label
                 htmlFor="nominationFile"
                 className="block px-[33px] py-4 rounded-full text-[#54575C] text-base tracking-wider font-medium border border-[#CBD0DC] outline-none cursor-pointer"
+                onClick={(e) => e.stopPropagation()}
               >
                 Browse Files
               </label>
             </div>
+            {/* FIXED: Show validation error when file is required but not selected */}
+            {touched.file && errors.file && (
+              <p className="text-red-600 text-sm mt-2">{errors.file}</p>
+            )}
           </div>
         ) : (
           <div className="mt-2 rounded-[26px] border-2 border-[#CBD0DC] border-dashed mb-6 relative overflow-hidden">
@@ -256,8 +467,14 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
                 className="hidden"
                 accept=".pdf,.jpg,.jpeg,.png"
                 onChange={handleFileChange}
+                onBlur={handleFileBlur} // FIXED: Use separate file blur handler
               />
             </div>
+            {touched.file && errors.file && (
+              <p className="text-red-600 text-sm mt-2 px-4 pb-2">
+                {errors.file}
+              </p>
+            )}
           </div>
         )}
         {/* Show inline error message */}
@@ -276,6 +493,7 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
               e.preventDefault();
           }}
           className="space-y-6"
+          noValidate
         >
           {/* Grid Layout for Inputs */}
           <div className="grid sm:grid-cols-2 gap-4">
@@ -292,10 +510,18 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
                 name="fullName"
                 value={formData.fullName}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 placeholder="Applicant/Nominee's full name"
-                className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                className={`w-full px-[10px] py-3 border rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm ${
+                  touched.fullName && errors.fullName
+                    ? "border-red-500 ring-2 ring-red-200"
+                    : "border-[#CBD0DC]"
+                }`}
                 required
               />
+              {touched.fullName && errors.fullName && (
+                <p className="text-red-600 text-sm">{errors.fullName}</p>
+              )}
             </div>
 
             <div className="flex flex-col gap-[5px]">
@@ -311,10 +537,18 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 placeholder="Enter mail ID for official communication"
-                className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                className={`w-full px-[10px] py-3 border rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm ${
+                  touched.email && errors.email
+                    ? "border-red-500 ring-2 ring-red-200"
+                    : "border-[#CBD0DC]"
+                }`}
                 required
               />
+              {touched.email && errors.email && (
+                <p className="text-red-600 text-sm">{errors.email}</p>
+              )}
             </div>
           </div>
 
@@ -332,7 +566,12 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
                 name="certificationLevel"
                 value={formData.certificationLevel}
                 onChange={handleChange}
-                className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                onBlur={handleBlur}
+                className={`w-full px-[10px] py-3 border rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                  touched.certificationLevel && errors.certificationLevel
+                    ? "border-red-500 ring-2 ring-red-200"
+                    : "border-[#CBD0DC]"
+                }`}
                 required
               >
                 <option value="">Choose your certification level</option>
@@ -342,6 +581,11 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
                   </option>
                 ))}
               </select>
+              {touched.certificationLevel && errors.certificationLevel && (
+                <p className="text-red-600 text-sm">
+                  {errors.certificationLevel}
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col gap-[5px]">
@@ -357,6 +601,7 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
                 name="nominatorName"
                 value={formData.nominatorName}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 placeholder="For peer nominations"
                 className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
               />
@@ -365,43 +610,69 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 
           {/* Textareas */}
           <div className="flex flex-col gap-[5px]">
-            <label
-              htmlFor="reason"
-              className="block text-[15px] font-normal text-black"
-            >
-              Why do you believe you/they should be recognized as a Conscious
-              Leader? <span className="text-red-600">*</span>
-            </label>
+            <div className="flex justify-between items-center">
+              <label
+                htmlFor="reason"
+                className="block text-[15px] font-normal text-black"
+              >
+                Why do you believe you/they should be recognized as a Conscious
+                Leader? <span className="text-red-600">*</span>
+              </label>
+              <div className="text-sm text-gray-500">
+                {getCharacterCount(formData.reason)}/1000 chars
+              </div>
+            </div>
             <textarea
               id="reason"
               name="reason"
-              rows={3}
+              rows={4}
               value={formData.reason}
               onChange={handleChange}
+              onBlur={handleBlur}
               placeholder="Reflective answer (min. 100 words)"
-              className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none"
+              className={`w-full px-[10px] py-3 border rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none ${
+                touched.reason && errors.reason
+                  ? "border-red-500 ring-2 ring-red-200"
+                  : "border-[#CBD0DC]"
+              }`}
               required
             />
+            {touched.reason && errors.reason && (
+              <p className="text-red-600 text-sm">{errors.reason}</p>
+            )}
           </div>
 
           <div className="flex flex-col gap-[5px]">
-            <label
-              htmlFor="project"
-              className="block text-[15px] font-normal text-black"
-            >
-              Describe one initiative or project that reflects conscious
-              leadership. <span className="text-red-600">*</span>
-            </label>
+            <div className="flex justify-between items-center">
+              <label
+                htmlFor="project"
+                className="block text-[15px] font-normal text-black"
+              >
+                Describe one initiative or project that reflects conscious
+                leadership. <span className="text-red-600">*</span>
+              </label>
+              <div className="text-sm text-gray-500">
+                {getCharacterCount(formData.project)}/1000 chars
+              </div>
+            </div>
             <textarea
               id="project"
               name="project"
-              rows={3}
+              rows={4}
               value={formData.project}
               onChange={handleChange}
+              onBlur={handleBlur}
               placeholder="Showcase measurable impact"
-              className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none"
+              className={`w-full px-[10px] py-3 border rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none ${
+                touched.project && errors.project
+                  ? "border-red-500 ring-2 ring-red-200"
+                  : "border-[#CBD0DC]"
+              }`}
               required
             />
+            {touched.project && errors.project && (
+              <p className="text-red-600 text-sm">{errors.project}</p>
+            )}
           </div>
 
           {/* Checkbox */}
@@ -412,7 +683,12 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
               name="confirm"
               checked={formData.confirm}
               onChange={handleChange}
-              className="w-4 h-4 mt-1 text-indigo-600 border-[#CBD0DC] rounded focus:ring-indigo-500"
+              onBlur={handleBlur}
+              className={`w-4 h-4 mt-1 text-indigo-600 border rounded focus:ring-indigo-500 ${
+                touched.confirm && errors.confirm
+                  ? "border-red-500 ring-2 ring-red-200"
+                  : "border-[#CBD0DC]"
+              }`}
               required
             />
             <label htmlFor="confirm" className="ml-2 text-sm text-gray-700">
@@ -420,6 +696,9 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
               CNESS values.
             </label>
           </div>
+          {touched.confirm && errors.confirm && (
+            <p className="text-red-600 text-sm -mt-2">{errors.confirm}</p>
+          )}
 
           {/* Buttons */}
           <div className="flex justify-center space-x-4 pt-4">
@@ -434,7 +713,7 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
             <Button
               type="submit"
               variant="gradient-primary"
-              className="w-[104px] h-[39px] rounded-[100px] text-[12px] font-medium flex items-center justify-center"
+              className="w-[104px] h-[39px] rounded-[100px] text-[12px] font-medium flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Submitting..." : "Submit"}
