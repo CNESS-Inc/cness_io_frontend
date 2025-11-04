@@ -578,7 +578,7 @@ export default function SellerDashboard() {
           ) : ( */}
           <CertificationCard
             progress={user?.assesment_progress ? user?.assesment_progress : 0}
-            activeLevel={user?.level} // Pass the actual user level from your API
+            activeLevel={user?.level}
             score={user?.cis_score}
             onContinue={RetakeAssesment}
             onOpen={() => console.log("Open Certification")}
