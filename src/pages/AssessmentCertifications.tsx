@@ -3,9 +3,9 @@ import list1 from "../assets/list1.svg";
 import list2 from "../assets/list2.svg";
 import list3 from "../assets/list3.svg";
 import list4 from "../assets/list4.svg";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Nomimationmodel from "../components/Nomination/Nominationapp";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { GetCertificationDetails } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 
@@ -17,14 +17,21 @@ interface Certification {
   status: number;
   start_date: string | null;
   end_date: string | null;
-  nomination_form_submited?: boolean; // Add this optional field
+  nomination_form_submited?: boolean;
 }
 
 const AssessmentCertification = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { showToast } = useToast();
   const [certifications, setCertifications] = useState<Certification[]>([]);
+  
+  // Refs for each section
+  const aspiringRef = useRef<HTMLDivElement>(null);
+  const inspiredRef = useRef<HTMLDivElement>(null);
+  const leaderRef = useRef<HTMLDivElement>(null);
+   console.log("Location state:", location.state)
 
   const fetchCertificationDetails = async () => {
     try {
@@ -46,87 +53,111 @@ const AssessmentCertification = () => {
     fetchCertificationDetails();
   }, []);
 
+  // Scroll to section based on URL state or parameters
+  useEffect(() => {
+    // Check if we have scroll target in location state
+    const scrollToSection = location.state?.scrollTo;
+    
+    if (scrollToSection) {
+      // Small timeout to ensure the DOM is fully rendered
+      setTimeout(() => {
+        switch (scrollToSection) {
+          case 'inspired':
+            inspiredRef.current?.scrollIntoView({ 
+              behavior: 'smooth',
+              block: 'start'
+            });
+            break;
+          case 'aspiring':
+            aspiringRef.current?.scrollIntoView({ 
+              behavior: 'smooth',
+              block: 'start'
+            });
+            break;
+          case 'leader':
+            leaderRef.current?.scrollIntoView({ 
+              behavior: 'smooth',
+              block: 'start'
+            });
+            break;
+          default:
+            break;
+        }
+        
+        // Clear the state to prevent scrolling on subsequent renders
+        window.history.replaceState({}, document.title);
+      }, 100);
+    }
+  }, [location.state]);
+
   // Helper function to get certification by slug
   const getCertificationBySlug = (slug: string): Certification | undefined => {
     return certifications.find((cert) => cert.slug === slug);
   };
 
   // Helper function to render button or message based on status
-const renderCertificationStatus = (
-  slug: string,
-  buttonText: string,
-  navigateTo: string
-) => {
-  const cert = getCertificationBySlug(slug);
-  if (!cert) return null;
+  const renderCertificationStatus = (
+    slug: string,
+    buttonText: string,
+    navigateTo: string
+  ) => {
+    const cert = getCertificationBySlug(slug);
+    if (!cert) return null;
 
-  // Disable leader button when status is 0
-  const isLeaderDisabled = slug === "leader" && cert.status === 0;
+    const isLeaderDisabled = slug === "leader" && cert.status === 0;
 
-  const handleButtonClick = () => {
-    // Check if profile is complete before proceeding
-    if (cert.profile_progress !== 100) {
-      showToast({
-        message:"Please complete your profile first before applying for certification",
-        type: "error",
-        duration: 5000,
-      });
-      return;
+    const handleButtonClick = () => {
+      if (cert.profile_progress !== 100) {
+        showToast({
+          message:"Please complete your profile first before applying for certification",
+          type: "error",
+          duration: 5000,
+        });
+        return;
+      }
+      
+      if (isLeaderDisabled) {
+        setIsModalOpen(true);
+      } else {
+        navigate(navigateTo);
+      }
+    };
+
+    if (cert.status === 0) {
+      return (
+        <>
+          <button
+            onClick={handleButtonClick}
+            className={`font-plusJakarta font-medium text-[16px] leading-[100%] text-center text-white px-5 py-2.5 rounded-full transition-all duration-300 ease-out bg-gradient-to-r from-[#7077FE] to-[#F07EFF] hover:opacity-90`}
+          >
+            {buttonText}
+          </button>
+        </>
+      );
+    } else if (cert.status === 1 || cert.status === 2) {
+      return (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <p className="font-['Open_Sans'] font-normal text-[14px] leading-[160%] text-blue-800">
+            {cert.message}
+          </p>
+          {cert.start_date && cert.end_date && (
+            <p className="font-['Open_Sans'] font-normal text-[12px] leading-[160%] text-blue-600 mt-2">
+              Valid from {new Date(cert.start_date).toLocaleDateString()} to{" "}
+              {new Date(cert.end_date).toLocaleDateString()}
+            </p>
+          )}
+        </div>
+      );
     }
-    
-    if (isLeaderDisabled) {
-      setIsModalOpen(true);
-    } else {
-      navigate(navigateTo);
-    }
+
+    return null;
   };
 
-  if (cert.status === 0) {
-    return (
-      <>
-        <button
-          onClick={handleButtonClick}
-          className={`font-plusJakarta font-medium text-[16px] leading-[100%] text-center text-white px-5 py-2.5 rounded-full transition-all duration-300 ease-out bg-gradient-to-r from-[#7077FE] to-[#F07EFF] hover:opacity-90`}
-        >
-          {buttonText}
-        </button>
-        
-        {/* Optional: Show profile completion message */}
-        {/* {cert.profile_progress !== 100 && (
-          <div className="mt-2 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-            <p className="font-['Open_Sans'] font-normal text-[12px] leading-[160%] text-yellow-800">
-              Complete your profile ({cert.profile_progress}%) to apply for this certification
-            </p>
-          </div>
-        )} */}
-      </>
-    );
-  } else if (cert.status === 1 || cert.status === 2) {
-    return (
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-        <p className="font-['Open_Sans'] font-normal text-[14px] leading-[160%] text-blue-800">
-          {cert.message}
-        </p>
-        {cert.start_date && cert.end_date && (
-          <p className="font-['Open_Sans'] font-normal text-[12px] leading-[160%] text-blue-600 mt-2">
-            Valid from {new Date(cert.start_date).toLocaleDateString()} to{" "}
-            {new Date(cert.end_date).toLocaleDateString()}
-          </p>
-        )}
-      </div>
-    );
-  }
-
-  return null;
-};
-
-  // Helper function specifically for Leader nomination button
   // Helper function specifically for Leader nomination button
   const renderLeaderNominationButton = () => {
     const leaderCert = getCertificationBySlug("leader");
     const aspiringCert = getCertificationBySlug("aspiring");
 
-    // Check if nomination form has been submitted
     if (leaderCert?.nomination_form_submited) {
       return (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-1">
@@ -137,7 +168,6 @@ const renderCertificationStatus = (
       );
     }
 
-    // Check if Aspiring certification has status 1 or 2 (enabled condition)
     const isAspiringCompleted =
       aspiringCert && (aspiringCert.status === 1 || aspiringCert.status === 2);
 
@@ -157,6 +187,7 @@ const renderCertificationStatus = (
     );
   };
 
+
   return (
     <>
       <h2 className="font-[poppins] font-medium text-[20px] md:text-[24px] text[#000000] mb-8 mt-2 text-center md:text-left px-2">
@@ -164,7 +195,7 @@ const renderCertificationStatus = (
       </h2>
 
       {/* Aspiring Section */}
-      <section className="bg-white rounded-2xl py-12 px-5 sm:px-8 md:px-16 border-b border-gray-100">
+      <section ref={aspiringRef} className="bg-white rounded-2xl py-12 px-5 sm:px-8 md:px-16 border-b border-gray-100">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:space-x-3 space-y-2 md:space-y-0 mb-6">
           <img
@@ -307,7 +338,7 @@ const renderCertificationStatus = (
       </section>
 
       {/* Inspired Section */}
-      <section className="bg-white rounded-2xl py-16 px-6 md:px-16 border-b border-gray-100 mt-6">
+      <section ref={inspiredRef} className="bg-white rounded-2xl py-16 px-6 md:px-16 border-b border-gray-100 mt-6">
         {/* Header */}
         <div className="flex items-center space-x-3 mb-6">
           <img
@@ -446,7 +477,7 @@ const renderCertificationStatus = (
       </section>
 
       {/* Leader Section */}
-      <section className="bg-white rounded-2xl py-16 px-6 md:px-16 border-b border-gray-100 mt-6">
+      <section ref={leaderRef} className="bg-white rounded-2xl py-16 px-6 md:px-16 border-b border-gray-100 mt-6">
         {/* Header */}
         <div className="flex items-center space-x-3 mb-6">
           <img

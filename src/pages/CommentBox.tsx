@@ -242,7 +242,10 @@ const CommentBox = ({
           "[data-comment-button]"
         ) as HTMLElement;
 
-        // Trigger credit animation for creating a comment if the function is provided
+        if (
+        import.meta.env.VITE_ENV_STAGE === "test" ||
+        import.meta.env.VITE_ENV_STAGE === "uat"
+      ) {
         if (triggerCreditAnimation && commentButton) {
           localStorage.setItem(
           "karma_credits",
@@ -250,6 +253,8 @@ const CommentBox = ({
         );
           triggerCreditAnimation(commentButton, 10); // 10 credits for creating a comment
         }
+      }
+        // Trigger credit animation for creating a comment if the function is provided
 
         setComments((prev) => [
           {

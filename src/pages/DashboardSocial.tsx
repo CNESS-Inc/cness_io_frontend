@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import StoryCard from "../components/Social/StoryCard";
 import {
@@ -284,6 +284,7 @@ export default function SocialTopBar() {
   // const navigate = useNavigate();
   // const [isExpanded, setIsExpanded] = useState(false);
   // const toggleExpand = () => setIsExpanded(!isExpanded);
+  const location = useLocation();
   const [showPopup, setShowPopup] = useState(false);
   const [showStoryPopup, setShowStoryPopup] = useState(false);
   const [showCommentBox, setShowCommentBox] = useState(false);
@@ -357,6 +358,15 @@ export default function SocialTopBar() {
   //const [showTopicModal, setShowTopicModal] = useState(false);
 
   const [animations, setAnimations] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (location.state?.openPostPopup) {
+      setShowPopup(true);
+
+      // Clear the state so it doesn't reopen on refresh
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   const maxChars = 2000;
 
@@ -822,13 +832,18 @@ export default function SocialTopBar() {
           "[data-post-button]"
         ) as HTMLElement;
 
-        if (postButton) {
-          localStorage.setItem(
-            "karma_credits",
-            response.data.data.karma_credits.toString()
-          );
-          // Trigger credit animation for creating a post (more credits than a like)
-          triggerCreditAnimation(postButton, 20); // 20 credits for creating a post
+        if (
+          import.meta.env.VITE_ENV_STAGE === "test" ||
+          import.meta.env.VITE_ENV_STAGE === "uat"
+        ) {
+          if (postButton) {
+            localStorage.setItem(
+              "karma_credits",
+              response.data.data.karma_credits.toString()
+            );
+            // Trigger credit animation for creating a post (more credits than a like)
+            triggerCreditAnimation(postButton, 20); // 20 credits for creating a post
+          }
         }
 
         showToast({
@@ -1067,8 +1082,13 @@ export default function SocialTopBar() {
       }
 
       // Only trigger animation when LIKING (not unliking) - AFTER API call
-      if (!isCurrentlyLiked) {
-        triggerCreditAnimation(buttonElement, 5); // 5 credits for like
+      if (
+        import.meta.env.VITE_ENV_STAGE === "test" ||
+        import.meta.env.VITE_ENV_STAGE === "uat"
+      ) {
+        if (!isCurrentlyLiked) {
+          triggerCreditAnimation(buttonElement, 5); // 5 credits for like
+        }
       }
 
       // Update post data

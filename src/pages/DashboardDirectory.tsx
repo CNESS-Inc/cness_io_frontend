@@ -132,7 +132,7 @@ export default function DashboardDirectory() {
         const transformedCompanies = res.data.data.rows.map((company: any) => ({
           id: company.id,
           name: company.name,
-          location: company.location || "Unknown",
+          location: company.location || "",
           domain: company.domain || "General",
           category: "Popular",
           logo: company.profile_picture || iconMap["companylogo1"],
@@ -178,7 +178,7 @@ export default function DashboardDirectory() {
         const transformedCompanies = res.data.data.rows.map((company: any) => ({
           id: company.id,
           name: company.name,
-          location: company.location || "Unknown",
+          location: company.location || "",
           domain: company.domain || "General",
           category: "Inspiring",
           logo: company.profile_picture || iconMap["aspcompany1"],
@@ -220,7 +220,7 @@ export default function DashboardDirectory() {
         const transformedCompanies = res.data.data.rows.map((company: any) => ({
           id: company.id,
           name: company.name,
-          location: company.location || "Unknown",
+          location: company.location || "",
           domain: company.domain || "General",
           category: "Inspiring",
           logo: company.profile_picture || iconMap["aspcompany1"],

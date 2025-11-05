@@ -190,6 +190,7 @@ export const EndPoint = {
   all_bestPractices: "/best-practice/all",
   bp: "/best-practice",
   bp_recommended: "/best-practice/recommended",
+  bp_related: "/best-practice/related",
   save_bestPractices: "/best-practice/get/save/best-practice",
   mine_bestPractices: "/best-practice/get-by-user-id",
   add_bestpractices: "/best-practice",
@@ -729,6 +730,16 @@ export const GetRecommendedBestPractices = (): ApiResponse => {
     ServerAPI.APIMethod.GET,
     null,
     `${EndPoint.bp_recommended}`
+  );
+};
+export const GetRelatedBestPractices = (id:any): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["bp_id"] = id;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    `${EndPoint.bp_related}`,
+    params
   );
 };
 export const UpdateBestPractice = (formData: any): ApiResponse => {
