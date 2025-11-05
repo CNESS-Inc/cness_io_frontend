@@ -21,6 +21,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
   const [profileData, setProfileData] = useState<any>(null);
   const [followingFollowers, setFollowingFollowers] = useState<any>(null);
   const [userPosts, setUserPosts] = useState<any[]>([]);
+  console.log("🚀 ~ FriendProfileModal ~ userPosts:", userPosts)
   const [loading, setLoading] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
@@ -54,70 +55,112 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
   };
 
   const fetchFriendData = async () => {
-    setLoading(true);
-    try {
-      // Fetch all data in parallel
-      const [profileResponse, followingResponse, postsResponse] = await Promise.all([
-        GetProfileByUserId(friend.id.toString()),
-        GetFollowingFollowersByUserId(friend.id.toString()),
-        GetUserPostsByUserId(friend.id.toString())
-      ]);
+  setLoading(true);
+  try {
+    // Fetch all data in parallel
+    const [profileResponse, followingResponse, postsResponse] = await Promise.all([
+      GetProfileByUserId(friend.id.toString()),
+      GetFollowingFollowersByUserId(friend.id.toString()),
+      GetUserPostsByUserId(friend.id.toString())
+    ]);
 
-      setProfileData(profileResponse.data.data.rows);
-      setFollowingFollowers(followingResponse.data.data);
+    setProfileData(profileResponse.data.data.rows);
+    setFollowingFollowers(followingResponse.data.data);
 
-      // setIsFollowing(followingResponse.data.data?.isFollowing || false);
-
-      const transformedPosts = postsResponse.data.data.rows.map((item: any) => {
-        // Handle multiple images (comma-separated), single image/video, or text-only
-        let media = null;
-        if (item.file && item.file_type === "video") {
-          media = {
-            type: "video",
-            src: item.file,
-            alt: item.content || "",
-            poster: item.file, // You can adjust if you have a separate poster
-          };
-        } else if (item.file && item.file_type === "image") {
-          const files = item.file.split(",").map((f: string) => f.trim()).filter(Boolean);
-          if (files.length === 1) {
+    const transformedPosts = postsResponse.data.data.rows.map((item: any) => {
+      // Handle multiple images (comma-separated), single image/video, or text-only
+      let media = null;
+      
+      if (item.file) {
+        const files = item.file.split(",").map((f: string) => f.trim()).filter(Boolean);
+        
+        if (files.length === 1) {
+          const fileUrl = files[0];
+          const fileExtension = getFileExtension(fileUrl);
+          const isVideo = isVideoFile(fileExtension);
+          const isImage = isImageFile(fileExtension);
+          
+          if (isVideo) {
+            media = {
+              type: "video",
+              src: fileUrl,
+              alt: item.content || "",
+              poster: getVideoPoster(fileUrl), // You can generate a poster or use a placeholder
+            };
+          } else if (isImage) {
             media = {
               type: "image",
-              src: files[0],
+              src: fileUrl,
               alt: item.content || "",
             };
-          } else if (files.length > 1) {
-            // If your MyPost component supports multiple images, pass as array
-            // Otherwise, just show the first image
+          }
+        } else if (files.length > 1) {
+          // For multiple files, assume they're images and use the first one
+          // You might want to handle mixed media types differently
+          const firstFile = files[0];
+          const fileExtension = getFileExtension(firstFile);
+          const isVideo = isVideoFile(fileExtension);
+          
+          if (!isVideo) { // Only create gallery for images, not videos
             media = {
               type: "image",
-              src: files[0],
+              src: firstFile,
               alt: item.content || "",
-              images: files, // Optional: for gallery support
+              images: files, // for gallery support
+            };
+          } else {
+            // If first file is video, treat as single video post
+            media = {
+              type: "video",
+              src: firstFile,
+              alt: item.content || "",
+              poster: getVideoPoster(firstFile),
             };
           }
         }
-        // For text-only posts, media remains null
+      }
+      // For text-only posts, media remains null
 
-        return {
-          media,
-          body: item.content,
-          likes: item.likes_count,
-          reflections: item.comments_count,
-          id: item.id,
-          is_liked: item.is_liked,
-          // Add more fields if needed
-        };
-      });
+      return {
+        media,
+        body: item.content,
+        likes: item.likes_count,
+        reflections: item.comments_count,
+        id: item.id,
+        is_liked: item.is_liked,
+      };
+    });
 
-      setUserPosts(transformedPosts);
-      // setUserPosts(postsResponse.data?.data?.rows || []);
-    } catch (error) {
-      console.error("Error fetching friend data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setUserPosts(transformedPosts);
+  } catch (error) {
+    console.error("Error fetching friend data:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+// Helper functions
+const getFileExtension = (filename: string): string => {
+  return filename.split('.').pop()?.toLowerCase() || '';
+};
+
+const isVideoFile = (extension: string): boolean => {
+  const videoExtensions = ['mp4', 'mov', 'avi', 'mkv', 'webm', 'ogg', '3gp', 'm4v'];
+  return videoExtensions.includes(extension);
+};
+
+const isImageFile = (extension: string): boolean => {
+  const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 'heic'];
+  return imageExtensions.includes(extension);
+};
+
+const getVideoPoster = (_videoUrl: string): string => {
+  // You can either:
+  // 1. Use a placeholder image
+  // 2. Generate a poster URL if your backend provides one
+  // 3. Extract frame from video (requires additional processing)
+  return '/images/video-poster-placeholder.jpg'; // placeholder
+};
 
   const handleFollowToggle = async () => {
     setFollowLoading(true);
@@ -159,7 +202,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
         }}
       >
         <div
-          className="bg-white rounded-[12px] border border-gray-200 flex flex-col shadow-lg overflow-hidden"
+          className="bg-white rounded-xl border border-gray-200 flex flex-col shadow-lg overflow-hidden"
           style={{
             width: "1152px",
             height: "701.25px",
@@ -168,12 +211,12 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
           }}
         >
           {/* Header */}
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <div className="relative">
               <img
                 src={companycard}
                 alt="Cover"
-                className="w-[1152px] h-[150px] object-cover rounded-t-[16px]"
+                className="w-6xl h-[150px] object-cover rounded-t-2xl"
               />
               <button
                 onClick={onClose}

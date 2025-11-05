@@ -23,7 +23,7 @@ import suggesticon from "../../assets/suggesticon.svg";
 import friendsicon from "../../assets/friendsicon.svg";
 import marketplaceicon from "../../assets/marketplace-icon.svg";
 import socialicon from "../../assets/socialprofileicon.svg";
-import postinsight from "../../assets/post-insights-badge.svg";
+// import postinsight from "../../assets/post-insights-badge.svg";
 import learninglabicon from "../../assets/learninglabicon.svg";
 import lock from "../../assets/lock.svg";
 import fire from "../../assets/fire.svg";
@@ -144,7 +144,6 @@ const SOFT = "shadow-[0_1px_2px_rgba(16,24,40,0.04)]";
 export function Card({
   className = "",
   children,
-  
 }: React.HTMLAttributes<HTMLDivElement> & {
   className?: string;
   children: React.ReactNode;
@@ -2297,8 +2296,8 @@ export function TrueProfileCard({
   completion = 100,
   avatar,
   onUpdateProfile,
-  onOpen,
-}: {
+}: // onOpen,
+{
   title?: string;
   avatar?: string;
   description?: string;
@@ -2306,6 +2305,8 @@ export function TrueProfileCard({
   onUpdateProfile?: () => void;
   onOpen?: () => void;
 }) {
+  const id = localStorage.getItem("Id");
+  const navigate = useNavigate();
   return (
     <Card className="p-4 md:p-5">
       {" "}
@@ -2326,7 +2327,7 @@ export function TrueProfileCard({
         </div>
 
         <button
-          onClick={onOpen}
+          onClick={() => navigate(`/dashboard/userprofile/${id}`)}
           className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F9FAFB] text-[#5E6573] hover:bg-[#EEF0F5]"
           aria-label="Open True Profile"
         >
@@ -2396,8 +2397,8 @@ export function CertificationCard({
   auto = true,
   intervalMs = 6000,
   upgradeText = "To achieve the next level certification, you need to create a basic profile that includes selling your reactions, accessing the community, and utilizing the resources library.",
-  // onUpgrade,
-}: {
+}: // onUpgrade,
+{
   progress?: number;
   score?: number;
   onContinue?: () => void;
@@ -2676,11 +2677,21 @@ export function CertificationCard({
               <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 px-1 sm:px-2">
                 {/* Aspiring */}
                 <div
-                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-[2px] ${
+                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-[2px] cursor-pointer ${
                     activeLevel === "Aspiring" && progress === 0
                       ? "bg-gradient-to-r from-[#7077FE] to-[#F07EFF]"
                       : "border border-[#E5E7EB] bg-white"
                   }`}
+                  onClick={() => {
+                    if (
+                      activeLevel === "Aspiring" ||
+                      activeLevel === "Inspired"
+                    ) {
+                      navigate("/dashboard/assesmentcertification");
+                    } else {
+                      navigate("/dashboard/upgrade-badge");
+                    }
+                  }}
                 >
                   <div className="w-full h-full rounded-[16px] bg-white flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4">
                     <img
@@ -2700,12 +2711,24 @@ export function CertificationCard({
 
                 {/* Inspired */}
                 <div
-                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-[2px] ${
+                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-[2px] cursor-pointer ${
                     activeLevel === "Inspired" ||
                     (activeLevel === "Aspiring" && progress > 0)
                       ? "bg-gradient-to-r from-[#7077FE] to-[#F07EFF]"
                       : "border border-[#E5E7EB] bg-white"
                   }`}
+                  onClick={() => {
+                    if (
+                      activeLevel === "Inspired" ||
+                      activeLevel === "Leader"
+                    ) {
+                      navigate("/dashboard/assesmentcertification", {
+                        state: { scrollTo: "inspired" },
+                      });
+                    } else {
+                      navigate("/dashboard/upgrade-badge");
+                    }
+                  }}
                 >
                   <div className="w-full h-full rounded-[16px] bg-white flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4">
                     <img
@@ -2726,13 +2749,20 @@ export function CertificationCard({
 
                 {/* Leader */}
                 <div
-                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-[2px] ${
+                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-0.5 cursor-pointer ${
                     activeLevel === "Leader"
                       ? "border-2 border-transparent bg-clip-padding bg-white relative before:absolute before:inset-0 before:rounded-[18px] before:p-[2px] before:bg-gradient-to-r before:from-[#7077FE] before:to-[#F07EFF] before:-z-10"
                       : "border border-[#E5E7EB] bg-white"
                   }`}
+                  onClick={() => {
+                    if (activeLevel === "Leader") {
+                      navigate("/dashboard/assesmentcertification");
+                    } else {
+                      navigate("/dashboard/upgrade-badge");
+                    }
+                  }}
                 >
-                  <div className="w-full h-full rounded-[16px] bg-white flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4">
+                  <div className="w-full h-full rounded-2xl bg-white flex flex-col items-center justify-center gap-2.5 sm:gap-3 px-4 py-4">
                     <img
                       src="https://cdn.cness.io/leader.webp"
                       alt="Leader"
@@ -3406,113 +3436,115 @@ export function SocialStackCard({
 
     /* ---------- helpers ---------- */
 
-    const InsightsCard = () => (
-      <div className="row-start-1 relative z-10 place-self-center w-full max-w-[620px]">
-        {/* badge */}
-        <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#A996FF]">
-          <img src={postinsight} alt="post" className="w-10 h-10" />
-        </div>
+    // const InsightsCard = () => (
+    //   <div className="row-start-1 relative z-10 place-self-center w-full max-w-[620px]">
+    //     {/* badge */}
+    //     <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#A996FF]">
+    //       <img src={postinsight} alt="post" className="w-10 h-10" />
+    //     </div>
 
-        <h3 className="font-poppins font-semibold text-[20px] leading-[32.3px] tracking-[0.15px] text-center text-[#0F1728]">
-          Post Insights
-        </h3>
-        <p className=" mt-2 max-w-[32rem] mx-auto text-[12px] leading-[100%] text-[#667085] font-[400] text-center font-['Open_Sans']">
-          {s.text /* e.g. "Posted on May 10,2024" */}
-        </p>
+    //     <h3 className="font-poppins font-semibold text-[20px] leading-[32.3px] tracking-[0.15px] text-center text-[#0F1728]">
+    //       Post Insights
+    //     </h3>
+    //     <p className=" mt-2 max-w-[32rem] mx-auto text-[12px] leading-[100%] text-[#667085] font-[400] text-center font-['Open_Sans']">
+    //       {s.text /* e.g. "Posted on May 10,2024" */}
+    //     </p>
 
-        {/* white stat card */}
-        <div className="mt-2 rounded-2xl border border-[#EEF0F5] bg-white p-5 shadow-sm">
-          {/* Account Reached */}
-          <div className="flex flex-col sm:flex-row items-start justify-between gap-6">
-            <div>
-              <div className="font-poppins font-semibold text-[20px] leading-[32.3px] tracking-[0.15px] text-center text-[#0F1728]">
-                Account Reached
-              </div>
-              <div className="mt-2 text-[18px] font-semibold text-[#F07EFF]">
-                {Intl.NumberFormat().format(resonating)}
-              </div>
-            </div>
+    //     {/* white stat card */}
+    //     <div className="mt-2 rounded-2xl border border-[#EEF0F5] bg-white p-5 shadow-sm">
+    //       {/* Account Reached */}
+    //       <div className="flex flex-col sm:flex-row items-start justify-between gap-6">
+    //         <div>
+    //           <div className="font-poppins font-semibold text-[20px] leading-[32.3px] tracking-[0.15px] text-center text-[#0F1728]">
+    //             Account Reached
+    //           </div>
+    //           <div className="mt-2 text-[18px] font-semibold text-[#F07EFF]">
+    //             {Intl.NumberFormat().format(resonating)}
+    //           </div>
+    //         </div>
 
-            {/* dot chart (pink) */}
-            <div className="flex flex-row items-end gap-1 mt-2 sm:mt-0">
-              {/* Column 1 (4 dots) */}
-              <div className="flex flex-col gap-1 justify-end">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <span key={i} className="h-2 w-2 rounded-full bg-[#F07EFF]" />
-                ))}
-              </div>
+    //         {/* dot chart (pink) */}
+    //         <div className="flex flex-row items-end gap-1 mt-2 sm:mt-0">
+    //           {/* Column 1 (4 dots) */}
+    //           <div className="flex flex-col gap-1 justify-end">
+    //             {Array.from({ length: 4 }).map((_, i) => (
+    //               <span key={i} className="h-2 w-2 rounded-full bg-[#F07EFF]" />
+    //             ))}
+    //           </div>
 
-              {/* Column 2 (5 dots) */}
-              <div className="flex flex-col gap-1 justify-end">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <span key={i} className="h-2 w-2 rounded-full bg-[#F07EFF]" />
-                ))}
-              </div>
+    //           {/* Column 2 (5 dots) */}
+    //           <div className="flex flex-col gap-1 justify-end">
+    //             {Array.from({ length: 5 }).map((_, i) => (
+    //               <span key={i} className="h-2 w-2 rounded-full bg-[#F07EFF]" />
+    //             ))}
+    //           </div>
 
-              {/* Column 3 (3 dots - peak) */}
-              <div className="flex flex-col gap-1 justify-end">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <span key={i} className="h-2 w-2 rounded-full bg-[#F07EFF]" />
-                ))}
-              </div>
+    //           {/* Column 3 (3 dots - peak) */}
+    //           <div className="flex flex-col gap-1 justify-end">
+    //             {Array.from({ length: 3 }).map((_, i) => (
+    //               <span key={i} className="h-2 w-2 rounded-full bg-[#F07EFF]" />
+    //             ))}
+    //           </div>
 
-              {/* Column 4 (4 dots) */}
-              <div className="flex flex-col gap-1 justify-end">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <span key={i} className="h-2 w-2 rounded-full bg-[#F07EFF]" />
-                ))}
-              </div>
-            </div>
-          </div>
+    //           {/* Column 4 (4 dots) */}
+    //           <div className="flex flex-col gap-1 justify-end">
+    //             {Array.from({ length: 4 }).map((_, i) => (
+    //               <span key={i} className="h-2 w-2 rounded-full bg-[#F07EFF]" />
+    //             ))}
+    //           </div>
+    //         </div>
+    //       </div>
 
-          <div className="my-4 border-t border-[#E9EDF3]" />
+    //       <div className="my-4 border-t border-[#E9EDF3]" />
 
-          {/* Followers */}
-          <div className="flex flex-col sm:flex-row items-start justify-between gap-6">
-            <div>
-              <div className="font-poppins font-semibold text-[20px] leading-[32.3px] tracking-[0.15px] text-center text-[#0F1728]">
-                Followers
-              </div>
-              <div className="mt-2 text-[18px] font-semibold text-[#8B7CFF]">
-                +{Intl.NumberFormat().format(resonators)}
-              </div>
-            </div>
+    //       {/* Followers */}
+    //       <div className="flex flex-col sm:flex-row items-start justify-between gap-6">
+    //         <div>
+    //           <div className="font-poppins font-semibold text-[20px] leading-[32.3px] tracking-[0.15px] text-center text-[#0F1728]">
+    //             Followers
+    //           </div>
+    //           <div className="mt-2 text-[18px] font-semibold text-[#8B7CFF]">
+    //             +{Intl.NumberFormat().format(resonators)}
+    //           </div>
+    //         </div>
 
-            {/* dot chart (purple) */}
-            <div className="flex flex-row items-end gap-1 mt-2 sm:mt-0">
-              {/* Column 1 (4 dots) */}
-              <div className="flex flex-col gap-1 justify-end">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <span key={i} className="h-2 w-2 rounded-full bg-[#8B7CFF]" />
-                ))}
-              </div>
+    //         {/* dot chart (purple) */}
+    //         <div className="flex flex-row items-end gap-1 mt-2 sm:mt-0">
+    //           {/* Column 1 (4 dots) */}
+    //           <div className="flex flex-col gap-1 justify-end">
+    //             {Array.from({ length: 4 }).map((_, i) => (
+    //               <span key={i} className="h-2 w-2 rounded-full bg-[#8B7CFF]" />
+    //             ))}
+    //           </div>
 
-              {/* Column 2 (5 dots) */}
-              <div className="flex flex-col gap-1 justify-end">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <span key={i} className="h-2 w-2 rounded-full bg-[#8B7CFF]" />
-                ))}
-              </div>
+    //           {/* Column 2 (5 dots) */}
+    //           <div className="flex flex-col gap-1 justify-end">
+    //             {Array.from({ length: 5 }).map((_, i) => (
+    //               <span key={i} className="h-2 w-2 rounded-full bg-[#8B7CFF]" />
+    //             ))}
+    //           </div>
 
-              {/* Column 3 (3 dots - peak) */}
-              <div className="flex flex-col gap-1 justify-end">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <span key={i} className="h-2 w-2 rounded-full bg-[#8B7CFF]" />
-                ))}
-              </div>
+    //           {/* Column 3 (3 dots - peak) */}
+    //           <div className="flex flex-col gap-1 justify-end">
+    //             {Array.from({ length: 3 }).map((_, i) => (
+    //               <span key={i} className="h-2 w-2 rounded-full bg-[#8B7CFF]" />
+    //             ))}
+    //           </div>
 
-              {/* Column 4 (4 dots) */}
-              <div className="flex flex-col gap-1 justify-end">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <span key={i} className="h-2 w-2 rounded-full bg-[#8B7CFF]" />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    //           {/* Column 4 (4 dots) */}
+    //           <div className="flex flex-col gap-1 justify-end">
+    //             {Array.from({ length: 4 }).map((_, i) => (
+    //               <span key={i} className="h-2 w-2 rounded-full bg-[#8B7CFF]" />
+    //             ))}
+    //           </div>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   </div>
+    // );
     const NotificationsCard = ({ notifications }: { notifications: any[] }) => {
+
+      const userProfile = localStorage.getItem("profile_picture")
       return (
         <div className="row-start-1 relative z-10 place-self-center w-full max-w-[620px]">
           {/* header */}
@@ -3537,7 +3569,7 @@ export function SocialStackCard({
                     src={
                       item?.sender_profile?.profile_picture
                         ? item?.sender_profile?.profile_picture
-                        : `https://i.pravatar.cc/56?u=${item.sender_id}`
+                        : userProfile
                     }
                     className="h-11 w-11 rounded-full object-cover"
                     alt=""
@@ -3560,12 +3592,12 @@ export function SocialStackCard({
           </div>
 
           {/* CTA */}
-         <button
-  className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-full text-white text-[14px] font-semibold bg-[linear-gradient(90deg,#7077FE_0%,#9747FF_60%,#F07EFF_100%)] shadow"
-  onClick={() => navigate("/dashboard")}
->
-  View all Notification
-</button>
+          <button
+            className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-full text-white text-[14px] font-semibold bg-[linear-gradient(90deg,#7077FE_0%,#9747FF_60%,#F07EFF_100%)] shadow"
+            onClick={() => navigate("/dashboard")}
+          >
+            View all Notification
+          </button>
         </div>
       );
     };
@@ -3651,9 +3683,11 @@ export function SocialStackCard({
                   </OutlinePill>
                 </div>
               </div>
-            ) : idx === 1 ? (
-              <InsightsCard />
-            ) : (
+            ) 
+            // : idx === 1 ? (
+            //   // <InsightsCard />
+            // ) 
+            : (
               <NotificationsCard notifications={notifications} />
             )}
           </div>
@@ -3875,12 +3909,12 @@ export function SocialStackCard({
             primaryLabel: "Start Posting",
             secondaryLabel: "View Feed",
           },
-          {
-            title: "Post Insights",
-            text: "Posted on May 10,2024",
-            primaryLabel: "Create Post",
-            secondaryLabel: "Open Feed",
-          },
+          // {
+          //   title: "Post Insights",
+          //   text: "Posted on May 10,2024",
+          //   primaryLabel: "Create Post",
+          //   secondaryLabel: "Open Feed",
+          // },
           {
             title: "Ask the community",
             text: "Start a discussion and get feedback from experienced sellers in minutes.",
@@ -4128,9 +4162,10 @@ export function MarketplaceCard({
               </div>
               <div className="relative">
                 <button
-                  onClick={() =>
-                    setOpenMenuId(openMenuId === f.id ? null : f.id)
-                  }
+                  // onClick={() =>
+                  //   setOpenMenuId(openMenuId === f.id ? null : f.id)
+                  // }
+                  onClick={() => navigate("/dashboard/marketplace")}
                   className="flex items-center justify-center w-8 h-8 rounded-[5px] hover:bg-gray-100 transition-colors"
                   title="More options"
                   style={{ boxShadow: "0px 0px 2px 0px rgba(0, 0, 0, 0.1)" }}
@@ -4167,7 +4202,7 @@ export function MarketplaceCard({
       </div>
       <PrimaryButton
         className="w-full rounded-3xl"
-onClick={() => navigate("/dashboard/marketplace")}
+        onClick={() => navigate("/dashboard/marketplace")}
       >
         Visit seller Dashboard
       </PrimaryButton>
@@ -4204,9 +4239,10 @@ onClick={() => navigate("/dashboard/marketplace")}
               </div>
               <div className="relative">
                 <button
-                  onClick={() =>
-                    setOpenMenuId(openMenuId === f.id ? null : f.id)
-                  }
+                  // onClick={() =>
+                  //   setOpenMenuId(openMenuId === f.id ? null : f.id)
+                  // }
+                  onClick={() => navigate("/dashboard/marketplace")}
                   className="flex items-center justify-center w-8 h-8 rounded-[5px] hover:bg-gray-100 transition-colors"
                   title="More options"
                   style={{ boxShadow: "0px 0px 2px 0px rgba(0, 0, 0, 0.1)" }}
@@ -4272,7 +4308,7 @@ onClick={() => navigate("/dashboard/marketplace")}
         <button className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F9FAFB] text-[#5E6573] hover:bg-[#EEF0F5]">
           <ArrowUpRight
             className="h-4 w-4"
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/dashboard/marketplace")}
           />
         </button>
       </div>
@@ -4300,7 +4336,7 @@ onClick={() => navigate("/dashboard/marketplace")}
               </div>
               <button
                 className="w-full rounded-full bg-[#7077FE] py-[8px] px-[3px] text-[8px] font-semibold text-white"
-        onClick={() => navigate("/dashboard/marketplace")}
+            onClick={() => navigate("/dashboard/marketplace")}
               >
                 Buy Now
               </button>
@@ -4316,10 +4352,10 @@ onClick={() => navigate("/dashboard/marketplace")}
   );
 
   return (
-   <Card
-  className="p-4 md:p-5 h-full cursor-pointer hover:shadow-lg transition-shadow duration-300"
- onClick={() => navigate("/dashboard/marketplace")}
->
+    <Card
+      className="p-4 md:p-5 h-full hover:shadow-lg transition-shadow duration-300"
+      onClick={() => navigate("/dashboard/marketplace")}
+    >
       {/* Header */}
       <div className="flex flex-col">
         <div className="flex items-center justify-between">
@@ -4342,7 +4378,7 @@ onClick={() => navigate("/dashboard/marketplace")}
           >
             <ArrowUpRight
               className="h-4 w-4"
-              onClick={() => navigate("/dashboard/market-place")}
+              onClick={() => navigate("/dashboard/marketplace")}
             />
           </button>
         </div>

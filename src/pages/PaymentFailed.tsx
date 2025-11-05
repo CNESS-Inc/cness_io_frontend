@@ -1,5 +1,4 @@
 import React from "react";
-import Header from "../components/MarketPlace/Buyerheader";
 import {  ShoppingCart,X,RotateCw} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import pay from "../assets/pay.svg";
@@ -7,8 +6,8 @@ import pay from "../assets/pay.svg";
 const PaymentSuccess: React.FC = () => {
   const navigate = useNavigate();
     return (
-        <main className="min-h-screen bg-white">
-            <Header />
+        <>
+       
 
 <div className="w-full mx-auto px-6 py-8">
         {/* ===== Progress Bar ===== */}
@@ -83,7 +82,7 @@ Oops! Payment Failed — Let’s Try Again.
 </button>
         </div>
 
-                </main>
+                </>
 
  );
 };

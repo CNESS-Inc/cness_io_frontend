@@ -1,4 +1,3 @@
-import Header from '../components/MarketPlace/Buyerheader';
 import { useLocation, useNavigate } from 'react-router-dom';
 import instagramIcon from '../assets/instagramicon.svg';
 import youtubeIcon from '../assets/youtubeicon.svg';
@@ -169,12 +168,11 @@ const reviews = [
 
   return (
     <main className=" min-h-screen bg-white">
-  <Header />
 
 <div
         className={` transition-all duration-300 ${
           isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
-        } pt-[80px] px-6`}
+        } pt-[30px] px-6`}
       >
       <div className="bg-white rounded-xl shadow-md p-4">
       <div className="flex items-center space-x-8">

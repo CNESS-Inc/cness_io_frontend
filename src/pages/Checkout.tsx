@@ -1,5 +1,4 @@
 import React from "react";
-import Header from "../components/MarketPlace/Buyerheader";
 import { Trash2, CheckCircle, CreditCard, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -23,8 +22,7 @@ const CheckoutPage: React.FC = () => {
   ];
 
   return (
-    <main className="min-h-screen bg-white">
-      <Header />
+   
 
       <div className="w-full mx-auto px-6 py-8">
         {/* ===== Progress Bar ===== */}
@@ -150,7 +148,7 @@ const CheckoutPage: React.FC = () => {
           </div>
         </div>
       </div>
-    </main>
+    
   );
 };
 

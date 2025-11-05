@@ -1,5 +1,4 @@
 import { useLocation, useParams } from "react-router-dom";
-import Header from   '../components/MarketPlace/Buyerheader';
 import ProductCard from '../components/MarketPlace/ProductCard';
 import ShopCard from '../components/MarketPlace/Shopcard';
 //import React, { useRef,useState  } from "react";
@@ -194,7 +193,7 @@ const shops = [
   return (
 
      <main>
-  <Header />
+
     <div className="w-full h-auto ">
       <div className="w-full h-[340px] relative rounded-lg">
         <img

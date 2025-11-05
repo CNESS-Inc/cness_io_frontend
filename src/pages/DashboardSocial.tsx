@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import StoryCard from "../components/Social/StoryCard";
 import {
@@ -284,6 +284,7 @@ export default function SocialTopBar() {
   // const navigate = useNavigate();
   // const [isExpanded, setIsExpanded] = useState(false);
   // const toggleExpand = () => setIsExpanded(!isExpanded);
+  const location = useLocation();
   const [showPopup, setShowPopup] = useState(false);
   const [showStoryPopup, setShowStoryPopup] = useState(false);
   const [showCommentBox, setShowCommentBox] = useState(false);
@@ -357,6 +358,15 @@ export default function SocialTopBar() {
   //const [showTopicModal, setShowTopicModal] = useState(false);
 
   const [animations, setAnimations] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (location.state?.openPostPopup) {
+      setShowPopup(true);
+
+      // Clear the state so it doesn't reopen on refresh
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   const maxChars = 2000;
 
@@ -822,13 +832,18 @@ export default function SocialTopBar() {
           "[data-post-button]"
         ) as HTMLElement;
 
-        if (postButton) {
-          localStorage.setItem(
-            "karma_credits",
-            response.data.data.karma_credits.toString()
-          );
-          // Trigger credit animation for creating a post (more credits than a like)
-          triggerCreditAnimation(postButton, 20); // 20 credits for creating a post
+        if (
+          import.meta.env.VITE_ENV_STAGE === "test" ||
+          import.meta.env.VITE_ENV_STAGE === "uat"
+        ) {
+          if (postButton) {
+            localStorage.setItem(
+              "karma_credits",
+              response.data.data.karma_credits.toString()
+            );
+            // Trigger credit animation for creating a post (more credits than a like)
+            triggerCreditAnimation(postButton, 20); // 20 credits for creating a post
+          }
         }
 
         showToast({
@@ -1067,8 +1082,13 @@ export default function SocialTopBar() {
       }
 
       // Only trigger animation when LIKING (not unliking) - AFTER API call
-      if (!isCurrentlyLiked) {
-        triggerCreditAnimation(buttonElement, 5); // 5 credits for like
+      if (
+        import.meta.env.VITE_ENV_STAGE === "test" ||
+        import.meta.env.VITE_ENV_STAGE === "uat"
+      ) {
+        if (!isCurrentlyLiked) {
+          triggerCreditAnimation(buttonElement, 5); // 5 credits for like
+        }
       }
 
       // Update post data
@@ -1467,7 +1487,7 @@ export default function SocialTopBar() {
               ) : ( */}
                 <>
                   {/* Start a Post */}
-                  <div className="bg-gradient-to-r from-[#7077fe36] to-[#f07eff21] p-4 md:p-10 rounded-xl mb-4 md:mb-5">
+                  <div className="bg-linear-to-r from-[#7077fe36] to-[#f07eff21] p-4 md:p-10 rounded-xl mb-4 md:mb-5">
                     <div className="flex flex-col gap-2 md:gap-3">
                       <div className="flex items-center gap-8">
                         <img
@@ -1543,7 +1563,7 @@ export default function SocialTopBar() {
                     {/* Create Story Card */}
                     <div
                       onClick={() => openStoryPopup()}
-                      className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-[12px] overflow-hidden relative cursor-pointer shrink-0 snap-start"
+                      className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-xl overflow-hidden relative cursor-pointer shrink-0 snap-start"
                     >
                       <img
                         src={createstory}
@@ -1554,7 +1574,7 @@ export default function SocialTopBar() {
                           target.src = "/profile.png";
                         }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                      <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
                       <svg
                         viewBox="0 0 162 70"
                         preserveAspectRatio="none"
@@ -1574,7 +1594,7 @@ export default function SocialTopBar() {
                           />
                         </div>
                       </div>
-                      <div className="absolute bottom-[20px] w-full text-center text-white text-xs md:text-[15px] font-normal z-20">
+                      <div className="absolute bottom-5 w-full text-center text-white text-xs md:text-[15px] font-normal z-20">
                         Create Story
                       </div>
                       <div className="w-full border-t-[5px] border-[#7C81FF] mt-4"></div>
@@ -1583,7 +1603,7 @@ export default function SocialTopBar() {
                     {storiesData.map((story) => (
                       <div
                         key={story.id}
-                        className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-[12px] overflow-hidden relative"
+                        className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-xl overflow-hidden relative"
                       >
                         <StoryCard
                           id={story.id}
@@ -1636,7 +1656,7 @@ export default function SocialTopBar() {
                   </div>
 
                   {/* Posts Section */}
-                  <div className="mt-1 h-[56px] px-6 py-4 bg-[rgba(112,119,254,0.1)] text-[#7077FE] font-medium rounded-[8px] text-left w-full font-family-Poppins text-[16px]">
+                  <div className="mt-1 h-14 px-6 py-4 bg-[rgba(112,119,254,0.1)] text-[#7077FE] font-medium rounded-lg text-left w-full font-family-Poppins text-[16px]">
                     Reflection Scroll
                   </div>
                   {userPosts.map((post) => (
@@ -1676,7 +1696,7 @@ export default function SocialTopBar() {
                                 {post.profile.first_name}{" "}
                                 {post.profile.last_name}
                               </Link>
-                              <span className="text-[#999999] text-xs md:text-[12px] font-[300]">
+                              <span className="text-[#999999] text-xs md:text-[12px] font-light">
                                 {" "}
                                 <Link
                                   to={`/dashboard/userprofile/${post?.profile?.user_id}`}
@@ -1697,7 +1717,7 @@ export default function SocialTopBar() {
                             <button
                               onClick={() => handleConnect(post.user_id)}
                               disabled={connectingUsers[post.user_id] || false}
-                              className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-[12px] py-[6px] rounded-full transition-colors font-family-open-sans h-[35px]
+                              className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px]
                               ${
                                 getFriendStatus(post.user_id) === "connected"
                                   ? "bg-gray-400 text-white cursor-not-allowed"
@@ -1749,7 +1769,7 @@ export default function SocialTopBar() {
                             <div className="relative">
                               <button
                                 onClick={() => toggleMenu(post.id, "options")}
-                                className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-[8px] hover:bg-gray-100 transition-colors"
+                                className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
                                 title="More options"
                               >
                                 <MoreHorizontal className="w-5 h-5 text-gray-600" />
@@ -1853,7 +1873,7 @@ export default function SocialTopBar() {
                             <div className="relative">
                               <button
                                 onClick={() => toggleMenu(post.id, "options")}
-                                className="flex items-center border-[#ECEEF2] border shadow-sm justify-center w-8 h-8 rounded-[8px] hover:bg-gray-100 transition-colors"
+                                className="flex items-center border-[#ECEEF2] border shadow-sm justify-center w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
                                 title="More options"
                               >
                                 <MoreHorizontal className="w-5 h-5 text-gray-600" />
@@ -2032,7 +2052,7 @@ export default function SocialTopBar() {
                           }`}
                         >
                           <ThumbsUp
-                            className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0"
+                            className="w-5 h-5 md:w-6 md:h-6 shrink-0"
                             fill={post.is_liked ? "#7077FE" : "none"}
                             stroke={post.is_liked ? "#7077FE" : "#000"}
                           />
@@ -2195,7 +2215,7 @@ export default function SocialTopBar() {
           {/* Right Sidebar Container */}
           <div className="w-full lg:w-[25%] flex flex-col gap-4">
             {/* Quick Actions */}
-            <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
+            <div className="w-full h-fit bg-white rounded-xl pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
               <h3 className="text-[#081021] font-semibold text-base md:text-[14px] mb-3 md:mb-4 px-4">
                 Quick Actions
               </h3>
@@ -2233,7 +2253,7 @@ export default function SocialTopBar() {
 
             {/* User Selected Topics Below Quick Actions */}
             {userSelectedTopics?.length > 0 && (
-              <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
+              <div className="w-full h-fit bg-white rounded-xl pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
                 <div className="flex items-center justify-between mb-3 md:mb-4 px-4">
                   <h3 className="text-gray-700 font-semibold text-base md:text-lg">
                     My Picks
@@ -2273,7 +2293,7 @@ export default function SocialTopBar() {
               </div>
             )}
             {/* Topics BELOW User Selected Topics */}
-            <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
+            <div className="w-full h-fit bg-white rounded-xl pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
               <h3 className="text-[#081021] font-semibold text-base md:text-[14px] mb-3 md:mb-4 px-4">
                 Explore Topics
               </h3>
@@ -2392,7 +2412,7 @@ export default function SocialTopBar() {
                     {postMessage.length}/{maxChars}
                   </div>
 
-                  <div className="space-y-3 mb-4 flex rounded-[8px] border border-[#F07EFF1A]  justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
+                  <div className="space-y-3 mb-4 flex rounded-lg border border-[#F07EFF1A]  justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
                     <p className="mb-0 text-sm font-semibold">
                       Add to your post :
                     </p>
@@ -2595,7 +2615,7 @@ export default function SocialTopBar() {
                   />
 
                   {/* Video Upload Section */}
-                  <div className="space-y-3 mb-4 flex rounded-[8px] border border-[#F07EFF1A] justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
+                  <div className="space-y-3 mb-4 flex rounded-lg border border-[#F07EFF1A] justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
                     <div className="flex justify-center gap-4 w-full">
                       <div>
                         <label className="flex flex-col items-center justify-center gap-2 cursor-pointer">
