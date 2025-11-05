@@ -112,7 +112,7 @@ const Thumb: React.FC<{ src: string; label?: string }> = ({ src, label }) => (
 );
 
 const ProductCard: React.FC<{ p: Product }> = ({ p }) => (
-  <div className="bg-white w-[225px] h-[380px] rounded-[14px] border-[0.5px] border-[#CBD5E1] box-border shadow-sm overflow-hidden">
+  <div className="bg-white h-[380px] rounded-[14px] border-[0.5px] border-[#CBD5E1] box-border shadow-sm overflow-hidden">
     <div className="relative">
       <img src={p.image} alt={p.title} className="w-full h-[180px] object-cover" />
     </div>
@@ -179,7 +179,7 @@ const Library: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#FFFFFF]">
-  <div className="max-w-[1200px] mx-auto px-4 sm:px-6 md:px-0 py-2 grid grid-cols-1 md:grid-cols-[1fr_267px] gap-6">
+  <div className="mx-auto px-4 sm:px-6 md:px-0 py-2 grid grid-cols-1 md:grid-cols-[1fr_267px] gap-6">
         {/* Main content (left) */}
         <main className="space-y-6">
           {/* Continue watching */}
