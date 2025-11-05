@@ -9,7 +9,8 @@ import {
   SendBpFollowRequest,
   CreateBestpracticesCommentReply,
   BPCommentLike,
-  CreateBestpracticesCommentReplyLike, // You'll need to create this API function
+  CreateBestpracticesCommentReplyLike,
+  GetRelatedBestPractices, // You'll need to create this API function
 } from "../Common/ServerAPI";
 import blush from "../assets/bg-one.png";
 import moon from "../assets/moon.png";
@@ -26,6 +27,7 @@ import Thumb from "../assets/prime_thumbs.png";
 import { ChatBubbleLeftIcon, HandThumbUpIcon } from "@heroicons/react/24/solid";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import CreditAnimation from "../Common/CreditAnimation";
+import { useToast } from "../components/ui/Toast/ToastProvider";
 
 const SingleBP = () => {
   const [isSaved, setIs_saved] = useState<boolean>(false);
@@ -44,10 +46,12 @@ const SingleBP = () => {
   const [replyText, setReplyText] = useState("");
   const [replyErrors, setReplyErrors] = useState<{ [key: string]: string }>({});
   const [animations, _setAnimations] = useState<any[]>([]);
+  const [relatedBestPractices, setRelatedBestPractices] = useState<any[]>([]);
 
   const profile_picture = localStorage.getItem("profile_picture") || "";
   const name = localStorage.getItem("name") || "";
   const { id } = useParams();
+  const { showToast } = useToast();
 
   useEffect(() => {
     fetchSinglePost(id);
@@ -220,6 +224,27 @@ const SingleBP = () => {
   const toggleSort = () => setSortLatest(!sortLatest);
   const navigate = useNavigate();
 
+  const fetchRelatedBestPractices = async () => {
+    try {
+      const response = await GetRelatedBestPractices(id);
+      console.log("🚀 ~ fetchRelatedBestPractices ~ response:", response);
+      if (response?.data?.data?.rows) {
+        setRelatedBestPractices(response.data.data.rows);
+      }
+    } catch (error: any) {
+      console.error("Error fetching related best practices:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchRelatedBestPractices();
+  }, []);
+
   // const triggerCreditAnimation = (fromElement: HTMLElement, amount = 10) => {
   //   const walletIcon = document.querySelector(
   //     "[data-wallet-icon]"
@@ -326,16 +351,18 @@ const SingleBP = () => {
             <div className="border-t border-gray-200 pt-6">
               <div className="mb-8">
                 <p className="text-[#7177FE] text-sm font-medium">
-                  Creativity & Expression
+                  {singlepost?.profession_data?.title
+                    ? singlepost?.profession_data?.title
+                    : singlepost?.interest}
                 </p>
                 <h1 className="text-[34px] sm:text-3xl font-bold text-[#000000] mt-1 leading-snug">
                   {singlepost?.title}
                 </h1>
-                <p className="text-gray-600 mt-3 text-sm sm:text-base">
+                {/* <p className="text-gray-600 mt-3 text-sm sm:text-base">
                   Explore how conscious photography transforms ordinary moments
                   into meaningful stories, capturing emotion, perspective, and
                   purpose through every frame.
-                </p>
+                </p> */}
               </div>
 
               {/* ======= Info Row - Grid Version ======= */}
@@ -732,32 +759,45 @@ const SingleBP = () => {
                 </div>
 
                 {/* ======= RIGHT: Related Section ======= */}
+                {/* ======= RIGHT: Related Section ======= */}
                 <aside className="lg:col-span-4 bg-[#F9F9F9] rounded-[30px] shadow-sm p-4 h-fit">
                   <h3 className="font-semibold text-gray-900 text-[20px] mb-4">
-                    Related Best Practises
+                    Related Best Practices
                   </h3>
                   <div className="space-y-3">
-                    {[1, 2, 3, 4, 5].map((_, i) => (
-                      <div
-                        key={i}
-                        className="flex gap-3 items-start p-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 cursor-pointer"
-                      >
-                        <img
-                          src={image1}
-                          alt="Related"
-                          className="w-15 h-15 rounded-md object-cover"
-                        />
-                        <div className="flex-1">
-                          <p className="font-medium text-gray-800 text-[13px]">
-                            The Foundation of IT Security
-                          </p>
-                          <p className="text-[12px] text-gray-500 mt-1">
-                            employees access countless digital assets — emails,
-                            data...
-                          </p>
+                    {relatedBestPractices.length > 0 ? (
+                      relatedBestPractices.map((practice) => (
+                        <div
+                          key={practice.id}
+                          className="flex gap-3 items-start p-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 cursor-pointer"
+                          onClick={() =>
+                            navigate(`/dashboard/bestpractices/${practice.id}`)
+                          }
+                        >
+                          <img
+                            src={practice.file || image1}
+                            alt={practice.title}
+                            className="w-15 h-15 rounded-md object-cover"
+                          />
+                          <div className="flex-1">
+                            <p className="font-medium text-gray-800 text-[13px] line-clamp-2">
+                              {practice.title}
+                            </p>
+                            <p className="text-[12px] text-gray-500 mt-1 line-clamp-2">
+                              {/* Create a text-only version of the description by stripping HTML tags */}
+                              {practice.description
+                                ?.replace(/<[^>]*>/g, "")
+                                .substring(0, 50)}
+                              ...
+                            </p>
+                          </div>
                         </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-4 text-gray-500 text-sm">
+                        No related best practices found
                       </div>
-                    ))}
+                    )}
                   </div>
                 </aside>
               </div>
