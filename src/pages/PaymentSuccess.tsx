@@ -1,5 +1,4 @@
 import React from "react";
-import Header from "../components/MarketPlace/Buyerheader";
 import {  CheckCircle, ShoppingCart,Check, WalletCards} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import pay from "../assets/pay.svg";
@@ -8,9 +7,8 @@ import pay from "../assets/pay.svg";
 const PaymentSuccess: React.FC = () => {
   const navigate = useNavigate();
     return (
-        <main className="min-h-screen bg-white">
-            <Header />
-
+    
+<>
 <div className="w-full mx-auto px-6 py-8">
         {/* ===== Progress Bar ===== */}
         <div className="flex flex items-center justify-center gap-10 mb-10">
@@ -75,7 +73,7 @@ const PaymentSuccess: React.FC = () => {
 </button>
         </div>
 
-                </main>
+               </>
 
  );
 };

@@ -116,7 +116,7 @@ export default function EcoSystemApp() {
     const id = setInterval(() => {
       step = (step + 1) % order.length;
       setActiveCard(order[step]);
-    }, 2000);
+    }, 10000);
     return () => clearInterval(id);
   }, [autoPlay, activeCard, isSmallScreen]);
 

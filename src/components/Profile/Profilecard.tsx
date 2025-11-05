@@ -30,7 +30,6 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   onOpenFollowing,
   activeTab,
 }) => {
-  console.log("profileImage", profileImage);
   //const [activeTab, setActiveTab] = useState(tabs[0]?.label || "");
 
   const navigate = useNavigate();
@@ -67,9 +66,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
           />
           <div>
             {name && (
-              <h3 className="text-lg font-semibold text-gray-800">{name}</h3>
+              <h3 className="text-lg font-semibold text-gray-800">{name || ""}</h3>
             )}
-            {username && <p className="text-sm text-gray-500">@{username}</p>}
+            {username && <p className="text-sm text-gray-500">@{username || ""}</p>}
             <div
               className="flex gap-4 mt-1"
               style={{

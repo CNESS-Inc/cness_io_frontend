@@ -3,10 +3,9 @@ import { useSearchParams } from "react-router-dom";
 import { Search, X, ChevronDown, Filter as FilterIcon } from "lucide-react";
 import ProductCard from "../components/MarketPlace/ProductCard";
 import Filter from "../components/MarketPlace/Filter";
-import Header from "../components/MarketPlace/Buyerheader";
 import filter from "../assets/filter.svg";
 
-const Wishlist = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
+const Wishlist : React.FC = () => {
   const [searchParams] = useSearchParams();
   const initialSearch = searchParams.get("search") || "";
   const [searchQuery, setSearchQuery] = useState(initialSearch);
@@ -89,16 +88,10 @@ const clearSelection = () => {
   };
 
   return (
-    <main className="min-h-screen bg-white">
-      <Header />
-
-      <div
-        className={`transition-all duration-300 ${
-          isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
-        } pt-[20px] px-6`}
-      >
+    <>
+ 
 <h2
-  className="font-[Poppins] font-semibold text-[20px] leading-[100%] text-[#242E3A] mb-6">
+  className="font-[Poppins] font-semibold text-[20px] leading-[100%] text-[#242E3A] mb-6 mt-5">
   My Wishlist
 </h2>        {/* 🔍 Search + Sort Section */}
         <div className="w-full max-w-[2000px] mx-auto flex items-start justify-between px-5 mt-8 gap-6">
@@ -213,8 +206,8 @@ const clearSelection = () => {
             </div>
           </div>
         )}
-      </div>
-    </main>
+    
+</>
   );
 };
 

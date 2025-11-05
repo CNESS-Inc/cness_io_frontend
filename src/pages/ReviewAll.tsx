@@ -1,4 +1,3 @@
-import Header from "../components/MarketPlace/Buyerheader";
 import { useLocation } from 'react-router-dom';
 
 import ProductCard from '../components/MarketPlace/ProductCard';
@@ -48,8 +47,8 @@ if (!product) {
   ];
 
   return (
-    <main className="min-h-screen">
-      <Header />
+
+     
 
       <div className="flex flex-col lg:flex-row gap-6 px-6 py-8">
         {/* ===== LEFT SECTION ===== */}
@@ -180,7 +179,7 @@ if (!product) {
 
         
       </div>
-    </main>
+
   );
 };
 

@@ -310,8 +310,16 @@ const AddEbookForm: React.FC = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* LEFT Upload */}
-                  <label className="flex flex-col items-center justify-center border-2 border-dashed border-[#CBD5E1] rounded-lg h-40 cursor-pointer hover:border-[#7077FE] transition-all bg-[#EEF3FF]">
-                    <input
+<label
+  className="relative flex flex-col items-center justify-center h-40 cursor-pointer relative rounded-lg p-6 text-center cursor-pointer transition-all bg-[#F9FAFB] hover:bg-[#EEF3FF]"
+>
+  {/* ✅ SVG dashed border */}
+  <svg
+    className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none"
+  >
+    <rect x="1"  y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="12" ry="12"  stroke="#CBD5E1" strokeWidth="2" strokeDasharray="6,6" fill="none"
+      className="transition-all duration-300 group-hover:stroke-[#7077FE]" />
+  </svg>                     <input
                       type="file"
                       accept=".pdf,.epub,.mobi,.azw3,.txt"
                       className="hidden"
@@ -426,8 +434,25 @@ const AddEbookForm: React.FC = () => {
             {/* Add Chapter Button */}
             <button
               onClick={handleAddChapter}
-              className="w-full border-2 border-dashed border-[#CBD5E1] rounded-lg py-4 text-[#7077FE] font-medium hover:border-[#7077FE] transition-all"
-            >
+              className="relative w-full rounded-lg py-4 text-[#7077FE] font-medium bg-white cursor-pointer group overflow-hidden transition-all"
+    >
+      <svg
+    className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none"
+  >
+    <rect
+      x="1"
+      y="1"
+      width="calc(100% - 2px)"
+      height="calc(100% - 2px)"
+      rx="10"
+      ry="10"
+      stroke="#CBD5E1"
+      strokeWidth="2"
+      strokeDasharray="6,6"
+      fill="none"
+      className="transition-colors duration-300 group-hover:stroke-[#7077FE]"
+    />
+  </svg>
               + Add Chapter
             </button>
           </div>

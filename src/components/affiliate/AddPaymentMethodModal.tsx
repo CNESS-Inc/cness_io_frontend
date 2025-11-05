@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Button from '../ui/Button';
+//import Button from '../ui/Button';
 import Select from 'react-select';
 import { CiBank } from 'react-icons/ci';
 import { PiPaypalLogo } from 'react-icons/pi';
@@ -484,23 +484,41 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({ isOpen, o
                                 </div>
 
                                 <div className="flex justify-end gap-3 pt-4 border-t border-[#ECEEF2]">
-                                    <Button
+                                    <button
                                         type="button"
-                                        variant="white-outline"
                                         onClick={handleClose}
-                                        className="px-6 py-3 rounded-full"
+                                        className="rounded-full
+    px-[20px] py-[10px]
+    text-[16px]
+    leading-[100%]
+    tracking-[0px]
+    text-center
+    text-[#242424]
+    font-['Open_Sans']
+    font-normal
+    disabled:opacity-60
+    border border-[#DADADA]
+    bg-white
+    hover:bg-[#F9F9F9]
+    transition-all
+  "
                                         disabled={isSubmitting}
                                     >
                                         Cancel
-                                    </Button>
-                                    <Button
+                                    </button>
+                                   <button
                                         type="submit"
-                                        variant="gradient-primary"
-                                        className="px-6 py-3 rounded-full"
+                                        className="rounded-full px-[20px] py-[10px] text-base font-normal text-white disabled:opacity-60"
+                  style={{
+                    background:
+                      "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
+                  }}
+
+
                                         disabled={isSubmitting}
                                     >
                                         {isSubmitting ? (editMode ? 'Updating...' : 'Adding...') : (editMode ? 'Update Payment Method' : 'Add Payment Method')}
-                                    </Button>
+                                    </button>
                                 </div>
                             </form>
                         </div>

@@ -16,7 +16,7 @@ export default function MobileSection() {
   // }, []);
 
   return (
-    <section className="px-4 sm:px-6 lg:py-13 md:py-[60px] py-[60px] bg-[#F1EFFF] mobile-section lg:h-[500px] ">
+<section className="bg-[#F1EFFF] px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
       <div className="max-w-[1336px] mx-auto overflow-x-hidden lg:h-[450px]">
         <div className="flex lg:flex-row flex-col lg:h-[400px]">
           <div className="lg:w-7/12 w-full flex items-center">

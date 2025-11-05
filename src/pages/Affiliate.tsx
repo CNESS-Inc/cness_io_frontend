@@ -656,13 +656,16 @@ export default function Affiliate() {
                 <p className="text-[#7A7A7A] font-['Open_Sans',Helvetica]">
                   No payment methods added yet
                 </p>
-                <Button
-                  variant="gradient-primary"
-                  onClick={() => setIsAddPaymentModalOpen(true)}
-                  className="px-6 py-3 rounded-full"
-                >
-                  Add Your First Payment Method
-                </Button>
+              <button
+  onClick={() => setIsAddPaymentModalOpen(true)}
+  className="rounded-full px-[20px] py-[10px] text-base font-normal text-white disabled:opacity-60"
+                  style={{
+                    background:
+                      "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
+                  }}
+>
+  Add Your First Payment Method
+</button>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">

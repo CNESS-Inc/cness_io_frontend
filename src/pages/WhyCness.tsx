@@ -6,7 +6,9 @@ import Header from "../layout/Header/Header";
 import Footer from "../layout/Footer/Footer";
 import Button from "../components/ui/Button";
 import SignupModel from "../components/OnBoarding/Signup";
-import bulb from "../assets/bulb.svg";
+//import bulb from "../assets/bulb.svg";
+import WhatOffer from "../components/ecoSystem/WhatOffer";
+
 //import Teamframe from "../components/ui/TeamFrame";
 import GetInTouch from "../components/sections/GetInTouch";
 //import Subscribe from "../components/sections/Subscribe";
@@ -70,7 +72,7 @@ export default function WhyCness() {
       <Header />
       <LazySection effect="fade-up" delay={0.2}>
         <section
-          className="relative w-full py-16 md:py-20"
+          className="relative w-full py-12 sm:py-16 md:py-20 px-4"
           style={{
             background:
               "linear-gradient(135deg, #FFFFFF 10%, #FDEDED 70%, #F9D3F2 100%)",
@@ -101,7 +103,7 @@ export default function WhyCness() {
               variant="gradient-primary"
               size="md"
               onClick={scrollToGetInTouch}
-              className="mt-6 font-['Plus Jakarta Sans'] font-medium text-[16px] leading-[100%] tracking-[0px] text-center"
+              className="mt-5 sm:mt-6 px-5 py-2 sm:px-6 sm:py-3 text-[14px] sm:text-[16px] font-['Plus Jakarta Sans'] font-medium text-[16px] leading-[100%] tracking-[0px] text-center"
             >
               Contact Us
             </Button>
@@ -117,7 +119,7 @@ export default function WhyCness() {
           mx-auto w-full max-w-[1900px] rounded-[32px]
               object-cover
               /* heights per breakpoint */
-              h-[240px] sm:h-[280px] md:h-[320px] lg:h-[405px] xl:h-[460px] 2xl:h-[460px]
+              h-[220px] sm:h-[280px] md:h-[360px] lg:h-[405px] xl:h-[460px] 2xl:h-[460px]
               /* keep the man’s face in frame as width grows */
               object-[58%_50%]       /* base: a bit right of center */
               sm:object-[60%_50%]
@@ -138,7 +140,7 @@ export default function WhyCness() {
         <section className="relative w-full py-16 lg:py-20 bg-gradient-to-r from-[#FAFAFA] to-[#F6F5FA]">
           <div className="mx-auto max-w-[1200px] px-6">
             {/* Top row */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-10 items-start">
+<div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 items-start px-4 sm:px-6">
               {/* Left: title */}
               <div className="text-center lg:text-left">
                 <p className="text-[32px] md:text-[38px] lg:text-[42px] font-semibold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
@@ -200,7 +202,7 @@ export default function WhyCness() {
       </LazySection>
 
       <LazySection effect="fade-up" delay={0.2}>
-        <section className="w-full bg-white py-12 md:py-20 px-10 md:px-[86px]">
+<section className="w-full bg-white py-10 sm:py-14 md:py-20 px-4 sm:px-8 md:px-[60px]">
           <div className="w-full 2xl:w-[1300px] mx-auto bg-[#F5F7F9] rounded-[24px] md:rounded-[32px] px-6 sm:px-10 md:px-12 xl:px-[120px]">
             <div className="grid xl:grid-cols-2 gap-2 w-full items-center">
               {/* Left copy */}
@@ -303,7 +305,7 @@ export default function WhyCness() {
       </LazySection>
 
       <LazySection effect="fade-up" delay={0.2}>
-        <section className="w-full max-w-7xl flex mx-auto flex-col justify-center items-center py-16 px-4">
+       {/* <section className="w-full max-w-7xl flex mx-auto flex-col justify-center items-center py-16 px-4">
           <div className="w-full text-center">
             <h3
               style={{ fontFamily: "Poppins, sans-serif" }}
@@ -368,17 +370,17 @@ export default function WhyCness() {
                   key={item.n}
                   className="relative rounded-4xl bg-[#FAFAFA] hover:shadow-md transition p-6"
                 >
-                  {/* Top right icon */}
+                 
                   <div className="absolute top-4 right-4 w-10 h-10">
                     <img src={bulb} alt="bulb" />
                   </div>
 
-                  {/* Number */}
+                 
                   <span className="font-['Open_Sans'] block text-lg text-[#4B4B4B] font-normal mb-2">
                     {item.n}
                   </span>
 
-                  {/* Title */}
+             
                   <h3
                     style={{ fontFamily: "Poppins, sans-serif" }}
                     className="text-2xl font-medium text-black"
@@ -386,7 +388,7 @@ export default function WhyCness() {
                     {item.title}
                   </h3>
 
-                  {/* Description */}
+                 
                   <p className="font-['Open_Sans'] mt-2 text-base text-[#242424] leading-relaxed font-light">
                     {item.desc}
                   </p>
@@ -394,7 +396,8 @@ export default function WhyCness() {
               ))}
             </div>
           </div>
-        </section>
+        </section>*/}
+         <WhatOffer />
       </LazySection>
 
       {/* <LazySection effect="fade-up" delay={0.2}>

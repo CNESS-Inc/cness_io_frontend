@@ -14,16 +14,16 @@ import {
   CirclePlay, // empty state icon
 } from "lucide-react";
 import MyPost from "../components/Profile/Mypost";
-import MyCollection from "../components/Profile/MymultiviewCollection";
+// import MyCollection from "../components/Profile/MymultiviewCollection";
 import type { CollectionBoard } from "../components/Profile/MymultiviewCollection"; // type-only import ✅
 
 import PostPopup from "../components/Profile/Popup";
 
-import aware1 from "../assets/aware_1.jpg";
-import aware2 from "../assets/aware_2.jpg";
-import aware3 from "../assets/aware_3.jpg";
-import carusol2 from "../assets/carosuel2.png";
-import aware4 from "../assets/carosuel4.png";
+// import aware1 from "../assets/aware_1.jpg";
+// import aware2 from "../assets/aware_2.jpg";
+// import aware3 from "../assets/aware_3.jpg";
+// import carusol2 from "../assets/carosuel2.png";
+// import aware4 from "../assets/carosuel4.png";
 
 import {
   // GetFollowingUser,
@@ -35,6 +35,8 @@ import {
   GetConnectionUser,
   UnFriend,
   MeDetails,
+  GetSavedPosts,
+  SavePost,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import Modal from "../components/ui/Modal";
@@ -70,8 +72,6 @@ export interface Media {
 //sample for collections
 const userProfilePicture = localStorage.getItem("profile_picture");
 
-
-
 const userName = localStorage.getItem("username") || "User";
 const fullName = localStorage.getItem("name") || "User";
 
@@ -98,44 +98,44 @@ const profiles = [
   },
 ];
 
-const demoBoards: CollectionBoard[] = [
-  {
-    id: "c1",
-    title: "Collection 1",
-    updatedAt: "2d ago",
-    items: [
-      { id: "1", type: "image", src: aware1 },
-      { id: "2", type: "image", src: aware2 },
-      {
-        id: "3",
-        type: "video",
-        src: "/test1.mp4",
-        poster: "/images/party.jpg",
-      },
-      { id: "4", type: "image", src: aware3 },
-    ],
-  },
-  {
-    id: "c2",
-    title: "Collection 2",
-    updatedAt: "2d ago",
-    items: [
-      { id: "1", type: "image", src: aware4 },
-      { id: "2", type: "image", src: carusol2 },
-      {
-        id: "3",
-        type: "video",
-        src: "/test1.mp4",
-        poster: "/images/party.jpg",
-      },
-      {
-        id: "4",
-        type: "text",
-        text: "Sustainability has become a transformative force…",
-      },
-    ],
-  },
-];
+// const demoBoards: CollectionBoard[] = [
+//   {
+//     id: "c1",
+//     title: "Collection 1",
+//     updatedAt: "2d ago",
+//     items: [
+//       { id: "1", type: "image", src: aware1 },
+//       { id: "2", type: "image", src: aware2 },
+//       {
+//         id: "3",
+//         type: "video",
+//         src: "/test1.mp4",
+//         poster: "/images/party.jpg",
+//       },
+//       { id: "4", type: "image", src: aware3 },
+//     ],
+//   },
+//   {
+//     id: "c2",
+//     title: "Collection 2",
+//     updatedAt: "2d ago",
+//     items: [
+//       { id: "1", type: "image", src: aware4 },
+//       { id: "2", type: "image", src: carusol2 },
+//       {
+//         id: "3",
+//         type: "video",
+//         src: "/test1.mp4",
+//         poster: "/images/party.jpg",
+//       },
+//       {
+//         id: "4",
+//         type: "text",
+//         text: "Sustainability has become a transformative force…",
+//       },
+//     ],
+//   },
+// ];
 
 /*const followersdata = [
   { id: "1", name: "Chloe",  handle: "chloejane",    avatar: "/assets/person1.jpg" },
@@ -216,7 +216,7 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState(
     location.state?.activeTab || profiles[0].tabs[0].label
   );
-  const [boards, setBoards] = useState<CollectionBoard[]>([]);
+  const [boards, _setBoards] = useState<CollectionBoard[]>([]);
   //const handleAddCollection = () => setBoards(demoBoards);
   const navigate = useNavigate();
   const [selectedPost, setSelectedPost] = useState<MyPostProps | null>(null);
@@ -226,6 +226,8 @@ export default function Profile() {
   const [userPosts, setUserPosts] = useState<MyPostProps[]>([]);
   const [followingUsers, setFollowingUsers] = useState<FollowedUser[]>([]);
   const [followerUsers, setFollowerUsers] = useState<FollowerUser[]>([]);
+  const [collectionItems, setCollectionItems] = useState<any[]>([]);
+  console.log("🚀 ~ Profile ~ collectionItems:", collectionItems);
 
   const { showToast } = useToast();
 
@@ -234,26 +236,29 @@ export default function Profile() {
     postId: string | null;
   }>({ isOpen: false, postId: null });
   const fetchMeDetails = async () => {
-  try {
-    const res = await MeDetails();
-    localStorage.setItem(
-      "profile_picture",
-      res?.data?.data?.user.profile_picture
-    );
-    localStorage.setItem("name", res?.data?.data?.user.name);
-    localStorage.setItem("main_name", res?.data?.data?.user.main_name);
-    localStorage.setItem(
-      "karma_credits",
-      res?.data?.data?.user?.karma_credits || 0
-    );
-    localStorage.setItem("username", res?.data?.data?.user?.username);
-    localStorage.setItem("margaret_name", res?.data?.data?.user.margaret_name);
-  } catch (error) {}
-};
+    try {
+      const res = await MeDetails();
+      localStorage.setItem(
+        "profile_picture",
+        res?.data?.data?.user.profile_picture
+      );
+      localStorage.setItem("name", res?.data?.data?.user.name);
+      localStorage.setItem("main_name", res?.data?.data?.user.main_name);
+      localStorage.setItem(
+        "karma_credits",
+        res?.data?.data?.user?.karma_credits || 0
+      );
+      localStorage.setItem("username", res?.data?.data?.user?.username);
+      localStorage.setItem(
+        "margaret_name",
+        res?.data?.data?.user.margaret_name
+      );
+    } catch (error) {}
+  };
 
-useEffect(() => {
-  fetchMeDetails();
-}, []);
+  useEffect(() => {
+    fetchMeDetails();
+  }, []);
 
   useEffect(() => {
     // Check if URL has the openpost parameter and a post ID
@@ -329,6 +334,81 @@ useEffect(() => {
       // Optional: Show error to user
       showToast({
         message: "Failed to load follower users",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  const fetchCollectionItems = async () => {
+    try {
+      const res = await GetSavedPosts();
+
+      // Transform the API response to match CollectionItem interface
+     const transformedItems = res.data.data.rows.map((item: any) => {
+        // Handle multiple images (comma-separated), single image/video, or text-only
+        let media = null;
+        if (item.file) {
+          const ext = item.file.split("?")[0].split(".").pop()?.toLowerCase();
+
+          if (
+            item.file_type === "video" ||
+            ["mp4", "mov", "avi", "mkv"].includes(ext!)
+          ) {
+            media = {
+              type: "video",
+              src: item.file,
+              alt: item.content || "",
+              poster: item.file, // You can adjust if you have a separate poster
+            };
+          } else if (
+            item.file_type === "image" ||
+            ["jpg", "jpeg", "png", "gif", "webp"].includes(ext!)
+          ) {
+            const files = item.file
+              .split(",")
+              .map((f: string) => f.trim())
+              .filter(Boolean);
+            if (files.length === 1) {
+              media = {
+                type: "image",
+                src: files[0],
+                alt: item.content || "",
+              };
+            } else if (files.length > 1) {
+              // If your MyPost component supports multiple images, pass as array
+              // Otherwise, just show the first image
+              media = {
+                type: "image",
+                src: files[0],
+                alt: item.content || "",
+                images: files, // Optional: for gallery support
+              };
+            }
+          }
+        }
+        // For text-only posts, media remains null
+
+        return {
+          media,
+          body: item.content,
+          likes: item.likes_count,
+          reflections: item.comments_count,
+          id: item.id,
+          is_liked: item.is_liked,
+          user: item.user,
+          profile: item.profile,
+          date: item.createdAt,
+          // Add more fields if needed
+        };
+      });
+
+      setCollectionItems(transformedItems);
+    } catch (error) {
+      console.error("Error fetching collection items:", error);
+      // Optional: Show error to user
+      showToast({
+        message: "Failed to load collection items",
         type: "error",
         duration: 3000,
       });
@@ -440,6 +520,18 @@ useEffect(() => {
       });
     }
   };
+  const handleUnsavePost = async (postId: string | number) => {
+    try {
+      await SavePost(String(postId)); // Call your API
+      fetchCollectionItems()
+    } catch (error) {
+      showToast({
+        message: "Failed to delete post.",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
 
   const handleLikePost = async (postId: string | number) => {
     try {
@@ -469,7 +561,8 @@ useEffect(() => {
 
   useEffect(() => {
     if (activeTab === "Collections" && boards.length === 0) {
-      setBoards(demoBoards);
+      // setBoards(demoBoards);
+      fetchCollectionItems();
     }
     if (activeTab === "Connections") {
       fetchFollowingUsers();
@@ -573,13 +666,14 @@ useEffect(() => {
                 });
               }
             }}
+            collection
             likesCount={selectedPost.likes ?? 0}
             insightsCount={selectedPost.reflections ?? 0}
           />
         )}
 
         {activeTab === "Collections" &&
-          (boards.length === 0 ? (
+          (collectionItems.length === 0 ? (
             // Empty state without any button
             <div className="border border-dashed border-[#C4B5FD] rounded-xl bg-[#F8F6FF] py-12 flex items-center justify-center">
               <p className="text-sm text-gray-500">No collections yet</p>
@@ -593,7 +687,7 @@ useEffect(() => {
                 </p>
               </div>
 
-              <MyCollection
+              {/* <MyCollection
                 mode="boards"
                 boards={boards}
                 onOpen={(id) => {
@@ -602,7 +696,52 @@ useEffect(() => {
                     state: { board },
                   });
                 }}
-              />
+              /> */}
+
+              <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
+                {collectionItems.length ? (
+                  collectionItems.map((post, i) => (
+                    <MyPost
+                      key={i}
+                      {...post}
+                      showOverlay
+                      collection
+                      //onClick={() => setSelectedPost(post)}
+                      onViewPost={() => setSelectedPost(post)}
+                      onLike={() => {
+                        if (post.id !== undefined) {
+                          handleLikePost(post.id);
+                        }
+                      }}
+                      onOpenReflections={() =>
+                        // console.log("Open reflections for post", i)
+                        setSelectedPost(post)
+                      }
+                      onDeletePost={() => {
+                        if (post.id !== undefined) {
+                          // handleDeletePost(post.id);
+                          setDeleteConfirmation({
+                            isOpen: true,
+                            postId: String(post.id),
+                          });
+                        }
+                      }}
+                      onDeleteSavePost={()=>{
+                        if (post.id !== undefined) {
+                          handleUnsavePost(post.id);
+                        }
+                      }}
+                    />
+                  ))
+                ) : (
+                  <div className="col-span-full border border-dashed border-purple-300 rounded-lg flex items-center justify-center py-16 text-center bg-[#F5F2FF]">
+                    <div className="flex items-center gap-2 text-[#575FFF]">
+                      <CirclePlay className="h-5 w-5" strokeWidth={2} />
+                      <span className="text-sm">No Post yet</span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           ))}
 

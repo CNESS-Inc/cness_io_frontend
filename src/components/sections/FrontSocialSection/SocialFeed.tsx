@@ -858,7 +858,7 @@ export default function SocialFeed() {
           {activeView === "posts" ? (
             <>
               {/* Start a Post */}
-              <div className="bg-gradient-to-r from-[#7077fe36] to-[#f07eff21] p-4 md:p-6 rounded-xl mb-4 md:mb-5">
+              <div className="bg-linear-to-r from-[#7077fe36] to-[#f07eff21] p-4 md:p-6 rounded-xl mb-4 md:mb-5">
                 <div className="flex flex-col gap-2 md:gap-3">
                   <div className="flex items-center gap-3">
                     <img
@@ -917,7 +917,7 @@ export default function SocialFeed() {
                 {/* Create Story Card */}
                 <div
                   onClick={() => setOpenSignup(true)}
-                  className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-[12px] overflow-hidden relative cursor-pointer shrink-0 snap-start"
+                  className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-xl overflow-hidden relative cursor-pointer shrink-0 snap-start"
                 >
                   <img
                     src={createstory}
@@ -928,7 +928,7 @@ export default function SocialFeed() {
                       target.src = "/profile.png";
                     }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
                   <svg
                     viewBox="0 0 162 70"
                     preserveAspectRatio="none"
@@ -948,7 +948,7 @@ export default function SocialFeed() {
                       />
                     </div>
                   </div>
-                  <div className="absolute bottom-[14px] w-full text-center text-white text-xs md:text-[15px] font-medium z-20">
+                  <div className="absolute bottom-3.5 w-full text-center text-white text-xs md:text-[15px] font-medium z-20">
                     Create Story
                   </div>
                   <div className="w-full border-t-[5px] border-[#7C81FF] mt-4"></div>
@@ -957,7 +957,7 @@ export default function SocialFeed() {
                 {storiesData.map((story) => (
                   <div
                     key={story.id}
-                    className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-[12px] overflow-hidden relative mohan"
+                    className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-xl overflow-hidden relative mohan"
                     onClick={() => setOpenSignup(true)}
                   >
                     <StoryCard
@@ -985,7 +985,7 @@ export default function SocialFeed() {
                   </div>
                 ))}
               </div>
-              <div className="w-full border-t-[1px] border-[#C8C8C8] mt-4 md:mt-6"></div>
+              <div className="w-full border-t border-[#C8C8C8] mt-4 md:mt-6"></div>
 
               {/* Posts Section */}
 
@@ -1087,7 +1087,7 @@ export default function SocialFeed() {
                         <div className="relative">
                           <button
                             onClick={() => toggleMenu(post.id, "options")}
-                            className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-[8px] hover:bg-gray-100 transition-colors"
+                            className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
                             title="More options"
                           >
                             <MoreHorizontal className="w-5 h-5 text-gray-600" />
@@ -1177,7 +1177,7 @@ export default function SocialFeed() {
                         <div className="relative">
                           <button
                             onClick={() => toggleMenu(post.id, "options")}
-                            className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-[8px] hover:bg-gray-100 transition-colors"
+                            className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
                             title="More options"
                           >
                             <MoreHorizontal className="w-5 h-5 text-gray-600" />
@@ -1323,7 +1323,7 @@ export default function SocialFeed() {
                     )}
                   </div>
 
-                  <div className="flex grid grid-cols-3 gap-2 md:gap-4 mt-3 md:mt-5 border-t border-[#ECEEF2] py-4 md:flex-none">
+                  <div className="grid grid-cols-3 gap-2 md:gap-4 mt-3 md:mt-5 border-t border-[#ECEEF2] py-4 md:flex-none">
                     <button
                       onClick={() => setOpenSignup(true)}
                       disabled={isLoading}
@@ -1332,7 +1332,7 @@ export default function SocialFeed() {
                       }`}
                     >
                       <ThumbsUp
-                        className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0"
+                        className="w-5 h-5 md:w-6 md:h-6 shrink-0"
                         fill={post.is_liked ? "#7077FE" : "none"} // <-- condition here
                         stroke={post.is_liked ? "#7077FE" : "#000"} // keeps border visible
                       />
@@ -1450,7 +1450,7 @@ export default function SocialFeed() {
         {/* Right Sidebar Container */}
         <div className="w-full lg:w-[25%] flex flex-col gap-4">
           {/* Quick Actions */}
-          <div className="w-full h-fit bg-white rounded-[12px] pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
+          <div className="w-full h-fit bg-white rounded-xl pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
             <h3 className="text-black flex items-center gap-2 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
               <img
                 src={iconMap["socialtrending"]}
@@ -1549,7 +1549,7 @@ export default function SocialFeed() {
                   onChange={(e) => setPostMessage(e.target.value)}
                 />
 
-                <div className="space-y-3 mb-4 flex rounded-[8px] border border-[#F07EFF1A]  justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
+                <div className="space-y-3 mb-4 flex rounded-lg border border-[#F07EFF1A]  justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
                   <p className="mb-0 text-sm font-semibold">
                     Add to your post :
                   </p>
@@ -1745,7 +1745,7 @@ export default function SocialFeed() {
                 />
 
                 {/* Video Upload Section */}
-                <div className="space-y-3 mb-4 flex rounded-[8px] border border-[#F07EFF1A] justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
+                <div className="space-y-3 mb-4 flex rounded-lg border border-[#F07EFF1A] justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
                   <div className="flex justify-center gap-4 w-full">
                     <div>
                       <label className="flex flex-col items-center justify-center gap-2 cursor-pointer">
