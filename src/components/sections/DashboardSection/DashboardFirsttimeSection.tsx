@@ -19,6 +19,7 @@ export default function DashboardFirsttimeSection() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [user, setUser] = useState<any | null>(null);
+  console.log("🚀 ~ DashboardFirsttimeSection ~ user:", user)
   const [isVisible, setIsVisible] = useState(true);
 
   const fetchDashboard = async () => {
@@ -440,7 +441,7 @@ export default function DashboardFirsttimeSection() {
         </div>
         <div className="w-full lg:w-2/5 flex flex-col gap-3">
           <div
-            className="w-full h-full relative py-8 px-[20px] px-[18px] rounded-xl bg-[#FAFAFA]"
+            className="w-full h-full relative py-8 px-[20px] rounded-xl bg-[#FAFAFA]"
             style={{
               border: "1px solid var(--Stroke, rgba(236, 238, 242, 1))",
             }}

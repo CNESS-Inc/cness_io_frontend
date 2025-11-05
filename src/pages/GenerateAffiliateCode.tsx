@@ -118,7 +118,7 @@ const AffiliateGenerateCode = () => {
       };
       const userData = await getReferralEarning(userpayload);
       
-      setReferreEarning(userData.data?.data?.referralEarning?.referral_amount || '0');
+      setReferreEarning(userData.data?.data?.available_amount || '0');
 
       const payload = { referralcode };
       const res = await getReferredUsers(payload);

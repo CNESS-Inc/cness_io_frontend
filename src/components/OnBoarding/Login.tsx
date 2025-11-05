@@ -64,7 +64,7 @@ interface PersonForm {
   interests: (string | number)[];
   professions: (string | number)[];
   custom_profession?: string;
-  question: QuestionAnswer[];
+  // question: QuestionAnswer[];
 }
 // type PartialOrganizationFormData = Partial<OrganizationForm>;
 
@@ -148,7 +148,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
   );
   const [openSignup, setOpenSignup] = useState(false);
   const [orgFormStep, setOrgFormStep] = useState(1); // 1 = Basic Info, 2 = Questions
-  const [personFormStep, setPersonFormStep] = useState(1);
+  const [personFormStep, _setPersonFormStep] = useState(1);
   console.log("🚀 ~ Login ~ personFormStep:", personFormStep);
   const closeByKey = (key: typeof activeModal) =>
     setActiveModal((curr) => (curr === key ? null : curr));
@@ -181,7 +181,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
     last_name: "",
     interests: [],
     professions: [],
-    question: [],
+    // question: [],
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [subDomain, setsubDomain] = useState<SubDomain[] | null>();
@@ -200,6 +200,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
   const [loginErrors, setLoginErrors] = useState<FormErrors>({});
   const [organizationErrors, setOrganizationErrors] = useState<FormErrors>({});
   const [personErrors, setPersonErrors] = useState<FormErrors>({});
+  console.log("🚀 ~ Login ~ personErrors:", personErrors);
   const [resetPasswordErrors] = useState<FormErrors>({});
   const [apiMessage, setApiMessage] = useState<string | null>(null);
   const [isOrgFormSubmitted, setIsOrgFormSubmitted] = useState(false);
@@ -366,44 +367,28 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
       return isValid;
     }
 
+    // In the validateForm function, update the "person" section:
     if (formType === "person") {
-      // Always validate step 1 fields if we're on step 1 or validating all steps
-      if (step === 1) {
-        const requiredFields: Array<
-          "first_name" | "last_name" | "interests" | "professions"
-        > = ["first_name", "last_name", "interests", "professions"];
+      const requiredFields: Array<
+        "first_name" | "last_name" | "interests" | "professions"
+      > = ["first_name", "last_name", "interests", "professions"];
 
-        requiredFields.forEach((field) => {
-          const error = validateField(field, formData[field], {
-            required: true,
-          });
-          if (error) {
-            newErrors[field] = error;
+      requiredFields.forEach((field) => {
+        const error = validateField(field, formData[field], {
+          required: true,
+        });
+        if (error) {
+          newErrors[field] = error;
+          isValid = false;
+        }
+        if (field === "interests" || field === "professions") {
+          if (!formData[field] || formData[field].length === 0) {
+            newErrors[field] = `${field} is required`;
             isValid = false;
           }
-          if (field === "interests" || field === "professions") {
-            if (!formData[field] || formData[field].length === 0) {
-              newErrors[field] = `${field} is required`;
-              isValid = false;
-            }
-          }
-        });
-      }
-
-      // Only validate questions when submitting (step 2) or validating all steps
-      if (step === 2) {
-        readlineQuestion.forEach((question: any) => {
-          const answer =
-            formData.question?.find(
-              (q: QuestionAnswer) => q.question_id === question.id
-            )?.answer || "";
-
-          if (!answer || answer.trim() === "") {
-            newErrors[`question_${question.id}`] = "This field is required";
-            isValid = false;
-          }
-        });
-      }
+        }
+      });
+      console.log("🚀 ~ validateForm ~ newErrors:", newErrors);
 
       if (setErrors) {
         setPersonErrors(newErrors);
@@ -434,16 +419,16 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
       setOrganizationErrors({});
     }
   };
-  const handleNextPersonClick = () => {
-    // Only validate step 1 fields when clicking next
-    const isValid = validateForm(personForm, "person", 1, true);
-    console.log("🚀 ~ handleNextPersonClick ~ isValid:", isValid);
+  // const handleNextPersonClick = () => {
+  //   // Only validate step 1 fields when clicking next
+  //   const isValid = validateForm(personForm, "person", 1, true);
+  //   console.log("🚀 ~ handleNextPersonClick ~ isValid:", isValid);
 
-    if (isValid) {
-      setPersonFormStep(2);
-      setOrganizationErrors({});
-    }
-  };
+  //   if (isValid) {
+  //     setPersonFormStep(2);
+  //     setOrganizationErrors({});
+  //   }
+  // };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -474,10 +459,6 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);
         localStorage.setItem("isAdult", response?.data?.data?.user?.is_adult);
-        console.log(
-          "🚀 ~ handleSubmit ~ response?.data?.data?.jwt:",
-          response?.data?.data?.jwt
-        );
         localStorage.setItem(
           "is_disqualify",
           response?.data?.data?.user?.is_disqualify
@@ -496,6 +477,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
           response?.data?.data?.user.profile_picture
         );
         localStorage.setItem("name", response?.data?.data?.user.name);
+        localStorage.setItem("karma_credits", response?.data?.data?.user?.karma_credits || 0);
         localStorage.setItem("main_name", response?.data?.data?.user.main_name);
         localStorage.setItem(
           "margaret_name",
@@ -508,10 +490,20 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
             response?.data?.data?.user.my_referral_code
           );
         }
-        const completionStatus =
-          response.data.data.user.person_organization_complete;
         const completed_step = response.data.data.user.completed_step;
         const is_disqualify = response.data.data.user.is_disqualify;
+
+        const res = await MeDetails();
+        localStorage.setItem(
+          "profile_picture",
+          res?.data?.data?.user.profile_picture
+        );
+        localStorage.setItem("name", res?.data?.data?.user.name);
+        localStorage.setItem("main_name", res?.data?.data?.user.main_name);
+        localStorage.setItem(
+          "margaret_name",
+          res?.data?.data?.user.margaret_name
+        );
 
         //   if (!is_disqualify) {
         //     if (completionStatus === 0 || completed_step === 0) {
@@ -626,25 +618,13 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
           // Skip type selection and directly set to Person (1)
           await handleTypeSelection(1);
 
-          if (completionStatus === 0 || completed_step === 0) {
+          if (completed_step === 0) {
             // This will now directly open the person form
             setActiveModal("person");
-          } else if (completionStatus === 1) {
-            if (completed_step === 0) {
-              setActiveModal("person");
-            } else if (completed_step === 1) {
-              navigate("/dashboard");
-            } else {
-              navigate("/dashboard");
-            }
-          } else if (completionStatus === 2) {
-            if (completed_step === 0) {
-              setActiveModal("organization");
-            } else if (completed_step === 1) {
-              navigate("/dashboard");
-            } else {
-              navigate("/dashboard");
-            }
+          } else if (completed_step === 1) {
+            navigate("/dashboard");
+          } else if (completed_step === 2) {
+            navigate("/dashboard");
           }
         } else {
           navigate("/dashboard");
@@ -872,15 +852,16 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
       return;
     }
 
-    if (!validateForm(personForm, "person", 2, true)) {
+    // Remove step parameter from validation
+    if (!validateForm(personForm, "person", 1, true)) {
       setIsSubmitting(false);
       return;
     }
 
+    // Rest of your handlePersonSubmit function remains the same...
     try {
       const payload = {
         ...personForm,
-        // Include custom_profession in the payload if "other" is selected
         professions: personForm.professions.includes("other")
           ? [
               ...personForm.professions.filter((p) => p !== "other"),
@@ -889,81 +870,25 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
           : personForm.professions,
       };
 
-      const res = await submitPersonDetails(payload as any);
-      localStorage.setItem("person_organization", "1");
+      const res = await submitPersonDetails(payload);
+      
+
+      if (res?.success) {
       localStorage.setItem("completed_step", "1");
-      // Group plans by their range (Basic Plan, Pro Plan, etc.)
-      if (res.success.statusCode === 200) {
-        const plansByRange: Record<string, any> = {};
-        res?.data?.data?.plan.forEach((plan: any) => {
-          if (!plansByRange[plan.plan_range]) {
-            plansByRange[plan.plan_range] = {};
-          }
-          plansByRange[plan.plan_range][plan.plan_type] = plan;
+        // showToast({
+        //   message: "Assessment submitted successfully!",
+        //   type: "success",
+        //   duration: 4000,
+        // });
+        navigate("/dashboard");
+      } else {
+        showToast({
+          message: res?.data?.message || "Failed to submit assessment.",
+          type: "error",
+          duration: 4000,
         });
-
-        const response = await MeDetails();
-        localStorage.setItem(
-          "profile_picture",
-          response?.data?.data?.user.profile_picture
-        );
-        localStorage.setItem("name", response?.data?.data?.user.name);
-        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
-        localStorage.setItem(
-          "margaret_name",
-          response?.data?.data?.user.margaret_name
-        );
-
-        // Create combined plan objects with both monthly and yearly data
-        const updatedPlans = Object.values(plansByRange)?.map(
-          (planGroup: any) => {
-            const monthlyPlan = planGroup.monthly;
-            const yearlyPlan = planGroup.yearly;
-
-            return {
-              id: monthlyPlan?.id || yearlyPlan?.id,
-              title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-              description: "Customized pricing based on your selection",
-              monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
-              yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-              period: isAnnual ? "/year" : "/month",
-              billingNote: yearlyPlan
-                ? isAnnual
-                  ? `billed annually ($${yearlyPlan.amount})`
-                  : `or $${monthlyPlan?.amount}/month`
-                : undefined,
-              features: [], // Add any features you need here
-              buttonText: "Get Started",
-              buttonClass: yearlyPlan
-                ? ""
-                : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-              borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
-              popular: !!yearlyPlan,
-            };
-          }
-        );
-
-        setPersonPricing(updatedPlans);
-        setActiveModal("personPricing");
-      } else if (res.success.statusCode === 201) {
-        setActiveModal("disqualify");
-        const response = await MeDetails();
-        localStorage.setItem(
-          "profile_picture",
-          response?.data?.data?.user.profile_picture
-        );
-        localStorage.setItem("name", response?.data?.data?.user.name);
-        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
-        localStorage.setItem(
-          "margaret_name",
-          response?.data?.data?.user.margaret_name
-        );
-        localStorage.setItem("is_disqualify", "true");
-        setTimeout(() => {
-          setActiveModal(null);
-          navigate("/dashboard");
-        }, 2000);
       }
+      // ... rest of your code
     } catch (error) {
       console.error("Error submitting organization form:", error);
     } finally {
@@ -979,29 +904,28 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
     const { name, value } = e.target;
 
     if (name.startsWith("question_")) {
-      const questionId = name.replace("question_", "");
-      setPersonForm((prev) => {
-        const existingQuestionIndex = prev.question.findIndex(
-          (q) => q.question_id === questionId
-        );
-
-        if (existingQuestionIndex >= 0) {
-          const updatedQuestions = [...prev.question];
-          updatedQuestions[existingQuestionIndex] = {
-            question_id: questionId,
-            answer: value,
-          };
-          return { ...prev, question: updatedQuestions };
-        } else {
-          return {
-            ...prev,
-            question: [
-              ...prev.question,
-              { question_id: questionId, answer: value },
-            ],
-          };
-        }
-      });
+      // const questionId = name.replace("question_", "");
+      // setPersonForm((prev) => {
+      //   const existingQuestionIndex = prev.question.findIndex(
+      //     (q) => q.question_id === questionId
+      //   );
+      //   if (existingQuestionIndex >= 0) {
+      //     const updatedQuestions = [...prev.question];
+      //     updatedQuestions[existingQuestionIndex] = {
+      //       question_id: questionId,
+      //       answer: value,
+      //     };
+      //     return { ...prev, question: updatedQuestions };
+      //   } else {
+      //     return {
+      //       ...prev,
+      //       question: [
+      //         ...prev.question,
+      //         { question_id: questionId, answer: value },
+      //       ],
+      //     };
+      //   }
+      // });
     } else {
       setPersonForm((prev) => ({
         ...prev,
@@ -1183,7 +1107,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
           } else if (completionStatus === 1) {
             if (completed_step === 0) {
               setActiveModal("person");
-            } else if (completed_step === 1) {
+            } else if (completed_step === 2) {
               navigate("/dashboard");
             } else {
               navigate("/dashboard");
@@ -1227,6 +1151,17 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
       });
     },
   });
+
+  const getBillingNote = (plan: any) => {
+    if (!plan.yearlyPrice || !plan.monthlyPrice) return undefined;
+
+    if (isAnnual) {
+      // For annual billing: show "billed annually (yearly price)"
+      return `billed annually ($${plan.yearlyPrice.replace("$", "") * 12})`;
+    } else {
+      return `or ${plan.monthlyPrice}/month`;
+    }
+  };
 
   if (!open) return null;
 
@@ -2002,320 +1937,195 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                 Tell Us About Yourself
               </h2>
               <form onSubmit={handlePersonSubmit} className="space-y-6">
-                {/* Step 1 - Basic Information */}
-                {personFormStep === 1 && (
-                  <>
-                    <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-800 mb-1">
-                        First Name
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="first_name"
-                        placeholder="Enter your first name"
-                        value={personForm.first_name}
-                        onChange={handlePersonFormChange}
-                        className={`w-[440px] h-[41px]
+                {/* Single form without steps */}
+                <div className="mb-4">
+                  <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                    First Name
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="first_name"
+                    placeholder="Enter your first name"
+                    value={personForm.first_name}
+                    onChange={handlePersonFormChange}
+                    className={`w-[440px] h-[41px]
     rounded-[12px]
     border-[0.82px]
     p-[12px] mt-2 ${
       personErrors.first_name ? "border-red-500" : "border-gray-300"
     } rounded-md`}
-                      />
-                      {personErrors.first_name && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {personErrors.first_name}
-                        </p>
-                      )}
-                    </div>
+                  />
+                  {personErrors.first_name && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {personErrors.first_name}
+                    </p>
+                  )}
+                </div>
 
-                    <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-800 mb-1">
-                        Last Name
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="last_name"
-                        value={personForm.last_name}
-                        onChange={handlePersonFormChange}
-                        className={`w-[440px] h-[41px]
+                <div className="mb-4">
+                  <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                    Last Name
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="last_name"
+                    value={personForm.last_name}
+                    onChange={handlePersonFormChange}
+                    className={`w-[440px] h-[41px]
     rounded-[12px]
     border-[0.82px]
     p-[12px] mt-2 ${
       personErrors.last_name ? "border-red-500" : "border-gray-300"
     } rounded-md`}
-                        placeholder="Enter your last name"
-                      />
-                      {personErrors.last_name && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {personErrors.last_name}
-                        </p>
-                      )}
-                    </div>
+                    placeholder="Enter your last name"
+                  />
+                  {personErrors.last_name && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {personErrors.last_name}
+                    </p>
+                  )}
+                </div>
 
-                    <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-800 mb-1 ">
-                        Interests
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <div className="mt-4">
-                        <Select
-                          isMulti
-                          options={interest?.map((interestItem: Interest) => ({
-                            value: interestItem.id,
-                            label: interestItem.name,
-                          }))}
-                          value={
-                            personForm.interests?.map((interestId: any) => ({
-                              value: interestId,
-                              label: interest?.find(
-                                (i: any) => i.id === interestId
-                              )?.name,
-                            })) || []
-                          }
-                          onChange={(selectedOptions) => {
-                            // Update your form state with the selected values
-                            const selectedValues = selectedOptions?.map(
-                              (option) => option.value
-                            );
-                            setPersonForm({
-                              ...personForm,
-                              interests: selectedValues,
-                            });
-                          }}
-                          className="react-select-container"
-                          classNamePrefix="react-select"
-                          placeholder="Select interests..."
-                          menuPortalTarget={document.body}
-                          styles={{
-                            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                          }}
-                        />
-                      </div>
-                      {personErrors.interests && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {personErrors.interests}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-800 mb-1">
-                        Professions
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <div className="mt-4">
-                        <Select
-                          isMulti
-                          options={[
-                            ...profession?.map(
-                              (professionItem: Profession) => ({
-                                value: professionItem.id,
-                                label: professionItem.title,
-                              })
-                            ),
-                            { value: "other", label: "Other (please specify)" },
-                          ]}
-                          value={
-                            personForm.professions?.map(
-                              (professionId: any) => ({
-                                value: professionId,
-                                label:
-                                  profession?.find(
-                                    (p: any) => p.id === professionId
-                                  )?.title ||
-                                  (professionId === "other" ? "Other" : ""),
-                              })
-                            ) || []
-                          }
-                          onChange={(selectedOptions) => {
-                            const selectedValues = selectedOptions?.map(
-                              (option) => option.value
-                            );
-                            setPersonForm({
-                              ...personForm,
-                              professions: selectedValues,
-                            });
-                          }}
-                          className="react-select-container"
-                          classNamePrefix="react-select"
-                          placeholder="Select professions..."
-                          menuPortalTarget={document.body}
-                          styles={{
-                            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                          }}
-                        />
-                      </div>
-                      {personErrors.professions && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {personErrors.professions}
-                        </p>
-                      )}
-                    </div>
-                    {/* Add this after the Select component */}
-                    {personForm.professions?.includes("other") && (
-                      <div className="mb-4 mt-2">
-                        <label className="block openSans text-base font-medium text-gray-800 mb-1">
-                          Specify Your Profession
-                        </label>
-                        <input
-                          type="text"
-                          name="custom_profession"
-                          value={personForm.custom_profession || ""}
-                          onChange={(e) =>
-                            setPersonForm({
-                              ...personForm,
-                              custom_profession: e.target.value,
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                          placeholder="Enter your profession"
-                        />
-                      </div>
-                    )}
-                  </>
-                )}
-
-                {/* Step 2 - Questions */}
-                {personFormStep === 2 && (
-                  <>
-                    <div className="space-y-4">
-                      {readlineQuestion?.map((question: any) => {
-                        const existingAnswer =
-                          personForm.question.find(
-                            (q: QuestionAnswer) => q.question_id === question.id
-                          )?.answer || "";
-
-                        return (
-                          <div key={question.id} className="mb-4">
-                            <label
-                              style={{ lineHeight: "1.8" }}
-                              className="block openSans text-base font-medium text-gray-800 mb-3 mt-4"
-                            >
-                              {question.question}
-                            </label>
-
-                            {question.options && question.options.length > 0 ? (
-                              <div className="space-y-2">
-                                {question?.options?.map((option: any) => (
-                                  <div
-                                    key={option.id}
-                                    className="flex items-center"
-                                  >
-                                    <input
-                                      type="radio"
-                                      id={`question_${question.id}_${option.id}`}
-                                      name={`question_${question.id}`}
-                                      value={option.option}
-                                      checked={existingAnswer === option.option}
-                                      onChange={handlePersonFormChange}
-                                      className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 flex-shrink-0 peer-checked:border-transparent peer-checked:bg-gradient-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
-                                    />
-                                    <label
-                                      htmlFor={`question_${question.id}_${option.id}`}
-                                      className="ml-3 block openSans text-base text-gray-700 "
-                                    >
-                                      {option.option}
-                                    </label>
-                                  </div>
-                                ))}
-                              </div>
-                            ) : (
-                              <textarea
-                                name={`question_${question.id}`}
-                                value={existingAnswer}
-                                onChange={handlePersonFormChange}
-                                className={`w-full px-3 py-2 border ${
-                                  personErrors[`question_${question.id}`]
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                } rounded-md`}
-                                placeholder={`Enter your answer`}
-                                rows={3}
-                              />
-                            )}
-
-                            {personErrors[`question_${question.id}`] && (
-                              <p className="mt-1 text-sm text-red-600">
-                                {personErrors[`question_${question.id}`]}
-                              </p>
-                            )}
-                          </div>
+                <div className="mb-4">
+                  <label className="block openSans text-base font-medium text-gray-800 mb-1 ">
+                    Interests
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <div className="mt-4">
+                    <Select
+                      isMulti
+                      options={interest?.map((interestItem: Interest) => ({
+                        value: interestItem.id,
+                        label: interestItem.name,
+                      }))}
+                      value={
+                        personForm.interests?.map((interestId: any) => ({
+                          value: interestId,
+                          label: interest?.find((i: any) => i.id === interestId)
+                            ?.name,
+                        })) || []
+                      }
+                      onChange={(selectedOptions) => {
+                        const selectedValues = selectedOptions?.map(
+                          (option) => option.value
                         );
-                      })}
-                    </div>
-                  </>
+                        setPersonForm({
+                          ...personForm,
+                          interests: selectedValues,
+                        });
+                      }}
+                      className="react-select-container"
+                      classNamePrefix="react-select"
+                      placeholder="Select interests..."
+                      menuPortalTarget={document.body}
+                      styles={{
+                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                      }}
+                    />
+                  </div>
+                  {personErrors.interests && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {personErrors.interests}
+                    </p>
+                  )}
+                </div>
+
+                <div className="mb-4">
+                  <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                    Professions
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <div className="mt-4">
+                    <Select
+                      isMulti
+                      options={[
+                        ...profession?.map((professionItem: Profession) => ({
+                          value: professionItem.id,
+                          label: professionItem.title,
+                        })),
+                        { value: "other", label: "Other (please specify)" },
+                      ]}
+                      value={
+                        personForm.professions?.map((professionId: any) => ({
+                          value: professionId,
+                          label:
+                            profession?.find((p: any) => p.id === professionId)
+                              ?.title ||
+                            (professionId === "other" ? "Other" : ""),
+                        })) || []
+                      }
+                      onChange={(selectedOptions) => {
+                        const selectedValues = selectedOptions?.map(
+                          (option) => option.value
+                        );
+                        setPersonForm({
+                          ...personForm,
+                          professions: selectedValues,
+                        });
+                      }}
+                      className="react-select-container"
+                      classNamePrefix="react-select"
+                      placeholder="Select professions..."
+                      menuPortalTarget={document.body}
+                      styles={{
+                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                      }}
+                    />
+                  </div>
+                  {personErrors.professions && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {personErrors.professions}
+                    </p>
+                  )}
+                </div>
+
+                {/* Add this after the Select component */}
+                {personForm.professions?.includes("other") && (
+                  <div className="mb-4 mt-2">
+                    <label className="block openSans text-base font-medium text-gray-800 mb-1">
+                      Specify Your Profession
+                    </label>
+                    <input
+                      type="text"
+                      name="custom_profession"
+                      value={personForm.custom_profession || ""}
+                      onChange={(e) =>
+                        setPersonForm({
+                          ...personForm,
+                          custom_profession: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      placeholder="Enter your profession"
+                    />
+                  </div>
                 )}
 
-                {/* Form Footer Actions */}
+                {/* Form Footer Actions - simplified for single form */}
                 <div className="flex justify-end mt-6 gap-3 flex-wrap">
-                  {personFormStep === 2 && (
-                    <>
-                      <Button
-                        type="button"
-                        onClick={() => {
-                          setPersonFormStep(1);
-                          setPersonErrors({});
-                        }}
-                        variant="white-outline"
-                        className="w-[104px] h-[39px] rounded-[100px] p-0
+                  <Button
+                    type="button"
+                    onClick={closeModal}
+                    variant="white-outline"
+                    className="w-[104px] h-[39px] rounded-[100px] p-0
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
     flex items-center justify-center"
-                      >
-                        Back
-                      </Button>
+                  >
+                    Cancel
+                  </Button>
 
-                      <Button
-                        type="button"
-                        onClick={closeModal}
-                        variant="white-outline"
-                        className="w-[104px] h-[39px] rounded-[100px] p-0
+                  <Button
+                    type="submit"
+                    variant="gradient-primary"
+                    className="w-[104px] h-[39px] rounded-[100px] p-0
     font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
     flex items-center justify-center"
-                      >
-                        Cancel
-                      </Button>
-
-                      <Button
-                        type="submit"
-                        variant="gradient-primary"
-                        className="w-[104px] h-[39px] rounded-[100px] p-0
-    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
-    flex items-center justify-center"
-                        disabled={isSubmitting}
-                      >
-                        {isSubmitting ? "Submitting..." : "Submit"}
-                      </Button>
-                    </>
-                  )}
-
-                  {personFormStep === 1 && (
-                    <>
-                      <Button
-                        type="button"
-                        onClick={closeModal}
-                        variant="white-outline"
-                        className="w-[104px] h-[39px] rounded-[100px] p-0
-    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
-    flex items-center justify-center"
-                      >
-                        Cancel
-                      </Button>
-
-                      <Button
-                        type="button"
-                        onClick={handleNextPersonClick}
-                        variant="gradient-primary"
-                        className="w-[104px] h-[39px] rounded-[100px] p-0
-    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
-    flex items-center justify-center"
-                      >
-                        Next
-                      </Button>
-                    </>
-                  )}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Submitting..." : "Submit"}
+                  </Button>
                 </div>
               </form>
             </div>
@@ -2391,9 +2201,9 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                           : plan.monthlyPrice}
                       </span>
                       <span className="text-gray-500">/month</span>
-                      {plan.billingNote && (
+                      {getBillingNote(plan) && (
                         <p className="text-sm text-gray-500 mt-1">
-                          {plan.billingNote}
+                          {getBillingNote(plan)}
                         </p>
                       )}
                     </div>

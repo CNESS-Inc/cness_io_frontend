@@ -3,21 +3,19 @@ import {
   //ChevronRight,
 
   Search as SearchIcon,
-  Lightbulb,
-  X,
+  // X,
   Bell,
   Plus,
   ArrowLeft,
   ArrowRight,
-  UserPlus,
   ArrowUpRight,
   LinkIcon,
   Bookmark,
   MoreHorizontal,
 } from "lucide-react";
 import profileicon from "../../assets/profileicon.svg";
-import aspired from "../../assets/aspired.png";
-import inspired from "../../assets/inspired.png";
+import aspired from "../../assets/asplocked1.svg";
+import inspired from "../../assets/insplocked1.svg";
 import bpicon from "../../assets/bpicon.svg";
 import certicon from "../../assets/certificationicon.svg";
 import directoryicon from "../../assets/directoryicon.svg";
@@ -38,14 +36,16 @@ import Select from "react-select";
 import {
   DashboardDetails,
   GetAllFormDetails,
-  GetAllPlanDetails,
+  // GetAllPlanDetails,
   GetSubDomainDetails,
   GetUserNotification,
   MeDetails,
   PaymentDetails,
   SendBpFollowRequest,
+  SendFriendRequest,
   submitOrganizationDetails,
   submitPersonDetails,
+  UnFriend,
 } from "../../Common/ServerAPI";
 import { useToast } from "../ui/Toast/ToastProvider";
 import Modal from "../ui/Modal";
@@ -242,8 +242,8 @@ function HeaderDivider() {
    =========================================================== */
 export function GreetingBar({
   name,
-  onCloseSuggestion,
-}: {
+}: // onCloseSuggestion,
+{
   name: string;
   onCloseSuggestion?: () => void;
 }) {
@@ -260,6 +260,7 @@ export function GreetingBar({
   const [isAnnual, setIsAnnual] = useState(true);
   const [personPricing, setPersonPricing] = useState<any[]>([]);
   const [user, setUser] = useState<any | null>(null);
+  console.log("🚀 ~ GreetingBar ~ user:", user);
   const [readlineQuestion, setReadlineQuestion] = useState([]);
   const { showToast } = useToast();
   const [domains, setDomains] = useState([]);
@@ -662,53 +663,53 @@ export function GreetingBar({
     }
   };
 
-  const openPricingModal = async () => {
-    try {
-      setActiveModal("PricingModal");
-      const res = await GetAllPlanDetails();
-      const plansByRange: Record<string, any> = {};
-      res?.data?.data?.forEach((plan: any) => {
-        if (!plansByRange[plan.plan_range]) {
-          plansByRange[plan.plan_range] = {};
-        }
-        plansByRange[plan.plan_range][plan.plan_type] = plan;
-      });
-      // Create combined plan objects with both monthly and yearly data
-      const updatedPlans = Object.values(plansByRange).map((planGroup: any) => {
-        const monthlyPlan = planGroup.monthly;
-        const yearlyPlan = planGroup.yearly;
+  // const openPricingModal = async () => {
+  //   try {
+  //     setActiveModal("PricingModal");
+  //     const res = await GetAllPlanDetails();
+  //     const plansByRange: Record<string, any> = {};
+  //     res?.data?.data?.forEach((plan: any) => {
+  //       if (!plansByRange[plan.plan_range]) {
+  //         plansByRange[plan.plan_range] = {};
+  //       }
+  //       plansByRange[plan.plan_range][plan.plan_type] = plan;
+  //     });
+  //     // Create combined plan objects with both monthly and yearly data
+  //     const updatedPlans = Object.values(plansByRange).map((planGroup: any) => {
+  //       const monthlyPlan = planGroup.monthly;
+  //       const yearlyPlan = planGroup.yearly;
 
-        return {
-          id: monthlyPlan?.id || yearlyPlan?.id,
-          title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-          description: "Customized pricing based on your selection",
-          monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
-          yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-          period: isAnnual ? "/year" : "/month",
-          billingNote: yearlyPlan
-            ? isAnnual
-              ? `billed annually ($${yearlyPlan.amount})`
-              : `or $${monthlyPlan?.amount}/month`
-            : undefined,
-          features: [], // Add any features you need here
-          buttonText: "Get Started",
-          buttonClass: yearlyPlan
-            ? ""
-            : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-          borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
-          popular: !!yearlyPlan,
-        };
-      });
+  //       return {
+  //         id: monthlyPlan?.id || yearlyPlan?.id,
+  //         title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+  //         description: "Customized pricing based on your selection",
+  //         monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
+  //         yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+  //         period: isAnnual ? "/year" : "/month",
+  //         billingNote: yearlyPlan
+  //           ? isAnnual
+  //             ? `billed annually ($${yearlyPlan.amount})`
+  //             : `or $${monthlyPlan?.amount}/month`
+  //           : undefined,
+  //         features: [], // Add any features you need here
+  //         buttonText: "Get Started",
+  //         buttonClass: yearlyPlan
+  //           ? ""
+  //           : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+  //         borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
+  //         popular: !!yearlyPlan,
+  //       };
+  //     });
 
-      setPersonPricing(updatedPlans);
-    } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    }
-  };
+  //     setPersonPricing(updatedPlans);
+  //   } catch (error: any) {
+  //     showToast({
+  //       message: error?.response?.data?.error?.message,
+  //       type: "error",
+  //       duration: 5000,
+  //     });
+  //   }
+  // };
   const closeModal = async () => {
     setActiveModal(null);
     await fetchDashboard();
@@ -764,31 +765,32 @@ export function GreetingBar({
     }
   };
 
-  const completedStep = localStorage.getItem("completed_step");
-  const is_disqualify = localStorage.getItem("is_disqualify");
+  // const completedStep = localStorage.getItem("completed_step");
+  // console.log("🚀 ~ GreetingBar ~ completedStep:", completedStep);
+  // const is_disqualify = localStorage.getItem("is_disqualify");
 
-  const openRetakeAssesmentModal = async () => {
-    console.log("1");
-    try {
-      console.log("2");
-      const personOrganization = localStorage.getItem("person_organization");
-      console.log("personOrganization", personOrganization);
-      if (personOrganization === "2") {
-        setActiveModal("organization");
-      } else {
-        setActiveModal("person");
-      }
+  // const openRetakeAssesmentModal = async () => {
+  //   console.log("1");
+  //   try {
+  //     console.log("2");
+  //     const personOrganization = localStorage.getItem("person_organization");
+  //     console.log("personOrganization", personOrganization);
+  //     if (personOrganization === "2") {
+  //       setActiveModal("organization");
+  //     } else {
+  //       setActiveModal("person");
+  //     }
 
-      const response = await GetAllFormDetails();
-      setReadlineQuestion(response?.data?.data?.questions);
-    } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    }
-  };
+  //     const response = await GetAllFormDetails();
+  //     setReadlineQuestion(response?.data?.data?.questions);
+  //   } catch (error: any) {
+  //     showToast({
+  //       message: error?.response?.data?.error?.message,
+  //       type: "error",
+  //       duration: 5000,
+  //     });
+  //   }
+  // };
 
   const handleOrganizationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -929,6 +931,64 @@ export function GreetingBar({
     }
   };
 
+  const getBillingNote = (plan: any) => {
+    if (!plan.yearlyPrice || !plan.monthlyPrice) return undefined;
+
+    if (isAnnual) {
+      // For annual billing: show "billed annually (yearly price)"
+      return `billed annually ($${plan.yearlyPrice.replace("$", "") * 12})`;
+    } else {
+      return `or ${plan.monthlyPrice}/month`;
+    }
+  };
+
+  // const getBadgeStatusInfo = (badgePaymentStatus: any[]) => {
+  //   // If badgePaymentStatus is not provided or empty, return null
+  //   if (!badgePaymentStatus || badgePaymentStatus.length === 0) {
+  //     return null;
+  //   }
+
+  //   const aspiring = badgePaymentStatus.find(
+  //     (badge) => badge.slug === "aspiring"
+  //   );
+  //   const inspired = badgePaymentStatus.find(
+  //     (badge) => badge.slug === "inspired"
+  //   );
+
+  //   // Check in order: aspiring -> inspired
+  //   if (aspiring && !aspiring.payment_status) {
+  //     return {
+  //       message:
+  //         "To start the certification journey into our platform, please complete the payment for Aspiring badge.",
+  //       route: "/dashboard/aspiring-assessment",
+  //       level: "aspiring",
+  //     };
+  //   } else if (
+  //     aspiring?.payment_status &&
+  //     inspired &&
+  //     !inspired.payment_status
+  //   ) {
+  //     return {
+  //       message:
+  //         "To continue your certification journey, please complete the payment for Inspired badge.",
+  //       route: "/dashboard/inspired-assessment",
+  //       level: "inspired",
+  //     };
+  //   }
+
+  //   // If none of the above conditions are met, return null
+  //   return null;
+  // };
+
+  // const badgeStatusInfo = user?.badge_payment_status
+  //   ? getBadgeStatusInfo(user.badge_payment_status)
+  //   : {
+  //       message:
+  //         "To start the certification journey into our platform, please complete the payment here.",
+  //       route: "/dashboard/aspiring-assessment",
+  //       level: "aspiring",
+  //     };
+
   return (
     <>
       <div className="mb-5 grid grid-cols-12 gap-5">
@@ -942,10 +1002,10 @@ export function GreetingBar({
         </div>
 
         <div className="col-span-12 lg:col-span-4 flex items-start lg:justify-end justify-start">
-          {completedStep !== "2" && (
-            <div className="mx-5 bg-[rgba(255,204,0,0.05)] text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
-              <div className="flex items-center gap-2">
-                {is_disqualify === "true" ? (
+          {/* {completedStep !== "2" && ( */}
+          {/* <div className="mx-5 bg-[rgba(255,204,0,0.05)] text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-2"> */}
+          {/* {is_disqualify === "true" ? (
                   Number(user?.daysRemaining) <= 0 ? (
                     <span className="text-green-500">
                       You are eligible for the Aspiration badge. Please{" "}
@@ -966,43 +1026,45 @@ export function GreetingBar({
                       again after {user?.daysRemaining} days!
                     </span>
                   )
-                ) : (
-                  <>
-                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full">
-                      <Lightbulb
-                        className="h-4 w-4"
-                        stroke="#FFCC00"
-                        fill="#FFCC00"
-                      />
-                    </span>
-                    <div>
-                      <span className="text-[12px] font-medium text-black leading-[0%] tracking-[0%] font-poppins">
-                        To start the certification journey into our platform,
-                        please complete the payment here.{" "}
-                      </span>
+                ) : ( */}
+          {/* {badgeStatusInfo?.message ? (
+                <>
+                  <span className="text-yellow-500">💡</span>
+                  <span>
+                    {badgeStatusInfo?.message}{" "}
+                    {badgeStatusInfo?.route && (
                       <a
                         href="#"
-                        className="text-blue-600 text-[12px] underline"
+                        className="text-blue-600 underline"
                         onClick={(e) => {
                           e.preventDefault();
-                          openPricingModal();
+                          // Use the dynamic route based on badge status
+                          if (badgeStatusInfo.route) {
+                            navigate(badgeStatusInfo.route);
+                          } else {
+                            openPricingModal();
+                          }
                         }}
                       >
                         Click here
                       </a>
-                    </div>
-                    <button
-                      aria-label="Dismiss"
-                      onClick={onCloseSuggestion}
-                      className="ml-auto inline-flex h-6 w-6 items-center justify-center rounded-full text-[#7A5A00]/70 hover:bg-white/50"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
+                    )}
+                  </span>
+                  <button
+                    aria-label="Dismiss"
+                    onClick={onCloseSuggestion}
+                    className="ml-auto inline-flex h-6 w-6 items-center justify-center rounded-full text-[#7A5A00]/70 hover:bg-white/50"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </>
+              ) : (
+                ""
+              )} */}
+          {/* // )} */}
+          {/* </div>
+          </div> */}
+          {/* // )} */}
           {/* <div className="w-full lg:min-w-[363px] lg:max-w-[400px] flex items-center gap-[10px] rounded-lg bg-[#FFCC00]/10 px-3 py-[10px] text-[#7A5A00]"></div> */}
         </div>
       </div>
@@ -1034,9 +1096,9 @@ export function GreetingBar({
                       : plan.monthlyPrice}
                   </span>
                   <span className="text-gray-500">/month</span>
-                  {plan.billingNote && (
+                  {getBillingNote(plan) && (
                     <p className="text-sm text-gray-500 mt-1">
-                      {plan.billingNote}
+                      {getBillingNote(plan)}
                     </p>
                   )}
                 </div>
@@ -1664,9 +1726,9 @@ export function GreetingBar({
                           : plan.monthlyPrice}
                       </span>
                       <span className="text-gray-500">/month</span>
-                      {plan.billingNote && (
+                      {getBillingNote(plan) && (
                         <p className="text-sm text-gray-500 mt-1">
-                          {plan.billingNote}
+                          {getBillingNote(plan)}
                         </p>
                       )}
                     </div>
@@ -2137,9 +2199,9 @@ export function GreetingBar({
                           : plan.monthlyPrice}
                       </span>
                       <span className="text-gray-500">/month</span>
-                      {plan.billingNote && (
+                      {getBillingNote(plan) && (
                         <p className="text-sm text-gray-500 mt-1">
-                          {plan.billingNote}
+                          {getBillingNote(plan)}
                         </p>
                       )}
                     </div>
@@ -2333,7 +2395,7 @@ export function CertificationCard({
   auto = true,
   intervalMs = 6000,
   upgradeText = "To achieve the next level certification, you need to create a basic profile that includes selling your reactions, accessing the community, and utilizing the resources library.",
-  onUpgrade,
+  // onUpgrade,
 }: {
   progress?: number;
   score?: number;
@@ -2350,6 +2412,7 @@ export function CertificationCard({
   upgradeCtaLabel?: string;
   onUpgrade?: () => void;
 }) {
+  console.log("🚀 ~ CertificationCard ~ activeLevel:", activeLevel);
   const [slide, setSlide] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
   const [showiInterestModal, setShowInterestModal] = useState(false);
@@ -2389,13 +2452,13 @@ export function CertificationCard({
 
   const handleUpgradeClick = (activeLevel?: string | null) => {
     if (!activeLevel) {
-      setShowInterestModal(true);
+      navigate("/dashboard/assesmentcertification");
     } else if (activeLevel === "Aspiring") {
-      navigate("/dashboard/assesment");
+      navigate("/dashboard/assesmentcertification");
     } else if (activeLevel === "Inspired") {
-      navigate("/dashboard/upgrade-badge");
+      navigate("/dashboard/assesmentcertification");
     } else {
-      onUpgrade?.();
+      navigate("/dashboard/assesmentcertification");
     }
   };
 
@@ -2423,7 +2486,7 @@ export function CertificationCard({
             <div className="w-fit">
               <button
                 className="flex items-center gap-3 bg-white text-black text-sm font-normal py-2 ps-3 pe-2 rounded-full w-fit"
-                onClick={() => navigate("/dashboard/assesment")}
+                onClick={() => navigate("/dashboard/assesmentcertification")}
                 style={{
                   border: "1px solid rgba(236, 238, 242, 1)",
                   boxShadow: "0px 1px 10px 0px rgba(0, 0, 0, 0.05)",
@@ -2468,7 +2531,7 @@ export function CertificationCard({
                   </div>
                   <div className="flex items-center gap-2 w-full sm:w-auto">
                     <button
-                      onClick={onContinue}
+                      onClick={() => navigate("/dashboard/inspired-assessment")}
                       className="relative w-full sm:w-[194px] h-[40px] rounded-full px-5 py-[10px] flex items-center justify-center text-center font-[600] text-[14px] text-[#222224] font-['Open_Sans'] leading-[100%] bg-white"
                     >
                       <span className="relative z-10">Continue Assessment</span>
@@ -2490,7 +2553,7 @@ export function CertificationCard({
               {underProgressDescription}
             </p>
           </>
-        ) : activeLevel === "Aspiring" && progress === 100 ? (
+        ) : activeLevel === "Aspiring" && progress === 100 && score === 0 ? (
           <>
             <div className="flex items-center gap-2">
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F2EAFE]">
@@ -2539,7 +2602,7 @@ export function CertificationCard({
               {completeProgressDescription}
             </p>
           </>
-        ) : (
+        ) : activeLevel === "Aspiring" && progress === 100 && score < 60 ? (
           <>
             <div className="flex items-center gap-2">
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F2EAFE]">
@@ -2567,22 +2630,27 @@ export function CertificationCard({
                   </sub>
                 </span>
               </div>
-
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <button
-                  onClick={onContinue}
-                  className="relative w-full sm:w-[194px] h-[40px] rounded-full px-5 py-[10px] flex items-center justify-center text-center font-[600] text-[14px] text-[#222224] font-['Open_Sans'] leading-[100%] bg-white"
-                >
-                  <span className="relative z-10">Retake Assessment</span>
-                  <span className="absolute inset-0 rounded-full p-[1px] bg-gradient-to-r from-[#9747FF] to-[#F07EFF]"></span>
-                  <span className="absolute inset-[1px] rounded-full bg-white"></span>
-                </button>
-              </div>
+              {score < 60 ? (
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <button
+                    onClick={onContinue}
+                    className="relative w-full sm:w-[194px] h-[40px] rounded-full px-5 py-[10px] flex items-center justify-center text-center font-[600] text-[14px] text-[#222224] font-['Open_Sans'] leading-[100%] bg-white"
+                  >
+                    <span className="relative z-10">Retake Assessment</span>
+                    <span className="absolute inset-0 rounded-full p-[1px] bg-gradient-to-r from-[#9747FF] to-[#F07EFF]"></span>
+                    <span className="absolute inset-[1px] rounded-full bg-white"></span>
+                  </button>
+                </div>
+              ) : (
+                ""
+              )}
             </div>
             <p className="text-sm font-normal font-['Open_Sans'] leading-[140%] text-[#242424]">
               {inspiredDescription}
             </p>
           </>
+        ) : (
+          ""
         )}
 
         {/* Slides container */}
@@ -2615,7 +2683,11 @@ export function CertificationCard({
                 >
                   <div className="w-full h-full rounded-[16px] bg-white flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4">
                     <img
-                      src={activeLevel === null ? aspired : "https://cdn.cness.io/aspiring.webp"} 
+                      src={
+                        activeLevel === null
+                          ? aspired
+                          : "https://cdn.cness.io/aspiringlogo.svg"
+                      }
                       alt="Aspiring"
                       className="h-[34px] w-[34px] sm:h-[39px] sm:w-[39px]"
                     />
@@ -2636,7 +2708,12 @@ export function CertificationCard({
                 >
                   <div className="w-full h-full rounded-[16px] bg-white flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4">
                     <img
-                      src={activeLevel === null || (activeLevel === "Aspiring" && progress === 0) ? inspired : "https://cdn.cness.io/inspired.webp"}
+                      src={
+                        activeLevel === null ||
+                        (activeLevel === "Aspiring" && progress === 0)
+                          ? inspired
+                          : "https://cdn.cness.io/inspired1.svg"
+                      }
                       alt="Inspired"
                       className="h-[34px] w-[34px] sm:h-[39px] sm:w-[39px]"
                     />
@@ -2684,7 +2761,7 @@ export function CertificationCard({
                       <img
                         src={
                           activeLevel === "Aspiring"
-                            ? "https://cdn.cness.io/inspired.webp"
+                            ? "https://cdn.cness.io/inspired1.svg"
                             : activeLevel === "Inspired"
                             ? "https://cdn.cness.io/leader.webp"
                             : "https://cdn.cness.io/leader1.webp"
@@ -3155,8 +3232,8 @@ export function SocialStackCard({
   // friends
   suggested,
   requested,
-  onConnect,
-}: {
+}: // onConnect,
+{
   coverUrl: string;
   avatar: string;
   name: string;
@@ -3173,6 +3250,7 @@ export function SocialStackCard({
   onViewFeed?: () => void;
 
   suggested: {
+    user_id(user_id: any): void;
     id: string | number;
     name: string;
     handle: string;
@@ -3194,6 +3272,7 @@ export function SocialStackCard({
   const [tab, setTab] = React.useState<"Suggested" | "Requested">("Suggested");
   const list = tab === "Suggested" ? suggested : requested;
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   type AdventureSlide = {
     title: string;
@@ -3549,7 +3628,7 @@ export function SocialStackCard({
     rounded-[100px]
     px-[12px] pr-[8px]
     whitespace-nowrap shrink-0
-    !justify-center     /* use !justify-between if you add an icon */
+    !justify-center     
     text-[12px] mr-2   
   "
                     onClick={onPrimary}
@@ -3602,6 +3681,75 @@ export function SocialStackCard({
       </>
     );
   }
+
+  const [friendRequests, setFriendRequests] = useState<{
+    [key: string]: string;
+  }>({});
+  const [connectingUsers, setConnectingUsers] = useState<{
+    [key: string]: boolean;
+  }>({});
+
+  const handleConnect = async (userId: string) => {
+    try {
+      setConnectingUsers((prev) => ({ ...prev, [userId]: true }));
+
+      // Check if already connected
+      if (friendRequests[userId] === "connected") {
+        // If connected, delete friend
+        const formattedData = {
+          friend_id: userId,
+        };
+
+        const response = await UnFriend(formattedData);
+
+        if (response.success) {
+          setFriendRequests((prev) => ({
+            ...prev,
+            [userId]: "connect",
+          }));
+          showToast({
+            message: "Friend removed successfully",
+            type: "success",
+            duration: 3000,
+          });
+        }
+      } else {
+        // If not connected, send friend request
+        const formattedData = {
+          friend_id: userId,
+        };
+
+        const response = await SendFriendRequest(formattedData);
+
+        if (response.success) {
+          // Immediately update the button state to "requested"
+          setFriendRequests((prev) => ({
+            ...prev,
+            [userId]: "requested",
+          }));
+          showToast({
+            message:
+              response.success.message || "Friend request sent successfully",
+            type: "success",
+            duration: 3000,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error handling connect:", error);
+      showToast({
+        message: "Something went wrong. Please try again.",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setConnectingUsers((prev) => ({ ...prev, [userId]: false }));
+    }
+  };
+
+  const getFriendStatus = (userId: string) => {
+    return friendRequests[userId] || "connect";
+  };
 
   return (
     <Card className="p-4 md:p-5">
@@ -3821,7 +3969,7 @@ export function SocialStackCard({
         {/* list */}
         <div className="space-y-3 flex-1">
           {list && list.length > 0 ? (
-            list.slice(0, 4).map((f) => (
+            list.slice(0, 4).map((f: any) => (
               <div
                 key={f.id}
                 className="flex items-center justify-between gap-3"
@@ -3847,13 +3995,40 @@ export function SocialStackCard({
                     </div>
                   </div>
                 </div>
-                <OutlinePill
+                {/* <OutlinePill
                   className="h-9 px-3"
                   onClick={() => onConnect?.(f)}
                 >
                   <UserPlus className="h-4 w-4" />
                   Connect
-                </OutlinePill>
+                </OutlinePill> */}
+                <button
+                  onClick={() => handleConnect(f.id)}
+                  disabled={connectingUsers[f.id] || false}
+                  className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-[12px] py-[6px] rounded-full transition-colors font-family-open-sans h-[35px]
+                  ${
+                    getFriendStatus(f.id) === "connected"
+                      ? "bg-gray-400 text-white cursor-not-allowed"
+                      : getFriendStatus(f.id) === "requested"
+                      ? "bg-gray-400 text-white cursor-not-allowed"
+                      : "bg-white text-black shadow-md"
+                  }`}
+                >
+                  <span className="flex items-center gap-1 text-[#0B3449]">
+                    <img
+                      src={iconMap["userplus"]}
+                      alt="userplus"
+                      className="w-4 h-4"
+                    />
+                    {connectingUsers[f.id]
+                      ? "Loading..."
+                      : getFriendStatus(f.id) === "connected"
+                      ? "Connected"
+                      : getFriendStatus(f.id) === "requested"
+                      ? "Requested"
+                      : "Connect"}
+                  </span>
+                </button>
               </div>
             ))
           ) : (

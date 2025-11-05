@@ -23,10 +23,13 @@ import UpgradeBadge from "../pages/UpgradeBadge";
 import DirectoryProfile from "../pages/DirectoryProfile";
 import Notification from "../pages/Notification";
 import Support from "../pages/Support";
+import MarketPlaceNew from "../pages/MarketPlaceNew";
 import MarketPlace from "../pages/MarketPlace";
+
 import SearchListing from "../pages/SearchListing";
 import DigitalProducts from "../pages/DigitalProducts";
 // import Feed from "../pages/Feed";
+import CourseDetail from "../pages/CourseDetail";
 import SearchExplore from "../pages/SearchExplore";
 import BecomeMentor from "../pages/BecomeMentorNew";
 //import DashboardDirectoryPage from "../pages/DashboardDirectoryPage";
@@ -63,9 +66,41 @@ import Faqs from "../pages/Faqs";
 import EcoSystem from "../pages/EcoSystem";
 import Premium from "../pages/Premium";
 import WhyCness from "../pages/WhyCness";
+import MyCollections from "../pages/MyCollections";
+import Library from "../pages/Library";
+import ContinueWatching from "../pages/ContinueWatching";
 //import SellerDashboard from "../pages/SellerDashboard";
 import UserPublicProfile from "../pages/UserPublicProfile";
 import Affiliate from "../pages/Affiliate";
+import ProductDetail from "../pages/ProductDetail";
+import MPSearch from "../pages/MPsearch";
+import AssessmentCertification from "../pages/AssessmentCertifications";
+import AspiringAssessment from "../pages/AspiringAssessment";
+import InspiredAssessment from "../pages/InspiredAssessment";
+import ShopDetail from "../pages/ShopDetail";
+import ReviewAll from "../pages/ReviewAll";
+import CartPage from "../pages/CartPage";
+import Checkout from "../pages/Checkout";
+import PaymentSuccess from "../pages/PaymentSuccess";
+import PaymentFailed from "../pages/PaymentFailed";
+import Wishlist from "../pages/Wishlist";
+import OrderHistory from "../pages/OrderHistory";
+import ProductSummery from "../pages/ProductSummery";
+import Category from "../pages/Category";
+import ShopsList from "../pages/Shops";
+import VendorDashboard from "../pages/VendorDashboard";
+import CreateShopForm from "../pages/CreateShopForm";
+import SellerProductList from "../pages/SellerProductList";
+import AddVideoForm from "../pages/AddVideo";
+import AddPodcastsForm from "../pages/AddPodcasts";
+import AddEbookForm from "../pages/AddEbook";
+import AddMusicForm from "../pages/AddMusic";
+import AddCourseForm from "../pages/AddCourse";
+import AddArtsForm from "../pages/AddArts";
+import SellerOrderList from "../pages/SellerOrderList";
+import SellerOrderDetail from "../pages/SellerOrderDetail";
+import SellerSales from "../pages/SellerSales";
+import SellerWithdrawal from "../pages/SellerWithdrawal";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -105,7 +140,7 @@ export const router = createBrowserRouter([
 
       //{
       // // path: "why",
-       // element: <Why />,
+      // element: <Why />,
       //},
       // {
       //   path: "what",
@@ -119,6 +154,7 @@ export const router = createBrowserRouter([
         path: "certifications",
         element: <Certifications />,
       },
+
       {
         path: "ecosystem",
         element: <EcoSystem />,
@@ -136,16 +172,20 @@ export const router = createBrowserRouter([
         path: "cness-marketplace",
         element: <CnessMarketplace />,
       },
-    {
-      path: "premium",
-      element: <Premium />,
-    },
-    {
-      path:"whycness",
-      element:<WhyCness />
-    },
       {
-      
+        path: "premium",
+        element: <Premium />,
+      },
+      {
+        path: "whycness",
+        element: <WhyCness />,
+      },
+
+        {
+    path: "social",
+    element: <Social />,
+  },
+      {
         path: "dashboard",
         element: <DashboardLayout />, // ✅ now it's wrapped!
         children: [
@@ -157,6 +197,14 @@ export const router = createBrowserRouter([
           {
             path: "score-result",
             element: <ScoreResult />,
+          },
+          {
+            path: "collections",
+            element: <MyCollections />,
+          },
+          {
+            path: "MyCollection/:id",
+            element: <Mycollectionview />,
           },
           {
             path: "user-profile",
@@ -177,6 +225,19 @@ export const router = createBrowserRouter([
           {
             path: "assesment",
             element: <AssessmentQuestion />,
+          },
+          {
+            path: "assesmentcertification",
+            element: <AssessmentCertification />,
+          },
+          {
+            path: "aspiring-assessment",
+            element: <AspiringAssessment />,
+          },
+
+          {
+            path: "inspired-assessment",
+            element: <InspiredAssessment />,
           },
           {
             path: "setting",
@@ -212,9 +273,188 @@ export const router = createBrowserRouter([
             path: "support",
             element: <Support />,
           },
+          //old marketplacepage
+          {
+            path: "marketplace",
+            element: <MarketPlace />,
+          },
           {
             path: "market-place",
-            element: <MarketPlace />,
+            element: <MarketPlaceNew />,
+          },
+          {
+            path: "library",
+            element: <Library />,
+          },
+          {
+            path: "continue-watching",
+            element: <ContinueWatching />,
+          },
+          {
+            path: "market-place/search",
+            element: <MPSearch />, // ← new page
+          },
+
+          {
+            path: "categories",
+            element: <Category />,
+          },
+
+          {
+            path: "product-detail/:id",
+            element: <ProductDetail />,
+          },
+
+          {
+            path: "shop-detail/:id",
+            element: <ShopDetail />,
+          },
+
+          {
+            path: "product-review/:id",
+            element: <ReviewAll />,
+          },
+          {
+            path: "cart",
+            element: <CartPage />,
+          },
+          {
+            path: "checkout",
+            element: <Checkout />,
+          },
+          {
+            path: "payment-success",
+            element: <PaymentSuccess />,
+          },
+
+          {
+            path: "payment-failed",
+            element: <PaymentFailed />,
+          },
+          {
+            path: "wishlist",
+            element: <Wishlist />,
+          },
+          {
+            path: "order-history",
+            element: <OrderHistory />
+          },
+          {
+            path: "order-history/:id",
+            element: <ProductSummery />,
+          },
+          {
+            path: "shops",
+            element: <ShopsList />
+          },
+
+          {
+            path: "seller-dashboard",
+            element: <VendorDashboard />
+          },
+
+          {
+            path: "createshop",
+            element: <CreateShopForm />
+          },
+          {
+            path: "products",
+            element: <SellerProductList />
+          },
+          {
+            path: "products/add-video",
+            element: <AddVideoForm />
+          },
+          {
+            path: "products/add-podcast",
+            element: <AddPodcastsForm />
+          },
+          {
+            path: "products/add-ebook",
+            element: <AddEbookForm />
+          },
+          {
+            path: "products/add-music",
+            element: <AddMusicForm />
+          },
+
+          {
+            path: "products/add-course",
+            element: <AddCourseForm />
+          },
+
+          {
+            path: "products/add-arts",
+            element: <AddArtsForm />
+          },
+
+          {
+            path: "orderlist",
+            element: <SellerOrderList />
+          },
+          {
+            path: "seller-sales",
+            element: <SellerSales />
+          },
+          {
+            path: "seller-sales/withdrawal",
+            element: <SellerWithdrawal />
+          },
+
+          {
+            path: "orderlist/:id",
+            element: <SellerOrderDetail />
+          }, {
+            path: "shop-detail/:id",
+            element: <ShopDetail />,
+          },
+
+          {
+            path: "product-review/:id",
+            element: <ReviewAll />,
+          },
+          {
+            path: "cart",
+            element: <CartPage />,
+          },
+          {
+            path: "checkout",
+            element: <Checkout />,
+          },
+          {
+            path: "payment-success",
+            element: <PaymentSuccess />,
+          },
+
+          {
+            path: "payment-failed",
+            element: <PaymentFailed />,
+          },
+          {
+            path: "wishlist",
+            element: <Wishlist />,
+          },
+          {
+            path: "order-history",
+            element: <OrderHistory />,
+          },
+          {
+            path: "order-history/:id",
+            element: <ProductSummery />,
+          },
+          {
+            path: "shops",
+            element: <ShopsList />,
+          },
+
+          {
+            path: "seller-dashboard",
+            element: <VendorDashboard />,
+          },
+
+          {
+            path: "createshop",
+            element: <CreateShopForm />,
           },
           // {
           //   path: "search-listing",
@@ -232,11 +472,16 @@ export const router = createBrowserRouter([
           {
             path: "userprofile/:id",
             //element: <DashboardUserProfile />,
-            element:<UserPublicProfile />,
+            element: <UserPublicProfile />,
           },
           {
             path: "digital_products",
             element: <DigitalProducts />,
+          },
+
+          {
+            path: "library/course/:id",
+            element: <CourseDetail />,
           },
 
           {
@@ -329,10 +574,6 @@ export const router = createBrowserRouter([
             element: <Profile />,
           },
 
-          {
-            path: "MyCollection/:id",
-            element: <Mycollectionview />,
-          },
           {
             path: "MyConnection",
             element: <MyConnection />,
@@ -438,10 +679,7 @@ export const router = createBrowserRouter([
       },
     ],
   },*/
-  {
-    path: "social",
-    element: <Social />,
-  },
+ 
   {
     path: "/email-verify",
     element: <EmailVerify />,

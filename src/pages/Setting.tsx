@@ -105,9 +105,13 @@ const Setting = () => {
       } else {
         setMessage("Password updated successfully.");
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log("🚀 ~ handleSubmit ~ error:", error);
-      setMessage("An error occurred while updating the password.");
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
     }
 
     setCurrentPassword("");
@@ -230,6 +234,17 @@ const Setting = () => {
         type: "error",
         duration: 5000,
       });
+    }
+  };
+
+    const getBillingNote = (plan: any) => {
+    if (!plan.yearlyPrice || !plan.monthlyPrice) return undefined;
+
+    if (isAnnual) {
+      // For annual billing: show "billed annually (yearly price)"
+      return `billed annually ($${plan.yearlyPrice.replace("$", "") * 12})`;
+    } else {
+      return `or ${plan.monthlyPrice}/month`;
     }
   };
 
@@ -560,11 +575,11 @@ const Setting = () => {
                       : plan.monthlyPrice}
                   </span>
                   <span className="text-gray-500">/month</span>
-                  {plan.billingNote && (
-                    <p className="text-sm text-gray-500 mt-1">
-                      {plan.billingNote}
-                    </p>
-                  )}
+                  {getBillingNote(plan) && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {getBillingNote(plan)}
+                        </p>
+                      )}
                 </div>
                 <Button
                   variant="gradient-primary"

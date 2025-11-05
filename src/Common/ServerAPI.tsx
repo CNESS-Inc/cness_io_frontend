@@ -100,7 +100,8 @@ export const EndPoint = {
   reset: "/auth/reset-password",
   register: "/auth/sign-up",
   organization_profile: "/readiness-question/organization/answer",
-  person_profile: "/readiness-question/person/answer",
+  person_profile: "/readiness-question/person/information",
+  person_readiness: "/readiness-question/person/answer",
   acount_type: "/auth/update/person",
   payment: "/payment",
   dashboard: "/dashboard",
@@ -108,6 +109,10 @@ export const EndPoint = {
   subdomain: "/sub-domain/by-domain",
   readinessQuestion: "/readiness-question",
   allFormData: "/readiness-question/get-formdata",
+  getAspiringQuestion: "/readiness-question/get-aspiring-question",
+  get_certification_details: "/quiz/certifications",
+  nomination_application: "/nomination-application",
+  get_retake_assensment: "/quiz/retake-assessment",
   allPlanData: "/person-plan/user/plan",
   emailverify: "/auth/email-verify",
   paymentverify: "/payment/payment-confirm",
@@ -139,6 +144,7 @@ export const EndPoint = {
   questions: "/quiz/get/question",
   questions_file: "/quiz/upload-answer-file",
   answer: "/quiz/answer",
+  removeuploadedfile: "/quiz/remove-upload-answer-file",
   final_submission: "/quiz/final-submition",
   report: "/quiz/report",
   get_front_all_post: "/user/posts/get/front/all",
@@ -226,7 +232,13 @@ export const EndPoint = {
   get_all_topics: "/topics/get/all",
   add_partner_inquiry: "/partner-inquiry",
 
+  // payment-method endpoints
+  payment_method: "/payment-method",
+
   add_mentor: "/mentor",
+
+  //marketplace endpoints
+  get_products: "/vendor/products"
 };
 
 // Messaging endpoints
@@ -242,7 +254,7 @@ export const GetConversationMessages = (conversationId: string | number) => {
   );
 };
 
-export const SendMessage = (formData: FormData) => {
+export const HandleSendMessage = (formData: FormData) => {
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.sendMessage);
 };
 
@@ -451,16 +463,19 @@ export const submitPersonDetails = (formData: any): ApiResponse => {
   };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.person_profile);
 };
+export const submitPersonReadinessDetails = (formData: any): ApiResponse => {
+  const data: Partial<any> = {
+    question: formData?.question,
+  };
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.person_readiness);
+};
 export const submitAnswerDetails = (formData: any): ApiResponse => {
-  console.log("🚀 ~ submitAnswerDetails ~ formData:", formData);
-  // Initialize the data array with the correct type
   const data: Array<{
     question_id: string;
     answer: any;
     show_answer_in_public?: boolean;
   }> = [];
 
-  // Handle selectedCheckboxIds and checkboxes_question_id
   if (formData.selectedCheckboxIds && formData.checkboxes_question_id) {
     data.push({
       question_id: formData.checkboxes_question_id,
@@ -515,6 +530,14 @@ export const submitAnswerDetails = (formData: any): ApiResponse => {
   // Return the formatted data
   return executeAPI(ServerAPI.APIMethod.POST, { data }, EndPoint.answer);
 };
+export const submitAssesmentAnswerDetails = (payload: any): ApiResponse => {
+
+  return executeAPI(ServerAPI.APIMethod.POST, payload, EndPoint.answer);
+};
+export const removeUploadedFile = (payload: any): ApiResponse => {
+
+  return executeAPI(ServerAPI.APIMethod.POST, payload, EndPoint.removeuploadedfile);
+};
 
 export const DashboardDetails = (): ApiResponse => {
   const data = {};
@@ -524,7 +547,7 @@ export const OrgTypeDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.org_type);
 };
-export const QuestionDetails = (sectionId: any): ApiResponse => {
+export const QuestionDetails = (sectionId?: any): ApiResponse => {
   const data: Partial<any> = {
     section_id: sectionId,
   };
@@ -542,9 +565,24 @@ export const GetAllFormDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.allFormData);
 };
+export const GetAspiringQuestionDetails = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.getAspiringQuestion);
+};
+export const GetCertificationDetails = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.get_certification_details);
+};
+export const GetRetakeAssesment = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.get_retake_assensment);
+};
 export const GetAllPlanDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.allPlanData);
+};
+export const AddNomination = (formDataToSend: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.POST, formDataToSend, EndPoint.nomination_application);
 };
 export const GetEmailVerify = (formData: EmailVerifyData): ApiResponse => {
   const data: Partial<EmailVerifyData> = {
@@ -692,15 +730,10 @@ export const GetRecommendedBestPractices = (): ApiResponse => {
     `${EndPoint.bp_recommended}`
   );
 };
-export const UpdateBestPractice = (payload: {
-  id: string;
-  profession: string;
-  title: string;
-  description: string;
-}): ApiResponse => {
+export const UpdateBestPractice = (formData: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST, // or PATCH depending on your API
-    payload,
+    formData,
     `${EndPoint.bp}/update`
   );
 };
@@ -1384,6 +1417,43 @@ export const getPostByTopicId = (
   );
 };
 
+export const addPaymentMethod = (payload: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    payload,
+    EndPoint.payment_method
+  );
+};
+
+export const getPaymentMethods = (): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.GET, null, EndPoint.payment_method);
+};
+
+export const getPaymentMethodById = (
+  id: string,
+): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    `${EndPoint.payment_method}/${id}`
+  );
+};
+
+export const updatePaymentMethod = (
+  id: string,
+  payload: any
+): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PUT,
+    payload,
+    `${EndPoint.payment_method}/${id}`
+  );
+};
+
+export const DeletePaymentMethod = (id: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.DELETE, {}, `${EndPoint.payment_method}/${id}`);
+};
+
 export const createPartnerInquiry = (formData: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
@@ -1454,22 +1524,26 @@ export const executeAPI = async <T = any,>(
       localStorage.setItem("appCatId", appCatIdres);
     }
 
-    const access_token = response.headers["access_token"];
+    // const access_token = response.headers["access_token"];
 
-    if (access_token != "not-provide") {
-      console.log("access token response check sets", true);
-      localStorage.setItem("jwt", access_token);
-    }
+    // if (access_token != "not-provide") {
+    //   console.log("access token response check sets", true);
+    //   localStorage.setItem("jwt", access_token);
+    // }
 
     return response.data;
   } catch (error: any) {
     // console.log("🚀 ~ error:", error)
 
-    // if (error.response?.data?.error?.statusCode == 401) {
-    //   localStorage.clear();
-    //   window.location.href = "/";
-    // }
+    if (error.response?.data?.error?.statusCode == 401) {
+      localStorage.clear();
+      window.location.href = "/";
+    }
 
     throw error;
   }
+};
+
+export const GetProducts = () => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_products);
 };

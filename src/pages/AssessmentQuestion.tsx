@@ -82,7 +82,6 @@ const AssessmentQuestion: React.FC = () => {
   const [activeModal, setActiveModal] = useState<
     "assesment" | "PricingModal" | null
   >(null);
-  console.log("🚀 ~ activeModal:", activeModal);
   const [personPricing, setPersonPricing] = useState<any[]>([]);
   const [isAnnual, setIsAnnual] = useState(true);
   const [isFinalSubmitting, setIsFinalSubmitting] = useState(false);
@@ -287,7 +286,7 @@ const AssessmentQuestion: React.FC = () => {
   };
 
   useEffect(() => {
-    if (completed_step === "2") {
+    if (completed_step === "1") {
       fetchQuestions();
     }
   }, []);
@@ -544,6 +543,17 @@ const AssessmentQuestion: React.FC = () => {
         });
       }
     };
+
+      const getBillingNote = (plan: any) => {
+    if (!plan.yearlyPrice || !plan.monthlyPrice) return undefined;
+
+    if (isAnnual) {
+      // For annual billing: show "billed annually (yearly price)"
+      return `billed annually ($${plan.yearlyPrice.replace("$", "") * 12})`;
+    } else {
+      return `or ${plan.monthlyPrice}/month`;
+    }
+  };
     return (
       <>
         <div className="mx-5 bg-[rgba(255,204,0,0.05)] text-sm text-[#444] px-4 py-2 border-t border-x border-[rgba(255,204,0,0.05)] rounded-t-[10px] rounded-b-[10px] flex items-center justify-between shadow-sm">
@@ -595,11 +605,11 @@ const AssessmentQuestion: React.FC = () => {
                         : plan.monthlyPrice}
                     </span>
                     <span className="text-gray-500">/month</span>
-                    {plan.billingNote && (
-                      <p className="text-sm text-gray-500 mt-1">
-                        {plan.billingNote}
-                      </p>
-                    )}
+                    {getBillingNote(plan) && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {getBillingNote(plan)}
+                        </p>
+                      )}
                   </div>
                   <Button
                     variant="gradient-primary"
@@ -667,7 +677,7 @@ const AssessmentQuestion: React.FC = () => {
         </div>
       </div>
 
-      {completed_step === "2" ? (
+      {completed_step === "1" ? (
         <div className="w-full px-4 sm:px-6 lg:px-2 pt-4 pb-10 space-y-6">
           <div className="bg-white rounded-3xl shadow-base p-4 sm:p-6 lg:p-8 space-y-8">
             {/* Section 1: Describe Your Approach */}

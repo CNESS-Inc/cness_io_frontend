@@ -49,6 +49,7 @@ interface CommentBoxProps {
   userPosts?: any;
   onClose: () => void;
   onCommentAdded?: () => void;
+  triggerCreditAnimation?: (element: HTMLElement, amount?: number) => void;
 }
 
 const CommentBox = ({
@@ -56,6 +57,7 @@ const CommentBox = ({
   onClose,
   onCommentAdded,
   setUserPosts,
+  triggerCreditAnimation,
 }: CommentBoxProps) => {
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
@@ -77,6 +79,9 @@ const CommentBox = ({
   const [replySuggestions, setReplySuggestions] = useState<any[]>([]);
   const [showReplySuggestions, setShowReplySuggestions] = useState(false);
   const [selectedReplyMentionIndex, setSelectedReplyMentionIndex] = useState(0);
+  //const postLottieRef = useRef<LottieRefCurrentProps | null>(null);
+//const [showPostAnimation, setShowPostAnimation] = useState(false);
+
 
   // Mention functionality for comments
   const {
@@ -230,6 +235,21 @@ const CommentBox = ({
 
       if (response?.data?.data) {
         console.log("response.data.data", response.data.data);
+
+        // Get the comment button element to use as animation source
+        const commentButton = document.querySelector(
+          "[data-comment-button]"
+        ) as HTMLElement;
+
+        // Trigger credit animation for creating a comment if the function is provided
+        if (triggerCreditAnimation && commentButton) {
+          localStorage.setItem(
+          "karma_credits",
+          response.data.data.karma_credits.toString()
+        );
+          triggerCreditAnimation(commentButton, 10); // 10 credits for creating a comment
+        }
+
         setComments((prev) => [
           {
             ...response.data.data,
@@ -273,6 +293,7 @@ const CommentBox = ({
         };
         setComments((prev) => [newComment, ...prev]);
       }
+
       setCommentText("");
       setCommentMentions([]);
 
@@ -332,7 +353,8 @@ const CommentBox = ({
           profile: {
             first_name: "Your",
             last_name: "Name",
-            profile_picture:  !profilePicture ||
+            profile_picture:
+              !profilePicture ||
               profilePicture === "null" ||
               profilePicture === "undefined" ||
               !profilePicture.startsWith("http")
@@ -675,12 +697,14 @@ const CommentBox = ({
                   {showReply === comment.id && (
                     <div className="ml-12 mb-2 flex gap-2">
                       <img
-                        src={ !profilePicture ||
-              profilePicture === "null" ||
-              profilePicture === "undefined" ||
-              !profilePicture.startsWith("http")
-                ? "/profile.png"
-                : profilePicture}
+                        src={
+                          !profilePicture ||
+                          profilePicture === "null" ||
+                          profilePicture === "undefined" ||
+                          !profilePicture.startsWith("http")
+                            ? "/profile.png"
+                            : profilePicture
+                        }
                         alt="Your profile"
                         className="w-8 h-8 rounded-full object-cover flex-shrink-0"
                         onError={(e) => {
@@ -895,13 +919,14 @@ const CommentBox = ({
               )}
             </div>
             <button
-              className={`px-4 py-2 rounded-full font-medium ${
+              className={`px-4 py-2 rounded-full font-medium relative ${
                 commentText
                   ? "text-purple-600 hover:text-purple-700"
                   : "text-purple-300 cursor-not-allowed"
               }`}
               disabled={!commentText}
               onClick={handleSubmitComment}
+              data-comment-button
             >
               Post
             </button>

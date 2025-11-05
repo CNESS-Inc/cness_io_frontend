@@ -1,4 +1,4 @@
-import { SendMessage, GetConversationMessages } from "../Common/ServerAPI";
+import { GetConversationMessages, HandleSendMessage } from "../Common/ServerAPI";
 
 export interface Message {
   id: string;
@@ -45,7 +45,7 @@ export const sendMessage = async (formData: FormData) => {
   try {
     // For now, return mock data since you haven't added the API endpoints yet
     // When you add the endpoints, uncomment the line below
-    const response = await SendMessage(formData);
+    const response = await HandleSendMessage(formData);
     
     // Mock response for testing
     const mockMessage = {

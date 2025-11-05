@@ -917,6 +917,17 @@ export default function SignupModal({
     }
   };
 
+    const getBillingNote = (plan: any) => {
+    if (!plan.yearlyPrice || !plan.monthlyPrice) return undefined;
+
+    if (isAnnual) {
+      // For annual billing: show "billed annually (yearly price)"
+      return `billed annually ($${plan.yearlyPrice.replace("$", "") * 12})`;
+    } else {
+      return `or ${plan.monthlyPrice}/month`;
+    }
+  };
+
   return (
     <>
       <PopupOnboardingModal open={open} onClose={onClose}>
@@ -1708,9 +1719,9 @@ export default function SignupModal({
                           : plan.monthlyPrice}
                       </span>
                       <span className="text-gray-500">/month</span>
-                      {plan.billingNote && (
+                      {getBillingNote(plan) && (
                         <p className="text-sm text-gray-500 mt-1">
-                          {plan.billingNote}
+                          {getBillingNote(plan)}
                         </p>
                       )}
                     </div>

@@ -5,8 +5,15 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const buildShareUrl = (fallback?: string) =>
-  fallback || `https://dev.cness.io/directory/user-profile/${localStorage.getItem("Id")}`;
+// export const buildShareUrl = (fallback?: string) =>
+//   fallback || `https://dev.cness.io/directory/user-profile/${localStorage.getItem("Id")}`;
+
+export const buildShareUrl = (postId?: string) => {
+  if (postId) {
+    return `${window.location.origin}/post/${postId}`;
+  }
+  return `${window.location.origin}/directory/user-profile/${localStorage.getItem("Id")}`;
+};
 
 export const copyPostLink = async (url: string, onSuccess: (msg: string) => void, onError: (msg: string) => void) => {
   try {

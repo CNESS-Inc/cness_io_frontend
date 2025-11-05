@@ -21,6 +21,7 @@ import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
 import AddBestPracticeModal from "../components/sections/bestPractiseHub/AddBestPractiseModal";
 import EditBestPracticeModal from "../components/sections/bestPractiseHub/EditBestPracticesModel";
+import DOMPurify from "dompurify";
 
 const Managebestpractices = () => {
   const [activeTab, setActiveTab] = useState<"saved" | "mine">("saved");
@@ -282,23 +283,69 @@ const Managebestpractices = () => {
     }
   };
 
+  const handleEditFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  const allowedTypes = ["image/jpeg", "image/png"];
+  const maxSize = 2 * 1024 * 1024; // 2 MB
+
+  // ❌ Invalid file type
+  if (!allowedTypes.includes(file.type)) {
+    showToast({
+      message: "Invalid file type. Please upload JPEG or PNG only.",
+      type: "error",
+      duration: 4000,
+    });
+    e.target.value = "";
+    return;
+  }
+
+  // ❌ File too large
+  if (file.size > maxSize) {
+    showToast({
+      message: "File size exceeds 2MB. Please upload a smaller image.",
+      type: "error",
+      duration: 4000,
+    });
+    e.target.value = "";
+    return;
+  }
+
+  // ✅ Valid file
+  setCurrentPractice({
+    ...currentPractice,
+    file,
+  });
+};
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
       if (isEditMode) {
-        // For edit mode, send as JSON
-        const payload = {
-          id: currentPractice.id,
-          profession: currentPractice.profession,
-          title: currentPractice.title,
-          description: currentPractice.description,
-          status: 0,
-          tags: tags,
-        };
+        // For edit mode, send as FormData to include file
+        const formData = new FormData();
+        formData.append("id", currentPractice.id);
+        formData.append("profession", currentPractice?.profession_data?.id);
+        formData.append("title", currentPractice.title);
+        formData.append("description", currentPractice.description);
+        formData.append("status", "0"); // Reset status to pending when edited
+        formData.append("tags", JSON.stringify(tags));
 
-        await UpdateBestPractice(payload);
+        // Append file if it's a new file (File object), not a string URL
+        if (currentPractice.file && typeof currentPractice.file !== "string") {
+          formData.append("file", currentPractice.file);
+        }
+
+        // If interest exists, append it
+        if (currentPractice.interest) {
+          formData.append("interest", currentPractice.interest);
+        }
+
+        await UpdateBestPractice(formData);
+
         showToast({
           message:
             "Best practice updated successfully and please wait until admin reviews it!",
@@ -372,26 +419,47 @@ const Managebestpractices = () => {
   };
 
   // Function to handle file change for create form
-  const handleCreateFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-      if (!validTypes.includes(file.type)) {
-        e.target.value = '';
+const handleCreateFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-        showToast?.({
-          message: "Please select only JPG, JPEG or PNG files.",
-          type: "error",
-          duration: 3000,
-        });
-        return;
-      }
+  const allowedTypes = ["image/jpeg", "image/png"];
+  const maxSize = 2 * 1024 * 1024; // 2 MB
 
-      setNewPractice((prev) => ({
-        ...prev,
-        file: file,
-      }));
-    }
+  // ❌ Invalid file type
+  if (!allowedTypes.includes(file.type)) {
+    showToast({
+      message: "Invalid file type. Please upload JPEG or PNG only.",
+      type: "error",
+      duration: 4000,
+    });
+    e.target.value = "";
+    return;
+  }
+
+  // ❌ File too large
+  if (file.size > maxSize) {
+    showToast({
+      message: "File size exceeds 2MB. Please upload a smaller image.",
+      type: "error",
+      duration: 4000,
+    });
+    e.target.value = "";
+    return;
+  }
+
+  // ✅ Valid file
+  setNewPractice((prev) => ({
+    ...prev,
+    file,
+  }));
+};
+
+  const handleRemoveFile = () => {
+    setNewPractice((prev) => ({
+      ...prev,
+      file: null,
+    }));
   };
 
   // Function to handle create form submission
@@ -473,25 +541,38 @@ const Managebestpractices = () => {
     }
   };
 
+  const handleTagAddKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && inputValue.trim()) {
+      e.preventDefault();
+      const newTag = inputValue.trim();
+      if (!tags.includes(newTag)) {
+        setTags([...tags, newTag]);
+        setInputValue("");
+      }
+    }
+  };
+
   return (
     <>
-      <div className="w-full min-h-screen mt-8">
+      <div className="w-full min-h-screen mt-8 px-1">
         {/* Tab Navigation */}
         <div className="flex border-b border-gray-200 mb-6 mt-8">
           <button
-            className={`px-4 py-2 cursor-pointer font-medium ${activeTab === "saved"
+            className={`px-4 py-2 cursor-pointer font-medium ${
+              activeTab === "saved"
                 ? "text-blue-600 border-b-2 border-blue-600"
                 : "text-gray-500"
-              }`}
+            }`}
             onClick={() => setActiveTab("saved")}
           >
             Saved Best Practices
           </button>
           <button
-            className={`px-4 py-2 cursor-pointer font-medium ${activeTab === "mine"
+            className={`px-4 py-2 cursor-pointer font-medium ${
+              activeTab === "mine"
                 ? "text-blue-600 border-b-2 border-blue-600"
                 : "text-gray-500"
-              }`}
+            }`}
             onClick={() => setActiveTab("mine")}
           >
             My Best Practices
@@ -524,10 +605,11 @@ const Managebestpractices = () => {
                       text-ellipsis 
                       text-center
                       focus:outline-none
-                      border ${activeStatusTab === 0
-                    ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
-                    : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
-                  }`}
+                      border ${
+                        activeStatusTab === 0
+                          ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
+                          : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
+                      }`}
                 onClick={() => setActiveStatusTab(0)}
               >
                 Pending
@@ -549,10 +631,11 @@ const Managebestpractices = () => {
                       text-ellipsis 
                       text-center
                       focus:outline-none
-                      border ms-2 ${activeStatusTab === 1
-                    ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
-                    : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
-                  }`}
+                      border ms-2 ${
+                        activeStatusTab === 1
+                          ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
+                          : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
+                      }`}
                 onClick={() => setActiveStatusTab(1)}
               >
                 Approved
@@ -575,10 +658,11 @@ const Managebestpractices = () => {
                       text-center
                       focus:outline-none
                       border
-                      ms-2 ${activeStatusTab === 2
-                    ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
-                    : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
-                  }`}
+                      ms-2 ${
+                        activeStatusTab === 2
+                          ? "text-purple-600 h-[45px] bg-[#F8F3FF] border-0"
+                          : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
+                      }`}
                 onClick={() => setActiveStatusTab(2)}
               >
                 Rejected
@@ -672,12 +756,12 @@ const Managebestpractices = () => {
                             <img
                               src={
                                 !company?.user?.profilePicture ||
-                                  company?.user?.profilePicture === "null" ||
-                                  company?.user?.profilePicture === "undefined" ||
-                                  !company?.user?.profilePicture.startsWith(
-                                    "http"
-                                  ) ||
-                                  company?.user?.profilePicture ===
+                                company?.user?.profilePicture === "null" ||
+                                company?.user?.profilePicture === "undefined" ||
+                                !company?.user?.profilePicture.startsWith(
+                                  "http"
+                                ) ||
+                                company?.user?.profilePicture ===
                                   "http://localhost:5026/file/"
                                   ? "/profile.png"
                                   : company?.user?.profilePicture
@@ -706,10 +790,10 @@ const Managebestpractices = () => {
                               <img
                                 src={
                                   !company.file ||
-                                    company.file === "null" ||
-                                    company.file === "undefined" ||
-                                    !company.file.startsWith("http") ||
-                                    company.file === "http://localhost:5026/file/"
+                                  company.file === "null" ||
+                                  company.file === "undefined" ||
+                                  !company.file.startsWith("http") ||
+                                  company.file === "http://localhost:5026/file/"
                                     ? iconMap["companycard1"]
                                     : company.file
                                 }
@@ -731,15 +815,19 @@ const Managebestpractices = () => {
                           </p>
 
                           <p className="text-sm text-gray-600 mb-2 leading-snug break-words whitespace-pre-line">
-                            {expandedDescriptions[company.id]
-                              ? company.description
-                              : truncateText(company.description, 100)}
+                            <span
+                              dangerouslySetInnerHTML={{
+                                __html: DOMPurify.sanitize(
+                                  expandedDescriptions[company.id]
+                                    ? company.description
+                                    : truncateText(company.description, 100)
+                                ),
+                              }}
+                            />
                             {company.description.length > 100 && (
                               <span
                                 className="text-purple-600 underline cursor-pointer ml-1"
-                                onClick={(e) =>
-                                  toggleDescription(e, company.id)
-                                }
+                                // onClick={(e) => toggleDescription(e, company.id)}
                               >
                                 {expandedDescriptions[company.id]
                                   ? "Read Less"
@@ -810,12 +898,12 @@ const Managebestpractices = () => {
                           <img
                             src={
                               !company?.user?.profilePicture ||
-                                company?.user?.profilePicture === "null" ||
-                                company?.user?.profilePicture === "undefined" ||
-                                !company?.user?.profilePicture.startsWith(
-                                  "http"
-                                ) ||
-                                company?.user?.profilePicture ===
+                              company?.user?.profilePicture === "null" ||
+                              company?.user?.profilePicture === "undefined" ||
+                              !company?.user?.profilePicture.startsWith(
+                                "http"
+                              ) ||
+                              company?.user?.profilePicture ===
                                 "http://localhost:5026/file/"
                                 ? "/profile.png"
                                 : company?.user?.profilePicture
@@ -843,10 +931,10 @@ const Managebestpractices = () => {
                             <img
                               src={
                                 !company.file ||
-                                  company.file === "null" ||
-                                  company.file === "undefined" ||
-                                  !company.file.startsWith("http") ||
-                                  company.file === "http://localhost:5026/file/"
+                                company.file === "null" ||
+                                company.file === "undefined" ||
+                                !company.file.startsWith("http") ||
+                                company.file === "http://localhost:5026/file/"
                                   ? iconMap["companycard1"]
                                   : company.file
                               }
@@ -1055,9 +1143,10 @@ const Managebestpractices = () => {
         inputValue={inputValue}
         setInputValue={setInputValue}
         removeTag={removeTag}
-        handleTagKeyDown={handleTagKeyDown}
+        handleTagKeyDown={handleTagAddKeyDown}
         handleInputChange={handleCreateInputChange}
         handleFileChange={handleCreateFileChange}
+        handleRemoveFile={handleRemoveFile}
         handleSubmit={handleCreateSubmit}
         isSubmitting={isCreateSubmitting}
       />
@@ -1073,6 +1162,7 @@ const Managebestpractices = () => {
         setEditInputValue={setEditInputValue}
         removeTag={removeTag}
         handleTagKeyDown={(e) => handleTagKeyDown(e, false)}
+        handleFileChange={handleEditFileChange}
         handleSubmit={handleSubmit}
         isSubmitting={isSubmitting}
       />

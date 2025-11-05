@@ -338,7 +338,9 @@ export default function DashboardDirectory() {
 
   return (
     <>
-      <section className="relative w-full h-[350px] sm:h-[400px] md:h-[500px] mx-auto rounded-[12px] overflow-hidden">
+    <div className="px-2 sm:px-2 lg:px-1">
+
+<section className="relative w-full h-[350px] sm:h-[400px] md:h-[500px] mx-auto rounded-[12px] overflow-hidden mt-2">
         <AnimatedBackground />
         <img
           src={iconMap["heroimgs"]}
@@ -435,6 +437,7 @@ export default function DashboardDirectory() {
           </p>
         </div>
       </section>
+      </div>
 
       <section className="py-6 px-1 bg-[#f9f9f9] border-t border-gray-100 ">
         <div className="w-full mx-auto flex items-center">

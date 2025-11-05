@@ -2,20 +2,29 @@ import { useEffect, useState } from "react";
 import url from "../../../assets/url.svg";
 import file from "../../../assets/file.svg";
 import socialmedia from "../../../assets/socialmedia.svg";
-import grouplogo from "../../../assets/grouplogo.png";
 import frame from "../../../assets/bg-frame.png";
-import facebook from "../../../assets/facebook.png";
-import linkedin from "../../../assets/linkedin.png";
 import cness from "../../../assets/cness.png";
-import insta from "../../../assets/insta.png";
-import whatsapp from "../../../assets/whatsapp.png";
 import Button from "../../ui/Button";
 import { getUserBadgeDetails } from "../../../Common/ServerAPI";
 import indv_aspiring from "../../../assets/indv_aspiring.svg";
 import indv_inspired from "../../../assets/indv_inspired.svg";
 import indv_leader from "../../../assets/indv_leader.svg";
-import jsPDF from 'jspdf';
+import jsPDF from "jspdf";
 import { IoCloseOutline } from "react-icons/io5";
+import {
+  FaFacebook,
+  FaLinkedin,
+  FaInstagram,
+  FaWhatsapp,
+  FaTwitter,
+} from "react-icons/fa";
+import { MdContentCopy } from "react-icons/md";
+import {
+  FacebookShareButton,
+  LinkedinShareButton,
+  WhatsappShareButton,
+  TwitterShareButton,
+} from "react-share";
 
 export default function ShareModal({
   isOpen,
@@ -39,6 +48,10 @@ export default function ShareModal({
   const [selectedRatio, setSelectedRatio] = useState("");
   const [logoScale, setLogoScale] = useState(100);
   const [isDownloading, setIsDownloading] = useState(false);
+
+  const [copy, setCopy] = useState(false);
+  const urldata = "your-url-here"; // Your actual URL
+  const tweetText = "Your tweet text here"; // Your tweet text
 
   const fetchUserBadge = async () => {
     try {
@@ -124,8 +137,8 @@ export default function ShareModal({
     activeButton === "btn1"
       ? embedCodes[0]
       : activeButton === "btn2"
-        ? embedCodes[1]
-        : embedCodes[2];
+      ? embedCodes[1]
+      : embedCodes[2];
 
   const handleCopy = async () => {
     try {
@@ -168,23 +181,39 @@ export default function ShareModal({
   const socialMedia = [
     {
       id: "cness",
+      component: null,
       icon: cness,
+      color: "",
     },
     {
       id: "facebook",
-      icon: facebook,
-    },
-    {
-      id: "instagram",
-      icon: insta,
-    },
-    {
-      id: "whatsapp",
-      icon: whatsapp,
+      component: FacebookShareButton,
+      icon: FaFacebook,
+      color: "#4267B2",
     },
     {
       id: "linkedin",
-      icon: linkedin,
+      component: LinkedinShareButton,
+      icon: FaLinkedin,
+      color: "#0077B5",
+    },
+    {
+      id: "instagram",
+      component: null, // Instagram doesn't have a direct share button
+      icon: FaInstagram,
+      color: "#C13584",
+    },
+    {
+      id: "whatsapp",
+      component: WhatsappShareButton,
+      icon: FaWhatsapp,
+      color: "#25D366",
+    },
+    {
+      id: "twitter",
+      component: TwitterShareButton,
+      icon: FaTwitter,
+      color: "#1DA1F2",
     },
   ];
 
@@ -203,7 +232,7 @@ export default function ShareModal({
     setIsDownloading(true);
 
     try {
-      const ratio = ratios.find(r => r.value === selectedRatio);
+      const ratio = ratios.find((r) => r.value === selectedRatio);
       if (!ratio) {
         alert("Invalid ratio selected");
         setIsDownloading(false);
@@ -211,10 +240,10 @@ export default function ShareModal({
       }
 
       // Create a canvas with the exact dimensions user selected
-      const canvas = document.createElement('canvas');
+      const canvas = document.createElement("canvas");
       canvas.width = ratio.width;
       canvas.height = ratio.height;
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext("2d");
 
       if (!ctx) {
         alert("Failed to create canvas");
@@ -223,11 +252,12 @@ export default function ShareModal({
       }
 
       // Only add background for JPEG and PDF (not PNG or SVG)
-      const includeBackground = selectedFormat === "JPEG" || selectedFormat === "PDF";
+      const includeBackground =
+        selectedFormat === "JPEG" || selectedFormat === "PDF";
 
       if (includeBackground) {
         // White background for JPEG and PDF
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         const frameImg = new Image();
@@ -249,7 +279,7 @@ export default function ShareModal({
       await new Promise((resolve, reject) => {
         logoImg.onload = resolve;
         logoImg.onerror = reject;
-        logoImg.src = grouplogo;
+        logoImg.src = staticImageURL;
       });
 
       // Calculate logo dimensions based on user's scale
@@ -274,7 +304,10 @@ export default function ShareModal({
       ctx.drawImage(logoImg, x, y, finalWidth, finalHeight);
 
       // Download based on format
-      const filename = `CNESS-Badge-${selectedRatio.replace(':', 'x')}-${logoScale}%-${Date.now()}`;
+      const filename = `CNESS-Badge-${selectedRatio.replace(
+        ":",
+        "x"
+      )}-${logoScale}%-${Date.now()}`;
 
       switch (selectedFormat) {
         case "PNG":
@@ -284,49 +317,57 @@ export default function ShareModal({
               downloadBlob(blob, `${filename}.png`);
               setIsDownloading(false);
             }
-          }, 'image/png');
+          }, "image/png");
           break;
 
         case "JPEG":
           // JPEG with white background
-          canvas.toBlob((blob) => {
-            if (blob) {
-              downloadBlob(blob, `${filename}.jpeg`);
-              setIsDownloading(false);
-            }
-          }, 'image/jpeg', 0.95);
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                downloadBlob(blob, `${filename}.jpeg`);
+                setIsDownloading(false);
+              }
+            },
+            "image/jpeg",
+            0.95
+          );
           break;
 
         case "PDF":
           // PDF with white background
-          const imgData = canvas.toDataURL('image/png');
+          const imgData = canvas.toDataURL("image/png");
           const pdf = new jsPDF({
-            orientation: ratio.width > ratio.height ? 'landscape' : 'portrait',
-            unit: 'px',
+            orientation: ratio.width > ratio.height ? "landscape" : "portrait",
+            unit: "px",
             format: [ratio.width, ratio.height],
           });
-          pdf.addImage(imgData, 'PNG', 0, 0, ratio.width, ratio.height);
+          pdf.addImage(imgData, "PNG", 0, 0, ratio.width, ratio.height);
           pdf.save(`${filename}.pdf`);
           setIsDownloading(false);
           break;
 
         case "SVG":
-          // SVG with transparent background 
-          const svgCanvas = document.createElement('canvas');
+          // SVG with transparent background
+          const svgCanvas = document.createElement("canvas");
           svgCanvas.width = ratio.width;
           svgCanvas.height = ratio.height;
-          const svgCtx = svgCanvas.getContext('2d');
+          const svgCtx = svgCanvas.getContext("2d");
 
           if (svgCtx) {
             // Draw only the logo, no background
             svgCtx.drawImage(logoImg, x, y, finalWidth, finalHeight);
 
             const svgContent = `
-              <svg xmlns="http://www.w3.org/2000/svg" width="${ratio.width}" height="${ratio.height}">
-                <image href="${svgCanvas.toDataURL('image/png')}" width="${ratio.width}" height="${ratio.height}"/>
+              <svg xmlns="http://www.w3.org/2000/svg" width="${
+                ratio.width
+              }" height="${ratio.height}">
+                <image href="${svgCanvas.toDataURL("image/png")}" width="${
+              ratio.width
+            }" height="${ratio.height}"/>
               </svg>
             `;
-            const svgBlob = new Blob([svgContent], { type: 'image/svg+xml' });
+            const svgBlob = new Blob([svgContent], { type: "image/svg+xml" });
             downloadBlob(svgBlob, `${filename}.svg`);
           }
           setIsDownloading(false);
@@ -334,14 +375,14 @@ export default function ShareModal({
       }
     } catch (error: any) {
       console.error("Download failed:", error);
-      alert(`Failed to download: ${error.message || 'Unknown error'}`);
+      alert(`Failed to download: ${error.message || "Unknown error"}`);
       setIsDownloading(false);
     }
   };
 
   const downloadBlob = (blob: Blob, filename: string) => {
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
     link.download = filename;
     document.body.appendChild(link);
@@ -352,20 +393,20 @@ export default function ShareModal({
 
   // File size estimation
   const getEstimatedSize = () => {
-    const ratio = ratios.find(r => r.value === selectedRatio);
+    const ratio = ratios.find((r) => r.value === selectedRatio);
     if (!ratio) return "Unknown";
 
     const pixels = ratio.width * ratio.height;
 
     switch (selectedFormat) {
       case "PNG":
-        return `~${Math.round(pixels * 3 / 1024 / 1024 * 10) / 10} MB`;
+        return `~${Math.round(((pixels * 3) / 1024 / 1024) * 10) / 10} MB`;
       case "JPEG":
-        return `~${Math.round(pixels * 0.5 / 1024 / 1024 * 10) / 10} MB`;
+        return `~${Math.round(((pixels * 0.5) / 1024 / 1024) * 10) / 10} MB`;
       case "PDF":
-        return `~${Math.round(pixels * 3 / 1024 / 1024 * 10) / 10} MB`;
+        return `~${Math.round(((pixels * 3) / 1024 / 1024) * 10) / 10} MB`;
       case "SVG":
-        return `~${Math.round(pixels * 0.1 / 1024 / 1024 * 10) / 10} MB`;
+        return `~${Math.round(((pixels * 0.1) / 1024 / 1024) * 10) / 10} MB`;
       default:
         return "Unknown";
     }
@@ -400,7 +441,10 @@ export default function ShareModal({
         }}
       >
         <div className="w-full h-[600px] ps-[12px] pe-[14px] py-[18px]">
-          <div onClick={onClose} className="absolute top-4 right-3 w-[20px] h-[20px] rounded-full flex items-center justify-center cursor-pointer border border-[#ECEEF2] shadow-[0px_0.56px_5.63px_0px_rgba(0,0,0,0.1)]">
+          <div
+            onClick={onClose}
+            className="absolute top-4 right-3 w-[20px] h-[20px] rounded-full flex items-center justify-center cursor-pointer border border-[#ECEEF2] shadow-[0px_0.56px_5.63px_0px_rgba(0,0,0,0.1)]"
+          >
             <IoCloseOutline className="text-[#E1056D]" />
           </div>
           <div className="w-full h-full flex flex-col lg:flex-row gap-[18px]">
@@ -412,10 +456,11 @@ export default function ShareModal({
                     setActiveTab(tab.id as "tab1" | "tab2" | "tab3")
                   }
                   className={`flex items-center py-[8px] px-[12px] gap-[12px] rounded-xl transition-all duration-200 whitespace-nowrap
-                   ${activeTab === tab.id
-                      ? "bg-[#FAFAFA]"
-                      : "bg-white hover:bg-[#FAFAFA]"
-                    }`}
+                   ${
+                     activeTab === tab.id
+                       ? "bg-[#FAFAFA]"
+                       : "bg-white hover:bg-[#FAFAFA]"
+                   }`}
                 >
                   <img
                     src={tab.icon}
@@ -443,10 +488,11 @@ export default function ShareModal({
                         setActiveButton(btn.id as "btn1" | "btn2" | "btn3")
                       }
                       className={`relative flex items-center justify-center p-[12px] rounded-lg bg-[#FAFAFA4D] transition-all duration-200 whitespace-nowrap
-                   ${activeButton === btn.id
-                          ? "shadow-[0_0_10px_0_rgba(0,0,0,0.1)]"
-                          : "bg-white hover:bg-[#FAFAFA]"
-                        }`}
+                   ${
+                     activeButton === btn.id
+                       ? "shadow-[0_0_10px_0_rgba(0,0,0,0.1)]"
+                       : "bg-white hover:bg-[#FAFAFA]"
+                   }`}
                     >
                       <p className="text-sm font-medium text-[#0D0D12] font-['Poppins',Helvetica]">
                         {btn.label}
@@ -475,10 +521,11 @@ export default function ShareModal({
                     />
                     <span
                       className={`w-[16px] h-[16px] flex items-center justify-center border border-[#D0D5DD] rounded-sm transition-all
-          ${checked
-                          ? "border-[#E1056D] bg-[#E1056D]"
-                          : "border-gray-300 bg-white"
-                        } shadow-[0_0_2px_0_rgba(0,0,0,0.1)]`}
+          ${
+            checked
+              ? "border-[#E1056D] bg-[#E1056D]"
+              : "border-gray-300 bg-white"
+          } shadow-[0_0_2px_0_rgba(0,0,0,0.1)]`}
                     >
                       {checked && (
                         <svg
@@ -623,15 +670,17 @@ export default function ShareModal({
                           style={{
                             width: `${logoScale}%`,
                             height: `${logoScale}%`,
-                            maxWidth: '80%',
-                            maxHeight: '80%',
+                            maxWidth: "80%",
+                            maxHeight: "80%",
                           }}
                         />
                       )}
 
                       {!staticImageURL && (
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <p className="text-sm text-gray-400">Unable to fetch user badge</p>
+                          <p className="text-sm text-gray-400">
+                            Unable to fetch user badge
+                          </p>
                         </div>
                       )}
 
@@ -641,7 +690,9 @@ export default function ShareModal({
                           <div className="relative">
                             <select
                               value={logoScale}
-                              onChange={(e) => setLogoScale(Number(e.target.value))}
+                              onChange={(e) =>
+                                setLogoScale(Number(e.target.value))
+                              }
                               className="appearance-none px-2 py-[6px] pr-[28px] text-[10px] border border-[#ECEEF2] rounded-[6px] font-['Poppins',Helvetica] text-[#0D0D12] bg-white shadow-[0_1px_4px_0_rgba(0,0,0,0.1)] cursor-pointer hover:border-[#7077FE] transition-colors"
                             >
                               <option value={100}>100%</option>
@@ -682,20 +733,72 @@ export default function ShareModal({
                   <label className="text-sm font-medium font-['Poppins',Helvetica] text-[#0D0D12] mb-2 block">
                     Social Media
                   </label>
-                  <div className="flex items-center gap-[12px]">
-                    {socialMedia.map((media) => (
+                  <ul className="flex items-center gap-4">
+                    <li>
                       <button
-                        key={media.id}
+                        key={"cness"}
                         className="p-[10px] flex gap-[12px] items-center justify-center"
                       >
                         <img
-                          src={media.icon}
-                          alt={media.id}
+                          src={cness}
+                          alt={"cness"}
                           className="w-[32px] h-[32px] object-contain"
                         />
                       </button>
-                    ))}
-                  </div>
+                    </li>
+                    {socialMedia.map((media) => {
+                      const IconComponent = media.icon;
+
+                      // if (media.id === "instagram") {
+                      //   // Instagram special case (no share button)
+                      //   return (
+                      //     <li key={media.id}>
+                      //       <button className="p-2">
+                      //         <IconComponent size={32} color={media.color} />
+                      //       </button>
+                      //     </li>
+                      //   );
+                      // }
+
+                      if (media.component) {
+                        const ShareComponent = media.component;
+                        return (
+                          <li key={media.id}>
+                            <ShareComponent
+                              url={urldata}
+                              {...(media.id === "twitter" && {
+                                title: tweetText,
+                              })}
+                            >
+                              <IconComponent size={32} color={media.color} />
+                            </ShareComponent>
+                          </li>
+                        );
+                      }
+
+                      return null;
+                    })}
+
+                    {/* Copy link button */}
+                    <li>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(urldata);
+                          setCopy(true);
+                          setTimeout(() => setCopy(false), 1500);
+                        }}
+                        className="flex items-center relative"
+                        title="Copy link"
+                      >
+                        <MdContentCopy size={30} className="text-gray-600" />
+                        {copy && (
+                          <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
+                            Link Copied!
+                          </div>
+                        )}
+                      </button>
+                    </li>
+                  </ul>
                 </div>
               </div>
             )}
@@ -724,24 +827,26 @@ export default function ShareModal({
               </h2>
               <div className="text-sm text-gray-600 space-y-3">
                 <p>
-                  This is a demo Terms of Services content. The actual terms and conditions
-                  will be integrated by the team.
+                  This is a demo Terms of Services content. The actual terms and
+                  conditions will be integrated by the team.
                 </p>
                 <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
-                  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                  quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                  consequat.
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                  laboris nisi ut aliquip ex ea commodo consequat.
                 </p>
                 <p>
-                  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore
-                  eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                  sunt in culpa qui officia deserunt mollit anim id est laborum.
+                  Duis aute irure dolor in reprehenderit in voluptate velit esse
+                  cillum dolore eu fugiat nulla pariatur. Excepteur sint
+                  occaecat cupidatat non proident, sunt in culpa qui officia
+                  deserunt mollit anim id est laborum.
                 </p>
                 <p>
-                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
-                  doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore
-                  veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+                  accusantium doloremque laudantium, totam rem aperiam, eaque
+                  ipsa quae ab illo inventore veritatis et quasi architecto
+                  beatae vitae dicta sunt explicabo.
                 </p>
               </div>
             </div>
@@ -770,30 +875,32 @@ export default function ShareModal({
               </h2>
               <div className="text-sm text-gray-600 space-y-3">
                 <p>
-                  This is a demo Privacy Policy content. The actual privacy policy will be
-                  integrated by the team.
+                  This is a demo Privacy Policy content. The actual privacy
+                  policy will be integrated by the team.
                 </p>
                 <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
-                  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                  quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                  consequat.
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                  laboris nisi ut aliquip ex ea commodo consequat.
                 </p>
                 <p>
-                  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore
-                  eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                  sunt in culpa qui officia deserunt mollit anim id est laborum.
+                  Duis aute irure dolor in reprehenderit in voluptate velit esse
+                  cillum dolore eu fugiat nulla pariatur. Excepteur sint
+                  occaecat cupidatat non proident, sunt in culpa qui officia
+                  deserunt mollit anim id est laborum.
                 </p>
                 <p>
-                  Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit,
-                  sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
-                  Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.
+                  Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut
+                  odit aut fugit, sed quia consequuntur magni dolores eos qui
+                  ratione voluptatem sequi nesciunt. Neque porro quisquam est,
+                  qui dolorem ipsum quia dolor sit amet.
                 </p>
               </div>
             </div>
           </div>
         )}
       </div>
-    </div >
+    </div>
   );
 }

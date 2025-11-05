@@ -25,6 +25,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/DashboardCard";
+import DOMPurify from "dompurify";
 import AddBestPracticeModal from "../components/sections/bestPractiseHub/AddBestPractiseModal";
 //import {  ChevronUp, ChevronDown, SortAsc, SortDesc } from "lucide-react"; // Import icons
 
@@ -270,7 +271,7 @@ useEffect(() => {
         type === "interest" ? id : "",
         searchText
       );
-      console.log('res.data.data.rowsfghghggg', res.data.data.rows)
+      console.log("res.data.data.rowsfghghggg", res.data.data.rows);
       if (res?.data?.data) {
         const transformedCompanies = res.data.data.rows.map(
           (practice: any) => ({
@@ -358,26 +359,47 @@ useEffect(() => {
     }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-      if (!validTypes.includes(file.type)) {
-        e.target.value = '';
+ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-        showToast?.({
-          message: "Please select only JPG, JPEG or PNG files.",
-          type: "error",
-          duration: 3000,
-        });
-        return;
-      }
+  const allowedTypes = ["image/jpeg", "image/png"];
+  const maxSize = 2 * 1024 * 1024; // 2MB
 
-      setNewPractice((prev) => ({
-        ...prev,
-        file: file,
-      }));
-    }
+  // ❌ Invalid file type
+  if (!allowedTypes.includes(file.type)) {
+    showToast({
+      message: "Invalid file type. Please upload JPEG or PNG only.",
+      type: "error",
+      duration: 4000,
+    });
+    e.target.value = "";
+    return;
+  }
+
+  // ❌ File too large
+  if (file.size > maxSize) {
+    showToast({
+      message: "File size exceeds 2MB. Please upload a smaller image.",
+      type: "error",
+      duration: 4000,
+    });
+    e.target.value = "";
+    return;
+  }
+
+  // ✅ Valid file
+  setNewPractice((prev) => ({
+    ...prev,
+    file,
+  }));
+};
+
+  const handleRemoveFile = () => {
+    setNewPractice((prev) => ({
+      ...prev,
+      file: null,
+    }));
   };
 
   // Sample like handler (replace with your actual API call)
@@ -508,7 +530,6 @@ useEffect(() => {
       const res = await SendBpFollowRequest({ bp_id: id });
 
       if (res?.success?.statusCode === 200) {
-
         const isFollowing = res?.data?.data !== null;
         setBestPractices((prev) =>
           prev.map((practice) => {
@@ -520,7 +541,9 @@ useEffect(() => {
         );
 
         showToast({
-          message: isFollowing ? "Added to followed practices" : "Removed from followed practices",
+          message: isFollowing
+            ? "Added to followed practices"
+            : "Removed from followed practices",
           type: "success",
           duration: 2000,
         });
@@ -544,7 +567,9 @@ useEffect(() => {
 
   return (
     <>
-      <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] mx-auto rounded-[12px] overflow-hidden">
+        <div className="px-2 sm:px-2 lg:px-1">
+
+      <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] mx-auto rounded-[12px] overflow-hidden mt-2">
         <AnimatedBackground />
 
         {/* Background Image (city illustration) */}
@@ -659,6 +684,7 @@ useEffect(() => {
           </p>
         </div>
       </section>
+      </div>
 
       {/* Best Practices Section */}
       <section className="py-8 px-1 sm:py-16 bg-[#f9f9f9] border-t border-gray-100">
@@ -672,9 +698,9 @@ useEffect(() => {
                     "
                     {selectedFilter.type === "profession"
                       ? profession.find((p) => p.id === selectedFilter.id)
-                        ?.title
+                          ?.title
                       : interest.find((i: any) => i.id === selectedFilter.id)
-                        ?.name}
+                          ?.name}
                     "
                   </span>
                 )}
@@ -823,10 +849,10 @@ useEffect(() => {
                         <img
                           src={
                             !company?.user?.profilePicture ||
-                              company?.user?.profilePicture === "null" ||
-                              company?.user?.profilePicture === "undefined" ||
-                              !company?.user?.profilePicture.startsWith("http") ||
-                              company?.user?.profilePicture ===
+                            company?.user?.profilePicture === "null" ||
+                            company?.user?.profilePicture === "undefined" ||
+                            !company?.user?.profilePicture.startsWith("http") ||
+                            company?.user?.profilePicture ===
                               "http://localhost:5026/file/"
                               ? "/profile.jpg"
                               : company?.user?.profilePicture
@@ -856,10 +882,10 @@ useEffect(() => {
                             <img
                               src={
                                 !company.file ||
-                                  company.file === "null" ||
-                                  company.file === "undefined" ||
-                                  !company.file.startsWith("http") ||
-                                  company.file === "http://localhost:5026/file/"
+                                company.file === "null" ||
+                                company.file === "undefined" ||
+                                !company.file.startsWith("http") ||
+                                company.file === "http://localhost:5026/file/"
                                   ? "/profile.jpg"
                                   : company.file
                               }
@@ -914,13 +940,19 @@ useEffect(() => {
                         )}
                       </p> */}
                         <p className="text-sm text-gray-600 leading-snug break-words whitespace-pre-line">
-                          {expandedDescriptions[company.id]
-                            ? company.description
-                            : truncateText(company.description, 100)}
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: DOMPurify.sanitize(
+                                expandedDescriptions[company.id]
+                                  ? company.description
+                                  : truncateText(company.description, 100)
+                              ),
+                            }}
+                          />
                           {company.description.length > 100 && (
                             <span
                               className="text-purple-600 underline cursor-pointer ml-1"
-                            // onClick={(e) => toggleDescription(e, company.id)}
+                              // onClick={(e) => toggleDescription(e, company.id)}
                             >
                               {expandedDescriptions[company.id]
                                 ? "Read Less"
@@ -1026,10 +1058,11 @@ useEffect(() => {
                           )
                         }
                         disabled={isLoading.popular}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${1 === pagination.currentPage
-                          ? "bg-indigo-500 text-white"
-                          : "bg-white text-gray-700 hover:bg-gray-100"
-                          }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
+                          1 === pagination.currentPage
+                            ? "bg-indigo-500 text-white"
+                            : "bg-white text-gray-700 hover:bg-gray-100"
+                        }`}
                       >
                         1
                       </button>
@@ -1062,10 +1095,11 @@ useEffect(() => {
                           )
                         }
                         disabled={isLoading.popular}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${page === pagination.currentPage
-                          ? "bg-indigo-500 text-white"
-                          : "bg-white text-gray-700 hover:bg-gray-100"
-                          }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
+                          page === pagination.currentPage
+                            ? "bg-indigo-500 text-white"
+                            : "bg-white text-gray-700 hover:bg-gray-100"
+                        }`}
                       >
                         {page}
                       </button>
@@ -1092,10 +1126,11 @@ useEffect(() => {
                             )
                           }
                           disabled={isLoading.popular}
-                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${pagination.totalPages === pagination.currentPage
-                            ? "bg-indigo-500 text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-100"
-                            }`}
+                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${
+                            pagination.totalPages === pagination.currentPage
+                              ? "bg-indigo-500 text-white"
+                              : "bg-white text-gray-700 hover:bg-gray-100"
+                          }`}
                         >
                           {pagination.totalPages}
                         </button>
@@ -1140,6 +1175,7 @@ useEffect(() => {
         handleTagKeyDown={handleTagKeyDown}
         handleInputChange={handleInputChange}
         handleFileChange={handleFileChange}
+        handleRemoveFile={handleRemoveFile}
         handleSubmit={handleSubmit}
         isSubmitting={isSubmitting}
       />

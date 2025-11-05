@@ -92,6 +92,7 @@ export default function DashboardSection() {
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [isAnnual, setIsAnnual] = useState(true);
   const [personPricing, setPersonPricing] = useState<PersPricingPlan[]>([]);
+  console.log("🚀 ~ DashboardSection ~ personPricing:", personPricing)
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [organizationErrors, setOrganizationErrors] = useState<FormErrors>({});
   const [personErrors, setPersonErrors] = useState<FormErrors>({});
@@ -587,6 +588,17 @@ export default function DashboardSection() {
         return indv_leader;
       default:
         return null;
+    }
+  };
+
+    const getBillingNote = (plan: any) => {
+    if (!plan.yearlyPrice || !plan.monthlyPrice) return undefined;
+
+    if (isAnnual) {
+      // For annual billing: show "billed annually (yearly price)"
+      return `billed annually ($${plan.yearlyPrice.replace("$", "") * 12})`;
+    } else {
+      return `or ${plan.monthlyPrice}/month`;
     }
   };
 
@@ -1177,11 +1189,11 @@ export default function DashboardSection() {
                         : plan.monthlyPrice}
                     </span>
                     <span className="text-gray-500">/month</span>
-                    {plan.billingNote && (
-                      <p className="text-sm text-gray-500 mt-1">
-                        {plan.billingNote}
-                      </p>
-                    )}
+                    {getBillingNote(plan) && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {getBillingNote(plan)}
+                        </p>
+                      )}
                   </div>
                   <Button
                     variant="gradient-primary"

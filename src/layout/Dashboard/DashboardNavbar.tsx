@@ -4,7 +4,7 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   // LogOutIcon,
-  BadgePlus,
+  //BadgePlus,
   TrendingUp,
   Zap,
 } from "lucide-react";
@@ -77,6 +77,11 @@ const DashboardNavbar = ({
       console.error("Failed to load referred users", err);
     }
   };*/
+// Automatically detect environment based on domain (no .env needed)
+const hostname = window.location.hostname.toLowerCase();
+
+const showMarketplaceNew =
+  hostname.includes("localhost") || hostname.includes("dev");
 
   const mainNavItems = [
     {
@@ -110,7 +115,8 @@ const DashboardNavbar = ({
         "/dashboard/upgrade-badge",
       ],
       children: [
-        { label: "Get Certified", path: "/dashboard/assesment" },
+        { label: "Get Certified", path: "/dashboard/assesmentcertification" },
+        // { label: "Assessment Certification", path: "/dashboard/assesmentcertification" },
         //{ label: "Upload Proof", path: "/dashboard/UploadProof" },
         { label: "Score & Results", path: "/dashboard/score-result" },
         { label: "Upgrade Badge", path: "/dashboard/upgrade-badge" },
@@ -171,22 +177,7 @@ const DashboardNavbar = ({
       ],
     },
 
-    {
-      id: "market-place",
-      icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
-      label: "Marketplace",
-      active: true,
-      path: "/dashboard/market-place",
-      /*isMarketplaceDropdown: true,
-      childPaths: ["/dashboard/DigitalProducts"],
-      children: [
-        {label: "Login To Market Place", path: "", customAction: generateSsoToken },
-        { label: "Buy Digital Products", path: "/dashboard/digital_products" },
-        { label: "Sell your Products", path: "/dashboard/SellProducts" },
-        { label: "Track Purchase & Sales", path: "/dashboard/Tracking" },
-        { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
-      ],*/
-    },
+  
 
     // {
     //   id: "Community",
@@ -210,6 +201,47 @@ const DashboardNavbar = ({
     //     // { label: "Messagings", path: "/dashboard/ComingSoon" },
     //   ],
     // },
+
+  {
+      id: "marketplace",
+      icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
+      label: "Marketplace",
+      active: true,
+      path: "/dashboard/marketplace",
+      /*isMarketplaceDropdown: true,
+      childPaths: ["/dashboard/DigitalProducts"],
+      children: [
+        {label: "Login To Market Place", path: "", customAction: generateSsoToken },
+        { label: "Buy Digital Products", path: "/dashboard/digital_products" },
+        { label: "Sell your Products", path: "/dashboard/SellProducts" },
+        { label: "Track Purchase & Sales", path: "/dashboard/Tracking" },
+        { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
+      ],*/
+    },
+  ...(showMarketplaceNew 
+     ? [
+    // {
+    //   id: "market-place",
+    //   icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
+    //   label: "MarketplaceNew",
+    //   active: false,
+    //   //path: "/dashboard/market-place",
+    //   isMarketplaceDropdown: true,
+    //   childPaths: ["/dashboard/DigitalProducts"],
+    //   children: [
+    //     { label: "Buy Digital Products", path: "/dashboard/market-place" },
+    //     { label: "Sell your Products", path: "/dashboard/createshop" },
+    //     { label: "Track Purchase & Sales", path: "/dashboard/Tracking" },
+    //     { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
+    //     { label: "Seller Dashboard", path: "/dashboard/seller-dashboard" }
+
+    //   ]
+    // },
+    ]
+    : []),
+
+
+
     {
       id: "MentorPartnerHub",
       icon: <Zap className="w-5 h-5 text-gray-500" />,
@@ -247,20 +279,20 @@ const DashboardNavbar = ({
     //   ],
     // },
 
-    {
-      icon: <BadgePlus className="w-5 h-5" />,
-      label: "Generate Badge Code",
-      active: false,
-      path: "/dashboard/GenerateBadgeCode",
-    },
-    {
-      icon: (
-        <img src={iconMap["community"]} alt="Home Icon" className="w-5 h-5" />
-      ),
-      label: "Affiliate",
-      active: false,
-      path: "/dashboard/GenerateAffiliateCode",
-    },
+    //{
+     // icon: <BadgePlus className="w-5 h-5" />,
+     // label: "Generate Badge Code",
+      //active: false,
+      //path: "/dashboard/GenerateBadgeCode",
+    //},
+   // {
+      //icon: (
+       // <img src={iconMap["community"]} alt="Home Icon" className="w-5 h-5" />
+      //),
+      //label: "Affiliate",
+     // active: false,
+    //  path: "/dashboard/GenerateAffiliateCode",
+    //},
   ];
 
   // const secondaryNavItems = [

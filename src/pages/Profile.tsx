@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
-import { useEffect } from "react"; // at top
 import FollowingModal from "../components/Profile/Following";
 import FollowersModal from "../components/Profile/Followers";
 import Connections from "../components/Profile/Connections";
@@ -35,6 +34,7 @@ import {
   PostsLike,
   GetConnectionUser,
   UnFriend,
+  MeDetails,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import Modal from "../components/ui/Modal";
@@ -70,9 +70,10 @@ export interface Media {
 //sample for collections
 const userProfilePicture = localStorage.getItem("profile_picture");
 
-const userName =
-  localStorage.getItem("name") + " " + localStorage.getItem("margaret_name") ||
-  "User";
+
+
+const userName = localStorage.getItem("username") || "User";
+const fullName = localStorage.getItem("name") || "User";
 
 const profiles = [
   {
@@ -83,7 +84,7 @@ const profiles = [
       !userProfilePicture.startsWith("http")
         ? "/profile.png"
         : userProfilePicture,
-    name: userName,
+    name: fullName,
     username: userName,
     following: "",
     followers: "",
@@ -91,7 +92,7 @@ const profiles = [
       { label: "Posts", icon: <Copy size={16} /> },
       { label: "Reels", icon: <PlayCircle size={16} /> },
       { label: "Connections", icon: <Users size={16} /> },
-      // { label: "Collections", icon: <Copy size={16} /> },
+      { label: "Collections", icon: <Copy size={16} /> },
       // { label: "About", icon: <AtSign size={16} /> },
     ],
   },
@@ -232,6 +233,27 @@ export default function Profile() {
     isOpen: boolean;
     postId: string | null;
   }>({ isOpen: false, postId: null });
+  const fetchMeDetails = async () => {
+  try {
+    const res = await MeDetails();
+    localStorage.setItem(
+      "profile_picture",
+      res?.data?.data?.user.profile_picture
+    );
+    localStorage.setItem("name", res?.data?.data?.user.name);
+    localStorage.setItem("main_name", res?.data?.data?.user.main_name);
+    localStorage.setItem(
+      "karma_credits",
+      res?.data?.data?.user?.karma_credits || 0
+    );
+    localStorage.setItem("username", res?.data?.data?.user?.username);
+    localStorage.setItem("margaret_name", res?.data?.data?.user.margaret_name);
+  } catch (error) {}
+};
+
+useEffect(() => {
+  fetchMeDetails();
+}, []);
 
   useEffect(() => {
     // Check if URL has the openpost parameter and a post ID
@@ -459,7 +481,7 @@ export default function Profile() {
   }, [activeTab, boards.length]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f9f9fb]">
+    <div className="flex flex-col min-h-screen bg-[#f9f9fb] pt-2 px-2 sm:px-2 md:px-1 lg:px-1">
       {profiles.map((profile, index) => (
         <ProfileCard
           key={index}

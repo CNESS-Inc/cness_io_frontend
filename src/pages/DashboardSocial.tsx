@@ -62,6 +62,7 @@ import CollectionList from "./CollectionList";
 import Button from "../components/ui/Button";
 import SharePopup from "../components/Social/SharePopup";
 import { buildShareUrl, copyPostLink } from "../lib/utils";
+import CreditAnimation from "../Common/CreditAnimation";
 // import { buildShareUrl } from "../lib/utils";
 
 interface Post {
@@ -331,7 +332,9 @@ export default function SocialTopBar() {
   // const [addNewPost, setAddNewPost] = useState(false)
 
   const [userInfo, setUserInfo] = useState<any>();
-  const [isAdult, setIsAdult] = useState<Boolean>(localStorage.getItem("isAdult") === "true"? true : false);
+  const [isAdult, setIsAdult] = useState<Boolean>(
+    localStorage.getItem("isAdult") === "true" ? true : false
+  );
   const navigate = useNavigate();
   const { showToast } = useToast();
   const userProfilePicture = localStorage.getItem("profile_picture");
@@ -353,15 +356,50 @@ export default function SocialTopBar() {
   const [isReportingPost, setIsReportingPost] = useState<string | null>(null);
   //const [showTopicModal, setShowTopicModal] = useState(false);
 
+  const [animations, setAnimations] = useState<any[]>([]);
+
   const maxChars = 2000;
+
+  const triggerCreditAnimation = (fromElement: HTMLElement, amount = 10) => {
+    const walletIcon = document.querySelector(
+      "[data-wallet-icon]"
+    ) as HTMLElement;
+    if (!walletIcon || !fromElement) return;
+
+    const fromRect = fromElement.getBoundingClientRect();
+    const toRect = walletIcon.getBoundingClientRect();
+
+    const animationId = Date.now();
+    setAnimations((prev) => [
+      ...prev,
+      {
+        id: animationId,
+        from: {
+          x: fromRect.left + fromRect.width / 2,
+          y: fromRect.top + fromRect.height / 2,
+        },
+        to: {
+          x: toRect.left + toRect.width / 2,
+          y: toRect.top + toRect.height / 2,
+        },
+        amount: amount,
+      },
+    ]);
+
+    // Remove animation after completion
+    setTimeout(() => {
+      setAnimations((prev) => prev.filter((a) => a.id !== animationId));
+    }, 1400);
+  };
 
   const handleConnect = async (userId: string) => {
     try {
       setConnectingUsers((prev) => ({ ...prev, [userId]: true }));
 
-      // Check if already connected
-      if (friendRequests[userId] === "connected") {
-        // If connected, delete friend
+      const currentStatus = friendRequests[userId];
+
+      // If already connected or requested, remove the connection/request
+      if (currentStatus === "connected" || currentStatus === "requested") {
         const formattedData = {
           friend_id: userId,
         };
@@ -371,10 +409,10 @@ export default function SocialTopBar() {
         if (response.success) {
           setFriendRequests((prev) => ({
             ...prev,
-            [userId]: "connect",
+            [userId]: "connect", // Change back to "connect" after removing
           }));
           showToast({
-            message: "Friend removed successfully",
+            message: "Friend request removed successfully",
             type: "success",
             duration: 3000,
           });
@@ -388,7 +426,6 @@ export default function SocialTopBar() {
         const response = await SendFriendRequest(formattedData);
 
         if (response.success) {
-          // Immediately update the button state to "requested"
           setFriendRequests((prev) => ({
             ...prev,
             [userId]: "requested",
@@ -597,39 +634,39 @@ export default function SocialTopBar() {
     }
   };
 
-  const getFreshPosts = async () => {
-    if (isLoading || !hasMore) return;
+  // const getFreshPosts = async () => {
+  //   if (isLoading || !hasMore) return;
 
-    setIsLoading(true);
-    setIsPostsLoading(true);
-    try {
-      // Call the API to get the posts for the current page
-      // const res = await PostsDetails(1);
-      const res = await FeedPostsDetails(1);
-      if (res?.data) {
-        const newPosts = res?.data.data.rows || [];
-        const totalPages = res?.data?.data?.count / 10 || 0;
+  //   setIsLoading(true);
+  //   setIsPostsLoading(true);
+  //   try {
+  //     // Call the API to get the posts for the current page
+  //     // const res = await PostsDetails(1);
+  //     const res = await FeedPostsDetails(1);
+  //     if (res?.data) {
+  //       const newPosts = res?.data.data.rows || [];
+  //       const totalPages = res?.data?.data?.count / 10 || 0;
 
-        if (newPosts.length === 0) {
-          setHasMore(false); // No more posts to load
-        } else {
-          setUserPosts(newPosts);
+  //       if (newPosts.length === 0) {
+  //         setHasMore(false); // No more posts to load
+  //       } else {
+  //         setUserPosts(newPosts);
 
-          // Check if the current page is the last page
-          if (page >= totalPages) {
-            setHasMore(false); // We've loaded all available pages
-          } else {
-            setPage(2); // Load the next page
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    } finally {
-      setIsLoading(false);
-      setIsPostsLoading(false);
-    }
-  };
+  //         // Check if the current page is the last page
+  //         if (page >= totalPages) {
+  //           setHasMore(false); // We've loaded all available pages
+  //         } else {
+  //           setPage(2); // Load the next page
+  //         }
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching posts:", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //     setIsPostsLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
     getUserPosts();
@@ -780,15 +817,64 @@ export default function SocialTopBar() {
     try {
       const response = await AddPost(formData);
       if (response) {
+        // Get the post button element to use as animation source
+        const postButton = document.querySelector(
+          "[data-post-button]"
+        ) as HTMLElement;
+
+        if (postButton) {
+          localStorage.setItem(
+            "karma_credits",
+            response.data.data.karma_credits.toString()
+          );
+          // Trigger credit animation for creating a post (more credits than a like)
+          triggerCreditAnimation(postButton, 20); // 20 credits for creating a post
+        }
+
         showToast({
           message: "Post created successfully",
           type: "success",
           duration: 3000,
         });
 
-        getFreshPosts();
+        // Create a new post object from the response
+        const newPost: Post = {
+          id: response.data.data.id, // Assuming the API returns the created post ID
+          user_id: loggedInUserID || "", // Use the logged-in user's ID
+          content: postMessage,
+          file: response.data.data.file || null, // Assuming API returns file URLs
+          file_type: response.data.data.file_type || null,
+          is_poll: false,
+          poll_id: null,
+          createdAt: new Date().toISOString(), // Use current time or API response time
+          likes_count: 0,
+          comments_count: 0,
+          if_following: false,
+          if_friend: false,
+          is_liked: false,
+          is_saved: false,
+          is_requested: false,
+          user: {
+            id: loggedInUserID || "",
+            username: userInfo?.username || "current_user", // Use actual username from userInfo
+          },
+          profile: {
+            id: userInfo?.profile?.id || "",
+            user_id: loggedInUserID || "",
+            first_name:
+              userInfo?.profile?.first_name ||
+              userInfo?.first_name ||
+              "Current",
+            last_name:
+              userInfo?.profile?.last_name || userInfo?.last_name || "User",
+            profile_picture:
+              userInfo?.profile_picture || userProfilePicture || "/profile.png",
+          },
+        };
 
-        setShowPopup(false);
+        // Add the new post at the beginning of the userPosts array
+        setUserPosts((prevPosts) => [newPost, ...prevPosts]);
+
         // Reset form
         setPostMessage("");
         setSelectedTopic("");
@@ -798,6 +884,7 @@ export default function SocialTopBar() {
           URL.revokeObjectURL(postVideoPreviewUrl);
           setPostVideoPreviewUrl(null);
         }
+        setShowPopup(false);
       }
     } catch (err: any) {
       console.error(err);
@@ -956,10 +1043,35 @@ export default function SocialTopBar() {
     setApiStoryMessage(null);
   };
 
-  const handleLike = async (postId: string) => {
+  const handleLike = async (postId: string, event: React.MouseEvent) => {
     try {
       const formattedData = { post_id: postId };
-      PostsLike(formattedData);
+
+      // Find the current post to check its like status
+      const currentPost = userPosts.find((post) => post.id === postId);
+      const isCurrentlyLiked = currentPost?.is_liked || false;
+
+      // Store the button element reference for later use
+      const buttonElement = event.currentTarget as HTMLElement;
+
+      // Make the API call first
+      const res = await PostsLike(formattedData);
+
+      // Update karma_credits in localStorage from API response
+      if (res?.data?.data?.karma_credits !== undefined) {
+        localStorage.setItem(
+          "karma_credits",
+          res.data.data.karma_credits.toString()
+        );
+        window.dispatchEvent(new Event("karmaCreditsUpdated"));
+      }
+
+      // Only trigger animation when LIKING (not unliking) - AFTER API call
+      if (!isCurrentlyLiked) {
+        triggerCreditAnimation(buttonElement, 5); // 5 credits for like
+      }
+
+      // Update post data
       setUserPosts((prevPosts) =>
         prevPosts.map((post) =>
           post.id === postId
@@ -1049,7 +1161,7 @@ export default function SocialTopBar() {
   }, [page, isLoading]);
 
   const MeDetail = async () => {
-    if(localStorage.getItem("isAdult") === "true"){
+    if (localStorage.getItem("isAdult") === "true") {
       setIsAdult(true);
       return;
     }
@@ -1091,9 +1203,8 @@ export default function SocialTopBar() {
       await getUserPosts();
       setIsPostsLoading(false);
     };
-    
+
     fetchInitialData();
-    
   }, []);
 
   // Function to save/unsave post to collection
@@ -1344,7 +1455,7 @@ export default function SocialTopBar() {
   return (
     <>
       {isAdult ? (
-        <div className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-2 px-2 md:px-2 lg:px-0 w-full">
+        <div className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-2 px-2 md:px-2 lg:px-1 w-full pt-2">
           {/* Left Side: Post & Stories - Full width on mobile */}
           <div className="w-full lg:max-w-[75%]" ref={containerRef}>
             {activeView === "posts" ? (
@@ -1587,14 +1698,14 @@ export default function SocialTopBar() {
                               onClick={() => handleConnect(post.user_id)}
                               disabled={connectingUsers[post.user_id] || false}
                               className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-[12px] py-[6px] rounded-full transition-colors font-family-open-sans h-[35px]
-                                ${
-                                  getFriendStatus(post.user_id) === "connected"
-                                    ? "bg-gray-400 text-white cursor-not-allowed"
-                                    :
-                                  getFriendStatus(post.user_id) === "requested"
-                                    ? "bg-gray-400 text-white cursor-not-allowed"
-                                    : "bg-white text-black shadow-md"
-                                }`}
+                              ${
+                                getFriendStatus(post.user_id) === "connected"
+                                  ? "bg-gray-400 text-white cursor-not-allowed"
+                                  : getFriendStatus(post.user_id) ===
+                                    "requested"
+                                  ? "bg-gray-400 text-white" // Remove cursor-not-allowed to make it clickable
+                                  : "bg-white text-black shadow-md"
+                              }`}
                             >
                               <span className="flex items-center gap-1 text-[#0B3449]">
                                 <img
@@ -1604,10 +1715,12 @@ export default function SocialTopBar() {
                                 />
                                 {connectingUsers[post.user_id]
                                   ? "Loading..."
-                                  :  getFriendStatus(post.user_id) === "connected"
-                                  ? "Connected" : 
-                                  getFriendStatus(post.user_id) === "requested"
-                                  ? "Requested"
+                                  : getFriendStatus(post.user_id) ===
+                                    "connected"
+                                  ? "Connected"
+                                  : getFriendStatus(post.user_id) ===
+                                    "requested"
+                                  ? "Requested" // This will now change back to "Connect" when clicked again
                                   : "Connect"}
                               </span>
                             </button>
@@ -1673,7 +1786,7 @@ export default function SocialTopBar() {
                                             ? "Loading..."
                                             : getFriendStatus(post.user_id) ===
                                               "requested"
-                                            ? "Requested"
+                                            ? "Requested" // This will now change back to "Connect" when clicked again
                                             : "Connect"}
                                         </button>
                                       </li>
@@ -1910,26 +2023,34 @@ export default function SocialTopBar() {
                         )}
                       </div>
 
-                     <div className="border-t border-[#ECEEF2] pt-4 grid grid-cols-3  gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
+                      <div className="border-t border-[#ECEEF2] pt-4 grid grid-cols-3  gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
                         <button
-                          onClick={() => handleLike(post.id)}
+                          onClick={(e) => handleLike(post.id, e)}
                           disabled={isLoading}
-                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 ${
+                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 relative ${
                             isLoading ? "opacity-50 cursor-not-allowed" : ""
                           }`}
                         >
                           <ThumbsUp
                             className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0"
-                            fill={post.is_liked ? "#7077FE" : "none"} // <-- condition here
-                            stroke={post.is_liked ? "#7077FE" : "#000"} // keeps border visible
+                            fill={post.is_liked ? "#7077FE" : "none"}
+                            stroke={post.is_liked ? "#7077FE" : "#000"}
                           />
                           <span
                             className={`hidden sm:flex ${
-                              post.is_liked ? "#7077FE" : "text-black"
+                              post.is_liked ? "text-[#7077FE]" : "text-black"
                             }`}
                           >
                             Appreciate
                           </span>
+                          {animations.map((anim) => (
+                            <CreditAnimation
+                              key={anim.id}
+                              from={anim.from}
+                              to={anim.to}
+                              amount={anim.amount}
+                            />
+                          ))}
                         </button>
                         <button
                           onClick={() => {
@@ -1968,7 +2089,9 @@ export default function SocialTopBar() {
                             className={`flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 text-black`}
                           >
                             <Share2 className="w-5 h-5 md:w-6 md:h-6" />
-                            <span className="hidden sm:flex text-black">Share</span>
+                            <span className="hidden sm:flex text-black">
+                              Share
+                            </span>
                           </button>
                           {openMenu.postId === post.id &&
                             openMenu.type === "share" && (
@@ -2218,12 +2341,12 @@ export default function SocialTopBar() {
                   <Link to={`/dashboard/userprofile/${userInfo?.id}`}>
                     <img
                       src={
-                        !userInfo.profile_picture ||
-                        userInfo.profile_picture === "null" ||
-                        userInfo.profile_picture === "undefined" ||
-                        !userInfo.profile_picture.startsWith("http")
+                        !userInfo?.profile_picture ||
+                        userInfo?.profile_picture === "null" ||
+                        userInfo?.profile_picture === "undefined" ||
+                        !userInfo?.profile_picture.startsWith("http")
                           ? "/profile.png"
-                          : userInfo.profile_picture
+                          : userInfo?.profile_picture
                       }
                       className="w-8 h-8 md:w-10 md:h-10 rounded-full"
                       alt="User"
@@ -2236,7 +2359,7 @@ export default function SocialTopBar() {
                   <div>
                     <p className="font-semibold text-sm md:text-base text-black">
                       <Link to={`/dashboard/userprofile/${userInfo?.id}`}>
-                        {userInfo.name}
+                        {userInfo?.name}
                       </Link>
                     </p>
                   </div>
@@ -2257,7 +2380,7 @@ export default function SocialTopBar() {
                   <textarea
                     rows={4}
                     className="w-full p-3 border border-[#ECEEF2] text-black placeholder:text-[#64748B] text-sm rounded-md resize-none mb-3 outline-none focus:border-[#897AFF1A]"
-                    placeholder={`What's on your mind? ${userInfo.main_name}...`}
+                    placeholder={`What's on your mind? ${userInfo?.main_name}...`}
                     value={postMessage}
                     onChange={(e) => {
                       if (e.target.value.length <= maxChars) {
@@ -2416,7 +2539,8 @@ export default function SocialTopBar() {
 
                     <button
                       onClick={handleSubmitPost}
-                      className="bg-[#7077FE] text-white px-6 py-2 rounded-full hover:bg-[#5b63e6]"
+                      className="bg-[#7077FE] text-white px-6 py-2 rounded-full hover:bg-[#5b63e6] relative"
+                      data-post-button // Add this attribute
                     >
                       Post
                     </button>
@@ -2547,6 +2671,7 @@ export default function SocialTopBar() {
                 setShowCommentBox(false);
                 setSelectedPostId(null);
               }}
+              triggerCreditAnimation={triggerCreditAnimation}
             />
           )}
 
