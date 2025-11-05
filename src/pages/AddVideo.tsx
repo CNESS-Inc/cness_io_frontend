@@ -87,15 +87,26 @@ const FileUpload: React.FC<FileUploadProps> = ({ label, description }) => {
       )}
       <div
         onClick={handleClick}
-        className="border-2 border-dashed border-[#CBD5E1] rounded-lg p-6 text-center cursor-pointer hover:border-[#7077FE] transition-all"
-       style={{
-    borderStyle: "dashed",
-    borderWidth: "3px",
-    borderRadius: "6px",
-    // @ts-ignore — allow non-standard style prop
-    borderDasharray: "8,8",
-  }}  
+        className={`relative rounded-lg p-6 text-center cursor-pointer transition-all bg-[#F9FAFB] hover:bg-[#EEF3FF]`}
+>
+  {/* ✅ SVG Dashed Border */}
+  <svg
+    className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none"
   >
+    <rect
+      x="1"
+      y="1"
+      width="calc(100% - 2px)"
+      height="calc(100% - 2px)"
+      rx="12"
+      ry="12"
+      stroke="#CBD5E1"
+      strokeWidth="2"
+      strokeDasharray="6,6"
+      fill="none"
+      className="transition-colors duration-300 group-hover:stroke-[#7077FE]"
+    />
+  </svg>
       
         <input
           ref={fileRef}

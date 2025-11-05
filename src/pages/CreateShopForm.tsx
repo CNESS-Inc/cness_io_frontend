@@ -143,15 +143,19 @@ const FileUpload: React.FC<FileUploadProps> = ({
       )}
 <div 
 onClick={handleClick}
-className={`border-dashed border-[#CBD5E1] rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer ${className}`}
- style={{
-    borderStyle: "dashed",
-    borderWidth: "3px",
-    borderRadius: "6px",
-    // @ts-ignore — allow non-standard style prop
-    borderDasharray: "8,8",
-  }}  
+className={`relative rounded-lg p-6 text-center cursor-pointer transition-colors hover:border-primary ${className}`}
+  style={{
+    background: "#F9FAFB",
+    borderRadius: "12px",
+  }}
+>
+  {/* ✅ SVG overlay border */}
+  <svg
+    style={{position: "absolute",top: 0,left: 0,width: "100%",height: "100%", borderRadius: "12px",pointerEvents: "none",}}
   >
+    <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)"  rx="12" ry="12" stroke="#CBD5E1"  strokeWidth="2"  strokeDasharray="6,6" fill="none" />
+  </svg>
+
     {/* Hidden file input */}
         <input
           type="file"
@@ -274,14 +278,6 @@ const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
 }
 
 
-const socialLinks = [
-  { platform: "Website",url: "https://www.cness.com/", icon: <img src={cnessicon} alt="Website" />, active: true },
-  { platform: "Instagram",url: "https://www.instagram.com/", icon: <img src={instagramIcon} alt="Instagram" />, active: false },
-  { platform: "YouTube",  url: "https://www.youtube.com/", icon: <img src={youtubeIcon} alt="YouTube" />, active: false },
-  { platform: "Facebook",  url: "https://www.facebook.com/",icon: <img src={facebookIcon} alt="Facebook" />, active: false },
-  { platform: "Twitter",  url: "https://www.twitter.com/",icon: <img src={xIcon} alt="Twitter" />, active: false },
-];
-
   const TeamMemberCard: React.FC = () => {
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-6">
@@ -347,6 +343,18 @@ const [policies, setPolicies] = useState([
       checked: false,
     },
   ]);
+
+   // ✅ Move these two lines inside the component
+  const [socialMediaInputs, setSocialMediaInputs] = useState<
+    { platform: string; url: string; icon: string }[]
+  >([]);
+
+  const availableSocials = [
+    { platform: "Instagram", icon: instagramIcon, url: "https://www.instagram.com/" },
+    { platform: "YouTube", icon: youtubeIcon, url: "https://www.youtube.com/" },
+    { platform: "LinkedIn", icon: facebookIcon, url: "https://www.linkedin.com/" },
+    { platform: "Twitter", icon: xIcon, url: "https://www.twitter.com/" },
+  ];
 
   // ✅ Add handler to toggle
   const togglePolicy = (index: number) => {
@@ -547,68 +555,95 @@ className="aspect-[1128/500] max-w-[600px] mx-auto"
         </FormSection>
 
         {/* Social Media Links */}
-        <FormSection
-          title="Social Media Links"
-          description="Connect Your profiles so customers can follow and trust your brand."
-        >
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            <div>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Add social links"
-                  className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                />
-                <svg
-                  className="absolute right-3 top-3 w-5 h-5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
-            </div>
+    
+<FormSection
+  title="Social Media Links"
+  description="Connect your profiles so customers can follow and trust your brand."
+>
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+    {/* Left side dropdown */}
+    <div>
+      <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+        Add social links
+      </label>
+      <select
+  className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-500"
+        defaultValue="" 
+        onChange={(e) => {
+          const selected = e.target.value;
+          if (selected && !socialMediaInputs.some((link) => link.platform === selected)) {
+            const newLink = availableSocials.find((s) => s.platform === selected);
+            if (newLink) setSocialMediaInputs([...socialMediaInputs, newLink]);
+          }
+          e.target.value = ""; // reset dropdown
+        }}
+      >
+         <option value="" disabled className="text-gray-400">
+    Select social platform
+  </option>
+  {availableSocials.map((s) => (
+    <option key={s.platform} value={s.platform} className="text-gray-900">
+      {s.platform}
+    </option>
+        ))}
+      </select>
+    </div>
 
-            <div className="space-y-3">
-              {socialLinks.map((link, index) => (
-                <div
-                  key={index}
-                  className={`flex items-center justify-between px-3 py-2 border border-gray-200 rounded-md ${
-                    link.active ? "bg-gray-100" : "bg-white"
-                  }`}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gray-200 rounded border border-gray-200 flex items-center justify-center">
-                      <span className="text-lg">{link.icon}</span>
-                    </div>
-                    <span className="text-gray-500">{link.url}</span>
-                  </div>
-                  <button className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
-                    <svg
-                      className="w-5 h-5 text-gray-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              ))}
-            </div>
+    {/* Right side active links */}
+    <div className="space-y-3">
+      {/* Default Cness Link */}
+      <div className="flex items-center justify-between px-3 py-1 border border-gray-200 rounded-md bg-gray-200 mt-5">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
+            <img src={cnessicon} alt="Cness" className="w-10 h-10" />
           </div>
-        </FormSection>
+          <span className="text-gray-500">https://www.cness.com/</span>
+        </div>
+      </div>
+
+      {/* Dynamic Social Links */}
+      {socialMediaInputs.map((link, index) => (
+        <div
+          key={index}
+          className="flex items-center justify-between px-3 py-2 border border-gray-200 rounded-md bg-white text-gray-900"
+        >
+          <div className="flex items-center space-x-3 flex-grow">
+            <div className="w-10 h-10 flex items-center justify-center">
+              <img src={link.icon} alt={link.platform} className="w-10 h-10" />
+            </div>
+            <input
+              type="url"
+              value={link.url}
+              onChange={(e) => {
+                const newLinks = [...socialMediaInputs];
+                newLinks[index].url = e.target.value;
+                setSocialMediaInputs(newLinks);
+              }}
+              placeholder={`Enter ${link.platform} URL`}
+              className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            />
+          </div>
+          <button
+            onClick={() =>
+              setSocialMediaInputs(socialMediaInputs.filter((_, i) => i !== index))
+            }
+            className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center ml-3 hover:bg-gray-300"
+          >
+            <svg
+              className="w-5 h-5 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      ))}
+    </div>
+  </div>
+</FormSection>
+
 
         {/* Team Members */}
         <FormSection
