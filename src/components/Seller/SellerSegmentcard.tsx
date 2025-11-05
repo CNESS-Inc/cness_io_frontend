@@ -144,7 +144,8 @@ const SOFT = "shadow-[0_1px_2px_rgba(16,24,40,0.04)]";
 export function Card({
   className = "",
   children,
-}: {
+  
+}: React.HTMLAttributes<HTMLDivElement> & {
   className?: string;
   children: React.ReactNode;
 }) {
@@ -3559,12 +3560,12 @@ export function SocialStackCard({
           </div>
 
           {/* CTA */}
-          <button
-            className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-full text-white text-[14px] font-semibold bg-[linear-gradient(90deg,#7077FE_0%,#9747FF_60%,#F07EFF_100%)] shadow"
-            onClick={() => navigate("/dashboard/notification")}
-          >
-            View all Notification
-          </button>
+         <button
+  className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-full text-white text-[14px] font-semibold bg-[linear-gradient(90deg,#7077FE_0%,#9747FF_60%,#F07EFF_100%)] shadow"
+  onClick={() => navigate("/dashboard")}
+>
+  View all Notification
+</button>
         </div>
       );
     };
@@ -4166,7 +4167,7 @@ export function MarketplaceCard({
       </div>
       <PrimaryButton
         className="w-full rounded-3xl"
-        onClick={() => navigate("/dashboard")}
+onClick={() => navigate("/dashboard/marketplace")}
       >
         Visit seller Dashboard
       </PrimaryButton>
@@ -4242,7 +4243,7 @@ export function MarketplaceCard({
       </div>
       <PrimaryButton
         className="w-full rounded-3xl"
-        onClick={() => navigate("/dashboard")}
+        onClick={() => navigate("/dashboard/marketplace")}
       >
         View All
       </PrimaryButton>
@@ -4299,7 +4300,7 @@ export function MarketplaceCard({
               </div>
               <button
                 className="w-full rounded-full bg-[#7077FE] py-[8px] px-[3px] text-[8px] font-semibold text-white"
-                onClick={() => navigate("/dashboard")}
+        onClick={() => navigate("/dashboard/marketplace")}
               >
                 Buy Now
               </button>
@@ -4315,7 +4316,10 @@ export function MarketplaceCard({
   );
 
   return (
-    <Card className="p-4 md:p-5 h-full">
+   <Card
+  className="p-4 md:p-5 h-full cursor-pointer hover:shadow-lg transition-shadow duration-300"
+ onClick={() => navigate("/dashboard/marketplace")}
+>
       {/* Header */}
       <div className="flex flex-col">
         <div className="flex items-center justify-between">

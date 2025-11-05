@@ -14,7 +14,7 @@ const links = [
   { name: "Ecosystem", href: "/ecosystem" },
   { name: "Social", href: "/social" },
   { name: "Certifications", href: "/certifications" },
-  { name: "Premium", href: "/premium" },
+  //{ name: "Premium", href: "/premium" },
    { name: "WhyCNESS", href: "/whycness" },
     { name: "FAQs", href: "/faq" },
 ];
@@ -34,12 +34,12 @@ export default function MobileMenu({ isOpen }: { isOpen: boolean }) {
   return (
     <>
       <div
-        className={`md:hidden bg-white transition-all duration-300 ease-in-out overflow-hidden ${
-          isOpen ? "max-h-[1000px] py-4" : "max-h-0 py-0"
-        }`}
-      >
+       className={`max-[1000px]:block hidden bg-white transition-all duration-300 ease-in-out overflow-y-auto ${
+    isOpen ? "max-h-screen py-4" : "max-h-0 py-0"
+  }`}
+>
         <nav aria-label="Mobile navigation" className="px-4">
-          <ul className="flex flex-col space-y-4">
+<ul className="flex flex-col space-y-3 md:space-y-4 text-[15px] md:text-[16px] px-2 md:px-4">
             {links.map((link) => (
               <li key={link.name}>
                 <Link

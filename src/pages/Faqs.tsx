@@ -218,7 +218,10 @@ export default function Faqs() {
         },
       ],
     },
-    {
+   
+/*
+
+ {
       id: "premium",
       title: "Premium",
       faqs: [
@@ -270,6 +273,9 @@ export default function Faqs() {
         },
       ],
     },
+*/
+
+
   ];
 
   const filteredFaqCategories = faqCategories.map(category => ({

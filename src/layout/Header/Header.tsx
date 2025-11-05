@@ -28,11 +28,11 @@ export default function Header() {
         </div>
 
         {/* Desktop Navigation */}
-        <NavLinks className="hidden md:flex" />
+<NavLinks className="hidden min-[1000px]:flex" />
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden p-2 rounded-md text-gray-700 hover:text-primary-600 focus:outline-none"
+          className="max-[999px]:block hidden p-2 rounded-md text-gray-700 hover:text-primary-600 focus:outline-none"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="Toggle menu"
           aria-expanded={isMobileMenuOpen}
