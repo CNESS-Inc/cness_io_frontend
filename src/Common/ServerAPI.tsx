@@ -202,6 +202,7 @@ export const EndPoint = {
   get_bestpracticescomment: "/best-practice/comment",
   bp_comment_like: "/best-practice/comment/like",
   bp_comment_reply: "/best-practice/comment/reply",
+  bp_comment_reply_like: "/best-practice/comment/reply/like",
   singleBp: "/best-practice/get",
   followBp: "/best-practice/follow",
   getFollowBp: "/best-practice/get-by-follow",
@@ -834,6 +835,13 @@ export const CreateBestpracticesCommentReply = (formData: any): ApiResponse => {
     ServerAPI.APIMethod.POST,
     formData,
     EndPoint.bp_comment_reply
+  );
+};
+export const CreateBestpracticesCommentReplyLike = (formData: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.bp_comment_reply_like
   );
 };
 
