@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   GetSingleBestPractice,
   LikeBestpractices,
@@ -25,7 +25,7 @@ import {
 import Thumb from "../assets/prime_thumbs.png";
 import { ChatBubbleLeftIcon, HandThumbUpIcon } from "@heroicons/react/24/solid";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-
+import CreditAnimation from "../Common/CreditAnimation";
 
 const SingleBP = () => {
   const [isSaved, setIs_saved] = useState<boolean>(false);
@@ -37,12 +37,13 @@ const SingleBP = () => {
   const [media, setMedia] = useState<string>("");
   const [_saved, setSaved] = useState(false);
   const [localLikeCount, setLocalLikeCount] = useState<number>(0);
-  const [_isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
   const [sortLatest, setSortLatest] = useState(true);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
   const [replyErrors, setReplyErrors] = useState<{ [key: string]: string }>({});
+  const [animations, _setAnimations] = useState<any[]>([]);
 
   const profile_picture = localStorage.getItem("profile_picture") || "";
   const name = localStorage.getItem("name") || "";
@@ -93,6 +94,7 @@ const SingleBP = () => {
       setSinglePost(res?.data?.data);
       setMedia(res?.data?.data?.file);
       setLocalLikeCount(res?.data?.data?.likes_count);
+      setIsLiked(res.data?.data?.is_liked || false);
     } catch (error) {
       console.error("Error fetching selection details:", error);
     }
@@ -127,6 +129,10 @@ const SingleBP = () => {
 
   const handleLike = async () => {
     try {
+      //  const like = document.querySelector(
+      //     "[data-comment-button]"
+      //   ) as HTMLElement;
+
       const res = await LikeBestpractices({ post_id: id });
       if (res?.success?.message?.includes("Unliked")) {
         setIsLiked(false);
@@ -134,6 +140,9 @@ const SingleBP = () => {
       } else if (res?.success) {
         setIsLiked(true);
         setLocalLikeCount((prev) => Number(prev) + 1);
+        // if (triggerCreditAnimation && like) {
+        //   triggerCreditAnimation(like, 10); // 10 credits for creating a comment
+        // }
       }
     } catch (error) {
       console.error("Error liking/unliking the post:", error);
@@ -209,6 +218,39 @@ const SingleBP = () => {
   };
 
   const toggleSort = () => setSortLatest(!sortLatest);
+  const navigate = useNavigate();
+
+  // const triggerCreditAnimation = (fromElement: HTMLElement, amount = 10) => {
+  //   const walletIcon = document.querySelector(
+  //     "[data-wallet-icon]"
+  //   ) as HTMLElement;
+  //   if (!walletIcon || !fromElement) return;
+
+  //   const fromRect = fromElement.getBoundingClientRect();
+  //   const toRect = walletIcon.getBoundingClientRect();
+
+  //   const animationId = Date.now();
+  //   setAnimations((prev) => [
+  //     ...prev,
+  //     {
+  //       id: animationId,
+  //       from: {
+  //         x: fromRect.left + fromRect.width / 2,
+  //         y: fromRect.top + fromRect.height / 2,
+  //       },
+  //       to: {
+  //         x: toRect.left + toRect.width / 2,
+  //         y: toRect.top + toRect.height / 2,
+  //       },
+  //       amount: amount,
+  //     },
+  //   ]);
+
+  //   // Remove animation after completion
+  //   setTimeout(() => {
+  //     setAnimations((prev) => prev.filter((a) => a.id !== animationId));
+  //   }, 1400);
+  // };
 
   return (
     <>
@@ -229,11 +271,19 @@ const SingleBP = () => {
             <div className="flex flex-wrap items-center justify-between text-sm text-gray-600 mb-6 gap-3">
               {/* Breadcrumb */}
               <div className="flex flex-wrap items-center gap-2 text-gray-500">
-                <img src="/home.png" alt="Home" className="w-[15px] h-[15px]" />
+                <img
+                  src="/home.png"
+                  alt="Home"
+                  className="w-[15px] h-[15px] cursor-pointer"
+                  onClick={() => navigate("/dashboard")}
+                />
                 <span className="text-dark text-[24px] sm:text-[30px] -mt-1.5 mx-1">
                   ›
                 </span>
-                <span className="text-black text-[14px] cursor-pointer hover:underline whitespace-nowrap">
+                <span
+                  className="text-black text-[14px] cursor-pointer hover:underline whitespace-nowrap"
+                  onClick={() => navigate("/dashboard/bestpractices")}
+                >
                   Best Practices
                 </span>
                 <span className="text-dark text-[24px] sm:text-[30px] -mt-1.5 mx-1">
@@ -263,7 +313,10 @@ const SingleBP = () => {
                 </div>
 
                 {/* Go Back Button */}
-                <button className="flex items-center gap-1 text-black border border-[#D77CFF] rounded-full px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium hover:bg-gray-50 transition">
+                <button
+                  className="flex items-center gap-1 text-black border border-[#D77CFF] rounded-full px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium hover:bg-gray-50 transition"
+                  onClick={() => navigate("/dashboard/bestpractices")}
+                >
                   Go Back
                 </button>
               </div>
@@ -339,11 +392,24 @@ const SingleBP = () => {
                         {localLikeCount}
                       </div>
                       <button
+                        data-comment-button
                         onClick={handleLike}
-                        className="flex border border-[#7B78FE] items-center gap-1 text-dark text-sm font-medium px-3 py-1.5 rounded-full transition hover:bg-gray-100 whitespace-nowrap"
+                        className={`flex border items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full transition whitespace-nowrap ${
+                          isLiked
+                            ? "border-[#7178FF] bg-[#7178FF] bg-opacity-10 text-white"
+                            : "border-[#7B78FE] text-dark hover:bg-gray-100"
+                        }`}
                       >
-                        Appreciate
+                        {isLiked ? "Appreciated" : "Appreciate"}
                       </button>
+                      {animations.map((anim) => (
+                        <CreditAnimation
+                          key={anim.id}
+                          from={anim.from}
+                          to={anim.to}
+                          amount={anim.amount}
+                        />
+                      ))}
                     </div>
                   </div>
                 </div>
