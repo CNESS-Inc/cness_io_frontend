@@ -230,6 +230,7 @@ const CommentBox = ({
         post_id: postId,
         mentioned_user_ids: commentMentions.map((mention) => mention.id),
       };
+      
 
       const response = await PostComments(formattedData);
 
@@ -544,7 +545,7 @@ const CommentBox = ({
 
       <div
         ref={commentBoxRef}
-        className={`relative w-full max-w-xl bg-white  shadow-xl px-[16px] transition-all duration-300 transform ${
+        className={`relative w-full max-w-xl bg-white  shadow-xl px-4 transition-all duration-300 transform ${
           isClosing ? "translate-y-full" : "translate-y-0"
         }`}
         style={{
@@ -563,7 +564,7 @@ const CommentBox = ({
             className="
     w-[35.44px] h-[35.44px]
     opacity-100
-    border-[#ECEEF2] border-[1px]
+    border-[#ECEEF2] border
     gap-[8.01px]
     p-[6.4px]
     rounded-[6.4px]
@@ -614,7 +615,7 @@ const CommentBox = ({
                   <div className="flex gap-3 py-2">
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between">
-                        <div className="flex items-center gap-2 mb-[10px]">
+                        <div className="flex items-center gap-2 mb-2.5">
                           <img
                             src={
                               comment.profile.profile_picture
@@ -622,7 +623,7 @@ const CommentBox = ({
                                 : "/profile.png"
                             }
                             alt={`${comment.profile.first_name} ${comment.profile.last_name}`}
-                            className="w-[36px] h-[36px] rounded-full object-cover flex-shrink-0"
+                            className="w-9 h-9 rounded-full object-cover shrink-0"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               target.src = "/profile.png";
@@ -649,7 +650,7 @@ const CommentBox = ({
                           </button>
                         </div>
                       </div>
-                      <p className="mt-1 break-words bg-[#F7F7F7] rounded-[8px] py-[14px] pl-[24px]">
+                      <p className="mt-1 wrap-break-word bg-[#F7F7F7] rounded-lg py-3.5 pl-6">
                         <TextWithMentions
                           text={comment.text}
                           commentId={comment.id}
@@ -706,7 +707,7 @@ const CommentBox = ({
                             : profilePicture
                         }
                         alt="Your profile"
-                        className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                        className="w-8 h-8 rounded-full object-cover shrink-0"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.src = "/profile.png";
@@ -818,7 +819,7 @@ const CommentBox = ({
                             <img
                               src={reply.profile.profile_picture}
                               alt={`${reply.profile.first_name} ${reply.profile.last_name}`}
-                              className="w-[27px] h-[27px] rounded-full object-cover flex-shrink-0"
+                              className="w-[27px] h-[27px] rounded-full object-cover shrink-0"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 target.src = "/profile.png";
@@ -826,14 +827,14 @@ const CommentBox = ({
                             />
                             <div className="flex items-center justify-between w-full">
                               <div className="flex items-baseline  gap-2">
-                                <span className="font-semibold text-sm me-[12px]">
+                                <span className="font-semibold text-sm me-3">
                                   {reply.profile.first_name}{" "}
                                   {reply.profile.last_name}
                                 </span>
                                 {/* <span className="text-xs text-gray-500">
                                   {formatTimeAgo(reply.createdAt)}
                                 </span> */}
-                                <p className="text-sm break-words">
+                                <p className="text-sm wrap-break-word">
                                   <TextWithMentions
                                     text={reply.text}
                                     commentId={comment.id}
