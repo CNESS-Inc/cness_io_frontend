@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   GetSingleBestPractice,
   LikeBestpractices,
@@ -9,7 +9,8 @@ import {
   SendBpFollowRequest,
   CreateBestpracticesCommentReply,
   BPCommentLike,
-  CreateBestpracticesCommentReplyLike, // You'll need to create this API function
+  CreateBestpracticesCommentReplyLike,
+  GetRelatedBestPractices, // You'll need to create this API function
 } from "../Common/ServerAPI";
 import blush from "../assets/bg-one.png";
 import moon from "../assets/moon.png";
@@ -25,7 +26,8 @@ import {
 import Thumb from "../assets/prime_thumbs.png";
 import { ChatBubbleLeftIcon, HandThumbUpIcon } from "@heroicons/react/24/solid";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-
+import CreditAnimation from "../Common/CreditAnimation";
+import { useToast } from "../components/ui/Toast/ToastProvider";
 
 const SingleBP = () => {
   const [isSaved, setIs_saved] = useState<boolean>(false);
@@ -37,16 +39,19 @@ const SingleBP = () => {
   const [media, setMedia] = useState<string>("");
   const [_saved, setSaved] = useState(false);
   const [localLikeCount, setLocalLikeCount] = useState<number>(0);
-  const [_isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
   const [sortLatest, setSortLatest] = useState(true);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
   const [replyErrors, setReplyErrors] = useState<{ [key: string]: string }>({});
+  const [animations, _setAnimations] = useState<any[]>([]);
+  const [relatedBestPractices, setRelatedBestPractices] = useState<any[]>([]);
 
   const profile_picture = localStorage.getItem("profile_picture") || "";
   const name = localStorage.getItem("name") || "";
   const { id } = useParams();
+  const { showToast } = useToast();
 
   useEffect(() => {
     fetchSinglePost(id);
@@ -93,6 +98,7 @@ const SingleBP = () => {
       setSinglePost(res?.data?.data);
       setMedia(res?.data?.data?.file);
       setLocalLikeCount(res?.data?.data?.likes_count);
+      setIsLiked(res.data?.data?.is_liked || false);
     } catch (error) {
       console.error("Error fetching selection details:", error);
     }
@@ -127,6 +133,10 @@ const SingleBP = () => {
 
   const handleLike = async () => {
     try {
+      //  const like = document.querySelector(
+      //     "[data-comment-button]"
+      //   ) as HTMLElement;
+
       const res = await LikeBestpractices({ post_id: id });
       if (res?.success?.message?.includes("Unliked")) {
         setIsLiked(false);
@@ -134,6 +144,9 @@ const SingleBP = () => {
       } else if (res?.success) {
         setIsLiked(true);
         setLocalLikeCount((prev) => Number(prev) + 1);
+        // if (triggerCreditAnimation && like) {
+        //   triggerCreditAnimation(like, 10); // 10 credits for creating a comment
+        // }
       }
     } catch (error) {
       console.error("Error liking/unliking the post:", error);
@@ -209,6 +222,60 @@ const SingleBP = () => {
   };
 
   const toggleSort = () => setSortLatest(!sortLatest);
+  const navigate = useNavigate();
+
+  const fetchRelatedBestPractices = async () => {
+    try {
+      const response = await GetRelatedBestPractices(id);
+      console.log("🚀 ~ fetchRelatedBestPractices ~ response:", response);
+      if (response?.data?.data?.rows) {
+        setRelatedBestPractices(response.data.data.rows);
+      }
+    } catch (error: any) {
+      console.error("Error fetching related best practices:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchRelatedBestPractices();
+  }, []);
+
+  // const triggerCreditAnimation = (fromElement: HTMLElement, amount = 10) => {
+  //   const walletIcon = document.querySelector(
+  //     "[data-wallet-icon]"
+  //   ) as HTMLElement;
+  //   if (!walletIcon || !fromElement) return;
+
+  //   const fromRect = fromElement.getBoundingClientRect();
+  //   const toRect = walletIcon.getBoundingClientRect();
+
+  //   const animationId = Date.now();
+  //   setAnimations((prev) => [
+  //     ...prev,
+  //     {
+  //       id: animationId,
+  //       from: {
+  //         x: fromRect.left + fromRect.width / 2,
+  //         y: fromRect.top + fromRect.height / 2,
+  //       },
+  //       to: {
+  //         x: toRect.left + toRect.width / 2,
+  //         y: toRect.top + toRect.height / 2,
+  //       },
+  //       amount: amount,
+  //     },
+  //   ]);
+
+  //   // Remove animation after completion
+  //   setTimeout(() => {
+  //     setAnimations((prev) => prev.filter((a) => a.id !== animationId));
+  //   }, 1400);
+  // };
 
   return (
     <>
@@ -229,11 +296,19 @@ const SingleBP = () => {
             <div className="flex flex-wrap items-center justify-between text-sm text-gray-600 mb-6 gap-3">
               {/* Breadcrumb */}
               <div className="flex flex-wrap items-center gap-2 text-gray-500">
-                <img src="/home.png" alt="Home" className="w-[15px] h-[15px]" />
+                <img
+                  src="/home.png"
+                  alt="Home"
+                  className="w-[15px] h-[15px] cursor-pointer"
+                  onClick={() => navigate("/dashboard")}
+                />
                 <span className="text-dark text-[24px] sm:text-[30px] -mt-1.5 mx-1">
                   ›
                 </span>
-                <span className="text-black text-[14px] cursor-pointer hover:underline whitespace-nowrap">
+                <span
+                  className="text-black text-[14px] cursor-pointer hover:underline whitespace-nowrap"
+                  onClick={() => navigate("/dashboard/bestpractices")}
+                >
                   Best Practices
                 </span>
                 <span className="text-dark text-[24px] sm:text-[30px] -mt-1.5 mx-1">
@@ -263,7 +338,10 @@ const SingleBP = () => {
                 </div>
 
                 {/* Go Back Button */}
-                <button className="flex items-center gap-1 text-black border border-[#D77CFF] rounded-full px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium hover:bg-gray-50 transition">
+                <button
+                  className="flex items-center gap-1 text-black border border-[#D77CFF] rounded-full px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium hover:bg-gray-50 transition"
+                  onClick={() => navigate("/dashboard/bestpractices")}
+                >
                   Go Back
                 </button>
               </div>
@@ -273,16 +351,18 @@ const SingleBP = () => {
             <div className="border-t border-gray-200 pt-6">
               <div className="mb-8">
                 <p className="text-[#7177FE] text-sm font-medium">
-                  Creativity & Expression
+                  {singlepost?.profession_data?.title
+                    ? singlepost?.profession_data?.title
+                    : singlepost?.interest}
                 </p>
                 <h1 className="text-[34px] sm:text-3xl font-bold text-[#000000] mt-1 leading-snug">
                   {singlepost?.title}
                 </h1>
-                <p className="text-gray-600 mt-3 text-sm sm:text-base">
+                {/* <p className="text-gray-600 mt-3 text-sm sm:text-base">
                   Explore how conscious photography transforms ordinary moments
                   into meaningful stories, capturing emotion, perspective, and
                   purpose through every frame.
-                </p>
+                </p> */}
               </div>
 
               {/* ======= Info Row - Grid Version ======= */}
@@ -339,11 +419,24 @@ const SingleBP = () => {
                         {localLikeCount}
                       </div>
                       <button
+                        data-comment-button
                         onClick={handleLike}
-                        className="flex border border-[#7B78FE] items-center gap-1 text-dark text-sm font-medium px-3 py-1.5 rounded-full transition hover:bg-gray-100 whitespace-nowrap"
+                        className={`flex border items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full transition whitespace-nowrap ${
+                          isLiked
+                            ? "border-[#7178FF] bg-[#7178FF] bg-opacity-10 text-white"
+                            : "border-[#7B78FE] text-dark hover:bg-gray-100"
+                        }`}
                       >
-                        Appreciate
+                        {isLiked ? "Appreciated" : "Appreciate"}
                       </button>
+                      {animations.map((anim) => (
+                        <CreditAnimation
+                          key={anim.id}
+                          from={anim.from}
+                          to={anim.to}
+                          amount={anim.amount}
+                        />
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -666,32 +759,45 @@ const SingleBP = () => {
                 </div>
 
                 {/* ======= RIGHT: Related Section ======= */}
+                {/* ======= RIGHT: Related Section ======= */}
                 <aside className="lg:col-span-4 bg-[#F9F9F9] rounded-[30px] shadow-sm p-4 h-fit">
                   <h3 className="font-semibold text-gray-900 text-[20px] mb-4">
-                    Related Best Practises
+                    Related Best Practices
                   </h3>
                   <div className="space-y-3">
-                    {[1, 2, 3, 4, 5].map((_, i) => (
-                      <div
-                        key={i}
-                        className="flex gap-3 items-start p-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 cursor-pointer"
-                      >
-                        <img
-                          src={image1}
-                          alt="Related"
-                          className="w-15 h-15 rounded-md object-cover"
-                        />
-                        <div className="flex-1">
-                          <p className="font-medium text-gray-800 text-[13px]">
-                            The Foundation of IT Security
-                          </p>
-                          <p className="text-[12px] text-gray-500 mt-1">
-                            employees access countless digital assets — emails,
-                            data...
-                          </p>
+                    {relatedBestPractices.length > 0 ? (
+                      relatedBestPractices.map((practice) => (
+                        <div
+                          key={practice.id}
+                          className="flex gap-3 items-start p-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 cursor-pointer"
+                          onClick={() =>
+                            navigate(`/dashboard/bestpractices/${practice.id}`)
+                          }
+                        >
+                          <img
+                            src={practice.file || image1}
+                            alt={practice.title}
+                            className="w-15 h-15 rounded-md object-cover"
+                          />
+                          <div className="flex-1">
+                            <p className="font-medium text-gray-800 text-[13px] line-clamp-2">
+                              {practice.title}
+                            </p>
+                            <p className="text-[12px] text-gray-500 mt-1 line-clamp-2">
+                              {/* Create a text-only version of the description by stripping HTML tags */}
+                              {practice.description
+                                ?.replace(/<[^>]*>/g, "")
+                                .substring(0, 50)}
+                              ...
+                            </p>
+                          </div>
                         </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-4 text-gray-500 text-sm">
+                        No related best practices found
                       </div>
-                    ))}
+                    )}
                   </div>
                 </aside>
               </div>
