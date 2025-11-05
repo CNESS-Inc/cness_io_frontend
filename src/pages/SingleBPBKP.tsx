@@ -222,7 +222,7 @@ useEffect(() => {
               media !== "http://localhost:5026/file/" &&
               !media.endsWith("/file/") && (
                 <div className="absolute top-[140px] left-1/2 transform -translate-x-1/2 w-[90%] sm:w-[80%] md:w-[70%] z-10">
-                  <div className="relative w-full h-[320px] md:h-[350px] overflow-hidden rounded-xl shadow-xl bg-gray-100">
+                  <div className="relative w-full h-80 md:h-[350px] overflow-hidden rounded-xl shadow-xl bg-gray-100">
                     <img
                       src={media}
                       alt="Best Practice Banner"
