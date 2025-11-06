@@ -240,6 +240,11 @@ export const EndPoint = {
   add_mentor: "/mentor",
 
   //marketplace endpoints
+  create_shop: "/seller-onboarding",
+  get_shop: "/seller-onboarding/profile",
+  upload_seller_documents: "/seller-onboarding/upload",
+  delete_seller_documents: "/seller-onboarding/remove",
+  save_extra_banners: "/seller-onboarding/save-extra-banners",
   get_products: "/vendor/products"
 };
 
@@ -1565,4 +1570,39 @@ export const executeAPI = async <T = any,>(
 
 export const GetProducts = () => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_products);
+};
+
+export const CreateSellerShop = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.create_shop
+  );
+};
+
+export const GetSellerShop = () => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_shop);
+};
+
+export const UploadSellerDocument = (fileType: string, formData: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    `${EndPoint.upload_seller_documents}/${fileType}`
+  );
+};
+
+export const RemoveSellerDocument = (fileType: string): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.delete_seller_documents}/${fileType}`
+  );
+};
+
+export const SaveExtraBanners = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.save_extra_banners
+  );
 };

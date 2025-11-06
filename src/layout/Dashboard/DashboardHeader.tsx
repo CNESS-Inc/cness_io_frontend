@@ -271,6 +271,10 @@ const DashboardHeader = ({
 
   // Handle notification click and redirect based on redirection type
   const handleNotificationItemClick = (notification: Notification) => {
+    console.log(
+      "🚀 ~ handleNotificationItemClick ~ notification:",
+      notification
+    );
     setIsNotificationDropdownOpen(false);
 
     // Mark notification as read
@@ -292,6 +296,14 @@ const DashboardHeader = ({
       case "post":
         if (notification.data_id) {
           navigate(`/dashboard/profile${query}`);
+        }
+        break;
+
+      case "my-connections":
+        if (notification.data_id) {
+          navigate("/dashboard/MyConnection", {
+            state: { to: "request" },
+          });
         }
         break;
 
@@ -568,7 +580,8 @@ const DashboardHeader = ({
               </span>
             </div>
           </div>
-          {import.meta.env.VITE_ENV_STAGE === "test" || import.meta.env.VITE_ENV_STAGE === "uat" ? (
+          {import.meta.env.VITE_ENV_STAGE === "test" ||
+          import.meta.env.VITE_ENV_STAGE === "uat" ? (
             <div
               data-wallet-icon
               onClick={() => setShowWalletModal(true)}

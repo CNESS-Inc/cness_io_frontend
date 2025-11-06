@@ -38,7 +38,7 @@ const EditProductPage: React.FC = () => {
   return (
     <div className="min-h-screen py-1 font-poppins" style={{ fontFamily: "Poppins" }}>
       <Breadcrumb />
-      <div className="max-w-4xl mx-auto bg-white shadow rounded-lg p-8">
+      <div className="w-full mx-auto bg-white shadow rounded-lg p-8">
         <h2 className="text-xl font-semibold mb-6">Edit Product</h2>
         <div className="grid grid-cols-2 gap-6 mb-6">
           <div>

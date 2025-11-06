@@ -102,6 +102,7 @@ import AddArtsForm from "../pages/AddArts";
 import SellerOrderList from "../pages/SellerOrderList";
 import SellerOrderDetail from "../pages/SellerOrderDetail";
 import SellerSales from "../pages/SellerSales";
+import SellerHelp from "../pages/SellerHelp";
 import SellerWithdrawal from "../pages/SellerWithdrawal";
 
 // Lazy-loaded pages
@@ -405,6 +406,10 @@ export const router = createBrowserRouter([
           {
             path: "seller-sales",
             element: <SellerSales />
+          },
+          {
+            path: "seller-help",
+            element: <SellerHelp />,
           },
           {
             path: "seller-sales/withdrawal",

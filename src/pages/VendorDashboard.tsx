@@ -221,18 +221,14 @@ const queue = [
 const VendorDashboard: React.FC = () => {
 
 const chartData = [
-  { height: "54%", week: "Week 6" },
-  { height: "40%", week: "Week 5" },
-  { height: "48%", week: "Week 4" },
-  {
-    height: "63%",
-    week: "Week 3",
-    value: "$2435",
-    date: "12 -18 October, 2025",
-  },
-  { height: "56%", week: "Week 2" },
-  { height: "16%", week: "Week 1" },
+  { week: "Week 6", date: "1 - 7 Oct, 2025", value: "$1200", height: 180 },
+  { week: "Week 5", date: "8 - 14 Oct, 2025", value: "$950", height: 140 },
+  { week: "Week 4", date: "15 - 21 Oct, 2025", value: "$1210", height: 200 },
+  { week: "Week 3", date: "12 - 18 October, 2025", value: "$2435", height: 240 },
+  { week: "Week 2", date: "22 - 28 Oct, 2025", value: "$1280", height: 210 },
+  { week: "Week 1", date: "29 Oct - 4 Nov, 2025", value: "$700", height: 110 },
 ];
+
   //const [hovered, setHovered] = useState<number | null>(null);
 
   return (
@@ -274,65 +270,63 @@ const chartData = [
         Will update every week’s data
       </p>
 
-      {/* Chart Container */}
-      <div className="relative h-[280px] px-8 flex items-end justify-between overflow-visible">
-        {/* Dotted Vertical Grid Lines (behind everything) */}
-        <div className="absolute inset-0 flex justify-between px-[16px] pointer-events-none">
-          {chartData.map((_, i) => (
-            <div
-              key={i}
-              className="h-full border-l border-dashed border-[#E6E8EC] opacity-80"
-            />
-          ))}
+       {/* Chart Container */}
+  <div className="relative h-[400px] px-5 flex items-end justify-between overflow-visible rounded-xl">
+    {/* Dotted Vertical Lines */}
+    <div className="absolute flex justify-between px-[16px] pointer-events-none">
+      {chartData.map((_, i) => (
+        <div
+          key={i}
+          className="h-full border-l border-dashed border-[#E6E8EC] opacity-70"
+        />
+      ))}
+    </div>
+
+    {/* Bars */}
+    {chartData.map((bar, i) => (
+      <div
+        key={i}
+        className="relative flex flex-col items-center justify-end group"
+        style={{ minWidth: 60 }}
+      >
+        {/* Tooltip */}
+        <div className="absolute -top-[85px] left-1/2 -translate-x-1/2 z-30 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200">
+          <div className="bg-white border border-[#B197FC] rounded-xl shadow-lg px-3 py-2 text-center min-w-[130px]">
+            <div className="text-gray-500 text-[12px]">{bar.date}</div>
+            <div className="text-gray-900 font-semibold text-[16px] mt-[2px]">
+              {bar.value}
+            </div>
+          </div>
         </div>
 
-        {/* Bars */}
-        {chartData.map((bar, i) => (
-          <div
-            key={i}
-            className="relative flex flex-col items-center justify-end group"
-          >
-            {/* Tooltip - hidden by default, visible on hover of group */}
-            {bar.value && (
-              <div className="absolute -top-[120px] left-1/2 -translate-x-1/2 z-30 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-150">
-                <div className="bg-white border border-[#B197FC] rounded-xl shadow-md px-3 py-2 text-center min-w-[130px]">
-                  <div className="text-gray-500 text-[12px] font-['Open_Sans']">
-                    {bar.date}
-                  </div>
-                  <div className="text-gray-900 font-['Poppins'] font-semibold text-[16px] mt-[2px]">
-                    {bar.value}
-                  </div>
-                </div>
+        {/* Line + Circle + Bar */}
+        <div className="flex flex-col items-center relative">
+          {/* Line with Circle inside */}
+          <div className="bg-gradient-to-b from-[#7177FE]/60 to-transparent relative">
+            <div className="absolute -top-[3px] left-1/2 -translate-x-1/2 flex items-center justify-center">
+            <div className="relative flex items-center justify-center">
+              <div className="w-[38px] h-[38px] rounded-full border border-dashed border-[#B197FC] flex items-center justify-center">
+                <div className="w-[28px] h-[28px] rounded-full bg-[#7177FE] shadow-md" />
               </div>
-            )}
-
-            {/* Circle + connector + bar stack */}
-            <div className="flex flex-col items-center">
-              {/* Circle (on top) */}
-              <div className="relative z-20">
-                <div className="w-[34px] h-[34px] rounded-full border border-dashed border-[#B197FC] bg-white flex items-center justify-center">
-                  <div className="w-[22px] h-[22px] rounded-full bg-[#6E3AFF]" />
-                </div>
-              </div>
-
-              {/* Dashed connector between circle and bar */}
-              <div className="w-[1px] h-[22px] border-l border-dashed border-[#C8B8FF] mt-1 z-10" />
-
-              {/* Bar: grows downward from the connector (top of bar aligned to connector bottom) */}
-              <div
-                className="relative w-[34px] rounded-t-full overflow-hidden bg-gradient-to-t from-[#C8B8FF]/40 to-[#6E3AFF]/80 mt-2"
-                style={{ height: bar.height }}
-              />
             </div>
-
-            {/* Week label */}
-            <span className="text-gray-600 text-[13px] font-['Open_Sans'] mt-5">
-              {bar.week}
-            </span>
           </div>
-        ))}
+
+
+          </div>
+
+          {/* Bar */}
+          <div
+            className="w-[38px] mt-[6px] rounded-t-full overflow-hidden bg-gradient-to-t from-[#E9EAFF]/40 to-[#7177FE]/80 shadow-sm"
+            style={{ height: bar.height }}
+          />
+        </div>
+
+        {/* Label */}
+        <span className="text-gray-600 text-[14px] mt-3">{bar.week}</span>
       </div>
-    </div>
+    ))}
+  </div>
+</div>
 
 
         {/* Best Selling */}

@@ -58,6 +58,7 @@ const DashboardLayout = () => {
     location.pathname.includes("/dashboard/products") ||
     location.pathname.includes("/dashboard/orderlist") ||
     location.pathname.includes("/dashboard/seller-sales");
+    location.pathname.includes("/dashboard/seller-help");
 
   const isCreateShopPage =
     location.pathname.includes("/dashboard/createshop") ||
