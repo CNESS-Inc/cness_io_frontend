@@ -1,9 +1,9 @@
 import { BsClockHistory } from "react-icons/bs";
 import { MdLanguage } from "react-icons/md";
-import { FaRegPlayCircle } from "react-icons/fa";
 import { IoMdCheckmark } from "react-icons/io";
-import { FaInstagram, FaYoutube, FaFacebookF, FaXTwitter } from "react-icons/fa6";
+import { FaYoutube, FaFacebookF, FaXTwitter } from "react-icons/fa6";
 import { FiSun } from "react-icons/fi";
+import { RiInstagramLine } from "react-icons/ri";
 
 // Use placeholder images for debugging
 const guitarImg = 'https://cdn.cness.io/VIDEO%20(1).svg';
@@ -13,25 +13,20 @@ const artistAvatar = 'https://cdn.cness.io/frame1.svg';
 const Preview = () => {
   return (
     
-    <div className="min-h-screen flex flex-col items-center py-2 px-2">
- <h2 className="text-[#242E3A] font-['Poppins'] font-semibold text-[18px]">
+    <div className="min-h-screen flex flex-col items-left py-2 px-2">
+ <h2 className="text-[#242E3A] font-['Poppins'] font-semibold text-[18px] mb-2">
                        Preview
         </h2>      
         {/* Main Product Card */}
-      <div className="bg-white rounded-xl shadow-md w-full max-w-6xl mb-8 flex flex-col">
+      <div className="bg-white rounded-xl shadow-md w-full mb-8 flex flex-col">
         <div className="flex flex-col md:flex-row">
-          <div className="relative w-full">
+          <div className="relative p-2 w-full">
             <img
               src={guitarImg}
               alt="Guitar Player"
-              className="rounded-t-xl md:rounded-l-xl md:rounded-tr-none w-full h-48 object-cover"
+              className="rounded-xl w-full h-54 object-cover"
             />
-            <button
-              aria-label="Play"
-              className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 text-3xl text-gray-900 shadow"
-            >
-              <FaRegPlayCircle />
-            </button>
+            
           </div>
           <div className="p-6 flex flex-col justify-between w-full">
             <div>
@@ -50,7 +45,7 @@ const Preview = () => {
       </div>
 
       {/* Overview Section */}
-      <div className="bg-white rounded-xl shadow-md w-full max-w-6xl p-6 mb-8">
+      <div className="bg-white rounded-xl shadow-md w-full p-6 mb-8">
         <h3 className="font-semibold text-lg mb-3" style={{ fontFamily: "Poppins" }}>Overview</h3>
         <p className="mb-4 text-gray-700" style={{ fontFamily: "Poppins" }}>
           Immerse yourself in smooth, atmospheric beats designed for focus, relaxation, and late-night creativity. Each track blends organic textures with soulful melodies to set the perfect vibe for study sessions or chill moments. Available for streaming and commercial licensing.
@@ -65,14 +60,14 @@ const Preview = () => {
         <div className="flex gap-10 text-gray-700 mb-2">
           <div>
             <div className="flex items-center gap-1 mb-1 font-semibold">
-              <BsClockHistory />
+              <BsClockHistory style={{ color: "#9747FF" }} />
               <span>Duration</span>
             </div>
             <span className="text-sm">12 hours</span>
           </div>
           <div>
             <div className="flex items-center gap-1 mb-1 font-semibold">
-              <MdLanguage />
+              <MdLanguage style={{ color: "#9747FF" }} />
               <span>Language</span>
             </div>
             <span className="text-sm" style={{ fontFamily: "Poppins" }}>English (with subtitles)</span>
@@ -81,7 +76,7 @@ const Preview = () => {
       </div>
 
       {/* Storytelling Section */}
-      <div className="bg-white rounded-xl shadow-md w-full max-w-6xl p-6 mb-8">
+      <div className="bg-white rounded-xl shadow-md w-full p-6 mb-8">
         <h3 className="font-semibold text-lg mb-3">Storytelling</h3>
         <div className="flex md:flex-row flex-col md:items-center gap-4">
           <div className="relative w-70 h-30">
@@ -90,12 +85,6 @@ const Preview = () => {
               alt="Storytelling"
               className="rounded-lg w-70 h-30 object-cover"
             />
-            <button
-              aria-label="Play Story"
-              className="absolute left-1 top-1 bg-white/80 rounded-full p-1 text-xl text-gray-800 shadow"
-            >
-              <FaRegPlayCircle />
-            </button>
             <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-2 bg-gray-200 rounded overflow-hidden">
               <div className="h-full bg-blue-500 rounded" style={{ width: "40%" }} />
             </div>
@@ -110,7 +99,7 @@ const Preview = () => {
       </div>
 
       {/* Artist Card */}
-      <div className="bg-white rounded-xl shadow-md w-full max-w-6xl p-4 flex items-center gap-4">
+      <div className="bg-white rounded-xl shadow-md w-full p-4 flex items-center gap-4">
             <img src={artistAvatar} alt="Red Tape" className="w-12 h-12 rounded-full object-cover" />
             <div>
             <div className="font-semibold flex items-center gap-1">
@@ -126,7 +115,7 @@ const Preview = () => {
                 <FiSun />
             </button>
             <button className="w-12 h-12 flex items-center justify-center rounded-lg border border-gray-300 text-2xl text-gray-500 hover:bg-gray-100 transition">
-                <FaInstagram />
+                <RiInstagramLine />
             </button>
             <button className="w-12 h-12 flex items-center justify-center rounded-lg border border-gray-300 text-2xl text-gray-500 hover:bg-gray-100 transition">
                 <FaYoutube />

@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom"; // Import useLocation
 import ConnectionsCard from "../components/Profile/Tabs";
 import FriendCard from "../components/Profile/Friendcard";
-// import person from "../assets/person1.jpg";
-// import person1 from "../assets/person2.jpg";
-// import person2 from "../assets/person3.jpg";
 import FriendProfileModal from "../components/Profile/FriendProfilepopup";
 import {
   GetConnectionUser,
@@ -19,6 +17,7 @@ const MyConnection = () => {
   const [searchValue, setSearchValue] = useState("");
   const [activeTab, setActiveTab] = useState("All Friends");
   const [selectedFriend, setSelectedFriend] = useState<Connection | null>(null);
+  console.log("🚀 ~ MyConnection ~ selectedFriend:", selectedFriend)
   const [allConnections, setAllConnections] = useState<Connection[]>([]);
   const [friendRequests, setFriendRequests] = useState<Connection[]>([]);
   const [suggestedFriend, setSuggestedFriend] = useState<Connection[]>([]);
@@ -26,6 +25,9 @@ const MyConnection = () => {
     {}
   );
   const { showToast } = useToast();
+
+  // Get navigation state
+  const location = useLocation();
 
   interface Connection {
     id: number;
@@ -36,6 +38,13 @@ const MyConnection = () => {
     conversationId?: string | number;
     isFollowing?: boolean;
   }
+
+  // Check navigation state on component mount and when location changes
+  useEffect(() => {
+    if (location.state?.to === "request") {
+      setActiveTab("Friend Requests");
+    }
+  }, [location.state]);
 
   useEffect(() => {
     if (activeTab === "Friend Requests") {
@@ -51,11 +60,12 @@ const MyConnection = () => {
 
   const fetchAllConnections = async (search: string = "") => {
     try {
-      const response = await GetConnectionUser(search); // <-- send search param
+      const response = await GetConnectionUser(search);
+      console.log("🚀 ~ fetchAllConnections ~ response:", response)
       const formattedRequests = response.data.data.rows.map((item: any) => ({
         id: item.friend_user.id,
         name: `${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
-        username: `@${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
+        username: item?.friend_user?.username,
         image: item.friend_user.profile.profile_picture,
         profileImage: item.friend_user.profile.profile_picture,
         conversationId: item?.conversation?.id || null,
@@ -73,13 +83,14 @@ const MyConnection = () => {
       console.error("Error fetching friend requests:", error);
     }
   };
+
   const fetchFriendRequests = async (search: string = "") => {
     try {
-      const response = await GetFriendRequest(search); // <-- send search param
+      const response = await GetFriendRequest(search);
       const formattedRequests = response.data.data.rows.map((item: any) => ({
         id: item.friend_user.id,
         name: `${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
-        username: `@${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
+        username: item?.friend_user?.username,
         image: item.friend_user.profile.profile_picture,
         profileImage: item.friend_user.profile.profile_picture,
       }));
@@ -88,14 +99,14 @@ const MyConnection = () => {
       console.error("Error fetching friend requests:", error);
     }
   };
+
   const fetchSuggestedFriend = async (search: string = "") => {
     try {
-      const response = await GetSuggestedFriend(search); // <-- send search param
-      console.log("🚀 ~ fetchSuggestedFriend ~ response:", response);
+      const response = await GetSuggestedFriend(search);
       const formattedRequests = response.data.data.rows.map((item: any) => ({
         id: item.id,
         name: `${item.profile.first_name} ${item.profile.last_name}`,
-        username: `@${item.profile.first_name} ${item.profile.last_name}`,
+        username: item?.username,
         image: item.profile.profile_picture,
         profileImage: item.profile.profile_picture,
       }));
@@ -115,15 +126,12 @@ const MyConnection = () => {
         prev.filter((request) => request.id !== friendId)
       );
       showToast({
-        message: "You’ve got a new friend!",
+        message: "You've got a new friend!",
         type: "success",
         duration: 3000,
       });
-      // Optional: Show success message
-      console.log("Friend request accepted successfully");
     } catch (error) {
       console.error("Error accepting friend request:", error);
-      // Handle error (show toast notification, etc.)
     }
   };
 
@@ -136,16 +144,12 @@ const MyConnection = () => {
       setFriendRequests((prev) =>
         prev.filter((request) => request.id !== friendId)
       );
-
-      // Optional: Show success message
-      console.log("Friend request rejected successfully");
     } catch (error) {
       console.error("Error rejecting friend request:", error);
-      // Handle error (show toast notification, etc.)
     }
   };
+
   const handleChatClick = (connection: Connection) => {
-    // Dispatch custom event to open messaging
     window.dispatchEvent(
       new CustomEvent("openMessaging", {
         detail: { connection },
@@ -153,98 +157,11 @@ const MyConnection = () => {
     );
   };
 
-  /*
-  const allConnections : Connection[] = [
-    {
-      id: 1,
-      name: "NovaStar",
-      username: "@novawrites",
-      image: profile,
-      
-    },
-    {
-      id: 2,
-      name: "LunaSky",
-      username: "@lunascribbles",
-      image: person1,
-      
-    },
-    {
-      id: 3,
-      name: "SkylarWave",
-      username: "@skylarwrites",
-      image: "/images/skylar.jpg",
-      
-    },
-
-     {
-      id: 4,
-      name: "SkylarWave",
-      username: "@skylarwrites",
-      image: "/images/skylar.jpg",
-      
-    },
-     {
-      id: 5,
-      name: "SkylarWave",
-      username: "@skylarwrites",
-      image: "/images/skylar.jpg",
-      
-    },
- {
-      id: 6,
-      name: "SkylarWave",
-      username: "@skylarwrites",
-      image: "/images/skylar.jpg",
-      
-    },
- {
-      id: 7,
-      name: "SkylarWave",
-      username: "@skylarwrites",
-      image: "/images/skylar.jpg",
-      
-    },
-    
-    // ...more
-  ];
-  */
-  /*const friendRequests : Connection[] =  [
-    {
-      id: 1,
-      name: "NovaStar",
-      username: "@novawrites",
-      image: person,
-      
-    },
-    {
-      id: 2,
-      name: "LunaSky",
-      username: "@lunascribbles",
-      image: person2,
-      
-    },
-    {
-      id: 3,
-      name: "SkylarWave",
-      username: "@skylarwrites",
-      image: "/images/skylar.jpg",
-      
-    },
-
-     {
-      id: 4,
-      name: "SkylarWave",
-      username: "@skylarwrites",
-      image: "/images/skylar.jpg",
-      
-    },]
-*/
-
   let activeConnections: Connection[] = [];
   if (activeTab === "All Friends") activeConnections = allConnections;
   if (activeTab === "Friend Requests") activeConnections = friendRequests;
   if (activeTab === "Suggestions") activeConnections = suggestedFriend;
+  console.log("🚀 ~ MyConnection ~ activeConnections:", activeConnections)
 
   const handleSearch = () => {
     if (activeTab === "Friend Requests") {
@@ -270,8 +187,9 @@ const MyConnection = () => {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         getUserPosts={GetUserPost}
-        selectedTopic={undefined} // onTabChange={setActiveTab}
+        selectedTopic={undefined}
       />
+      
       <div className="rounded-[12px] border border-gray-200 bg-white flex flex-col gap-4 sm:p-6 w-full">
         <div className="flex flex-wrap items-center justify-between gap-3">
           {/* Left Title */}
@@ -288,6 +206,7 @@ const MyConnection = () => {
               ? "Friend Requests"
               : "Suggestions"}
           </h2>
+          
           {/* Search & Button */}
           <div className="flex w-full sm:w-auto items-center gap-2">
             <div className="relative flex-1 sm:w-64">
@@ -322,13 +241,13 @@ const MyConnection = () => {
           </div>
         </div>
 
-        <div className=" sm:grid gap-4 md:gap-5 lg:gap-6 justify-items-center grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-4 3xl:grid-cols-6">
+        <div className="sm:grid gap-4 md:gap-5 lg:gap-6 justify-items-center grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-4 3xl:grid-cols-6">
           {activeConnections.length > 0 ? (
             activeConnections.map((conn) => (
               <FriendCard
                 key={conn.id}
                 name={conn.name}
-                username={conn.username.replace("@", "")}
+                username={conn.username}
                 image={conn.image}
                 connection={conn}
                 actions={
@@ -359,6 +278,7 @@ const MyConnection = () => {
           )}
         </div>
       </div>
+      
       {/* Modal */}
       {selectedFriend && (
         <FriendProfileModal
