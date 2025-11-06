@@ -2,7 +2,7 @@ import axios, { type AxiosResponse } from "axios";
 import { v4 as uuidv4 } from "uuid";
 // import { Server } from "lucide-react";
 // Define types for your API
-type ApiMethod = "GET" | "POST" | "PUT" | "DELETE";
+type ApiMethod = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
 type LoginFormData = {
   email: string;
   password: string;
@@ -77,6 +77,7 @@ export const ServerAPI = {
   APIMethod: {
     GET: "GET" as const,
     POST: "POST" as const,
+    PATCH: "PATCH" as const,
     PUT: "PUT" as const,
     DELETE: "DELETE" as const,
   },
@@ -241,10 +242,15 @@ export const EndPoint = {
 
   //marketplace endpoints
   create_shop: "/seller-onboarding",
+  update_shop: "/seller-onboarding/update",
   get_shop: "/seller-onboarding/profile",
   upload_seller_documents: "/seller-onboarding/upload",
   delete_seller_documents: "/seller-onboarding/remove",
   save_extra_banners: "/seller-onboarding/save-extra-banners",
+  remove_extra_banners: "/seller-onboarding/remove/extra-banners",
+  remove_specific_extra_banners: "/seller-onboarding/remove/extra-banners",
+  remove_team_member_image: "/seller-onboarding/remove/team-member-image",
+  remove_team_member: "/seller-onboarding/remove/team-member",
   get_products: "/vendor/products"
 };
 
@@ -737,7 +743,7 @@ export const GetRecommendedBestPractices = (): ApiResponse => {
     `${EndPoint.bp_recommended}`
   );
 };
-export const GetRelatedBestPractices = (id:any): ApiResponse => {
+export const GetRelatedBestPractices = (id: any): ApiResponse => {
   let params: { [key: string]: any } = {};
   params["bp_id"] = id;
   return executeAPI(
@@ -1580,6 +1586,14 @@ export const CreateSellerShop = (data: any): ApiResponse => {
   );
 };
 
+export const UpdateSellerShop = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PATCH,
+    data,
+    EndPoint.update_shop
+  );
+};
+
 export const GetSellerShop = () => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_shop);
 };
@@ -1596,6 +1610,34 @@ export const RemoveSellerDocument = (fileType: string): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.DELETE,
     {},
     `${EndPoint.delete_seller_documents}/${fileType}`
+  );
+};
+
+export const RemoveSpecificExtraBanner = (id: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.remove_specific_extra_banners}/${id}`
+  );
+};
+
+export const RemoveAllExtraBanner = (): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.DELETE,
+    {},
+    EndPoint.remove_extra_banners
+  );
+};
+
+export const RemoveTeamMemberImage= (id: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.remove_team_member_image}/${id}`
+  );
+};
+
+export const RemoveTeamMember = (id: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.remove_team_member}/${id}`
   );
 };
 
