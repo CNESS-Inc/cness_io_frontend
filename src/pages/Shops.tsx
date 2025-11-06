@@ -105,7 +105,7 @@ const ShopList = () => {
         {/* Search Bar + Filters in one row */}
         <div className="flex flex-col md:flex-row items-start md:items-center gap-3 w-full">
           {/* Search Box */}
-          <div className="relative w-full md:w-[290px]">
+          <div className="relative w-[90vw] max-w-full md:w-[290px]">
             <input
               type="text"
               placeholder="Search"
@@ -115,6 +115,7 @@ const ShopList = () => {
             />
             <Search className="absolute right-4 top-3 text-[#897AFF]" size={20} />
           </div>
+
 
           {/* Filter Buttons (excluding current active one) */}
           <div className="flex flex-wrap gap-3">

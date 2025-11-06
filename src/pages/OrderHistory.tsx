@@ -127,7 +127,7 @@ const handleTitleClick = (id: string) => {
         </h2>
 
         {/* 🔍 Search + Sort Section */}
-        <div className="w-full max-w-[2000px] mx-auto flex items-start justify-between px-5 mt-8 gap-6">
+        <div className="w-full mx-auto flex items-start justify-between px-5 mt-8 gap-6">
           <div className="flex flex-col flex-1">
             <div className="flex items-center gap-4 max-w-[1200px]">
               {/* Search Bar */}
@@ -193,7 +193,7 @@ const handleTitleClick = (id: string) => {
         </div>
 
         {/* 📦 Main Section */}
-        <div className="flex w-full max-w-[1600px] mx-auto px-5 py-10 gap-8">
+        <div className="flex w-full mx-auto px-5 py-10 gap-8">
           <div className="flex-1">
            
 
@@ -203,12 +203,12 @@ const handleTitleClick = (id: string) => {
                 filteredOrders.map((order) => (
                   <div
                     key={order.id}
-                    className="bg-[#FFFFFF] border border-gray-200 rounded-xl shadow-sm p-4 flex flex-col md:flex-row items-start md:items-center gap-4 hover:shadow-md transition-all"
+                    className="bg-[#FFFFFF] border border-gray-200 rounded-xl shadow-sm p-2 flex flex-col md:flex-row items-start md:items-center gap-4 hover:shadow-md transition-all"
                   >
                     <img
                       src={order.image}
                       alt={order.title}
-                      className="w-[160px] h-[100px] object-cover rounded-lg cursor-pointer"
+                      className="w-[160px] h-[130px] md:w-[200px] md:h-[160px] object-cover rounded-lg cursor-pointer"
                       onClick={() => handleImageClick(order.id)}
                     />
 
