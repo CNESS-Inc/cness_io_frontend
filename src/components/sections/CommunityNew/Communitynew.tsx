@@ -4,7 +4,7 @@ const Communitynew: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
 
   return (
-    <section ref={sectionRef} className="community-section py-12 bg-white">
+<section ref={sectionRef} className="community-section bg-white px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
       {/* Header */}
       <div className="community-header text-center mb-12 px-4">
         <h2

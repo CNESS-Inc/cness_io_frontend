@@ -19,8 +19,10 @@ export type MyPostProps = {
   onOpenReflections?: () => void;
   onClick?: () => void;
   showOverlay?: boolean;
+  collection?: boolean;
   onViewPost?: () => void;
   onDeletePost?: () => void;
+  onDeleteSavePost?: () => void;
   // Optional author info for Collection View
   authorName?: string;
   authorAvatar?: string;
@@ -54,8 +56,10 @@ export default function MyPost({
   insightsCount,
   onFollowToggle,
   showOverlay,
+  collection,
   onViewPost,
   onDeletePost,
+  onDeleteSavePost,
 }: MyPostProps) {
   const total = likes + (reflections ?? 0);
   return (
@@ -148,12 +152,17 @@ export default function MyPost({
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onDeletePost?.();
+                if(collection){
+                  onDeleteSavePost?.()
+                }else{
+                  onDeletePost?.();
+                }
               }}
               className="w-32 py-2 rounded-full bg-red-500 text-white font-medium text-sm shadow hover:bg-red-600"
             >
               <X className="w-4 h-4 inline-block mr-1" />
-              Delete
+              {collection ? "Unsave" : "Delete"}
+              
             </button>
           </div>
         )}

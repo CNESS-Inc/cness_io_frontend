@@ -24,9 +24,9 @@ export default function HeroSection() {
     <section className="relative bg-white overflow-hidden flex flex-col">
       {/* gradient blobs */}
       <div className="pointer-events-none absolute inset-0 z-0">
-        <div className="absolute -top-24 -left-24 w-[520px] sm:w-[640px] lg:w-[720px] aspect-square rounded-full bg-[#00D2FF]/18 blur-[360px] sm:blur-[420px] lg:blur-[350px] mix-blend-screen" />
+        <div className="absolute -top-24 -left-24 w-[320px] sm:w-[520px] lg:w-[720px] aspect-square rounded-full bg-[#00D2FF]/18 blur-[180px] sm:blur-[360px] lg:blur-[420px] mix-blend-screen" />
         <div className="absolute top-12 -right-20 w-[560px] sm:w-[680px] lg:w-[760px] aspect-square rounded-full bg-[#FF994A]/16 blur-[380px] sm:blur-[460px] lg:blur-[350px] mix-blend-screen" />
-        <div className="absolute -bottom-24 left-1/2 -translate-x-1/3 w-[520px] sm:w-[640px] lg:w-[720px] aspect-square rounded-full bg-[#6340FF]/14 blur-[360px] sm:blur-[420px] lg:blur-[350px] mix-blend-screen" />
+        <div className="absolute -bottom-24 left-1/2 -translate-x-1/3 w-[320px] sm:w-[520px] lg:w-[720px] aspect-square rounded-full bg-[#6340FF]/14 blur-[180px] sm:blur-[360px] lg:blur-[420px] mix-blend-screen" />
       </div>
 
       {/* top content */}
@@ -41,7 +41,7 @@ export default function HeroSection() {
         </h1>
 
         <p
-          className={`font-['Open_Sans'] font-light text-[16px] leading-[24px] tracking-[0px] text-[#242424] text-center max-w-[62ch] mt-4 sm:mt-6 lg:mt-6 transition-all duration-1000 ease-in-out  ${step >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          className={`font-['Open_Sans'] font-light text-[14px] sm:text-[15px] lg:text-[16px] leading-[22px] sm:leading-[24px] tracking-[0px] text-[#242424] text-center max-w-[62ch] mt-4 sm:mt-6 lg:mt-6 transition-all duration-1000 ease-in-out  ${step >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
             }`}
         >
           Build your conscious identity. Connect with purpose-led peers. Share
@@ -52,12 +52,11 @@ export default function HeroSection() {
           className={`mt-5 sm:mt-6 flex justify-center transition-all duration-1000 ease-in-out ${step >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
             }`}
         >
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+<div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto items-center">
             <Button
               variant="gradient-primary"
               className="w-full sm:w-auto rounded-[100px] hero-section-btn 
-             py-2 px-4 sm:py-3 sm:px-8 
-             text-[16px] sm:text-base 
+             py-2 px-4 sm:py-3 sm:px-8 text-[14px] sm:text-[16px] whitespace-nowrap
              font-['Open_Sans'] font-medium 
              leading-[100%] tracking-[0px] text-center"
               onClick={() => setOpenSignup(true)}
@@ -79,7 +78,7 @@ export default function HeroSection() {
 
       {/* bottom image */}
       <div className="w-full px-4 sm:px-6 lg:px-8 pb-10 sm:pb-12 pt-12 sm:pt-16">
-        <div className="relative mx-auto w-full max-w-[1900px] rounded-[32px] overflow-hidden">
+<div className="relative mx-auto w-full max-w-[1900px] rounded-[24px] sm:rounded-[32px] overflow-hidden aspect-[16/9] sm:aspect-auto">
           {/* responsive height using aspect-ratio; keeps the face framed via object-position */}
           <div className="hero-img w-full rounded-[32px] aspect-auto object-cover object-center overflow-hidden">
             {/* <img
@@ -113,7 +112,7 @@ export default function HeroSection() {
               height={374}
               loading="eager"
               fetchPriority="high"
-              className="w-full h-full object-cover"
+className="w-full h-auto sm:h-full object-cover object-center"
             />
 
           </div>

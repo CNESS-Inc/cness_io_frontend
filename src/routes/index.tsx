@@ -91,6 +91,8 @@ import ShopsList from "../pages/Shops";
 import VendorDashboard from "../pages/VendorDashboard";
 import CreateShopForm from "../pages/CreateShopForm";
 import SellerProductList from "../pages/SellerProductList";
+import EditProductPage from "../pages/EditProductPage";
+import Preview from "../pages/Preview";
 import AddVideoForm from "../pages/AddVideo";
 import AddPodcastsForm from "../pages/AddPodcasts";
 import AddEbookForm from "../pages/AddEbook";
@@ -386,6 +388,14 @@ export const router = createBrowserRouter([
           {
             path: "products/add-arts",
             element: <AddArtsForm />
+          },
+          {
+            path: "products/edit/:productNo",
+            element: <EditProductPage />
+          },
+          {
+            path: "products/preview/:productNo",
+            element: <Preview />
           },
 
           {

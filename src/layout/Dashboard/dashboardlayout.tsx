@@ -47,8 +47,11 @@ const DashboardLayout = () => {
     location.pathname.includes("/dashboard/order-history") ||
     location.pathname.includes("/dashboard/faqs") ||
     location.pathname.includes("/dashboard/categories") ||
-    location.pathname.includes("/dashboard/shops");
-
+    location.pathname.includes("/dashboard/shops") ||
+    location.pathname.includes("/dashboard/wishlist") ||
+    location.pathname.includes("/dashboard/checkout") ||
+    location.pathname.includes("/dashboard/payment-success") ||
+    location.pathname.includes("/dashboard/payment-failed");
 
   const isSellerPage =
     location.pathname.includes("/dashboard/seller-dashboard") ||

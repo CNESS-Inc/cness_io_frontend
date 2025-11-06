@@ -45,7 +45,7 @@ const features = [
   },
   {
     id: "07",
-    icon: "/ecosystem-location.png",
+    icon: "/mobileapp1.webp",
     title: "AriOme",
     description:
       "Explore curated content that informs, entertains, and inspires.",

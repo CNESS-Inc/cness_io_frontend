@@ -190,6 +190,7 @@ export const EndPoint = {
   all_bestPractices: "/best-practice/all",
   bp: "/best-practice",
   bp_recommended: "/best-practice/recommended",
+  bp_related: "/best-practice/related",
   save_bestPractices: "/best-practice/get/save/best-practice",
   mine_bestPractices: "/best-practice/get-by-user-id",
   add_bestpractices: "/best-practice",
@@ -202,6 +203,7 @@ export const EndPoint = {
   get_bestpracticescomment: "/best-practice/comment",
   bp_comment_like: "/best-practice/comment/like",
   bp_comment_reply: "/best-practice/comment/reply",
+  bp_comment_reply_like: "/best-practice/comment/reply/like",
   singleBp: "/best-practice/get",
   followBp: "/best-practice/follow",
   getFollowBp: "/best-practice/get-by-follow",
@@ -730,6 +732,16 @@ export const GetRecommendedBestPractices = (): ApiResponse => {
     `${EndPoint.bp_recommended}`
   );
 };
+export const GetRelatedBestPractices = (id:any): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["bp_id"] = id;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    `${EndPoint.bp_related}`,
+    params
+  );
+};
 export const UpdateBestPractice = (formData: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST, // or PATCH depending on your API
@@ -834,6 +846,13 @@ export const CreateBestpracticesCommentReply = (formData: any): ApiResponse => {
     ServerAPI.APIMethod.POST,
     formData,
     EndPoint.bp_comment_reply
+  );
+};
+export const CreateBestpracticesCommentReplyLike = (formData: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.bp_comment_reply_like
   );
 };
 

@@ -27,22 +27,23 @@ export default function SocialMedia() {
   // }, []);
 
   return (
-    <section className="bg-[#fff] px-4 sm:px-6 pb-8 sm:pb-12 lg:py-[72px] lg:pb-0 pt-10">
+<section className="bg-white px-4 sm:px-6 lg:px-8 pt-10 pb-12 lg:py-[72px]">
       <div className="max-w-[1336px] mx-auto">
-        <div className="flex lg:flex-row md:flex-row flex-col">
+<div className="flex flex-col md:flex-row lg:flex-row items-start lg:items-center gap-8 lg:gap-16">
           <div className="lg:w-6/12 md:w-6/12 w-full lg:mb-0 md:mb-0 mb-4">
             <h2
               style={{ fontFamily: "Poppins, sans-serif" }}
-              className=" lg:leading-[54px] md:leading-[54px] leading-[40px] lg:text-[42px] md:text-[42px] text-[32px] font-[500] mt-3"
+  className="text-[28px] sm:text-[36px] lg:text-[42px] leading-tight font-medium mt-3 text-[#242424]"
             >
-              <span className="bg-linear-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">
+  <span className="bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">
                 Social Media
               </span>
               , Reimagined for Conscious Expression
             </h2>
           </div>
           <div className="lg:w-6/12 md:w-6/12 w-full">
-            <p style={{ fontFamily: "Open Sans, sans-serif" }} className="font-light text-[16px] leading-[24px] tracking-[0px] text-[#242424] ">
+            <p style={{ fontFamily: "Open Sans, sans-serif" }} 
+              className="font-light text-[15px] sm:text-[16px] leading-[26px] text-[#242424] mt-4">
               Share reflections, life moments, and conscious thoughts.
               <br />
               React, repost, and respond to what moves you. CNESS is where
@@ -69,7 +70,7 @@ export default function SocialMedia() {
             alt="Social Media Visual"
             width={"100%"}
             height={"511px"}
-            className="w-14 h-14 mt-[52px] media-img object-cover"
+className="w-full h-auto mt-8 lg:mt-[52px] object-cover rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] transition-all duration-300"
           />
 
           {/* {notificationLottie && ( */}

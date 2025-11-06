@@ -132,7 +132,7 @@ export default function DashboardDirectory() {
         const transformedCompanies = res.data.data.rows.map((company: any) => ({
           id: company.id,
           name: company.name,
-          location: company.location || "Unknown",
+          location: company.location || "",
           domain: company.domain || "General",
           category: "Popular",
           logo: company.profile_picture || iconMap["companylogo1"],
@@ -178,7 +178,7 @@ export default function DashboardDirectory() {
         const transformedCompanies = res.data.data.rows.map((company: any) => ({
           id: company.id,
           name: company.name,
-          location: company.location || "Unknown",
+          location: company.location || "",
           domain: company.domain || "General",
           category: "Inspiring",
           logo: company.profile_picture || iconMap["aspcompany1"],
@@ -220,7 +220,7 @@ export default function DashboardDirectory() {
         const transformedCompanies = res.data.data.rows.map((company: any) => ({
           id: company.id,
           name: company.name,
-          location: company.location || "Unknown",
+          location: company.location || "",
           domain: company.domain || "General",
           category: "Inspiring",
           logo: company.profile_picture || iconMap["aspcompany1"],
@@ -427,13 +427,7 @@ export default function DashboardDirectory() {
           </div>
 
           <p className="text-gray-700 text-xs md:text-sm mt-16 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
-            <span
-              className="font-medium text-[#F07EFF] underline cursor-pointer"
-              onClick={() => navigate("/dashboard/company-profile")}
-            >
-              List your company now
-            </span>{" "}
-            and connect with conscious audience
+            Connect with conscious audience
           </p>
         </div>
       </section>

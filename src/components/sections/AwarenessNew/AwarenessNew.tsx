@@ -87,7 +87,7 @@ export default function AwarenessSection() {
       {/* --- Second (Main) Section --- */}
       <motion.div
         key="second-load"
-        className="second-load lg:h-[900px] flex flex-col items-center space-y-8 lg:py-24 py-15 px-4 bg-[#F7F7F7]"
+  className="second-load flex flex-col items-center gap-10 lg:gap-16 px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24 bg-[#F7F7F7]"
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 40 }}
@@ -145,10 +145,10 @@ export default function AwarenessSection() {
                       onTouchEnd={handleTouchEnd}
                       className="h-full w-full"
                     >
-                      <Card className="flex flex-col md:h-[408px] h-full w-full rounded-[12px] overflow-hidden">
+<Card className="flex flex-col w-full rounded-[12px] overflow-hidden shadow-sm md:h-[408px] h-auto">
                         <div
                           className="relative w-full rounded-t-[12px] overflow-hidden"
-                          style={{ height: "290px" }}
+style={{ height: "240px" }}
                         >
                           <img
                             src={card.image}
@@ -169,7 +169,7 @@ export default function AwarenessSection() {
                                 marginTop: 0,
                               }}
                             >
-                              <h2 className="text-[14px] font-semibold text-white leading-7 md:leading-8">
+<h2 className="text-[13px] sm:text-[14px] font-semibold text-white leading-6 sm:leading-7">
                                 {card.title}
                               </h2>
                               <p className="font-['Open_Sans'] font-normal text-[12px] leading-[18px] text-[#ECEEF2]">
@@ -185,7 +185,7 @@ export default function AwarenessSection() {
               ))}
             </Swiper>
 
-            <div className="flex lg:flex-row md:flex-row flex-col max-w-[550px] w-full mx-auto mt-0">
+<div className="flex flex-col md:flex-row items-center justify-between max-w-[600px] w-full mx-auto mt-10 gap-6 md:gap-4">
               <p className="lg:w-8/12 md:w-5/12 w-full font-['Open_Sans'] font-light text-[16px] leading-[24px] tracking-[0px] text-[#242424]">
                 Showcase your products in our conscious
                 <br />
@@ -195,7 +195,7 @@ export default function AwarenessSection() {
                 <br />
                 Purpose-driven ecosystem.
               </p>
-              <div className="flex lg:justify-end justify-start md:gap-6 gap-2 lg:w-4/13 md:w-7/12 w-full lg:mt-7 md:mt-0 mt-5 mb-4">
+<div className="flex justify-center md:justify-end w-full md:w-auto mt-4 md:mt-0">
                 <Button
                   variant="gradient-primary"
                   className="
@@ -221,7 +221,7 @@ export default function AwarenessSection() {
       </motion.div>
 
       {/* --- Bottom Section --- */}
-      <div className="community-bottom m-0 bg-[url(https://res.cloudinary.com/diudvzdkb/image/upload/v1753780353/community-bg_cqdnuq.png)] w-full lg:px-8 md:px-8 px-4 py-16 flex justify-center items-center flex-col bg-cover bg-center">
+<div className="community-bottom bg-[url(https://res.cloudinary.com/diudvzdkb/image/upload/v1753780353/community-bg_cqdnuq.png)] bg-cover bg-center w-full px-4 sm:px-6 lg:px-8 py-12 sm:py-16 flex flex-col items-center text-center">
         <h3
           style={{ fontFamily: "Poppins, sans-serif" }}
           className="lg:text-[32px] md:text-[32px] text-[23px] font-medium bg-gradient-to-b from-[#4E4E4E] to-[#232323] 

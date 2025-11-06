@@ -156,7 +156,7 @@ export default function SellerDashboard() {
 
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const id = localStorage.getItem("id") || "";
+  const id = localStorage.getItem("Id") || "";
   const [userDetails, setUserDetails] = useState<any>(null);
 
   const hasFetched = useRef(false);
@@ -614,7 +614,11 @@ export default function SellerDashboard() {
             onOpen={() => navigate("/dashboard/Profile")}
             adventureTitle="Your Next Social Life Adventure"
             adventureText="What would your younger self admire about your life now? Any standout achievements or experiences?"
-            onStartPosting={() => navigate("/dashboard/feed")}
+            onStartPosting={() =>
+              navigate("/dashboard/feed", {
+                state: { openPostPopup: true },
+              })
+            }
             onViewFeed={() => navigate("/dashboard/feed")}
             suggested={suggestion}
             requested={friendRequests}
