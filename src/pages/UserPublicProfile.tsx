@@ -346,41 +346,59 @@ export default function UserProfileView() {
   };
 
   const handleFriend = async (userId: string) => {
-    try {
-      if (
-        userDetails.friend_request_status !== "ACCEPT" &&
-        userDetails.friend_request_status !== "PENDING" &&
-        !userDetails.if_friend
-      ) {
-        const formattedData = {
-          friend_id: userId,
-        };
-        await SendConnectionRequest(formattedData);
-        setUserDetails({
-          ...userDetails,
-          if_friend: false,
-          friend_request_status: "PENDING",
-        });
-      } else {
-        if (
-          userDetails.friend_request_status == "ACCEPT" &&
-          userDetails.if_friend
-        ) {
-          const formattedData = {
-            friend_id: userId,
-          };
-          await UnFriend(formattedData);
-          setUserDetails({
-            ...userDetails,
-            if_friend: false,
-            friend_request_status: null,
-          });
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching selection details:", error);
+  try {
+    // Case 1: No existing connection or pending request - Send new connection request
+    if (
+      userDetails.friend_request_status !== "ACCEPT" &&
+      userDetails.friend_request_status !== "PENDING" &&
+      !userDetails.if_friend
+    ) {
+      const formattedData = {
+        friend_id: userId,
+      };
+      await SendConnectionRequest(formattedData);
+      setUserDetails({
+        ...userDetails,
+        if_friend: false,
+        friend_request_status: "PENDING",
+      });
     }
-  };
+    // Case 2: Cancel pending request (when status is PENDING)
+    else if (userDetails.friend_request_status === "PENDING" && !userDetails.if_friend) {
+      const formattedData = {
+        friend_id: userId,
+      };
+      await UnFriend(formattedData); // Or use a specific cancel request API if available
+      setUserDetails({
+        ...userDetails,
+        if_friend: false,
+        friend_request_status: null,
+      });
+    }
+    // Case 3: Remove existing friend connection
+    else if (
+      userDetails.friend_request_status === "ACCEPT" &&
+      userDetails.if_friend
+    ) {
+      const formattedData = {
+        friend_id: userId,
+      };
+      await UnFriend(formattedData);
+      setUserDetails({
+        ...userDetails,
+        if_friend: false,
+        friend_request_status: null,
+      });
+    }
+  } catch (error) {
+    console.error("Error handling friend request:", error);
+    showToast({
+      message: "Failed to update connection",
+      type: "error",
+      duration: 3000,
+    });
+  }
+};
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
