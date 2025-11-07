@@ -251,7 +251,28 @@ export const EndPoint = {
   remove_specific_extra_banners: "/seller-onboarding/remove/extra-banners",
   remove_team_member_image: "/seller-onboarding/remove/team-member-image",
   remove_team_member: "/seller-onboarding/remove/team-member",
-  get_products: "/vendor/products"
+  get_products: "/vendor/products",
+  get_seller_products: "/seller-onboarding/my-products",
+
+  // marketplace product endpoints
+  get_categories: "/marketplace-product/product-categories",
+  get_moods: "/marketplace-product/moods",
+  get_preview_product: "/marketplace-product",
+
+  create_video_product: "/marketplace-product/video",
+  update_video_product: "/marketplace-product",
+  upload_product_document: "/marketplace-product/upload",
+  update_video: "/marketplace-product",
+
+  create_music_product: "/marketplace-product/music",
+  update_music_product: "/marketplace-product",
+  update_music: "/marketplace-product/music",
+  delete_music: "/marketplace-product/music",
+
+  podcast_product: "/marketplace-product/podcast",
+  ebook_product: "/marketplace-product/ebook",
+  art_product: "/marketplace-product/art",
+  course_product: "/marketplace-product/course",
 };
 
 // Messaging endpoints
@@ -1578,6 +1599,10 @@ export const GetProducts = () => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_products);
 };
 
+export const GetSellerProducts = () => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_seller_products);
+};
+
 export const CreateSellerShop = (data: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
@@ -1627,7 +1652,7 @@ export const RemoveAllExtraBanner = (): ApiResponse => {
   );
 };
 
-export const RemoveTeamMemberImage= (id: any): ApiResponse => {
+export const RemoveTeamMemberImage = (id: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.DELETE,
     {},
     `${EndPoint.remove_team_member_image}/${id}`
@@ -1646,5 +1671,137 @@ export const SaveExtraBanners = (data: any): ApiResponse => {
     ServerAPI.APIMethod.POST,
     data,
     EndPoint.save_extra_banners
+  );
+};
+
+export const GetMarketPlaceCategories = () => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_categories);
+};
+
+export const GetMarketPlaceMoods = () => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_moods);
+};
+
+export const GetPreviewProduct = (category: any, id: any) => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.get_preview_product}/${category}/${id}`);
+};
+
+export const CreateVideoProduct = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.create_video_product
+  );
+};
+
+export const UpdateVideoProduct = (data: any, id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PATCH,
+    data,
+    `${EndPoint.update_video_product}/${id}`
+  );
+};
+
+export const UpdateProductStatus = (data: any, id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PATCH,
+    data,
+    `${EndPoint.update_video_product}/${id}/status`
+  );
+};
+
+export const UploadProductDocument = (fileType: string, formData: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    `${EndPoint.upload_product_document}/${fileType}`
+  );
+};
+
+export const UpdateVideo = (pid: any, fileType: string, formData: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    `${EndPoint.update_video}/${pid}/${fileType}`
+  );
+};
+
+export const CreateMusicProduct = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.create_music_product
+  );
+};
+
+export const UpdateMusicProduct = (data: any, id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PATCH,
+    data,
+    `${EndPoint.update_music_product}/${id}`
+  );
+};
+
+export const UpdateMusic = (pid: any, fileType: string, data: any, tid: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    `${EndPoint.update_music}/${pid}/${fileType}/${tid}`
+  );
+};
+
+export const DeleteMusic = (pid: any, fileType: string, tid: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.delete_music}/${pid}/${fileType}/${tid}`
+  );
+};
+
+export const CreatePodcastProduct = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.podcast_product
+  );
+};
+
+export const UpdatePodcastProduct = (data: any, id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PATCH,
+    data,
+    `${EndPoint.update_music_product}/${id}`
+  );
+};
+
+export const CreateEbookProduct = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.ebook_product
+  );
+};
+
+export const UpdateEbookProduct = (data: any, id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PATCH,
+    data,
+    `${EndPoint.ebook_product}/${id}`
+  );
+};
+
+export const CreateArtProduct = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.art_product
+  );
+};
+
+export const CreateCourseProduct = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.course_product
   );
 };
