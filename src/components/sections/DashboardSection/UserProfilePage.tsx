@@ -415,14 +415,13 @@ const UserProfilePage = () => {
           .string()
           .required("Last name is required")
           .matches(/^[a-zA-Z\s'-]+$/, "Last name can only contain letters"),
-        bio: yup
-          .string()
-          .required("Professional bio is required")
-          .matches(
-            /^[a-zA-Z0-9\s.,!?@#$%^&*()_+-=<>;:'"\/\\[\]{}|`~]+$/,
-            "Bio contains invalid characters"
-          ),
-        gender: yup.string().required("Gender is required"),
+        // Remove required validation for bio, keep only character validation if needed
+        bio: yup.string().matches(
+          /^[a-zA-Z0-9\s.,!?@#$%^&*()_+-=<>;:'"\/\\[\]{}|`~]*$/, // Added * to allow empty strings
+          "Bio contains invalid characters"
+        ),
+        // Remove required validation for gender
+        gender: yup.string(),
         dob: yup
           .string()
           .required("Date of birth is required")
@@ -441,32 +440,81 @@ const UserProfilePage = () => {
               return age >= 18;
             }
           ),
-        quote: yup
-          .string()
-          .matches(
-            /^[a-zA-Z0-9\s.,!?@#$%^&*()_+-=<>;:'"\/\\[\]{}|`~]+$/,
-            "Quote contains invalid characters"
-          ),
+        // Remove required validation for quote, keep only character validation if needed
+        quote: yup.string().matches(
+          /^[a-zA-Z0-9\s.,!?@#$%^&*()_+-=<>;:'"\/\\[\]{}|`~]*$/, // Added * to allow empty strings
+          "Quote contains invalid characters"
+        ),
+        // Remove required validation for vision, keep only character validation if needed
         vision: yup
           .string()
+          .transform((value) => (value === "" ? null : value)) // Transform empty string to null
+          .nullable()
           .matches(
-            /^[a-zA-Z0-9\s.,!?@#$%^&*()_+-=<>;:'"\/\\[\]{}|`~]+$/,
+            /^[a-zA-Z0-9\s.,!?@#$%^&*()_+-=<>;:'"\/\\[\]{}|`~]*$/,
             "Vision statement contains invalid characters"
           ),
         professions: yup.array().min(1, "At least one profession is required"),
-        interests: yup.array().min(1, "At least one interest is required"),
+        // Remove required validation for interests
+        interests: yup.array(),
         identify_uploaded: yup.mixed().nullable(),
         custom_profession: yup.string().nullable(),
       })
     ),
   });
+  console.log(
+    "🚀 ~ UserProfilePage ~ basicInfoForm:",
+    basicInfoForm.formState.errors
+  );
   /*const contactInfoForm = useForm({
     defaultValues: {
       country_code: countryCode[0],
       phone: "",
     },
   });*/
-  const contactInfoForm = useForm();
+  const contactInfoForm = useForm({
+    defaultValues: {
+      country_code: countryCode[0],
+      phone: "",
+      email: "",
+      address: "",
+      country: "",
+      state: "",
+      city: "",
+      postalCode: "",
+      communication: {
+        sms: false,
+        email: false,
+        whatsapp: false,
+      },
+    },
+    resolver: yupResolver(
+      yup.object().shape({
+        // Keep validation only for these 3 fields
+        phone: yup
+          .string()
+          .required("Phone number is required")
+          .matches(/^[0-9]{8,13}$/, "Phone must be between 8-13 digits"),
+        email: yup
+          .string()
+          .required("Email is required")
+          .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Enter a valid email"),
+        country: yup.string().required("Country is required"),
+
+        // Remove validation for other fields
+        country_code: yup.string(),
+        address: yup.string(),
+        state: yup.string(),
+        city: yup.string(),
+        postalCode: yup.string(),
+        communication: yup.object().shape({
+          sms: yup.boolean(),
+          email: yup.boolean(),
+          whatsapp: yup.boolean(),
+        }),
+      })
+    ),
+  });
   // Update the socialLinksForm initialization with validation
   const socialLinksForm = useForm({
     resolver: yupResolver(
@@ -526,21 +574,21 @@ const UserProfilePage = () => {
             yup.object().shape({
               degree: yup
                 .string()
-                .required("Degree is required")
+                // .required("Degree is required")
                 .matches(
                   /^[a-zA-Z\s.,-]+$/,
                   "Degree contains invalid characters"
                 ),
               institution: yup
                 .string()
-                .required("Institution is required")
+                // .required("Institution is required")
                 .matches(
                   /^[a-zA-Z0-9\s.,'-]+$/,
                   "Institution name contains invalid characters"
                 ),
               start_date: yup
                 .string()
-                .required("Start date is required")
+                // .required("Start date is required")
                 .test(
                   "is-valid-date",
                   "Start date must be a valid date",
@@ -886,9 +934,9 @@ const UserProfilePage = () => {
     const payload = {
       first_name: data.firstName || null,
       last_name: data.lastName || null,
-      bio: data.bio || null,
-      gender: data.gender || null,
-      dob: data.dob || null,
+      bio: data.bio || "",
+      gender: data.gender || "",
+      dob: data.dob || "",
       opinion_on_counsciouness: data.quote || null,
       personal_vision_statement: data.vision || null,
       professions: normalizeToArray(data.professions),
@@ -1718,7 +1766,8 @@ const UserProfilePage = () => {
                       {/* Interests */}
                       <div>
                         <label className="block text-sm font-medium text-gray-800 mb-2">
-                          Interests <span className="text-red-500">*</span>
+                          Interests
+                          {/* <span className="text-red-500">*</span> */}
                         </label>
                         <Select
                           isMulti
@@ -1965,7 +2014,8 @@ const UserProfilePage = () => {
                       {/* Gender Dropdown - Styled like the Interests Field */}
                       <div className="w-full">
                         <label className="block text-sm font-medium text-gray-800 mb-2">
-                          Gender <span className="text-red-500">*</span>
+                          Gender
+                          {/* <span className="text-red-500">*</span> */}
                         </label>
                         <Select
                           options={genderOptions}
@@ -2002,7 +2052,8 @@ const UserProfilePage = () => {
                       {/* Date of Birth */}
                       <div>
                         <label className="block text-sm font-medium text-gray-800 mb-2">
-                          Date of Birth <span className="text-red-500">*</span>
+                          Date of Birth
+                          <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="date"
@@ -2060,7 +2111,7 @@ const UserProfilePage = () => {
                       <div>
                         <label className="block text-sm font-medium text-gray-800 mb-2">
                           Professional Bio{" "}
-                          <span className="text-red-500">*</span>
+                          {/* <span className="text-red-500">*</span> */}
                         </label>
                         <input
                           type="text"
@@ -2162,9 +2213,6 @@ const UserProfilePage = () => {
                                   selectedOption?.value || countryCode[0]
                                 )
                               }
-                              onBlur={() =>
-                                contactInfoForm.trigger("country_code")
-                              }
                               isSearchable={false}
                               placeholder="Code"
                             />
@@ -2172,13 +2220,7 @@ const UserProfilePage = () => {
                           <input
                             type="tel"
                             placeholder="Enter Your Phone Number"
-                            {...contactInfoForm.register("phone", {
-                              required: "Phone number is required",
-                              pattern: {
-                                value: /^[0-9]{8,13}$/,
-                                message: "Phone must be between 8-13 digits",
-                              },
-                            })}
+                            {...contactInfoForm.register("phone")}
                             minLength={8}
                             maxLength={13}
                             onKeyDown={(e) => {
@@ -2218,14 +2260,8 @@ const UserProfilePage = () => {
                         </label>
                         <input
                           type="email"
-                          placeholder="Enter Your Email "
-                          {...contactInfoForm.register("email", {
-                            required: "Email is required",
-                            pattern: {
-                              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                              message: "Enter a valid email",
-                            },
-                          })}
+                          placeholder="Enter Your Email"
+                          {...contactInfoForm.register("email")}
                           className={`w-full px-4 py-2 border bg-white ${
                             contactInfoForm.formState.errors.email
                               ? "border-red-500"
@@ -2246,27 +2282,17 @@ const UserProfilePage = () => {
                         )}
                       </div>
 
-                      {/* Address */}
+                      {/* Address - No validation */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Address <span className="text-red-500">*</span>
+                          Address
                         </label>
                         <input
                           type="text"
-                          {...contactInfoForm.register("address", {
-                            required: "Address is required",
-                          })}
+                          {...contactInfoForm.register("address")}
                           placeholder="Enter your address"
                           className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
-                        {contactInfoForm.formState.errors.address && (
-                          <p className="text-sm text-red-500 mt-1">
-                            {
-                              contactInfoForm.formState.errors.address
-                                .message as string
-                            }
-                          </p>
-                        )}
                       </div>
 
                       {/* Country */}
@@ -2323,10 +2349,10 @@ const UserProfilePage = () => {
                         )}
                       </div>
 
-                      {/* State */}
+                      {/* State - No validation */}
                       <div className="w-full relative">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          State <span className="text-red-500">*</span>
+                          State
                         </label>
                         <Select
                           options={
@@ -2361,7 +2387,6 @@ const UserProfilePage = () => {
                               selectedOption?.value || ""
                             );
                           }}
-                          onBlur={() => contactInfoForm.trigger("state")}
                           styles={customSelectStyles}
                           placeholder="Select your state"
                           isSearchable
@@ -2370,17 +2395,9 @@ const UserProfilePage = () => {
                           menuPosition="fixed"
                           maxMenuHeight={200}
                         />
-                        {contactInfoForm.formState.errors.state && (
-                          <p className="text-sm text-red-500 mt-1">
-                            {
-                              contactInfoForm.formState.errors.state
-                                .message as string
-                            }
-                          </p>
-                        )}
                       </div>
 
-                      {/* City */}
+                      {/* City - No validation */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           City
@@ -2393,35 +2410,25 @@ const UserProfilePage = () => {
                         />
                       </div>
 
-                      {/* Postal Code */}
+                      {/* Postal Code - No validation */}
                       <div>
                         <label className="block text-sm font-medium text-gray-800 mb-2">
-                          Postal Code <span className="text-red-500">*</span>
+                          Postal Code
                         </label>
                         <input
                           type="text"
-                          {...contactInfoForm.register("postalCode", {
-                            required: "Postal code is required",
-                          })}
+                          {...contactInfoForm.register("postalCode")}
                           placeholder="Enter postal code"
-                          className="w-full px-4 py-2 border h-[41px] bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 uppercase" // Added uppercase class
+                          className="w-full px-4 py-2 border h-[41px] bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 uppercase"
                           style={{ textTransform: "uppercase" }}
                         />
-                        {contactInfoForm.formState.errors.postalCode && (
-                          <p className="text-sm text-red-500 mt-1">
-                            {
-                              contactInfoForm.formState.errors.postalCode
-                                .message as string
-                            }
-                          </p>
-                        )}
                       </div>
 
                       {/* Communication Preferences */}
                       <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Preferred Method of Communication{" "}
-                          <span className="text-red-500">*</span>
+                          {/* <span className="text-red-500">*</span> */}
                         </label>
                         <div className="flex gap-6">
                           <label className="inline-flex items-center gap-2">
@@ -2663,7 +2670,8 @@ const UserProfilePage = () => {
                           {/* Degree */}
                           <div>
                             <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Degree <span className="text-red-500">*</span>
+                              Degree
+                              {/* <span className="text-red-500">*</span> */}
                             </label>
                             <input
                               type="text"
@@ -2701,7 +2709,7 @@ const UserProfilePage = () => {
                           <div>
                             <label className="block text-sm font-medium text-gray-800 mb-2">
                               Institution{" "}
-                              <span className="text-red-500">*</span>
+                              {/* <span className="text-red-500">*</span> */}
                             </label>
                             <input
                               type="text"
@@ -2738,7 +2746,8 @@ const UserProfilePage = () => {
                           {/* Start Date */}
                           <div>
                             <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Start Date <span className="text-red-500">*</span>
+                              Start Date
+                              {/* <span className="text-red-500">*</span> */}
                             </label>
                             <input
                               type="date"
@@ -2916,7 +2925,8 @@ const UserProfilePage = () => {
                           {/* Company */}
                           <div className="lg:w-[48%] md:w-[48%] w-full">
                             <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Company <span className="text-red-500">*</span>
+                              Company
+                              {/* <span className="text-red-500">*</span> */}
                             </label>
                             <input
                               type="text"
@@ -2951,7 +2961,8 @@ const UserProfilePage = () => {
                           {/* Position */}
                           <div className="lg:w-[48%] md:w-[48%] w-full">
                             <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Position <span className="text-red-500">*</span>
+                              Position
+                              {/* <span className="text-red-500">*</span> */}
                             </label>
                             <input
                               type="text"
@@ -2987,7 +2998,7 @@ const UserProfilePage = () => {
                           <div className="lg:w-[48%] md:w-[48%] w-full">
                             <label className="block text-sm font-medium text-gray-800 mb-2">
                               Roles & Responsibilities{" "}
-                              <span className="text-red-500">*</span>
+                              {/* <span className="text-red-500">*</span> */}
                             </label>
                             <textarea
                               {...workExperienceForm.register(
@@ -3025,7 +3036,8 @@ const UserProfilePage = () => {
                           {/* Country */}
                           <div className="lg:w-[48%] md:w-[48%] w-full">
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Country <span className="text-red-500">*</span>
+                              Country
+                              {/* <span className="text-red-500">*</span> */}
                             </label>
                             <Select
                               options={
@@ -3082,7 +3094,8 @@ const UserProfilePage = () => {
                           {/* State */}
                           <div className="lg:w-[48%] md:w-[48%] w-full relative">
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                              State <span className="text-red-500">*</span>
+                              State
+                              {/* <span className="text-red-500">*</span> */}
                             </label>
                             <Select
                               options={
@@ -3177,7 +3190,8 @@ const UserProfilePage = () => {
                           {/* Start Date */}
                           <div className="lg:w-[48%] md:w-[48%] w-full">
                             <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Start Date <span className="text-red-500">*</span>
+                              Start Date
+                              {/* <span className="text-red-500">*</span> */}
                             </label>
                             <input
                               type="date"
@@ -3333,7 +3347,8 @@ const UserProfilePage = () => {
                       {/* Title */}
                       <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-800 mb-2">
-                          Title <span className="text-red-500">*</span>
+                          Title
+                          {/* <span className="text-red-500">*</span> */}
                         </label>
                         <textarea
                           {...publicProfileForm.register("title", {
@@ -3352,7 +3367,8 @@ const UserProfilePage = () => {
 
                       <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-800 mb-2">
-                          About Us <span className="text-red-500">*</span>
+                          About Us
+                          {/* <span className="text-red-500">*</span> */}
                         </label>
                         <textarea
                           {...publicProfileForm.register("aboutUs", {
@@ -3582,7 +3598,8 @@ const UserProfilePage = () => {
                       {/* Tags Field */}
                       <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-800 mb-2">
-                          Tags <span className="text-red-500">*</span>
+                          Tags
+                          {/* <span className="text-red-500">*</span> */}
                         </label>
                         <div className="w-full border border-gray-300 bg-white rounded-xl px-3 py-2">
                           <div className="flex flex-wrap gap-2 mb-1">
@@ -3615,7 +3632,8 @@ const UserProfilePage = () => {
                       {/* Notify Email */}
                       <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-800 mb-2">
-                          Notify Email <span className="text-red-500">*</span>
+                          Notify Email
+                          {/* <span className="text-red-500">*</span> */}
                         </label>
                         <input
                           type="email"
