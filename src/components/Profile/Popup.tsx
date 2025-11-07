@@ -77,6 +77,7 @@ const PostPopup: React.FC<PopupProps> = ({
   insightsCount,
   collection,
 }) => {
+  console.log("🚀 ~ PostPopup ~ insightsCount:", insightsCount)
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [isCommentsLoading, setIsCommentsLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -193,7 +194,7 @@ const PostPopup: React.FC<PopupProps> = ({
 
   const handleReplySubmit = async (id: string) => {
     if (!replyInput.trim()) return;
-    setPosting(true);
+    // setPosting(true);
     try {
       await PostChildComments({
         post_id: post.id,
@@ -658,7 +659,7 @@ const PostPopup: React.FC<PopupProps> = ({
                   }}
                   className="text-[13px] sm:text-sm text-[#64748B] hover:text-[#475569] font-medium whitespace-nowrap"
                 >
-                  {insightsCount} Reflections Thread
+                  {comments.length} Reflections Thread
                 </button>
               )}
             </div>

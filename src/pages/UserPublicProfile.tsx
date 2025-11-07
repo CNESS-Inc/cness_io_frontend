@@ -11,6 +11,7 @@ import service from "../assets/service.svg";
 import bio from "../assets/bio.svg";
 import education from "../assets/education.svg";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
+import { iconMap } from "../assets/icons";
 import {
   UnFriend,
   // GetUserProfileDetails,
@@ -22,21 +23,24 @@ import {
   // GetBestpracticesByUserProfile,
   // GetValidProfessionalDetails,
   // GetInterestsDetails,
-  CreateBestPractice,
   SendBpFollowRequest,
   GetPublicProfileDetailsById,
   GetInterestsDetails,
   GetValidProfessionalDetails,
+  AcceptFriendRequest,
+  RejectFriendRequest,
+  GetFollowBestpractices,
+  GetBestPracticesById,
+  UpdateBestPractice,
+  GetBestpracticesByUserProfile,
+  DeleteBestPractices,
   //UnFriend,
 } from "../Common/ServerAPI";
 import { useNavigate, useParams } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { useState, useEffect } from "react";
 //import banner from "../assets/aspcom2.png";
-import bcard1 from "../assets/Bcard1.png";
-import bcard2 from "../assets/Bcard2.png";
-import bcard3 from "../assets/Bcard3.png";
-import bcard4 from "../assets/Bcard4.png";
+import DOMPurify from "dompurify";
 // import { normalizeFileUrl } from "../components/ui/Normalizefileurl";
 import { FaLocationDot } from "react-icons/fa6";
 import SharePopup from "../components/Social/SharePopup";
@@ -47,6 +51,13 @@ import {
   PrimaryButton,
 } from "../components/Seller/SellerSegmentcard";
 import AddBestPracticeModal from "../components/sections/bestPractiseHub/AddBestPractiseModal";
+import {
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/DashboardCard";
+import EditBestPracticeModal from "../components/sections/bestPractiseHub/EditBestPracticesModel";
+import Modal from "../components/ui/Modal";
 
 const levels = [
   {
@@ -88,10 +99,6 @@ export const formatRange = (
 
 export default function UserProfileView() {
   const [userDetails, setUserDetails] = useState<any>();
-  // const [publicUserDetails, setPublicUserDetails] = useState<any>();
-  const [myBP, setMyBP] = useState<any>([]);
-  const [myProfessionBP, setMyProfessionBP] = useState<any[]>([]);
-  const [myInterestBP, setMyInterestBP] = useState<any[]>([]);
   const [followBP, setFollowBP] = useState<any>([]);
   const [activeTab, setActiveTab] = useState("about");
   const { id } = useParams();
@@ -105,6 +112,7 @@ export default function UserProfileView() {
   const [profession, setProfession] = useState<any[]>([]);
   const [interest, setInterestData] = useState<any[]>([]);
   const [tags, setTags] = useState<string[]>([]);
+  const [createTags, setCreateTags] = useState<string[]>([]); // Separate tags for create modal
   const [inputValue, setInputValue] = useState("");
   const [newPractice, setNewPractice] = useState({
     title: "",
@@ -114,11 +122,25 @@ export default function UserProfileView() {
     file: null as File | null,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mineBestPractices, setmineBestPractices] = useState<any[]>([]);
+  const [expandedDescriptions] = useState<Record<string, boolean>>({});
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    practiceId: string | null;
+  }>({ isOpen: false, practiceId: null });
+  const truncateText = (text: string, maxLength: number): string => {
+    if (!text) return "";
+    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  };
+  const filteredMineBestPractices = mineBestPractices.filter(
+    (practice) => practice.status === 1
+  );
 
   const isOwnProfile =
     (id && String(id) === String(loggedInUserID)) ||
     (userDetails?.user_id &&
       String(userDetails.user_id) === String(loggedInUserID));
+  console.log("🚀 ~ UserProfileView ~ isOwnProfile:", isOwnProfile);
   const userLevel = userDetails?.level?.level;
 
   let displayLevels: typeof levels = [];
@@ -130,6 +152,82 @@ export default function UserProfileView() {
     displayLevels = levels;
   }
 
+  const [isAboutExpanded, setIsAboutExpanded] = useState(false);
+
+  // Add this function to truncate the about text
+  const truncateAboutText = (text: string, maxLength: number = 150): string => {
+    if (!text) return "";
+    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  };
+  const fetchMineBestPractices = async () => {
+    try {
+      const res = await GetBestpracticesByUserProfile(id);
+      if (res?.data?.data) {
+        const transformedCompanies = res.data.data.rows.map(
+          (practice: any) => ({
+            id: practice.id,
+            title: practice.title,
+            description: practice.description,
+            file: practice.file,
+            profession: practice.profession_data?.title || "General",
+            user: {
+              username: practice.user?.username || "Anonymous",
+              profilePicture:
+                practice.profile?.profile_picture || iconMap["aspcompany1"],
+              firstName: practice.profile?.first_name || "",
+              lastName: practice.profile?.last_name || "",
+            },
+            followersCount: practice.followers_count || 0,
+            likesCount: practice.likes_count || 0,
+            isLiked: practice.is_liked || false,
+            commentsCount: practice.total_comment_count || 0,
+            status: practice.status,
+          })
+        );
+        setmineBestPractices(transformedCompanies);
+      }
+    } catch (error: any) {
+      console.error("Error fetching inspiring companies:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
+  const handleDeleteBestPractice = async (id: any) => {
+      try {
+        await DeleteBestPractices(id);
+      } catch (error: any) {
+        console.error("Error fetching inspiring companies:", error);
+        showToast({
+          message: error?.response?.data?.error?.message,
+          type: "error",
+          duration: 5000,
+        });
+      } 
+    };
+  const fetchFollowBestPractices = async () => {
+    try {
+      const res = await GetFollowBestpractices();
+      setFollowBP(res.data.data.rows);
+      console.log("🚀 ~ fetchFollowBestPractices ~ res:", res);
+    } catch (error: any) {
+      console.error("Error fetching inspiring companies:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchMineBestPractices();
+    fetchFollowBestPractices();
+  }, [activeTab === "best"]);
+
   useEffect(() => {
     fetchUserDetails();
     // fetchPublicUserDetails();
@@ -138,24 +236,6 @@ export default function UserProfileView() {
     fetchProfession();
     fetchIntrusts();
   }, []);
-
-  useEffect(() => {
-    if (myBP?.length > 0) {
-      // Separate profession-aligned BPs
-      const professionData = myBP.filter(
-        (bp: any) => bp?.profession_data !== null
-      );
-
-      // Separate interest-aligned BPs
-      const interestData = myBP.filter((bp: any) => bp?.interest !== null);
-
-      setMyProfessionBP(professionData);
-      setMyInterestBP(interestData);
-    } else {
-      setMyProfessionBP([]);
-      setMyInterestBP([]);
-    }
-  }, [myBP]);
 
   const fetchProfession = async () => {
     try {
@@ -266,88 +346,119 @@ export default function UserProfileView() {
   };
 
   const handleFriend = async (userId: string) => {
-    try {
-      if (
-        userDetails.friend_request_status !== "ACCEPT" &&
-        userDetails.friend_request_status !== "PENDING" &&
-        !userDetails.if_friend
-      ) {
-        const formattedData = {
-          friend_id: userId,
-        };
-        await SendConnectionRequest(formattedData);
-        setUserDetails({
-          ...userDetails,
-          if_friend: false,
-          friend_request_status: "PENDING",
-        });
-      } else {
-        if (
-          userDetails.friend_request_status == "ACCEPT" &&
-          userDetails.if_friend
-        ) {
-          const formattedData = {
-            friend_id: userId,
-          };
-          await UnFriend(formattedData);
-          setUserDetails({
-            ...userDetails,
-            if_friend: false,
-            friend_request_status: null,
-          });
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching selection details:", error);
+  try {
+    // Case 1: No existing connection or pending request - Send new connection request
+    if (
+      userDetails.friend_request_status !== "ACCEPT" &&
+      userDetails.friend_request_status !== "PENDING" &&
+      !userDetails.if_friend
+    ) {
+      const formattedData = {
+        friend_id: userId,
+      };
+      const res = await SendConnectionRequest(formattedData);
+      console.log("🚀 ~ handleFriend ~ res:", res)
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 2000,
+      });
+      setUserDetails({
+        ...userDetails,
+        if_friend: false,
+        friend_request_status: "PENDING",
+      });
     }
-  };
+    // Case 2: Cancel pending request (when status is PENDING)
+    else if (userDetails.friend_request_status === "PENDING" && !userDetails.if_friend) {
+      const formattedData = {
+        friend_id: userId,
+      };
+      const res = await UnFriend(formattedData); // Or use a specific cancel request API if available
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 2000,
+      });
+      setUserDetails({
+        ...userDetails,
+        if_friend: false,
+        friend_request_status: null,
+      });
+    }
+    // Case 3: Remove existing friend connection
+    else if (
+      userDetails.friend_request_status === "ACCEPT" &&
+      userDetails.if_friend
+    ) {
+      const formattedData = {
+        friend_id: userId,
+      };
+      const res = await UnFriend(formattedData);
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 2000,
+      });
+      setUserDetails({
+        ...userDetails,
+        if_friend: false,
+        friend_request_status: null,
+      });
+    }
+  } catch (error) {
+    console.error("Error handling friend request:", error);
+    showToast({
+      message: "Failed to update connection",
+      type: "error",
+      duration: 3000,
+    });
+  }
+};
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const hasProfession = !!newPractice.profession;
-    const hasInterest = !!newPractice.interest;
-
-    if (!hasProfession && !hasInterest) {
-      showToast({
-        message: "Please select either a profession or an interest.",
-        type: "error",
-        duration: 5000,
-      });
-      setIsSubmitting(false);
-      return;
-    }
-
     try {
-      const formData = new FormData();
-      formData.append("title", newPractice.title);
-      formData.append("description", newPractice.description);
-      formData.append("profession", newPractice.profession);
-      formData.append("interest", newPractice.interest);
-      formData.append("tags", JSON.stringify(tags));
-      if (newPractice.file) {
-        formData.append("file", newPractice.file);
+      if (isEditMode) {
+        // For edit mode, send as FormData to include file
+        const formData = new FormData();
+        formData.append("id", currentPractice.id);
+        formData.append("profession", currentPractice?.profession_data?.id);
+        formData.append("title", currentPractice.title);
+        formData.append("description", currentPractice.description);
+        formData.append("tags", JSON.stringify(tags));
+
+        // Append file if it's a new file (File object), not a string URL
+        if (currentPractice.file && typeof currentPractice.file !== "string") {
+          formData.append("file", currentPractice.file);
+        }
+
+        // If interest exists, append it
+        if (currentPractice.interest) {
+          formData.append("interest", currentPractice.interest);
+        }
+
+        await UpdateBestPractice(formData);
+
+        showToast({
+          message:
+            "Best practice updated successfully and please wait until admin reviews it!",
+          type: "success",
+          duration: 3000,
+        });
       }
 
-      await CreateBestPractice(formData);
-
-      showToast({
-        message:
-          "Best practices has been created and please wait until admin reviews it!",
-        type: "success",
-        duration: 5000,
-      });
-
       closeModal();
-      navigate("/dashboard/bestpractices");
-      setActiveModal(false);
+      await fetchMineBestPractices();
+      await fetchMineBestPractices();
     } catch (error: any) {
-      console.error("Error creating best practice:", error);
+      console.error("Error saving best practice:", error);
       showToast({
         message:
           error?.response?.data?.error?.message ||
-          "Failed to create best practice",
+          `Failed to ${isEditMode ? "update" : "create"} best practice`,
         type: "error",
         duration: 5000,
       });
@@ -401,6 +512,7 @@ export default function UserProfileView() {
 
   const closeModal = () => {
     setActiveModal(false);
+    setBestPracticeModal(null);
     setNewPractice({
       title: "",
       description: "",
@@ -415,8 +527,67 @@ export default function UserProfileView() {
     newTags.splice(index, 1);
     setTags(newTags);
   };
+  const handleEditFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const allowedTypes = ["image/jpeg", "image/png"];
+    const maxSize = 2 * 1024 * 1024; // 2 MB
+
+    // ❌ Invalid file type
+    if (!allowedTypes.includes(file.type)) {
+      showToast({
+        message: "Invalid file type. Please upload JPEG or PNG only.",
+        type: "error",
+        duration: 4000,
+      });
+      e.target.value = "";
+      return;
+    }
+
+    // ❌ File too large
+    if (file.size > maxSize) {
+      showToast({
+        message: "File size exceeds 2MB. Please upload a smaller image.",
+        type: "error",
+        duration: 4000,
+      });
+      e.target.value = "";
+      return;
+    }
+
+    // ✅ Valid file
+    setCurrentPractice({
+      ...currentPractice,
+      file,
+    });
+  };
+
+  const handleTagKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    isCreateModal: boolean = false
+  ) => {
+    const value = isCreateModal ? inputValue : editInputValue;
+
+    if (e.key === "Enter" && value.trim()) {
+      e.preventDefault();
+      const newTag = value.trim();
+
+      if (isCreateModal) {
+        if (!createTags.includes(newTag)) {
+          setCreateTags([...createTags, newTag]);
+          setInputValue("");
+        }
+      } else {
+        if (!tags.includes(newTag)) {
+          setTags([...tags, newTag]);
+          setEditInputValue("");
+        }
+      }
+    }
+  };
+
+  const handleTagAddKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && inputValue.trim()) {
       e.preventDefault();
       const newTag = inputValue.trim();
@@ -434,22 +605,6 @@ export default function UserProfileView() {
       if (res?.success?.statusCode === 200) {
         const isNowFollowing = res?.data?.data !== null;
 
-        setFollowBP((prev: any) =>
-          prev.map((item: any) =>
-            item.id === bpId
-              ? { ...item, is_bp_following: isNowFollowing }
-              : item
-          )
-        );
-
-        setMyBP((prev: any) =>
-          prev.map((item: any) =>
-            item.id === bpId
-              ? { ...item, is_bp_following: isNowFollowing }
-              : item
-          )
-        );
-
         showToast({
           message: isNowFollowing
             ? "Added to followed practices"
@@ -457,6 +612,8 @@ export default function UserProfileView() {
           type: "success",
           duration: 2000,
         });
+
+        await fetchFollowBestPractices();
       } else {
         console.warn("Unexpected status code:", res?.success?.statusCode);
       }
@@ -537,6 +694,85 @@ export default function UserProfileView() {
 */
   }
 
+  const handleAcceptRequest = async (userId: string) => {
+    try {
+      const formattedData = { friend_id: userId };
+      await AcceptFriendRequest(formattedData);
+      setUserDetails({
+        ...userDetails,
+        if_friend: true,
+        friend_request_status: "ACCEPT",
+        reciver_request_status: null,
+      });
+
+      showToast({
+        message: "Friend request accepted!",
+        type: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error accepting friend request:", error);
+      showToast({
+        message: "Failed to accept friend request",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleRejectRequest = async (userId: string) => {
+    try {
+      const formattedData = { friend_id: userId };
+      await RejectFriendRequest(formattedData);
+      setUserDetails({
+        ...userDetails,
+        if_friend: false,
+        friend_request_status: null,
+        reciver_request_status: null,
+      });
+
+      showToast({
+        message: "Friend request rejected",
+        type: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error rejecting friend request:", error);
+      showToast({
+        message: "Failed to reject friend request",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  const [currentPractice, setCurrentPractice] = useState<any>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editInputValue, setEditInputValue] = useState("");
+  const [BestPracticeModal, setBestPracticeModal] = useState<
+    "bestpractices" | null
+  >(null);
+
+  const handleEditBestPractice = async (id: any) => {
+    try {
+      const response = await GetBestPracticesById(id);
+      if (response?.data?.data) {
+        setCurrentPractice(response.data.data);
+        setTags(response.data.data.tags || []);
+        setEditInputValue(""); // Reset edit input value
+        setIsEditMode(true);
+        setBestPracticeModal("bestpractices");
+      }
+    } catch (error: any) {
+      console.error("Error fetching best practice:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
   return (
     <div className="relative w-full h-full mx-auto px-1 pt-2">
       <button
@@ -597,7 +833,17 @@ export default function UserProfileView() {
                 {/* {publicUserDetails?.title} */}
               </p>
               <p className="mt-2 font-['Open_Sans'] font-normal text-[14px] leading-[21px] text-[#64748B] max-w-full md:max-w-[500px] break-words">
-                {userDetails?.about_us}
+                {isAboutExpanded
+                  ? userDetails?.about_us
+                  : truncateAboutText(userDetails?.about_us || "", 150)}
+                {userDetails?.about_us && userDetails.about_us.length > 150 && (
+                  <button
+                    onClick={() => setIsAboutExpanded(!isAboutExpanded)}
+                    className="ml-1 text-[#7077FE] font-semibold hover:underline focus:outline-none"
+                  >
+                    {isAboutExpanded ? "Show less" : "Show more"}
+                  </button>
+                )}
               </p>
 
               {(userDetails?.address ||
@@ -667,33 +913,64 @@ export default function UserProfileView() {
                   </button>
                 )} */}
                 {!isOwnProfile && (
-                  <button
-                    onClick={() => handleFriend(userDetails?.user_id)}
-                    disabled={userDetails?.user_id === loggedInUserID} // 👈 disable on own profile
-                    className={`w-full h-9 rounded-full border border-[#ECEEF2] 
-             font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
-             flex items-center justify-center gap-2
-             ${
-               userDetails?.user_id === loggedInUserID
-                 ? "bg-gray-200 text-gray-500 cursor-not-allowed" // 👈 styling when disabled
-                 : userDetails?.if_friend &&
-                   userDetails?.friend_request_status === "ACCEPT"
-                 ? "bg-green-100 text-green-700"
-                 : !userDetails?.if_friend &&
-                   userDetails?.friend_request_status === "PENDING"
-                 ? "bg-yellow-100 text-yellow-700"
-                 : "bg-[#FFFFFF] text-[#0B3449] hover:bg-indigo-600"
-             }`}
-                  >
-                    <UserRoundPlus className="w-4 h-4" />
-                    {userDetails?.if_friend &&
-                    userDetails?.friend_request_status === "ACCEPT"
-                      ? "Connected"
-                      : !userDetails?.if_friend &&
-                        userDetails?.friend_request_status === "PENDING"
-                      ? "Requested..."
-                      : "Connect"}
-                  </button>
+                  <div className="w-full">
+                    {/* Show Accept/Reject buttons when user has received a pending request */}
+                    {userDetails?.reciver_request_status === "PENDING" ? (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() =>
+                            handleAcceptRequest(userDetails?.user_id)
+                          }
+                          className="flex-1 h-9 rounded-full bg-green-500 
+            font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
+            text-white flex items-center justify-center gap-2 hover:bg-green-600"
+                        >
+                          <UserRoundPlus className="w-4 h-4" />
+                          Accept
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleRejectRequest(userDetails?.user_id)
+                          }
+                          className="flex-1 h-9 rounded-full bg-red-500 
+            font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
+            text-white flex items-center justify-center gap-2 hover:bg-red-600"
+                        >
+                          <UserRoundPlus className="w-4 h-4" />
+                          Reject
+                        </button>
+                      </div>
+                    ) : (
+                      /* Show regular Connect/Requested/Connected button for other cases */
+                      <button
+                        onClick={() => handleFriend(userDetails?.user_id)}
+                        disabled={userDetails?.user_id === loggedInUserID}
+                        className={`w-full h-9 rounded-full border border-[#ECEEF2] 
+          font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
+          flex items-center justify-center gap-2
+          ${
+            userDetails?.user_id === loggedInUserID
+              ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+              : userDetails?.if_friend &&
+                userDetails?.friend_request_status === "ACCEPT"
+              ? "bg-green-100 text-green-700"
+              : !userDetails?.if_friend &&
+                userDetails?.friend_request_status === "PENDING"
+              ? "bg-yellow-100 text-yellow-700"
+              : "bg-[#FFFFFF] text-[#0B3449] hover:bg-indigo-600"
+          }`}
+                      >
+                        <UserRoundPlus className="w-4 h-4" />
+                        {userDetails?.if_friend &&
+                        userDetails?.friend_request_status === "ACCEPT"
+                          ? "Connected"
+                          : !userDetails?.if_friend &&
+                            userDetails?.friend_request_status === "PENDING"
+                          ? "Requested..."
+                          : "Connect"}
+                      </button>
+                    )}
+                  </div>
                 )}
 
                 <div className="relative">
@@ -1098,17 +1375,15 @@ export default function UserProfileView() {
 
             {/* Best Practices Tab */}
             {activeTab === "best" &&
-              (userDetails?.best_practices_questions?.length > 0 ||
-              myBP?.length > 0 ||
-              followBP?.length > 0 ? (
-                <div>
-                  {userDetails?.best_practices_questions?.length > 0 && (
+              (filteredMineBestPractices?.length > 0 || followBP?.length > 0 ? (
+                <>
+                  <div>
+                    {/* {userDetails?.best_practices_questions?.length > 0 && (
                     <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
                       <h3 className="font-['Poppins'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-[#000000] mb-6">
                         Best practices aligned CNESS
                       </h3>
 
-                      {/* <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3"> */}
                       <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 mt-4">
                         {userDetails.best_practices_questions.map(
                           (section: any, index: number) => {
@@ -1167,250 +1442,361 @@ export default function UserProfileView() {
                         )}
                       </div>
                     </div>
-                  )}
+                  )} */}
+                    {filteredMineBestPractices.length > 0 ? (
+                      <>
+                        {isOwnProfile ? (
+                          <>
+                            <h2>My Best Practices</h2>
+                          </>
+                        ) : (
+                          ""
+                        )}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 gap-x-4 gap-y-4 pt-6 px-4 pb-6 rounded-lg rounded-tl-none rounded-tr-none">
+                          {filteredMineBestPractices?.map((company) => {
+                            return (
+                              <div
+                                key={company.id}
+                                className="relative bg-white cursor-pointer rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
+                              >
+                                {/* Edit and Delete buttons (absolute positioned in top-right) */}
+                                {isOwnProfile && (
+                                  <div className="absolute top-2 right-2 z-10 flex gap-2">
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleEditBestPractice(company.id);
+                                      }}
+                                      className="p-1 bg-white rounded-full shadow-md hover:bg-gray-100"
+                                      title="Edit"
+                                    >
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="h-5 w-5 text-gray-600"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                        />
+                                      </svg>
+                                    </button>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setDeleteConfirmation({
+                                          isOpen: true,
+                                          practiceId: company.id,
+                                        });
+                                      }}
+                                      className="p-1 bg-white rounded-full shadow-md hover:bg-gray-100"
+                                      title="Delete"
+                                    >
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="h-5 w-5 text-red-600"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                        />
+                                      </svg>
+                                    </button>
+                                  </div>
+                                )}
+                                {/* Card content */}
+                                <div
+                                  onClick={() =>
+                                    navigate(
+                                      `/dashboard/bestpractices/${
+                                        company.id
+                                      }/${slugify(company.title)}`,
+                                      {
+                                        state: {
+                                          likesCount: company.likesCount,
+                                          isLiked: company.isLiked,
+                                        },
+                                      }
+                                    )
+                                  }
+                                >
+                                  <CardHeader className="px-4 pt-4 pb-0 relative z-0">
+                                    <div className="flex items-start gap-1 pr-12">
+                                      <img
+                                        src={
+                                          !company?.user?.profilePicture ||
+                                          company?.user?.profilePicture ===
+                                            "null" ||
+                                          company?.user?.profilePicture ===
+                                            "undefined" ||
+                                          !company?.user?.profilePicture.startsWith(
+                                            "http"
+                                          ) ||
+                                          company?.user?.profilePicture ===
+                                            "http://localhost:5026/file/"
+                                            ? "/profile.png"
+                                            : company?.user?.profilePicture
+                                        }
+                                        alt={company.user.username}
+                                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover mr-2 sm:mr-3"
+                                        onError={(e) => {
+                                          // Fallback if the image fails to load
+                                          const target =
+                                            e.target as HTMLImageElement;
+                                          target.src = "/profile.png";
+                                        }}
+                                      />
+                                      <div>
+                                        <CardTitle className="text-sm font-semibold">
+                                          {company.user.firstName}{" "}
+                                          {company.user.lastName}
+                                        </CardTitle>
+                                        <CardDescription className="text-xs text-gray-500">
+                                          @{company.user.username}
+                                        </CardDescription>
+                                      </div>
+                                    </div>
+                                  </CardHeader>
+                                  <div className="px-4 pt-4 pb-0 relative z-0">
+                                    <div className="rounded-xl overflow-hidden mb-3">
+                                      {company.file && (
+                                        <img
+                                          src={
+                                            !company.file ||
+                                            company.file === "null" ||
+                                            company.file === "undefined" ||
+                                            !company.file.startsWith("http") ||
+                                            company.file ===
+                                              "http://localhost:5026/file/"
+                                              ? iconMap["companycard1"]
+                                              : company.file
+                                          }
+                                          alt={company.title}
+                                          className="w-full h-40 sm:h-48 object-cover"
+                                          onError={(e) => {
+                                            // Fallback in case the image fails to load
+                                            (e.target as HTMLImageElement).src =
+                                              iconMap["companycard1"];
+                                          }}
+                                        />
+                                      )}
+                                    </div>
+                                    <h3 className="text-base sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">
+                                      {company.title}
+                                    </h3>
+                                    <p className="text-sm font-semibold text-gray-900">
+                                      Overview
+                                    </p>
 
-                  {/* Best Practices profession  */}
-                  {myProfessionBP?.length > 0 && (
-                    <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
-                      <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
-                        My best practices aligned profession
-                      </h3>
+                                    <p className="text-sm text-gray-600 mb-2 leading-snug break-words whitespace-pre-line">
+                                      <span
+                                        dangerouslySetInnerHTML={{
+                                          __html: DOMPurify.sanitize(
+                                            expandedDescriptions[company.id]
+                                              ? company.description
+                                              : truncateText(
+                                                  company.description,
+                                                  100
+                                                )
+                                          ),
+                                        }}
+                                      />
+                                      {company.description.length > 100 && (
+                                        <span
+                                          className="text-purple-600 underline cursor-pointer ml-1"
+                                          // onClick={(e) => toggleDescription(e, company.id)}
+                                        >
+                                          {/* {expandedDescriptions[company.id]
+                                  ? "Read Less"
+                                  : "Read More"} */}
+                                        </span>
+                                      )}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </>
+                    ) : (
+                      ""
+                    )}
+                    {/* {myInterestBP?.length > 0 && (
+                      <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
+                        <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
+                          My best practices aligned interest
+                        </h3>
 
-                      <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 mt-4">
-                        {/* <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3"> */}
-                        {myProfessionBP?.map((practice: any) => {
-                          return (
-                            <div
-                              key={practice?.id}
-                              onClick={(e) => {
-                                // Only navigate if it's not the Read More button
-                                if (
-                                  !(e.target as HTMLElement).closest(
-                                    ".read-more-btn"
-                                  )
-                                ) {
-                                  navigate(
-                                    `/dashboard/bestpractices/${
-                                      practice.id
-                                    }/${slugify(practice.title)}`,
-                                    {
-                                      state: {
-                                        likesCount: practice.likesCount,
-                                        isLiked: practice.isLiked,
-                                      },
-                                    }
-                                  );
-                                }
-                              }}
-                            >
-                              <BestPracticeCard
-                                id={practice?.id}
-                                name={
-                                  `${practice?.profile?.first_name || ""} ${
-                                    practice?.profile?.last_name || ""
-                                  }`.trim() || "CNESS User"
-                                }
-                                username={practice?.user?.username || "user"}
-                                profileImage={
-                                  !practice?.profile?.profile_picture ||
-                                  practice?.profile?.profile_picture ===
-                                    "null" ||
-                                  practice?.profile?.profile_picture ===
-                                    "undefined" ||
-                                  !practice?.profile?.profile_picture.startsWith(
-                                    "http"
-                                  )
-                                    ? "/profile.png"
-                                    : practice?.profile?.profile_picture
-                                }
-                                coverImage={
-                                  !practice?.file ||
-                                  practice?.file === "null" ||
-                                  practice?.file === "undefined" ||
-                                  !practice?.file.startsWith("http")
-                                    ? "https://cdn.cness.io/banner.webp"
-                                    : practice?.file
-                                }
-                                title={
-                                  practice?.title ||
-                                  practice?.profession_data?.title ||
-                                  "Untitled"
-                                }
-                                description={practice?.description || ""}
-                                link={`/dashboard/bestpractices/${
-                                  practice.id
-                                }/${slugify(practice.title)}`}
-                                ifFollowing={practice.is_bp_following}
-                                onToggleFollow={handleToggleFollow}
-                              />
-                            </div>
-                          );
-                        })}
+                        <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 mt-4">
+                          {myInterestBP?.map((practice: any) => {
+                            return (
+                              <div
+                                key={practice?.id}
+                                onClick={(e) => {
+                                  // Only navigate if it's not the Read More button
+                                  if (
+                                    !(e.target as HTMLElement).closest(
+                                      ".read-more-btn"
+                                    )
+                                  ) {
+                                    navigate(
+                                      `/dashboard/bestpractices/${
+                                        practice.id
+                                      }/${slugify(practice.title)}`,
+                                      {
+                                        state: {
+                                          likesCount: practice.likesCount,
+                                          isLiked: practice.isLiked,
+                                        },
+                                      }
+                                    );
+                                  }
+                                }}
+                              >
+                                <BestPracticeCard
+                                  id={practice?.id}
+                                  name={
+                                    `${practice?.profile?.first_name || ""} ${
+                                      practice?.profile?.last_name || ""
+                                    }`.trim() || "CNESS User"
+                                  }
+                                  username={practice?.user?.username || "user"}
+                                  profileImage={
+                                    !practice?.profile?.profile_picture ||
+                                    practice?.profile?.profile_picture ===
+                                      "null" ||
+                                    practice?.profile?.profile_picture ===
+                                      "undefined" ||
+                                    !practice?.profile?.profile_picture.startsWith(
+                                      "http"
+                                    )
+                                      ? "/profile.png"
+                                      : practice?.profile?.profile_picture
+                                  }
+                                  coverImage={
+                                    !practice?.file ||
+                                    practice?.file === "null" ||
+                                    practice?.file === "undefined" ||
+                                    !practice?.file.startsWith("http")
+                                      ? "https://cdn.cness.io/banner.webp"
+                                      : practice?.file
+                                  }
+                                  title={
+                                    practice?.title ||
+                                    practice?.profession_data?.title ||
+                                    "Untitled"
+                                  }
+                                  description={practice?.description || ""}
+                                  link={`/dashboard/bestpractices/${
+                                    practice.id
+                                  }/${slugify(practice.title)}`}
+                                  ifFollowing={practice.is_bp_following}
+                                  onToggleFollow={handleToggleFollow}
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )} */}
 
-                  {myInterestBP?.length > 0 && (
-                    <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
-                      <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
-                        My best practices aligned interest
-                      </h3>
+                    {followBP?.length > 0 && isOwnProfile ? (
+                      <>
+                        <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
+                          <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
+                            Best Practices I am following
+                          </h3>
 
-                      {/* <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3"> */}
-                      <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 mt-4">
-                        {myInterestBP?.map((practice: any) => {
-                          return (
-                            <div
-                              key={practice?.id}
-                              onClick={(e) => {
-                                // Only navigate if it's not the Read More button
-                                if (
-                                  !(e.target as HTMLElement).closest(
-                                    ".read-more-btn"
-                                  )
-                                ) {
-                                  navigate(
-                                    `/dashboard/bestpractices/${
-                                      practice.id
-                                    }/${slugify(practice.title)}`,
-                                    {
-                                      state: {
-                                        likesCount: practice.likesCount,
-                                        isLiked: practice.isLiked,
-                                      },
+                          {/* <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3"> */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 gap-x-4 gap-y-4 pt-6 px-4 pb-6 rounded-lg rounded-tl-none rounded-tr-none">
+                            {followBP?.map((practice: any) => {
+                              return (
+                                <div
+                                  key={practice?.id}
+                                  onClick={(e) => {
+                                    // Only navigate if it's not the Read More button
+                                    if (
+                                      !(e.target as HTMLElement).closest(
+                                        ".read-more-btn"
+                                      )
+                                    ) {
+                                      navigate(
+                                        `/dashboard/bestpractices/${
+                                          practice.id
+                                        }/${slugify(practice.title)}`,
+                                        {
+                                          state: {
+                                            likesCount: practice.likesCount,
+                                            isLiked: practice.isLiked,
+                                          },
+                                        }
+                                      );
                                     }
-                                  );
-                                }
-                              }}
-                            >
-                              <BestPracticeCard
-                                id={practice?.id}
-                                name={
-                                  `${practice?.profile?.first_name || ""} ${
-                                    practice?.profile?.last_name || ""
-                                  }`.trim() || "CNESS User"
-                                }
-                                username={practice?.user?.username || "user"}
-                                profileImage={
-                                  !practice?.profile?.profile_picture ||
-                                  practice?.profile?.profile_picture ===
-                                    "null" ||
-                                  practice?.profile?.profile_picture ===
-                                    "undefined" ||
-                                  !practice?.profile?.profile_picture.startsWith(
-                                    "http"
-                                  )
-                                    ? "/profile.png"
-                                    : practice?.profile?.profile_picture
-                                }
-                                coverImage={
-                                  !practice?.file ||
-                                  practice?.file === "null" ||
-                                  practice?.file === "undefined" ||
-                                  !practice?.file.startsWith("http")
-                                    ? "https://cdn.cness.io/banner.webp"
-                                    : practice?.file
-                                }
-                                title={
-                                  practice?.title ||
-                                  practice?.profession_data?.title ||
-                                  "Untitled"
-                                }
-                                description={practice?.description || ""}
-                                link={`/dashboard/bestpractices/${
-                                  practice.id
-                                }/${slugify(practice.title)}`}
-                                ifFollowing={practice.is_bp_following}
-                                onToggleFollow={handleToggleFollow}
-                              />
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {followBP?.length > 0 && (
-                    <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
-                      <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
-                        Best Practices I am following
-                      </h3>
-
-                      {/* <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3"> */}
-                      <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 mt-4">
-                        {followBP?.map((practice: any) => {
-                          console.log("practice", practice);
-                          return (
-                            <div
-                              key={practice?.id}
-                              onClick={(e) => {
-                                // Only navigate if it's not the Read More button
-                                if (
-                                  !(e.target as HTMLElement).closest(
-                                    ".read-more-btn"
-                                  )
-                                ) {
-                                  navigate(
-                                    `/dashboard/bestpractices/${
-                                      practice.id
-                                    }/${slugify(practice.title)}`,
-                                    {
-                                      state: {
-                                        likesCount: practice.likesCount,
-                                        isLiked: practice.isLiked,
-                                      },
+                                  }}
+                                >
+                                  <BestPracticeCard
+                                    id={practice?.id}
+                                    name={
+                                      `${practice?.profile?.first_name || ""} ${
+                                        practice?.profile?.last_name || ""
+                                      }`.trim() || "CNESS User"
                                     }
-                                  );
-                                }
-                              }}
-                            >
-                              <BestPracticeCard
-                                id={practice?.id}
-                                name={
-                                  `${practice?.profile?.first_name || ""} ${
-                                    practice?.profile?.last_name || ""
-                                  }`.trim() || "CNESS User"
-                                }
-                                username={practice?.user?.username || "user"}
-                                profileImage={
-                                  !practice?.profile?.profile_picture ||
-                                  practice?.profile?.profile_picture ===
-                                    "null" ||
-                                  practice?.profile?.profile_picture ===
-                                    "undefined" ||
-                                  !practice?.profile?.profile_picture.startsWith(
-                                    "http"
-                                  )
-                                    ? "/profile.png"
-                                    : practice?.profile?.profile_picture
-                                }
-                                coverImage={
-                                  !practice?.file ||
-                                  practice?.file === "null" ||
-                                  practice?.file === "undefined" ||
-                                  !practice?.file.startsWith("http")
-                                    ? "https://cdn.cness.io/banner.webp"
-                                    : practice?.file
-                                }
-                                title={
-                                  practice?.title ||
-                                  practice?.profession_data?.title ||
-                                  "Untitled"
-                                }
-                                description={practice?.description || ""}
-                                link={`/dashboard/bestpractices/${
-                                  practice.id
-                                }/${slugify(practice.title)}`}
-                                ifFollowing={practice.is_bp_following}
-                                onToggleFollow={handleToggleFollow}
-                              />
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                                    username={
+                                      practice?.user?.username || "user"
+                                    }
+                                    profileImage={
+                                      !practice?.profile?.profile_picture ||
+                                      practice?.profile?.profile_picture ===
+                                        "null" ||
+                                      practice?.profile?.profile_picture ===
+                                        "undefined" ||
+                                      !practice?.profile?.profile_picture.startsWith(
+                                        "http"
+                                      )
+                                        ? "/profile.png"
+                                        : practice?.profile?.profile_picture
+                                    }
+                                    coverImage={
+                                      !practice?.file ||
+                                      practice?.file === "null" ||
+                                      practice?.file === "undefined" ||
+                                      !practice?.file.startsWith("http")
+                                        ? "https://cdn.cness.io/banner.webp"
+                                        : practice?.file
+                                    }
+                                    title={
+                                      practice?.title ||
+                                      practice?.profession_data?.title ||
+                                      "Untitled"
+                                    }
+                                    description={practice?.description || ""}
+                                    link={`/dashboard/bestpractices/${
+                                      practice.id
+                                    }/${slugify(practice.title)}`}
+                                    ifFollowing={practice.is_bp_following}
+                                    onToggleFollow={handleToggleFollow}
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                </>
               ) : isOwnProfile ? (
                 <div className="flex flex-col items-center justify-center text-center p-8">
                   <img
@@ -1495,13 +1881,69 @@ export default function UserProfileView() {
         inputValue={inputValue}
         setInputValue={setInputValue}
         removeTag={removeTag}
-        handleTagKeyDown={handleTagKeyDown}
+        handleTagKeyDown={handleTagAddKeyDown}
         handleInputChange={handleInputChange}
         handleFileChange={handleFileChange}
         handleRemoveFile={handleRemoveFile}
         handleSubmit={handleSubmit}
         isSubmitting={isSubmitting}
       />
+      <EditBestPracticeModal
+        open={BestPracticeModal === "bestpractices"}
+        onClose={closeModal}
+        currentPractice={currentPractice}
+        setCurrentPractice={setCurrentPractice}
+        profession={profession}
+        interest={interest}
+        tags={tags}
+        editInputValue={editInputValue}
+        setEditInputValue={setEditInputValue}
+        removeTag={removeTag}
+        handleTagKeyDown={(e) => handleTagKeyDown(e, false)}
+        handleFileChange={handleEditFileChange}
+        handleSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+      />
+      <Modal
+        isOpen={deleteConfirmation.isOpen}
+        onClose={() =>
+          setDeleteConfirmation({ isOpen: false, practiceId: null })
+        }
+      >
+        <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
+          <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
+          <p className="mb-6">
+            Are you sure you want to delete this best practice? This action
+            cannot be undone.
+          </p>
+
+          <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4">
+            <Button
+              type="button"
+              onClick={() =>
+                setDeleteConfirmation({ isOpen: false, practiceId: null })
+              }
+              // variant="white-outline"
+              className="rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none relative overflow-hidden cursor-pointer bg-white border border-gray-200 hover:bg-gray-50 focus-visible:ring-gray-300 px-6 py-4 text-[18px] font-[Plus_Jakarta_Sans] font-medium w-full sm:w-auto"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={async () => {
+                if (deleteConfirmation.practiceId) {
+                  await handleDeleteBestPractice(deleteConfirmation.practiceId);
+                  await fetchMineBestPractices(); // Refresh the list
+                  setDeleteConfirmation({ isOpen: false, practiceId: null });
+                }
+              }}
+              className="transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none relative overflow-hidden cursor-pointer flex justify-center items-center gap-[7px] rounded-full bg-[#7077FE] text-white text-[18px] font-[Plus_Jakarta_Sans] font-medium w-full sm:w-auto py-2 px-6 sm:py-3 sm:px-8"
+            >
+              Delete
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

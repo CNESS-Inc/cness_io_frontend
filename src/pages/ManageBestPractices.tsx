@@ -284,40 +284,40 @@ const Managebestpractices = () => {
   };
 
   const handleEditFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  const allowedTypes = ["image/jpeg", "image/png"];
-  const maxSize = 2 * 1024 * 1024; // 2 MB
+    const allowedTypes = ["image/jpeg", "image/png"];
+    const maxSize = 2 * 1024 * 1024; // 2 MB
 
-  // ❌ Invalid file type
-  if (!allowedTypes.includes(file.type)) {
-    showToast({
-      message: "Invalid file type. Please upload JPEG or PNG only.",
-      type: "error",
-      duration: 4000,
+    // ❌ Invalid file type
+    if (!allowedTypes.includes(file.type)) {
+      showToast({
+        message: "Invalid file type. Please upload JPEG or PNG only.",
+        type: "error",
+        duration: 4000,
+      });
+      e.target.value = "";
+      return;
+    }
+
+    // ❌ File too large
+    if (file.size > maxSize) {
+      showToast({
+        message: "File size exceeds 2MB. Please upload a smaller image.",
+        type: "error",
+        duration: 4000,
+      });
+      e.target.value = "";
+      return;
+    }
+
+    // ✅ Valid file
+    setCurrentPractice({
+      ...currentPractice,
+      file,
     });
-    e.target.value = "";
-    return;
-  }
-
-  // ❌ File too large
-  if (file.size > maxSize) {
-    showToast({
-      message: "File size exceeds 2MB. Please upload a smaller image.",
-      type: "error",
-      duration: 4000,
-    });
-    e.target.value = "";
-    return;
-  }
-
-  // ✅ Valid file
-  setCurrentPractice({
-    ...currentPractice,
-    file,
-  });
-};
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -331,7 +331,6 @@ const Managebestpractices = () => {
         formData.append("profession", currentPractice?.profession_data?.id);
         formData.append("title", currentPractice.title);
         formData.append("description", currentPractice.description);
-        formData.append("status", "0"); // Reset status to pending when edited
         formData.append("tags", JSON.stringify(tags));
 
         // Append file if it's a new file (File object), not a string URL
@@ -419,41 +418,41 @@ const Managebestpractices = () => {
   };
 
   // Function to handle file change for create form
-const handleCreateFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+  const handleCreateFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  const allowedTypes = ["image/jpeg", "image/png"];
-  const maxSize = 2 * 1024 * 1024; // 2 MB
+    const allowedTypes = ["image/jpeg", "image/png"];
+    const maxSize = 2 * 1024 * 1024; // 2 MB
 
-  // ❌ Invalid file type
-  if (!allowedTypes.includes(file.type)) {
-    showToast({
-      message: "Invalid file type. Please upload JPEG or PNG only.",
-      type: "error",
-      duration: 4000,
-    });
-    e.target.value = "";
-    return;
-  }
+    // ❌ Invalid file type
+    if (!allowedTypes.includes(file.type)) {
+      showToast({
+        message: "Invalid file type. Please upload JPEG or PNG only.",
+        type: "error",
+        duration: 4000,
+      });
+      e.target.value = "";
+      return;
+    }
 
-  // ❌ File too large
-  if (file.size > maxSize) {
-    showToast({
-      message: "File size exceeds 2MB. Please upload a smaller image.",
-      type: "error",
-      duration: 4000,
-    });
-    e.target.value = "";
-    return;
-  }
+    // ❌ File too large
+    if (file.size > maxSize) {
+      showToast({
+        message: "File size exceeds 2MB. Please upload a smaller image.",
+        type: "error",
+        duration: 4000,
+      });
+      e.target.value = "";
+      return;
+    }
 
-  // ✅ Valid file
-  setNewPractice((prev) => ({
-    ...prev,
-    file,
-  }));
-};
+    // ✅ Valid file
+    setNewPractice((prev) => ({
+      ...prev,
+      file,
+    }));
+  };
 
   const handleRemoveFile = () => {
     setNewPractice((prev) => ({

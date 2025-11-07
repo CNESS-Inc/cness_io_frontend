@@ -20,6 +20,7 @@ export type MyPostProps = {
   onClick?: () => void;
   showOverlay?: boolean;
   collection?: boolean;
+  friend?: boolean;
   onViewPost?: () => void;
   onDeletePost?: () => void;
   onDeleteSavePost?: () => void;
@@ -57,6 +58,7 @@ export default function MyPost({
   onFollowToggle,
   showOverlay,
   collection,
+  friend,
   onViewPost,
   onDeletePost,
   onDeleteSavePost,
@@ -146,24 +148,25 @@ export default function MyPost({
               }}
               className="w-32 py-2 rounded-full bg-[#7077FE] hover:bg-[#4B51D1] text-white font-medium text-sm shadow"
             >
-              <Pen className="w-4 h-4 inline-block mr-1" />
+              {!friend && <Pen className="w-4 h-4 inline-block mr-1" />}
               View Post
             </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                if(collection){
-                  onDeleteSavePost?.()
-                }else{
-                  onDeletePost?.();
-                }
-              }}
-              className="w-32 py-2 rounded-full bg-red-500 text-white font-medium text-sm shadow hover:bg-red-600"
-            >
-              <X className="w-4 h-4 inline-block mr-1" />
-              {collection ? "Unsave" : "Delete"}
-              
-            </button>
+            {!friend && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (collection) {
+                    onDeleteSavePost?.();
+                  } else {
+                    onDeletePost?.();
+                  }
+                }}
+                className="w-32 py-2 rounded-full bg-red-500 text-white font-medium text-sm shadow hover:bg-red-600"
+              >
+                <X className="w-4 h-4 inline-block mr-1" />
+                {collection ? "Unsave" : "Delete"}
+              </button>
+            )}
           </div>
         )}
       </div>

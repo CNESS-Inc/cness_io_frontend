@@ -138,14 +138,6 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       rating: 4.8,
       logo: "https://static.codia.ai/image/2025-10-24/yZMZNXqr5b.png"
     },
-    {
-      id: 5,
-      image: "https://static.codia.ai/image/2025-10-24/JTVKiSmYDa.png",
-      name: "Red Tape",
-      description: "Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.",
-      rating: 4.8,
-      logo: "https://static.codia.ai/image/2025-10-24/yZMZNXqr5b.png"
-    },
 
   ]
 
@@ -412,8 +404,8 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       sm:grid-cols-2
       md:grid-cols-3
       lg:grid-cols-4
-      xl:grid-cols-5
-      2xl:grid-cols-5
+      xl:grid-cols-4
+      2xl:grid-cols-4
       gap-5
       sm:gap-6
       md:gap-8
