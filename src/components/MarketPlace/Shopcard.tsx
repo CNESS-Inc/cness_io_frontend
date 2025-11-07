@@ -23,13 +23,25 @@ const ShopCard: React.FC<ShopCardProps> = ({
   return (
     <div
       onClick={() => navigate(`/dashboard/shop-detail/${id}`, { state: { id, image, name, description, rating, logo } })}
-      className="w-full flex flex-col items-center cursor-pointer hover:shadow-lg transition-shadow duration-300"
+      className="         
+  sm:max-w-[320px]
+  md:max-w-[350px]
+  flex flex-col items-center cursor-pointer hover:shadow-lg transition-shadow duration-300"
     >
-      <img
+     <img
         src={image}
         alt={name}
-        className="w-full h-[120px] object-cover"
+        className="
+          w-full
+          h-[100px]          // Very small screens (default)
+          sm:h-[80px] w-[80px]        // Small screens
+          md:h-[120px] w-[80px]       // Medium screens/tablets
+          lg:h-[160px] w-[80px]      // Larger screens
+          object-cover
+          rounded-t-[10px]
+        "
       />
+
 
       <div className="bg-white shadow-[0px_4px_14px_rgba(0,0,0,0.1)] rounded-b-[10px] p-[12px_14px] flex flex-col gap-4 w-full">
         <div className="flex flex-col gap-2">

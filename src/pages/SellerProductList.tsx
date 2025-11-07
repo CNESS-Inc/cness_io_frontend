@@ -152,12 +152,24 @@ const SellerProductList: React.FC = () => {
         </div>
 
         {/* Add Product Button */}
-        <button 
-        onClick={()=>setIsOpen(true)}
-        className="flex items-center justify-center gap-2 bg-[#7077FE] hover:bg-[#665EE0] text-white text-sm font-semibold rounded-lg px-5 py-2.5 shadow-sm transition-all">
+        <button
+          onClick={() => setIsOpen(true)}
+          className="
+            w-[90vw]        // Button will stretch to 90% viewport width on mobile, always fits
+            max-w-[320px]   // Never wider than 320px anywhere (desktop/tablet max)
+            sm:w-auto       // On small screens and up, auto width (just enough for its content)
+            flex items-center justify-center gap-2
+            bg-[#7077FE] hover:bg-[#665EE0]
+            text-white font-semibold rounded-lg shadow-sm transition-all
+            text-xs         // Small font on tiny screens
+            px-4 py-2       // Compact padding on mobile
+            sm:text-sm sm:px-5 sm:py-2.5
+          "
+        >
           <Plus className="w-4 h-4" />
           Add Product
         </button>
+
       
       </div>
         
