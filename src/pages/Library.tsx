@@ -4,6 +4,7 @@ import FilterSidebar from "../components/MarketPlace/Filter";
 import { Star, Play, Search, Clock, ChevronDown } from "lucide-react";
 import filter from "../assets/filter.svg";
 import { BsCameraVideo } from "react-icons/bs";
+import MarketHeader from "../components/MarketPlace/Buyerheader";
 
 type Product = {
   id: number;
@@ -112,6 +113,7 @@ const Thumb: React.FC<{ src: string; label?: string }> = ({ src, label }) => (
 );
 
 const ProductCard: React.FC<{ p: Product }> = ({ p }) => (
+  
   <div className="bg-white rounded-[14px] border-[0.5px] border-[#CBD5E1] box-border shadow-sm overflow-hidden">
     <div className="relative">
       <img src={p.image} alt={p.title} className="w-full h-[180px] object-cover rounded-xl
@@ -182,7 +184,10 @@ const Library: React.FC = () => {
   }, [query]);
 
   return (
+    
     <div className="min-h-screen bg-[#FFFFFF]">
+          <MarketHeader />
+
   <div className="mx-auto px-4 sm:px-6 md:px-0 py-2 grid grid-cols-1 md:grid-cols-[1fr_267px] gap-6">
         {/* Main content (left) */}
         <main className="space-y-6">
@@ -315,7 +320,7 @@ const Library: React.FC = () => {
         </main>
 
         {/* Sidebar (right) */}
-  <FilterSidebar mobileTopOffset={143} />
+  <FilterSidebar />
       </div>
     </div>
   );
