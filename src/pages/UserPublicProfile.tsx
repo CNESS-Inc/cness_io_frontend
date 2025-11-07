@@ -356,7 +356,13 @@ export default function UserProfileView() {
       const formattedData = {
         friend_id: userId,
       };
-      await SendConnectionRequest(formattedData);
+      const res = await SendConnectionRequest(formattedData);
+      console.log("🚀 ~ handleFriend ~ res:", res)
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 2000,
+      });
       setUserDetails({
         ...userDetails,
         if_friend: false,
@@ -368,7 +374,12 @@ export default function UserProfileView() {
       const formattedData = {
         friend_id: userId,
       };
-      await UnFriend(formattedData); // Or use a specific cancel request API if available
+      const res = await UnFriend(formattedData); // Or use a specific cancel request API if available
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 2000,
+      });
       setUserDetails({
         ...userDetails,
         if_friend: false,
@@ -383,7 +394,12 @@ export default function UserProfileView() {
       const formattedData = {
         friend_id: userId,
       };
-      await UnFriend(formattedData);
+      const res = await UnFriend(formattedData);
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 2000,
+      });
       setUserDetails({
         ...userDetails,
         if_friend: false,
