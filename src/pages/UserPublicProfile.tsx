@@ -33,6 +33,7 @@ import {
   GetBestPracticesById,
   UpdateBestPractice,
   GetBestpracticesByUserProfile,
+  DeleteBestPractices,
   //UnFriend,
 } from "../Common/ServerAPI";
 import { useNavigate, useParams } from "react-router-dom";
@@ -56,6 +57,7 @@ import {
   CardTitle,
 } from "../components/ui/DashboardCard";
 import EditBestPracticeModal from "../components/sections/bestPractiseHub/EditBestPracticesModel";
+import Modal from "../components/ui/Modal";
 
 const levels = [
   {
@@ -121,9 +123,11 @@ export default function UserProfileView() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mineBestPractices, setmineBestPractices] = useState<any[]>([]);
-  const [expandedDescriptions] = useState<
-    Record<string, boolean>
-  >({});
+  const [expandedDescriptions] = useState<Record<string, boolean>>({});
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    practiceId: string | null;
+  }>({ isOpen: false, practiceId: null });
   const truncateText = (text: string, maxLength: number): string => {
     if (!text) return "";
     return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
@@ -136,6 +140,7 @@ export default function UserProfileView() {
     (id && String(id) === String(loggedInUserID)) ||
     (userDetails?.user_id &&
       String(userDetails.user_id) === String(loggedInUserID));
+  console.log("🚀 ~ UserProfileView ~ isOwnProfile:", isOwnProfile);
   const userLevel = userDetails?.level?.level;
 
   let displayLevels: typeof levels = [];
@@ -190,6 +195,19 @@ export default function UserProfileView() {
       });
     }
   };
+
+  const handleDeleteBestPractice = async (id: any) => {
+      try {
+        await DeleteBestPractices(id);
+      } catch (error: any) {
+        console.error("Error fetching inspiring companies:", error);
+        showToast({
+          message: error?.response?.data?.error?.message,
+          type: "error",
+          duration: 5000,
+        });
+      } 
+    };
   const fetchFollowBestPractices = async () => {
     try {
       const res = await GetFollowBestpractices();
@@ -218,7 +236,6 @@ export default function UserProfileView() {
     fetchProfession();
     fetchIntrusts();
   }, []);
-
 
   const fetchProfession = async () => {
     try {
@@ -1409,7 +1426,7 @@ export default function UserProfileView() {
                                 className="relative bg-white cursor-pointer rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
                               >
                                 {/* Edit and Delete buttons (absolute positioned in top-right) */}
-                                {company.status !== 2 && (
+                                {isOwnProfile && (
                                   <div className="absolute top-2 right-2 z-10 flex gap-2">
                                     <button
                                       onClick={(e) => {
@@ -1437,10 +1454,10 @@ export default function UserProfileView() {
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        // setDeleteConfirmation({
-                                        //   isOpen: true,
-                                        //   practiceId: company.id,
-                                        // });
+                                        setDeleteConfirmation({
+                                          isOpen: true,
+                                          practiceId: company.id,
+                                        });
                                       }}
                                       className="p-1 bg-white rounded-full shadow-md hover:bg-gray-100"
                                       title="Delete"
@@ -1853,6 +1870,46 @@ export default function UserProfileView() {
         handleSubmit={handleSubmit}
         isSubmitting={isSubmitting}
       />
+      <Modal
+        isOpen={deleteConfirmation.isOpen}
+        onClose={() =>
+          setDeleteConfirmation({ isOpen: false, practiceId: null })
+        }
+      >
+        <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
+          <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
+          <p className="mb-6">
+            Are you sure you want to delete this best practice? This action
+            cannot be undone.
+          </p>
+
+          <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4">
+            <Button
+              type="button"
+              onClick={() =>
+                setDeleteConfirmation({ isOpen: false, practiceId: null })
+              }
+              // variant="white-outline"
+              className="rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none relative overflow-hidden cursor-pointer bg-white border border-gray-200 hover:bg-gray-50 focus-visible:ring-gray-300 px-6 py-4 text-[18px] font-[Plus_Jakarta_Sans] font-medium w-full sm:w-auto"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={async () => {
+                if (deleteConfirmation.practiceId) {
+                  await handleDeleteBestPractice(deleteConfirmation.practiceId);
+                  await fetchMineBestPractices(); // Refresh the list
+                  setDeleteConfirmation({ isOpen: false, practiceId: null });
+                }
+              }}
+              className="transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none relative overflow-hidden cursor-pointer flex justify-center items-center gap-[7px] rounded-full bg-[#7077FE] text-white text-[18px] font-[Plus_Jakarta_Sans] font-medium w-full sm:w-auto py-2 px-6 sm:py-3 sm:px-8"
+            >
+              Delete
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
