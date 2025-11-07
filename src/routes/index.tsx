@@ -105,6 +105,7 @@ import SellerOrderDetail from "../pages/SellerOrderDetail";
 import SellerSales from "../pages/SellerSales";
 import SellerHelp from "../pages/SellerHelp";
 import SellerWithdrawal from "../pages/SellerWithdrawal";
+import Wallet from "../pages/Wallet";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -253,6 +254,11 @@ export const router = createBrowserRouter([
             //   <ComingSoon />
             // ),
           },
+
+          {
+              path:"wallet",
+              element:<Wallet />,
+            },
           {
             path: "upload-proof",
             element: <UploadProof />,
