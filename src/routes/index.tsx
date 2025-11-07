@@ -68,6 +68,7 @@ import Premium from "../pages/Premium";
 import WhyCness from "../pages/WhyCness";
 import MyCollections from "../pages/MyCollections";
 import Library from "../pages/Library";
+import EmptyPageLibrary from "../pages/EmptyPageLibrary";
 import ContinueWatching from "../pages/ContinueWatching";
 //import SellerDashboard from "../pages/SellerDashboard";
 import UserPublicProfile from "../pages/UserPublicProfile";
@@ -293,6 +294,10 @@ export const router = createBrowserRouter([
           },
           {
             path: "library",
+            element: <EmptyPageLibrary />,
+          },
+          {
+            path: "my-library",
             element: <Library />,
           },
           {

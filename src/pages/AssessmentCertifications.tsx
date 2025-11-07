@@ -526,7 +526,7 @@ const AssessmentCertification = () => {
             </div>
 
             {/* Nomination Process */}
-            <div className="w-full max-w-[639px] rounded-[30px] border border-gray-200 bg-[#FAFAFA] flex flex-col gap-[14px] p-6 md:p-[30px] px-[40px] mt-10">
+            <div className="w-full max-w-[639px] rounded-[30px] border border-gray-200 bg-[#FAFAFA] flex flex-col gap-3.5 p-6 md:p-[30px] px-10 mt-10">
               <h4 className="font-[poppins] font-semibold text-[18px] leading-[120%] text[#000000] mb-3">
                 Nomination Process
               </h4>
@@ -545,7 +545,7 @@ const AssessmentCertification = () => {
                     <img
                       src={list1}
                       alt="bullet"
-                      className="w-7 h-7 mt-1 flex-shrink-0"
+                      className="w-7 h-7 mt-1 shrink-0"
                     />
                     <span className="font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-[#1E1E1E]">
                       Inspired users can apply for Leader Certification
@@ -577,7 +577,7 @@ const AssessmentCertification = () => {
                     <img
                       src={list3}
                       alt="bullet"
-                      className="w-7 h-7 mt-[2px] flex-shrink-0"
+                      className="w-7 h-7 mt-0.5 shrink-0"
                     />
                     <span className="font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-[#1E1E1E]">
                       Any certified (Aspiring/Inspired) user can nominate a
@@ -588,7 +588,7 @@ const AssessmentCertification = () => {
                     <img
                       src={list4}
                       alt="bullet"
-                      className="w-7 h-7 mt-[2px] flex-shrink-0"
+                      className="w-7 h-7 mt-0.5 shrink-0"
                     />
                     <span className="font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-[#1E1E1E]">
                       The form captures the nominee's profile, reason for

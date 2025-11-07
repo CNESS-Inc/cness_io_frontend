@@ -112,9 +112,13 @@ const Thumb: React.FC<{ src: string; label?: string }> = ({ src, label }) => (
 );
 
 const ProductCard: React.FC<{ p: Product }> = ({ p }) => (
-  <div className="bg-white h-[380px] rounded-[14px] border-[0.5px] border-[#CBD5E1] box-border shadow-sm overflow-hidden">
+  <div className="bg-white rounded-[14px] border-[0.5px] border-[#CBD5E1] box-border shadow-sm overflow-hidden">
     <div className="relative">
-      <img src={p.image} alt={p.title} className="w-full h-[180px] object-cover" />
+      <img src={p.image} alt={p.title} className="w-full h-[180px] object-cover rounded-xl
+    sm:h-[150px]
+    md:h-[180px]
+    lg:h-[200px]
+  " />
     </div>
     <div className="p-2">
       {/* Top meta: mood pill + rating */}
@@ -224,7 +228,7 @@ const Library: React.FC = () => {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search"
-                className="w-[450px] h-9 rounded-[20px] border border-gray-200 bg-white pl-4 pr-10 text-[16px] leading-[150%] tracking-[-0.019em] placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-gray-200"
+                className="w-[90vw] max-w-[450px] md:w-[200px] h-9 rounded-[20px] border border-gray-200 bg-white pl-4 pr-10 text-[16px] leading-[150%] tracking-[-0.019em] placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-gray-200"
                 
               />
               <button

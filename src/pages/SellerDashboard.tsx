@@ -131,7 +131,6 @@ const carted = [
 
 export default function SellerDashboard() {
   const [user, setUser] = useState<UserData | null>(null);
-  console.log("user", user);
   const [resonating, setReasonating] = useState<UserData | null>(null);
   const [reasonators, setReasonators] = useState<UserData | null>(null);
   const [bestPractices, setBestPractices] = useState<BestPracticeItem[]>([]);

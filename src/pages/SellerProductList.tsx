@@ -78,6 +78,7 @@ const ProductRow: React.FC<ProductRowProps & { onEdit: (id: string, slug: string
   onEdit,
   index,
 }) => {
+
   const getStatusStyle = (status: string) => {
     switch (status.toLowerCase()) {
       case "draft":
