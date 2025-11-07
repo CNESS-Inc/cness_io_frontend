@@ -391,9 +391,10 @@ export const router = createBrowserRouter([
             element: <AddArtsForm />
           },
           {
-            path: "products/edit/:productNo",
-            element: <EditProductPage />
-          },
+  path: "products/:category/edit/:productNo",
+  element: <EditProductPage />
+},
+
           {
             path: "products/preview/:productNo",
             element: <Preview />

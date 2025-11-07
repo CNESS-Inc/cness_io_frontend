@@ -15,9 +15,17 @@ interface ProductRowProps {
   status: "pending" | "approved" | "rejected";
 }
 
-const ProductRow: React.FC<ProductRowProps & { onEdit: (id: string) => void }> = ({
-  productNo, thumbnail, courseName, price, category, uploadDate, status, onEdit
+const ProductRow: React.FC<ProductRowProps> = ({
+  productNo,
+  thumbnail,
+  courseName,
+  price,
+  category,
+  uploadDate,
+  status,
 }) => {
+  const navigate = useNavigate();
+
   const getStatusStyle = (status: string) => {
     switch (status) {
       case "pending":
@@ -31,7 +39,17 @@ const ProductRow: React.FC<ProductRowProps & { onEdit: (id: string) => void }> =
     }
   };
 
-  
+  const productData = {
+    productNo,
+    thumbnail,
+    courseName,
+    price,
+    category,
+    uploadDate,
+    status,
+  };
+
+
   return (
     <tr className="border-b border-gray-100">
       <td className="py-6 px-6 text-[#1A1A1A] text-base">{productNo}</td>
@@ -64,9 +82,14 @@ const ProductRow: React.FC<ProductRowProps & { onEdit: (id: string) => void }> =
       </td>
       <td className="py-6 px-6">
         <div className="flex items-center gap-2">
-          <button 
-          className="text-gray-600 hover:text-gray-800"
-          onClick={() => onEdit(productNo)}>
+           <button
+            className="text-gray-600 hover:text-gray-800"
+            onClick={() =>
+              navigate(`/dashboard/products/${category.toLowerCase()}/edit/${productNo}`, {
+                state: { product: productData }, // Pass the current product details
+              })
+            }
+          >
             <Pencil className="w-5 h-5" />
           </button>
           <button className="text-gray-600 hover:text-gray-800">
@@ -79,6 +102,15 @@ const ProductRow: React.FC<ProductRowProps & { onEdit: (id: string) => void }> =
 };
 
 const queue = [
+   {
+    productNo: "P0011",
+    thumbnail: "https://static.codia.ai/image/2025-10-29/MqPwkBCmiC.png",
+    courseName: "Soft guitar moods that heals your inner pain",
+    price: "$1259",
+    category: "Course",
+    uploadDate: "12 Oct, 2025",
+    status: "pending" as const,
+  },
   {
     productNo: "P0012",
     thumbnail: "https://static.codia.ai/image/2025-10-29/MqPwkBCmiC.png",
@@ -106,15 +138,32 @@ const queue = [
     uploadDate: "12 Oct, 2025",
     status: "rejected" as const,
   },
+
+   {
+    productNo: "P0015",
+    thumbnail: "https://static.codia.ai/image/2025-10-29/MqPwkBCmiC.png",
+    courseName: "Soft guitar moods that heals your inner pain",
+    price: "$1259",
+    category: "video",
+    uploadDate: "12 Oct, 2025",
+    status: "approved" as const,
+  },
+
+   {
+    productNo: "P0016",
+    thumbnail: "https://static.codia.ai/image/2025-10-29/MqPwkBCmiC.png",
+    courseName: "Soft guitar moods that heals your inner pain",
+    price: "$1259",
+    category: "Audio",
+    uploadDate: "12 Oct, 2025",
+    status: "rejected" as const,
+  },
 ];
 
 const SellerProductList: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const handleEditProduct = (productNo: string) => {
-  const num = productNo.replace("#", "");
-  navigate(`/dashboard/products/edit/${num}`);
-};
+
   const handleSelectCategory = (category: string) => {
   console.log("Selected category:", category); // 👈 add this
   setIsOpen(false);
@@ -194,8 +243,8 @@ const SellerProductList: React.FC = () => {
             </thead>
             <tbody>
             {queue.map((product, idx) => (
-              <ProductRow key={idx} {...product} onEdit={handleEditProduct} />
-            ))}
+  <ProductRow key={idx} {...product} />
+))}
           </tbody>
           </table>
         </div>
