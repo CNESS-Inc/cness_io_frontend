@@ -91,7 +91,6 @@ import ShopsList from "../pages/Shops";
 import VendorDashboard from "../pages/VendorDashboard";
 import CreateShopForm from "../pages/CreateShopForm";
 import SellerProductList from "../pages/SellerProductList";
-import EditProductPage from "../pages/EditProductPage";
 import Preview from "../pages/Preview";
 import AddVideoForm from "../pages/AddVideo";
 import AddPodcastsForm from "../pages/AddPodcasts";
@@ -104,6 +103,13 @@ import SellerOrderDetail from "../pages/SellerOrderDetail";
 import SellerSales from "../pages/SellerSales";
 import SellerHelp from "../pages/SellerHelp";
 import SellerWithdrawal from "../pages/SellerWithdrawal";
+import EditVideoProductPage from "../pages/EditVideoProductPage";
+import EditMusicForm from "../pages/EditAudioProductPage";
+import AudioPreview from "../pages/MusicPreview";
+import EditPodcastForm from "../pages/EditPodcastProductPage";
+import PodcastPreview from "../pages/PodcastPreview";
+import EditEbookForm from "../pages/EditEbookProductPage";
+import EbookPreview from "../pages/EbookPreview";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -391,12 +397,36 @@ export const router = createBrowserRouter([
             element: <AddArtsForm />
           },
           {
-            path: "products/edit/:productNo",
-            element: <EditProductPage />
+            path: "products/edit-video/:productNo",
+            element: <EditVideoProductPage />
+          },
+          {
+            path: "products/edit-music/:productNo",
+            element: <EditMusicForm />
+          },
+          {
+            path: "products/edit-podcast/:productNo",
+            element: <EditPodcastForm />
+          },
+          {
+            path: "products/edit-ebook/:productNo",
+            element: <EditEbookForm />
           },
           {
             path: "products/preview/:productNo",
             element: <Preview />
+          },
+          {
+            path: "products/music-preview/:productNo",
+            element: <AudioPreview />
+          },
+          {
+            path: "products/podcast-preview/:productNo",
+            element: <PodcastPreview />
+          },
+          {
+            path: "products/ebook-preview/:productNo",
+            element: <EbookPreview />
           },
 
           {

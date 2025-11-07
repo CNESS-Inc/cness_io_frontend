@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import uploadimg from "../assets/upload1.svg";
 import Breadcrumb from "../components/MarketPlace/Breadcrumb";
 import CategoryModel from "../components/MarketPlace/CategoryModel";
-import { useNavigate } from "react-router-dom";
-import { Image, SquarePen, Trash2, Plus, X, FileText } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Book, Plus, SquarePen, Trash2, X } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { CreateArtProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument } from "../Common/ServerAPI";
+import { UpdateEbookProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, GetPreviewProduct, UpdateProductStatus } from "../Common/ServerAPI";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 interface FormSectionProps {
   title: string;
@@ -79,6 +80,7 @@ interface ChapterFile {
 
 interface Chapter {
   id: number;
+  chapter_id?: string;
   title: string;
   chapter_files: ChapterFile[];
   description: string;
@@ -86,40 +88,89 @@ interface Chapter {
   is_free: boolean;
 }
 
-const AddArtsForm: React.FC = () => {
+const EditEbookForm: React.FC = () => {
+  const navigate = useNavigate();
+  const params = useParams();
+  const productId = params?.productNo;
+  const { showToast } = useToast();
   const [showModal, setShowModal] = useState(false);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
-  const navigate = useNavigate();
-  const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetchingData, setIsFetchingData] = useState(true);
   const [moods, setMoods] = useState<string[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [newHighlight, setNewHighlight] = useState("");
-
-  const [chapters, setChapters] = useState<Chapter[]>([
-    {
-      id: 1,
-      title: "Collection 1",
-      chapter_files: [],
-      description: "",
-      order_number: 1,
-      is_free: false
-    },
-  ]);
+  const [chapters, setChapters] = useState<Chapter[]>([]);
 
   const [formData, setFormData] = useState({
     product_title: "",
     price: 0,
     discount_percentage: 0,
     mood_id: "",
+    author: "",
     overview: "",
     highlights: [] as string[],
+    pages: 0,
     language: "",
     theme: "",
-    mediums: "",
-    modern_trends: "",
+    format: "",
   });
+
+  useEffect(() => {
+    const fetchProductData = async () => {
+      if (!productId) return;
+
+      setIsFetchingData(true);
+      try {
+        const response = await GetPreviewProduct('ebook', productId);
+        const productData = response?.data?.data;
+
+        if (productData) {
+          setFormData({
+            product_title: productData.product_title || "",
+            price: parseFloat(productData.price || "0"),
+            discount_percentage: parseFloat(productData.discount_percentage || "0"),
+            mood_id: productData.mood_id || "",
+            author: productData.author || "",
+            overview: productData.overview || "",
+            highlights: productData.highlights || [],
+            pages: productData.ebook_details?.pages || 0,
+            language: productData.language || "",
+            theme: productData.ebook_details?.theme || "",
+            format: productData.ebook_details?.format || "",
+          });
+
+          if (productData.content_items && productData.content_items.length > 0) {
+            setChapters(productData.content_items.map((item: any, index: number) => ({
+              id: item.id || index + 1,
+              chapter_id: item.id,
+              title: item.title || `Chapter ${index + 1}`,
+              chapter_files: item.file_urls?.map((file: any) => ({
+                url: file.url,
+                title: file.title,
+                order_number: file.order_number,
+              })) || [],
+              description: item.description || "",
+              order_number: item.order_number || index + 1,
+              is_free: item.is_free || false,
+            })));
+          }
+        }
+      } catch (error: any) {
+        showToast({
+          message: error?.response?.data?.error?.message || "Failed to load product data.",
+          type: "error",
+          duration: 3000,
+        });
+        navigate('/dashboard/products');
+      } finally {
+        setIsFetchingData(false);
+      }
+    };
+
+    fetchProductData();
+  }, [productId]);
 
   useEffect(() => {
     const fetchMoods = async () => {
@@ -158,8 +209,6 @@ const AddArtsForm: React.FC = () => {
   }, []);
 
   const handleSelectCategory = (category: string) => {
-    setShowModal(false); // Close modal first
-    
     const routes: Record<string, string> = {
       Video: "/dashboard/products/add-video",
       Music: "/dashboard/products/add-music",
@@ -168,11 +217,8 @@ const AddArtsForm: React.FC = () => {
       Ebook: "/dashboard/products/add-ebook",
       Arts: "/dashboard/products/add-arts",
     };
-    
     const path = routes[category];
-    if (path) {
-      navigate(path);
-    }
+    if (path) navigate(path);
   };
 
   const handleAddFile = (
@@ -205,8 +251,8 @@ const AddArtsForm: React.FC = () => {
     setChapters((prev) => [
       ...prev,
       {
-        id: prev.length + 1,
-        title: `Collection ${prev.length + 1}`,
+        id: Date.now(),
+        title: `Chapter ${prev.length + 1}`,
         chapter_files: [],
         description: "",
         order_number: prev.length + 1,
@@ -309,13 +355,18 @@ const AddArtsForm: React.FC = () => {
       newErrors.highlights = "At least one highlight is required.";
     }
 
+    const validFormats = ["PDF", "EPUB", "MOBI", "AZW3", "TXT"];
+    if (!formData.format || !validFormats.includes(formData.format.toUpperCase())) {
+      newErrors.format = "Format must be one of the following: PDF, EPUB, MOBI, AZW3, TXT.";
+    }
+
     if (chapters.length === 0) {
-      newErrors.chapters = "At least one collection is required.";
+      newErrors.chapters = "At least one chapter is required.";
     }
 
     chapters.forEach((chapter, index) => {
       if (chapter.chapter_files.length === 0) {
-        newErrors[`chapter_${chapter.id}`] = `Collection ${index + 1} must have at least one file.`;
+        newErrors[`chapter_${chapter.id}`] = `Chapter ${index + 1} must have at least one file.`;
       }
     });
 
@@ -363,15 +414,15 @@ const AddArtsForm: React.FC = () => {
           const uploadedFiles = await Promise.all(
             chapter.chapter_files.map(async (chapterFile) => {
               if (chapterFile.file) {
-                const formDataUpload = new FormData();
-                formDataUpload.append('chapter_file', chapterFile.file);
+                const formData = new FormData();
+                formData.append('chapter_pdf', chapterFile.file);
 
                 try {
-                  const response = await UploadProductDocument('art-chapter', formDataUpload);
+                  const response = await UploadProductDocument('ebook-chapter', formData);
                   const uploadData = response?.data?.data?.data;
 
                   return {
-                    url: uploadData?.image_url || uploadData?.document_url || "",
+                    url: uploadData?.document_url || "",
                     title: chapterFile.title,
                     order_number: chapterFile.order_number,
                   };
@@ -379,11 +430,16 @@ const AddArtsForm: React.FC = () => {
                   throw new Error(`Failed to upload ${chapterFile.title}`);
                 }
               }
-              return chapterFile;
+              return {
+                url: chapterFile.url,
+                title: chapterFile.title,
+                order_number: chapterFile.order_number,
+              };
             })
           );
 
           return {
+            ...(chapter.chapter_id && { chapter_id: chapter.chapter_id }),
             title: chapter.title,
             chapter_files: uploadedFiles,
             description: chapter.description || "",
@@ -398,32 +454,32 @@ const AddArtsForm: React.FC = () => {
         price: formData.price,
         discount_percentage: formData.discount_percentage,
         mood_id: formData.mood_id,
+        author: formData.author,
         overview: formData.overview,
-        highlights: formData.highlights.join(', '),
+        highlights: formData.highlights,
+        pages: formData.pages || 0,
         language: formData.language,
         theme: formData.theme,
-        mediums: formData.mediums,
-        modern_trends: formData.modern_trends,
-        status: isDraft ? 'draft' : 'published',
+        format: formData.format,
         chapters: uploadedChapters,
       };
 
-      const response = await CreateArtProduct(payload);
-      const productId = response?.data?.data?.product_id;
+      await UpdateEbookProduct(payload, productId);
+
+      const status = isDraft ? 'draft' : 'published';
+      await UpdateProductStatus({ status }, productId);
 
       showToast({
-        message: isDraft 
-          ? "Art product saved as draft successfully" 
-          : "Art product created successfully",
+        message: isDraft ? "Ebook product saved as draft successfully" : "Ebook product updated successfully",
         type: "success",
         duration: 3000,
       });
 
       setErrors({});
 
-      if (isDraft && productId) {
+      if (isDraft) {
         setTimeout(() => {
-          navigate(`/dashboard/products/art-preview/${productId}?category=art`);
+          navigate(`/dashboard/products/ebook-preview/${productId}?category=ebook`);
         }, 1500);
       } else {
         setTimeout(() => {
@@ -432,7 +488,7 @@ const AddArtsForm: React.FC = () => {
       }
     } catch (error: any) {
       showToast({
-        message: error?.message || error?.response?.data?.error?.message || 'Failed to create art product',
+        message: error?.message || error?.response?.data?.error?.message || 'Failed to update ebook product',
         type: "error",
         duration: 3000,
       });
@@ -443,9 +499,9 @@ const AddArtsForm: React.FC = () => {
 
   const handleAddHighlight = () => {
     if (newHighlight.trim()) {
-      if (formData.highlights.length >= 5) {
+      if (formData.highlights.length >= 3) {
         showToast({
-          message: "Maximum 5 highlights allowed",
+          message: "Maximum 3 highlights allowed",
           type: "error",
           duration: 3000,
         });
@@ -487,6 +543,14 @@ const AddArtsForm: React.FC = () => {
     navigate('/dashboard/products');
   };
 
+  if (isFetchingData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
   return (
     <>
       <Breadcrumb
@@ -496,8 +560,8 @@ const AddArtsForm: React.FC = () => {
 
       <div className="max-w-9xl mx-auto px-2 py-1 space-y-10">
         <FormSection
-          title="Add Arts"
-          description="Upload your digital art collections, set pricing, and make them available for buyers on the marketplace."
+          title="Edit Ebook"
+          description="Update your ebook chapters, pricing, and publish them to the marketplace."
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <InputField
@@ -544,6 +608,14 @@ const AddArtsForm: React.FC = () => {
               </select>
               {errors.mood_id && <span className="text-red-500 text-sm mt-1">{errors.mood_id}</span>}
             </div>
+            <InputField
+              label="Author"
+              placeholder="Enter author name"
+              name="author"
+              value={formData.author}
+              onChange={handleChange}
+              error={errors.author}
+            />
           </div>
         </FormSection>
 
@@ -557,7 +629,7 @@ const AddArtsForm: React.FC = () => {
                 name="overview"
                 value={formData.overview}
                 onChange={handleChange}
-                placeholder="Describe your artwork"
+                placeholder="Describe your ebook"
                 className="w-full h-32 px-3 py-2 border border-gray-200 rounded-md resize-none focus:ring-2 focus:ring-[#7077FE]"
                 required
               />
@@ -565,7 +637,7 @@ const AddArtsForm: React.FC = () => {
             </div>
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Highlights * (Max 5)
+                Highlights * (Max 3)
               </label>
               <div className="space-y-3">
                 {formData?.highlights?.map((highlight: any, index: number) => (
@@ -587,7 +659,7 @@ const AddArtsForm: React.FC = () => {
                   </div>
                 ))}
 
-                {formData.highlights.length < 5 && (
+                {formData.highlights.length < 3 && (
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -613,36 +685,49 @@ const AddArtsForm: React.FC = () => {
                 )}
 
                 <p className="text-sm text-gray-500">
-                  Add up to 5 key highlights about your artwork
+                  Add up to 3 key highlights about your ebook
                 </p>
               </div>
               {errors.highlights && <span className="text-red-500 text-sm mt-1">{errors.highlights}</span>}
             </div>
 
             <InputField
+              label="Total Pages"
+              placeholder="Enter total pages"
+              name="pages"
+              type="number"
+              value={formData.pages === 0 ? "" : formData.pages.toString()}
+              onChange={handleChange}
+              error={errors.pages}
+            />
+            <InputField
               label="Theme"
-              placeholder="Describe the art theme"
+              placeholder="Describe the ebook theme"
               name="theme"
               value={formData.theme}
               onChange={handleChange}
               error={errors.theme}
             />
-            <InputField
-              label="Medium"
-              placeholder="Describe the art creation mediums like oils, digital tools"
-              name="mediums"
-              value={formData.mediums}
-              onChange={handleChange}
-              error={errors.mediums}
-            />
-            <InputField
-              label="Modern Trends"
-              placeholder="Enter your art trends"
-              name="modern_trends"
-              value={formData.modern_trends}
-              onChange={handleChange}
-              error={errors.modern_trends}
-            />
+
+            <div>
+              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+                Format *
+              </label>
+              <select
+                name="format"
+                value={formData.format}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE]">
+                <option value="">Select Format</option>
+                <option value="PDF">PDF</option>
+                <option value="EPUB">EPUB</option>
+                <option value="MOBI">MOBI</option>
+                <option value="AZW3">AZW3</option>
+                <option value="TXT">TXT</option>
+              </select>
+              {errors.format && <span className="text-red-500 text-sm mt-1">{errors.format}</span>}
+            </div>
+
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
                 Language
@@ -658,11 +743,12 @@ const AddArtsForm: React.FC = () => {
                 <option value="French">French</option>
                 <option value="German">German</option>
               </select>
+              {errors.language && <span className="text-red-500 text-sm mt-1">{errors.language}</span>}
             </div>
           </div>
         </FormSection>
 
-        <FormSection title="Collections" description="">
+        <FormSection title="Chapters" description="">
           <div className="space-y-6">
             {chapters.map((chapter) => (
               <div
@@ -673,7 +759,7 @@ const AddArtsForm: React.FC = () => {
                   {chapter.title}
                 </h3>
                 <p className="text-sm text-[#665B5B] mb-4">
-                  Upload artwork files (images, PDFs, etc.)
+                  Upload chapter {chapter.order_number} files
                 </p>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -683,7 +769,7 @@ const AddArtsForm: React.FC = () => {
                     </svg>
                     <input
                       type="file"
-                      accept="image/*,.pdf,.zip"
+                      accept=".pdf,.epub,.mobi,.azw3,.txt"
                       className="hidden"
                       onChange={(e) => handleAddFile(e, chapter.id)}
                       multiple
@@ -696,7 +782,7 @@ const AddArtsForm: React.FC = () => {
                         Drag & drop or click to upload
                       </p>
                       <p className="text-xs text-[#665B5B]">
-                        JPG, PNG, SVG, WEBP, PDF, ZIP (max 100 MB)
+                        PDF, EPUB, MOBI (max 50 MB)
                       </p>
                     </div>
                   </label>
@@ -714,11 +800,7 @@ const AddArtsForm: React.FC = () => {
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-2">
-                              {file.title.match(/\.(jpg|jpeg|png|gif|svg|webp)$/i) ? (
-                                <Image className="w-5 h-5 text-[#242E3A]" />
-                              ) : (
-                                <FileText className="w-5 h-5 text-[#242E3A]" />
-                              )}
+                              <Book className="w-5 h-5 text-[#242E3A]" />
                               {file.isEditing ? (
                                 <input
                                   type="text"
@@ -794,7 +876,7 @@ const AddArtsForm: React.FC = () => {
               <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
                 <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="10" ry="10" stroke="#CBD5E1" strokeWidth="2" strokeDasharray="6,6" fill="none" className="transition-colors duration-300 group-hover:stroke-[#7077FE]" />
               </svg>
-              + Add Collection
+              + Add Chapter
             </button>
 
             {errors.chapters && (
@@ -868,4 +950,4 @@ const AddArtsForm: React.FC = () => {
   );
 };
 
-export default AddArtsForm;
+export default EditEbookForm;
