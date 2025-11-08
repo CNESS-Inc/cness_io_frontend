@@ -196,9 +196,9 @@ const DashboardLayout = () => {
             }
             sm:px-4 sm:py-3
             md:px-6 md:py-4
-            lg:px-8 lg:py-5
-            xl:px-10 xl:py-6
-            2xl:px-12 2xl:py-8
+            lg:px-2 lg:py-2
+            xl:px-2 xl:py-2
+            2xl:px-2 2xl:py-2
           `} 
           >
 

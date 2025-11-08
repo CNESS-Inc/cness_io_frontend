@@ -5,6 +5,11 @@ import { IoIosArrowForward } from "react-icons/io";
 import { BsBookmarkFill } from "react-icons/bs";
 import { FaVideo, FaPodcast, FaStar } from "react-icons/fa";
 import { AiOutlinePlus } from "react-icons/ai";
+import { FiCalendar } from "react-icons/fi";
+import { LuImagePlus, LuGalleryVerticalEnd } from "react-icons/lu";
+
+
+
 import { FaRegClock, FaRegStar, FaRegCommentAlt, FaRegFileVideo, FaRegKeyboard } from "react-icons/fa";
 
 // ----------------- Demo/static data & Types -----------------
@@ -140,9 +145,9 @@ export default function CourseDetail() {
 
         {/* Breadcrumbs */}
         <div className="flex text-[12px] text-slate-500 mt-9">
-          <button onClick={() => navigate("/dashboard/library")} className="hover:underline">Library</button>
+          <button onClick={() => navigate("/dashboard/library")} className="font-[poppins] hover:underline">Library</button>
           <span className="mt-1 mx-2"><IoIosArrowForward /></span>
-          <span>Courses</span>
+          <span className="font-[poppins]">Courses</span>
           <span className="mt-1 mx-2"><IoIosArrowForward /></span>
           <span className="text-slate-700" style={{ fontFamily: "Poppins, sans-serif" }}>Soft guitar moods Books</span>
         </div>
@@ -154,30 +159,25 @@ export default function CourseDetail() {
             <span className="mx-2">•</span>
           </span>
           <span className="flex items-center" style={{ fontFamily: "Poppins, sans-serif" }}>
-            <svg className="w-4 h-4 text-blue-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-4 h-4 text-[#7077fe] mr-1" fill="currentColor" viewBox="0 0 20 20">
               <path d="M10 15l-5.878 3.09L5.8 12.02.924 7.91l6.068-.936L10 2l2.919 4.974 6.067.936-4.876 4.11 1.678 6.07z" />
             </svg>
             {demoRating} ({demoReviews} reviews)
             <span className="mx-2">•</span>
           </span>
           <span className="flex items-center" style={{ fontFamily: "Poppins, sans-serif" }}>
-            <svg className="w-4 h-4 text-blue-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M16 11V5a1 1 0 00-1-1H5a1 1 0 00-1 1v6H2v2h16v-2h-2z"/>
-            </svg>
+            <LuImagePlus className="w-4 h-4 text-[#7077fe] mr-1" />
             {purchases.toLocaleString()} purchases
             <span className="mx-2">•</span>
           </span>
           <span className="flex items-center" style={{ fontFamily: "Poppins, sans-serif" }}>
-            <svg className="w-4 h-4 text-blue-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V6.414A2 2 0 0015.414 5L13 2.586A2 2 0 0011.586 2H6zm0 2h6v3a1 1 0 001 1h3v10H6V4z"/>
-            </svg>
+           <LuGalleryVerticalEnd className="w-4 h-4 text-[#7077fe] mr-1" />
             {chaptersCount} Chapters
             <span className="mx-2">•</span>
           </span>
           <span className="flex items-center" style={{ fontFamily: "Poppins, sans-serif" }}>
-            <svg className="w-4 h-4 text-blue-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M6 2a2 2 0 00-2 2v1h12V4a2 2 0 00-2-2H6zm-2 5h12v11a2 2 0 01-2 2H6a2 2 0 01-2-2V7z"/>
-            </svg>
+           <FiCalendar className="w-4 h-4 text-[#7077fe] mr-1" />
+
             Purchased on <span className="font-semibold ml-1">{purchaseDate}</span>
           </span>
         </div>
