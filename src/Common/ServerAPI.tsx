@@ -97,6 +97,7 @@ export const EndPoint = {
   refreshToken: "/auth/refresh-token",
   forgot: "/auth/forgot-password",
   me: "/auth/me",
+  wallet: "/credits/history",
   updatepassword: "/auth/update/password",
   reset: "/auth/reset-password",
   register: "/auth/sign-up",
@@ -317,6 +318,13 @@ export const RefreshTokenDetails = async (): ApiResponse => {
 export const MeDetails = async (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.me);
+};
+export const WalletDetails = async (page: number, limit: number): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["limit"] = limit;
+
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.wallet,params);
 };
 export const ForgotPasswordDetails = (
   formData: ForgotFormData

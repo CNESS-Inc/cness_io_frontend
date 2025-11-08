@@ -119,6 +119,7 @@ type PartnerPayload = {
 const BecomePartner = () => {
   const { showToast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
+  const [OrgSize, setOrgSize] = useState([]);
   const [data, setData] = useState<PartnerPayload>({
     organization_name: "",
     contact_person_name: "",
@@ -135,6 +136,7 @@ const BecomePartner = () => {
 
   // Add these states
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  console.log("🚀 ~ BecomePartner ~ fieldErrors:", fieldErrors)
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
   const [submitMessage, setSubmitMessage] = useState<{
     type: "success" | "error";
@@ -145,71 +147,83 @@ const BecomePartner = () => {
     boolean | null
   >(null);
 
-  const getFieldError = (fieldName: string, value: string): string | null => {
-    const validations: { [key: string]: (val: string) => string | null } = {
-      organization_name: (val) => {
-        if (!val.trim()) return "Organization name is required.";
-        if (val.trim().length < 2)
-          return "Organization name must be at least 2 characters.";
-        if (!/^[A-Za-z0-9&.,'()\- ]+$/.test(val.trim()))
-          return "Only letters, numbers, and basic punctuation are allowed.";
-        return null;
-      },
+const getFieldError = (fieldName: string, value: string): string | null => {
+  const validations: { [key: string]: (val: string) => string | null } = {
+    organization_name: (val) => {
+      if (!val.trim()) return "Organization name is required.";
+      if (val.trim().length < 2)
+        return "Organization name must be at least 2 characters.";
+      if (!/^[A-Za-z0-9&.,'()\- ]+$/.test(val.trim()))
+        return "Only letters, numbers, and basic punctuation are allowed.";
+      return null;
+    },
 
-      contact_person_name: (val) => {
-        if (!val.trim()) return "Contact person name is required.";
-        if (val.trim().length < 2)
-          return "Contact person name must be at least 2 characters.";
-        if (!/^[A-Za-z\s.'-]+$/.test(val.trim()))
-          return "Only letters, spaces, and basic punctuation are allowed.";
-        return null;
-      },
+    contact_person_name: (val) => {
+      if (!val.trim()) return "Contact person name is required.";
+      if (val.trim().length < 2)
+        return "Contact person name must be at least 2 characters.";
+      if (!/^[A-Za-z\s.'-]+$/.test(val.trim()))
+        return "Only letters, spaces, and basic punctuation are allowed.";
+      return null;
+    },
 
-      email: (val) =>
-        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? "Invalid email format" : null,
+    email: (val) =>
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? "Invalid email format" : null,
 
-      phone_number: (val) =>
-        val.replace(/\D/g, "").length < 7 ? "At least 7 digits required" : null,
+    phone_number: (val) =>
+      val.replace(/\D/g, "").length < 7 ? "At least 7 digits required" : null,
 
-      industry_sector: (val) =>
-        val.trim().length < 2 ? "Must be at least 2 characters" : null,
+    industry_sector: (val) =>
+      val.trim().length < 2 ? "Must be at least 2 characters" : null,
 
-      website_link: (val) => {
-        if (val.trim() === "") return null; // Optional
-        return !/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?$/.test(
-          val.trim()
-        )
-          ? "Please enter a valid website URL"
-          : null;
-      },
+    website_link: (val) => {
+      if (val.trim() === "") return null; // Optional
+      return !/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?$/.test(
+        val.trim()
+      )
+        ? "Please enter a valid website URL"
+        : null;
+    },
 
-      about: (val) => {
-        if (val.trim().length < 50) return "At least 50 characters required.";
-        if (val.trim().length > 2000) return "Maximum 2000 characters allowed.";
-        return null;
-      },
+    about: (val) => {
+      if (val.trim().length < 50) return "At least 50 characters required.";
+      if (val.trim().length > 2000) return "Maximum 2000 characters allowed.";
+      return null;
+    },
 
-      reason_to_partner: (val) =>
-        val.trim().length < 20 ? "At least 20 characters required." : null,
-      organization_size: (val) => {
-        const trimmed = val.trim();
-        if (!trimmed) return "Please specify your organization size.";
+    reason_to_partner: (val) =>
+      val.trim().length < 20 ? "At least 20 characters required." : null,
+    
+    organization_size: (val) => {
+      if (!val.trim()) return "Please specify your organization size.";
+      return null;
+    },
 
-        // ✅ Allow pure numbers (e.g., 25)
-        if (/^\d+$/.test(trimmed)) return null;
+    areas_of_collabration: (val) =>
+      val.trim().length < 2 ? "Please specify areas of collaboration." : null,
+  };
 
-        // ✅ Allow valid ranges (e.g., 51-200 or 5–10)
-        if (/^\d+\s*[-–]\s*\d+$/.test(trimmed)) return null;
+  return validations[fieldName]?.(value) || null;
+};
 
-        // ❌ Anything else is invalid (like "ten", "5 employees", "approx 100")
-        return "Enter a number (e.g., 25) or a range (e.g., 51-200).";
-      },
+  const handleSelectChange: React.ChangeEventHandler<HTMLSelectElement> = (
+    e
+  ) => {
+    const { name, value } = e.target;
+    setData((d) => ({ ...d, [name]: value }));
 
-      areas_of_collabration: (val) =>
-        val.trim().length < 2 ? "Please specify areas of collaboration." : null,
-    };
+    // Clear error for this field when user starts typing (only if we've attempted submit)
+    if (hasAttemptedSubmit && fieldErrors[name]) {
+      setFieldErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
 
-    return validations[fieldName]?.(value) || null;
+    if (submitMessage) {
+      setSubmitMessage(null);
+    }
   };
 
   const handleChange: React.ChangeEventHandler<
@@ -354,6 +368,7 @@ const BecomePartner = () => {
           areas_of_collabration: "",
           status: "pending",
         });
+        await fetchSubmit()
         setFieldErrors({});
         setCurrentStep(2);
       } else {
@@ -413,7 +428,7 @@ const BecomePartner = () => {
     try {
       const res = await OrgTypeDetails();
       console.log("🚀 ~ fetchOrgType ~ res:", res);
-      // setOrgSize(res?.data?.data);
+      setOrgSize(res?.data?.data);
     } catch (error: any) {
       if (error?.response?.data?.error?.message) {
         showToast({
@@ -887,7 +902,7 @@ const BecomePartner = () => {
                             </span>
                           }
                         >
-                          <Input
+                          {/* <Input
                             name="organization_size"
                             placeholder="Number of employees"
                             value={data.organization_size}
@@ -897,7 +912,39 @@ const BecomePartner = () => {
                                 ? fieldErrors.organization_size
                                 : null
                             }
-                          />
+                          /> */}
+
+                          <div className="relative group">
+                            <select
+                              name="organization_size"
+                              value={data.organization_size}
+                              onChange={handleSelectChange} // Use the new handler
+                              className={`w-full appearance-none py-[15px] px-[12px] border border-[#CBD0DC] rounded-sm border-2 border-[#EEEEEE] bg-white text-[14px] outline-none focus:border-[#C9C9FF] placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-[20px] ${
+                                data.organization_size
+                                  ? "text-black"
+                                  : "text-[#6E7179]"
+                              }`}
+                            >
+                              <option value="" disabled>
+                                Select your organization
+                              </option>
+                              {OrgSize.map((size: any) => (
+                                <option key={size.id} value={size.id}>
+                                  {size.name}
+                                </option>
+                              ))}
+                            </select>
+                            {/* Custom dropdown arrow */}
+                            <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center px-2 text-gray-700 border-l border-gray-300 h-fit top-1/2 -translate-y-1/2">
+                              <svg
+                                className="fill-current text-[#ccc] h-5 w-5 group-focus-within:text-black"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                              >
+                                <path d="M5.516 7.548L10 12.032l4.484-4.484L16 9.064l-6 6-6-6z" />
+                              </svg>
+                            </div>
+                          </div>
                         </Field>
                         <Field
                           label={
