@@ -34,6 +34,8 @@ import resume from "../../assets/resume.svg";
 import carticon from "../../assets/carticon.svg";
 import clock from "../../assets/clock.svg";
 import { useNavigate } from "react-router-dom";
+import alterProfile from "../../assets/altprofile.png";
+
 import Select from "react-select";
 import {
   AcceptFriendRequest,
@@ -3551,7 +3553,7 @@ export function SocialStackCard({
     //   </div>
     // );
     const NotificationsCard = ({ notifications }: { notifications: any[] }) => {
-      const userProfile = localStorage.getItem("profile_picture");
+      //const userProfile = localStorage.getItem("profile_picture");
       return (
         <div className="row-start-1 relative z-10 place-self-center w-full max-w-[620px]">
           {/* header */}
@@ -3572,15 +3574,20 @@ export function SocialStackCard({
                 className="flex items-center justify-between rounded-2xl border border-[#EEF0F5] bg-white p-3 shadow-sm"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <img
-                    src={
-                      item?.sender_profile?.profile_picture
-                        ? item?.sender_profile?.profile_picture
-                        : userProfile
-                    }
-                    className="h-11 w-11 rounded-full object-cover"
-                    alt=""
-                  />
+                 <img
+                src={
+                  item?.sender_profile?.profile_picture
+                    ? item.sender_profile.profile_picture
+                    : alterProfile // 👈 Default fallback if null or undefined
+                }
+                onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                  const target = e.currentTarget;
+                  target.onerror = null; // Prevent infinite loop
+                  target.src = alterProfile as string; // 👈 Fallback if image fails to load
+                }}
+                className="h-11 w-11 rounded-full object-cover"
+                alt={`${item?.sender_profile?.first_name || "User"}'s profile`}
+              />
                   <div className="min-w-0">
                     <div className="truncate text-[14px] font-semibold text-[#0F1728]">
                       {item?.sender_profile?.first_name}{" "}
