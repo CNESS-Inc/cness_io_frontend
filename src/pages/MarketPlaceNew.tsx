@@ -196,7 +196,7 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
         } pt-[20px] px-6`}
     >
 
-      <div className="grid grid-cols-4  gap-4 max-w-[2000px] mx-auto">
+      <div className="grid grid-cols-4 gap-4 mx-auto">
         {/* HAPPY (left big one) */}
         <div className="col-span-1 row-span-1 relative overflow-hidden rounded-2xl group">
           <img
@@ -370,7 +370,7 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       </section>
 
       {/* Digital Stores Section */}
-      <section className="relative w-full h-[426px] px-8 py-16 flex items-center justify-center">
+      <section className="relative w-full h-auto px-8 py-16 flex items-center justify-center">
         {/* Background image absolutely positioned */}
         <img
           src={digital}
@@ -402,10 +402,10 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       grid
       grid-cols-1
       sm:grid-cols-2
-      md:grid-cols-3
-      lg:grid-cols-4
-      xl:grid-cols-4
-      2xl:grid-cols-4
+      md:grid-cols-3 w-full
+      lg:grid-cols-4 w-full
+      xl:grid-cols-4 w-full
+      2xl:grid-cols-4  w-full
       gap-5
       sm:gap-6
       md:gap-8
