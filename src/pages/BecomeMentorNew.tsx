@@ -369,7 +369,6 @@ const BecomeMentor = () => {
 
       // Call the API
       const response = await createMentor(submissionData);
-      console.log("🚀 ~ handleSubmit ~ response:", response);
 
       if (response.success) {
         // Reset form
@@ -396,6 +395,7 @@ const BecomeMentor = () => {
           type: "success",
           duration: 3000,
         });
+        await fetchSubmit()
       }
     } catch (error: any) {
       console.log("🚀 ~ handleSubmit ~ error:", error);
