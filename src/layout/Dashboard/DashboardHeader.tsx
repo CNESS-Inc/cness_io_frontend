@@ -584,7 +584,7 @@ const DashboardHeader = ({
           import.meta.env.VITE_ENV_STAGE === "uat" ? (
             <div
               data-wallet-icon
-              onClick={() => setShowWalletModal(true)}
+              onClick={() => navigate("/dashboard/wallet")}
               className="flex items-center space-x-2 bg-linear-to-r from-purple-500 to-blue-500 text-white px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105 cursor-pointer"
             >
               <Wallet className="w-5 h-5" />
@@ -757,7 +757,7 @@ const DashboardHeader = ({
             className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative z-10"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Header */}
+            {/* Modal Header 
             <div className="bg-linear-to-r from-purple-600 to-blue-600 p-8 text-white rounded-t-2xl">
               <div className="flex items-center justify-between">
                 <div>
@@ -788,7 +788,7 @@ const DashboardHeader = ({
                 </button>
               </div>
 
-              {/* Credits Display */}
+              {/* Credits Display
               <div className="mt-6 bg-white/30 backdrop-blur-sm rounded-xl p-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -812,9 +812,9 @@ const DashboardHeader = ({
               </div>
             </div>
 
-            {/* Modal Body */}
+            {/* Modal Body 
             <div className="p-8">
-              {/* How to Earn Credits */}
+              {/* How to Earn Credits
               <section className="mb-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
                   <span className="bg-purple-100 p-2 rounded-lg mr-3">💎</span>
@@ -876,7 +876,7 @@ const DashboardHeader = ({
                 </div>
               </section>
 
-              {/* Redemption Options */}
+              {/* Redemption Options 
               <section>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
                   <span className="bg-blue-100 p-2 rounded-lg mr-3">🎁</span>
@@ -890,7 +890,7 @@ const DashboardHeader = ({
                 </p>
 
                 <div className="space-y-4">
-                  {/* Marketplace Discount */}
+                  {/* Marketplace Discount
                   <div className="bg-linear-to-r from-green-50 to-emerald-50 p-6 rounded-xl border border-green-200 hover:shadow-md transition">
                     <div className="flex items-start space-x-4">
                       <span className="text-3xl">🛍️</span>
@@ -911,7 +911,7 @@ const DashboardHeader = ({
                     </div>
                   </div>
 
-                  {/* Special Recognition in Newsletter */}
+                  {/* Special Recognition in Newsletter 
                   <div className="bg-linear-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-200 hover:shadow-md transition">
                     <div className="flex items-start space-x-4">
                       <span className="text-3xl">📰</span>
@@ -932,7 +932,7 @@ const DashboardHeader = ({
                     </div>
                   </div>
 
-                  {/* Exclusive Professional/Industry Featured Newsletter */}
+                  {/* Exclusive Professional/Industry Featured Newsletter
                   <div className="bg-linear-to-r from-purple-50 to-pink-50 p-6 rounded-xl border border-purple-200 hover:shadow-md transition">
                     <div className="flex items-start space-x-4">
                       <span className="text-3xl">📧</span>
@@ -953,7 +953,7 @@ const DashboardHeader = ({
                     </div>
                   </div>
 
-                  {/* Special Interview in Newsletter */}
+                  {/* Special Interview in Newsletter 
                   <div className="bg-linear-to-r from-orange-50 to-amber-50 p-6 rounded-xl border border-orange-200 hover:shadow-md transition">
                     <div className="flex items-start space-x-4">
                       <span className="text-3xl">🎤</span>
@@ -974,7 +974,7 @@ const DashboardHeader = ({
                     </div>
                   </div>
 
-                  {/* Social Media Feature */}
+                  {/* Social Media Feature 
                   <div className="bg-linear-to-r from-pink-50 to-rose-50 p-6 rounded-xl border border-pink-200 hover:shadow-md transition">
                     <div className="flex items-start space-x-4">
                       <span className="text-3xl">📱</span>
@@ -995,7 +995,7 @@ const DashboardHeader = ({
                     </div>
                   </div>
 
-                  {/* YouTube Interview */}
+                  {/* YouTube Interview 
                   <div className="bg-linear-to-r from-red-50 to-orange-50 p-6 rounded-xl border border-red-200 hover:shadow-md transition">
                     <div className="flex items-start space-x-4">
                       <span className="text-3xl">🎥</span>
@@ -1016,7 +1016,7 @@ const DashboardHeader = ({
                     </div>
                   </div>
 
-                  {/* Directory Feature */}
+                  {/* Directory Feature 
                   <div className="bg-linear-to-r from-cyan-50 to-blue-50 p-6 rounded-xl border border-cyan-200 hover:shadow-md transition">
                     <div className="flex items-start space-x-4">
                       <span className="text-3xl">📂</span>
@@ -1038,7 +1038,7 @@ const DashboardHeader = ({
                     </div>
                   </div>
 
-                  {/* Aspired Member Recognition */}
+                  {/* Aspired Member Recognition 
                   <div className="bg-linear-to-r from-yellow-50 to-amber-50 p-6 rounded-xl border-2 border-yellow-400 hover:shadow-lg transition">
                     <div className="flex items-start space-x-4">
                       <span className="text-3xl">🏆</span>
@@ -1070,7 +1070,7 @@ const DashboardHeader = ({
                 </div>
               </section>
 
-              {/* Footer Note */}
+              {/* Footer Note 
               <div className="mt-8 p-6 bg-gray-50 rounded-xl border border-gray-200">
                 <p className="text-sm text-gray-600 text-center">
                   <strong className="text-gray-900">Note:</strong> Credits are
@@ -1086,7 +1086,7 @@ const DashboardHeader = ({
                   with your desired redemption option.
                 </p>
               </div>
-            </div>
+            </div>*/}
           </div>
         </div>
       )}
