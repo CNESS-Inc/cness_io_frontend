@@ -8,7 +8,6 @@ const CreditsWallet: React.FC = () => {
   const [activeTab, setActiveTab] = useState("karma");
   const karmaCredits = localStorage.getItem("karma_credits") || "0";
   const [walletData, setWalletData] = useState<any | null>(null);
-  const [totalCredits, setTotalCredits] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [totalItems, setTotalItems] = useState<number>(0);
@@ -23,18 +22,6 @@ const CreditsWallet: React.FC = () => {
       if (res.success && res.data?.data) {
         setWalletData(res.data.data);
         setTotalItems(res.data.data.count);
-
-        // Calculate total credits (sum of all credits where type is CREDIT)
-        const total = res.data.data.rows.reduce(
-          (sum: number, transaction: any) => {
-            if (transaction.type === "CREDIT") {
-              return sum + parseInt(transaction.credits);
-            }
-            return sum;
-          },
-          0
-        );
-        setTotalCredits(total);
       }
     } catch (error: any) {
       showToast({
@@ -57,14 +44,6 @@ const CreditsWallet: React.FC = () => {
     setCurrentPage(1);
   }, [activeTab]);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startItem = (currentPage - 1) * itemsPerPage + 1;
