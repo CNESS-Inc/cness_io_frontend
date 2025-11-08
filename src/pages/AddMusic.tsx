@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import uploadimg from "../assets/upload1.svg";
 import Breadcrumb from "../components/MarketPlace/Breadcrumb";
 import CategoryModel from "../components/MarketPlace/CategoryModel";
 import { useNavigate } from "react-router-dom";
-import { Music, SquarePen, Trash2 } from "lucide-react";
+import { Music, Plus, SquarePen, Trash2, X } from "lucide-react";
+import { useToast } from "../components/ui/Toast/ToastProvider";
+import { CreateMusicProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument } from "../Common/ServerAPI";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 interface FormSectionProps {
   title: string;
@@ -34,6 +37,10 @@ interface InputFieldProps {
   placeholder: string;
   required?: boolean;
   type?: string;
+  name: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -41,6 +48,10 @@ const InputField: React.FC<InputFieldProps> = ({
   placeholder,
   required = false,
   type = "text",
+  name,
+  value,
+  onChange,
+  error = "",
 }) => (
   <div className="flex flex-col">
     <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
@@ -48,18 +59,79 @@ const InputField: React.FC<InputFieldProps> = ({
     </label>
     <input
       type={type}
+      name={name}
       placeholder={placeholder}
       required={required}
+      value={value}
+      onChange={onChange}
       className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
     />
+    {error && <span className="text-red-500 text-sm mt-1">{error}</span>}
   </div>
 );
 
 const AddMusicForm: React.FC = () => {
-  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
+  const { showToast } = useToast();
+  const [showModal, setShowModal] = useState(false);
+  const [showDiscardModal, setShowDiscardModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [moods, setMoods] = useState<string[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [newHighlight, setNewHighlight] = useState("");
+  const [tracks, setTracks] = useState<any[]>([
+    {
+      id: 1,
+      title: "Track 1",
+      track_files: [],
+      description: "",
+      duration: "",
+      order_number: 1,
+      is_free: false
+    },
+  ]);
+
+  useEffect(() => {
+    const fetchMoods = async () => {
+      try {
+        const response = await GetMarketPlaceMoods();
+        setMoods(response?.data?.data);
+      } catch (error: any) {
+        showToast({
+          message: "Failed to load moods.",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    };
+
+    fetchMoods();
+  }, []);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await GetMarketPlaceCategories();
+        if (response?.data?.data) {
+          setCategories(response.data.data);
+        }
+      } catch (error: any) {
+        const errorMessage = error?.response?.data?.error?.message || "Failed to load categories.";
+        showToast({
+          message: errorMessage,
+          type: "error",
+          duration: 3000,
+        });
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleSelectCategory = (category: string) => {
+    setShowModal(false); // Close modal first
+    
     const routes: Record<string, string> = {
       Video: "/dashboard/products/add-video",
       Music: "/dashboard/products/add-music",
@@ -68,49 +140,11 @@ const AddMusicForm: React.FC = () => {
       Ebook: "/dashboard/products/add-ebook",
       Arts: "/dashboard/products/add-arts",
     };
+    
     const path = routes[category];
-    if (path) navigate(path);
-  };
-
-  // ----------- Upload Section Logic -----------
-  interface AudioFile {
-    id: number;
-    name: string;
-    tempName: string;
-    progress: number;
-    isEditing: boolean;
-    size: number;
-  }
-
-  interface Track {
-    id: number;
-    name: string;
-    files: AudioFile[];
-  }
-
-  const [tracks, setTracks] = useState<Track[]>([
-    { id: 1, name: "Track 1", files: [] },
-  ]);
-
-  // Simulate upload progress
-  const simulateUpload = (trackId: number, fileId: number) => {
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 10;
-      setTracks((prev) =>
-        prev.map((track) =>
-          track.id === trackId
-            ? {
-                ...track,
-                files: track.files.map((f) =>
-                  f.id === fileId ? { ...f, progress } : f
-                ),
-              }
-            : track
-        )
-      );
-      if (progress >= 100) clearInterval(interval);
-    }, 300);
+    if (path) {
+      navigate(path);
+    }
   };
 
   // Add files
@@ -119,49 +153,54 @@ const AddMusicForm: React.FC = () => {
     trackId: number
   ) => {
     const files = Array.from(e.target.files || []);
+
     setTracks((prev) =>
       prev.map((track) =>
         track.id === trackId
           ? {
-              ...track,
-              files: [
-                ...track.files,
-                ...files.map((file, i) => ({
-                  id: Date.now() + i,
-                  name: file.name,
-                  tempName: file.name,
-                  size: file.size,
-                  progress: 0,
-                  isEditing: false,
-                })),
-              ],
-            }
+            ...track,
+            track_files: [
+              ...track.track_files,
+              ...files.map((file, i) => ({
+                url: "", // Will be filled after upload
+                title: file.name,
+                order_number: track.track_files.length + i + 1,
+                file: file, // Store the actual file
+              })),
+            ],
+          }
           : track
       )
     );
-
-    files.forEach((_, i) => simulateUpload(trackId, Date.now() + i));
   };
 
   // Add new track
   const handleAddTrack = () => {
     setTracks((prev) => [
       ...prev,
-      { id: prev.length + 1, name: `Track ${prev.length + 1}`, files: [] },
+      {
+        id: prev.length + 1,
+        title: `Track ${prev.length + 1}`,
+        track_files: [],
+        description: "",
+        duration: "",
+        order_number: prev.length + 1,
+        is_free: false
+      },
     ]);
   };
 
   // Edit file name
-  const toggleEditFile = (trackId: number, fileId: number) => {
+  const toggleEditFile = (trackId: number, fileOrderNumber: number) => {
     setTracks((prev) =>
       prev.map((track) =>
         track.id === trackId
           ? {
-              ...track,
-              files: track.files.map((f) =>
-                f.id === fileId ? { ...f, isEditing: !f.isEditing } : f
-              ),
-            }
+            ...track,
+            track_files: track.track_files.map((f: any) =>
+              f.order_number === fileOrderNumber ? { ...f, isEditing: !f.isEditing } : f
+            ),
+          }
           : track
       )
     );
@@ -169,45 +208,48 @@ const AddMusicForm: React.FC = () => {
 
   const handleEditFileName = (
     trackId: number,
-    fileId: number,
-    newName: string
+    fileOrderNumber: number,
+    newTitle: string
   ) => {
     setTracks((prev) =>
       prev.map((track) =>
         track.id === trackId
           ? {
-              ...track,
-              files: track.files.map((f) =>
-                f.id === fileId ? { ...f, tempName: newName } : f
-              ),
-            }
+            ...track,
+            track_files: track.track_files.map((f: any) =>
+              f.order_number === fileOrderNumber ? { ...f, title: newTitle } : f
+            ),
+          }
           : track
       )
     );
   };
 
-  const saveFileName = (trackId: number, fileId: number) => {
+  const saveFileName = (trackId: number, fileOrderNumber: number) => {
     setTracks((prev) =>
       prev.map((track) =>
         track.id === trackId
           ? {
-              ...track,
-              files: track.files.map((f) =>
-                f.id === fileId
-                  ? { ...f, name: f.tempName, isEditing: false }
-                  : f
-              ),
-            }
+            ...track,
+            track_files: track.track_files.map((f: any) =>
+              f.order_number === fileOrderNumber
+                ? { ...f, isEditing: false }
+                : f
+            ),
+          }
           : track
       )
     );
   };
 
-  const deleteFile = (trackId: number, fileId: number) => {
+  const deleteFile = (trackId: number, fileOrderNumber: number) => {
     setTracks((prev) =>
       prev.map((track) =>
         track.id === trackId
-          ? { ...track, files: track.files.filter((f) => f.id !== fileId) }
+          ? {
+            ...track,
+            track_files: track.track_files.filter((f: any) => f.order_number !== fileOrderNumber)
+          }
           : track
       )
     );
@@ -221,11 +263,302 @@ const AddMusicForm: React.FC = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  // ---------------------------------------------
+  const [formData, setFormData] = useState({
+    product_title: "",
+    price: 0,
+    discount_percentage: 0,
+    mood_id: "",
+    overview: "",
+    highlights: [] as string[],
+    total_duration: "",
+    language: "",
+    theme: "",
+    format: "",
+    status: "",
+  });
+
+  const validateForm = (): boolean => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!formData.product_title.trim()) newErrors.product_title = "Product title is required.";
+
+    if (isNaN(formData.price) || formData.price <= 0) {
+      newErrors.price = "Price must be a positive number.";
+    }
+
+    if (isNaN(formData.discount_percentage)) {
+      newErrors.discount_percentage = "Discount percentage must be a number.";
+    } else if (formData.discount_percentage < 0 || formData.discount_percentage > 100) {
+      newErrors.discount_percentage = "Discount percentage must be between 0 and 100.";
+    }
+
+    if (!formData.mood_id.trim()) newErrors.mood_id = "Mood Selection is required.";
+
+    if (!formData.overview.trim()) newErrors.overview = "Overview is required.";
+
+    if (formData.highlights.length === 0) {
+      newErrors.highlights = "At least one highlight is required.";
+    }
+
+    if (formData.total_duration) {
+      if (!/^\d{2}:\d{2}:\d{2}$/.test(formData.total_duration)) {
+        newErrors.total_duration = "Duration must be in HH:MM:SS format (e.g., 01:10:00)";
+      }
+    }
+
+    // Remove duration validation
+
+    const validFormats = ["MP3", "AAC", "WAV", "FLAC", "OGG"];
+    if (!formData.format || !validFormats.includes(formData.format.toUpperCase())) {
+      newErrors.format = "Format must be one of the following: MP3, AAC, WAV, FLAC, OGG.";
+    }
+
+    if (tracks.length === 0) {
+      newErrors.tracks = "At least one track is required.";
+    }
+
+    // Validate each track has at least one file
+    tracks.forEach((track, index) => {
+      if (track.track_files.length === 0) {
+        newErrors[`track_${track.id}`] = `Track ${index + 1} must have at least one audio file.`;
+      }
+    });
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      setTimeout(() => {
+        const firstErrorElement = document.querySelector('.text-red-500');
+        if (firstErrorElement) {
+          firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    }
+
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const target = e.target;
+    const { name, value } = target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    const toStr = (v: unknown) => (v === undefined || v === null ? "" : String(v));
+    const valStr = toStr(value).trim();
+
+    let message = "";
+    switch (name) {
+      case "product_title":
+        if (!valStr) message = "Product title is required";
+        break;
+
+      case "price":
+        if (value === "" || isNaN(parseFloat(value)) || parseFloat(value) <= 0) {
+          message = "Price must be a positive number";
+        }
+        break;
+
+      case "discount_percentage":
+        const discount = parseFloat(value);
+        if (value === "" || isNaN(discount)) {
+          message = "Discount percentage must be a number";
+        } else if (discount < 0 || discount > 100) {
+          message = "Discount percentage must be between 0 and 100";
+        }
+        break;
+
+      case "mood_id":
+        if (!valStr) message = "Mood Selection is required";
+        break;
+
+      case "overview":
+        if (!valStr) message = "Overview is required";
+        break;
+
+      case "highlights":
+        if (Array.isArray(value) && value.length === 0) {
+          message = "At least one highlight is required";
+        } else if (Array.isArray(value) && value.some((highlight: string) => !highlight.trim())) {
+          message = "Highlights cannot contain empty values";
+        }
+        break;
+
+      case "total_duration":
+        if (valStr && !/^\d{2}:\d{2}:\d{2}$/.test(valStr)) message = "Invalid duration format. Use HH:MM:SS";
+        break;
+
+      case "status":
+        const validStatuses = ["draft", "published"];
+        if (valStr && !validStatuses.includes(valStr)) message = "Status must be either 'draft' or 'published'.";
+        break;
+
+      default:
+        break;
+    }
+
+    setErrors((prev) => ({ ...prev, [name]: message }));
+  };
+
+  const handleSubmit = async (isDraft: boolean = false) => {
+    if (!validateForm()) {
+      showToast({
+        message: "Please fill all required fields correctly",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Step 1: Upload all track files and get URLs
+      const uploadedTracks = await Promise.all(
+        tracks.map(async (track) => {
+          // Upload all files for this track
+          const uploadedFiles = await Promise.all(
+            track.track_files.map(async (trackFile: any) => {
+              if (trackFile.file) {
+                const formData = new FormData();
+                formData.append('track', trackFile.file);
+
+                try {
+                  const response = await UploadProductDocument('music-track', formData);
+                  const uploadData = response?.data?.data;
+
+                  return {
+                    url: uploadData?.track_url || "",
+                    title: trackFile.title,
+                    order_number: trackFile.order_number,
+                  };
+                } catch (error) {
+                  throw new Error(`Failed to upload ${trackFile.title}`);
+                }
+              }
+              return trackFile;
+            })
+          );
+
+          return {
+            title: track.title,
+            track_files: uploadedFiles,
+            description: track.description || "",
+            duration: track.duration || "00:00",
+            order_number: track.order_number,
+            is_free: track.is_free,
+          };
+        })
+      );
+
+      // Step 2: Create music product with uploaded tracks
+      const payload = {
+        product_title: formData.product_title,
+        price: formData.price,
+        discount_percentage: formData.discount_percentage,
+        mood_id: formData.mood_id,
+        overview: formData.overview,
+        highlights: formData.highlights,
+        total_duration: formData.total_duration || "00:00",
+        language: formData.language,
+        theme: formData.theme,
+        format: formData.format,
+        status: isDraft ? 'draft' : 'published',
+        tracks: uploadedTracks,
+      };
+
+      const response = await CreateMusicProduct(payload);
+      const productId = response?.data?.data?.product_id;
+
+      showToast({
+        message: isDraft
+          ? "Music product saved as draft successfully"
+          : "Music product created successfully",
+        type: "success",
+        duration: 3000,
+      });
+
+      setErrors({});
+
+      // Navigate based on action
+      if (isDraft && productId) {
+        setTimeout(() => {
+          navigate(`/dashboard/products/music-preview/${productId}?category=music`);
+        }, 1500);
+      } else {
+        setTimeout(() => {
+          navigate('/dashboard/products');
+        }, 1500);
+      }
+    } catch (error: any) {
+      showToast({
+        message: error?.message || error?.response?.data?.error?.message || 'Failed to create music product',
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAddHighlight = () => {
+    if (newHighlight.trim()) {
+      if (formData.highlights.length >= 3) {
+        showToast({
+          message: "Maximum 3 highlights allowed",
+          type: "error",
+          duration: 3000,
+        });
+        return;
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        highlights: [...prev.highlights, newHighlight.trim()]
+      }));
+      setNewHighlight("");
+
+      if (errors.highlights) {
+        setErrors(prev => ({ ...prev, highlights: "" }));
+      }
+    }
+  };
+
+  const handleRemoveHighlight = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      highlights: prev.highlights.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleEditHighlight = (index: number, newValue: string) => {
+    setFormData(prev => ({
+      ...prev,
+      highlights: prev.highlights.map((h, i) => i === index ? newValue : h)
+    }));
+  };
+
+  const handleDiscard = () => {
+    setShowDiscardModal(true);
+  };
+
+  const confirmDiscard = () => {
+    setShowDiscardModal(false);
+    navigate('/dashboard/products');
+  };
+
+  if (isLoading) {
+    return (
+      <LoadingSpinner />
+    );
+  }
 
   return (
     <>
-      {/* 🔹 Breadcrumb Section */}
       <Breadcrumb
         onAddProductClick={() => setShowModal(true)}
         onSelectCategory={handleSelectCategory}
@@ -237,20 +570,50 @@ const AddMusicForm: React.FC = () => {
           title="Add Music"
           description="Upload your tracks, set pricing, and publish them to the marketplace."
         >
-           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <InputField label="Product Title *" placeholder="Enter your title" required />
-            <InputField label="Price" placeholder=" $ " />
-            <InputField label="Discount in %" placeholder="Enter discount in %" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <InputField
+              label="Product Title *"
+              placeholder="Enter your title"
+              name="product_title"
+              value={formData.product_title}
+              onChange={handleChange}
+              error={errors.product_title}
+              required
+            />
+            <InputField
+              label="Price *"
+              placeholder=" $ "
+              name="price"
+              value={formData.price === 0 ? "" : formData.price.toString()}
+              onChange={handleChange}
+              error={errors.price}
+              required
+            />
+            <InputField
+              label="Discount in %"
+              placeholder="Enter discount in %"
+              name="discount_percentage"
+              value={formData.discount_percentage === 0 ? "" : formData.discount_percentage.toString()}
+              onChange={handleChange}
+              error={errors.discount_percentage}
+            />
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Mood
+                Mood *
               </label>
-              <select className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent cursor-pointer">
-                <option>Calm</option>
-                <option>Energetic</option>
-                <option>Inspiring</option>
-                <option>Romantic</option>
+              <select
+                name="mood_id"
+                value={formData.mood_id}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent cursor-pointer">
+                <option value="">Select Mood</option>
+                {moods?.map((mood: any) => (
+                  <option key={mood.id} value={mood.id}>
+                    {mood.name}
+                  </option>
+                ))}
               </select>
+              {errors.mood_id && <span className="text-red-500 text-sm mt-1">{errors.mood_id}</span>}
             </div>
           </div>
         </FormSection>
@@ -260,38 +623,107 @@ const AddMusicForm: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Overview
+                Overview *
               </label>
               <textarea
+                name="overview"
+                value={formData.overview}
+                onChange={handleChange}
                 placeholder="Describe your track or album"
                 className="w-full h-32 px-3 py-2 border border-gray-200 rounded-md resize-none focus:ring-2 focus:ring-[#7077FE]"
+                required
               />
+              {errors.overview && <span className="text-red-500 text-sm mt-1">{errors.overview}</span>}
             </div>
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Highlights
+                Highlights * (Max 3)
               </label>
-              <textarea
-                placeholder="Mention key details or credits"
-                className="w-full h-32 px-3 py-2 border border-gray-200 rounded-md resize-none focus:ring-2 focus:ring-[#7077FE]"
-              />
+              <div className="space-y-3">
+                {formData?.highlights?.map((highlight: any, index: number) => (
+                  <div key={index} className="flex items-start gap-2 p-3 border border-gray-200 rounded-md bg-white">
+                    <span className="text-[#7077FE] font-bold mt-1">•</span>
+                    <input
+                      type="text"
+                      value={highlight}
+                      onChange={(e) => handleEditHighlight(index, e.target.value)}
+                      className="flex-1 border-none focus:outline-none text-[#242E3A]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveHighlight(index)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+
+                {formData.highlights.length < 3 && (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newHighlight}
+                      onChange={(e) => setNewHighlight(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddHighlight();
+                        }
+                      }}
+                      placeholder="Add a highlight (e.g., Guided relaxation for stress relief)"
+                      className="flex-1 px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddHighlight}
+                      className="px-4 py-2 bg-[#7077FE] text-white rounded-md hover:bg-[#5a60ea] transition-colors"
+                    >
+                      <Plus className="w-5 h-5" />
+                    </button>
+                  </div>
+                )}
+
+                <p className="text-sm text-gray-500">
+                  Add up to 3 key highlights about your video (e.g., "Guided relaxation for stress relief", "Mindfulness and breathing techniques")
+                </p>
+              </div>
+              {errors.highlights && <span className="text-red-500 text-sm mt-1">{errors.highlights}</span>}
             </div>
 
-            <InputField label="Total Duration" placeholder="Enter the music duration" />
-             <InputField label="Theme" placeholder="Describe the music theme" />
-
+            <InputField
+              label="Duration (HH:MM:SS)"
+              placeholder="e.g., 01:10:00"
+              name="total_duration"
+              value={formData.total_duration}
+              onChange={handleChange}
+              error={errors.total_duration}
+            />
+            <InputField
+              label="Theme"
+              placeholder="Describe the music theme"
+              name="theme"
+              value={formData.theme}
+              onChange={handleChange}
+              error={errors.theme}
+            />
 
             {/* Format dropdown */}
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
                 Format
               </label>
-              <select className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white focus:ring-2 focus:ring-[#7077FE]">
-                <option>MP3</option>
-                <option>WAV</option>
-                <option>AAC</option>
-                <option>FLAC</option>
-                <option>OGG</option>
+              <select
+                name="format"
+                value={formData.format}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE]">
+                <option value="">Select Format</option>
+                <option value="MP3">MP3</option>
+                <option value="WAV">WAV</option>
+                <option value="AAC">AAC</option>
+                <option value="FLAC">FLAC</option>
+                <option value="OGG">OGG</option>
               </select>
             </div>
 
@@ -299,13 +731,18 @@ const AddMusicForm: React.FC = () => {
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
                 Language
               </label>
-              <select className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white focus:ring-2 focus:ring-[#7077FE]">
-                <option>English</option>
-                <option>Hindi</option>
-                <option>Spanish</option>
-                <option>French</option>
-                <option>Instrumental</option>
+              <select
+                name="language"
+                value={formData.language}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE]">
+                <option value="">Select Language</option>
+                <option value="English">English</option>
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
+                <option value="German">German</option>
               </select>
+              {errors.language && <span className="text-red-500 text-sm mt-1">{errors.language}</span>}
             </div>
           </div>
         </FormSection>
@@ -327,16 +764,16 @@ const AddMusicForm: React.FC = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* LEFT Upload */}
-<label
-  className="relative flex flex-col items-center justify-center h-40 cursor-pointer relative rounded-lg p-6 text-center cursor-pointer transition-all bg-[#F9FAFB] hover:bg-[#EEF3FF]"
->
-  {/* ✅ SVG dashed border */}
-  <svg
-    className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none"
-  >
-    <rect x="1"  y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="12" ry="12"  stroke="#CBD5E1" strokeWidth="2" strokeDasharray="6,6" fill="none"
-      className="transition-all duration-300 group-hover:stroke-[#7077FE]" />
-  </svg>                     <input
+                  <label
+                    className="relative flex flex-col items-center justify-center h-40 cursor-pointer relative rounded-lg p-6 text-center cursor-pointer transition-all bg-[#F9FAFB] hover:bg-[#EEF3FF]"
+                  >
+                    {/* ✅ SVG dashed border */}
+                    <svg
+                      className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none"
+                    >
+                      <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="12" ry="12" stroke="#CBD5E1" strokeWidth="2" strokeDasharray="6,6" fill="none"
+                        className="transition-all duration-300 group-hover:stroke-[#7077FE]" />
+                    </svg>                     <input
                       type="file"
                       accept="audio/*"
                       className="hidden"
@@ -358,14 +795,14 @@ const AddMusicForm: React.FC = () => {
 
                   {/* RIGHT Uploaded Files */}
                   <div className="space-y-3">
-                    {track.files.length === 0 ? (
+                    {track.track_files.length === 0 ? (
                       <div className="text-sm text-gray-500 border border-gray-100 rounded-lg p-4 bg-gray-50">
                         No files uploaded yet
                       </div>
                     ) : (
-                      track.files.map((file) => (
+                      track.track_files.map((file: any) => (
                         <div
-                          key={file.id}
+                          key={file.order_number}
                           className="border border-gray-200 rounded-lg p-3 bg-white"
                         >
                           <div className="flex items-center justify-between mb-2">
@@ -374,11 +811,11 @@ const AddMusicForm: React.FC = () => {
                               {file.isEditing ? (
                                 <input
                                   type="text"
-                                  value={file.tempName}
+                                  value={file.title}
                                   onChange={(e) =>
                                     handleEditFileName(
                                       track.id,
-                                      file.id,
+                                      file.order_number,
                                       e.target.value
                                     )
                                   }
@@ -386,14 +823,14 @@ const AddMusicForm: React.FC = () => {
                                 />
                               ) : (
                                 <p className="text-sm font-medium text-[#242E3A]">
-                                  {file.name}
+                                  {file.title}
                                 </p>
                               )}
                             </div>
                             <div className="flex items-center space-x-2">
                               {file.isEditing ? (
                                 <button
-                                  onClick={() => saveFileName(track.id, file.id)}
+                                  onClick={() => saveFileName(track.id, file.order_number)}
                                   className="text-[#7077FE] text-sm font-semibold"
                                 >
                                   Save
@@ -402,42 +839,42 @@ const AddMusicForm: React.FC = () => {
                                 <>
                                   <button
                                     onClick={() =>
-                                      toggleEditFile(track.id, file.id)
+                                      toggleEditFile(track.id, file.order_number)
                                     }
                                     className="text-gray-500 hover:text-[#7077FE]"
                                   >
                                     <SquarePen className="w-4 h-4" />
                                   </button>
                                   <button
-                                    onClick={() => deleteFile(track.id, file.id)}
+                                    onClick={() => deleteFile(track.id, file.order_number)}
                                     className="text-gray-500 hover:text-red-500"
                                   >
                                     <Trash2 className="w-4 h-4" />
                                   </button>
                                 </>
                               )}
-                              <input
-                                type="checkbox"
-                                checked={file.progress === 100}
-                                readOnly
-                                className="accent-[#7077FE]"
-                              />
                             </div>
                           </div>
                           <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                            <span>{formatFileSize(file.size)}</span>
-                            <span>{file.progress}%</span>
+                            <span>{file.file ? formatFileSize(file.file.size) : "Uploaded"}</span>
+                            <span className="text-green-600">✓ Ready</span>
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
                             <div
-                              className="bg-[#7077FE] h-2 rounded-full"
-                              style={{ width: `${file.progress}%` }}
+                              className="bg-green-500 h-2 rounded-full"
+                              style={{ width: '100%' }}
                             ></div>
                           </div>
                         </div>
                       ))
                     )}
                   </div>
+                  {errors.tracks && (
+                    <p className="text-red-500 text-sm mt-2">{errors.tracks}</p>
+                  )}
+                  {Object.keys(errors).filter(key => key.startsWith('track_')).map(key => (
+                    <p key={key} className="text-red-500 text-sm mt-2">{errors[key]}</p>
+                  ))}
                 </div>
               </div>
             ))}
@@ -445,25 +882,25 @@ const AddMusicForm: React.FC = () => {
             {/* Add Track Button */}
             <button
               onClick={handleAddTrack}
-             className="relative w-full rounded-lg py-4 text-[#7077FE] font-medium bg-white cursor-pointer group overflow-hidden transition-all"
-    >
-      <svg
-    className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none"
-  >
-    <rect
-      x="1"
-      y="1"
-      width="calc(100% - 2px)"
-      height="calc(100% - 2px)"
-      rx="10"
-      ry="10"
-      stroke="#CBD5E1"
-      strokeWidth="2"
-      strokeDasharray="6,6"
-      fill="none"
-      className="transition-colors duration-300 group-hover:stroke-[#7077FE]"
-    />
-  </svg>
+              className="relative w-full rounded-lg py-4 text-[#7077FE] font-medium bg-white cursor-pointer group overflow-hidden transition-all"
+            >
+              <svg
+                className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none"
+              >
+                <rect
+                  x="1"
+                  y="1"
+                  width="calc(100% - 2px)"
+                  height="calc(100% - 2px)"
+                  rx="10"
+                  ry="10"
+                  stroke="#CBD5E1"
+                  strokeWidth="2"
+                  strokeDasharray="6,6"
+                  fill="none"
+                  className="transition-colors duration-300 group-hover:stroke-[#7077FE]"
+                />
+              </svg>
               + Add Track
             </button>
           </div>
@@ -471,14 +908,26 @@ const AddMusicForm: React.FC = () => {
 
         {/* Buttons */}
         <div className="flex justify-end space-x-4 pt-6">
-          <button className="px-5 py-3 text-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium hover:text-blue-500 transition">
+          <button
+            type="button"
+            onClick={handleDiscard}
+            className=" px-5 py-3 text-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%] tracking-[0]  hover:text-blue-500 transition-colors">
             Discard
           </button>
-          <button className="px-5 py-3 bg-white text-[#7077FE] border border-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium hover:bg-gray-300 transition">
-            Preview
+          <button
+            type="button"
+            onClick={() => handleSubmit(true)}
+            disabled={isLoading}
+            className="px-5 py-3 bg-white text-[#7077FE] border border-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium hover:bg-gray-50 transition disabled:opacity-50"
+          >
+            {isLoading ? "Saving..." : "Preview"}
           </button>
-          <button className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-['Plus_Jakarta_Sans'] font-medium hover:bg-[#5a60ea] transition">
-            Submit
+          <button
+            type='button'
+            onClick={() => handleSubmit(false)}
+            disabled={isLoading}
+            className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%] tracking-[0] hover:bg-[#5a60ea] transition-colors disabled:opacity-50">
+            {isLoading ? "Submitting..." : "Submit"}
           </button>
         </div>
       </div>
@@ -488,7 +937,35 @@ const AddMusicForm: React.FC = () => {
           open={showModal}
           onClose={() => setShowModal(false)}
           onSelect={handleSelectCategory}
+          category={categories}
         />
+      )}
+      {showDiscardModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowDiscardModal(false)}></div>
+          <div className="relative z-10 bg-white rounded-[20px] shadow-lg p-8 w-[450px]">
+            <h3 className="text-[20px] font-semibold font-['Poppins'] text-[#242E3A] mb-4">
+              Discard Product?
+            </h3>
+            <p className="text-[14px] text-[#665B5B] font-['Open_Sans'] mb-6">
+              Are you sure you want to discard this product? All your entered details will not be saved.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowDiscardModal(false)}
+                className="px-5 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDiscard}
+                className="px-5 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              >
+                Yes, Discard
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

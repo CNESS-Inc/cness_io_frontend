@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import uploadimg from "../assets/upload1.svg";
 import Breadcrumb from "../components/MarketPlace/Breadcrumb";
 import CategoryModel from "../components/MarketPlace/CategoryModel";
-import { useNavigate } from "react-router-dom";
-import { Image, SquarePen, Trash2, Plus, X, FileText } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Music, Plus, SquarePen, Trash2, X } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { CreateArtProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument } from "../Common/ServerAPI";
+import { UpdatePodcastProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, GetPreviewProduct, UpdateProductStatus } from "../Common/ServerAPI";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 interface FormSectionProps {
   title: string;
@@ -69,44 +70,20 @@ const InputField: React.FC<InputFieldProps> = ({
   </div>
 );
 
-interface ChapterFile {
-  url: string;
-  title: string;
-  order_number: number;
-  file?: File;
-  isEditing?: boolean;
-}
-
-interface Chapter {
-  id: number;
-  title: string;
-  chapter_files: ChapterFile[];
-  description: string;
-  order_number: number;
-  is_free: boolean;
-}
-
-const AddArtsForm: React.FC = () => {
+const EditPodcastForm: React.FC = () => {
+  const navigate = useNavigate();
+  const params = useParams();
+  const productId = params?.productNo;
+  const { showToast } = useToast();
   const [showModal, setShowModal] = useState(false);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
-  const navigate = useNavigate();
-  const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetchingData, setIsFetchingData] = useState(true);
   const [moods, setMoods] = useState<string[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [newHighlight, setNewHighlight] = useState("");
-
-  const [chapters, setChapters] = useState<Chapter[]>([
-    {
-      id: 1,
-      title: "Collection 1",
-      chapter_files: [],
-      description: "",
-      order_number: 1,
-      is_free: false
-    },
-  ]);
+  const [episodes, setEpisodes] = useState<any[]>([]);
 
   const [formData, setFormData] = useState({
     product_title: "",
@@ -115,11 +92,66 @@ const AddArtsForm: React.FC = () => {
     mood_id: "",
     overview: "",
     highlights: [] as string[],
+    total_duration: "",
     language: "",
     theme: "",
-    mediums: "",
-    modern_trends: "",
+    format: "",
   });
+
+  useEffect(() => {
+    const fetchProductData = async () => {
+      if (!productId) return;
+
+      setIsFetchingData(true);
+      try {
+        const response = await GetPreviewProduct('podcast', productId);
+        const productData = response?.data?.data;
+
+        if (productData) {
+          setFormData({
+            product_title: productData.product_title || "",
+            price: parseFloat(productData.price || "0"),
+            discount_percentage: parseFloat(productData.discount_percentage || "0"),
+            mood_id: productData.mood_id || "",
+            overview: productData.overview || "",
+            highlights: productData.highlights || [],
+            total_duration: productData.podcast_details?.total_duration || "",
+            language: productData.language || "",
+            theme: productData.podcast_details?.theme || "",
+            format: productData.podcast_details?.format || "",
+          });
+
+          if (productData.content_items && productData.content_items.length > 0) {
+            setEpisodes(productData.content_items.map((item: any, index: number) => ({
+              id: item.id || index + 1,
+              episode_id: item.id,
+              title: item.title || `Episode ${index + 1}`,
+              episode_files: item.file_urls?.map((file: any) => ({
+                url: file.url,
+                title: file.title,
+                order_number: file.order_number,
+              })) || [],
+              description: item.description || "",
+              duration: item.duration || "00:00",
+              order_number: item.order_number || index + 1,
+              is_free: item.is_free || false,
+            })));
+          }
+        }
+      } catch (error: any) {
+        showToast({
+          message: error?.response?.data?.error?.message || "Failed to load product data.",
+          type: "error",
+          duration: 3000,
+        });
+        navigate('/dashboard/products');
+      } finally {
+        setIsFetchingData(false);
+      }
+    };
+
+    fetchProductData();
+  }, [productId]);
 
   useEffect(() => {
     const fetchMoods = async () => {
@@ -158,8 +190,6 @@ const AddArtsForm: React.FC = () => {
   }, []);
 
   const handleSelectCategory = (category: string) => {
-    setShowModal(false); // Close modal first
-    
     const routes: Record<string, string> = {
       Video: "/dashboard/products/add-video",
       Music: "/dashboard/products/add-music",
@@ -168,113 +198,111 @@ const AddArtsForm: React.FC = () => {
       Ebook: "/dashboard/products/add-ebook",
       Arts: "/dashboard/products/add-arts",
     };
-    
     const path = routes[category];
-    if (path) {
-      navigate(path);
-    }
+    if (path) navigate(path);
   };
 
   const handleAddFile = (
     e: React.ChangeEvent<HTMLInputElement>,
-    chapterId: number
+    episodeId: number
   ) => {
     const files = Array.from(e.target.files || []);
 
-    setChapters((prev) =>
-      prev.map((chapter) =>
-        chapter.id === chapterId
+    setEpisodes((prev) =>
+      prev.map((episode) =>
+        episode.id === episodeId
           ? {
-            ...chapter,
-            chapter_files: [
-              ...chapter.chapter_files,
+            ...episode,
+            episode_files: [
+              ...episode.episode_files,
               ...files.map((file, i) => ({
                 url: "",
                 title: file.name,
-                order_number: chapter.chapter_files.length + i + 1,
+                order_number: episode.episode_files.length + i + 1,
                 file: file,
               })),
             ],
           }
-          : chapter
+          : episode
       )
     );
   };
 
-  const handleAddChapter = () => {
-    setChapters((prev) => [
+  const handleAddEpisode = () => {
+    setEpisodes((prev) => [
       ...prev,
       {
-        id: prev.length + 1,
-        title: `Collection ${prev.length + 1}`,
-        chapter_files: [],
+        id: Date.now(),
+        title: `Episode ${prev.length + 1}`,
+        episode_files: [],
         description: "",
+        duration: "",
         order_number: prev.length + 1,
         is_free: false
       },
     ]);
   };
 
-  const toggleEditFile = (chapterId: number, fileOrderNumber: number) => {
-    setChapters((prev) =>
-      prev.map((chapter) =>
-        chapter.id === chapterId
+  const toggleEditFile = (episodeId: number, fileOrderNumber: number) => {
+    setEpisodes((prev) =>
+      prev.map((episode) =>
+        episode.id === episodeId
           ? {
-            ...chapter,
-            chapter_files: chapter.chapter_files.map((f) =>
+            ...episode,
+            episode_files: episode.episode_files.map((f: any) =>
               f.order_number === fileOrderNumber ? { ...f, isEditing: !f.isEditing } : f
             ),
           }
-          : chapter
+          : episode
       )
     );
   };
 
   const handleEditFileName = (
-    chapterId: number,
+    episodeId: number,
     fileOrderNumber: number,
     newTitle: string
   ) => {
-    setChapters((prev) =>
-      prev.map((chapter) =>
-        chapter.id === chapterId
+    setEpisodes((prev) =>
+      prev.map((episode) =>
+        episode.id === episodeId
           ? {
-            ...chapter,
-            chapter_files: chapter.chapter_files.map((f) =>
+            ...episode,
+            episode_files: episode.episode_files.map((f: any) =>
               f.order_number === fileOrderNumber ? { ...f, title: newTitle } : f
             ),
           }
-          : chapter
+          : episode
       )
     );
   };
 
-  const saveFileName = (chapterId: number, fileOrderNumber: number) => {
-    setChapters((prev) =>
-      prev.map((chapter) =>
-        chapter.id === chapterId
+  const saveFileName = (episodeId: number, fileOrderNumber: number) => {
+    setEpisodes((prev) =>
+      prev.map((episode) =>
+        episode.id === episodeId
           ? {
-            ...chapter,
-            chapter_files: chapter.chapter_files.map((f) =>
+            ...episode,
+            episode_files: episode.episode_files.map((f: any) =>
               f.order_number === fileOrderNumber
                 ? { ...f, isEditing: false }
                 : f
             ),
           }
-          : chapter
+          : episode
       )
     );
   };
 
-  const deleteFile = (chapterId: number, fileOrderNumber: number) => {
-    setChapters((prev) =>
-      prev.map((chapter) =>
-        chapter.id === chapterId
+  const deleteFile = (episodeId: number, fileOrderNumber: number) => {
+    setEpisodes((prev) =>
+      prev.map((episode) =>
+        episode.id === episodeId
           ? {
-            ...chapter,
-            chapter_files: chapter.chapter_files.filter((f) => f.order_number !== fileOrderNumber)
+            ...episode,
+            episode_files: episode.episode_files.filter((f: any) => f.order_number !== fileOrderNumber)
           }
-          : chapter
+          : episode
       )
     );
   };
@@ -309,13 +337,18 @@ const AddArtsForm: React.FC = () => {
       newErrors.highlights = "At least one highlight is required.";
     }
 
-    if (chapters.length === 0) {
-      newErrors.chapters = "At least one collection is required.";
+    const validFormats = ["MP3", "AAC", "WAV", "FLAC", "OGG"];
+    if (!formData.format || !validFormats.includes(formData.format.toUpperCase())) {
+      newErrors.format = "Format must be one of the following: MP3, AAC, WAV, FLAC, OGG.";
     }
 
-    chapters.forEach((chapter, index) => {
-      if (chapter.chapter_files.length === 0) {
-        newErrors[`chapter_${chapter.id}`] = `Collection ${index + 1} must have at least one file.`;
+    if (episodes.length === 0) {
+      newErrors.episodes = "At least one episode is required.";
+    }
+
+    episodes.forEach((episode, index) => {
+      if (episode.episode_files.length === 0) {
+        newErrors[`episode_${episode.id}`] = `Episode ${index + 1} must have at least one audio file.`;
       }
     });
 
@@ -358,37 +391,43 @@ const AddArtsForm: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const uploadedChapters = await Promise.all(
-        chapters.map(async (chapter) => {
+      const uploadedEpisodes = await Promise.all(
+        episodes.map(async (episode) => {
           const uploadedFiles = await Promise.all(
-            chapter.chapter_files.map(async (chapterFile) => {
-              if (chapterFile.file) {
-                const formDataUpload = new FormData();
-                formDataUpload.append('chapter_file', chapterFile.file);
+            episode.episode_files.map(async (episodeFile: any) => {
+              if (episodeFile.file) {
+                const formData = new FormData();
+                formData.append('audio', episodeFile.file);
 
                 try {
-                  const response = await UploadProductDocument('art-chapter', formDataUpload);
+                  const response = await UploadProductDocument('podcast-audio', formData);
                   const uploadData = response?.data?.data?.data;
 
                   return {
-                    url: uploadData?.image_url || uploadData?.document_url || "",
-                    title: chapterFile.title,
-                    order_number: chapterFile.order_number,
+                    url: uploadData?.track_url || "",
+                    title: episodeFile.title,
+                    order_number: episodeFile.order_number,
                   };
                 } catch (error) {
-                  throw new Error(`Failed to upload ${chapterFile.title}`);
+                  throw new Error(`Failed to upload ${episodeFile.title}`);
                 }
               }
-              return chapterFile;
+              return {
+                url: episodeFile.url,
+                title: episodeFile.title,
+                order_number: episodeFile.order_number,
+              };
             })
           );
 
           return {
-            title: chapter.title,
-            chapter_files: uploadedFiles,
-            description: chapter.description || "",
-            order_number: chapter.order_number,
-            is_free: chapter.is_free,
+            ...(episode.episode_id && { episode_id: episode.episode_id }),
+            title: episode.title,
+            episode_files: uploadedFiles,
+            description: episode.description || "",
+            duration: episode.duration || "00:00",
+            order_number: episode.order_number,
+            is_free: episode.is_free,
           };
         })
       );
@@ -399,31 +438,30 @@ const AddArtsForm: React.FC = () => {
         discount_percentage: formData.discount_percentage,
         mood_id: formData.mood_id,
         overview: formData.overview,
-        highlights: formData.highlights.join(', '),
+        highlights: formData.highlights,
+        total_duration: formData.total_duration || "00:00:00",
         language: formData.language,
         theme: formData.theme,
-        mediums: formData.mediums,
-        modern_trends: formData.modern_trends,
-        status: isDraft ? 'draft' : 'published',
-        chapters: uploadedChapters,
+        format: formData.format,
+        episodes: uploadedEpisodes,
       };
 
-      const response = await CreateArtProduct(payload);
-      const productId = response?.data?.data?.product_id;
+      await UpdatePodcastProduct(payload, productId);
+
+      const status = isDraft ? 'draft' : 'published';
+      await UpdateProductStatus({ status }, productId);
 
       showToast({
-        message: isDraft 
-          ? "Art product saved as draft successfully" 
-          : "Art product created successfully",
+        message: isDraft ? "Podcast product saved as draft successfully" : "Podcast product updated successfully",
         type: "success",
         duration: 3000,
       });
 
       setErrors({});
 
-      if (isDraft && productId) {
+      if (isDraft) {
         setTimeout(() => {
-          navigate(`/dashboard/products/art-preview/${productId}?category=art`);
+          navigate(`/dashboard/products/podcast-preview/${productId}?category=podcast`);
         }, 1500);
       } else {
         setTimeout(() => {
@@ -432,7 +470,7 @@ const AddArtsForm: React.FC = () => {
       }
     } catch (error: any) {
       showToast({
-        message: error?.message || error?.response?.data?.error?.message || 'Failed to create art product',
+        message: error?.message || error?.response?.data?.error?.message || 'Failed to update podcast product',
         type: "error",
         duration: 3000,
       });
@@ -443,9 +481,9 @@ const AddArtsForm: React.FC = () => {
 
   const handleAddHighlight = () => {
     if (newHighlight.trim()) {
-      if (formData.highlights.length >= 5) {
+      if (formData.highlights.length >= 3) {
         showToast({
-          message: "Maximum 5 highlights allowed",
+          message: "Maximum 3 highlights allowed",
           type: "error",
           duration: 3000,
         });
@@ -487,6 +525,14 @@ const AddArtsForm: React.FC = () => {
     navigate('/dashboard/products');
   };
 
+  if (isFetchingData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
   return (
     <>
       <Breadcrumb
@@ -496,8 +542,8 @@ const AddArtsForm: React.FC = () => {
 
       <div className="max-w-9xl mx-auto px-2 py-1 space-y-10">
         <FormSection
-          title="Add Arts"
-          description="Upload your digital art collections, set pricing, and make them available for buyers on the marketplace."
+          title="Edit Podcast"
+          description="Update your podcast episodes, pricing, and publish them to the marketplace."
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <InputField
@@ -557,7 +603,7 @@ const AddArtsForm: React.FC = () => {
                 name="overview"
                 value={formData.overview}
                 onChange={handleChange}
-                placeholder="Describe your artwork"
+                placeholder="Describe your podcast"
                 className="w-full h-32 px-3 py-2 border border-gray-200 rounded-md resize-none focus:ring-2 focus:ring-[#7077FE]"
                 required
               />
@@ -565,7 +611,7 @@ const AddArtsForm: React.FC = () => {
             </div>
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Highlights * (Max 5)
+                Highlights * (Max 3)
               </label>
               <div className="space-y-3">
                 {formData?.highlights?.map((highlight: any, index: number) => (
@@ -587,7 +633,7 @@ const AddArtsForm: React.FC = () => {
                   </div>
                 ))}
 
-                {formData.highlights.length < 5 && (
+                {formData.highlights.length < 3 && (
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -613,36 +659,47 @@ const AddArtsForm: React.FC = () => {
                 )}
 
                 <p className="text-sm text-gray-500">
-                  Add up to 5 key highlights about your artwork
+                  Add up to 3 key highlights about your podcast
                 </p>
               </div>
               {errors.highlights && <span className="text-red-500 text-sm mt-1">{errors.highlights}</span>}
             </div>
 
             <InputField
+              label="Total Duration (HH:MM:SS)"
+              placeholder="e.g., 30:00:00"
+              name="total_duration"
+              value={formData.total_duration}
+              onChange={handleChange}
+              error={errors.total_duration}
+            />
+            <InputField
               label="Theme"
-              placeholder="Describe the art theme"
+              placeholder="Describe the podcast theme"
               name="theme"
               value={formData.theme}
               onChange={handleChange}
               error={errors.theme}
             />
-            <InputField
-              label="Medium"
-              placeholder="Describe the art creation mediums like oils, digital tools"
-              name="mediums"
-              value={formData.mediums}
-              onChange={handleChange}
-              error={errors.mediums}
-            />
-            <InputField
-              label="Modern Trends"
-              placeholder="Enter your art trends"
-              name="modern_trends"
-              value={formData.modern_trends}
-              onChange={handleChange}
-              error={errors.modern_trends}
-            />
+
+            <div>
+              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+                Format
+              </label>
+              <select
+                name="format"
+                value={formData.format}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE]">
+                <option value="">Select Format</option>
+                <option value="MP3">MP3</option>
+                <option value="WAV">WAV</option>
+                <option value="AAC">AAC</option>
+                <option value="FLAC">FLAC</option>
+                <option value="OGG">OGG</option>
+              </select>
+            </div>
+
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
                 Language
@@ -658,22 +715,23 @@ const AddArtsForm: React.FC = () => {
                 <option value="French">French</option>
                 <option value="German">German</option>
               </select>
+              {errors.language && <span className="text-red-500 text-sm mt-1">{errors.language}</span>}
             </div>
           </div>
         </FormSection>
 
-        <FormSection title="Collections" description="">
+        <FormSection title="Episodes" description="">
           <div className="space-y-6">
-            {chapters.map((chapter) => (
+            {episodes.map((episode) => (
               <div
-                key={chapter.id}
+                key={episode.id}
                 className="border border-gray-200 rounded-lg p-4 shadow-sm bg-white"
               >
                 <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
-                  {chapter.title}
+                  {episode.title}
                 </h3>
                 <p className="text-sm text-[#665B5B] mb-4">
-                  Upload artwork files (images, PDFs, etc.)
+                  Upload episode {episode.order_number} audio files
                 </p>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -683,9 +741,9 @@ const AddArtsForm: React.FC = () => {
                     </svg>
                     <input
                       type="file"
-                      accept="image/*,.pdf,.zip"
+                      accept="audio/*"
                       className="hidden"
-                      onChange={(e) => handleAddFile(e, chapter.id)}
+                      onChange={(e) => handleAddFile(e, episode.id)}
                       multiple
                     />
                     <div className="text-center space-y-2">
@@ -696,36 +754,32 @@ const AddArtsForm: React.FC = () => {
                         Drag & drop or click to upload
                       </p>
                       <p className="text-xs text-[#665B5B]">
-                        JPG, PNG, SVG, WEBP, PDF, ZIP (max 100 MB)
+                        MP3, WAV, AAC (max 20 MB)
                       </p>
                     </div>
                   </label>
 
                   <div className="space-y-3">
-                    {chapter.chapter_files.length === 0 ? (
+                    {episode.episode_files.length === 0 ? (
                       <div className="text-sm text-gray-500 border border-gray-100 rounded-lg p-4 bg-gray-50">
                         No files uploaded yet
                       </div>
                     ) : (
-                      chapter.chapter_files.map((file) => (
+                      episode.episode_files.map((file: any) => (
                         <div
                           key={file.order_number}
                           className="border border-gray-200 rounded-lg p-3 bg-white"
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-2">
-                              {file.title.match(/\.(jpg|jpeg|png|gif|svg|webp)$/i) ? (
-                                <Image className="w-5 h-5 text-[#242E3A]" />
-                              ) : (
-                                <FileText className="w-5 h-5 text-[#242E3A]" />
-                              )}
+                              <Music className="w-5 h-5 text-[#242E3A]" />
                               {file.isEditing ? (
                                 <input
                                   type="text"
                                   value={file.title}
                                   onChange={(e) =>
                                     handleEditFileName(
-                                      chapter.id,
+                                      episode.id,
                                       file.order_number,
                                       e.target.value
                                     )
@@ -741,7 +795,7 @@ const AddArtsForm: React.FC = () => {
                             <div className="flex items-center space-x-2">
                               {file.isEditing ? (
                                 <button
-                                  onClick={() => saveFileName(chapter.id, file.order_number)}
+                                  onClick={() => saveFileName(episode.id, file.order_number)}
                                   className="text-[#7077FE] text-sm font-semibold"
                                 >
                                   Save
@@ -750,14 +804,14 @@ const AddArtsForm: React.FC = () => {
                                 <>
                                   <button
                                     onClick={() =>
-                                      toggleEditFile(chapter.id, file.order_number)
+                                      toggleEditFile(episode.id, file.order_number)
                                     }
                                     className="text-gray-500 hover:text-[#7077FE]"
                                   >
                                     <SquarePen className="w-4 h-4" />
                                   </button>
                                   <button
-                                    onClick={() => deleteFile(chapter.id, file.order_number)}
+                                    onClick={() => deleteFile(episode.id, file.order_number)}
                                     className="text-gray-500 hover:text-red-500"
                                   >
                                     <Trash2 className="w-4 h-4" />
@@ -781,24 +835,24 @@ const AddArtsForm: React.FC = () => {
                     )}
                   </div>
                 </div>
-                {errors[`chapter_${chapter.id}`] && (
-                  <p className="text-red-500 text-sm mt-2">{errors[`chapter_${chapter.id}`]}</p>
+                {errors[`episode_${episode.id}`] && (
+                  <p className="text-red-500 text-sm mt-2">{errors[`episode_${episode.id}`]}</p>
                 )}
               </div>
             ))}
 
             <button
-              onClick={handleAddChapter}
+              onClick={handleAddEpisode}
               className="relative w-full rounded-lg py-4 text-[#7077FE] font-medium bg-white cursor-pointer group overflow-hidden transition-all"
             >
               <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
                 <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="10" ry="10" stroke="#CBD5E1" strokeWidth="2" strokeDasharray="6,6" fill="none" className="transition-colors duration-300 group-hover:stroke-[#7077FE]" />
               </svg>
-              + Add Collection
+              + Add Episode
             </button>
 
-            {errors.chapters && (
-              <p className="text-red-500 text-sm mt-2">{errors.chapters}</p>
+            {errors.episodes && (
+              <p className="text-red-500 text-sm mt-2">{errors.episodes}</p>
             )}
           </div>
         </FormSection>
@@ -868,4 +922,4 @@ const AddArtsForm: React.FC = () => {
   );
 };
 
-export default AddArtsForm;
+export default EditPodcastForm;

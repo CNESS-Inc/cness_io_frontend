@@ -1,13 +1,43 @@
-import React, { useState, useRef, useEffect } from "react";
-import uploadimg from "../assets/upload1.svg";
-//import { ChevronRight } from "lucide-react";
-import Breadcrumb from "../components/MarketPlace/Breadcrumb";
-import CategoryModel from "../components/MarketPlace/CategoryModel";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { RiArrowRightSLine } from "react-icons/ri";
+import { useNavigate, useParams } from "react-router-dom";
+import { GetMarketPlaceMoods, GetPreviewProduct, UpdateProductStatus, UpdateVideoProduct, UploadProductDocument } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { CreateVideoProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument } from "../Common/ServerAPI";
+import uploadimg from "../assets/upload1.svg";
 import { Plus, X } from "lucide-react";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+
+// const guitarImg = 'https://cdn.cness.io/VIDEO%20(1).svg';
+// const storytellerImg = 'https://cdn.cness.io/freame2.svg';
+
+// Breadcrumb component
+const Breadcrumb = () => (
+  <nav
+    className="mb-6 px-8 text-gray-700 text-sm"
+    style={{ fontFamily: "Poppins" }}
+    aria-label="Breadcrumb"
+  >
+    <ol className="list-reset flex">
+      <li>
+        <a href="/dashboard/seller-dashboard" className="text-black-600">
+          Home
+        </a>
+      </li>
+      <li className="flex items-center">
+        <RiArrowRightSLine className="mx-2 text-slate-500" />
+      </li>
+      <li>
+        <a href="/dashboard/products" className="text-black-600">
+          Products
+        </a>
+      </li>
+      <li className="flex items-center">
+        <RiArrowRightSLine className="mx-2 text-slate-500" />
+      </li>
+      <li className="text-gray-500">Edit Product</li>
+    </ol>
+  </nav>
+);
 
 interface FormSectionProps {
   title: string;
@@ -82,6 +112,7 @@ interface FileUploadProps {
   defaultPreview?: string;
   error?: string;
   videoFile?: File | null;
+  existingVideoUrl?: string;
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
@@ -92,6 +123,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   onRemove,
   defaultPreview,
   error,
+  existingVideoUrl,
 }) => {
   const [preview, setPreview] = useState<string | null>(defaultPreview || null);
   const [isUploading, setIsUploading] = useState(false);
@@ -112,7 +144,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith("video/")) {
       showToast({
         message: "Please upload a video file",
@@ -122,7 +153,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
       return;
     }
 
-    // Validate file size (100MB max for videos)
     if (file.size > 100 * 1024 * 1024) {
       showToast({
         message: "File size should be less than 100MB",
@@ -135,11 +165,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
     setIsUploading(true);
 
     try {
-      // Create temporary preview
       const videoURL = URL.createObjectURL(file);
       setPreview(videoURL);
 
-      // Store file in state, don't upload yet
       if (onUploadSuccess) {
         onUploadSuccess(file);
       }
@@ -165,7 +193,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
     if (onRemove) {
       onRemove();
     }
-    // Reset file input
     if (fileRef.current) {
       fileRef.current.value = '';
     }
@@ -183,7 +210,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
         className={`relative rounded-lg p-6 text-center cursor-pointer transition-all ${error ? 'bg-red-50' : 'bg-[#F9FAFB] hover:bg-[#EEF3FF]'
           }`}
       >
-        {/* ✅ SVG Dashed Border */}
         <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
           <rect
             x="1"
@@ -211,11 +237,20 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
         {preview ? (
           <div className="relative">
-            <video
+            <img
               src={preview}
-              className="w-full max-h-64 rounded-lg object-cover"
-              controls={false}
+              alt="Video thumbnail"
+              className="rounded-xl w-full h-54 object-cover"
             />
+
+            {/* Centered Play Button */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <img
+                src="/path/to/play-button.png" // replace with your play icon
+                alt="Play Button"
+                className="w-12 h-12"
+              />
+            </div>
             <button
               type="button"
               onClick={(e) => {
@@ -245,41 +280,89 @@ const FileUpload: React.FC<FileUploadProps> = ({
           </div>
         )}
       </div>
+      {existingVideoUrl && !preview && (
+        <p className="text-sm text-gray-500 mt-2">Current video is uploaded. Upload a new one to replace it.</p>
+      )}
       {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>
   );
 };
 
-const AddVideoForm: React.FC = () => {
+const EditVideoProductPage: React.FC = () => {
   const navigate = useNavigate();
+  const params = useParams();
+  const productId = params?.productNo;
   const { showToast } = useToast();
-  const [showModal, setShowModal] = useState(false);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetchingData, setIsFetchingData] = useState(true);
   const [moods, setMoods] = useState<string[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
   const [mainVideoFile, setMainVideoFile] = useState<File | null>(null);
   const [shortVideoFile, setShortVideoFile] = useState<File | null>(null);
   const [newHighlight, setNewHighlight] = useState("");
+  const [mainVideoPreview, setMainVideoPreview] = useState("");
+  const [shortVideoPreview, setShortVideoPreview] = useState("");
 
-  const handleSelectCategory = (category: string) => {
-    setShowModal(false); // Close modal first
-    
-    const routes: Record<string, string> = {
-      Video: "/dashboard/products/add-video",
-      Music: "/dashboard/products/add-music",
-      Course: "/dashboard/products/add-course",
-      Podcasts: "/dashboard/products/add-podcast",
-      Ebook: "/dashboard/products/add-ebook",
-      Arts: "/dashboard/products/add-arts",
+  const [formData, setFormData] = useState({
+    product_title: "",
+    price: 0,
+    discount_percentage: 0,
+    mood_id: "",
+    video_url: "",
+    thumbnail_url: "",
+    overview: "",
+    highlights: [] as string[],
+    duration: "",
+    language: "",
+    short_video_url: "",
+    summary: "",
+  });
+
+  useEffect(() => {
+    const fetchProductData = async () => {
+      if (!productId) return;
+
+      setIsFetchingData(true);
+      try {
+        const response = await GetPreviewProduct('video', productId);
+        const productData = response?.data?.data;
+
+        if (productData) {
+          setFormData({
+            product_title: productData.product_title || "",
+            price: parseFloat(productData.original_price || productData.price || "0"),
+            discount_percentage: parseFloat(productData.discount_percentage || "0"),
+            mood_id: productData.mood_id || "",
+            video_url: productData.video_details?.video_files?.[0] || "",
+            thumbnail_url: productData.video_details?.thumbnail_url || "",
+            overview: productData.overview || "",
+            highlights: productData.highlights || [],
+            duration: productData.video_details?.duration || "",
+            language: productData.language || "",
+            short_video_url: productData.video_details?.short_preview_video_url || "",
+            summary: productData.video_details?.summary_of_storytelling || "",
+          });
+        }
+        setMainVideoPreview(productData.video_details?.thumbnail_url);
+        setShortVideoPreview(productData.video_details?.short_video?.thumbnail);
+
+      } catch (error: any) {
+        showToast({
+          message: error?.response?.data?.error?.message || "Failed to load product data.",
+          type: "error",
+          duration: 3000,
+        });
+        navigate('/dashboard/products');
+      } finally {
+        setIsFetchingData(false);
+      }
     };
-    
-    const path = routes[category];
-    if (path) {
-      navigate(path);
+
+    if (productId) {
+      fetchProductData();
     }
-  };
+  }, [productId]);
 
   useEffect(() => {
     const fetchMoods = async () => {
@@ -298,41 +381,6 @@ const AddVideoForm: React.FC = () => {
     fetchMoods();
   }, []);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await GetMarketPlaceCategories();
-        if (response?.data?.data) {
-          setCategories(response.data.data);
-        }
-      } catch (error: any) {
-        const errorMessage = error?.response?.data?.error?.message || "Failed to load categories.";
-        showToast({
-          message: errorMessage,
-          type: "error",
-          duration: 3000,
-        });
-      }
-    };
-
-    fetchCategories();
-  }, []);
-
-  const [formData, setFormData] = useState({
-    product_title: "",
-    price: 0,
-    discount_percentage: 0,
-    mood_id: "",
-    video_url: "", // video_id
-    overview: "",
-    highlights: [] as string[],
-    duration: "",
-    language: "",
-    short_video_url: "", // short video URL
-    summary: "",
-    status: "",
-  });
-
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
 
@@ -346,7 +394,6 @@ const AddVideoForm: React.FC = () => {
       newErrors.discount_percentage = "Discount percentage must be between 0 and 100.";
     }
     if (!formData.mood_id.trim()) newErrors.mood_id = "Mood Selection is required.";
-    // if (!formData.video_url.trim()) newErrors.video_url = "Main video is required.";
     if (!formData.overview.trim()) newErrors.overview = "Overview is required.";
 
     if (formData.highlights.length === 0) {
@@ -383,97 +430,40 @@ const AddVideoForm: React.FC = () => {
 
     setFormData(prev => ({ ...prev, [name]: value }));
 
-    const toStr = (v: unknown) => (v === undefined || v === null ? "" : String(v));
-    const valStr = toStr(value).trim();
-
-    let message = "";
-    switch (name) {
-      case "product_title":
-        if (!valStr) message = "Product title is required";
-        break;
-
-      case "price":
-        if (value === "" || isNaN(parseFloat(value)) || parseFloat(value) <= 0) {
-          message = "Price must be a positive number";
-        }
-        break;
-
-      case "discount_percentage":
-        const discount = parseFloat(value);
-        if (value === "" || isNaN(discount)) {
-          message = "Discount percentage must be a number";
-        } else if (discount < 0 || discount > 100) {
-          message = "Discount percentage must be between 0 and 100";
-        }
-        break;
-
-      case "mood_id":
-        if (!valStr) message = "Mood Selection is required";
-        break;
-
-      case "video_url":
-        if (!valStr) message = "Video URL is required";
-        break;
-
-      case "overview":
-        if (!valStr) message = "Overview is required";
-        break;
-
-      case "highlights":
-        if (Array.isArray(value) && value.length === 0) {
-          message = "At least one highlight is required";
-        } else if (Array.isArray(value) && value.some((highlight: string) => !highlight.trim())) {
-          message = "Highlights cannot contain empty values";
-        }
-        break;
-
-      case "duration":
-        if (valStr && !/^\d{2}:\d{2}:\d{2}$/.test(valStr)) message = "Invalid duration format. Use HH:MM:SS";
-        break;
-
-      case "summary":
-        if (!valStr) message = "Summary is required";
-        break;
-
-      default:
-        break;
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: "" }));
     }
-
-    setErrors(prev => ({ ...prev, [name]: message }));
   };
 
   const uploadVideos = async () => {
     const uploadedData: any = {};
 
-    if (!mainVideoFile) {
-      showToast({
-        message: "Main video is required.",
-        type: "error",
-        duration: 3000,
-      });
-      return;
-    }
-
-    // Upload main video
+    // Upload main video if new file is selected
     if (mainVideoFile) {
       const mainFormData = new FormData();
       mainFormData.append('video', mainVideoFile);
 
       try {
         const mainResponse = await UploadProductDocument('main-video', mainFormData);
-        uploadedData.video_id = mainResponse?.data?.data?.video_id;
+        const videoData = mainResponse?.data?.data?.data;
+
+        uploadedData.video_url = videoData?.video_id;
+        uploadedData.thumbnail_url = videoData?.thumbnail;
       } catch (error: any) {
         throw new Error(error?.response?.data?.error?.message || "Failed to upload main video");
       }
     }
-    // Upload short video (optional)
+
+    // Upload short video if new file is selected (optional)
     if (shortVideoFile) {
       const shortFormData = new FormData();
       shortFormData.append('short_video', shortVideoFile);
 
       try {
         const shortResponse = await UploadProductDocument('short-video', shortFormData);
-        uploadedData.short_video_id = shortResponse?.data?.data?.video_url;
+        const videoData = shortResponse?.data?.data;
+
+        uploadedData.short_video_url = videoData?.video_url;
       } catch (error: any) {
         throw new Error(error?.response?.data?.error?.message || "Failed to upload short video");
       }
@@ -494,31 +484,62 @@ const AddVideoForm: React.FC = () => {
 
     setIsLoading(true);
     try {
+      // Step 1: Upload new videos first (if any)
       const uploadedData = await uploadVideos();
 
-      const payload = {
-        ...formData,
-        video_url: uploadedData.video_id,
-        short_video_url: uploadedData.short_video_id || "",
-        status: isDraft ? 'draft' : 'published'
+      // Step 2: Prepare payload with updated data
+      const payload: any = {
+        product_title: formData.product_title,
+        price: formData.price,
+        discount_percentage: formData.discount_percentage,
+        overview: formData.overview,
+        highlights: formData.highlights,
+        duration: formData.duration,
+        language: formData.language,
+        summary: formData.summary,
       };
 
-      const response = await CreateVideoProduct(payload);
-      console.log('response', response)
+      // Add video URLs only if new videos were uploaded
+      if (uploadedData.video_url) {
+        payload.video_url = uploadedData.video_url;
+      }
+      if (uploadedData.thumbnail_url) {
+        payload.thumbnail_url = uploadedData.thumbnail_url;
+      }
+      if (uploadedData.short_video_url) {
+        payload.short_video_url = uploadedData.short_video_url;
+      }
+
+      // Step 3: Update product details
+      await UpdateVideoProduct(payload, productId);
+
+      // Step 4: Update product status
+      const status = isDraft ? 'draft' : 'published';
+      await UpdateProductStatus({ status }, productId);
 
       showToast({
-        message: isDraft ? "Product saved as draft" : "Product submitted successfully",
+        message: isDraft ? "Product saved as draft successfully" : "Product published successfully",
         type: "success",
         duration: 3000,
       });
+
       setErrors({});
 
-      setTimeout(() => {
-        navigate(isDraft ? `/dashboard/products/preview/${response?.data?.data?.product_id}?category=video` : '/dashboard/products');
-      }, 1500);
+      // Navigate based on action
+      if (isDraft) {
+        // Navigate to preview page for draft
+        setTimeout(() => {
+          navigate(`/dashboard/products/preview/${productId}?category=video`);
+        }, 1500);
+      } else {
+        // Navigate to products list for published
+        setTimeout(() => {
+          navigate('/dashboard/products');
+        }, 1500);
+      }
     } catch (error: any) {
       showToast({
-        message: error?.message || error?.response?.data?.error?.message || 'Failed to submit product',
+        message: error?.message || error?.response?.data?.error?.message || 'Failed to update product',
         type: "error",
         duration: 3000,
       });
@@ -590,24 +611,22 @@ const AddVideoForm: React.FC = () => {
     setShortVideoFile(null);
   };
 
-  if (isLoading) {
+  if (isFetchingData) {
     return (
-      <LoadingSpinner />
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
     );
   }
 
   return (
-    <>
-      <Breadcrumb
-        onAddProductClick={() => setShowModal(true)}
-        onSelectCategory={handleSelectCategory}
-      />
-
+    <div className="min-h-screen py-1 font-poppins" style={{ fontFamily: "Poppins" }}>
+      <Breadcrumb />
       <div className="max-w-9xl mx-auto px-2 py-1 space-y-10">
-        {/* Add Video Section */}
+        {/* Edit Video Section */}
         <FormSection
-          title="Add Video"
-          description="Upload your digital product details, set pricing, and make it available for buyers on the marketplace."
+          title="Edit Video"
+          description="Update your digital product details, pricing, and availability on the marketplace."
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <InputField
@@ -659,20 +678,21 @@ const AddVideoForm: React.FC = () => {
           <div className="mt-8">
             <FileUpload
               label="Upload Video *"
-              description="Drag & drop or click to upload"
+              description="Drag & drop or click to upload new video"
               fileType="main-video"
               onUploadSuccess={handleMainVideoUpload}
               onRemove={handleRemoveMainVideo}
+              defaultPreview={mainVideoPreview}
               error={errors.video_url}
               videoFile={mainVideoFile}
+              existingVideoUrl={formData.video_url}
             />
           </div>
         </FormSection>
 
-        {/* Details Section */}
         <FormSection
           title="Details"
-          description="Add detailed information about your product."
+          description="Update detailed information about your product."
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
@@ -689,6 +709,7 @@ const AddVideoForm: React.FC = () => {
               />
               {errors.overview && <span className="text-red-500 text-sm mt-1">{errors.overview}</span>}
             </div>
+
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
                 Highlights * (Max 3)
@@ -725,7 +746,7 @@ const AddVideoForm: React.FC = () => {
                           handleAddHighlight();
                         }
                       }}
-                      placeholder="Add a highlight (e.g., Guided relaxation for stress relief)"
+                      placeholder="Add a highlight"
                       className="flex-1 px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
                     />
                     <button
@@ -739,11 +760,12 @@ const AddVideoForm: React.FC = () => {
                 )}
 
                 <p className="text-sm text-gray-500">
-                  Add up to 3 key highlights about your video (e.g., "Guided relaxation for stress relief", "Mindfulness and breathing techniques")
+                  Add up to 3 key highlights about your video
                 </p>
               </div>
               {errors.highlights && <span className="text-red-500 text-sm mt-1">{errors.highlights}</span>}
             </div>
+
             <InputField
               label="Duration (HH:MM:SS)"
               placeholder="e.g., 01:10:00"
@@ -775,16 +797,18 @@ const AddVideoForm: React.FC = () => {
         {/* Storytelling Section */}
         <FormSection
           title="Storytelling"
-          description="Add a short video and description to explain your content."
+          description="Update short video and description."
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <FileUpload
               label="Short Video (Optional)"
-              description="Drag & drop or click to upload"
+              description="Drag & drop or click to upload new short video"
               fileType="short-video"
               onUploadSuccess={handleShortVideoUpload}
               onRemove={handleRemoveShortVideo}
+              defaultPreview={shortVideoPreview}
               videoFile={shortVideoFile}
+              existingVideoUrl={formData.short_video_url}
             />
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
@@ -808,62 +832,59 @@ const AddVideoForm: React.FC = () => {
           <button
             type="button"
             onClick={handleDiscard}
-            className=" px-5 py-3 text-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%] tracking-[0]  hover:text-blue-500 transition-colors">
+            disabled={isLoading}
+            className="px-5 py-3 text-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] hover:text-blue-500 transition-colors disabled:opacity-50"
+          >
             Discard
           </button>
           <button
             type="button"
             onClick={() => handleSubmit(true)}
             disabled={isLoading}
-            className="px-5 py-3 bg-white text-[#7077FE] border border-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%] tracking-[0] hover:bg-gray-300 transition-colors">
+            className="px-5 py-3 bg-white text-[#7077FE] border border-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] hover:bg-gray-50 transition-colors disabled:opacity-50"
+          >
             {isLoading ? "Saving..." : "Preview"}
           </button>
           <button
-            type='button'
+            type="button"
             onClick={() => handleSubmit(false)}
             disabled={isLoading}
-            className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%] tracking-[0] hover:bg-[#5a60ea] transition-colors">
-            {isLoading ? "Submitting..." : "Submit"}
+            className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] hover:bg-[#5a60ea] transition-colors disabled:opacity-50"
+          >
+            {isLoading ? "Publishing..." : "Submit"}
           </button>
         </div>
       </div>
-      {showModal && (
-        <CategoryModel
-          open={showModal}
-          onClose={() => setShowModal(false)}
-          onSelect={handleSelectCategory}
-          category={categories}
-        />
-      )}
+
       {showDiscardModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowDiscardModal(false)}></div>
           <div className="relative z-10 bg-white rounded-[20px] shadow-lg p-8 w-[450px]">
             <h3 className="text-[20px] font-semibold font-['Poppins'] text-[#242E3A] mb-4">
-              Discard Product?
+              Cancel Changes?
             </h3>
             <p className="text-[14px] text-[#665B5B] font-['Open_Sans'] mb-6">
-              Are you sure you want to discard this product? All your entered details will not be saved.
+              Are you sure you want to cancel? All your changes will not be saved.
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowDiscardModal(false)}
                 className="px-5 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                Cancel
+                Continue Editing
               </button>
               <button
                 onClick={confirmDiscard}
                 className="px-5 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
               >
-                Yes, Discard
+                Yes, Cancel
               </button>
             </div>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
-export default AddVideoForm;
+export default EditVideoProductPage;
