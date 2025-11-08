@@ -239,6 +239,7 @@ export const EndPoint = {
   payment_method: "/payment-method",
 
   add_mentor: "/mentor",
+  check_mentor_or_partner: "/bussiness-hub/form-submited",
 
   //marketplace endpoints
   create_shop: "/seller-onboarding",
@@ -1514,6 +1515,9 @@ export const createPartnerInquiry = (formData: any): ApiResponse => {
 };
 export const createMentor = (formData: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.add_mentor);
+};
+export const isMentorOrPartner = (): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.check_mentor_or_partner);
 };
 
 export const LogOut = () => {

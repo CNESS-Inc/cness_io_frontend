@@ -63,7 +63,7 @@ export default function MyPost({
   onDeletePost,
   onDeleteSavePost,
 }: MyPostProps) {
-  const total = likes + (reflections ?? 0);
+  // const total = likes + (reflections ?? 0);
   return (
     <article
       onClick={onClick}
@@ -201,7 +201,7 @@ export default function MyPost({
         </div>
 
         <span className="whitespace-nowrap font-medium text-gray-600 text-sm">
-          {formatCount(total)}
+          {formatCount(likes)}
         </span>
 
         <div className="ml-auto flex items-center gap-2">

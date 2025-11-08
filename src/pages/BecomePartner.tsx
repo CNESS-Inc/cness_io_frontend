@@ -10,8 +10,12 @@ import partner5 from "../assets/partner5.svg";
 import bulb from "../assets/bulb.png";
 import "react-international-phone/style.css";
 import { PhoneInput } from "react-international-phone";
-import { useState } from "react";
-import { createPartnerInquiry } from "../Common/ServerAPI";
+import { useEffect, useState } from "react";
+import {
+  createPartnerInquiry,
+  isMentorOrPartner,
+  OrgTypeDetails,
+} from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import clsx from "clsx";
 
@@ -35,8 +39,6 @@ const features = [
       "Collaborate with Mentors, share best practices, and contribute to scaling conscious business worldwide.",
   },
 ];
-
-
 
 const cards = [
   {
@@ -139,6 +141,9 @@ const BecomePartner = () => {
     text: string;
   } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasSubmittedMentorForm, setHasSubmittedMentorForm] = useState<
+    boolean | null
+  >(null);
 
   const getFieldError = (fieldName: string, value: string): string | null => {
     const validations: { [key: string]: (val: string) => string | null } = {
@@ -391,478 +396,564 @@ const BecomePartner = () => {
     return hasAttemptedSubmit && fieldErrors[fieldName];
   };
 
+  const fetchSubmit = async () => {
+    try {
+      const res = await isMentorOrPartner();
+      setHasSubmittedMentorForm(res.data.data.partner_form);
+    } catch (error: any) {
+      showToast({
+        message: error.response.data.error.message,
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  const fetchOrgType = async () => {
+    try {
+      const res = await OrgTypeDetails();
+      console.log("🚀 ~ fetchOrgType ~ res:", res);
+      // setOrgSize(res?.data?.data);
+    } catch (error: any) {
+      if (error?.response?.data?.error?.message) {
+        showToast({
+          message: error?.response?.data?.error?.message,
+          type: "error",
+          duration: 5000,
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchSubmit();
+    fetchOrgType();
+  }, []);
+
   return (
     <>
-            <div className="px-5 2xl:px-5 pt-2 md:pt-2 pb-5 md:pb-18">
-
-      <div className="m-0 p-0">
-        <div
-          className="py-[33px] px-10"
-          style={{
-            background:
-              "linear-gradient(128.73deg, #FFFFFF 27.75%, #FEDFDF 100.43%, #F1A5E5 101.52%)",
-          }}
-        >
-          <div className="flex flex-col lg:flex-row justify-between items-stretch gap-5">
-            <div className="w-full lg:w-1/3 py-[30px] px-[26px] gap-6 bg-white rounded-[40px]">
-              <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[42px] lg:text-3xl xl:text-[42px] md:leading-[54px] lg:leading-[40px] xl:leading-[54px] text-wrap">
-                <span className="text-[#1A1A1A]">Grow With Purpose. </span>
-                <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent block">
-                  Partner With CNESS.
-                </span>
-              </h1>
-              <h5 className="py-3 font-['Open_Sans',Helvetica] text-base font-light text-[#242424] leading-[24px]">
-                Join hands with us to embed conscious practices in organizations
-                and communities. As a CNESS Partner, you gain visibility,
-                credibility, and the chance to co-create global impact.
-              </h5>
-              <div className="pt-6">
-                <button
-                  className="py-4 px-5 font-['Open_Sans',Helvetica] text-black font-medium text-sm text-white rounded-full"
-                  onClick={() => {
-                    const element = document.getElementById("apply_partner");
-                    if (element) {
-                      element.scrollIntoView({ behavior: "smooth" });
-                    }
-                  }}
-                  style={{
-                    background:
-                      "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
-                  }}
-                >
-                  Apply to Become a Partner
-                </button>
-              </div>
-            </div>
-            <div className="w-full lg:w-2/3 rounded-[40px]">
-              <img
-                src="https://cdn.cness.io/partner_banner.jpg"
-                alt="partner main poster"
-                className="w-full h-[427px] lg:h-full object-cover object-top pointer-events-none select-none rounded-[40px]"
-                aria-hidden="true"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="py-12 flex flex-col justify-center items-center mx-auto bg-white">
-          <h1 className="text-center font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px]">
-            <span className="text-black">Why Become a </span>
-            <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
-              CNESS Partner
-            </span>
-          </h1>
-          <h5 className="py-3 px-5 sm:px-10 md:px-20 font-['Open_Sans',Helvetica] font-light text-base text-center text-[#242424] leading-[24px]">
-            CNESS Partners are consultancies, agencies, and specialists who
-            extend the power of the CNESS framework into organizations. From HR
-            and DEI firms to ESG consultants and leadership coaches, Partners
-            help businesses adopt conscious practices that drive real
-            transformation. To qualify as a Partner, you must employ at least
-            one CNESS-certified professional, complete partner training, and
-            sign a license agreement. In return, you receive recognition as an
-            official CNESS Partner — a mark of trust and credibility.
-          </h5>
-        </div>
-
-        <div className="w-full flex mx-auto flex-col justify-center items-center bg-[#F5F7F9] pt-10 pb-[86px] px-5 sm:px-14">
-          <h1 className="font-['Poppins',Helvetica] text-center font-medium text-2xl md:text-[32px] sm:leading-[54px]">
-            <span className="text-black">What does a </span>
-            <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
-              Partner do?
-            </span>
-          </h1>
-          <div className="w-full pt-10">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[40px]">
-              {features.map((item) => (
-                <div
-                  key={item.id}
-                  className="relative flex flex-col rounded-4xl bg-white hover:shadow-md transition p-[30px] gap-3"
-                >
-                  {/* Top right icon */}
-                  <div className="absolute top-4 right-4 w-[34px] h-[34px]">
-                    <img src={bulb} alt="bulb" />
-                  </div>
-
-                  {/* Number */}
-                  <span className="font-['Poppins',Helvetica] block text-lg text-[#B6B6B6] font-medium">
-                    {item.id}
+      <div className="px-5 2xl:px-5 pt-2 md:pt-2 pb-5 md:pb-18">
+        <div className="m-0 p-0">
+          <div
+            className="py-[33px] px-10"
+            style={{
+              background:
+                "linear-gradient(128.73deg, #FFFFFF 27.75%, #FEDFDF 100.43%, #F1A5E5 101.52%)",
+            }}
+          >
+            <div className="flex flex-col lg:flex-row justify-between items-stretch gap-5">
+              <div className="w-full lg:w-1/3 py-[30px] px-[26px] gap-6 bg-white rounded-[40px]">
+                <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[42px] lg:text-3xl xl:text-[42px] md:leading-[54px] lg:leading-[40px] xl:leading-[54px] text-wrap">
+                  <span className="text-[#1A1A1A]">Grow With Purpose. </span>
+                  <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent block">
+                    Partner With CNESS.
                   </span>
-
-                  {/* Title */}
-                  <h3
-                    style={{ fontFamily: "Poppins, sans-serif" }}
-                    className="pt-5 text-xl font-medium text-black"
-                  >
-                    {item.title}
-                  </h3>
-
-                  {/* Description */}
-                  <p className="font-['Open_Sans'] text-base font-light text-[#242424] leading-relaxed lg:pe-5">
-                    {item.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex justify-center items-center mx-auto w-full bg-white">
-          <div className="mx-auto w-full px-[20px] md:px-[60px] pb-[60px] pt-[50px] sm:py-[86px]">
-            <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px] text-center">
-              <span className="text-black">Why It Pays to </span>
-              <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
-                Partner
-              </span>
-            </h1>
-            <div className="mx-auto mt-8 w-full 2xl:w-7xl flex flex-wrap justify-center items-stretch gap-6 md:gap-8">
-              {cards.map((c, i) => (
-                <div key={i} className="w-full sm:w-[300px] flex">
-                  <Card title={c.title} body={c.body} icon={c.icon} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="w-full bg-[#F5F7F9] py-[50px] sm:py-[86px] px-10 sm:px-20">
-          <div className="mx-auto flex flex-col lg:flex-row justify-between items-center gap-10">
-            <div className="w-full lg:w-3/5 flex flex-col justify-start items-start text-start">
-              <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px] text-center">
-                <span className="text-black">Who can become a </span>
-                <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
-                  Partner?
-                </span>
-              </h1>
-
-              <ul className="font-['Open_Sans'] mt-6 list-disc pl-5 text-[#242424] text-base font-light leading-[32px] space-y-1">
-                <li>
-                  Organizations with strong consulting or training backgrounds
-                  (HR, DEI, ESG, leadership, or culture development).
-                </li>
-                <li>At least one certified CNESS professional on your team.</li>
-                <li>
-                  Completion of Partner Training and the official License
-                  Agreement.
-                </li>
-              </ul>
-            </div>
-
-            <div className="w-full lg:w-2/5 rounded-[20px] overflow-hidden">
-              <img
-                src="https://cdn.cness.io/partner2.jpg"
-                alt="Handshake"
-                className="w-full h-auto object-cover"
-              />
-            </div>
-          </div>
-        </div>
-
-        <section className="hidden sm:flex flex-col bg-white px-6 sm:px-10 md:px-16 lg:px-22 py-[60px] mb-0">
-          <div className="text-center mb-10">
-            <h2 className="font-['Poppins',Helvetica] font-medium text-2xl sm:text-3xl lg:text-[32px] leading-snug sm:leading-[40px] lg:leading-[54px] tracking-[-0.02em]">
-              Your Path to Becoming a{" "}
-              <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
-                Partner
-              </span>
-            </h2>
-          </div>
-
-          <div className="relative flex justify-between">
-            <div
-              className="absolute top-5 left-[calc(theme(spacing.5))] right-[calc(theme(spacing.5))] h-1 bg-[#6340FF]"
-              style={{
-                left: "calc(5.25rem)",
-                right: "calc(5.25rem)",
-              }}
-            />
-
-            <div
-              className="absolute top-5 h-1 bg-[#6340FF]"
-              style={{
-                left: "calc(1.25rem)",
-                width:
-                  steps.length > 1
-                    ? `calc((( ${
-                        ((currentStep - 1) / (steps.length - 1)) * 100
-                      }% ) - 1.25rem))`
-                    : "0%",
-              }}
-            />
-
-            {steps.map((step, index) => {
-              const stepNumber = index + 1;
-
-              return (
-                <div key={index} className="flex flex-col items-center flex-1">
-                  {/* Circle */}
-                  <div
-                    className={clsx(
-                      "z-10 flex h-10 w-10 items-center justify-center rounded-full bg-[#6340FF] text-white transition-colors"
-                    )}
-                  >
-                    {stepNumber}
-                  </div>
-                  <p
-                    className={clsx(
-                      "mt-[21px] text-center font-['Open_Sans',Helvetica] text-sm font-light text-[#242424]",
-                      step.width
-                    )}
-                  >
-                    {step.description}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        <div
-          id="apply_partner"
-          className="w-full bg-[#F5F7F9] pb-10 sm:py-10 px-5 lg:px-10"
-        >
-          <h1 className="pb-10 font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px] text-center">
-            <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
-              Application Form
-            </span>
-          </h1>
-
-          <div className="grid xl:grid-cols-[275px_1fr] gap-10 items-stretch">
-            <div className="hidden xl:flex rounded-[20px] overflow-hidden">
-              <img
-                src="https://cdn.cness.io/partnerapp_3.jpg"
-                alt="Handshake"
-                className="h-full w-full object-cover"
-              />
-            </div>
-
-            <div className="rounded-[25px] bg-white p-[20px] lg:p-[30px] flex flex-col">
-              <form
-                className="w-full flex flex-col flex-1"
-                onSubmit={handleSubmit}
-              >
-                <div className="mx-auto w-full max-w-[760px] 2xl:max-w-none grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 items-start">
-                  <Field
-                    label={
-                      <span>
-                        Organization Name
-                        <span style={{ color: "red" }}> *</span>
-                      </span>
-                    }
-                  >
-                    <Input
-                      name="organization_name"
-                      placeholder="Enter organization name"
-                      value={data.organization_name}
-                      onChange={handleChange}
-                      error={
-                        shouldShowError("organization_name")
-                          ? fieldErrors.organization_name
-                          : null
-                      }
-                    />
-                  </Field>
-                  <Field
-                    label={
-                      <span>
-                        Contact Person Name
-                        <span style={{ color: "red" }}> *</span>
-                      </span>
-                    }
-                  >
-                    <Input
-                      name="contact_person_name"
-                      placeholder="Enter your name"
-                      value={data.contact_person_name}
-                      onChange={handleChange}
-                      error={
-                        shouldShowError("contact_person_name")
-                          ? fieldErrors.contact_person_name
-                          : null
-                      }
-                    />
-                  </Field>
-                  <Field
-                    label={
-                      <span>
-                        Phone Number<span style={{ color: "red" }}> *</span>
-                      </span>
-                    }
-                  >
-                    <PhoneInputField
-                      name="phone_number"
-                      value={data.phone_number}
-                      onChange={handlePhoneChange}
-                      defaultCountry="us"
-                      placeholder="Enter your phone number"
-                      error={
-                        shouldShowError("phone_number")
-                          ? fieldErrors.phone_number
-                          : null
-                      }
-                    />
-                  </Field>
-                  <Field
-                    label={
-                      <span>
-                        Email Address<span style={{ color: "red" }}> *</span>
-                      </span>
-                    }
-                  >
-                    <Input
-                      name="email"
-                      value={data.email}
-                      onChange={handleChange}
-                      placeholder="Mail ID"
-                      type="email"
-                      error={
-                        shouldShowError("email") ? fieldErrors.email : null
-                      }
-                    />
-                  </Field>
-                  <Field
-                    label={
-                      <span>
-                        Industry / Sector
-                        <span style={{ color: "red" }}> *</span>
-                      </span>
-                    }
-                  >
-                    <Input
-                      name="industry_sector"
-                      placeholder="Enter your years of experience"
-                      value={data.industry_sector}
-                      onChange={handleChange}
-                      error={
-                        shouldShowError("industry_sector")
-                          ? fieldErrors.industry_sector
-                          : null
-                      }
-                    />
-                  </Field>
-                  <Field label="Website / Social Media Link (if any)">
-                    <Input
-                      name="website_link"
-                      placeholder="Enter your link"
-                      value={data.website_link}
-                      onChange={handleChange}
-                      error={
-                        shouldShowError("website_link")
-                          ? fieldErrors.website_link
-                          : null
-                      }
-                    />
-                  </Field>
-                  <Field
-                    label={
-                      <span>
-                        Brief About Your Organization (150–200 words)
-                        <span style={{ color: "red" }}> *</span>
-                      </span>
-                    }
-                  >
-                    <TextArea
-                      name="about"
-                      placeholder="Add Notes..."
-                      value={data.about}
-                      onChange={handleChange}
-                      error={
-                        shouldShowError("about") ? fieldErrors.about : null
-                      }
-                    />
-                  </Field>
-                  <Field
-                    label={
-                      <span>
-                        Why do you want to partner with CNESS?
-                        <span style={{ color: "red" }}> *</span>
-                      </span>
-                    }
-                  >
-                    <TextArea
-                      name="reason_to_partner"
-                      placeholder="Add Notes..."
-                      value={data.reason_to_partner}
-                      onChange={handleChange}
-                      error={
-                        shouldShowError("reason_to_partner")
-                          ? fieldErrors.reason_to_partner
-                          : null
-                      }
-                    />
-                  </Field>
-                  <Field
-                    label={
-                      <span>
-                        Organization Size (No. of employees / scale)
-                        <span style={{ color: "red" }}> *</span>
-                      </span>
-                    }
-                  >
-                    <Input
-                      name="organization_size"
-                      placeholder="Number of employees"
-                      value={data.organization_size}
-                      onChange={handleChange}
-                      error={
-                        shouldShowError("organization_size")
-                          ? fieldErrors.organization_size
-                          : null
-                      }
-                    />
-                  </Field>
-                  <Field
-                    label={
-                      <span>
-                        Areas of Collaboration (e.g., Events, Tech, etc.)
-                        <span style={{ color: "red" }}> *</span>
-                      </span>
-                    }
-                  >
-                    <Input
-                      name="areas_of_collabration"
-                      placeholder="Select your Availability"
-                      value={data.areas_of_collabration}
-                      onChange={handleChange}
-                      error={
-                        shouldShowError("areas_of_collabration")
-                          ? fieldErrors.areas_of_collabration
-                          : null
-                      }
-                    />
-                  </Field>
-                </div>
-
-                {submitMessage && (
-                  <div
-                    className={`p-3 rounded-md ${
-                      submitMessage.type === "success"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {submitMessage.text}
-                  </div>
-                )}
-
-                <div className="mt-8 flex justify-center">
+                </h1>
+                <h5 className="py-3 font-['Open_Sans',Helvetica] text-base font-light text-[#242424] leading-[24px]">
+                  Join hands with us to embed conscious practices in
+                  organizations and communities. As a CNESS Partner, you gain
+                  visibility, credibility, and the chance to co-create global
+                  impact.
+                </h5>
+                <div className="pt-6">
                   <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="rounded-full px-[20px] py-[10px] text-base font-normal text-white disabled:opacity-60"
+                    className="py-4 px-5 font-['Open_Sans',Helvetica] text-black font-medium text-sm text-white rounded-full"
+                    onClick={() => {
+                      const element = document.getElementById("apply_partner");
+                      if (element) {
+                        element.scrollIntoView({ behavior: "smooth" });
+                      }
+                    }}
                     style={{
                       background:
                         "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
                     }}
                   >
-                    {isSubmitting ? "Submitting…" : "Submit"}
+                    Apply to Become a Partner
                   </button>
                 </div>
-              </form>
+              </div>
+              <div className="w-full lg:w-2/3 rounded-[40px]">
+                <img
+                  src="https://cdn.cness.io/partner_banner.jpg"
+                  alt="partner main poster"
+                  className="w-full h-[427px] lg:h-full object-cover object-top pointer-events-none select-none rounded-[40px]"
+                  aria-hidden="true"
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* <div className="rounded-xl border border-gray-200 bg-white p-0">
+          <div className="py-12 flex flex-col justify-center items-center mx-auto bg-white">
+            <h1 className="text-center font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px]">
+              <span className="text-black">Why Become a </span>
+              <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                CNESS Partner
+              </span>
+            </h1>
+            <h5 className="py-3 px-5 sm:px-10 md:px-20 font-['Open_Sans',Helvetica] font-light text-base text-center text-[#242424] leading-[24px]">
+              CNESS Partners are consultancies, agencies, and specialists who
+              extend the power of the CNESS framework into organizations. From
+              HR and DEI firms to ESG consultants and leadership coaches,
+              Partners help businesses adopt conscious practices that drive real
+              transformation. To qualify as a Partner, you must employ at least
+              one CNESS-certified professional, complete partner training, and
+              sign a license agreement. In return, you receive recognition as an
+              official CNESS Partner — a mark of trust and credibility.
+            </h5>
+          </div>
+
+          <div className="w-full flex mx-auto flex-col justify-center items-center bg-[#F5F7F9] pt-10 pb-[86px] px-5 sm:px-14">
+            <h1 className="font-['Poppins',Helvetica] text-center font-medium text-2xl md:text-[32px] sm:leading-[54px]">
+              <span className="text-black">What does a </span>
+              <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                Partner do?
+              </span>
+            </h1>
+            <div className="w-full pt-10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[40px]">
+                {features.map((item) => (
+                  <div
+                    key={item.id}
+                    className="relative flex flex-col rounded-4xl bg-white hover:shadow-md transition p-[30px] gap-3"
+                  >
+                    {/* Top right icon */}
+                    <div className="absolute top-4 right-4 w-[34px] h-[34px]">
+                      <img src={bulb} alt="bulb" />
+                    </div>
+
+                    {/* Number */}
+                    <span className="font-['Poppins',Helvetica] block text-lg text-[#B6B6B6] font-medium">
+                      {item.id}
+                    </span>
+
+                    {/* Title */}
+                    <h3
+                      style={{ fontFamily: "Poppins, sans-serif" }}
+                      className="pt-5 text-xl font-medium text-black"
+                    >
+                      {item.title}
+                    </h3>
+
+                    {/* Description */}
+                    <p className="font-['Open_Sans'] text-base font-light text-[#242424] leading-relaxed lg:pe-5">
+                      {item.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-center items-center mx-auto w-full bg-white">
+            <div className="mx-auto w-full px-[20px] md:px-[60px] pb-[60px] pt-[50px] sm:py-[86px]">
+              <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px] text-center">
+                <span className="text-black">Why It Pays to </span>
+                <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                  Partner
+                </span>
+              </h1>
+              <div className="mx-auto mt-8 w-full 2xl:w-7xl flex flex-wrap justify-center items-stretch gap-6 md:gap-8">
+                {cards.map((c, i) => (
+                  <div key={i} className="w-full sm:w-[300px] flex">
+                    <Card title={c.title} body={c.body} icon={c.icon} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full bg-[#F5F7F9] py-[50px] sm:py-[86px] px-10 sm:px-20">
+            <div className="mx-auto flex flex-col lg:flex-row justify-between items-center gap-10">
+              <div className="w-full lg:w-3/5 flex flex-col justify-start items-start text-start">
+                <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px] text-center">
+                  <span className="text-black">Who can become a </span>
+                  <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                    Partner?
+                  </span>
+                </h1>
+
+                <ul className="font-['Open_Sans'] mt-6 list-disc pl-5 text-[#242424] text-base font-light leading-[32px] space-y-1">
+                  <li>
+                    Organizations with strong consulting or training backgrounds
+                    (HR, DEI, ESG, leadership, or culture development).
+                  </li>
+                  <li>
+                    At least one certified CNESS professional on your team.
+                  </li>
+                  <li>
+                    Completion of Partner Training and the official License
+                    Agreement.
+                  </li>
+                </ul>
+              </div>
+
+              <div className="w-full lg:w-2/5 rounded-[20px] overflow-hidden">
+                <img
+                  src="https://cdn.cness.io/partner2.jpg"
+                  alt="Handshake"
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            </div>
+          </div>
+
+          <section className="hidden sm:flex flex-col bg-white px-6 sm:px-10 md:px-16 lg:px-22 py-[60px] mb-0">
+            <div className="text-center mb-10">
+              <h2 className="font-['Poppins',Helvetica] font-medium text-2xl sm:text-3xl lg:text-[32px] leading-snug sm:leading-[40px] lg:leading-[54px] tracking-[-0.02em]">
+                Your Path to Becoming a{" "}
+                <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                  Partner
+                </span>
+              </h2>
+            </div>
+
+            <div className="relative flex justify-between">
+              <div
+                className="absolute top-5 left-[calc(theme(spacing.5))] right-[calc(theme(spacing.5))] h-1 bg-[#6340FF]"
+                style={{
+                  left: "calc(5.25rem)",
+                  right: "calc(5.25rem)",
+                }}
+              />
+
+              <div
+                className="absolute top-5 h-1 bg-[#6340FF]"
+                style={{
+                  left: "calc(1.25rem)",
+                  width:
+                    steps.length > 1
+                      ? `calc((( ${
+                          ((currentStep - 1) / (steps.length - 1)) * 100
+                        }% ) - 1.25rem))`
+                      : "0%",
+                }}
+              />
+
+              {steps.map((step, index) => {
+                const stepNumber = index + 1;
+
+                return (
+                  <div
+                    key={index}
+                    className="flex flex-col items-center flex-1"
+                  >
+                    {/* Circle */}
+                    <div
+                      className={clsx(
+                        "z-10 flex h-10 w-10 items-center justify-center rounded-full bg-[#6340FF] text-white transition-colors"
+                      )}
+                    >
+                      {stepNumber}
+                    </div>
+                    <p
+                      className={clsx(
+                        "mt-[21px] text-center font-['Open_Sans',Helvetica] text-sm font-light text-[#242424]",
+                        step.width
+                      )}
+                    >
+                      {step.description}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          <div
+            id="apply_partner"
+            className="w-full bg-[#F5F7F9] pb-10 sm:py-10 px-5 lg:px-10"
+          >
+            <h1 className="pb-10 font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px] text-center">
+              <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                Application Form
+              </span>
+            </h1>
+
+            <div className="grid xl:grid-cols-[275px_1fr] gap-10 items-stretch">
+              <div className="hidden xl:flex rounded-[20px] overflow-hidden">
+                <img
+                  src="https://cdn.cness.io/partnerapp_3.jpg"
+                  alt="Handshake"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+
+              {hasSubmittedMentorForm ? (
+                <>
+                  <div className="w-full bg-[#F5F7F9] py-10 px-5 lg:px-10">
+                    <div className="max-w-4xl mx-auto bg-white rounded-[25px] p-8 text-center">
+                      <div className="mb-6">
+                        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <svg
+                            className="w-10 h-10 text-green-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        </div>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                          Application Submitted Successfully!
+                        </h2>
+                        <p className="text-gray-600 mb-4">
+                          Thank you for your interest in becoming a CNESS
+                          Partner. Your application has been received and is
+                          currently under review.
+                        </p>
+                        {/* <p className="text-gray-600">
+                                      Our team will carefully evaluate your application and
+                                      get back to you soon. In the meantime, feel free to
+                                      explore more about CNESS and our mission.
+                                    </p> */}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="rounded-[25px] bg-white p-[20px] lg:p-[30px] flex flex-col">
+                    <form
+                      className="w-full flex flex-col flex-1"
+                      onSubmit={handleSubmit}
+                    >
+                      <div className="mx-auto w-full max-w-[760px] 2xl:max-w-none grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 items-start">
+                        <Field
+                          label={
+                            <span>
+                              Organization Name
+                              <span style={{ color: "red" }}> *</span>
+                            </span>
+                          }
+                        >
+                          <Input
+                            name="organization_name"
+                            placeholder="Enter organization name"
+                            value={data.organization_name}
+                            onChange={handleChange}
+                            error={
+                              shouldShowError("organization_name")
+                                ? fieldErrors.organization_name
+                                : null
+                            }
+                          />
+                        </Field>
+                        <Field
+                          label={
+                            <span>
+                              Contact Person Name
+                              <span style={{ color: "red" }}> *</span>
+                            </span>
+                          }
+                        >
+                          <Input
+                            name="contact_person_name"
+                            placeholder="Enter your name"
+                            value={data.contact_person_name}
+                            onChange={handleChange}
+                            error={
+                              shouldShowError("contact_person_name")
+                                ? fieldErrors.contact_person_name
+                                : null
+                            }
+                          />
+                        </Field>
+                        <Field
+                          label={
+                            <span>
+                              Phone Number
+                              <span style={{ color: "red" }}> *</span>
+                            </span>
+                          }
+                        >
+                          <PhoneInputField
+                            name="phone_number"
+                            value={data.phone_number}
+                            onChange={handlePhoneChange}
+                            defaultCountry="us"
+                            placeholder="Enter your phone number"
+                            error={
+                              shouldShowError("phone_number")
+                                ? fieldErrors.phone_number
+                                : null
+                            }
+                          />
+                        </Field>
+                        <Field
+                          label={
+                            <span>
+                              Email Address
+                              <span style={{ color: "red" }}> *</span>
+                            </span>
+                          }
+                        >
+                          <Input
+                            name="email"
+                            value={data.email}
+                            onChange={handleChange}
+                            placeholder="Mail ID"
+                            type="email"
+                            error={
+                              shouldShowError("email")
+                                ? fieldErrors.email
+                                : null
+                            }
+                          />
+                        </Field>
+                        <Field
+                          label={
+                            <span>
+                              Industry / Sector
+                              <span style={{ color: "red" }}> *</span>
+                            </span>
+                          }
+                        >
+                          <Input
+                            name="industry_sector"
+                            placeholder="Enter your industry"
+                            value={data.industry_sector}
+                            onChange={handleChange}
+                            error={
+                              shouldShowError("industry_sector")
+                                ? fieldErrors.industry_sector
+                                : null
+                            }
+                          />
+                        </Field>
+                        <Field label="Website / Social Media Link (if any)">
+                          <Input
+                            name="website_link"
+                            placeholder="Enter your link"
+                            value={data.website_link}
+                            onChange={handleChange}
+                            error={
+                              shouldShowError("website_link")
+                                ? fieldErrors.website_link
+                                : null
+                            }
+                          />
+                        </Field>
+                        <Field
+                          label={
+                            <span>
+                              Brief About Your Organization (150–200 words)
+                              <span style={{ color: "red" }}> *</span>
+                            </span>
+                          }
+                        >
+                          <TextArea
+                            name="about"
+                            placeholder="Add Notes..."
+                            value={data.about}
+                            onChange={handleChange}
+                            error={
+                              shouldShowError("about")
+                                ? fieldErrors.about
+                                : null
+                            }
+                          />
+                        </Field>
+                        <Field
+                          label={
+                            <span>
+                              Why do you want to partner with CNESS?
+                              <span style={{ color: "red" }}> *</span>
+                            </span>
+                          }
+                        >
+                          <TextArea
+                            name="reason_to_partner"
+                            placeholder="Add Notes..."
+                            value={data.reason_to_partner}
+                            onChange={handleChange}
+                            error={
+                              shouldShowError("reason_to_partner")
+                                ? fieldErrors.reason_to_partner
+                                : null
+                            }
+                          />
+                        </Field>
+                        <Field
+                          label={
+                            <span>
+                              Organization Size (No. of employees / scale)
+                              <span style={{ color: "red" }}> *</span>
+                            </span>
+                          }
+                        >
+                          <Input
+                            name="organization_size"
+                            placeholder="Number of employees"
+                            value={data.organization_size}
+                            onChange={handleChange}
+                            error={
+                              shouldShowError("organization_size")
+                                ? fieldErrors.organization_size
+                                : null
+                            }
+                          />
+                        </Field>
+                        <Field
+                          label={
+                            <span>
+                              Areas of Collaboration (e.g., Events, Tech, etc.)
+                              <span style={{ color: "red" }}> *</span>
+                            </span>
+                          }
+                        >
+                          <Input
+                            name="areas_of_collabration"
+                            placeholder="Select your Availability"
+                            value={data.areas_of_collabration}
+                            onChange={handleChange}
+                            error={
+                              shouldShowError("areas_of_collabration")
+                                ? fieldErrors.areas_of_collabration
+                                : null
+                            }
+                          />
+                        </Field>
+                      </div>
+
+                      {submitMessage && (
+                        <div
+                          className={`p-3 rounded-md ${
+                            submitMessage.type === "success"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {submitMessage.text}
+                        </div>
+                      )}
+
+                      <div className="mt-8 flex justify-center">
+                        <button
+                          type="submit"
+                          disabled={isSubmitting}
+                          className="rounded-full px-[20px] py-[10px] text-base font-normal text-white disabled:opacity-60"
+                          style={{
+                            background:
+                              "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
+                          }}
+                        >
+                          {isSubmitting ? "Submitting…" : "Submit"}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* <div className="rounded-xl border border-gray-200 bg-white p-0">
           <Parterform
             // Use your actual Marketplace form’s public URL (formperma link)
             src="https://forms.zohopublic.com/vijicn1/form/BecameaPartner/formperma/P95-zn1fVjDdH3Gfzw89mzvoDjgtPhOOdEKmZRE7crI"
@@ -870,7 +961,7 @@ const BecomePartner = () => {
             minHeight={900}
           />
         </div> */}
-      </div>
+        </div>
       </div>
     </>
   );
