@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import ShopCard from "../components/MarketPlace/Shopcard";
 import Pagination from "../components/MarketPlace/Pagination";
@@ -6,10 +6,20 @@ import star from "../assets/starm.svg";
 import brightstar from "../assets/brightstar.svg";
 import fire from "../assets/fire copy.svg";
 import light from "../assets/light_person.svg";
+import { GetMarketPlaceShops } from "../Common/ServerAPI";
+import { useToast } from "../components/ui/Toast/ToastProvider";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
+import { useNavigate } from "react-router-dom";
 
 const ShopList = () => {
+  const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState("Discover Shops");
   const [searchTerm, setSearchTerm] = useState("");
+  const [shops, setShops] = useState<any[]>([]);
+  const [isLoadingShops, setIsLoadingShops] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const { showToast } = useToast();
 
   const filters = [
     { name: "Trending Shops", icon: fire },
@@ -19,71 +29,39 @@ const ShopList = () => {
     { name: "Discover Shops", icon: brightstar },
   ];
 
-  const shops = [
-    {
-      id: 1,
-      image: "https://static.codia.ai/image/2025-10-24/zsb3OSD4Mb.png",
-      name: "Red Tape",
-      description:
-        "Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.",
-      rating: 4.8,
-      logo: "https://static.codia.ai/image/2025-10-24/rbKaFihKgE.png",
-    },
-    {
-      id: 2,
-      image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600",
-      name: "Urban Streetwear",
-      description:
-        "Your go-to shop for edgy urban styles, trendy sneakers, and street fashion essentials.",
-      rating: 4.7,
-      logo: "https://static.codia.ai/image/2025-10-24/rbKaFihKgE.png",
-    },
-    {
-      id: 3,
-      image: "https://static.codia.ai/image/2025-10-24/zsb3OSD4Mb.png",
-      name: "The Art Collective",
-      description:
-        "Discover exclusive art pieces and creative merch by independent artists and designers.",
-      rating: 4.9,
-      logo: "https://static.codia.ai/image/2025-10-24/rbKaFihKgE.png",
-    },
-    {
-      id: 4,
-      image: "https://static.codia.ai/image/2025-10-24/zsb3OSD4Mb.png",
-      name: "Tech Hub",
-      description:
-        "Explore the latest gadgets, accessories, and smart tech from innovative creators.",
-      rating: 4.6,
-      logo: "https://static.codia.ai/image/2025-10-24/rbKaFihKgE.png",
-    },
-     {
-      id: 5,
-      image: "https://static.codia.ai/image/2025-10-24/zsb3OSD4Mb.png",
-      name: "Red Tape",
-      description:
-        "Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.",
-      rating: 4.8,
-      logo: "https://static.codia.ai/image/2025-10-24/rbKaFihKgE.png",
-    },
-    {
-      id: 6,
-      image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600",
-      name: "Urban Streetwear",
-      description:
-        "Your go-to shop for edgy urban styles, trendy sneakers, and street fashion essentials.",
-      rating: 4.7,
-      logo: "https://static.codia.ai/image/2025-10-24/rbKaFihKgE.png",
-    },
-    {
-      id: 7,
-      image: "https://static.codia.ai/image/2025-10-24/zsb3OSD4Mb.png",
-      name: "The Art Collective",
-      description:
-        "Discover exclusive art pieces and creative merch by independent artists and designers.",
-      rating: 4.9,
-      logo: "https://static.codia.ai/image/2025-10-24/rbKaFihKgE.png",
-    },
-  ];
+  useEffect(() => {
+    const fetchShops = async () => {
+      setIsLoadingShops(true);
+      try {
+        const response = await GetMarketPlaceShops({
+          search: searchTerm,
+          limit: 8,
+          page: 1,
+        });
+
+        const shops = response?.data?.data?.shops || [];
+        const pagination = response?.data?.data?.pagination || {};
+
+        setShops(shops);
+        setTotalPages(pagination.total_pages || 1);
+
+        if (shops.length === 0 && currentPage > 1) {
+          setCurrentPage(1);
+        }
+      } catch (error: any) {
+        showToast({
+          message: "Failed to load products.",
+          type: "error",
+          duration: 3000,
+        });
+        setShops([]);
+      } finally {
+        setIsLoadingShops(false);
+      }
+    };
+
+    fetchShops();
+  }, [searchTerm, currentPage]);
 
   // Filters excluding the active one
   const visibleFilters = filters.filter((filter) => filter.name !== activeFilter);
@@ -139,15 +117,48 @@ const ShopList = () => {
 
       {/* Shop Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-3">
-        {shops.map((shop) => (
-          <ShopCard key={shop.id} {...shop} />
-        ))}
+        {isLoadingShops ? (
+          <div className="flex justify-center items-center py-20">
+            <LoadingSpinner />
+          </div>
+        ) : (
+          <>
+            {shops.length > 0 ? (
+              shops.map((shop) => (
+                <div
+                  key={shop?.id}
+                  onClick={() => navigate(`/dashboard/shop-detail/${shop.id}`)}
+                  className="sm:max-w-[320px] md:max-w-[350px] cursor-pointer h-full"
+                >
+                  <ShopCard
+                    id={shop?.id}
+                    image={shop?.shop_image || 'https://static.codia.ai/image/2025-10-24/COYsFisEy4.png'}
+                    name={shop?.shop_name}
+                    description={shop?.description || ''}
+                    rating={shop?.rating || 0}
+                    logo={shop?.shop_logo}
+                  />
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-10 text-gray-500">
+                No products found for this category
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-center mt-10">
-        <Pagination currentPage={1} totalPages={4} />
-      </div>
+      {shops.length > 0 && (
+        <div className="flex justify-center mt-10">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page: number) => setCurrentPage(page)}
+          />
+        </div>
+      )}
     </div>
   );
 };

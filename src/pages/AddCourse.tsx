@@ -152,22 +152,22 @@ const AddCourseForm: React.FC = () => {
 
   const handleSelectCategory = (category: string) => {
     setShowModal(false); // Close modal first
-    
+
     const routes: Record<string, string> = {
       Video: "/dashboard/products/add-video",
       Music: "/dashboard/products/add-music",
       Course: "/dashboard/products/add-course",
       Podcasts: "/dashboard/products/add-podcast",
       Ebook: "/dashboard/products/add-ebook",
-      Arts: "/dashboard/products/add-arts",
+      Art: "/dashboard/products/add-arts",
     };
-    
+
     const path = routes[category];
     if (path) {
       navigate(path);
     }
   };
-  
+
   const getFileType = (fileName: string): "video" | "audio" | "image" | "pdf" => {
     const ext = fileName.split('.').pop()?.toLowerCase();
     if (['mp4', 'mov', 'avi', 'mkv', 'wmv', 'webm'].includes(ext || '')) return 'video';
@@ -383,10 +383,10 @@ const AddCourseForm: React.FC = () => {
                   if (chapterFile.file_type === 'video') {
                     formDataUpload.append('chapter_file', chapterFile.file);
                     uploadResponse = await UploadProductDocument('course-chapter', formDataUpload);
-                    uploadData = uploadResponse?.data?.data?.data;
+                    uploadData = uploadResponse?.data?.data;
 
                     return {
-                      url: uploadData?.video_url || "",
+                      url: uploadData?.video_id,
                       title: chapterFile.title,
                       order_number: chapterFile.order_number,
                       file_type: chapterFile.file_type,
@@ -460,8 +460,8 @@ const AddCourseForm: React.FC = () => {
       const productId = response?.data?.data?.product_id;
 
       showToast({
-        message: isDraft 
-          ? "Course product saved as draft successfully" 
+        message: isDraft
+          ? "Course product saved as draft successfully"
           : "Course product created successfully",
         type: "success",
         duration: 3000,
@@ -487,6 +487,10 @@ const AddCourseForm: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDeleteChapter = (chapterId: number) => {
+    setChapters(prev => prev.filter(ch => ch.id !== chapterId));
   };
 
   const handleAddHighlight = () => {
@@ -739,12 +743,26 @@ const AddCourseForm: React.FC = () => {
                 key={chapter.id}
                 className="border border-gray-200 rounded-lg p-4 shadow-sm bg-white"
               >
-                <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
-                  {chapter.title}
-                </h3>
-                <p className="text-sm text-[#665B5B] mb-4">
-                  Upload lesson {chapter.id} materials (videos, audios, PDFs, images)
-                </p>
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
+                      {chapter.title}
+                    </h3>
+                    <p className="text-sm text-[#665B5B] mb-4">
+                      Upload lesson {chapter.id} materials (videos, audios, PDFs, images)
+                    </p>
+                  </div>
+
+                  {/* Delete Chapter Button */}
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteChapter(chapter.id)}
+                    className="text-red-500 hover:text-red-700 transition-colors"
+                    title="Delete Chapter"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <label className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF]">

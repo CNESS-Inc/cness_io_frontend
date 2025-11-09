@@ -1,144 +1,100 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { X, Filter as FilterIcon } from "lucide-react";
 import ProductCard from "../components/MarketPlace/ProductCard";
 import Filter from "../components/MarketPlace/Filter";
+import { GetMarketPlaceBuyerCategories, GetMarketPlaceBuyerProducts } from "../Common/ServerAPI";
+import { useToast } from "../components/ui/Toast/ToastProvider";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
+  const location = useLocation();
+  const { showToast } = useToast();
+
+  // Get category from URL const stateCategorySlug = location.state?.selectedCategory;
+  const stateCategorySlug = location.state?.selectedCategory;
+  const initialCategory = stateCategorySlug || '';
 
   // ✅ Active Category State
-  const [activeCategory, setActiveCategory] = useState("Videos");
-
-  // ✅ Static Products
-  const products = [
-    {
-      id: "1",
-      title: "Soft Guitarmood that Heal Your Inner Pain",
-      author: "Redtape",
-      rating: 4.8,
-      reviews: 120,
-      currentPrice: 1259,
-      originalPrice: 2444,
-      discount: 50,
-      duration: "00:23:00",
-     mood: "🧘 Spiritual",
-      category: "Videos",
-      image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
-    },
-    {
-      id: "2",
-      title: "Calming Piano Waves for Focus and Flow",
-      author: "BlueNote",
-      rating: 4.9,
-      reviews: 98,
-      currentPrice: 1599,
-      originalPrice: 2999,
-      discount: 47,
-      duration: "00:25:00",
-     mood: "🧘 Spiritual",
-       category: "Audio",
-      image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
-    },
-    {
-      id: "3",
-      title: "Chill Beats for Peaceful Evenings",
-      author: "MindTune",
-      rating: 4.7,
-      reviews: 80,
-      currentPrice: 999,
-      originalPrice: 1999,
-      discount: 50,
-      duration: "00:20:00",
-     mood: "🧘 Spiritual",
-       category: "Podcasts",
-      image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
-    },
-    {
-      id: "4",
-      title: "Creative Art Workshop Series",
-      author: "Artify",
-      rating: 4.9,
-      reviews: 52,
-      currentPrice: 1899,
-      originalPrice: 2599,
-      discount: 27,
-      duration: "01:00:00",
-     mood: "🧘 Spiritual",
-       category: "Music",
-      image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
-    },
-    {
-      id: "5",
-      title: "Calming Piano Waves for Focus and Flow",
-      author: "BlueNote",
-      rating: 4.9,
-      reviews: 98,
-      currentPrice: 1599,
-      originalPrice: 2999,
-      discount: 47,
-      duration: "00:25:00",
-     mood: '🧘 Spiritual',
-       category: "Music",
-      image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
-    },
-    {
-      id: "6",
-      title: "Chill Beats for Peaceful Evenings",
-      author: "MindTune",
-      rating: 4.7,
-      reviews: 80,
-      currentPrice: 999,
-      originalPrice: 1999,
-      discount: 50,
-      duration: "00:20:00",
-     mood: '🧘 Spiritual',
-       category: "Videos",
-      image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
-    },
-    {
-      id: "8",
-      title: "Soft Guitarmood that Heal Your Inner Pain",
-      author: "Redtape",
-      rating: 4.8,
-      reviews: 120,
-      currentPrice: 1259,
-      originalPrice: 2444,
-      discount: 50,
-      duration: "00:23:00",
-     mood: "🧘 Spiritual",
-       category: "Courses",
-      image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
-    },
-     {
-      id: "8",
-      title: "Soft Guitarmood that Heal Your Inner Pain",
-      author: "Redtape",
-      rating: 4.8,
-      reviews: 120,
-      currentPrice: 1259,
-      originalPrice: 2444,
-      discount: 50,
-      duration: "00:23:00",
-     mood: "🧘 Spiritual",
-       category: "Arts",
-      image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
-    },
-  ];
-
-  const categories = [
-    { name: "Videos", count: 4 },
-    { name: "Podcasts", count: 3 },
-    { name: "Music", count: 3 },
-    { name: "Courses", count: 4 },
-    { name: "Arts", count: 4 },
-  ];
-
-  // ✅ Filter products based on active category
-  const filteredProducts = products.filter(
-    (product) => product.category === activeCategory
-  );
-
-  // ✅ Mobile filter drawer toggle
+  const [activeCategory, setActiveCategory] = useState(initialCategory);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [showMobileFilter, setShowMobileFilter] = useState(false);
+
+  // Filter state
+  const [filters, setFilters] = useState({
+    min_price: "",
+    max_price: "",
+    language: "",
+    duration: "",
+    rating: "",
+  });
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await GetMarketPlaceBuyerCategories();
+        const cats = response?.data?.data || [];
+        setCategories(cats);
+
+        if (stateCategorySlug) {
+          setActiveCategory(stateCategorySlug);
+        } else if (cats.length > 0) {
+          setActiveCategory(cats[0].slug);
+        }
+      } catch (error: any) {
+        showToast({
+          message: "Failed to load categories.",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    };
+
+    fetchCategories();
+  }, [stateCategorySlug]);
+
+  // Fetch products when category or filters change
+  useEffect(() => {
+    const fetchProducts = async () => {
+      if (!activeCategory) return;
+
+      setIsLoading(true);
+      try {
+        const params: any = {
+          category_slug: activeCategory,
+          page: 1,
+          limit: 100,
+        };
+
+        // Apply filters
+        if (filters.min_price) params.min_price = parseFloat(filters.min_price);
+        if (filters.max_price) params.max_price = parseFloat(filters.max_price);
+        if (filters.language) params.language = filters.language;
+        // Duration and rating filters would need backend support
+
+        const response = await GetMarketPlaceBuyerProducts(params);
+        const productsData = response?.data?.data?.products || [];
+        setProducts(productsData);
+      } catch (error: any) {
+        showToast({
+          message: "Failed to load products.",
+          type: "error",
+          duration: 3000,
+        });
+        setProducts([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [activeCategory, filters]);
+
+  const handleFilterChange = (newFilters: any) => {
+    setFilters(newFilters);
+  };
 
   return (
     <div
@@ -152,28 +108,33 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
 
       {/* 🔹 Category Tabs */}
       <div className="flex flex-wrap gap-4 mb-8 px-5">
-        {categories.map((category, index) => (
-          <button
-            key={index}
-            onClick={() => setActiveCategory(category.name)}
-            className={`flex items-center gap-3 px-8 py-3 h-[54px] rounded-full border font-medium text-sm transition-all duration-200 ${
-              activeCategory === category.name
-                ? "border-[#7077FE] text-[#7077FE] bg-white shadow-sm"
-                : "border-[#A7A6A6] text-[#A7A6A6] bg-white hover:border-[#7077FE]/60"
-            }`}
-          >
-            <span>{category.name}</span>
-            <span
-              className={`text-xs px-2 py-0.5 rounded-full ${
-                activeCategory === category.name
-                  ? "bg-[#7077FE] text-white"
-                  : "bg-[#A7A6A6] text-white"
+        {categories.map((category) => {
+          // Count products for this category (you can get this from API if available)
+          const categoryProductCount = category.product_count || 0;
+          
+          return (
+            <button
+              key={category.slug}
+              onClick={() => setActiveCategory(category.slug)}
+              className={`flex items-center gap-3 px-8 py-3 h-[54px] rounded-full border font-medium text-sm transition-all duration-200 ${
+                activeCategory === category.slug
+                  ? "border-[#7077FE] text-[#7077FE] bg-white shadow-sm"
+                  : "border-[#A7A6A6] text-[#A7A6A6] bg-white hover:border-[#7077FE]/60"
               }`}
             >
-              {category.count}
-            </span>
-          </button>
-        ))}
+              <span>{category.name}</span>
+              <span
+                className={`text-xs px-2 py-0.5 rounded-full ${
+                  activeCategory === category.slug
+                    ? "bg-[#7077FE] text-white"
+                    : "bg-[#A7A6A6] text-white"
+                }`}
+              >
+                {categoryProductCount}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* 📦 Main Section */}
@@ -188,22 +149,49 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
           </button>
 
           {/* 🧩 Product Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-            {filteredProducts.length > 0 ? (
-              filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))
-            ) : (
-              <p className="col-span-full text-center text-gray-500">
-                No results found in "{activeCategory}"
-              </p>
-            )}
-          </div>
+          {isLoading ? (
+            <div className="flex justify-center items-center py-20">
+              <LoadingSpinner />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+              {products.length > 0 ? (
+                products.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={{
+                      id: product.id,
+                      title: product.product_title,
+                      author: product.seller?.shop_name || "Unknown",
+                      rating: product?.rating?.average,
+                      reviews: product?.rating?.total_reviews,
+                      currentPrice: product?.discounted_price,
+                      originalPrice: product?.price,
+                      discount: product.discount_percentage,
+                      duration:
+                        product.video_details?.duration ||
+                        product.music_details?.total_duration ||
+                        "00:00:00",
+                      mood: `${product.mood?.icon || ""} ${product.mood?.name || ""}`,
+                      image:
+                        product.thumbnail_url ||
+                        "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
+                      category: product.product_category?.name || "",
+                    }}
+                  />
+                ))
+              ) : (
+                <p className="col-span-full text-center text-gray-500">
+                  No results found in "{categories.find(c => c.slug === activeCategory)?.name || activeCategory}"
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
         {/* 🧰 Right Sidebar Filter */}
         <div className="hidden md:block w-[300px] flex-shrink-0 -mt-40 px-10">
-          <Filter />
+          <Filter filters={filters} onFilterChange={handleFilterChange} />
         </div>
       </div>
 
@@ -217,7 +205,7 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
             >
               <X className="w-6 h-6" />
             </button>
-            <Filter />
+            <Filter filters={filters} onFilterChange={handleFilterChange} />
           </div>
         </div>
       )}

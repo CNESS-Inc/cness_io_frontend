@@ -5,7 +5,7 @@ import CategoryModel from "../components/MarketPlace/CategoryModel";
 import { useNavigate, useParams } from "react-router-dom";
 import { Music, Plus, SquarePen, Trash2, X } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { UpdateMusicProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, GetPreviewProduct, UpdateProductStatus } from "../Common/ServerAPI";
+import { UpdateMusicProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, GetPreviewProduct, UpdateProductStatus, DeleteMusicTrack } from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 interface FormSectionProps {
@@ -84,7 +84,7 @@ const EditMusicForm: React.FC = () => {
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [newHighlight, setNewHighlight] = useState("");
     const [tracks, setTracks] = useState<any[]>([]);
-    console.log('tracks', tracks)
+    const [deletingTracks, setDeletingTracks] = useState<Set<number>>(new Set());
 
     const [formData, setFormData] = useState({
         product_title: "",
@@ -125,7 +125,7 @@ const EditMusicForm: React.FC = () => {
                     // Set existing tracks from content_items
                     if (productData.content_items && productData.content_items.length > 0) {
                         setTracks(productData.content_items.map((item: any, index: number) => ({
-                            id: item.id || index + 1,
+                            track_id: item.id,
                             title: item.title || `Track ${index + 1}`,
                             track_files: item.file_urls?.map((file: any) => ({
                                 url: file.url,
@@ -197,7 +197,7 @@ const EditMusicForm: React.FC = () => {
             Course: "/dashboard/products/add-course",
             Podcasts: "/dashboard/products/add-podcast",
             Ebook: "/dashboard/products/add-ebook",
-            Arts: "/dashboard/products/add-arts",
+            Art: "/dashboard/products/add-arts",
         };
         const path = routes[category];
         if (path) navigate(path);
@@ -257,6 +257,38 @@ const EditMusicForm: React.FC = () => {
                     : track
             )
         );
+    };
+
+    const handleDeleteTrack = async (trackId: any) => {
+        if (trackId) {
+            setDeletingTracks(prev => new Set(prev).add(trackId));
+
+            try {
+                await DeleteMusicTrack(productId, trackId);
+
+                setTracks(prev => prev.filter(ch => ch.track_id !== trackId));
+
+                showToast({
+                    message: "Chapter deleted successfully",
+                    type: "success",
+                    duration: 2000,
+                });
+            } catch (error: any) {
+                showToast({
+                    message: error?.response?.data?.error?.message || "Failed to delete chapter",
+                    type: "error",
+                    duration: 3000,
+                });
+            } finally {
+                setDeletingTracks(prev => {
+                    const newSet = new Set(prev);
+                    newSet.delete(trackId);
+                    return newSet;
+                });
+            }
+        } else {
+            setTracks(prev => prev.filter(ch => ch.track_id !== trackId));
+        }
     };
 
     const handleEditFileName = (
@@ -404,7 +436,7 @@ const EditMusicForm: React.FC = () => {
 
                                 try {
                                     const response = await UploadProductDocument('music-track', formData);
-                                    const uploadData = response?.data?.data?.data;
+                                    const uploadData = response?.data?.data;
 
                                     return {
                                         url: uploadData?.track_url || "",
@@ -424,7 +456,7 @@ const EditMusicForm: React.FC = () => {
                         })
                     );
 
-                    return {
+                    const trackPayload: any = {
                         title: track.title,
                         track_files: uploadedFiles,
                         description: track.description || "",
@@ -432,6 +464,12 @@ const EditMusicForm: React.FC = () => {
                         order_number: track.order_number,
                         is_free: track.is_free,
                     };
+
+                    if (track.track_id) {
+                        trackPayload.track_id = track.track_id;
+                    }
+
+                    return trackPayload;
                 })
             );
 
@@ -449,7 +487,7 @@ const EditMusicForm: React.FC = () => {
                 tracks: uploadedTracks,
             };
 
-            await UpdateMusicProduct(payload, productId);
+            await UpdateMusicProduct(payload, 'music', productId);
 
             // Update product status
             const status = isDraft ? 'draft' : 'published';
@@ -731,12 +769,30 @@ const EditMusicForm: React.FC = () => {
                                 key={track.id}
                                 className="border border-gray-200 rounded-lg p-4 shadow-sm bg-white"
                             >
-                                <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
-                                    {track.title}
-                                </h3>
-                                <p className="text-sm text-[#665B5B] mb-4">
-                                    Upload track {track.order_number} audio files
-                                </p>
+                                <div className="flex items-center justify-between mb-2">
+                                    <div>
+                                        <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
+                                            {track.title}
+                                        </h3>
+                                        <p className="text-sm text-[#665B5B] mb-4">
+                                            Upload track {track.order_number} audio files
+                                        </p>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDeleteTrack(track.track_id)}
+                                        disabled={deletingTracks.has(track.track_id)}
+                                        className="text-red-500 hover:text-red-700 transition-colors"
+                                        title="Delete Track"
+                                    >
+                                        {deletingTracks.has(track.track_id) ? (
+                                            <span className="text-sm">Deleting...</span>
+                                        ) : (
+                                            <X className="w-5 h-5" />
+                                        )}
+                                    </button>
+                                </div>
 
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                     <label className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF]">

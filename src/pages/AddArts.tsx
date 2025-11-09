@@ -69,23 +69,6 @@ const InputField: React.FC<InputFieldProps> = ({
   </div>
 );
 
-interface ChapterFile {
-  url: string;
-  title: string;
-  order_number: number;
-  file?: File;
-  isEditing?: boolean;
-}
-
-interface Chapter {
-  id: number;
-  title: string;
-  chapter_files: ChapterFile[];
-  description: string;
-  order_number: number;
-  is_free: boolean;
-}
-
 const AddArtsForm: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
@@ -97,7 +80,7 @@ const AddArtsForm: React.FC = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [newHighlight, setNewHighlight] = useState("");
 
-  const [chapters, setChapters] = useState<Chapter[]>([
+  const [chapters, setChapters] = useState<any[]>([
     {
       id: 1,
       title: "Collection 1",
@@ -159,7 +142,7 @@ const AddArtsForm: React.FC = () => {
 
   const handleSelectCategory = (category: string) => {
     setShowModal(false); // Close modal first
-    
+
     const routes: Record<string, string> = {
       Video: "/dashboard/products/add-video",
       Music: "/dashboard/products/add-music",
@@ -168,11 +151,15 @@ const AddArtsForm: React.FC = () => {
       Ebook: "/dashboard/products/add-ebook",
       Arts: "/dashboard/products/add-arts",
     };
-    
+
     const path = routes[category];
     if (path) {
       navigate(path);
     }
+  };
+
+  const handleDeleteChapter = (chapterId: number) => {
+    setChapters(prev => prev.filter(ch => ch.id !== chapterId));
   };
 
   const handleAddFile = (
@@ -221,7 +208,7 @@ const AddArtsForm: React.FC = () => {
         chapter.id === chapterId
           ? {
             ...chapter,
-            chapter_files: chapter.chapter_files.map((f) =>
+            chapter_files: chapter.chapter_files.map((f: any) =>
               f.order_number === fileOrderNumber ? { ...f, isEditing: !f.isEditing } : f
             ),
           }
@@ -240,7 +227,7 @@ const AddArtsForm: React.FC = () => {
         chapter.id === chapterId
           ? {
             ...chapter,
-            chapter_files: chapter.chapter_files.map((f) =>
+            chapter_files: chapter.chapter_files.map((f: any) =>
               f.order_number === fileOrderNumber ? { ...f, title: newTitle } : f
             ),
           }
@@ -255,7 +242,7 @@ const AddArtsForm: React.FC = () => {
         chapter.id === chapterId
           ? {
             ...chapter,
-            chapter_files: chapter.chapter_files.map((f) =>
+            chapter_files: chapter.chapter_files.map((f: any) =>
               f.order_number === fileOrderNumber
                 ? { ...f, isEditing: false }
                 : f
@@ -272,7 +259,7 @@ const AddArtsForm: React.FC = () => {
         chapter.id === chapterId
           ? {
             ...chapter,
-            chapter_files: chapter.chapter_files.filter((f) => f.order_number !== fileOrderNumber)
+            chapter_files: chapter.chapter_files.filter((f: any) => f.order_number !== fileOrderNumber)
           }
           : chapter
       )
@@ -361,17 +348,17 @@ const AddArtsForm: React.FC = () => {
       const uploadedChapters = await Promise.all(
         chapters.map(async (chapter) => {
           const uploadedFiles = await Promise.all(
-            chapter.chapter_files.map(async (chapterFile) => {
+            chapter.chapter_files.map(async (chapterFile: any) => {
               if (chapterFile.file) {
                 const formDataUpload = new FormData();
                 formDataUpload.append('chapter_file', chapterFile.file);
 
                 try {
                   const response = await UploadProductDocument('art-chapter', formDataUpload);
-                  const uploadData = response?.data?.data?.data;
+                  const uploadData = response?.data?.data;
 
                   return {
-                    url: uploadData?.image_url || uploadData?.document_url || "",
+                    url: uploadData?.chapter_file_url,
                     title: chapterFile.title,
                     order_number: chapterFile.order_number,
                   };
@@ -412,8 +399,8 @@ const AddArtsForm: React.FC = () => {
       const productId = response?.data?.data?.product_id;
 
       showToast({
-        message: isDraft 
-          ? "Art product saved as draft successfully" 
+        message: isDraft
+          ? "Art product saved as draft successfully"
           : "Art product created successfully",
         type: "success",
         duration: 3000,
@@ -669,12 +656,27 @@ const AddArtsForm: React.FC = () => {
                 key={chapter.id}
                 className="border border-gray-200 rounded-lg p-4 shadow-sm bg-white"
               >
-                <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
-                  {chapter.title}
-                </h3>
-                <p className="text-sm text-[#665B5B] mb-4">
-                  Upload artwork files (images, PDFs, etc.)
-                </p>
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
+                      {chapter.title}
+                    </h3>
+                    <p className="text-sm text-[#665B5B] mb-4">
+                      Upload artwork files (images, PDFs, etc.)
+                    </p>
+
+                  </div>
+
+                  {/* Delete Chapter Button */}
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteChapter(chapter.id)}
+                    className="text-red-500 hover:text-red-700 transition-colors"
+                    title="Delete Chapter"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <label className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF]">
@@ -707,7 +709,7 @@ const AddArtsForm: React.FC = () => {
                         No files uploaded yet
                       </div>
                     ) : (
-                      chapter.chapter_files.map((file) => (
+                      chapter.chapter_files.map((file: any) => (
                         <div
                           key={file.order_number}
                           className="border border-gray-200 rounded-lg p-3 bg-white"
