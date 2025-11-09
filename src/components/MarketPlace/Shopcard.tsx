@@ -22,40 +22,46 @@ const ShopCard: React.FC<ShopCardProps> = ({
 
   return (
     <div
-      onClick={() => navigate(`/dashboard/shop-detail/${id}`, { state: { id, image, name, description, rating, logo } })}
-      className="         
-  sm:max-w-[320px]
-  md:max-w-[350px]
-  flex flex-col items-center cursor-pointer hover:shadow-lg transition-shadow duration-300"
+      onClick={() => navigate(`/dashboard/shop-detail/${id}`)}
+      className="sm:max-w-[320px] md:max-w-[350px] h-full flex flex-col items-center cursor-pointer hover:shadow-lg transition-shadow duration-300"
     >
-     <img
-        src={image}
-        alt={name}
-        className="
-          w-full
-          h-[100px]          // Very small screens (default)
-          sm:h-[80px] w-[80px]        // Small screens
-          md:h-[120px] w-[80px]       // Medium screens/tablets
-          lg:h-[160px] w-[80px]      // Larger screens
-          object-cover
-          rounded-t-[10px]
-        "
-      />
+      <div className="flex-shrink-0">
+        <img
+          src={image || 'https://static.codia.ai/image/2025-10-24/COYsFisEy4.png'}
+          alt={name}
+          className="
+            w-full
+            h-[100px]          // Very small screens (default)
+            sm:h-[80px] w-[80px]        // Small screens
+            md:h-[120px] w-[80px]       // Medium screens/tablets
+            lg:h-[160px] w-[80px]      // Larger screens
+            object-cover
+            rounded-t-[10px]
+          "
+          onError={(e) => {
+            e.currentTarget.src = 'https://static.codia.ai/image/2025-10-24/COYsFisEy4.png'; // fallback image
+          }}
+        />
+      </div>
 
-
-      <div className="bg-white shadow-[0px_4px_14px_rgba(0,0,0,0.1)] rounded-b-[10px] p-[12px_14px] flex flex-col gap-4 w-full">
-        <div className="flex flex-col gap-2">
+      <div className="bg-white shadow-[0px_4px_14px_rgba(0,0,0,0.1)] rounded-b-[10px] p-[12px_14px] flex flex-col gap-4 w-full h-full">
+        <div className="flex flex-col gap-2 flex-grow">
           <div className="flex items-center gap-2">
-            <img
-              src={logo}
-              alt={`${name} Logo`}
-              className="w-[26px] h-[26px]"
-            />
+            {logo ? (
+              <img
+                src={logo}
+                alt={`${name} Logo`}
+                className="w-[26px] h-[26px]"
+              />
+            ) : (
+              <div className="w-[26px] h-[26px] flex items-center justify-center bg-gray-300 rounded-full">
+                <span className="text-white font-semibold text-sm">{name.charAt(0)}</span>
+              </div>
+            )}
             <h3 className="font-open-sans text-[18px] leading-[24.51px] text-[#1A1A1A]">
               {name}
             </h3>
           </div>
-
           <p className="font-open-sans font-normal text-[10px] leading-[13.62px] text-[#A7A6A6]">
             {description}
           </p>

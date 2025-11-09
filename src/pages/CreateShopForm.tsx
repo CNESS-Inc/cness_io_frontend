@@ -535,10 +535,10 @@ const CreateShopForm: React.FC = () => {
       if (response?.data?.data) {
         const data = response.data.data;
 
-        // if (data.verification_status === "pending") {
-        //   setIsSubmitted(true);
-        //   return;
-        // }
+        if (data.verification_status === "pending") {
+          setIsSubmitted(true);
+          return;
+        }
 
         if (data.verification_status === "approved") {
           setIsApproved(true);

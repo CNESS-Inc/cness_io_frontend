@@ -112,6 +112,10 @@ import EditPodcastForm from "../pages/EditPodcastProductPage";
 import PodcastPreview from "../pages/PodcastPreview";
 import EditEbookForm from "../pages/EditEbookProductPage";
 import EbookPreview from "../pages/EbookPreview";
+import EditCourseForm from "../pages/EditCourseProductPage";
+import CoursePreview from "../pages/CoursePreview";
+import ArtPreview from "../pages/ArtPreview";
+import EditArtsForm from "../pages/EditArtProductPage";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -424,6 +428,14 @@ export const router = createBrowserRouter([
             element: <EditEbookForm />
           },
           {
+            path: "products/edit-course/:productNo",
+            element: <EditCourseForm />
+          },
+          {
+            path: "products/edit-art/:productNo",
+            element: <EditArtsForm />
+          },
+          {
             path: "products/preview/:productNo",
             element: <Preview />
           },
@@ -438,6 +450,14 @@ export const router = createBrowserRouter([
           {
             path: "products/ebook-preview/:productNo",
             element: <EbookPreview />
+          },
+          {
+            path: "products/course-preview/:productNo",
+            element: <CoursePreview />
+          },
+          {
+            path: "products/art-preview/:productNo",
+            element: <ArtPreview />
           },
 
           {

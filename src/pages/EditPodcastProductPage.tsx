@@ -5,7 +5,7 @@ import CategoryModel from "../components/MarketPlace/CategoryModel";
 import { useNavigate, useParams } from "react-router-dom";
 import { Music, Plus, SquarePen, Trash2, X } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { UpdatePodcastProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, GetPreviewProduct, UpdateProductStatus } from "../Common/ServerAPI";
+import { UpdatePodcastProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, GetPreviewProduct, UpdateProductStatus, DeletPodcastEpisode } from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 interface FormSectionProps {
@@ -84,6 +84,7 @@ const EditPodcastForm: React.FC = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [newHighlight, setNewHighlight] = useState("");
   const [episodes, setEpisodes] = useState<any[]>([]);
+  const [deletingEpisodes, setDeletingEpisodes] = useState<Set<number>>(new Set());
 
   const [formData, setFormData] = useState({
     product_title: "",
@@ -123,7 +124,6 @@ const EditPodcastForm: React.FC = () => {
 
           if (productData.content_items && productData.content_items.length > 0) {
             setEpisodes(productData.content_items.map((item: any, index: number) => ({
-              id: item.id || index + 1,
               episode_id: item.id,
               title: item.title || `Episode ${index + 1}`,
               episode_files: item.file_urls?.map((file: any) => ({
@@ -131,10 +131,10 @@ const EditPodcastForm: React.FC = () => {
                 title: file.title,
                 order_number: file.order_number,
               })) || [],
-              description: item.description || "",
-              duration: item.duration || "00:00",
-              order_number: item.order_number || index + 1,
-              is_free: item.is_free || false,
+              // description: item.description || "",
+              // duration: item.duration || "00:00",
+              // order_number: item.order_number || index + 1,
+              // is_free: item.is_free || false,
             })));
           }
         }
@@ -196,7 +196,7 @@ const EditPodcastForm: React.FC = () => {
       Course: "/dashboard/products/add-course",
       Podcasts: "/dashboard/products/add-podcast",
       Ebook: "/dashboard/products/add-ebook",
-      Arts: "/dashboard/products/add-arts",
+      Art: "/dashboard/products/add-arts",
     };
     const path = routes[category];
     if (path) navigate(path);
@@ -241,6 +241,38 @@ const EditPodcastForm: React.FC = () => {
         is_free: false
       },
     ]);
+  };
+
+  const handleDeleteEpisode = async (episodeId: any) => {
+    if (episodeId) {
+      setDeletingEpisodes(prev => new Set(prev).add(episodeId));
+
+      try {
+        await DeletPodcastEpisode(productId, episodeId);
+
+        setEpisodes(prev => prev.filter(ch => ch.episode_id !== episodeId));
+
+        showToast({
+          message: "Episode deleted successfully",
+          type: "success",
+          duration: 2000,
+        });
+      } catch (error: any) {
+        showToast({
+          message: error?.response?.data?.error?.message || "Failed to delete episode",
+          type: "error",
+          duration: 3000,
+        });
+      } finally {
+        setDeletingEpisodes(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(episodeId);
+          return newSet;
+        });
+      }
+    } else {
+      setEpisodes(prev => prev.filter(ch => ch.episode_id !== episodeId));
+    }
   };
 
   const toggleEditFile = (episodeId: number, fileOrderNumber: number) => {
@@ -404,7 +436,7 @@ const EditPodcastForm: React.FC = () => {
                   const uploadData = response?.data?.data?.data;
 
                   return {
-                    url: uploadData?.track_url || "",
+                    url: uploadData?.track_url,
                     title: episodeFile.title,
                     order_number: episodeFile.order_number,
                   };
@@ -424,10 +456,10 @@ const EditPodcastForm: React.FC = () => {
             ...(episode.episode_id && { episode_id: episode.episode_id }),
             title: episode.title,
             episode_files: uploadedFiles,
-            description: episode.description || "",
-            duration: episode.duration || "00:00",
-            order_number: episode.order_number,
-            is_free: episode.is_free,
+            // description: episode.description || "",
+            // duration: episode.duration || "00:00",
+            // order_number: episode.order_number,
+            // is_free: episode.is_free,
           };
         })
       );
@@ -446,7 +478,7 @@ const EditPodcastForm: React.FC = () => {
         episodes: uploadedEpisodes,
       };
 
-      await UpdatePodcastProduct(payload, productId);
+      await UpdatePodcastProduct(payload, 'podcast', productId);
 
       const status = isDraft ? 'draft' : 'published';
       await UpdateProductStatus({ status }, productId);
@@ -727,12 +759,30 @@ const EditPodcastForm: React.FC = () => {
                 key={episode.id}
                 className="border border-gray-200 rounded-lg p-4 shadow-sm bg-white"
               >
-                <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
-                  {episode.title}
-                </h3>
-                <p className="text-sm text-[#665B5B] mb-4">
-                  Upload episode {episode.order_number} audio files
-                </p>
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
+                      {episode.title}
+                    </h3>
+                    <p className="text-sm text-[#665B5B] mb-4">
+                      Upload episode {episode.order_number} audio files
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteEpisode(episode.episode_id)}
+                    disabled={deletingEpisodes.has(episode.episode_id)}
+                    className="text-red-500 hover:text-red-700 transition-colors"
+                    title="Delete Episode"
+                  >
+                    {deletingEpisodes.has(episode.episode_id) ? (
+                      <span className="text-sm">Deleting...</span>
+                    ) : (
+                      <X className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <label className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF]">

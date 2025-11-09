@@ -344,7 +344,7 @@ const EditVideoProductPage: React.FC = () => {
             summary: productData.video_details?.summary_of_storytelling || "",
           });
         }
-        setMainVideoPreview(productData.video_details?.thumbnail_url);
+        setMainVideoPreview(productData.video_details?.main_video?.thumbnail);
         setShortVideoPreview(productData.video_details?.short_video?.thumbnail);
 
       } catch (error: any) {
@@ -463,7 +463,7 @@ const EditVideoProductPage: React.FC = () => {
         const shortResponse = await UploadProductDocument('short-video', shortFormData);
         const videoData = shortResponse?.data?.data;
 
-        uploadedData.short_video_url = videoData?.video_url;
+        uploadedData.short_video_url = videoData?.video_id;
       } catch (error: any) {
         throw new Error(error?.response?.data?.error?.message || "Failed to upload short video");
       }

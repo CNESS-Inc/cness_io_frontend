@@ -2,10 +2,18 @@ import React, { useEffect, useState } from "react";
 import uploadimg from "../assets/upload1.svg";
 import Breadcrumb from "../components/MarketPlace/Breadcrumb";
 import CategoryModel from "../components/MarketPlace/CategoryModel";
-import { useNavigate } from "react-router-dom";
-import { Music, Plus, SquarePen, Trash2, X } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Video, SquarePen, Trash2, Plus, X, FileText, Music, Image } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { CreateMusicProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument } from "../Common/ServerAPI";
+import {
+  UpdateCourseProduct,
+  GetMarketPlaceCategories,
+  GetMarketPlaceMoods,
+  GetPreviewProduct,
+  UploadProductDocument,
+  UpdateProductStatus,
+  DeleteCourseChapter
+} from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 interface FormSectionProps {
@@ -70,27 +78,105 @@ const InputField: React.FC<InputFieldProps> = ({
   </div>
 );
 
-const AddMusicForm: React.FC = () => {
+interface ChapterFile {
+  url: string;
+  title: string;
+  order_number: number;
+  file_type: "video" | "audio" | "image" | "pdf";
+  file?: File;
+  isEditing?: boolean;
+}
+
+interface Chapter {
+  id: number;
+  chapter_id?: string;
+  title: string;
+  chapter_files: ChapterFile[];
+}
+
+const EditCourseForm: React.FC = () => {
   const navigate = useNavigate();
+  const params = useParams();
+  const productId = params?.productNo;
   const { showToast } = useToast();
+
   const [showModal, setShowModal] = useState(false);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetchingData, setIsFetchingData] = useState(true);
   const [moods, setMoods] = useState<string[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [newHighlight, setNewHighlight] = useState("");
-  const [tracks, setTracks] = useState<any[]>([
-    {
-      id: 1,
-      title: "Track 1",
-      track_files: [],
-      description: "",
-      duration: "",
-      order_number: 1,
-      is_free: false
-    },
-  ]);
+  const [chapters, setChapters] = useState<Chapter[]>([]);
+  const [deletingChapters, setDeletingChapters] = useState<Set<number>>(new Set());
+
+  const [formData, setFormData] = useState({
+    product_title: "",
+    price: 0,
+    discount_percentage: 0,
+    mood_id: "",
+    overview: "",
+    highlights: [] as string[],
+    storytelling: "",
+    duration: "",
+    language: "",
+    format: "video",
+    requirements: "",
+  });
+
+  useEffect(() => {
+    const fetchProductData = async () => {
+      if (!productId) return;
+
+      setIsFetchingData(true);
+      try {
+        const response = await GetPreviewProduct('course', productId);
+        const productData = response?.data?.data;
+
+        if (productData) {
+          setFormData({
+            product_title: productData.product_title || "",
+            price: parseFloat(productData.price || "0"),
+            discount_percentage: parseFloat(productData.discount_percentage || "0"),
+            mood_id: productData.mood_id || "",
+            overview: productData.overview || "",
+            highlights: productData.highlights ? (typeof productData.highlights === 'string' ? productData.highlights.split(',').map((h: string) => h.trim()) : productData.highlights) : [],
+            storytelling: productData.course_details?.storytelling || "",
+            duration: productData.course_details?.duration || "",
+            language: productData.language || "",
+            format: productData.course_details?.format || "video",
+            requirements: productData.course_details?.requirements || "",
+          });
+
+          if (productData.content_items && productData.content_items.length > 0) {
+            setChapters(productData.content_items.map((item: any, index: number) => ({
+              id: index + 1,
+              chapter_id: item.id,
+              title: item.title || `Lesson ${index + 1}`,
+              chapter_files: item.file_urls?.map((file: any) => ({
+                url: file.url,
+                title: file.title,
+                order_number: file.order_number,
+                file_type: file.file_type || 'video',
+              })) || [],
+            })));
+          }
+        }
+      } catch (error: any) {
+        showToast({
+          message: error?.response?.data?.error?.message || "Failed to load product data.",
+          type: "error",
+          duration: 3000,
+        });
+        navigate('/dashboard/products');
+      } finally {
+        setIsFetchingData(false);
+      }
+    };
+
+    fetchProductData();
+  }, [productId]);
 
   useEffect(() => {
     const fetchMoods = async () => {
@@ -117,9 +203,8 @@ const AddMusicForm: React.FC = () => {
           setCategories(response.data.data);
         }
       } catch (error: any) {
-        const errorMessage = error?.response?.data?.error?.message || "Failed to load categories.";
         showToast({
-          message: errorMessage,
+          message: "Failed to load categories.",
           type: "error",
           duration: 3000,
         });
@@ -129,128 +214,160 @@ const AddMusicForm: React.FC = () => {
     fetchCategories();
   }, []);
 
-  const handleSelectCategory = (category: string) => {
-    setShowModal(false); // Close modal first
+  const handleSelectCategory = () => {
+    setShowModal(false);
+  };
 
-    const routes: Record<string, string> = {
-      Video: "/dashboard/products/add-video",
-      Music: "/dashboard/products/add-music",
-      Course: "/dashboard/products/add-course",
-      Podcasts: "/dashboard/products/add-podcast",
-      Ebook: "/dashboard/products/add-ebook",
-      Art: "/dashboard/products/add-arts",
-    };
+  const getFileType = (fileName: string): "video" | "audio" | "image" | "pdf" => {
+    const ext = fileName.split('.').pop()?.toLowerCase();
+    if (['mp4', 'mov', 'avi', 'mkv', 'wmv', 'webm'].includes(ext || '')) return 'video';
+    if (['mp3', 'wav', 'aac', 'flac', 'ogg'].includes(ext || '')) return 'audio';
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext || '')) return 'image';
+    if (ext === 'pdf') return 'pdf';
+    return 'video';
+  };
 
-    const path = routes[category];
-    if (path) {
-      navigate(path);
+  const getFileIcon = (fileType: string) => {
+    switch (fileType) {
+      case 'video':
+        return <Video className="w-5 h-5 text-[#242E3A]" />;
+      case 'audio':
+        return <Music className="w-5 h-5 text-[#242E3A]" />;
+      case 'image':
+        return <Image className="w-5 h-5 text-[#242E3A]" />;
+      case 'pdf':
+        return <FileText className="w-5 h-5 text-[#242E3A]" />;
+      default:
+        return <Video className="w-5 h-5 text-[#242E3A]" />;
     }
   };
 
-  // Add files
   const handleAddFile = (
     e: React.ChangeEvent<HTMLInputElement>,
-    trackId: number
+    chapterId: number
   ) => {
     const files = Array.from(e.target.files || []);
 
-    setTracks((prev) =>
-      prev.map((track) =>
-        track.id === trackId
+    setChapters((prev) =>
+      prev.map((chapter) =>
+        chapter.id === chapterId
           ? {
-            ...track,
-            track_files: [
-              ...track.track_files,
+            ...chapter,
+            chapter_files: [
+              ...chapter.chapter_files,
               ...files.map((file, i) => ({
-                url: "", // Will be filled after upload
+                url: "",
                 title: file.name,
-                order_number: track.track_files.length + i + 1,
-                file: file, // Store the actual file
+                order_number: chapter.chapter_files.length + i + 1,
+                file_type: getFileType(file.name),
+                file: file,
               })),
             ],
           }
-          : track
+          : chapter
       )
     );
   };
 
-  // Add new track
-  const handleAddTrack = () => {
-    setTracks((prev) => [
+  const handleAddChapter = () => {
+    setChapters((prev) => [
       ...prev,
-      {
-        id: prev.length + 1,
-        title: `Track ${prev.length + 1}`,
-        track_files: [],
-        description: "",
-        duration: "",
-        order_number: prev.length + 1,
-        is_free: false
-      },
+      { id: prev.length + 1, title: `Lesson ${prev.length + 1}`, chapter_files: [] },
     ]);
   };
 
-  // Edit file name
-  const toggleEditFile = (trackId: number, fileOrderNumber: number) => {
-    setTracks((prev) =>
-      prev.map((track) =>
-        track.id === trackId
+  const handleDeleteChapter = async (chapterId: any) => {
+      if (chapterId) {
+        setDeletingChapters(prev => new Set(prev).add(chapterId));
+  
+        try {
+          await DeleteCourseChapter(productId, chapterId);
+  
+          setChapters(prev => prev.filter(ch => ch.chapter_id !== chapterId));
+  
+          showToast({
+            message: "Chapter deleted successfully",
+            type: "success",
+            duration: 2000,
+          });
+        } catch (error: any) {
+          showToast({
+            message: error?.response?.data?.error?.message || "Failed to delete chapter",
+            type: "error",
+            duration: 3000,
+          });
+        } finally {
+          setDeletingChapters(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(chapterId);
+            return newSet;
+          });
+        }
+      } else {
+        setChapters(prev => prev.filter(ch => ch.chapter_id !== chapterId));
+      }
+    };
+
+  const toggleEditFile = (chapterId: number, fileOrderNumber: number) => {
+    setChapters((prev) =>
+      prev.map((chapter) =>
+        chapter.id === chapterId
           ? {
-            ...track,
-            track_files: track.track_files.map((f: any) =>
+            ...chapter,
+            chapter_files: chapter.chapter_files.map((f) =>
               f.order_number === fileOrderNumber ? { ...f, isEditing: !f.isEditing } : f
             ),
           }
-          : track
+          : chapter
       )
     );
   };
 
   const handleEditFileName = (
-    trackId: number,
+    chapterId: number,
     fileOrderNumber: number,
     newTitle: string
   ) => {
-    setTracks((prev) =>
-      prev.map((track) =>
-        track.id === trackId
+    setChapters((prev) =>
+      prev.map((chapter) =>
+        chapter.id === chapterId
           ? {
-            ...track,
-            track_files: track.track_files.map((f: any) =>
+            ...chapter,
+            chapter_files: chapter.chapter_files.map((f) =>
               f.order_number === fileOrderNumber ? { ...f, title: newTitle } : f
             ),
           }
-          : track
+          : chapter
       )
     );
   };
 
-  const saveFileName = (trackId: number, fileOrderNumber: number) => {
-    setTracks((prev) =>
-      prev.map((track) =>
-        track.id === trackId
+  const saveFileName = (chapterId: number, fileOrderNumber: number) => {
+    setChapters((prev) =>
+      prev.map((chapter) =>
+        chapter.id === chapterId
           ? {
-            ...track,
-            track_files: track.track_files.map((f: any) =>
+            ...chapter,
+            chapter_files: chapter.chapter_files.map((f) =>
               f.order_number === fileOrderNumber
                 ? { ...f, isEditing: false }
                 : f
             ),
           }
-          : track
+          : chapter
       )
     );
   };
 
-  const deleteFile = (trackId: number, fileOrderNumber: number) => {
-    setTracks((prev) =>
-      prev.map((track) =>
-        track.id === trackId
+  const deleteFile = (chapterId: number, fileOrderNumber: number) => {
+    setChapters((prev) =>
+      prev.map((chapter) =>
+        chapter.id === chapterId
           ? {
-            ...track,
-            track_files: track.track_files.filter((f: any) => f.order_number !== fileOrderNumber)
+            ...chapter,
+            chapter_files: chapter.chapter_files.filter((f) => f.order_number !== fileOrderNumber)
           }
-          : track
+          : chapter
       )
     );
   };
@@ -262,20 +379,6 @@ const AddMusicForm: React.FC = () => {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
-
-  const [formData, setFormData] = useState({
-    product_title: "",
-    price: 0,
-    discount_percentage: 0,
-    mood_id: "",
-    overview: "",
-    highlights: [] as string[],
-    total_duration: "",
-    language: "",
-    theme: "",
-    format: "",
-    status: "",
-  });
 
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
@@ -293,34 +396,19 @@ const AddMusicForm: React.FC = () => {
     }
 
     if (!formData.mood_id.trim()) newErrors.mood_id = "Mood Selection is required.";
-
     if (!formData.overview.trim()) newErrors.overview = "Overview is required.";
 
     if (formData.highlights.length === 0) {
       newErrors.highlights = "At least one highlight is required.";
     }
 
-    if (formData.total_duration) {
-      if (!/^\d{2}:\d{2}:\d{2}$/.test(formData.total_duration)) {
-        newErrors.total_duration = "Duration must be in HH:MM:SS format (e.g., 01:10:00)";
-      }
+    if (chapters.length === 0) {
+      newErrors.chapters = "At least one lesson is required.";
     }
 
-    // Remove duration validation
-
-    const validFormats = ["MP3", "AAC", "WAV", "FLAC", "OGG"];
-    if (!formData.format || !validFormats.includes(formData.format.toUpperCase())) {
-      newErrors.format = "Format must be one of the following: MP3, AAC, WAV, FLAC, OGG.";
-    }
-
-    if (tracks.length === 0) {
-      newErrors.tracks = "At least one track is required.";
-    }
-
-    // Validate each track has at least one file
-    tracks.forEach((track, index) => {
-      if (track.track_files.length === 0) {
-        newErrors[`track_${track.id}`] = `Track ${index + 1} must have at least one audio file.`;
+    chapters.forEach((chapter, index) => {
+      if (chapter.chapter_files.length === 0) {
+        newErrors[`chapter_${chapter.id}`] = `Lesson ${index + 1} must have at least one file.`;
       }
     });
 
@@ -344,69 +432,11 @@ const AddMusicForm: React.FC = () => {
     const target = e.target;
     const { name, value } = target;
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
-    const toStr = (v: unknown) => (v === undefined || v === null ? "" : String(v));
-    const valStr = toStr(value).trim();
-
-    let message = "";
-    switch (name) {
-      case "product_title":
-        if (!valStr) message = "Product title is required";
-        break;
-
-      case "price":
-        if (value === "" || isNaN(parseFloat(value)) || parseFloat(value) <= 0) {
-          message = "Price must be a positive number";
-        }
-        break;
-
-      case "discount_percentage":
-        const discount = parseFloat(value);
-        if (value === "" || isNaN(discount)) {
-          message = "Discount percentage must be a number";
-        } else if (discount < 0 || discount > 100) {
-          message = "Discount percentage must be between 0 and 100";
-        }
-        break;
-
-      case "mood_id":
-        if (!valStr) message = "Mood Selection is required";
-        break;
-
-      case "overview":
-        if (!valStr) message = "Overview is required";
-        break;
-
-      case "highlights":
-        if (Array.isArray(value) && value.length === 0) {
-          message = "At least one highlight is required";
-        } else if (Array.isArray(value) && value.some((highlight: string) => !highlight.trim())) {
-          message = "Highlights cannot contain empty values";
-        }
-        break;
-
-      case "total_duration":
-        if (valStr && !/^\d{2}:\d{2}:\d{2}$/.test(valStr)) message = "Invalid duration format. Use HH:MM:SS";
-        break;
-
-      case "status":
-        const validStatuses = ["draft", "published"];
-        if (valStr && !validStatuses.includes(valStr)) message = "Status must be either 'draft' or 'published'.";
-        break;
-
-      default:
-        break;
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
-
-    setErrors((prev) => ({ ...prev, [name]: message }));
-  };
-
-  const handleDeleteTrack = (trackId: any) => {
-    setTracks(prev => prev.filter(ch => ch.id !== trackId));
   };
 
   const handleSubmit = async (isDraft: boolean = false) => {
@@ -421,77 +451,76 @@ const AddMusicForm: React.FC = () => {
 
     setIsLoading(true);
     try {
-      // Step 1: Upload all track files and get URLs
-      const uploadedTracks = await Promise.all(
-        tracks.map(async (track) => {
-          // Upload all files for this track
+      const uploadedChapters = await Promise.all(
+        chapters.map(async (chapter) => {
           const uploadedFiles = await Promise.all(
-            track.track_files.map(async (trackFile: any) => {
-              if (trackFile.file) {
-                const formData = new FormData();
-                formData.append('track', trackFile.file);
+            chapter.chapter_files.map(async (chapterFile) => {
+              if (chapterFile.file) {
+                const formDataUpload = new FormData();
+                formDataUpload.append('chapter_file', chapterFile.file);
 
                 try {
-                  const response = await UploadProductDocument('music-track', formData);
-                  const uploadData = response?.data?.data;
+                  const uploadResponse = await UploadProductDocument('course-chapter', formDataUpload);
+                  const uploadData = uploadResponse?.data?.data;
 
                   return {
-                    url: uploadData?.track_url || "",
-                    title: trackFile.title,
-                    order_number: trackFile.order_number,
+                    url: uploadData?.video_id || uploadData?.document_url || uploadData?.track_url || uploadData?.image_url || "",
+                    title: chapterFile.title,
+                    order_number: chapterFile.order_number,
+                    file_type: chapterFile.file_type,
                   };
                 } catch (error) {
-                  throw new Error(`Failed to upload ${trackFile.title}`);
+                  throw new Error(`Failed to upload ${chapterFile.title}`);
                 }
               }
-              return trackFile;
+              return {
+                url: chapterFile.url,
+                title: chapterFile.title,
+                order_number: chapterFile.order_number,
+                file_type: chapterFile.file_type,
+              };
             })
           );
 
           return {
-            title: track.title,
-            track_files: uploadedFiles,
-            description: track.description || "",
-            duration: track.duration || "00:00",
-            order_number: track.order_number,
-            is_free: track.is_free,
+            ...(chapter.chapter_id && { chapter_id: chapter.chapter_id }),
+            title: chapter.title,
+            chapter_files: uploadedFiles,
           };
         })
       );
 
-      // Step 2: Create music product with uploaded tracks
       const payload = {
         product_title: formData.product_title,
         price: formData.price,
         discount_percentage: formData.discount_percentage,
         mood_id: formData.mood_id,
         overview: formData.overview,
-        highlights: formData.highlights,
-        total_duration: formData.total_duration || "00:00",
+        highlights: formData.highlights.join(', '),
+        storytelling: formData.storytelling,
+        duration: formData.duration || "00:00:00",
         language: formData.language,
-        theme: formData.theme,
         format: formData.format,
-        status: isDraft ? 'draft' : 'published',
-        tracks: uploadedTracks,
+        requirements: formData.requirements,
+        chapters: uploadedChapters,
       };
 
-      const response = await CreateMusicProduct(payload);
-      const productId = response?.data?.data?.product_id;
+      await UpdateCourseProduct(payload, productId);
+
+      const status = isDraft ? 'draft' : 'published';
+      await UpdateProductStatus({ status }, productId);
 
       showToast({
-        message: isDraft
-          ? "Music product saved as draft successfully"
-          : "Music product created successfully",
+        message: isDraft ? "Course product saved as draft successfully" : "Course product updated successfully",
         type: "success",
         duration: 3000,
       });
 
       setErrors({});
 
-      // Navigate based on action
-      if (isDraft && productId) {
+      if (isDraft) {
         setTimeout(() => {
-          navigate(`/dashboard/products/music-preview/${productId}?category=music`);
+          navigate(`/dashboard/products/course-preview/${productId}?category=course`);
         }, 1500);
       } else {
         setTimeout(() => {
@@ -500,7 +529,7 @@ const AddMusicForm: React.FC = () => {
       }
     } catch (error: any) {
       showToast({
-        message: error?.message || error?.response?.data?.error?.message || 'Failed to create music product',
+        message: error?.message || error?.response?.data?.error?.message || 'Failed to update course product',
         type: "error",
         duration: 3000,
       });
@@ -511,9 +540,9 @@ const AddMusicForm: React.FC = () => {
 
   const handleAddHighlight = () => {
     if (newHighlight.trim()) {
-      if (formData.highlights.length >= 3) {
+      if (formData.highlights.length >= 5) {
         showToast({
-          message: "Maximum 3 highlights allowed",
+          message: "Maximum 5 highlights allowed",
           type: "error",
           duration: 3000,
         });
@@ -555,9 +584,11 @@ const AddMusicForm: React.FC = () => {
     navigate('/dashboard/products');
   };
 
-  if (isLoading) {
+  if (isFetchingData) {
     return (
-      <LoadingSpinner />
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
     );
   }
 
@@ -569,10 +600,9 @@ const AddMusicForm: React.FC = () => {
       />
 
       <div className="max-w-9xl mx-auto px-2 py-1 space-y-10">
-        {/* Add Music Section */}
         <FormSection
-          title="Add Music"
-          description="Upload your tracks, set pricing, and publish them to the marketplace."
+          title="Edit Course"
+          description="Update your course details, lessons, and publish changes to the marketplace."
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <InputField
@@ -622,7 +652,6 @@ const AddMusicForm: React.FC = () => {
           </div>
         </FormSection>
 
-        {/* Details Section */}
         <FormSection title="Details" description="">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
@@ -633,7 +662,7 @@ const AddMusicForm: React.FC = () => {
                 name="overview"
                 value={formData.overview}
                 onChange={handleChange}
-                placeholder="Describe your track or album"
+                placeholder="Describe your course"
                 className="w-full h-32 px-3 py-2 border border-gray-200 rounded-md resize-none focus:ring-2 focus:ring-[#7077FE]"
                 required
               />
@@ -641,7 +670,7 @@ const AddMusicForm: React.FC = () => {
             </div>
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Highlights * (Max 3)
+                Highlights * (Max 5)
               </label>
               <div className="space-y-3">
                 {formData?.highlights?.map((highlight: any, index: number) => (
@@ -663,7 +692,7 @@ const AddMusicForm: React.FC = () => {
                   </div>
                 ))}
 
-                {formData.highlights.length < 3 && (
+                {formData.highlights.length < 5 && (
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -675,7 +704,7 @@ const AddMusicForm: React.FC = () => {
                           handleAddHighlight();
                         }
                       }}
-                      placeholder="Add a highlight (e.g., Guided relaxation for stress relief)"
+                      placeholder="Add a highlight"
                       className="flex-1 px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
                     />
                     <button
@@ -689,47 +718,33 @@ const AddMusicForm: React.FC = () => {
                 )}
 
                 <p className="text-sm text-gray-500">
-                  Add up to 3 key highlights about your video (e.g., "Guided relaxation for stress relief", "Mindfulness and breathing techniques")
+                  Add up to 5 key highlights about your course
                 </p>
               </div>
               {errors.highlights && <span className="text-red-500 text-sm mt-1">{errors.highlights}</span>}
             </div>
 
+            <div>
+              <label className="block font-semibold text-[16px] text-[#242E3A] mb-2">
+                Storytelling
+              </label>
+              <textarea
+                name="storytelling"
+                value={formData.storytelling}
+                onChange={handleChange}
+                placeholder="What will students learn from this course?"
+                className="w-full h-32 px-3 py-2 border border-gray-200 rounded-md resize-none focus:ring-2 focus:ring-[#7077FE]"
+              />
+            </div>
+
             <InputField
               label="Duration (HH:MM:SS)"
-              placeholder="e.g., 01:10:00"
-              name="total_duration"
-              value={formData.total_duration}
+              placeholder="e.g., 105:30:00"
+              name="duration"
+              value={formData.duration}
               onChange={handleChange}
-              error={errors.total_duration}
+              error={errors.duration}
             />
-            <InputField
-              label="Theme"
-              placeholder="Describe the music theme"
-              name="theme"
-              value={formData.theme}
-              onChange={handleChange}
-              error={errors.theme}
-            />
-
-            {/* Format dropdown */}
-            <div>
-              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Format
-              </label>
-              <select
-                name="format"
-                value={formData.format}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE]">
-                <option value="">Select Format</option>
-                <option value="MP3">MP3</option>
-                <option value="WAV">WAV</option>
-                <option value="AAC">AAC</option>
-                <option value="FLAC">FLAC</option>
-                <option value="OGG">OGG</option>
-              </select>
-            </div>
 
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
@@ -748,54 +763,74 @@ const AddMusicForm: React.FC = () => {
               </select>
               {errors.language && <span className="text-red-500 text-sm mt-1">{errors.language}</span>}
             </div>
+
+            <InputField
+              label="Requirements"
+              placeholder="Enter the course requirements for attendees"
+              name="requirements"
+              value={formData.requirements}
+              onChange={handleChange}
+            />
+
+            <div>
+              <label className="block font-semibold text-[16px] text-[#242E3A] mb-2">
+                Format
+              </label>
+              <select
+                name="format"
+                value={formData.format}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE]">
+                <option value="video">Video</option>
+                <option value="audio">Audio</option>
+                <option value="mixed">Mixed</option>
+              </select>
+            </div>
           </div>
         </FormSection>
 
-        {/* Uploads Section */}
-        <FormSection title="Uploads" description="">
+        <FormSection title="Lessons" description="">
           <div className="space-y-6">
-            {tracks.map((track) => (
+            {chapters.map((chapter: any) => (
               <div
-                key={track.id}
+                key={chapter.id}
                 className="border border-gray-200 rounded-lg p-4 shadow-sm bg-white"
               >
                 <div className="flex items-center justify-between mb-2">
                   <div>
                     <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
-                      {track.name}
+                      {chapter.title}
                     </h3>
                     <p className="text-sm text-[#665B5B] mb-4">
-                      Upload track {track.id} audio files
+                      Upload lesson {chapter.id} materials (videos, audios, PDFs, images)
                     </p>
                   </div>
 
-                  {/* Delete Chapter Button */}
                   <button
                     type="button"
-                    onClick={() => handleDeleteTrack(track.id)}
+                    onClick={() => handleDeleteChapter(chapter.chapter_id)}
+                    disabled={deletingChapters.has(chapter.chapter_id)}
                     className="text-red-500 hover:text-red-700 transition-colors"
-                    title="Delete Track"
+                    title="Delete Chapter"
                   >
-                    <X className="w-5 h-5" />
+                    {deletingChapters.has(chapter.chapter_id) ? (
+                      <span className="text-sm">Deleting...</span>
+                    ) : (
+                      <X className="w-5 h-5" />
+                    )}
                   </button>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* LEFT Upload */}
-                  <label
-                    className="relative flex flex-col items-center justify-center h-40 cursor-pointer relative rounded-lg p-6 text-center cursor-pointer transition-all bg-[#F9FAFB] hover:bg-[#EEF3FF]"
-                  >
-                    {/* ✅ SVG dashed border */}
-                    <svg
-                      className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none"
-                    >
-                      <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="12" ry="12" stroke="#CBD5E1" strokeWidth="2" strokeDasharray="6,6" fill="none"
-                        className="transition-all duration-300 group-hover:stroke-[#7077FE]" />
-                    </svg>                     <input
+                  <label className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF]">
+                    <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
+                      <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="12" ry="12" stroke="#CBD5E1" strokeWidth="2" strokeDasharray="6,6" fill="none" className="transition-all duration-300 group-hover:stroke-[#7077FE]" />
+                    </svg>
+                    <input
                       type="file"
-                      accept="audio/*"
+                      accept="video/*,audio/*,image/*,.pdf"
                       className="hidden"
-                      onChange={(e) => handleAddFile(e, track.id)}
+                      onChange={(e) => handleAddFile(e, chapter.id)}
                       multiple
                     />
                     <div className="text-center space-y-2">
@@ -806,33 +841,32 @@ const AddMusicForm: React.FC = () => {
                         Drag & drop or click to upload
                       </p>
                       <p className="text-xs text-[#665B5B]">
-                        MP3, WAV, FLAC (max 20 MB)
+                        Videos, audios, PDFs, images
                       </p>
                     </div>
                   </label>
 
-                  {/* RIGHT Uploaded Files */}
                   <div className="space-y-3">
-                    {track.track_files.length === 0 ? (
+                    {chapter.chapter_files.length === 0 ? (
                       <div className="text-sm text-gray-500 border border-gray-100 rounded-lg p-4 bg-gray-50">
                         No files uploaded yet
                       </div>
                     ) : (
-                      track.track_files.map((file: any) => (
+                      chapter.chapter_files.map((file: any) => (
                         <div
                           key={file.order_number}
                           className="border border-gray-200 rounded-lg p-3 bg-white"
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-2">
-                              <Music className="w-5 h-5 text-[#242E3A]" />
+                              {getFileIcon(file.file_type)}
                               {file.isEditing ? (
                                 <input
                                   type="text"
                                   value={file.title}
                                   onChange={(e) =>
                                     handleEditFileName(
-                                      track.id,
+                                      chapter.id,
                                       file.order_number,
                                       e.target.value
                                     )
@@ -844,11 +878,14 @@ const AddMusicForm: React.FC = () => {
                                   {file.title}
                                 </p>
                               )}
+                              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                                {file.file_type}
+                              </span>
                             </div>
                             <div className="flex items-center space-x-2">
                               {file.isEditing ? (
                                 <button
-                                  onClick={() => saveFileName(track.id, file.order_number)}
+                                  onClick={() => saveFileName(chapter.id, file.order_number)}
                                   className="text-[#7077FE] text-sm font-semibold"
                                 >
                                   Save
@@ -857,14 +894,14 @@ const AddMusicForm: React.FC = () => {
                                 <>
                                   <button
                                     onClick={() =>
-                                      toggleEditFile(track.id, file.order_number)
+                                      toggleEditFile(chapter.id, file.order_number)
                                     }
                                     className="text-gray-500 hover:text-[#7077FE]"
                                   >
                                     <SquarePen className="w-4 h-4" />
                                   </button>
                                   <button
-                                    onClick={() => deleteFile(track.id, file.order_number)}
+                                    onClick={() => deleteFile(chapter.id, file.order_number)}
                                     className="text-gray-500 hover:text-red-500"
                                   >
                                     <Trash2 className="w-4 h-4" />
@@ -887,49 +924,35 @@ const AddMusicForm: React.FC = () => {
                       ))
                     )}
                   </div>
-                  {errors.tracks && (
-                    <p className="text-red-500 text-sm mt-2">{errors.tracks}</p>
-                  )}
-                  {Object.keys(errors).filter(key => key.startsWith('track_')).map(key => (
-                    <p key={key} className="text-red-500 text-sm mt-2">{errors[key]}</p>
-                  ))}
                 </div>
+                {errors[`chapter_${chapter.id}`] && (
+                  <p className="text-red-500 text-sm mt-2">{errors[`chapter_${chapter.id}`]}</p>
+                )}
               </div>
             ))}
 
-            {/* Add Track Button */}
             <button
-              onClick={handleAddTrack}
+              onClick={handleAddChapter}
               className="relative w-full rounded-lg py-4 text-[#7077FE] font-medium bg-white cursor-pointer group overflow-hidden transition-all"
             >
-              <svg
-                className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none"
-              >
-                <rect
-                  x="1"
-                  y="1"
-                  width="calc(100% - 2px)"
-                  height="calc(100% - 2px)"
-                  rx="10"
-                  ry="10"
-                  stroke="#CBD5E1"
-                  strokeWidth="2"
-                  strokeDasharray="6,6"
-                  fill="none"
-                  className="transition-colors duration-300 group-hover:stroke-[#7077FE]"
-                />
+              <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
+                <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="10" ry="10" stroke="#CBD5E1" strokeWidth="2" strokeDasharray="6,6" fill="none" className="transition-colors duration-300 group-hover:stroke-[#7077FE]" />
               </svg>
-              + Add Track
+              + Add Lesson
             </button>
+
+            {errors.chapters && (
+              <p className="text-red-500 text-sm mt-2">{errors.chapters}</p>
+            )}
           </div>
         </FormSection>
 
-        {/* Buttons */}
         <div className="flex justify-end space-x-4 pt-6">
           <button
             type="button"
             onClick={handleDiscard}
-            className=" px-5 py-3 text-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%] tracking-[0]  hover:text-blue-500 transition-colors">
+            disabled={isLoading}
+            className="px-5 py-3 text-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] hover:text-blue-500 transition-colors disabled:opacity-50">
             Discard
           </button>
           <button
@@ -944,8 +967,8 @@ const AddMusicForm: React.FC = () => {
             type='button'
             onClick={() => handleSubmit(false)}
             disabled={isLoading}
-            className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%] tracking-[0] hover:bg-[#5a60ea] transition-colors disabled:opacity-50">
-            {isLoading ? "Submitting..." : "Submit"}
+            className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] hover:bg-[#5a60ea] transition-colors disabled:opacity-50">
+            {isLoading ? "Updating..." : "Update"}
           </button>
         </div>
       </div>
@@ -963,10 +986,10 @@ const AddMusicForm: React.FC = () => {
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowDiscardModal(false)}></div>
           <div className="relative z-10 bg-white rounded-[20px] shadow-lg p-8 w-[450px]">
             <h3 className="text-[20px] font-semibold font-['Poppins'] text-[#242E3A] mb-4">
-              Discard Product?
+              Discard Changes?
             </h3>
             <p className="text-[14px] text-[#665B5B] font-['Open_Sans'] mb-6">
-              Are you sure you want to discard this product? All your entered details will not be saved.
+              Are you sure you want to discard? All your changes will not be saved.
             </p>
             <div className="flex justify-end gap-3">
               <button
@@ -989,4 +1012,4 @@ const AddMusicForm: React.FC = () => {
   );
 };
 
-export default AddMusicForm;
+export default EditCourseForm;
