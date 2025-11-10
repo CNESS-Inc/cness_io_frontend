@@ -19,10 +19,11 @@ const collections: CollectionTile[] = [
 ];
 
 export default function MyCollections({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) {
+  console.log("🚀 ~ MyCollections ~ isMobileNavOpen:", isMobileNavOpen)
   const navigate = useNavigate();
 
   return (
-    <div className="transition-all duration-300 md:ml-0 pt-[20px] px-6 md:px-8 py-8 overflow-x-hidden"> 
+    <div className="transition-all duration-300 md:ml-0 pt-5 px-6 md:px-8 py-8 overflow-x-hidden"> 
       {/* Frame 1: Heading container (1128x30 with 20px gap below) */}
       <div className="mx-auto w-full h-[30px] mb-5 flex items-center">
           <h1 className="font-['Poppins'] font-semibold text-[20px] leading-[100%] tracking-[0] text-[#1A1A1A] w-[149px]">
@@ -49,7 +50,7 @@ export default function MyCollections({ isMobileNavOpen }: { isMobileNavOpen?: b
                   alt={collection.title}
                   className="w-full h-auto object-cover rounded-t-[10px]"
                 />
-                <div className="px-2 mt-[10px] text-center text-[14px] font-medium text-[#1A1A1A]">
+                <div className="px-2 mt-2.5 text-center text-[14px] font-medium text-[#1A1A1A]">
                   {collection.title}
                 </div>
               </div>

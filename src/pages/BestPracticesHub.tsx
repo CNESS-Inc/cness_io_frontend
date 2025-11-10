@@ -678,7 +678,7 @@ export default function BestPracticesHub() {
   return (
     <>
       <div className="px-2 sm:px-2 lg:px-1">
-        <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] mx-auto rounded-[12px] overflow-hidden mt-2">
+        <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] mx-auto rounded-xl overflow-hidden mt-2">
           <AnimatedBackground />
 
           {/* Background Image (city illustration) */}
@@ -1039,7 +1039,7 @@ export default function BestPracticesHub() {
                           Overview
                         </p>
 
-                        <p className="text-sm text-gray-600 leading-snug break-words whitespace-pre-line">
+                        <p className="text-sm text-gray-600 leading-snug wrap-break-word whitespace-pre-line">
                           <span
                             dangerouslySetInnerHTML={{
                               __html: DOMPurify.sanitize(
