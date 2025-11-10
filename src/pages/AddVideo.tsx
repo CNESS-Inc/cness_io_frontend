@@ -272,7 +272,7 @@ const AddVideoForm: React.FC = () => {
       Course: "/dashboard/products/add-course",
       Podcasts: "/dashboard/products/add-podcast",
       Ebook: "/dashboard/products/add-ebook",
-      Arts: "/dashboard/products/add-arts",
+      Art: "/dashboard/products/add-arts",
     };
     
     const path = routes[category];
@@ -473,7 +473,7 @@ const AddVideoForm: React.FC = () => {
 
       try {
         const shortResponse = await UploadProductDocument('short-video', shortFormData);
-        uploadedData.short_video_id = shortResponse?.data?.data?.video_url;
+        uploadedData.short_video_id = shortResponse?.data?.data?.video_id;
       } catch (error: any) {
         throw new Error(error?.response?.data?.error?.message || "Failed to upload short video");
       }

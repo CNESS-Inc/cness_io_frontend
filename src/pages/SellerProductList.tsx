@@ -3,13 +3,13 @@ import { Video, Pencil, X, Plus, Music, BookOpen, FileAudio, FileText, Palette }
 import Pagination from "../components/MarketPlace/Pagination";
 import CategoryModal from "../components/MarketPlace/CategoryModel";
 import { useNavigate } from "react-router-dom";
-import { GetMarketPlaceCategories, GetSellerProducts } from "../Common/ServerAPI";
+import { DeleteSellerProduct, GetMarketPlaceCategories, GetSellerProducts } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 interface ProductRowProps {
   id: string;
-  thumbnail_url: string;
+  video_details?: any;
   product_name: string;
   price: string;
   original_price: string;
@@ -24,6 +24,8 @@ interface ProductRowProps {
   is_published: boolean;
   is_active: boolean;
   index: number;
+  currentPage: number;
+  handleDelete: (id: string) => void;
 }
 
 const getCategoryIcon = (categoryName: string) => {
@@ -67,7 +69,7 @@ const getCategoryColor = (categoryName: string) => {
 
 const ProductRow: React.FC<ProductRowProps & { onEdit: (id: string, slug: string) => void }> = ({
   id,
-  thumbnail_url,
+  video_details,
   product_name,
   price,
   original_price,
@@ -77,6 +79,8 @@ const ProductRow: React.FC<ProductRowProps & { onEdit: (id: string, slug: string
   status,
   onEdit,
   index,
+  currentPage,
+  handleDelete
 }) => {
 
   const getStatusStyle = (status: string) => {
@@ -125,16 +129,23 @@ const ProductRow: React.FC<ProductRowProps & { onEdit: (id: string, slug: string
     const isVideo = category.slug.toLowerCase() === 'video';
 
     if (isVideo) {
-      return (
-        <img
-          src={thumbnail_url}
-          alt={product_name}
-          className="w-[90px] h-[58px] rounded-md object-cover shadow-sm"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = 'https://cdn.cness.io/VIDEO%20(1).svg';
-          }}
-        />
-      );
+      const thumbnailUrl = video_details?.main_video?.thumbnail ||
+        video_details?.thumbnail_url ||
+        video_details?.thumbnail;
+
+      if (thumbnailUrl) {
+        return (
+          <img
+            src={thumbnailUrl}
+            alt={product_name}
+            className="w-[90px] h-[58px] rounded-md object-cover shadow-sm"
+            onError={(e) => {
+              // Fallback to default video icon on error
+              (e.target as HTMLImageElement).src = 'https://cdn.cness.io/VIDEO%20(1).svg';
+            }}
+          />
+        );
+      }
     }
 
     // For other categories, show a professional box with icon
@@ -147,7 +158,9 @@ const ProductRow: React.FC<ProductRowProps & { onEdit: (id: string, slug: string
 
   return (
     <tr className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
-      <td className="py-6 px-6 text-[#1A1A1A] text-base">P{String(index + 1).padStart(4, '0')}</td>
+      <td className="py-6 px-6 text-[#1A1A1A] text-base">
+        P{String((currentPage - 1) * 10 + index + 1).padStart(4, '0')}
+      </td>
       <td className="py-6 px-6">
         {renderThumbnail()}
       </td>
@@ -183,6 +196,7 @@ const ProductRow: React.FC<ProductRowProps & { onEdit: (id: string, slug: string
           <button
             className="text-gray-600 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50"
             title="Delete product"
+            onClick={() => handleDelete(id)}
           >
             <X className="w-5 h-5" />
           </button>
@@ -201,6 +215,8 @@ const SellerProductList: React.FC = () => {
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteProductId, setDeleteProductId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { showToast } = useToast();
 
@@ -212,7 +228,7 @@ const SellerProductList: React.FC = () => {
       "course": `/dashboard/products/edit-course/${productId}`,
       "podcast": `/dashboard/products/edit-podcast/${productId}`,
       "ebook": `/dashboard/products/edit-ebook/${productId}`,
-      "arts": `/dashboard/products/edit-arts/${productId}`,
+      "art": `/dashboard/products/edit-art/${productId}`,
     };
 
     const route = routeMap[categorySlug] || `/dashboard/products/edit/${productId}`;
@@ -220,30 +236,8 @@ const SellerProductList: React.FC = () => {
   };
 
   useEffect(() => {
-    const fetchProductsData = async () => {
-      setIsLoadingProducts(true);
-      try {
-        const response = await GetSellerProducts();
-        const products = response?.data?.data?.products || [];
-        setProductData(products);
-
-        // Calculate total pages (assuming 10 items per page)
-        const itemsPerPage = 10;
-        setTotalPages(Math.ceil(products.length / itemsPerPage));
-      } catch (error: any) {
-        const errorMessage = error?.response?.data?.error?.message || "Failed to load products.";
-        showToast({
-          message: errorMessage,
-          type: "error",
-          duration: 3000,
-        });
-      } finally {
-        setIsLoadingProducts(false);
-      }
-    };
-
     fetchProductsData();
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -270,10 +264,36 @@ const SellerProductList: React.FC = () => {
     fetchCategories();
   }, []);
 
+  const fetchProductsData = async () => {
+    setIsLoadingProducts(true);
+    try {
+      const response = await GetSellerProducts(currentPage);
+      const products = response?.data?.data?.products || [];
+      const pagination = response?.data?.data?.pagination || {};
+
+      const filteredProducts = products.filter((product: any) => product.status.toLowerCase() !== "deleted");
+
+      setProductData(filteredProducts);
+      setTotalPages(pagination.total_pages || 1);
+
+      if (filteredProducts.length === 0 && currentPage > 1) {
+        setCurrentPage(1);
+      }
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.error?.message || "Failed to load products.";
+      showToast({
+        message: errorMessage,
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsLoadingProducts(false);
+    }
+  };
+
   const handleSelectCategory = (categoryId: string, categoryName: string) => {
     setIsOpen(false);
 
-    // Route mapping based on category name
     const routeMap: { [key: string]: string } = {
       "Video": "/dashboard/products/add-video",
       "Music": "/dashboard/products/add-music",
@@ -282,12 +302,11 @@ const SellerProductList: React.FC = () => {
       "Podcasts": "/dashboard/products/add-podcast",
       "eBook": "/dashboard/products/add-ebook",
       "Ebook": "/dashboard/products/add-ebook",
-      "Arts": "/dashboard/products/add-arts",
+      "Art": "/dashboard/products/add-arts",
     };
 
     const route = routeMap[categoryName];
     if (route) {
-      // Navigate with category ID as state
       navigate(route, { state: { categoryId, categoryName } });
     } else {
       showToast({
@@ -295,6 +314,34 @@ const SellerProductList: React.FC = () => {
         type: "error",
         duration: 3000,
       });
+    }
+  };
+
+  const handleDelete = (productId: string) => {
+    setDeleteProductId(productId);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (deleteProductId) {
+      try {
+        await DeleteSellerProduct(deleteProductId);
+        setShowDeleteModal(false);
+        showToast({
+          message: "Product deleted successfully.",
+          type: "success",
+          duration: 3000,
+        });
+        fetchProductsData();
+      } catch (error: any) {
+        const errorMessage =
+          error?.response?.data?.error?.message || "Failed to delete product.";
+        showToast({
+          message: errorMessage,
+          type: "error",
+          duration: 3000,
+        });
+      }
     }
   };
 
@@ -365,6 +412,9 @@ const SellerProductList: React.FC = () => {
                     {...product}
                     index={index}
                     onEdit={handleEditProduct}
+                    currentPage={currentPage}
+                    handleDelete={handleDelete}
+                    video_details={product.video_details}
                   />
                 ))
               ) : (
@@ -398,8 +448,39 @@ const SellerProductList: React.FC = () => {
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={setCurrentPage}
+            onPageChange={(page: number) => setCurrentPage(page)}
           />
+        </div>
+      )}
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setShowDeleteModal(false)}
+          ></div>
+          <div className="relative z-10 bg-white rounded-[20px] shadow-lg p-8 w-[450px]">
+            <h3 className="text-[20px] font-semibold font-['Poppins'] text-[#242E3A] mb-4">
+              Delete Product?
+            </h3>
+            <p className="text-[14px] text-[#665B5B] font-['Open_Sans'] mb-6">
+              Are you sure you want to delete this product? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-5 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-5 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

@@ -98,9 +98,9 @@ const AddPodcastForm: React.FC = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [newHighlight, setNewHighlight] = useState("");
   const [episodes, setEpisodes] = useState<Episode[]>([
-    { 
-      id: 1, 
-      title: "Episode 1", 
+    {
+      id: 1,
+      title: "Episode 1",
       episode_files: [],
       description: "",
       duration: "",
@@ -160,20 +160,24 @@ const AddPodcastForm: React.FC = () => {
 
   const handleSelectCategory = (category: string) => {
     setShowModal(false); // Close modal first
-    
+
     const routes: Record<string, string> = {
       Video: "/dashboard/products/add-video",
       Music: "/dashboard/products/add-music",
       Course: "/dashboard/products/add-course",
       Podcasts: "/dashboard/products/add-podcast",
       Ebook: "/dashboard/products/add-ebook",
-      Arts: "/dashboard/products/add-arts",
+      Art: "/dashboard/products/add-arts",
     };
-    
+
     const path = routes[category];
     if (path) {
       navigate(path);
     }
+  };
+
+  const handleDeleteEpisode = (episodeId: any) => {
+    setEpisodes(prev => prev.filter(ch => ch.id !== episodeId));
   };
 
   const handleAddFile = (
@@ -420,8 +424,8 @@ const AddPodcastForm: React.FC = () => {
       const productId = response?.data?.data?.product_id;
 
       showToast({
-        message: isDraft 
-          ? "Podcast product saved as draft successfully" 
+        message: isDraft
+          ? "Podcast product saved as draft successfully"
           : "Podcast product created successfully",
         type: "success",
         duration: 3000,
@@ -689,12 +693,27 @@ const AddPodcastForm: React.FC = () => {
                 key={episode.id}
                 className="border border-gray-200 rounded-lg p-4 shadow-sm bg-white"
               >
-                <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
-                  {episode.title}
-                </h3>
-                <p className="text-sm text-[#665B5B] mb-4">
-                  Upload chapter {episode.id} audios
-                </p>
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
+                      {episode.title}
+                    </h3>
+                    <p className="text-sm text-[#665B5B] mb-4">
+                      Upload chapter {episode.id} audios
+                    </p>
+
+                  </div>
+
+                  {/* Delete Chapter Button */}
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteEpisode(episode.id)}
+                    className="text-red-500 hover:text-red-700 transition-colors"
+                    title="Delete Episode"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <label className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF]">

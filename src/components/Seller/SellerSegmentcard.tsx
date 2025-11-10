@@ -12,6 +12,8 @@ import {
   LinkIcon,
   Bookmark,
   MoreHorizontal,
+  CircleCheckBig,
+  Trash2,
 } from "lucide-react";
 import profileicon from "../../assets/profileicon.svg";
 import aspired from "../../assets/asplocked1.svg";
@@ -32,8 +34,11 @@ import resume from "../../assets/resume.svg";
 import carticon from "../../assets/carticon.svg";
 import clock from "../../assets/clock.svg";
 import { useNavigate } from "react-router-dom";
+import alterProfile from "../../assets/altprofile.png";
+
 import Select from "react-select";
 import {
+  AcceptFriendRequest,
   DashboardDetails,
   GetAllFormDetails,
   // GetAllPlanDetails,
@@ -41,6 +46,7 @@ import {
   GetUserNotification,
   MeDetails,
   PaymentDetails,
+  RejectFriendRequest,
   SendBpFollowRequest,
   SendFriendRequest,
   submitOrganizationDetails,
@@ -3263,6 +3269,8 @@ export function SocialStackCard({
   // friends
   suggested,
   requested,
+  fetchFriendRequests,
+  fetchFriendSuggestions
 }: // onConnect,
 {
   coverUrl: string;
@@ -3279,6 +3287,8 @@ export function SocialStackCard({
   adventureText?: string;
   onStartPosting?: () => void;
   onViewFeed?: () => void;
+  fetchFriendRequests?: any;
+  fetchFriendSuggestions?: any;
 
   suggested: {
     user_id(user_id: any): void;
@@ -3543,8 +3553,7 @@ export function SocialStackCard({
     //   </div>
     // );
     const NotificationsCard = ({ notifications }: { notifications: any[] }) => {
-
-      const userProfile = localStorage.getItem("profile_picture")
+      //const userProfile = localStorage.getItem("profile_picture");
       return (
         <div className="row-start-1 relative z-10 place-self-center w-full max-w-[620px]">
           {/* header */}
@@ -3565,15 +3574,20 @@ export function SocialStackCard({
                 className="flex items-center justify-between rounded-2xl border border-[#EEF0F5] bg-white p-3 shadow-sm"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <img
-                    src={
-                      item?.sender_profile?.profile_picture
-                        ? item?.sender_profile?.profile_picture
-                        : userProfile
-                    }
-                    className="h-11 w-11 rounded-full object-cover"
-                    alt=""
-                  />
+                 <img
+                src={
+                  item?.sender_profile?.profile_picture
+                    ? item.sender_profile.profile_picture
+                    : alterProfile // 👈 Default fallback if null or undefined
+                }
+                onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                  const target = e.currentTarget;
+                  target.onerror = null; // Prevent infinite loop
+                  target.src = alterProfile as string; // 👈 Fallback if image fails to load
+                }}
+                className="h-11 w-11 rounded-full object-cover"
+                alt={`${item?.sender_profile?.first_name || "User"}'s profile`}
+              />
                   <div className="min-w-0">
                     <div className="truncate text-[14px] font-semibold text-[#0F1728]">
                       {item?.sender_profile?.first_name}{" "}
@@ -3594,7 +3608,7 @@ export function SocialStackCard({
           {/* CTA */}
           <button
             className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-full text-white text-[14px] font-semibold bg-[linear-gradient(90deg,#7077FE_0%,#9747FF_60%,#F07EFF_100%)] shadow"
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/dashboard/notification")}
           >
             View all Notification
           </button>
@@ -3652,42 +3666,41 @@ export function SocialStackCard({
                 </p>
                 <div
                   className="mt-4 grid grid-cols-2 gap-2
-  w-full max-w-[320px] sm:max-w-[360px] mx-auto
-  place-items-center"
+                    w-full max-w-[320px] sm:max-w-[360px] mx-auto
+                    place-items-center"
                 >
                   <PrimaryButton
                     className="
-    w-[100px] min-w-[100px] h-[33px]
-    rounded-[100px]
-    px-[12px] pr-[8px]
-    whitespace-nowrap shrink-0
-    !justify-center     
-    text-[12px] mr-2   
-  "
+                      w-[100px] min-w-[100px] h-[33px]
+                      rounded-[100px]
+                      px-[12px] pr-[8px]
+                      whitespace-nowrap shrink-0
+                      !justify-center     
+                      text-[12px] mr-2   
+                    "
                     onClick={onPrimary}
                   >
                     {s.primaryLabel ?? "Start Posting"}
                   </PrimaryButton>
                   <OutlinePill
                     className="
-    w-[100px] min-w-[100px] h-[33px]
-    rounded-[100px]
-    px-[12px] pr-[8px]
-    whitespace-nowrap shrink-0
-    !justify-center
-    text-[12px]
-  "
+                      w-[100px] min-w-[100px] h-[33px]
+                      rounded-[100px]
+                      px-[12px] pr-[8px]
+                      whitespace-nowrap shrink-0
+                      !justify-center
+                      text-[12px]
+                    "
                     onClick={onSecondary}
                   >
                     {s.secondaryLabel ?? "View Feed"}
                   </OutlinePill>
                 </div>
               </div>
-            ) 
-            // : idx === 1 ? (
-            //   // <InsightsCard />
-            // ) 
-            : (
+            ) : (
+              // : idx === 1 ? (
+              //   // <InsightsCard />
+              // )
               <NotificationsCard notifications={notifications} />
             )}
           </div>
@@ -3786,6 +3799,97 @@ export function SocialStackCard({
     return friendRequests[userId] || "connect";
   };
 
+  const handleAcceptRequest = async (userId: string) => {
+    try {
+      setConnectingUsers((prev) => ({ ...prev, [userId]: true }));
+
+      const formattedData = {
+        friend_id: userId,
+      };
+
+      const response = await AcceptFriendRequest(formattedData);
+
+      if (response.success) {
+        setFriendRequests((prev) => ({
+          ...prev,
+          [userId]: "connected",
+        }));
+        showToast({
+          message: "Friend request accepted successfully",
+          type: "success",
+          duration: 3000,
+        });
+        await fetchFriendRequests()
+      }
+    } catch (error) {
+      console.error("Error accepting friend request:", error);
+      showToast({
+        message: "Failed to accept friend request",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setConnectingUsers((prev) => ({ ...prev, [userId]: false }));
+    }
+  };
+
+  // NEW: Function to handle declining friend requests
+  const handleDeclineRequest = async (userId: string) => {
+    try {
+      setConnectingUsers((prev) => ({ ...prev, [userId]: true }));
+
+      const formattedData = {
+        friend_id: userId,
+      };
+
+      const response = await RejectFriendRequest(formattedData);
+
+      if (response.success) {
+        setFriendRequests((prev) => ({
+          ...prev,
+          [userId]: "declined",
+        }));
+        showToast({
+          message: "Friend request declined",
+          type: "success",
+          duration: 3000,
+        });
+        await fetchFriendRequests()
+        // Optional: Remove the declined request from the list
+        // You might want to refresh the requested list instead
+      }
+    } catch (error) {
+      console.error("Error declining friend request:", error);
+      showToast({
+        message: "Failed to decline friend request",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setConnectingUsers((prev) => ({ ...prev, [userId]: false }));
+    }
+  };
+
+
+  const handleTabChange = (newTab: "Suggested" | "Requested") => {
+    setTab(newTab);
+    
+    // Call the appropriate fetch function based on the selected tab
+    if (newTab === "Suggested" && fetchFriendSuggestions) {
+      fetchFriendSuggestions();
+    } else if (newTab === "Requested" && fetchFriendRequests) {
+      fetchFriendRequests();
+    }
+  };
+
+  // Also call the fetch function on initial mount for the default tab
+  React.useEffect(() => {
+    if (tab === "Suggested" && fetchFriendSuggestions) {
+      fetchFriendSuggestions();
+    } else if (tab === "Requested" && fetchFriendRequests) {
+      fetchFriendRequests();
+    }
+  }, []);
   return (
     <Card className="p-4 md:p-5">
       {/* Header */}
@@ -3972,8 +4076,8 @@ export function SocialStackCard({
           <div
             className="absolute top-1 bottom-1 rounded-full bg-[#7077FE] shadow-sm transition-all duration-200"
             style={{
-              width: "calc(50% - 8px)", // 8px = p-1*2
-              left: tab === "Suggested" ? 4 : "calc(50% + 4px)", // slide left/right
+              width: "calc(50% - 8px)",
+              left: tab === "Suggested" ? 4 : "calc(50% + 4px)",
             }}
           />
 
@@ -3981,7 +4085,7 @@ export function SocialStackCard({
           <button
             role="tab"
             aria-selected={tab === "Suggested"}
-            onClick={() => setTab("Suggested")}
+            onClick={() => handleTabChange("Suggested")} // Use handleTabChange instead of setTab
             className={`relative z-10 h-8 text-center text-sm font-semibold rounded-full transition-colors ${
               tab === "Suggested" ? "text-white" : "text-[#222224]"
             }`}
@@ -3992,7 +4096,7 @@ export function SocialStackCard({
           <button
             role="tab"
             aria-selected={tab === "Requested"}
-            onClick={() => setTab("Requested")}
+            onClick={() => handleTabChange("Requested")} // Use handleTabChange instead of setTab
             className={`relative z-10 h-8 text-center text-sm font-semibold rounded-full transition-colors ${
               tab === "Requested" ? "text-white" : "text-[#222224]"
             }`}
@@ -4037,33 +4141,53 @@ export function SocialStackCard({
                   <UserPlus className="h-4 w-4" />
                   Connect
                 </OutlinePill> */}
-                <button
-                  onClick={() => handleConnect(f.id)}
-                  disabled={connectingUsers[f.id] || false}
-                  className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-[12px] py-[6px] rounded-full transition-colors font-family-open-sans h-[35px]
-                  ${
-                    getFriendStatus(f.id) === "connected"
-                      ? "bg-gray-400 text-white cursor-not-allowed"
-                      : getFriendStatus(f.id) === "requested"
-                      ? "bg-gray-400 text-white cursor-not-allowed"
-                      : "bg-white text-black shadow-md"
-                  }`}
-                >
-                  <span className="flex items-center gap-1 text-[#0B3449]">
-                    <img
-                      src={iconMap["userplus"]}
-                      alt="userplus"
-                      className="w-4 h-4"
-                    />
-                    {connectingUsers[f.id]
-                      ? "Loading..."
-                      : getFriendStatus(f.id) === "connected"
-                      ? "Connected"
-                      : getFriendStatus(f.id) === "requested"
-                      ? "Requested"
-                      : "Connect"}
-                  </span>
-                </button>
+                {tab === "Suggested" ? (
+                  <button
+                    onClick={() => handleConnect(f.id)}
+                    disabled={connectingUsers[f.id] || false}
+                    className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-[12px] py-[6px] rounded-full transition-colors font-family-open-sans h-[35px]
+                    ${
+                      getFriendStatus(f.id) === "connected"
+                        ? "bg-gray-400 text-white cursor-not-allowed"
+                        : getFriendStatus(f.id) === "requested"
+                        ? "bg-gray-400 text-white cursor-not-allowed"
+                        : "bg-white text-black shadow-md"
+                    }`}
+                  >
+                    <span className="flex items-center gap-1 text-[#0B3449]">
+                      <img
+                        src={iconMap["userplus"]}
+                        alt="userplus"
+                        className="w-4 h-4"
+                      />
+                      {connectingUsers[f.id]
+                        ? "Loading..."
+                        : getFriendStatus(f.id) === "connected"
+                        ? "Connected"
+                        : getFriendStatus(f.id) === "requested"
+                        ? "Requested"
+                        : "Connect"}
+                    </span>
+                  </button>
+                ) : (
+                  // Requested tab - Show Accept/Decline buttons
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleAcceptRequest(f.id)}
+                      className="p-2 rounded-lg bg-[#31C48D] text-white hover:opacity-90"
+                      aria-label="Accept"
+                    >
+                      <CircleCheckBig size={16} />
+                    </button>
+                    <button
+                      onClick={() => handleDeclineRequest(f.id)}
+                      className="p-2 rounded-lg bg-[#F87171] text-white hover:opacity-90"
+                      aria-label="Reject"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                )}
               </div>
             ))
           ) : (
@@ -4336,7 +4460,7 @@ export function MarketplaceCard({
               </div>
               <button
                 className="w-full rounded-full bg-[#7077FE] py-[8px] px-[3px] text-[8px] font-semibold text-white"
-            onClick={() => navigate("/dashboard/marketplace")}
+                onClick={() => navigate("/dashboard/marketplace")}
               >
                 Buy Now
               </button>

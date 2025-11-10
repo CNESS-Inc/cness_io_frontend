@@ -14,132 +14,132 @@ import digital from "../assets/digital.svg";
 import Button from '../components/ui/Button';
 import { useNavigate } from 'react-router-dom';
 import ShopCard from '../components/MarketPlace/Shopcard';
+import { useEffect, useState } from "react";
+import { GetMarketPlaceBuyerCategories, GetMarketPlaceBuyerMoods, GetMarketPlaceBuyerProducts, GetMarketPlaceShops } from "../Common/ServerAPI";
+import { useToast } from "../components/ui/Toast/ToastProvider";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   const navigate = useNavigate();
-  const categories = [
-    { name: 'Videos', active: true },
-    { name: 'Podcasts', active: false },
-    { name: 'Music', active: false },
-    { name: 'Arts', active: false },
-    { name: 'Ebooks', active: false },
-    { name: 'Courses', active: false },
-  ]
+  const { showToast } = useToast();
+  const [moods, setMoods] = useState<string[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
+  const [shops, setShops] = useState<any[]>([]);
+  const [isLoadingShops, setIsLoadingShops] = useState(false);
 
-  const products = [
-    {
-      id: 1,
-      image: 'https://static.codia.ai/image/2025-10-15/oXL6MSyn60.png',
-      title: 'Soft guitar moods that heals your inner pain',
-      author: 'by Redtape',
-      rating: 4.2,
-      reviews: 123,
-      originalPrice: 2444,
-      currentPrice: 1299,
-      discount: 50,
-      duration: '00:23:00',
-      category: '🎨 creative'
-    },
-    {
-      id: 2,
-      image: 'https://static.codia.ai/image/2025-10-15/uPxjuzQ1CY.png',
-      title: 'Soft guitar moods that heals your inner pain',
-      author: 'by Redtape',
-      rating: 4.7,
-      reviews: 123,
-      currentPrice: 1299,
-      duration: '00:23:00',
-      category: '🕊️ Peaceful'
-    },
-    {
-      id: 3,
-      image: 'https://static.codia.ai/image/2025-10-15/TjuDo2nfP0.png',
-      title: 'Soft guitar moods that heals your inner pain',
-      author: 'by Redtape',
-      rating: 4.8,
-      reviews: 123,
-      originalPrice: 2444,
-      currentPrice: 1299,
-      discount: 50,
-      duration: '00:23:00',
-      category: '🙏 Grateful'
-    },
-    {
-      id: 4,
-      image: 'https://static.codia.ai/image/2025-10-15/VM7Quny2Gp.png',
-      title: 'Soft guitar moods that heals your inner pain',
-      author: 'by Redtape',
-      rating: 4.5,
-      reviews: 123,
-      originalPrice: 2444,
-      currentPrice: 1299,
-      discount: 50,
-      duration: '00:23:00',
-      category: '🧘 Spiritual'
-    },
-    {
-      id: 5,
-      image: 'https://static.codia.ai/image/2025-10-15/d9CJZoEQeE.png',
-      title: 'Soft guitar moods that heals your inner pain',
-      author: 'by Redtape',
-      rating: 4,
-      reviews: 123,
-      originalPrice: 2444,
-      currentPrice: 1299,
-      discount: 50,
-      duration: '00:23:00',
-      category: '🕊️ Peaceful'
-    },
-    {
-      id: 6,
-      image: 'https://static.codia.ai/image/2025-10-15/2RXhPHX82C.png',
-      title: 'Soft guitar moods that heals your inner pain',
-      author: 'by Redtape',
-      rating: 4.8,
-      reviews: 123,
-      originalPrice: 2444,
-      currentPrice: 1299,
-      discount: 50,
-      duration: '00:23:00',
-      category: '🕊️ Peaceful'
+  useEffect(() => {
+    const fetchMoods = async () => {
+      try {
+        const response = await GetMarketPlaceBuyerMoods();
+        setMoods(response?.data?.data);
+      } catch (error: any) {
+        showToast({
+          message: "Failed to load moods.",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    };
+
+    fetchMoods();
+  }, []);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await GetMarketPlaceBuyerCategories();
+        if (response?.data?.data) {
+          const cats = response.data.data;
+          setCategories(cats);
+          if (cats.length > 0) {
+            setSelectedCategory(cats[0].slug);
+          }
+        }
+      } catch (error: any) {
+        showToast({
+          message: "Failed to load categories.",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    const fetchFeaturedProducts = async () => {
+      if (!selectedCategory) return;
+
+      setIsLoadingProducts(true);
+      try {
+        const response = await GetMarketPlaceBuyerProducts({
+          category_slug: selectedCategory,
+          limit: 6,
+          page: 1,
+        });
+
+        const products = response?.data?.data?.products || [];
+        setFeaturedProducts(products);
+      } catch (error: any) {
+        showToast({
+          message: "Failed to load products.",
+          type: "error",
+          duration: 3000,
+        });
+        setFeaturedProducts([]);
+      } finally {
+        setIsLoadingProducts(false);
+      }
+    };
+
+    fetchFeaturedProducts();
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    const fetchShops = async () => {
+      setIsLoadingShops(true);
+      try {
+        const response = await GetMarketPlaceShops({
+          limit: 8,
+          page: 1,
+        });
+
+        const products = response?.data?.data?.shops || [];
+        setShops(products);
+      } catch (error: any) {
+        showToast({
+          message: "Failed to load products.",
+          type: "error",
+          duration: 3000,
+        });
+        setShops([]);
+      } finally {
+        setIsLoadingShops(false);
+      }
+    };
+
+    fetchShops();
+  }, []);
+
+  const handleMoodClick = (moodSlug: string) => {
+    navigate(`/dashboard/market-place/search?mood_slug=${moodSlug}`);
+  };
+
+  const handleCategorySelect = (categorySlug: string) => {
+    setSelectedCategory(categorySlug);
+  };
+
+  const handleExploreCategory = () => {
+    if (selectedCategory) {
+      navigate('/dashboard/categories', {
+        state: { selectedCategory: selectedCategory }
+      });
     }
-  ]
-
-  const shops = [
-    {
-      id: 1,
-      image: "https://static.codia.ai/image/2025-10-24/SeX9YKDnOo.png",
-      name: "Red Tape",
-      description: "Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.",
-      rating: 4.8,
-      logo: "https://static.codia.ai/image/2025-10-24/rbKaFihKgE.png"
-    },
-    {
-      id: 2,
-      image: "https://static.codia.ai/image/2025-10-24/zsb3OSD4Mb.png",
-      name: "Red Tape",
-      description: "Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.",
-      rating: 4.8,
-      logo: "https://static.codia.ai/image/2025-10-24/FHxbN55yap.png"
-    },
-    {
-      id: 3,
-      image: "https://static.codia.ai/image/2025-10-24/COYsFisEy4.png",
-      name: "Red Tape",
-      description: "Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.",
-      rating: 4.8,
-      logo: "https://static.codia.ai/image/2025-10-24/JMEWUxwU2n.png"
-    },
-    {
-      id: 4,
-      image: "https://static.codia.ai/image/2025-10-24/JTVKiSmYDa.png",
-      name: "Red Tape",
-      description: "Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.",
-      rating: 4.8,
-      logo: "https://static.codia.ai/image/2025-10-24/yZMZNXqr5b.png"
-    },
-
-  ]
+  };
 
   {/*const stores = [
     {
@@ -188,7 +188,6 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   ]
   */}
 
-
   return (
 
     <div
@@ -198,7 +197,10 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
 
       <div className="grid grid-cols-4 gap-4 mx-auto">
         {/* HAPPY (left big one) */}
-        <div className="col-span-1 row-span-1 relative overflow-hidden rounded-2xl group">
+        <div
+          className="col-span-1 row-span-1 relative overflow-hidden rounded-2xl group cursor-pointer"
+          onClick={() => handleMoodClick('happy')}
+        >
           <img
             src={happy}
             alt="HAPPY"
@@ -210,8 +212,11 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
         </div>
 
         {/* Column 2 (Motivated + Calm stacked) */}
-        <div className="grid  gap-4">
-          <div className="row-span-2 relative overflow-hidden rounded-2xl group">
+        <div className="grid gap-4">
+          <div
+            className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer"
+            onClick={() => handleMoodClick('motivated')}
+          >
             <img
               src={motivated}
               alt="CREATIVE"
@@ -221,7 +226,10 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
               Motivated
             </h2>
           </div>
-          <div className="relative overflow-hidden rounded-2xl group">
+          <div
+            className="relative overflow-hidden rounded-2xl group cursor-pointer"
+            onClick={() => handleMoodClick('calm')}
+          >
             <img
               src={calm}
               alt="SAD"
@@ -234,8 +242,11 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
         </div>
 
         {/* Column 3 (Creative tall + Sad small bottom) */}
-        <div className="grid  gap-4">
-          <div className="row-span-2 relative overflow-hidden rounded-2xl group">
+        <div className="grid gap-4">
+          <div
+            className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer"
+            onClick={() => handleMoodClick('creative')}
+          >
             <img
               src={creative}
               alt="CREATIVE"
@@ -245,7 +256,10 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
               CREATIVE
             </h2>
           </div>
-          <div className="relative overflow-hidden rounded-2xl group">
+          <div
+            className="relative overflow-hidden rounded-2xl group cursor-pointer"
+            onClick={() => handleMoodClick('sad')}
+          >
             <img
               src={sad}
               alt="SAD"
@@ -258,8 +272,11 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
         </div>
 
         {/* Column 4 (Spiritual top + Energetic bottom) */}
-        <div className="grid  gap-4">
-          <div className="relative overflow-hidden rounded-2xl group">
+        <div className="grid gap-4">
+          <div
+            className="relative overflow-hidden rounded-2xl group cursor-pointer"
+            onClick={() => handleMoodClick('spiritual')}
+          >
             <img
               src={spiritual}
               alt="SPIRITUAL"
@@ -269,7 +286,10 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
               SPIRITUAL
             </h2>
           </div>
-          <div className="relative overflow-hidden rounded-2xl group">
+          <div
+            className="relative overflow-hidden rounded-2xl group cursor-pointer"
+            onClick={() => handleMoodClick('energetic')}
+          >
             <img
               src={energy}
               alt="ENERGETIC"
@@ -282,7 +302,7 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
         </div>
       </div>
       <div className="mt-12">
-        <MoodSelector />
+        <MoodSelector moods={moods} />
       </div>
 
 
@@ -339,12 +359,13 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
 
           {/* Category Tabs */}
           <div className="flex space-x-4">
-            {categories.map((category, index) => (
+            {categories.map((category) => (
               <button
-                key={index}
-                className={`px-11 py-4 rounded-full border font-medium text-sm transition-colors ${category.active
-                    ? 'border-blue-500 text-blue-500 bg-white'
-                    : 'border-gray-400 text-gray-400 bg-white hover:border-gray-500'
+                key={category.slug}
+                onClick={() => handleCategorySelect(category.slug)}
+                className={`px-11 py-4 rounded-full border font-medium text-sm transition-colors ${selectedCategory === category.slug
+                  ? "border-blue-500 text-blue-500 bg-white"
+                  : "border-gray-400 text-gray-400 bg-white hover:border-gray-500"
                   }`}
               >
                 {category.name}
@@ -354,19 +375,58 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-          {products.map((product) => (
-            <ProductCard key={String(product.id)} product={{ ...product, id: String(product.id) }} />
-          ))}
-        </div>
+        {isLoadingProducts ? (
+          <div className="flex justify-center items-center py-20">
+            <LoadingSpinner />
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+              {featuredProducts.length > 0 ? (
+                featuredProducts.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={{
+                      id: product.id,
+                      title: product.product_name,
+                      author: product.author,
+                      rating: product?.rating?.average,
+                      reviews: product?.rating?.total_reviews,
+                      currentPrice: product?.discounted_price,
+                      originalPrice: product?.price,
+                      discount: product.discount_percentage,
+                      duration: product.video_details?.duration || product.music_details?.total_duration || "00:00:00",
+                      mood: product?.mood_name,
+                      image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
+                      category: product.category?.name || "",
+                    }}
+                  />
+                ))
+              ) : (
+                <div className="col-span-full text-center py-10 text-gray-500">
+                  No products found for this category
+                </div>
+              )}
+            </div>
 
-        {/* Explore Videos Button */}
-        <div className="flex justify-center">
-          <button className="flex items-center space-x-2 px-6 py-3 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-50 transition-colors">
-            <span className="font-jakarta font-medium">Explore videos</span>
-            <img src="https://static.codia.ai/image/2025-10-15/xZLgath1fZ.png" alt="Explore" className="w-6 h-6" />
-          </button>
-        </div>
+            {/* Explore Button */}
+            <div className="flex justify-center">
+              <button
+                onClick={handleExploreCategory}
+                className="flex items-center space-x-2 px-6 py-3 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-50 transition-colors"
+              >
+                <span className="font-jakarta font-medium">
+                  Explore {categories.find(c => c.slug === selectedCategory)?.name || 'products'}
+                </span>
+                <img
+                  src="https://static.codia.ai/image/2025-10-15/xZLgath1fZ.png"
+                  alt="Explore"
+                  className="w-6 h-6"
+                />
+              </button>
+            </div>
+          </>
+        )}
       </section>
 
       {/* Digital Stores Section */}
@@ -384,13 +444,12 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
         <div className="flex flex-col items-start space-y-6 mt-32 mr-26 ">
 
           <Button
+            onClick={() => navigate('/dashboard/shops')}
             variant="gradient-primary"
-            className="font-['Plus_Jakarta_Sans'] font-medium 
-      w-fit h-[42px] px-[19.5px] py-[16px]
-      rounded-[81.26px] text-[14px] leading-[100%] tracking-[0]
-      text-center flex items-center justify-center"
+            className="font-['Plus_Jakarta_Sans'] font-medium w-fit h-[42px] px-[19.5px] py-[16px] rounded-[81.26px] text-[14px] leading-[100%] tracking-[0] text-center flex items-center justify-center"
           >
-            Visit store            </Button>
+            Visit store
+          </Button>
         </div>
       </section>
 
@@ -411,19 +470,41 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       md:gap-8
     "
         >
-          {shops.map((shop, index) => (
-            <div
-              key={index}
-              onClick={() => navigate(`/dashboard/shop-detail/${shop.id}`, { state: shop })}
-              className="cursor-pointer"
-            >
-              <ShopCard {...shop} />
+          {isLoadingShops ? (
+            <div className="flex justify-center items-center py-20">
+              <LoadingSpinner />
             </div>
-          ))}
+          ) : (
+            <>
+              {shops.length > 0 ? (
+                shops.map((shop) => (
+                  <div
+                    key={shop?.id}
+                    onClick={() => navigate(`/dashboard/shop-detail/${shop.id}`)}
+                    className="sm:max-w-[320px] md:max-w-[350px] cursor-pointer h-full"
+                  >
+                    <ShopCard
+                      id={shop?.id}
+                      image={shop?.shop_image || 'https://static.codia.ai/image/2025-10-24/COYsFisEy4.png'}
+                      name={shop?.shop_name}
+                      description={shop?.description || ''}
+                      rating={shop?.rating || 0}
+                      logo={shop?.shop_logo}
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full text-center py-10 text-gray-500">
+                  No products found for this category
+                </div>
+              )}
+            </>
+          )}
         </div>
 
         <div className="flex justify-center mt-8">
           <button
+            onClick={() => navigate('/dashboard/shops')}
             className="flex items-center space-x-2 px-6 py-3 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-50 transition-colors">
             <span className="font-jakarta font-medium">Visit all stores</span>
             <img src="https://static.codia.ai/image/2025-10-15/4wmOKSRAa7.png" alt="Explore" className="w-6 h-6" />
@@ -431,11 +512,6 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
         </div>
       </section>
     </div>
-
-
-
-
-
   )
 }
 

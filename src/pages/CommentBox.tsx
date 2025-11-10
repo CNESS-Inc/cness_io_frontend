@@ -57,7 +57,7 @@ const CommentBox = ({
   onClose,
   onCommentAdded,
   setUserPosts,
-  triggerCreditAnimation,
+  // triggerCreditAnimation,
 }: CommentBoxProps) => {
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
@@ -80,8 +80,7 @@ const CommentBox = ({
   const [showReplySuggestions, setShowReplySuggestions] = useState(false);
   const [selectedReplyMentionIndex, setSelectedReplyMentionIndex] = useState(0);
   //const postLottieRef = useRef<LottieRefCurrentProps | null>(null);
-//const [showPostAnimation, setShowPostAnimation] = useState(false);
-
+  //const [showPostAnimation, setShowPostAnimation] = useState(false);
 
   // Mention functionality for comments
   const {
@@ -230,7 +229,6 @@ const CommentBox = ({
         post_id: postId,
         mentioned_user_ids: commentMentions.map((mention) => mention.id),
       };
-      
 
       const response = await PostComments(formattedData);
 
@@ -238,22 +236,22 @@ const CommentBox = ({
         console.log("response.data.data", response.data.data);
 
         // Get the comment button element to use as animation source
-        const commentButton = document.querySelector(
-          "[data-comment-button]"
-        ) as HTMLElement;
+        // const commentButton = document.querySelector(
+        //   "[data-comment-button]"
+        // ) as HTMLElement;
 
-        if (
-        import.meta.env.VITE_ENV_STAGE === "test" ||
-        import.meta.env.VITE_ENV_STAGE === "uat"
-      ) {
-        if (triggerCreditAnimation && commentButton) {
-          localStorage.setItem(
-          "karma_credits",
-          response.data.data.karma_credits.toString()
-        );
-          triggerCreditAnimation(commentButton, 10); // 10 credits for creating a comment
-        }
-      }
+        // if (
+        //   import.meta.env.VITE_ENV_STAGE === "test" ||
+        //   import.meta.env.VITE_ENV_STAGE === "uat"
+        // ) {
+        //   if (triggerCreditAnimation && commentButton) {
+        //     localStorage.setItem(
+        //       "karma_credits",
+        //       response.data.data.karma_credits.toString()
+        //     );
+        //     triggerCreditAnimation(commentButton, 10); // 10 credits for creating a comment
+        //   }
+        // }
         // Trigger credit animation for creating a comment if the function is provided
 
         setComments((prev) => [

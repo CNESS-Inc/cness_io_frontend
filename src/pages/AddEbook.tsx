@@ -108,16 +108,16 @@ const AddEbookForm: React.FC = () => {
   // Breadcrumb category handling
   const handleSelectCategory = (category: string) => {
     setShowModal(false); // Close modal first
-    
+
     const routes: Record<string, string> = {
       Video: "/dashboard/products/add-video",
       Music: "/dashboard/products/add-music",
       Course: "/dashboard/products/add-course",
       Podcasts: "/dashboard/products/add-podcast",
       Ebook: "/dashboard/products/add-ebook",
-      Arts: "/dashboard/products/add-arts",
+      Art: "/dashboard/products/add-arts",
     };
-    
+
     const path = routes[category];
     if (path) {
       navigate(path);
@@ -148,6 +148,10 @@ const AddEbookForm: React.FC = () => {
           : chapter
       )
     );
+  };
+
+  const handleDeleteChapter = (chapterId: number) => {
+    setChapters(prev => prev.filter(ch => ch.id !== chapterId));
   };
 
   const handleAddChapter = () => {
@@ -743,12 +747,24 @@ const AddEbookForm: React.FC = () => {
                 key={chapter.id}
                 className="border border-gray-200 rounded-lg p-4 shadow-sm bg-white"
               >
-                <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
-                  {chapter.name}
-                </h3>
-                <p className="text-sm text-[#665B5B] mb-4">
-                  Upload chapter {chapter.id} Ebook files
-                </p>
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
+                      {chapter.name}
+                    </h3>
+                    <p className="text-sm text-[#665B5B] mb-4">
+                      Upload chapter {chapter.id} Ebook files
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteChapter(chapter.id)}
+                    className="text-red-500 hover:text-red-700 transition-colors"
+                    title="Delete Chapter"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* LEFT Upload */}
@@ -894,10 +910,10 @@ const AddEbookForm: React.FC = () => {
               + Add Chapter
             </button>
           </div>
-        </FormSection>
+        </FormSection >
 
         {/* Buttons */}
-        <div className="flex justify-end space-x-4 pt-6">
+        < div className="flex justify-end space-x-4 pt-6" >
           <button
             type="button"
             onClick={handleDiscard}
@@ -920,8 +936,8 @@ const AddEbookForm: React.FC = () => {
             className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] hover:bg-[#5a60ea] transition-colors disabled:opacity-50">
             {isLoading ? "Submitting..." : "Submit"}
           </button>
-        </div>
-      </div>
+        </div >
+      </div >
       {showDiscardModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowDiscardModal(false)}></div>
@@ -949,14 +965,16 @@ const AddEbookForm: React.FC = () => {
           </div>
         </div>
       )}
-      {showModal && (
-        <CategoryModel
-          open={showModal}
-          onClose={() => setShowModal(false)}
-          onSelect={handleSelectCategory}
-          category={categories}
-        />
-      )}
+      {
+        showModal && (
+          <CategoryModel
+            open={showModal}
+            onClose={() => setShowModal(false)}
+            onSelect={handleSelectCategory}
+            category={categories}
+          />
+        )
+      }
     </>
   );
 };

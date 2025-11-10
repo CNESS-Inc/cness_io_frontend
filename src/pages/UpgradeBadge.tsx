@@ -364,7 +364,7 @@ const UpgradeBadge = () => {
                   </button>
                   {showMenu && (
                     <div
-                      className="absolute top-10 sm:left-auto sm:right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
+                      className="absolute top-10 sm:left-auto sm:right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-[9999]"
                       ref={menuRef}
                     >
                       <ul className="flex items-center gap-4">
@@ -537,7 +537,7 @@ const UpgradeBadge = () => {
                     key={index}
                     className={`flex-1 h-5 md:h-[24px] rounded ${
                       index <
-                      Math.floor((user?.assesment_progress || 0) / (100 / 6))
+                      Math.floor((user?.cis_score || 0) / (100 / 6))
                         ? "bg-gradient-to-b from-[rgba(79,70,229,1)] to-[rgba(151,71,255,1)]"
                         : "bg-[#EDEAFF]"
                     }`}

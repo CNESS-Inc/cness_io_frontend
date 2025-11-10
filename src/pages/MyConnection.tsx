@@ -17,7 +17,6 @@ const MyConnection = () => {
   const [searchValue, setSearchValue] = useState("");
   const [activeTab, setActiveTab] = useState("All Friends");
   const [selectedFriend, setSelectedFriend] = useState<Connection | null>(null);
-  console.log("🚀 ~ MyConnection ~ selectedFriend:", selectedFriend)
   const [allConnections, setAllConnections] = useState<Connection[]>([]);
   const [friendRequests, setFriendRequests] = useState<Connection[]>([]);
   const [suggestedFriend, setSuggestedFriend] = useState<Connection[]>([]);
@@ -61,7 +60,6 @@ const MyConnection = () => {
   const fetchAllConnections = async (search: string = "") => {
     try {
       const response = await GetConnectionUser(search);
-      console.log("🚀 ~ fetchAllConnections ~ response:", response)
       const formattedRequests = response.data.data.rows.map((item: any) => ({
         id: item.friend_user.id,
         name: `${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
@@ -161,7 +159,6 @@ const MyConnection = () => {
   if (activeTab === "All Friends") activeConnections = allConnections;
   if (activeTab === "Friend Requests") activeConnections = friendRequests;
   if (activeTab === "Suggestions") activeConnections = suggestedFriend;
-  console.log("🚀 ~ MyConnection ~ activeConnections:", activeConnections)
 
   const handleSearch = () => {
     if (activeTab === "Friend Requests") {

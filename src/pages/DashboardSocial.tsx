@@ -828,23 +828,23 @@ export default function SocialTopBar() {
       const response = await AddPost(formData);
       if (response) {
         // Get the post button element to use as animation source
-        const postButton = document.querySelector(
-          "[data-post-button]"
-        ) as HTMLElement;
+        // const postButton = document.querySelector(
+        //   "[data-post-button]"
+        // ) as HTMLElement;
 
-        if (
-          import.meta.env.VITE_ENV_STAGE === "test" ||
-          import.meta.env.VITE_ENV_STAGE === "uat"
-        ) {
-          if (postButton) {
-            localStorage.setItem(
-              "karma_credits",
-              response.data.data.karma_credits.toString()
-            );
-            // Trigger credit animation for creating a post (more credits than a like)
-            triggerCreditAnimation(postButton, 20); // 20 credits for creating a post
-          }
-        }
+        // if (
+        //   import.meta.env.VITE_ENV_STAGE === "test" ||
+        //   import.meta.env.VITE_ENV_STAGE === "uat"
+        // ) {
+        //   if (postButton) {
+        //     localStorage.setItem(
+        //       "karma_credits",
+        //       response.data.data.karma_credits.toString()
+        //     );
+        //     // Trigger credit animation for creating a post (more credits than a like)
+        //     triggerCreditAnimation(postButton, 20); // 20 credits for creating a post
+        //   }
+        // }
 
         showToast({
           message: "Post created successfully",
@@ -1059,6 +1059,7 @@ export default function SocialTopBar() {
   };
 
   const handleLike = async (postId: string, event: React.MouseEvent) => {
+    console.log("🚀 ~ handleLike ~ event:", event)
     try {
       const formattedData = { post_id: postId };
 
@@ -1067,7 +1068,7 @@ export default function SocialTopBar() {
       const isCurrentlyLiked = currentPost?.is_liked || false;
 
       // Store the button element reference for later use
-      const buttonElement = event.currentTarget as HTMLElement;
+      // const buttonElement = event.currentTarget as HTMLElement;
 
       // Make the API call first
       const res = await PostsLike(formattedData);
@@ -1087,7 +1088,7 @@ export default function SocialTopBar() {
         import.meta.env.VITE_ENV_STAGE === "uat"
       ) {
         if (!isCurrentlyLiked) {
-          triggerCreditAnimation(buttonElement, 5); // 5 credits for like
+          // triggerCreditAnimation(buttonElement, 5); // 5 credits for like
         }
       }
 

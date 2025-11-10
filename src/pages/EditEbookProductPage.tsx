@@ -5,7 +5,7 @@ import CategoryModel from "../components/MarketPlace/CategoryModel";
 import { useNavigate, useParams } from "react-router-dom";
 import { Book, Plus, SquarePen, Trash2, X } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { UpdateEbookProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, GetPreviewProduct, UpdateProductStatus } from "../Common/ServerAPI";
+import { UpdateEbookProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, GetPreviewProduct, UpdateProductStatus, DeleteEbookChapter } from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 interface FormSectionProps {
@@ -102,6 +102,7 @@ const EditEbookForm: React.FC = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [newHighlight, setNewHighlight] = useState("");
   const [chapters, setChapters] = useState<Chapter[]>([]);
+  const [deletingChapters, setDeletingChapters] = useState<Set<number>>(new Set());
 
   const [formData, setFormData] = useState({
     product_title: "",
@@ -118,59 +119,59 @@ const EditEbookForm: React.FC = () => {
   });
 
   useEffect(() => {
-    const fetchProductData = async () => {
-      if (!productId) return;
-
-      setIsFetchingData(true);
-      try {
-        const response = await GetPreviewProduct('ebook', productId);
-        const productData = response?.data?.data;
-
-        if (productData) {
-          setFormData({
-            product_title: productData.product_title || "",
-            price: parseFloat(productData.price || "0"),
-            discount_percentage: parseFloat(productData.discount_percentage || "0"),
-            mood_id: productData.mood_id || "",
-            author: productData.author || "",
-            overview: productData.overview || "",
-            highlights: productData.highlights || [],
-            pages: productData.ebook_details?.pages || 0,
-            language: productData.language || "",
-            theme: productData.ebook_details?.theme || "",
-            format: productData.ebook_details?.format || "",
-          });
-
-          if (productData.content_items && productData.content_items.length > 0) {
-            setChapters(productData.content_items.map((item: any, index: number) => ({
-              id: item.id || index + 1,
-              chapter_id: item.id,
-              title: item.title || `Chapter ${index + 1}`,
-              chapter_files: item.file_urls?.map((file: any) => ({
-                url: file.url,
-                title: file.title,
-                order_number: file.order_number,
-              })) || [],
-              description: item.description || "",
-              order_number: item.order_number || index + 1,
-              is_free: item.is_free || false,
-            })));
-          }
-        }
-      } catch (error: any) {
-        showToast({
-          message: error?.response?.data?.error?.message || "Failed to load product data.",
-          type: "error",
-          duration: 3000,
-        });
-        navigate('/dashboard/products');
-      } finally {
-        setIsFetchingData(false);
-      }
-    };
-
     fetchProductData();
   }, [productId]);
+
+  const fetchProductData = async () => {
+    if (!productId) return;
+
+    setIsFetchingData(true);
+    try {
+      const response = await GetPreviewProduct('ebook', productId);
+      const productData = response?.data?.data;
+
+      if (productData) {
+        setFormData({
+          product_title: productData.product_title || "",
+          price: parseFloat(productData.price || "0"),
+          discount_percentage: parseFloat(productData.discount_percentage || "0"),
+          mood_id: productData.mood.id || "",
+          author: productData.author || "",
+          overview: productData.overview || "",
+          highlights: productData.highlights || [],
+          pages: productData.ebook_details?.pages || 0,
+          language: productData.language || "",
+          theme: productData.ebook_details?.theme || "",
+          format: productData.ebook_details?.format || "",
+        });
+
+        if (productData.content_items && productData.content_items.length > 0) {
+          setChapters(productData.content_items.map((item: any, index: number) => ({
+            id: item.id || index + 1,
+            chapter_id: item.id,
+            title: item.title || `Chapter ${index + 1}`,
+            chapter_files: item.file_urls?.map((file: any) => ({
+              url: file.url,
+              title: file.title,
+              order_number: file.order_number,
+            })) || [],
+            description: item.description || "",
+            order_number: item.order_number || index + 1,
+            is_free: item.is_free || false,
+          })));
+        }
+      }
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to load product data.",
+        type: "error",
+        duration: 3000,
+      });
+      navigate('/dashboard/products');
+    } finally {
+      setIsFetchingData(false);
+    }
+  };
 
   useEffect(() => {
     const fetchMoods = async () => {
@@ -215,7 +216,7 @@ const EditEbookForm: React.FC = () => {
       Course: "/dashboard/products/add-course",
       Podcasts: "/dashboard/products/add-podcast",
       Ebook: "/dashboard/products/add-ebook",
-      Arts: "/dashboard/products/add-arts",
+      Art: "/dashboard/products/add-arts",
     };
     const path = routes[category];
     if (path) navigate(path);
@@ -259,6 +260,38 @@ const EditEbookForm: React.FC = () => {
         is_free: false
       },
     ]);
+  };
+
+  const handleDeleteChapter = async (chapterId: number) => {
+    if (chapterId) {
+      setDeletingChapters(prev => new Set(prev).add(chapterId));
+
+      try {
+        await DeleteEbookChapter(productId, chapterId);
+
+        setChapters(prev => prev.filter(ch => ch.id !== chapterId));
+
+        showToast({
+          message: "Chapter deleted successfully",
+          type: "success",
+          duration: 2000,
+        });
+      } catch (error: any) {
+        showToast({
+          message: error?.response?.data?.error?.message || "Failed to delete chapter",
+          type: "error",
+          duration: 3000,
+        });
+      } finally {
+        setDeletingChapters(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(chapterId);
+          return newSet;
+        });
+      }
+    } else {
+      setChapters(prev => prev.filter(ch => ch.id !== chapterId));
+    }
   };
 
   const toggleEditFile = (chapterId: number, fileOrderNumber: number) => {
@@ -755,12 +788,30 @@ const EditEbookForm: React.FC = () => {
                 key={chapter.id}
                 className="border border-gray-200 rounded-lg p-4 shadow-sm bg-white"
               >
-                <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
-                  {chapter.title}
-                </h3>
-                <p className="text-sm text-[#665B5B] mb-4">
-                  Upload chapter {chapter.order_number} files
-                </p>
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <h3 className="text-[16px] font-semibold text-[#242E3A]">
+                      {chapter.title}
+                    </h3>
+                    <p className="text-sm text-[#665B5B]">
+                      Upload chapter {chapter.order_number} files
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteChapter(chapter.id)}
+                    disabled={deletingChapters.has(chapter.id)}
+                    className="text-red-500 hover:text-red-700 transition-colors"
+                    title="Delete Chapter"
+                  >
+                    {deletingChapters.has(chapter.id) ? (
+                      <span className="text-sm">Deleting...</span>
+                    ) : (
+                      <X className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <label className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF]">

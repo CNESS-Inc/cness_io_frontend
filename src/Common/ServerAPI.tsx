@@ -97,6 +97,7 @@ export const EndPoint = {
   refreshToken: "/auth/refresh-token",
   forgot: "/auth/forgot-password",
   me: "/auth/me",
+  wallet: "/credits/history",
   updatepassword: "/auth/update/password",
   reset: "/auth/reset-password",
   register: "/auth/sign-up",
@@ -239,6 +240,7 @@ export const EndPoint = {
   payment_method: "/payment-method",
 
   add_mentor: "/mentor",
+  check_mentor_or_partner: "/bussiness-hub/form-submited",
 
   //marketplace endpoints
   create_shop: "/seller-onboarding",
@@ -253,6 +255,7 @@ export const EndPoint = {
   remove_team_member: "/seller-onboarding/remove/team-member",
   get_products: "/vendor/products",
   get_seller_products: "/seller-onboarding/my-products",
+  delete_seller_products: "/marketplace-product/product",
 
   // marketplace product endpoints
   get_categories: "/marketplace-product/product-categories",
@@ -273,6 +276,15 @@ export const EndPoint = {
   ebook_product: "/marketplace-product/ebook",
   art_product: "/marketplace-product/art",
   course_product: "/marketplace-product/course",
+
+  get_buyer_moods: "/marketplace-buyer/moods",
+  get_buyer_categories: "/marketplace-buyer/categories",
+  get_buyer_product_list: "/marketplace-buyer/products",
+  
+  marketplace_wishlist: "/marketplace-buyer/wishlist",
+  marketplace_cart: "/marketplace-buyer/cart",
+
+  get_shop_list: "/marketplace-buyer/shops",
 };
 
 // Messaging endpoints
@@ -316,6 +328,13 @@ export const RefreshTokenDetails = async (): ApiResponse => {
 export const MeDetails = async (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.me);
+};
+export const WalletDetails = async (page: number, limit: number): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["limit"] = limit;
+
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.wallet,params);
 };
 export const ForgotPasswordDetails = (
   formData: ForgotFormData
@@ -1515,6 +1534,9 @@ export const createPartnerInquiry = (formData: any): ApiResponse => {
 export const createMentor = (formData: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.add_mentor);
 };
+export const isMentorOrPartner = (): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.check_mentor_or_partner);
+};
 
 export const LogOut = () => {
   let data = {};
@@ -1599,8 +1621,12 @@ export const GetProducts = () => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_products);
 };
 
-export const GetSellerProducts = () => {
-  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_seller_products);
+export const GetSellerProducts = (page: number = 1, limit: number = 10): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.get_seller_products}?page=${page}&limit=${limit}`
+  );
 };
 
 export const CreateSellerShop = (data: any): ApiResponse => {
@@ -1734,11 +1760,11 @@ export const CreateMusicProduct = (data: any): ApiResponse => {
   );
 };
 
-export const UpdateMusicProduct = (data: any, id: any): ApiResponse => {
+export const UpdateMusicProduct = (data: any, fileType: string, id: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.PATCH,
     data,
-    `${EndPoint.update_music_product}/${id}`
+    `${EndPoint.update_music_product}/${fileType}/${id}`
   );
 };
 
@@ -1750,11 +1776,11 @@ export const UpdateMusic = (pid: any, fileType: string, data: any, tid: any): Ap
   );
 };
 
-export const DeleteMusic = (pid: any, fileType: string, tid: any): ApiResponse => {
+export const DeleteMusicTrack = (pid: any, tid: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.DELETE,
     {},
-    `${EndPoint.delete_music}/${pid}/${fileType}/${tid}`
+    `${EndPoint.delete_music}/${pid}/tracks/${tid}`
   );
 };
 
@@ -1766,11 +1792,19 @@ export const CreatePodcastProduct = (data: any): ApiResponse => {
   );
 };
 
-export const UpdatePodcastProduct = (data: any, id: any): ApiResponse => {
+export const UpdatePodcastProduct = (data: any, fileType: string, id: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.PATCH,
     data,
-    `${EndPoint.update_music_product}/${id}`
+    `${EndPoint.update_music_product}/${fileType}/${id}`
+  );
+};
+
+export const DeletPodcastEpisode = (pid: any, cid: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.podcast_product}/${pid}/episodes/${cid}`
   );
 };
 
@@ -1790,11 +1824,35 @@ export const UpdateEbookProduct = (data: any, id: any): ApiResponse => {
   );
 };
 
+export const DeleteEbookChapter = (pid: any, cid: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.ebook_product}/${pid}/chapters/${cid}`
+  );
+};
+
 export const CreateArtProduct = (data: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
     data,
     EndPoint.art_product
+  );
+};
+
+export const UpdateArtProduct = (data: any, id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PATCH,
+    data,
+    `${EndPoint.art_product}/${id}`
+  );
+};
+
+export const DeleteArtChapter = (pid: any, cid: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.art_product}/${pid}/chapters/${cid}`
   );
 };
 
@@ -1804,4 +1862,152 @@ export const CreateCourseProduct = (data: any): ApiResponse => {
     data,
     EndPoint.course_product
   );
+};
+
+export const UpdateCourseProduct = (data: any, id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PATCH,
+    data,
+    `${EndPoint.course_product}/${id}`
+  );
+};
+
+export const DeleteCourseChapter = (pid: any, cid: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.course_product}/${pid}/chapters/${cid}`
+  );
+};
+
+export const DeleteSellerProduct = (id: any) => {
+  return executeAPI(ServerAPI.APIMethod.DELETE, {}, `${EndPoint.delete_seller_products}/${id}`);
+};
+
+export const GetMarketPlaceBuyerMoods = () => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_buyer_moods);
+};
+
+export const GetMarketPlaceBuyerCategories = () => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_buyer_categories);
+};
+
+export const GetMarketPlaceBuyerProducts = (params?: {
+  mood_slug?: string;
+  search?: string;
+  min_price?: number;
+  max_price?: number;
+  sort_by?: string;
+  sort_order?: string;
+  category_slug?: string;
+  language?: string;
+  page?: number;
+  limit?: number;
+}): ApiResponse => {
+  const queryParams = new URLSearchParams();
+
+  if (params?.mood_slug) queryParams.append('mood_slug', params.mood_slug);
+  if (params?.search) queryParams.append('search', params.search);
+  if (params?.min_price) queryParams.append('min_price', params.min_price.toString());
+  if (params?.max_price) queryParams.append('max_price', params.max_price.toString());
+  if (params?.sort_by) queryParams.append('sort_by', params.sort_by);
+  if (params?.sort_order) queryParams.append('sort_order', params.sort_order);
+  if (params?.category_slug) queryParams.append('category_slug', params.category_slug);
+  if (params?.language) queryParams.append('language', params.language);
+  if (params?.page) queryParams.append('page', params.page.toString());
+  if (params?.limit) queryParams.append('limit', params.limit.toString());
+
+  const queryString = queryParams.toString();
+  const endpoint = queryString
+    ? `${EndPoint.get_buyer_product_list}?${queryString}`
+    : EndPoint.get_buyer_product_list;
+
+  return executeAPI(ServerAPI.APIMethod.GET, {}, endpoint);
+};
+
+export const GetMarketPlaceBuyerProductById = (id: any) => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.get_buyer_product_list}/${id}`);
+};
+
+export const AddProductToWishlist = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.marketplace_wishlist
+  );
+};
+
+export const GetProductWishlist = () => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.marketplace_wishlist);
+};
+
+export const RemoveProductToWishlist = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.marketplace_wishlist}/${id}`
+  );
+};
+
+export const EmptyProductWishlist = (): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    EndPoint.marketplace_wishlist
+  );
+};
+
+export const AddProductToCart = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.marketplace_cart
+  );
+};
+
+export const GetProductCart = () => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.marketplace_cart);
+};
+
+export const RemoveProductToCart = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.marketplace_cart}/${id}`
+  );
+};
+
+export const EmptyProductCart = (): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    EndPoint.marketplace_cart
+  );
+};
+
+export const GetMarketPlaceShops = (params?: {
+  search?: string;
+  sort_by?: string;
+  sort_order?: string;
+  page?: number;
+  limit?: number;
+}): ApiResponse => {
+  const queryParams = new URLSearchParams();
+  
+  if (params?.search) queryParams.append('search', params.search);
+  if (params?.sort_by) queryParams.append('sort_by', params.sort_by);
+  if (params?.sort_order) queryParams.append('sort_order', params.sort_order);
+  if (params?.page) queryParams.append('page', params.page.toString());
+  if (params?.limit) queryParams.append('limit', params.limit.toString());
+  
+  const queryString = queryParams.toString();
+  const endpoint = queryString
+  ? `${EndPoint.get_shop_list}?${queryString}`
+  : EndPoint.get_shop_list;
+  
+  return executeAPI(ServerAPI.APIMethod.GET, {}, endpoint);
+};
+
+export const GetMarketPlaceShopById = (id: any) => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.get_shop_list}/${id}`);
 };

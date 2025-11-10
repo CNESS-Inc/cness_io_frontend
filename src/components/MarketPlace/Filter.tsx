@@ -1,13 +1,94 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
+import { GetMarketPlaceBuyerCategories } from "../../Common/ServerAPI";
+import { useLocation } from "react-router-dom";
 
-const categories = ["Music", "Podcasts", "Arts", "Videos", "Courses", "Ebook"];
+interface FilterProps {
+  filters: {
+    category_slug?: string;
+    min_price?: string;
+    max_price?: string;
+    language?: string;
+    duration?: string;
+    rating?: string;
+  };
+  onFilterChange: (filters: any) => void;
+}
+
 const languages = ["English", "Spanish", "French"];
 const durations = ["< 30 min", "30 - 120 min", "> 2 hrs"];
 const ratings = ["4+ Stars", "3+ Stars", "2+ Stars"];
 
-const FilterSidebar: React.FC = () => {
+const FilterSidebar: React.FC<FilterProps> = ({ filters, onFilterChange }) => {
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [localFilters, setLocalFilters] = useState(filters);
+
+  const isCategoriesPage = location.pathname === '/dashboard/categories';
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await GetMarketPlaceBuyerCategories();
+        setCategories(response?.data?.data || []);
+      } catch (error) {
+        console.error("Failed to load categories");
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters]);
+
+  const handleCategoryToggle = (categorySlug: string) => {
+    const newFilters = {
+      ...localFilters,
+      category_slug: localFilters.category_slug === categorySlug ? "" : categorySlug,
+    };
+    setLocalFilters(newFilters);
+    onFilterChange(newFilters);
+  };
+
+  const handlePriceChange = (field: 'min_price' | 'max_price', value: string) => {
+    const newFilters = {
+      ...localFilters,
+      [field]: value,
+    };
+    setLocalFilters(newFilters);
+  };
+
+  const handlePriceBlur = () => {
+    onFilterChange(localFilters);
+  };
+
+  const handleLanguageToggle = (language: string) => {
+    const newFilters = {
+      ...localFilters,
+      language: localFilters.language === language ? "" : language,
+    };
+    setLocalFilters(newFilters);
+    onFilterChange(newFilters);
+  };
+
+  const handleDurationToggle = (duration: string) => {
+    const newFilters = {
+      ...localFilters,
+      duration: localFilters.duration === duration ? "" : duration,
+    };
+    setLocalFilters(newFilters); duration
+  };
+
+  const handleRatingToggle = (rating: string) => {
+    const newFilters = {
+      ...localFilters,
+      rating: localFilters.rating === rating ? "" : rating,
+    };
+    setLocalFilters(newFilters);
+  };
 
   return (
     <>
@@ -60,7 +141,25 @@ const FilterSidebar: React.FC = () => {
         </div>
 
         {/* 📂 Category */}
-        <FilterGroup title="Category" items={categories} />
+        {!isCategoriesPage && (
+          < div className="space-y-2 mb-8">
+            <h3 className="text-[16px] font-semibold">Category</h3>
+            {categories.map((category) => (
+              <label
+                key={category.slug}
+                className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  checked={localFilters.category_slug === category.slug}
+                  onChange={() => handleCategoryToggle(category.slug)}
+                  className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
+                />
+                <span>{category.name}</span>
+              </label>
+            ))}
+          </div>
+        )}
 
         {/* 💲 Price */}
         <div className="space-y-2 mb-8">
@@ -69,25 +168,79 @@ const FilterSidebar: React.FC = () => {
             <input
               type="number"
               placeholder="$0"
+              value={localFilters.min_price || ""}
+              onChange={(e) => handlePriceChange('min_price', e.target.value)}
+              onBlur={handlePriceBlur}
               className="w-[90px] px-3 py-2 border rounded-lg text-sm font-semibold font-[poppins] focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
             />
             <span className="text-gray-500">-</span>
             <input
               type="number"
               placeholder="$50"
+              value={localFilters.max_price || ""}
+              onChange={(e) => handlePriceChange('max_price', e.target.value)}
+              onBlur={handlePriceBlur}
               className="w-[90px] px-3 py-2 border rounded-lg text-sm font-semibold font-[poppins] focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
             />
           </div>
         </div>
 
         {/* 🌍 Language */}
-        <FilterGroup title="Language" items={languages} />
+        <div className="space-y-2 mb-8">
+          <h3 className="text-[16px] font-semibold">Language</h3>
+          {languages.map((language) => (
+            <label
+              key={language}
+              className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                checked={localFilters.language === language}
+                onChange={() => handleLanguageToggle(language)}
+                className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
+              />
+              <span>{language}</span>
+            </label>
+          ))}
+        </div>
 
         {/* ⏱️ Duration */}
-        <FilterGroup title="Duration" items={durations} />
+        <div className="space-y-2 mb-8">
+          <h3 className="text-[16px] font-semibold">Duration</h3>
+          {durations.map((duration) => (
+            <label
+              key={duration}
+              className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                checked={localFilters.duration === duration}
+                onChange={() => handleDurationToggle(duration)}
+                className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
+              />
+              <span>{duration}</span>
+            </label>
+          ))}
+        </div>
 
         {/* ⭐ Ratings */}
-        <FilterGroup title="Ratings" items={ratings} />
+        <div className="space-y-2 mb-8">
+          <h3 className="text-[16px] font-semibold">Ratings</h3>
+          {ratings.map((rating) => (
+            <label
+              key={rating}
+              className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                checked={localFilters.rating === rating}
+                onChange={() => handleRatingToggle(rating)}
+                className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
+              />
+              <span>{rating}</span>
+            </label>
+          ))}
+        </div>
 
         {/* 🧑‍🎨 Creator Search */}
         <div className="mt-8 relative">
@@ -101,7 +254,7 @@ const FilterSidebar: React.FC = () => {
           />
           <FiSearch className="absolute right-3 -mt-4 transform -translate-y-1/2 text-gray-400" />
         </div>
-      </aside>
+      </aside >
     </>
   );
 };
@@ -109,26 +262,26 @@ const FilterSidebar: React.FC = () => {
 export default FilterSidebar;
 
 /* 💡 Reusable Filter Group Component */
-const FilterGroup = ({
-  title,
-  items,
-}: {
-  title: string;
-  items: string[];
-}) => (
-  <div className="space-y-2 mb-8">
-    <h3 className="text-[16px] font-semibold">{title}</h3>
-    {items.map((item) => (
-      <label
-        key={item}
-        className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
-      >
-        <input
-          type="checkbox"
-          className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
-        />
-        <span>{item}</span>
-      </label>
-    ))}
-  </div>
-);
+// const FilterGroup = ({
+//   title,
+//   items,
+// }: {
+//   title: string;
+//   items: string[];
+// }) => (
+//   <div className="space-y-2 mb-8">
+//     <h3 className="text-[16px] font-semibold">{title}</h3>
+//     {items.map((item) => (
+//       <label
+//         key={item}
+//         className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
+//       >
+//         <input
+//           type="checkbox"
+//           className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
+//         />
+//         <span>{item}</span>
+//       </label>
+//     ))}
+//   </div>
+// );
