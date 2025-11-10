@@ -49,7 +49,6 @@ import Collection from "../assets/collectionicon.svg";
 import people from "../assets/peopleicon.svg";
 import Trending from "../assets/trending.svg";
 import createstory from "../assets/createstory.jpg";
-import carosuel1 from "../assets/carosuel1.png";
 // import like from "../assets/like.png";
 import like from "../assets/sociallike.svg";
 // import comment from "../assets/comment.png";

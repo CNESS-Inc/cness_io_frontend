@@ -32,9 +32,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
   const [followingFollowers, setFollowingFollowers] = useState<any>(null);
   const [userPosts, setUserPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [followLoading, setFollowLoading] = useState(false);
-  console.log("🚀 ~ FriendProfileModal ~ followLoading:", followLoading)
+  const [_isFollowing, setIsFollowing] = useState(false);
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -195,34 +193,34 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
     return "/images/video-poster-placeholder.jpg"; // placeholder
   };
 
-  const handleFollowToggle = async () => {
-    setFollowLoading(true);
-    try {
-      const formattedData = { following_id: friend.id };
-      await SendFollowRequest(formattedData);
+  // const handleFollowToggle = async () => {
+  //   setFollowLoading(true);
+  //   try {
+  //     const formattedData = { following_id: friend.id };
+  //     await SendFollowRequest(formattedData);
 
-      // Toggle the following state correctly
-      const newFollowStatus = !isFollowing;
-      setIsFollowing(newFollowStatus);
+  //     // Toggle the following state correctly
+  //     const newFollowStatus = !isFollowing;
+  //     setIsFollowing(newFollowStatus);
 
-      // Update the followers count correctly
-      setFollowingFollowers((prev: typeof followingFollowers) => ({
-        ...prev,
-        followerCount: newFollowStatus
-          ? (prev?.followerCount || 0) + 1 // If now following, increase count
-          : Math.max(0, (prev?.followerCount || 0) - 1), // If now unfollowing, decrease count
-      }));
+  //     // Update the followers count correctly
+  //     setFollowingFollowers((prev: typeof followingFollowers) => ({
+  //       ...prev,
+  //       followerCount: newFollowStatus
+  //         ? (prev?.followerCount || 0) + 1 // If now following, increase count
+  //         : Math.max(0, (prev?.followerCount || 0) - 1), // If now unfollowing, decrease count
+  //     }));
 
-      console.log(
-        newFollowStatus ? "Followed successfully" : "Unfollowed successfully"
-      );
-    } catch (error) {
-      console.error("Error toggling follow status:", error);
-      // Don't revert the state on error - let the user see the error and try again
-    } finally {
-      setFollowLoading(false);
-    }
-  };
+  //     console.log(
+  //       newFollowStatus ? "Followed successfully" : "Unfollowed successfully"
+  //     );
+  //   } catch (error) {
+  //     console.error("Error toggling follow status:", error);
+  //     // Don't revert the state on error - let the user see the error and try again
+  //   } finally {
+  //     setFollowLoading(false);
+  //   }
+  // };
 
   const [selectedPost, setSelectedPost] = useState<any | null>(null);
     const [friendRequests, setFriendRequests] = useState<{

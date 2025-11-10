@@ -238,25 +238,25 @@ export default function BestPracticesHub() {
     setSearchParams(params);
   };
 
-  const handleFilterChange = async (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const id = e.target.value;
-    const type = e.target.options[e.target.selectedIndex].dataset.type as
-      | "profession"
-      | "interest"
-      | "";
+  // const handleFilterChange = async (
+  //   e: React.ChangeEvent<HTMLSelectElement>
+  // ) => {
+  //   const id = e.target.value;
+  //   const type = e.target.options[e.target.selectedIndex].dataset.type as
+  //     | "profession"
+  //     | "interest"
+  //     | "";
 
-    setSelectedFilter({ id, type });
+  //   setSelectedFilter({ id, type });
 
-    const selectedText = e.target.options[e.target.selectedIndex].text;
-    setSelectedDomainText(selectedText);
+  //   const selectedText = e.target.options[e.target.selectedIndex].text;
+  //   setSelectedDomainText(selectedText);
 
-    // Update query params with profession title
-    updateQueryParams(id, searchText);
+  //   // Update query params with profession title
+  //   updateQueryParams(id, searchText);
 
-    await fetchBestPractices(1, id, type, searchText);
-  };
+  //   await fetchBestPractices(1, id, type, searchText);
+  // };
 
   const fetchProfession = async () => {
     try {

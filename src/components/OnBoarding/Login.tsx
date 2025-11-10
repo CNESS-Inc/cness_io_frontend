@@ -148,7 +148,6 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
   );
   const [openSignup, setOpenSignup] = useState(false);
   const [orgFormStep, setOrgFormStep] = useState(1); // 1 = Basic Info, 2 = Questions
-  const [personFormStep, _setPersonFormStep] = useState(1);
   const closeByKey = (key: typeof activeModal) =>
     setActiveModal((curr) => (curr === key ? null : curr));
 
