@@ -22,17 +22,17 @@ export default function MyCollections({ isMobileNavOpen }: { isMobileNavOpen?: b
   const navigate = useNavigate();
 
   return (
-    <div className={`transition-all duration-300 ${isMobileNavOpen ? 'md:ml-[256px]' : 'md:ml-0'} pt-[20px] px-4 lg:px-0 overflow-x-hidden`}> 
+    <div className="transition-all duration-300 md:ml-0 pt-[20px] px-6 md:px-8 py-8 overflow-x-hidden"> 
       {/* Frame 1: Heading container (1128x30 with 20px gap below) */}
-      <div className="mx-auto w-full max-w-[1128px] h-[30px] mb-5 flex items-center">
+      <div className="mx-auto w-full h-[30px] mb-5 flex items-center">
           <h1 className="font-['Poppins'] font-semibold text-[20px] leading-[100%] tracking-[0] text-[#1A1A1A] w-[149px]">
           My Collections
         </h1>
       </div>
 
       {/* Frames 2 & 3 combined: 8 tiles (4 + 4). On lg screens the frame is exactly 1128x460 with 20px gaps */}
-      <div className="mx-auto w-full max-w-[1128px] lg:h-[460px]">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-[repeat(4,267px)] gap-5">
+      <div className="mx-auto w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 px-6 gap-5">
           {collections.map((collection) => (
             <div
               key={collection.id}
@@ -43,7 +43,7 @@ export default function MyCollections({ isMobileNavOpen }: { isMobileNavOpen?: b
               }
               className="group cursor-pointer"
             >
-              <div className="relative overflow-hidden rounded-[10px]  bg-white w-full h-[195px]">
+              <div className="relative overflow-hidden rounded-[10px]  bg-white w-full">
                 <img
                   src={collection.image}
                   alt={collection.title}

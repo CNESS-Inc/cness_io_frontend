@@ -91,7 +91,7 @@ export default function EmptyPageLibrary() {
     >
       
       {/* Main content */}
-      <div className="max-w-[1160px] mx-auto flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col">
         <h2
           className="mt-4 mb-2 text-[18px] font-semibold text-slate-900
             sm:text-[22px] sm:mt-6 sm:mb-3

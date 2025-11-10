@@ -103,6 +103,7 @@ import SellerOrderList from "../pages/SellerOrderList";
 import SellerOrderDetail from "../pages/SellerOrderDetail";
 import SellerSales from "../pages/SellerSales";
 import SellerHelp from "../pages/SellerHelp";
+import DashboardFaqs from "../pages/DashboardFaqs";
 import SellerWithdrawal from "../pages/SellerWithdrawal";
 import Wallet from "../pages/Wallet";
 import EditVideoProductPage from "../pages/EditVideoProductPage";
@@ -472,6 +473,11 @@ export const router = createBrowserRouter([
             path: "seller-help",
             element: <SellerHelp />,
           },
+          {
+            path: "faqs",
+            element: <DashboardFaqs />,
+          },
+
           {
             path: "seller-sales/withdrawal",
             element: <SellerWithdrawal />
