@@ -11,11 +11,10 @@ import {
   GetFollowStatus,
   UnFriend,
   SendFriendRequest,
+  GetFriendStatus,
 } from "../../Common/ServerAPI";
 import PostPopup from "./Popup";
 import { useToast } from "../ui/Toast/ToastProvider";
-import { iconMap } from "../../assets/icons";
-
 
 type Props = {
   friend: {
@@ -34,6 +33,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
   const [loading, setLoading] = useState(false);
   const [_isFollowing, setIsFollowing] = useState(false);
   const { showToast } = useToast();
+  const loggedInUserId = localStorage.getItem("Id");
 
   useEffect(() => {
     if (friend.id) {
@@ -47,7 +47,6 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
       const response = await GetFollowStatus(friend.id.toString());
 
       // Get the logged-in user's ID from localStorage or wherever you store it
-      const loggedInUserId = localStorage.getItem("Id");
 
       // Check if the logged-in user is in the followers list
       const followers = response.data?.data?.rows || [];
@@ -72,6 +71,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
           GetFollowingFollowersByUserId(friend.id.toString()),
           GetUserPostsByUserId(friend.id.toString()),
         ]);
+      console.log("🚀 ~ fetchFriendData ~ profileResponse:", profileResponse);
 
       setProfileData(profileResponse.data.data);
       setFollowingFollowers(followingResponse.data.data);
@@ -223,95 +223,163 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
   // };
 
   const [selectedPost, setSelectedPost] = useState<any | null>(null);
-    const [friendRequests, setFriendRequests] = useState<{
-      [key: string]: string;
-    }>({});
-    const [connectingUsers, setConnectingUsers] = useState<{
-      [key: string]: boolean;
-    }>({});
+  const [friendRequests, setFriendRequests] = useState<{
+    [key: string]: string;
+  }>({});
 
+  const checkFriendStatus = async (userId: string) => {
+    try {
+      const response = await GetFriendStatus(userId);
+      if (response.success) {
+        // The API returns data.data.rows array with all friends
+        const friendsList = response.data.data.rows || [];
 
-      const getFriendStatus = (userId: string) => {
-    return friendRequests[userId] || "connect";
-  };
+        // Find if this specific user is in the friends list
+        const friendRecord = friendsList.find(
+          (friend: any) =>
+            friend.friend_id === userId || friend.user_id === userId
+        );
+        console.log("🚀 ~ checkFriendStatus ~ friendRecord:", friendsList);
+        if (friendRecord) {
+          // Check the request_status from the database
+          const status = friendRecord.request_status;
 
-
-    const handleConnect = async (userId: string) => {
-      try {
-        setConnectingUsers((prev) => ({ ...prev, [userId]: true }));
-  
-        const currentStatus = friendRequests[userId];
-  
-        // If already connected or requested, remove the connection/request
-        if (currentStatus === "connected" || currentStatus === "requested") {
-          const formattedData = {
-            friend_id: userId,
-          };
-  
-          const response = await UnFriend(formattedData);
-  
-          if (response.success) {
+          if (status === "ACCEPT") {
             setFriendRequests((prev) => ({
               ...prev,
-              [userId]: "connect", // Change back to "connect" after removing
+              [userId]: "connected",
             }));
-            showToast({
-              message: "Friend request removed successfully",
-              type: "success",
-              duration: 3000,
-            });
-          }
-        } else {
-          // If not connected, send friend request
-          const formattedData = {
-            friend_id: userId,
-          };
-  
-          const response = await SendFriendRequest(formattedData);
-  
-          if (response.success) {
+          } else if (status === "PENDING") {
             setFriendRequests((prev) => ({
               ...prev,
               [userId]: "requested",
             }));
-            showToast({
-              message:
-                response.success.message || "Friend request sent successfully",
-              type: "success",
-              duration: 3000,
-            });
+          } else if (status === "REJECT") {
+            setFriendRequests((prev) => ({
+              ...prev,
+              [userId]: "connect",
+            }));
+          } else {
+            setFriendRequests((prev) => ({
+              ...prev,
+              [userId]: "connect",
+            }));
           }
-        }
-      } catch (error) {
-        console.error("Error handling connect:", error);
-        showToast({
-          message: "Something went wrong. Please try again.",
-          type: "error",
-          duration: 3000,
-        });
-      } finally {
-        setConnectingUsers((prev) => ({ ...prev, [userId]: false }));
-      }
-    };
-
-    const handleFollow = async (userId: string) => {
-        try {
-          const formattedData = {
-            following_id: userId,
-          };
-          await SendFollowRequest(formattedData);
-          setUserPosts((prevPosts) =>
-            prevPosts.map((post) =>
-              post.user_id === userId
-                ? { ...post, if_following: !post.if_following }
-                : post
-            )
+        } else {
+          // No friend record found, set to connect
+          console.log(
+            "🚀 ~ checkFriendStatus ~ No friend record found, set to connect"
           );
-        } catch (error) {
-          console.error("Error fetching selection details:", error);
+          setFriendRequests((prev) => ({
+            ...prev,
+            [userId]: "connect",
+          }));
         }
-      };
+      }
+    } catch (error) {
+      console.error("Error checking friend status:", error);
+      // Set default status if API fails
+      setFriendRequests((prev) => ({
+        ...prev,
+        [userId]: "connect",
+      }));
+    }
+  };
 
+  useEffect(() => {
+    if (userPosts.length > 0) {
+      userPosts.forEach((post) => {
+        if (post.user_id !== loggedInUserId) {
+          checkFriendStatus(post.user_id);
+        }
+      });
+    }
+  }, [userPosts, loggedInUserId]);
+
+  // Add another useEffect to check friend status on component mount
+  useEffect(() => {
+    // Check friend status for all posts when component mounts
+    if (userPosts.length > 0 && loggedInUserId) {
+      userPosts.forEach((post) => {
+        if (post.user_id !== loggedInUserId) {
+          checkFriendStatus(post.user_id);
+        }
+      });
+    }
+  }, []);
+  const handleConnect = async (userId: string) => {
+    try {
+      const currentStatus = friendRequests[userId];
+
+      // If already connected or requested, remove the connection/request
+      if (currentStatus === "connected" || currentStatus === "requested") {
+        const formattedData = {
+          friend_id: userId,
+        };
+
+        const response = await UnFriend(formattedData);
+
+        if (response.success) {
+          setFriendRequests((prev) => ({
+            ...prev,
+            [userId]: "connect", // Change back to "connect" after removing
+          }));
+          await fetchFriendData();
+          showToast({
+            message: "Friend request removed successfully",
+            type: "success",
+            duration: 3000,
+          });
+        }
+      } else {
+        // If not connected, send friend request
+        const formattedData = {
+          friend_id: userId,
+        };
+
+        const response = await SendFriendRequest(formattedData);
+
+        if (response.success) {
+          setFriendRequests((prev) => ({
+            ...prev,
+            [userId]: "requested",
+          }));
+          showToast({
+            message:
+              response.success.message || "Friend request sent successfully",
+            type: "success",
+            duration: 3000,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error handling connect:", error);
+      showToast({
+        message: "Something went wrong. Please try again.",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleFollow = async (userId: string) => {
+    try {
+      const formattedData = {
+        following_id: userId,
+      };
+      await SendFollowRequest(formattedData);
+      setUserPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.user_id === userId
+            ? { ...post, if_following: !post.if_following }
+            : post
+        )
+      );
+      await fetchFriendData();
+    } catch (error) {
+      console.error("Error fetching selection details:", error);
+    }
+  };
   return (
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -412,34 +480,23 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
                 <div className="flex gap-2 mt-8">
                   <button
                     onClick={() => handleConnect(profileData?.user_id)}
-                    disabled={connectingUsers[profileData?.user_id] || false}
-                    className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px]
-                                                ${
-                                                  getFriendStatus(
-                                                    profileData?.user_id
-                                                  ) === "connected"
-                                                    ? "bg-gray-400 text-white cursor-not-allowed"
-                                                    : getFriendStatus(
-                                                        profileData?.user_id
-                                                      ) === "requested"
-                                                    ? "bg-gray-400 text-white" // Remove cursor-not-allowed to make it clickable
-                                                    : "bg-white text-black shadow-md"
-                                                }`}
+                    className={`text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full ${
+                      profileData?.if_friend &&
+                      profileData?.friend_request_status === "ACCEPT"
+                        ? "bg-gray-200 text-gray-800"
+                        : !profileData?.if_friend &&
+                          profileData?.friend_request_status === "PENDING"
+                        ? "bg-gray-200 text-black"
+                        : "bg-[#7C81FF] text-white"
+                    } hover:bg-indigo-600 hover:text-white`}
                   >
-                    <span className="flex items-center gap-1 text-[#0B3449]">
-                      <img
-                        src={iconMap["userplus"]}
-                        alt="userplus"
-                        className="w-4 h-4"
-                      />
-                      {connectingUsers[profileData?.user_id]
-                        ? "Loading..."
-                        : getFriendStatus(profileData?.user_id) === "connected"
-                        ? "Connected"
-                        : getFriendStatus(profileData?.user_id) === "requested"
-                        ? "Requested" // This will now change back to "Connect" when clicked again
-                        : "Connect"}
-                    </span>
+                    {profileData?.if_friend &&
+                    profileData?.friend_request_status === "ACCEPT"
+                      ? "Connected"
+                      : !profileData?.if_friend &&
+                        profileData?.friend_request_status === "PENDING"
+                      ? "Requested..."
+                      : "+ Connect"}
                   </button>
                   {/* Follow Button */}
                   <button
