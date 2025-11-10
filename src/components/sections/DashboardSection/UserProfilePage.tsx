@@ -451,7 +451,7 @@ const UserProfilePage = () => {
           .transform((value) => (value === "" ? null : value)) // Transform empty string to null
           .nullable()
           .matches(
-            /^[a-zA-Z0-9\s.,!?@#$%^&*()_+-=<>;:'"\/\\[\]{}|`~]*$/,
+            /^[a-zA-Z0-9\s\S]*$/, // This allows ALL characters including special characters
             "Vision statement contains invalid characters"
           ),
         professions: yup.array().min(1, "At least one profession is required"),
@@ -462,10 +462,6 @@ const UserProfilePage = () => {
       })
     ),
   });
-  console.log(
-    "🚀 ~ UserProfilePage ~ basicInfoForm:",
-    basicInfoForm.formState.errors
-  );
   /*const contactInfoForm = useForm({
     defaultValues: {
       country_code: countryCode[0],
@@ -1209,7 +1205,7 @@ const UserProfilePage = () => {
         contactInfoForm.reset({
           country_code: response.data.data?.country_code || "",
           phone: response.data.data?.phone_no || "",
-          email: response.data.data?.email || "",
+          email: response?.data?.data?.email || "",
           address:
             response.data.data?.address ||
             response.data.data?.location?.address ||
@@ -3637,7 +3633,7 @@ const UserProfilePage = () => {
                         </label>
                         <input
                           type="email"
-                          placeholder="Enter Yor notify Email"
+                          placeholder="Enter Your Notify Email"
                           {...publicProfileForm.register("notifyEmail", {
                             required: "Email is required",
                             pattern: {

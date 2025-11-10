@@ -2,8 +2,14 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import PostCard from "../components/Profile/Post";
 import ConnectionsCard from "../components/Profile/Tabs";
 import { TrendingUp } from "lucide-react";
-import { GetTrendingPost } from "../Common/ServerAPI";
+import {
+  getTopics,
+  GetTrendingPost,
+  getUserSelectedTopic,
+} from "../Common/ServerAPI";
 import ProfileCards from "./ProfileCards";
+import { useToast } from "../components/ui/Toast/ToastProvider";
+import { useNavigate } from "react-router-dom";
 
 type Post = React.ComponentProps<typeof PostCard>;
 type Profile = {
@@ -23,11 +29,17 @@ export default function TrendingAI() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState("Ai");
   const [activeTab, setActiveTab] = useState(tabs[0]);
-  
+  const { showToast } = useToast();
+  const [topics, setTopics] = useState<any[]>([]); // list of topics
+  const [visibleTopic, setVisibleTopic] = useState(10);
+  const [userSelectedTopics, setUserSelectedTopics] = useState<any[]>([]); // list of user selected topics
   // Use refs to track values without causing re-renders
   const selectedTopicRef = useRef(selectedTopic);
   const activeTabRef = useRef(activeTab);
-  
+  const loggedInUserID = localStorage.getItem("Id");
+
+  const navigate = useNavigate();
+
   // Update refs when state changes
   useEffect(() => {
     selectedTopicRef.current = selectedTopic;
@@ -39,103 +51,151 @@ export default function TrendingAI() {
   const lastElementRef = useRef<HTMLDivElement>(null);
 
   // Memoize the getUserPosts function with minimal dependencies
-  const getData = useCallback(async (isNewSearch = false) => {
-    if ((isLoading && !isNewSearch) || (!isNewSearch && !hasMore)) return;
+  const getData = useCallback(
+    async (isNewSearch = false) => {
+      if ((isLoading && !isNewSearch) || (!isNewSearch && !hasMore)) return;
 
-    setIsLoading(true);
-    try {
-      const currentPage = isNewSearch ? 1 : page;
-      
-      // Use ref values instead of state to prevent recreation
-      const res = await GetTrendingPost(
-        selectedTopicRef.current, 
-        activeTabRef.current.toLowerCase(),
-        currentPage // Use currentPage instead of page
-      );
-      
-      console.log("🚀 ~ getData ~ res:", res);
+      setIsLoading(true);
+      try {
+        const currentPage = isNewSearch ? 1 : page;
 
-      if (activeTabRef.current === "People") {
-        // Handle People tab response
-        if (res?.data?.data?.rows) {
-          const newProfiles: Profile[] = res.data.data.rows.map((el: any) => {
-            return {
-              id: el?.user?.id || '',
-              username: el?.user?.username || '',
-              firstName: el?.profile?.first_name || '',
-              lastName: el?.profile?.last_name || '',
-              profilePicture: el?.profile?.profile_picture || null,
-            };
-          });
+        // Use ref values instead of state to prevent recreation
+        const res = await GetTrendingPost(
+          selectedTopicRef.current,
+          activeTabRef.current.toLowerCase(),
+          currentPage // Use currentPage instead of page
+        );
 
-          const totalCount = res?.data?.data?.count || 0;
-          const itemsPerPage = 10;
-          const totalPages = Math.ceil(totalCount / itemsPerPage);
+        if (activeTabRef.current === "People") {
+          // Handle People tab response
+          if (res?.data?.data?.rows) {
+            const newProfiles: Profile[] = res.data.data.rows.map((el: any) => {
+              return {
+                id: el?.user?.id || "",
+                username: el?.user?.username || "",
+                firstName: el?.profile?.first_name || "",
+                lastName: el?.profile?.last_name || "",
+                profilePicture: el?.profile?.profile_picture || null,
+              };
+            });
 
-          if (newProfiles.length === 0) {
-            setHasMore(false);
-          } else {
-            setProfiles(prevProfiles => isNewSearch ? newProfiles : [...prevProfiles, ...newProfiles]);
-            
-            if (currentPage >= totalPages) {
+            const totalCount = res?.data?.data?.count || 0;
+            const itemsPerPage = 10;
+            const totalPages = Math.ceil(totalCount / itemsPerPage);
+
+            if (newProfiles.length === 0) {
               setHasMore(false);
-            } else if (isNewSearch) {
-              setPage(2);
-              setHasMore(true);
             } else {
-              setPage(prevPage => prevPage + 1);
+              setProfiles((prevProfiles) =>
+                isNewSearch ? newProfiles : [...prevProfiles, ...newProfiles]
+              );
+
+              if (currentPage >= totalPages) {
+                setHasMore(false);
+              } else if (isNewSearch) {
+                setPage(2);
+                setHasMore(true);
+              } else {
+                setPage((prevPage) => prevPage + 1);
+              }
             }
+          } else {
+            setHasMore(false);
           }
         } else {
-          setHasMore(false);
-        }
-      } else {
-        // Handle Posts tabs (Top, Latest)
-        if (res?.data?.data?.rows) {
-          const newPosts: Post[] = res.data.data.rows.map((el: any) => {
-            return {
-              avatar: el?.profile?.profile_picture || null,
-              name: `${el?.profile?.first_name || ''} ${el?.profile?.last_name || ''}`.trim() || 'Unknown User',
-              time: el?.createdAt,
-              following: el?.if_following || false,
-              media: el?.file,
-              likes: el?.likes_count || 0,
-              reflections: el?.total_comment_count || 0,
-              id: el?.id || null,
-              isLiked: el?.is_liked || false,
-              content: el?.content || '',
-            };
-          });
+          // Handle Posts tabs (Top, Latest)
+          if (res?.data?.data?.rows) {
+            const newPosts: Post[] = res.data.data.rows.map((el: any) => {
+              return {
+                avatar: el?.profile?.profile_picture || null,
+                name:
+                  `${el?.profile?.first_name || ""} ${
+                    el?.profile?.last_name || ""
+                  }`.trim() || "Unknown User",
+                time: el?.createdAt,
+                following: el?.if_following || false,
+                media: el?.file,
+                likes: el?.likes_count || 0,
+                reflections: el?.total_comment_count || 0,
+                id: el?.id || null,
+                isLiked: el?.is_liked || false,
+                content: el?.content || "",
+              };
+            });
 
-          const totalCount = res?.data?.data?.count || 0;
-          const itemsPerPage = 10;
-          const totalPages = Math.ceil(totalCount / itemsPerPage);
+            const totalCount = res?.data?.data?.count || 0;
+            const itemsPerPage = 10;
+            const totalPages = Math.ceil(totalCount / itemsPerPage);
 
-          if (newPosts.length === 0) {
-            setHasMore(false);
-          } else {
-            setPosts(prevPosts => isNewSearch ? newPosts : [...prevPosts, ...newPosts]);
-            
-            if (currentPage >= totalPages) {
+            if (newPosts.length === 0) {
               setHasMore(false);
-            } else if (isNewSearch) {
-              setPage(2);
-              setHasMore(true);
             } else {
-              setPage(prevPage => prevPage + 1);
+              setPosts((prevPosts) =>
+                isNewSearch ? newPosts : [...prevPosts, ...newPosts]
+              );
+
+              if (currentPage >= totalPages) {
+                setHasMore(false);
+              } else if (isNewSearch) {
+                setPage(2);
+                setHasMore(true);
+              } else {
+                setPage((prevPage) => prevPage + 1);
+              }
             }
+          } else {
+            setHasMore(false);
           }
-        } else {
-          setHasMore(false);
         }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setHasMore(false);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setHasMore(false);
-    } finally {
-      setIsLoading(false);
+    },
+    [page, isLoading, hasMore]
+  );
+
+  useEffect(() => {
+    fetchUserSelectedTopics();
+  }, []);
+
+  const fetchUserSelectedTopics = async () => {
+    if (!loggedInUserID) {
+      showToast({
+        message: "No user ID found.",
+        type: "error",
+        duration: 2000,
+      });
+      return;
     }
-  }, [page, isLoading, hasMore]);
+    try {
+      const response = await getUserSelectedTopic(loggedInUserID);
+      if (
+        response?.success?.statusCode === 200 &&
+        response?.data?.data?.length > 0
+      ) {
+        setUserSelectedTopics(response?.data?.data);
+      } else {
+        console.warn(
+          "Error during fetch user selected topics details",
+          response
+        );
+      }
+    } catch (error: any) {
+      console.error("Error fetching user selected topic details:", error);
+      if (error?.response?.status === 404) {
+        // setShowTopicModal(true);
+      } else {
+        showToast({
+          message: "Failed to load User Selected Topics.",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    }
+  };
 
   // Set up intersection observer for infinite scroll
   useEffect(() => {
@@ -171,22 +231,40 @@ export default function TrendingAI() {
     setProfiles([]);
     setPage(1);
     setHasMore(true);
-    
+
     // Call API with new parameters
     getData(true);
   }, [selectedTopic, activeTab]);
+  useEffect(() => {
+    fetchTopics();
+  }, []);
 
-  const trendingTopics = [
-    { label: "#AI" },
-    { label: "#Conscious" },
-    { label: "#Social_impact", icon: "🔥" },
-    { label: "#Save_water", icon: "💧" },
-  ];
 
-  const handleTopicClick = (topicLabel: string) => {
-    const topicWithoutHash = topicLabel.replace('#', '');
-    setSelectedTopic(topicWithoutHash);
+  const fetchTopics = async () => {
+    try {
+      const response = await getTopics();
+      if (
+        response?.success?.statusCode === 200 &&
+        response?.data?.data?.length
+      ) {
+        setTopics(response?.data?.data);
+      } else {
+        console.warn("Error during fetch topics details", response);
+      }
+    } catch (error) {
+      console.error("Error fetching topic details:", error);
+      showToast({
+        message: "Failed to load Topics.",
+        type: "error",
+        duration: 3000,
+      });
+    }
   };
+
+  // const handleTopicClick = (topicLabel: string) => {
+  //   const topicWithoutHash = topicLabel.replace("#", "");
+  //   setSelectedTopic(topicWithoutHash);
+  // };
 
   return (
     <div className="w-full px-4 py-4">
@@ -198,8 +276,8 @@ export default function TrendingAI() {
         setActiveTab={setActiveTab}
         activeTab={activeTab}
         selectedTopic={selectedTopic}
-        onTopicChange={setSelectedTopic} 
-        getUserPosts={undefined} 
+        onTopicChange={setSelectedTopic}
+        getUserPosts={undefined}
       />
 
       {/* Content Area */}
@@ -298,22 +376,26 @@ export default function TrendingAI() {
               )}
             </>
           )}
-          
+
           {/* Loading indicator for additional content */}
-          {isLoading && ((activeTab === "People" && profiles.length > 0) || (activeTab !== "People" && posts.length > 0)) && (
-            <div className="flex justify-center py-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-            </div>
-          )}
-          
+          {isLoading &&
+            ((activeTab === "People" && profiles.length > 0) ||
+              (activeTab !== "People" && posts.length > 0)) && (
+              <div className="flex justify-center py-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+              </div>
+            )}
+
           {/* No more content message */}
-          {!hasMore && ((activeTab === "People" && profiles.length > 0) || (activeTab !== "People" && posts.length > 0)) && (
-            <div className="text-center py-4 text-gray-500">
-              No more {activeTab === "People" ? "profiles" : "posts"} to load
-            </div>
-          )}
+          {!hasMore &&
+            ((activeTab === "People" && profiles.length > 0) ||
+              (activeTab !== "People" && posts.length > 0)) && (
+              <div className="text-center py-4 text-gray-500">
+                No more {activeTab === "People" ? "profiles" : "posts"} to load
+              </div>
+            )}
         </div>
-        
+
         {/* Right Column: Trending Topics */}
         <aside className="lg:col-span-1 xl:sticky xl:top-4 self-start">
           <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm min-h-[560px]">
@@ -324,28 +406,38 @@ export default function TrendingAI() {
 
             <div className="border-b border-gray-200 w-full mb-4"></div>
 
-            <ol className="space-y-3 text-sm">
-              {trendingTopics.map((t, idx) => {
-                const topicWithoutHash = t.label.replace('#', '');
-                const isSelected = topicWithoutHash === selectedTopic;
-                return (
-                  <li
-                    key={t.label}
-                    className={`flex items-center justify-between font-opensans font-normal text-[14px] leading-[100%] cursor-pointer px-3 py-2 rounded-md hover:bg-[#E6E9FF] transition-all duration-200 ease-in-out transform hover:scale-y-110 w-full ${isSelected ? "bg-[#E6E9FF]" : ""
-                      }`}
-                    onClick={() => handleTopicClick(t.label)}
-                  >
-                    <span
-                      className={`transition-colors duration-200 ${isSelected ? "text-[#7077FE]" : "text-black hover:text-[#7077FE]"
-                        }`}
-                    >
-                      {idx + 1}. {t.label}
-                    </span>
-                    {t.icon && <span className="ml-2">{t.icon}</span>}
-                  </li>
-                );
-              })}
-            </ol>
+            <ul className="space-y-3 text-sm md:text-[15px] text-gray-700 px-4">
+              {topics?.slice(0, visibleTopic)?.map((topic) => (
+                <button
+                  key={topic.id}
+                  onClick={() =>
+                    navigate(`/dashboard/${topic.slug}`, {
+                      state: {
+                        topics,
+                        userSelectedTopics,
+                      },
+                    })
+                  }
+                  className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+                >
+                  <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                  {topic.topic_name}
+                </button>
+              ))}
+              {visibleTopic < topics?.length && (
+                <button
+                  onClick={() => setVisibleTopic((pre) => pre + 10)}
+                  className="text-sm text-blue-500 hover:underline hover:text-blue-600 transition cursor-pointer"
+                >
+                  See more
+                </button>
+              )}
+              {topics?.length === 0 && (
+                <button disabled className="text-gray-400 italic">
+                  No topics available
+                </button>
+              )}
+            </ul>
             <div className="my-5 h-px bg-gray-100" />
           </div>
         </aside>

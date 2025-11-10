@@ -50,7 +50,6 @@ export default function MyPost({
   onFollowToggle,
   onClick, // <-- bring it in from props
 }: MyPostProps) {
-  console.log("🚀 ~ MyPost ~ authorAvatar:", authorAvatar)
   return (
     <article
       onClick={onClick}
