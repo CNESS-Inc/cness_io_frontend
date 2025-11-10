@@ -1,8 +1,6 @@
 import { X } from "lucide-react";
 import MyPost from "../Profile/Mypost";
 import companycard from "../../assets/companycard1.png";
-// import whychess from "../../assets/whycness.jpg";
-// import webinar from "../../assets/webinarimg.jpg";
 import { TrendingUp } from "lucide-react";
 import { useState, useEffect } from "react";
 import {
@@ -11,8 +9,13 @@ import {
   GetFollowingFollowersByUserId,
   SendFollowRequest,
   GetFollowStatus,
+  UnFriend,
+  SendFriendRequest,
 } from "../../Common/ServerAPI";
 import PostPopup from "./Popup";
+import { useToast } from "../ui/Toast/ToastProvider";
+import { iconMap } from "../../assets/icons";
+
 
 type Props = {
   friend: {
@@ -29,10 +32,9 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
   const [followingFollowers, setFollowingFollowers] = useState<any>(null);
   const [userPosts, setUserPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [followLoading, setFollowLoading] = useState(false);
+  const [_isFollowing, setIsFollowing] = useState(false);
+  const { showToast } = useToast();
 
-  // Add useEffect to fetch data when modal opens
   useEffect(() => {
     if (friend.id) {
       fetchFriendData();
@@ -71,7 +73,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
           GetUserPostsByUserId(friend.id.toString()),
         ]);
 
-      setProfileData(profileResponse.data.data.rows);
+      setProfileData(profileResponse.data.data);
       setFollowingFollowers(followingResponse.data.data);
 
       const transformedPosts = postsResponse.data.data.rows.map((item: any) => {
@@ -191,38 +193,124 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
     return "/images/video-poster-placeholder.jpg"; // placeholder
   };
 
-  const handleFollowToggle = async () => {
-    setFollowLoading(true);
-    try {
-      const formattedData = { following_id: friend.id };
-      await SendFollowRequest(formattedData);
+  // const handleFollowToggle = async () => {
+  //   setFollowLoading(true);
+  //   try {
+  //     const formattedData = { following_id: friend.id };
+  //     await SendFollowRequest(formattedData);
 
-      // Toggle the following state correctly
-      const newFollowStatus = !isFollowing;
-      setIsFollowing(newFollowStatus);
+  //     // Toggle the following state correctly
+  //     const newFollowStatus = !isFollowing;
+  //     setIsFollowing(newFollowStatus);
 
-      // Update the followers count correctly
-      setFollowingFollowers((prev: typeof followingFollowers) => ({
-        ...prev,
-        followerCount: newFollowStatus
-          ? (prev?.followerCount || 0) + 1 // If now following, increase count
-          : Math.max(0, (prev?.followerCount || 0) - 1), // If now unfollowing, decrease count
-      }));
+  //     // Update the followers count correctly
+  //     setFollowingFollowers((prev: typeof followingFollowers) => ({
+  //       ...prev,
+  //       followerCount: newFollowStatus
+  //         ? (prev?.followerCount || 0) + 1 // If now following, increase count
+  //         : Math.max(0, (prev?.followerCount || 0) - 1), // If now unfollowing, decrease count
+  //     }));
 
-      console.log(
-        newFollowStatus ? "Followed successfully" : "Unfollowed successfully"
-      );
-    } catch (error) {
-      console.error("Error toggling follow status:", error);
-      // Don't revert the state on error - let the user see the error and try again
-    } finally {
-      setFollowLoading(false);
-    }
+  //     console.log(
+  //       newFollowStatus ? "Followed successfully" : "Unfollowed successfully"
+  //     );
+  //   } catch (error) {
+  //     console.error("Error toggling follow status:", error);
+  //     // Don't revert the state on error - let the user see the error and try again
+  //   } finally {
+  //     setFollowLoading(false);
+  //   }
+  // };
+
+  const [selectedPost, setSelectedPost] = useState<any | null>(null);
+    const [friendRequests, setFriendRequests] = useState<{
+      [key: string]: string;
+    }>({});
+    const [connectingUsers, setConnectingUsers] = useState<{
+      [key: string]: boolean;
+    }>({});
+
+
+      const getFriendStatus = (userId: string) => {
+    return friendRequests[userId] || "connect";
   };
 
-    const [selectedPost, setSelectedPost] = useState<any | null>(null);
-    console.log("🚀 ~ FriendProfileModal ~ selectedPost:", selectedPost)
+
+    const handleConnect = async (userId: string) => {
+      try {
+        setConnectingUsers((prev) => ({ ...prev, [userId]: true }));
   
+        const currentStatus = friendRequests[userId];
+  
+        // If already connected or requested, remove the connection/request
+        if (currentStatus === "connected" || currentStatus === "requested") {
+          const formattedData = {
+            friend_id: userId,
+          };
+  
+          const response = await UnFriend(formattedData);
+  
+          if (response.success) {
+            setFriendRequests((prev) => ({
+              ...prev,
+              [userId]: "connect", // Change back to "connect" after removing
+            }));
+            showToast({
+              message: "Friend request removed successfully",
+              type: "success",
+              duration: 3000,
+            });
+          }
+        } else {
+          // If not connected, send friend request
+          const formattedData = {
+            friend_id: userId,
+          };
+  
+          const response = await SendFriendRequest(formattedData);
+  
+          if (response.success) {
+            setFriendRequests((prev) => ({
+              ...prev,
+              [userId]: "requested",
+            }));
+            showToast({
+              message:
+                response.success.message || "Friend request sent successfully",
+              type: "success",
+              duration: 3000,
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error handling connect:", error);
+        showToast({
+          message: "Something went wrong. Please try again.",
+          type: "error",
+          duration: 3000,
+        });
+      } finally {
+        setConnectingUsers((prev) => ({ ...prev, [userId]: false }));
+      }
+    };
+
+    const handleFollow = async (userId: string) => {
+        try {
+          const formattedData = {
+            following_id: userId,
+          };
+          await SendFollowRequest(formattedData);
+          setUserPosts((prevPosts) =>
+            prevPosts.map((post) =>
+              post.user_id === userId
+                ? { ...post, if_following: !post.if_following }
+                : post
+            )
+          );
+        } catch (error) {
+          console.error("Error fetching selection details:", error);
+        }
+      };
 
   return (
     <>
@@ -323,6 +411,56 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
                 {/* Right: Buttons */}
                 <div className="flex gap-2 mt-8">
                   <button
+                    onClick={() => handleConnect(profileData?.user_id)}
+                    disabled={connectingUsers[profileData?.user_id] || false}
+                    className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px]
+                                                ${
+                                                  getFriendStatus(
+                                                    profileData?.user_id
+                                                  ) === "connected"
+                                                    ? "bg-gray-400 text-white cursor-not-allowed"
+                                                    : getFriendStatus(
+                                                        profileData?.user_id
+                                                      ) === "requested"
+                                                    ? "bg-gray-400 text-white" // Remove cursor-not-allowed to make it clickable
+                                                    : "bg-white text-black shadow-md"
+                                                }`}
+                  >
+                    <span className="flex items-center gap-1 text-[#0B3449]">
+                      <img
+                        src={iconMap["userplus"]}
+                        alt="userplus"
+                        className="w-4 h-4"
+                      />
+                      {connectingUsers[profileData?.user_id]
+                        ? "Loading..."
+                        : getFriendStatus(profileData?.user_id) === "connected"
+                        ? "Connected"
+                        : getFriendStatus(profileData?.user_id) === "requested"
+                        ? "Requested" // This will now change back to "Connect" when clicked again
+                        : "Connect"}
+                    </span>
+                  </button>
+                  {/* Follow Button */}
+                  <button
+                    onClick={() => handleFollow(profileData?.user_id)}
+                    className={`flex w-[100px] justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
+                                                  ${
+                                                    profileData?.if_following
+                                                      ? "bg-transparent text-[#7077FE] hover:text-[#7077FE]/80"
+                                                      : "bg-[#7077FE] text-white hover:bg-indigo-600 h-[35px]"
+                                                  }`}
+                  >
+                    {profileData?.if_following ? (
+                      <>
+                        <TrendingUp className="w-5 h-5 text-[#7077FE]" />{" "}
+                        Resonating
+                      </>
+                    ) : (
+                      "+ Resonate"
+                    )}
+                  </button>
+                  {/* <button
                     onClick={handleFollowToggle}
                     disabled={followLoading}
                     data-testid={isFollowing}
@@ -338,7 +476,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
                       : isFollowing
                       ? "Following"
                       : "Follow"}
-                  </button>
+                  </button> */}
                   {/* <button className="px-8 py-2 rounded-full bg-indigo-500 text-white text-sm">
                   Message
                 </button> */}
@@ -392,9 +530,8 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
         </div>
       </div>
 
-
       {selectedPost && (
-          /*<PostPopup
+        /*<PostPopup
             post={{
               id: String(demoPosts.indexOf(selectedPost)),
             media:
@@ -406,29 +543,29 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
             onClose={() => setSelectedPost(null)}
           />*/
 
-          <PostPopup
-            post={{
-              id: String(selectedPost.id),
-              date: selectedPost.date,
-              media:
-                selectedPost.media ??
-                ({ type: "text", src: selectedPost.body || "" } as const),
-              // optional
-            }}
-            onClose={() => setSelectedPost(null)}
-            onDeletePost={() => {
-              if (selectedPost.id !== undefined) {
-                // setDeleteConfirmation({
-                //   isOpen: true,
-                //   postId: String(selectedPost.id),
-                // });
-              }
-            }}
-            collection
-            likesCount={selectedPost.likes ?? 0}
-            insightsCount={selectedPost.reflections ?? 0}
-          />
-        )}
+        <PostPopup
+          post={{
+            id: String(selectedPost.id),
+            date: selectedPost.date,
+            media:
+              selectedPost.media ??
+              ({ type: "text", src: selectedPost.body || "" } as const),
+            // optional
+          }}
+          onClose={() => setSelectedPost(null)}
+          onDeletePost={() => {
+            if (selectedPost.id !== undefined) {
+              // setDeleteConfirmation({
+              //   isOpen: true,
+              //   postId: String(selectedPost.id),
+              // });
+            }
+          }}
+          collection
+          likesCount={selectedPost.likes ?? 0}
+          insightsCount={selectedPost.reflections ?? 0}
+        />
+      )}
     </>
   );
 }

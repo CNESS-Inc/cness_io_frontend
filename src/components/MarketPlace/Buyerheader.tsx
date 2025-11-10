@@ -38,15 +38,17 @@ const MarketHeader: React.FC<MarketHeaderProps> = ({ }) => {
 
 
   const isActive = (path: string) => {
-    // Treat Continue Watching as part of Library
-    if (path === "/dashboard/library") {
-      return (
-        location.pathname === "/dashboard/library" ||
-        location.pathname === "/dashboard/continue-watching"
-      );
-    }
-    return location.pathname === path;
-  };
+  // Treat Library, Continue Watching, and My Library as part of Library
+  if (path === "/dashboard/library") {
+    return (
+      location.pathname === "/dashboard/library" ||
+      location.pathname === "/dashboard/continue-watching" ||
+      location.pathname === "/dashboard/my-library"
+    );
+  }
+  return location.pathname === path;
+};
+
 
   const fetchRatingDetails = async () => {
     try {

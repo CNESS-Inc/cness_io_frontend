@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import uploadimg from "../assets/upload1.svg";
 import Breadcrumb from "../components/MarketPlace/Breadcrumb";
 import CategoryModel from "../components/MarketPlace/CategoryModel";
 import { useNavigate } from "react-router-dom";
-import { Image, SquarePen, Trash2 } from "lucide-react";
+import { Image, SquarePen, Trash2, Plus, X, FileText } from "lucide-react";
+import { useToast } from "../components/ui/Toast/ToastProvider";
+import { CreateArtProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument } from "../Common/ServerAPI";
 
 interface FormSectionProps {
   title: string;
@@ -34,6 +36,10 @@ interface InputFieldProps {
   placeholder: string;
   required?: boolean;
   type?: string;
+  name: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -41,6 +47,10 @@ const InputField: React.FC<InputFieldProps> = ({
   placeholder,
   required = false,
   type = "text",
+  name,
+  value,
+  onChange,
+  error = "",
 }) => (
   <div className="flex flex-col">
     <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
@@ -48,19 +58,91 @@ const InputField: React.FC<InputFieldProps> = ({
     </label>
     <input
       type={type}
+      name={name}
       placeholder={placeholder}
       required={required}
+      value={value}
+      onChange={onChange}
       className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
     />
+    {error && <span className="text-red-500 text-sm mt-1">{error}</span>}
   </div>
 );
 
 const AddArtsForm: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
+  const [showDiscardModal, setShowDiscardModal] = useState(false);
   const navigate = useNavigate();
+  const { showToast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [moods, setMoods] = useState<string[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [newHighlight, setNewHighlight] = useState("");
 
-  // Breadcrumb category navigation
+  const [chapters, setChapters] = useState<any[]>([
+    {
+      id: 1,
+      title: "Collection 1",
+      chapter_files: [],
+      description: "",
+      order_number: 1,
+      is_free: false
+    },
+  ]);
+
+  const [formData, setFormData] = useState({
+    product_title: "",
+    price: 0,
+    discount_percentage: 0,
+    mood_id: "",
+    overview: "",
+    highlights: [] as string[],
+    language: "",
+    theme: "",
+    mediums: "",
+    modern_trends: "",
+  });
+
+  useEffect(() => {
+    const fetchMoods = async () => {
+      try {
+        const response = await GetMarketPlaceMoods();
+        setMoods(response?.data?.data);
+      } catch (error: any) {
+        showToast({
+          message: "Failed to load moods.",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    };
+
+    fetchMoods();
+  }, []);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await GetMarketPlaceCategories();
+        if (response?.data?.data) {
+          setCategories(response.data.data);
+        }
+      } catch (error: any) {
+        showToast({
+          message: "Failed to load categories.",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   const handleSelectCategory = (category: string) => {
+    setShowModal(false); // Close modal first
+
     const routes: Record<string, string> = {
       Video: "/dashboard/products/add-video",
       Music: "/dashboard/products/add-music",
@@ -69,156 +151,117 @@ const AddArtsForm: React.FC = () => {
       Ebook: "/dashboard/products/add-ebook",
       Arts: "/dashboard/products/add-arts",
     };
+
     const path = routes[category];
-    if (path) navigate(path);
+    if (path) {
+      navigate(path);
+    }
   };
 
-  // ---------- Upload Logic ----------
-  interface ArtFile {
-    id: number;
-    name: string;
-    tempName: string;
-    progress: number;
-    isEditing: boolean;
-    size: number;
-  }
-
-  interface Collection {
-    id: number;
-    name: string;
-    files: ArtFile[];
-  }
-
-  const [collections, setCollections] = useState<Collection[]>([
-    { id: 1, name: "Content", files: [] },
-  ]);
-
-  // Simulate upload progress
-  const simulateUpload = (collectionId: number, fileId: number) => {
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 10;
-      setCollections((prev) =>
-        prev.map((col) =>
-          col.id === collectionId
-            ? {
-                ...col,
-                files: col.files.map((f) =>
-                  f.id === fileId ? { ...f, progress } : f
-                ),
-              }
-            : col
-        )
-      );
-      if (progress >= 100) clearInterval(interval);
-    }, 300);
+  const handleDeleteChapter = (chapterId: number) => {
+    setChapters(prev => prev.filter(ch => ch.id !== chapterId));
   };
 
-  // Add files
   const handleAddFile = (
     e: React.ChangeEvent<HTMLInputElement>,
-    collectionId: number
+    chapterId: number
   ) => {
     const files = Array.from(e.target.files || []);
-    const MAX_SIZE = 100 * 1024 * 1024; // 100 MB limit
 
-    const validFiles = files.filter((file) => {
-      if (file.size > MAX_SIZE) {
-        alert(`${file.name} exceeds 100 MB and was skipped.`);
-        return false;
-      }
-      return true;
-    });
-
-    setCollections((prev) =>
-      prev.map((col) =>
-        col.id === collectionId
+    setChapters((prev) =>
+      prev.map((chapter) =>
+        chapter.id === chapterId
           ? {
-              ...col,
-              files: [
-                ...col.files,
-                ...validFiles.map((file, i) => ({
-                  id: Date.now() + i,
-                  name: file.name,
-                  tempName: file.name,
-                  size: file.size,
-                  progress: 0,
-                  isEditing: false,
-                })),
-              ],
-            }
-          : col
+            ...chapter,
+            chapter_files: [
+              ...chapter.chapter_files,
+              ...files.map((file, i) => ({
+                url: "",
+                title: file.name,
+                order_number: chapter.chapter_files.length + i + 1,
+                file: file,
+              })),
+            ],
+          }
+          : chapter
       )
     );
-
-    validFiles.forEach((_, i) => simulateUpload(collectionId, Date.now() + i));
   };
 
-  // Add new collection
-  const handleAddCollection = () => {
-    setCollections((prev) => [
+  const handleAddChapter = () => {
+    setChapters((prev) => [
       ...prev,
-      { id: prev.length + 1, name: `Collection ${prev.length + 1}`, files: [] },
+      {
+        id: prev.length + 1,
+        title: `Collection ${prev.length + 1}`,
+        chapter_files: [],
+        description: "",
+        order_number: prev.length + 1,
+        is_free: false
+      },
     ]);
   };
 
-  const toggleEditFile = (collectionId: number, fileId: number) => {
-    setCollections((prev) =>
-      prev.map((col) =>
-        col.id === collectionId
+  const toggleEditFile = (chapterId: number, fileOrderNumber: number) => {
+    setChapters((prev) =>
+      prev.map((chapter) =>
+        chapter.id === chapterId
           ? {
-              ...col,
-              files: col.files.map((f) =>
-                f.id === fileId ? { ...f, isEditing: !f.isEditing } : f
-              ),
-            }
-          : col
+            ...chapter,
+            chapter_files: chapter.chapter_files.map((f: any) =>
+              f.order_number === fileOrderNumber ? { ...f, isEditing: !f.isEditing } : f
+            ),
+          }
+          : chapter
       )
     );
   };
 
   const handleEditFileName = (
-    collectionId: number,
-    fileId: number,
-    newName: string
+    chapterId: number,
+    fileOrderNumber: number,
+    newTitle: string
   ) => {
-    setCollections((prev) =>
-      prev.map((col) =>
-        col.id === collectionId
+    setChapters((prev) =>
+      prev.map((chapter) =>
+        chapter.id === chapterId
           ? {
-              ...col,
-              files: col.files.map((f) =>
-                f.id === fileId ? { ...f, tempName: newName } : f
-              ),
-            }
-          : col
+            ...chapter,
+            chapter_files: chapter.chapter_files.map((f: any) =>
+              f.order_number === fileOrderNumber ? { ...f, title: newTitle } : f
+            ),
+          }
+          : chapter
       )
     );
   };
 
-  const saveFileName = (collectionId: number, fileId: number) => {
-    setCollections((prev) =>
-      prev.map((col) =>
-        col.id === collectionId
+  const saveFileName = (chapterId: number, fileOrderNumber: number) => {
+    setChapters((prev) =>
+      prev.map((chapter) =>
+        chapter.id === chapterId
           ? {
-              ...col,
-              files: col.files.map((f) =>
-                f.id === fileId
-                  ? { ...f, name: f.tempName, isEditing: false }
-                  : f
-              ),
-            }
-          : col
+            ...chapter,
+            chapter_files: chapter.chapter_files.map((f: any) =>
+              f.order_number === fileOrderNumber
+                ? { ...f, isEditing: false }
+                : f
+            ),
+          }
+          : chapter
       )
     );
   };
 
-  const deleteFile = (collectionId: number, fileId: number) => {
-    setCollections((prev) =>
-      prev.map((col) =>
-        col.id === collectionId
-          ? { ...col, files: col.files.filter((f) => f.id !== fileId) }
-          : col
+  const deleteFile = (chapterId: number, fileOrderNumber: number) => {
+    setChapters((prev) =>
+      prev.map((chapter) =>
+        chapter.id === chapterId
+          ? {
+            ...chapter,
+            chapter_files: chapter.chapter_files.filter((f: any) => f.order_number !== fileOrderNumber)
+          }
+          : chapter
       )
     );
   };
@@ -231,7 +274,206 @@ const AddArtsForm: React.FC = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  // ---------- UI ----------
+  const validateForm = (): boolean => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!formData.product_title.trim()) newErrors.product_title = "Product title is required.";
+
+    if (isNaN(formData.price) || formData.price <= 0) {
+      newErrors.price = "Price must be a positive number.";
+    }
+
+    if (isNaN(formData.discount_percentage)) {
+      newErrors.discount_percentage = "Discount percentage must be a number.";
+    } else if (formData.discount_percentage < 0 || formData.discount_percentage > 100) {
+      newErrors.discount_percentage = "Discount percentage must be between 0 and 100.";
+    }
+
+    if (!formData.mood_id.trim()) newErrors.mood_id = "Mood Selection is required.";
+    if (!formData.overview.trim()) newErrors.overview = "Overview is required.";
+
+    if (formData.highlights.length === 0) {
+      newErrors.highlights = "At least one highlight is required.";
+    }
+
+    if (chapters.length === 0) {
+      newErrors.chapters = "At least one collection is required.";
+    }
+
+    chapters.forEach((chapter, index) => {
+      if (chapter.chapter_files.length === 0) {
+        newErrors[`chapter_${chapter.id}`] = `Collection ${index + 1} must have at least one file.`;
+      }
+    });
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      setTimeout(() => {
+        const firstErrorElement = document.querySelector('.text-red-500');
+        if (firstErrorElement) {
+          firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    }
+
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const target = e.target;
+    const { name, value } = target;
+
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const handleSubmit = async (isDraft: boolean = false) => {
+    if (!validateForm()) {
+      showToast({
+        message: "Please fill all required fields correctly",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const uploadedChapters = await Promise.all(
+        chapters.map(async (chapter) => {
+          const uploadedFiles = await Promise.all(
+            chapter.chapter_files.map(async (chapterFile: any) => {
+              if (chapterFile.file) {
+                const formDataUpload = new FormData();
+                formDataUpload.append('chapter_file', chapterFile.file);
+
+                try {
+                  const response = await UploadProductDocument('art-chapter', formDataUpload);
+                  const uploadData = response?.data?.data;
+
+                  return {
+                    url: uploadData?.chapter_file_url,
+                    title: chapterFile.title,
+                    order_number: chapterFile.order_number,
+                  };
+                } catch (error) {
+                  throw new Error(`Failed to upload ${chapterFile.title}`);
+                }
+              }
+              return chapterFile;
+            })
+          );
+
+          return {
+            title: chapter.title,
+            chapter_files: uploadedFiles,
+            description: chapter.description || "",
+            order_number: chapter.order_number,
+            is_free: chapter.is_free,
+          };
+        })
+      );
+
+      const payload = {
+        product_title: formData.product_title,
+        price: formData.price,
+        discount_percentage: formData.discount_percentage,
+        mood_id: formData.mood_id,
+        overview: formData.overview,
+        highlights: formData.highlights.join(', '),
+        language: formData.language,
+        theme: formData.theme,
+        mediums: formData.mediums,
+        modern_trends: formData.modern_trends,
+        status: isDraft ? 'draft' : 'published',
+        chapters: uploadedChapters,
+      };
+
+      const response = await CreateArtProduct(payload);
+      const productId = response?.data?.data?.product_id;
+
+      showToast({
+        message: isDraft
+          ? "Art product saved as draft successfully"
+          : "Art product created successfully",
+        type: "success",
+        duration: 3000,
+      });
+
+      setErrors({});
+
+      if (isDraft && productId) {
+        setTimeout(() => {
+          navigate(`/dashboard/products/art-preview/${productId}?category=art`);
+        }, 1500);
+      } else {
+        setTimeout(() => {
+          navigate('/dashboard/products');
+        }, 1500);
+      }
+    } catch (error: any) {
+      showToast({
+        message: error?.message || error?.response?.data?.error?.message || 'Failed to create art product',
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAddHighlight = () => {
+    if (newHighlight.trim()) {
+      if (formData.highlights.length >= 5) {
+        showToast({
+          message: "Maximum 5 highlights allowed",
+          type: "error",
+          duration: 3000,
+        });
+        return;
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        highlights: [...prev.highlights, newHighlight.trim()]
+      }));
+      setNewHighlight("");
+
+      if (errors.highlights) {
+        setErrors(prev => ({ ...prev, highlights: "" }));
+      }
+    }
+  };
+
+  const handleRemoveHighlight = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      highlights: prev.highlights.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleEditHighlight = (index: number, newValue: string) => {
+    setFormData(prev => ({
+      ...prev,
+      highlights: prev.highlights.map((h, i) => i === index ? newValue : h)
+    }));
+  };
+
+  const handleDiscard = () => {
+    setShowDiscardModal(true);
+  };
+
+  const confirmDiscard = () => {
+    setShowDiscardModal(false);
+    navigate('/dashboard/products');
+  };
+
   return (
     <>
       <Breadcrumb
@@ -240,95 +482,212 @@ const AddArtsForm: React.FC = () => {
       />
 
       <div className="max-w-9xl mx-auto px-2 py-1 space-y-10">
-        {/* Add Arts Section */}
         <FormSection
           title="Add Arts"
-          description="Upload your digital product details, set pricing, and make it available for buyers on the marketplace."
+          description="Upload your digital art collections, set pricing, and make them available for buyers on the marketplace."
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <InputField label="Product Title *" placeholder="Enter Product title" required />
-            <InputField label="Price" placeholder="Enter price ($)" />
-            <InputField label="Discount (%)" placeholder="Enter discount if any" />
-             <div>
+            <InputField
+              label="Product Title *"
+              placeholder="Enter your title"
+              name="product_title"
+              value={formData.product_title}
+              onChange={handleChange}
+              error={errors.product_title}
+              required
+            />
+            <InputField
+              label="Price *"
+              placeholder=" $ "
+              name="price"
+              value={formData.price === 0 ? "" : formData.price.toString()}
+              onChange={handleChange}
+              error={errors.price}
+              required
+            />
+            <InputField
+              label="Discount in %"
+              placeholder="Enter discount in %"
+              name="discount_percentage"
+              value={formData.discount_percentage === 0 ? "" : formData.discount_percentage.toString()}
+              onChange={handleChange}
+              error={errors.discount_percentage}
+            />
+            <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Mood
+                Mood *
               </label>
-              <select className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent cursor-pointer">
-                <option>Calm</option>
-                <option>Energetic</option>
-                <option>Inspiring</option>
-                <option>Romantic</option>
+              <select
+                name="mood_id"
+                value={formData.mood_id}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent cursor-pointer">
+                <option value="">Select Mood</option>
+                {moods?.map((mood: any) => (
+                  <option key={mood.id} value={mood.id}>
+                    {mood.name}
+                  </option>
+                ))}
               </select>
+              {errors.mood_id && <span className="text-red-500 text-sm mt-1">{errors.mood_id}</span>}
             </div>
           </div>
-          
         </FormSection>
 
-        {/* Details Section */}
         <FormSection title="Details" description="">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
-              <label className="block font-semibold text-[16px] text-[#242E3A] mb-2">
-                OverView
+              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+                Overview *
               </label>
               <textarea
-                placeholder="Write about your artwork, inspiration, and techniques"
+                name="overview"
+                value={formData.overview}
+                onChange={handleChange}
+                placeholder="Describe your artwork"
                 className="w-full h-32 px-3 py-2 border border-gray-200 rounded-md resize-none focus:ring-2 focus:ring-[#7077FE]"
+                required
               />
-
-              
+              {errors.overview && <span className="text-red-500 text-sm mt-1">{errors.overview}</span>}
             </div>
-             <div>
-              <label className="block font-semibold text-[16px] text-[#242E3A] mb-2">
-                Highlights
+            <div>
+              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+                Highlights * (Max 5)
               </label>
-              <textarea
-                placeholder="What will students learn from this course?"
-                className="w-full h-32 px-3 py-2 border border-gray-200 rounded-md resize-none focus:ring-2 focus:ring-[#7077FE]"
-              />
+              <div className="space-y-3">
+                {formData?.highlights?.map((highlight: any, index: number) => (
+                  <div key={index} className="flex items-start gap-2 p-3 border border-gray-200 rounded-md bg-white">
+                    <span className="text-[#7077FE] font-bold mt-1">•</span>
+                    <input
+                      type="text"
+                      value={highlight}
+                      onChange={(e) => handleEditHighlight(index, e.target.value)}
+                      className="flex-1 border-none focus:outline-none text-[#242E3A]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveHighlight(index)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+
+                {formData.highlights.length < 5 && (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newHighlight}
+                      onChange={(e) => setNewHighlight(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddHighlight();
+                        }
+                      }}
+                      placeholder="Add a highlight"
+                      className="flex-1 px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddHighlight}
+                      className="px-4 py-2 bg-[#7077FE] text-white rounded-md hover:bg-[#5a60ea] transition-colors"
+                    >
+                      <Plus className="w-5 h-5" />
+                    </button>
+                  </div>
+                )}
+
+                <p className="text-sm text-gray-500">
+                  Add up to 5 key highlights about your artwork
+                </p>
+              </div>
+              {errors.highlights && <span className="text-red-500 text-sm mt-1">{errors.highlights}</span>}
             </div>
 
-            <InputField label="Theme" placeholder="Describe the art Theme" />
-            <InputField label="Medium" placeholder="Describe the art creation mediums like oils, digital tools" />
-            <InputField label="Image Size" placeholder="Enter size or resolution" />
-            <InputField label="Modern Trends" placeholder="Enter your art trends" />
-
-           
+            <InputField
+              label="Theme"
+              placeholder="Describe the art theme"
+              name="theme"
+              value={formData.theme}
+              onChange={handleChange}
+              error={errors.theme}
+            />
+            <InputField
+              label="Medium"
+              placeholder="Describe the art creation mediums like oils, digital tools"
+              name="mediums"
+              value={formData.mediums}
+              onChange={handleChange}
+              error={errors.mediums}
+            />
+            <InputField
+              label="Modern Trends"
+              placeholder="Enter your art trends"
+              name="modern_trends"
+              value={formData.modern_trends}
+              onChange={handleChange}
+              error={errors.modern_trends}
+            />
+            <div>
+              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+                Language
+              </label>
+              <select
+                name="language"
+                value={formData.language}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE]">
+                <option value="">Select Language</option>
+                <option value="English">English</option>
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
+                <option value="German">German</option>
+              </select>
+            </div>
           </div>
         </FormSection>
 
-        {/* Upload Section */}
-        <FormSection title="Uploads" description="">
+        <FormSection title="Collections" description="">
           <div className="space-y-6">
-            {collections.map((collection) => (
+            {chapters.map((chapter) => (
               <div
-                key={collection.id}
+                key={chapter.id}
                 className="border border-gray-200 rounded-lg p-4 shadow-sm bg-white"
               >
-                <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
-                  {collection.name}
-                </h3>
-                <p className="text-sm text-[#665B5B] mb-4">
-                  Upload your artwork files
-                </p>
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
+                      {chapter.title}
+                    </h3>
+                    <p className="text-sm text-[#665B5B] mb-4">
+                      Upload artwork files (images, PDFs, etc.)
+                    </p>
+
+                  </div>
+
+                  {/* Delete Chapter Button */}
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteChapter(chapter.id)}
+                    className="text-red-500 hover:text-red-700 transition-colors"
+                    title="Delete Chapter"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Upload Area */}
-<label
-  className="relative flex flex-col items-center justify-center h-40 cursor-pointer relative rounded-lg p-6 text-center cursor-pointer transition-all bg-[#F9FAFB] hover:bg-[#EEF3FF]"
->
-  {/* ✅ SVG dashed border */}
-  <svg
-    className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none"
-  >
-    <rect x="1"  y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="12" ry="12"  stroke="#CBD5E1" strokeWidth="2" strokeDasharray="6,6" fill="none"
-      className="transition-all duration-300 group-hover:stroke-[#7077FE]" />
-  </svg>               
-   <input
+                  <label className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF]">
+                    <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
+                      <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="12" ry="12" stroke="#CBD5E1" strokeWidth="2" strokeDasharray="6,6" fill="none" className="transition-all duration-300 group-hover:stroke-[#7077FE]" />
+                    </svg>
+                    <input
                       type="file"
-                      accept="image/*,.zip"
+                      accept="image/*,.pdf,.zip"
                       className="hidden"
-                      onChange={(e) => handleAddFile(e, collection.id)}
+                      onChange={(e) => handleAddFile(e, chapter.id)}
                       multiple
                     />
                     <div className="text-center space-y-2">
@@ -339,34 +698,37 @@ const AddArtsForm: React.FC = () => {
                         Drag & drop or click to upload
                       </p>
                       <p className="text-xs text-[#665B5B]">
-                        JPG, PNG, SVG, WEBP, ZIP (max 100 MB each)
+                        JPG, PNG, SVG, WEBP, PDF, ZIP (max 100 MB)
                       </p>
                     </div>
                   </label>
 
-                  {/* Uploaded Files */}
                   <div className="space-y-3">
-                    {collection.files.length === 0 ? (
+                    {chapter.chapter_files.length === 0 ? (
                       <div className="text-sm text-gray-500 border border-gray-100 rounded-lg p-4 bg-gray-50">
                         No files uploaded yet
                       </div>
                     ) : (
-                      collection.files.map((file) => (
+                      chapter.chapter_files.map((file: any) => (
                         <div
-                          key={file.id}
+                          key={file.order_number}
                           className="border border-gray-200 rounded-lg p-3 bg-white"
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-2">
-                              <Image className="w-5 h-5 text-[#242E3A] " />
+                              {file.title.match(/\.(jpg|jpeg|png|gif|svg|webp)$/i) ? (
+                                <Image className="w-5 h-5 text-[#242E3A]" />
+                              ) : (
+                                <FileText className="w-5 h-5 text-[#242E3A]" />
+                              )}
                               {file.isEditing ? (
                                 <input
                                   type="text"
-                                  value={file.tempName}
+                                  value={file.title}
                                   onChange={(e) =>
                                     handleEditFileName(
-                                      collection.id,
-                                      file.id,
+                                      chapter.id,
+                                      file.order_number,
                                       e.target.value
                                     )
                                   }
@@ -374,14 +736,14 @@ const AddArtsForm: React.FC = () => {
                                 />
                               ) : (
                                 <p className="text-sm font-medium text-[#242E3A]">
-                                  {file.name}
+                                  {file.title}
                                 </p>
                               )}
                             </div>
                             <div className="flex items-center space-x-2">
                               {file.isEditing ? (
                                 <button
-                                  onClick={() => saveFileName(collection.id, file.id)}
+                                  onClick={() => saveFileName(chapter.id, file.order_number)}
                                   className="text-[#7077FE] text-sm font-semibold"
                                 >
                                   Save
@@ -389,35 +751,31 @@ const AddArtsForm: React.FC = () => {
                               ) : (
                                 <>
                                   <button
-                                    onClick={() => toggleEditFile(collection.id, file.id)}
+                                    onClick={() =>
+                                      toggleEditFile(chapter.id, file.order_number)
+                                    }
                                     className="text-gray-500 hover:text-[#7077FE]"
                                   >
-                                    <SquarePen className="w-4 h-4" stroke="black" />
+                                    <SquarePen className="w-4 h-4" />
                                   </button>
                                   <button
-                                    onClick={() => deleteFile(collection.id, file.id)}
+                                    onClick={() => deleteFile(chapter.id, file.order_number)}
                                     className="text-gray-500 hover:text-red-500"
                                   >
-                                    <Trash2 className="w-4 h-4" stroke="black" />
+                                    <Trash2 className="w-4 h-4" />
                                   </button>
                                 </>
                               )}
-                              <input
-                                type="checkbox"
-                                checked={file.progress === 100}
-                                readOnly
-                                className="accent-[#7077FE]"
-                              />
                             </div>
                           </div>
                           <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                            <span>{formatFileSize(file.size)}</span>
-                            <span>{file.progress}%</span>
+                            <span>{file.file ? formatFileSize(file.file.size) : "Uploaded"}</span>
+                            <span className="text-green-600">✓ Ready</span>
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
                             <div
-                              className="bg-[#7077FE] h-2 rounded-full"
-                              style={{ width: `${file.progress}%` }}
+                              className="bg-green-500 h-2 rounded-full"
+                              style={{ width: '100%' }}
                             ></div>
                           </div>
                         </div>
@@ -425,46 +783,50 @@ const AddArtsForm: React.FC = () => {
                     )}
                   </div>
                 </div>
+                {errors[`chapter_${chapter.id}`] && (
+                  <p className="text-red-500 text-sm mt-2">{errors[`chapter_${chapter.id}`]}</p>
+                )}
               </div>
             ))}
 
-            {/* Add Collection Button */}
             <button
-              onClick={handleAddCollection}
+              onClick={handleAddChapter}
               className="relative w-full rounded-lg py-4 text-[#7077FE] font-medium bg-white cursor-pointer group overflow-hidden transition-all"
-    >
-      <svg
-    className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none"
-  >
-    <rect
-      x="1"
-      y="1"
-      width="calc(100% - 2px)"
-      height="calc(100% - 2px)"
-      rx="10"
-      ry="10"
-      stroke="#CBD5E1"
-      strokeWidth="2"
-      strokeDasharray="6,6"
-      fill="none"
-      className="transition-colors duration-300 group-hover:stroke-[#7077FE]"
-    />
-  </svg>
+            >
+              <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
+                <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="10" ry="10" stroke="#CBD5E1" strokeWidth="2" strokeDasharray="6,6" fill="none" className="transition-colors duration-300 group-hover:stroke-[#7077FE]" />
+              </svg>
               + Add Collection
             </button>
+
+            {errors.chapters && (
+              <p className="text-red-500 text-sm mt-2">{errors.chapters}</p>
+            )}
           </div>
         </FormSection>
 
-        {/* Buttons */}
         <div className="flex justify-end space-x-4 pt-6">
-          <button className="px-5 py-3 text-[#7077FE] rounded-lg font-medium hover:text-blue-500 transition">
+          <button
+            type="button"
+            onClick={handleDiscard}
+            disabled={isLoading}
+            className="px-5 py-3 text-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] hover:text-blue-500 transition-colors disabled:opacity-50">
             Discard
           </button>
-          <button className="px-5 py-3 bg-white text-[#7077FE] border border-[#7077FE] rounded-lg font-medium hover:bg-gray-300 transition">
-            Preview
+          <button
+            type="button"
+            onClick={() => handleSubmit(true)}
+            disabled={isLoading}
+            className="px-5 py-3 bg-white text-[#7077FE] border border-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium hover:bg-gray-50 transition disabled:opacity-50"
+          >
+            {isLoading ? "Saving..." : "Preview"}
           </button>
-          <button className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-medium hover:bg-[#5a60ea] transition">
-            Submit
+          <button
+            type='button'
+            onClick={() => handleSubmit(false)}
+            disabled={isLoading}
+            className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] hover:bg-[#5a60ea] transition-colors disabled:opacity-50">
+            {isLoading ? "Submitting..." : "Submit"}
           </button>
         </div>
       </div>
@@ -474,7 +836,35 @@ const AddArtsForm: React.FC = () => {
           open={showModal}
           onClose={() => setShowModal(false)}
           onSelect={handleSelectCategory}
+          category={categories}
         />
+      )}
+      {showDiscardModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowDiscardModal(false)}></div>
+          <div className="relative z-10 bg-white rounded-[20px] shadow-lg p-8 w-[450px]">
+            <h3 className="text-[20px] font-semibold font-['Poppins'] text-[#242E3A] mb-4">
+              Discard Changes?
+            </h3>
+            <p className="text-[14px] text-[#665B5B] font-['Open_Sans'] mb-6">
+              Are you sure you want to discard? All your changes will not be saved.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowDiscardModal(false)}
+                className="px-5 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDiscard}
+                className="px-5 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              >
+                Yes, Discard
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

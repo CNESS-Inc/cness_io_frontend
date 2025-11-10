@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react'
-import { CreateSellerShop, GetCountryDetails, GetSellerShop, GetUserScoreResult, RemoveSellerDocument, SaveExtraBanners, UploadSellerDocument } from '../Common/ServerAPI';
+import { CreateSellerShop, GetCountryDetails, GetSellerShop, GetUserScoreResult, RemoveAllExtraBanner, RemoveSellerDocument, RemoveSpecificExtraBanner, RemoveTeamMember, RemoveTeamMemberImage, SaveExtraBanners, UpdateSellerShop, UploadSellerDocument } from '../Common/ServerAPI';
 import { useToast } from '../components/ui/Toast/ToastProvider';
 import { CiFacebook, CiInstagram, CiLinkedin, CiYoutube } from 'react-icons/ci';
 import { RiTwitterXFill } from 'react-icons/ri';
@@ -138,6 +138,8 @@ interface FileUploadProps {
   fileType: string;
   onUploadSuccess?: (url: string) => void;
   defaultPreview?: string;
+  error?: string;
+  onRemove?: () => Promise<void>;
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
@@ -149,23 +151,40 @@ const FileUpload: React.FC<FileUploadProps> = ({
   fileType,
   onUploadSuccess,
   defaultPreview,
+  error,
+  onRemove
 }) => {
   const [preview, setPreview] = useState<string | null>(defaultPreview || null);
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const { showToast } = useToast();
 
+  useEffect(() => {
+    setPreview(defaultPreview || null);
+  }, [defaultPreview]);
+
   const handleFileUpload = async (file: File) => {
     if (!file) return;
 
     // Validate file type
-    if (!file.type.startsWith("image/")) {
-      showToast({
-        message: "Please upload an image file",
-        type: "error",
-        duration: 3000,
-      });
-      return;
+    if (fileType === 'government-id') {
+      if (!file.type.startsWith("image/") && file.type !== "application/pdf") {
+        showToast({
+          message: "Only image or PDF files are allowed",
+          type: "error",
+          duration: 3000,
+        });
+        return;
+      }
+    } else {
+      if (!file.type.startsWith("image/")) {
+        showToast({
+          message: "Please upload an image file",
+          type: "error",
+          duration: 3000,
+        });
+        return;
+      }
     }
 
     // Validate file size (5MB max)
@@ -184,7 +203,25 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
     try {
       const response = await UploadSellerDocument(fileType, formData);
-      const uploadedUrl = response?.data?.data?.url;
+      const responseData = response?.data?.data;
+
+      let uploadedUrl = "";
+
+      if (fileType === 'extra-banners') {
+        const banners = responseData?.extra_banners;
+        if (banners && banners.length > 0) {
+          const latestBanner = banners[banners.length - 1];
+          uploadedUrl = latestBanner.banner_url;
+        }
+      } else if (fileType === 'team-member-image') {
+        uploadedUrl = responseData?.profile_image_url || "";
+      } else if (fileType === 'government-id') {
+        uploadedUrl = responseData?.secure_url || "";
+      } else if (fileType === 'shop-logo') {
+        uploadedUrl = responseData?.shop_logo_url || "";
+      } else if (fileType === 'shop-banner') {
+        uploadedUrl = responseData?.shop_banner_url || "";
+      }
 
       if (uploadedUrl) {
         setPreview(uploadedUrl);
@@ -207,21 +244,26 @@ const FileUpload: React.FC<FileUploadProps> = ({
   };
 
   const handleRemove = async () => {
-    try {
-      await RemoveSellerDocument(fileType);
+    if (onRemove) {
+      await onRemove();
       setPreview(null);
-      onUploadSuccess?.("");
-      showToast({
-        message: "File removed successfully",
-        type: "success",
-        duration: 3000,
-      });
-    } catch (error: any) {
-      showToast({
-        message: "Failed to remove file",
-        type: "error",
-        duration: 3000,
-      });
+    } else {
+      try {
+        await RemoveSellerDocument(fileType);
+        setPreview(null);
+        onUploadSuccess?.("");
+        showToast({
+          message: "File removed successfully",
+          type: "success",
+          duration: 3000,
+        });
+      } catch (error: any) {
+        showToast({
+          message: "Failed to remove file",
+          type: "error",
+          duration: 3000,
+        });
+      }
     }
   };
 
@@ -264,7 +306,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         className={`relative border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer ${isDragging ? "border-primary bg-primary/5" : "border-dashed border-[#CBD5E1]"
-          } rounded-lg p-6 text-center ${className}`}
+          } ${className}`}
         style={{
           borderStyle: "dashed",
           borderWidth: "3px",
@@ -278,9 +320,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
             <img
               src={preview}
               alt="Preview"
-              className="w-full h-full object-cover rounded-lg"
+              className={`${fileType === 'team-member-image' ? 'w-[90px] h-[90px]' : 'w-[140px] h-[140px]'} object-cover rounded-lg`}
             />
             <button
+              type="button"
               onClick={handleRemove}
               className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition"
             >
@@ -323,6 +366,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
           </>
         )}
       </div>
+      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>
   );
 };
@@ -332,6 +376,7 @@ const CreateShopForm: React.FC = () => {
   const { showToast } = useToast();
   const [isEligible, setIsEligible] = useState(true);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isApproved, setIsApproved] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const [month, setMonth] = useState<string>("");
@@ -366,14 +411,8 @@ const CreateShopForm: React.FC = () => {
       linkedin_url: "",
       pinterest_url: "",
     },
-    team_members: [
-      {
-        name: "",
-        role: "",
-        profile_image: "",
-        display_order: 1,
-      }
-    ] as Array<{
+    team_members: [] as Array<{
+      id?: string;
       name: string;
       role: string;
       profile_image: string;
@@ -386,16 +425,54 @@ const CreateShopForm: React.FC = () => {
     },
   });
 
+  const validateForm = (): boolean => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!formData.owner_full_name.trim()) newErrors.owner_full_name = "Owner name is required";
+    if (!formData.owner_date_of_birth) newErrors.owner_date_of_birth = "Date of birth is required";
+    if (!formData.owner_mobile_number.trim()) newErrors.owner_mobile_number = "Mobile number is required";
+    if (!formData.ssn_or_ein.trim()) newErrors.ssn_or_ein = "SSN/EIN is required";
+    if (!formData.owner_address.trim()) newErrors.owner_address = "Address is required";
+    if (!formData.government_id_document) newErrors.government_id_document = "Government ID is required";
+    if (!formData.shop_name.trim()) newErrors.shop_name = "Shop name is required";
+    if (!formData.shop_logo) newErrors.shop_logo = "Shop logo is required";
+    if (!formData.shop_banner) newErrors.shop_banner = "Shop banner is required";
+    if (!formData.about_shop.trim()) newErrors.about_shop = "About shop is required";
+    if (!formData.why_choose_your_shop.trim()) newErrors.why_choose_your_shop = "This field is required";
+    if (!formData.shop_philosophy.trim()) newErrors.shop_philosophy = "Shop philosophy is required";
+    if (!formData.shop_base_country_id) newErrors.shop_base_country_id = "Country is required";
+
+    if (formData.owner_mobile_number && !/^\+?[\d\s-()]+$/.test(formData.owner_mobile_number)) {
+      newErrors.owner_mobile_number = "Invalid mobile number format";
+    }
+
+    if (formData.ssn_or_ein && !/^\d{3}-\d{2}-\d{4}$/.test(formData.ssn_or_ein)) {
+      newErrors.ssn_or_ein = "Invalid format. Use XXX-XX-XXXX";
+    }
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      setTimeout(() => {
+        const firstErrorElement = document.querySelector('.text-red-500');
+        if (firstErrorElement) {
+          firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    }
+
+    return Object.keys(newErrors).length === 0;
+  };
+
   const [policies, setPolicies] = useState([
     {
       title: "Terms & Conditions",
       description: "Using this shop means you agree to our terms and conditions",
-      checked: true,
+      checked: false,
     },
     {
       title: "Licensing & usage",
       description: "Products include standard and commercial usage rights",
-      checked: true,
+      checked: false,
     },
     {
       title: "Refund Policy",
@@ -412,9 +489,11 @@ const CreateShopForm: React.FC = () => {
     );
   };
 
-  console.log('formData', formData)
-
-  const [extraBanners, setExtraBanners] = useState<string[]>(["", "", ""]);
+  const [extraBanners, setExtraBanners] = useState<Array<{ id?: string; url: string }>>([
+    { url: "" },
+    { url: "" },
+    { url: "" }
+  ]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
@@ -455,23 +534,75 @@ const CreateShopForm: React.FC = () => {
       const response = await GetSellerShop();
       if (response?.data?.data) {
         const data = response.data.data;
-        console.log('data', data)
 
-        // Check if already submitted
-        if (data.status === "submitted" || data.status === "approved") {
+        if (data.verification_status === "pending") {
           setIsSubmitted(true);
           return;
         }
 
-        // Populate form data
-        setFormData(data);
+        if (data.verification_status === "approved") {
+          setIsApproved(true);
+          return;
+        }
 
-        // Parse date if exists
+        setFormData({
+          owner_full_name: data.owner_full_name || "",
+          owner_date_of_birth: data.owner_date_of_birth || "",
+          owner_mobile_number: data.owner_mobile_number || "",
+          ssn_or_ein: data.ssn_or_ein || "",
+          owner_address: data.owner_address || "",
+          government_id_document: data.government_id_document || "",
+          shop_name: data?.shop?.shop_name || "",
+          shop_logo: data?.shop?.shop_logo || "",
+          shop_banner: data?.shop?.shop_banner || "",
+          about_shop: data?.shop?.about_shop || "",
+          why_choose_your_shop: data?.shop?.why_choose_your_shop || "",
+          shop_philosophy: data?.shop?.shop_philosophy || "",
+          shop_base_country_id: data?.shop?.shop_base_country_id || "",
+          languages_supported: data?.shop?.languages_supported || [],
+          social_links: {
+            facebook_url: data?.shop?.social_links?.facebook_url || "",
+            instagram_url: data?.shop?.social_links?.instagram_url || "",
+            youtube_url: data?.shop?.social_links?.youtube_url || "",
+            twitter_url: data?.shop?.social_links?.twitter_url || "",
+            tiktok_url: data?.shop?.social_links?.tiktok_url || "",
+            linkedin_url: data?.shop?.social_links?.linkedin_url || "",
+            pinterest_url: data?.shop?.social_links?.pinterest_url || "",
+          },
+          // Load team members with IDs
+          team_members: data?.shop?.team_members?.map((member: any) => ({
+            id: member.id,
+            name: member.name || "",
+            role: member.role || "",
+            profile_image: member.profile_image || "",
+            display_order: member.display_order || 0,
+          })) || [],
+          store_policies: data.shop?.store_policies || {
+            terms_and_conditions: "By using this shop, you agree to our terms and conditions. We reserve the right to update these terms at any time.",
+            licensing_and_usage: "All products include standard and commercial usage rights. Resale of digital files is prohibited.",
+            refund_policy: "Refunds are available within 12 hours of purchase if you haven't downloaded the product. After download, all sales are final.",
+          },
+        });
+
+        // Load extra banners with IDs
+        if (data?.shop?.extra_banners && Array.isArray(data.shop.extra_banners)) {
+          const bannerData = data.shop.extra_banners.map((b: any) => ({
+            id: b.id,
+            url: b.banner_url || "",
+          }));
+
+          const newBanners = [{ url: "" }, { url: "" }, { url: "" }];
+          bannerData.forEach((banner: { id?: string; url: string }, idx: number) => {
+            if (idx < 3) newBanners[idx] = banner;
+          });
+          setExtraBanners(newBanners);
+        }
+
         if (data.owner_date_of_birth) {
           const [y, m, d] = data.owner_date_of_birth.split("-");
-          setYear(y);
-          setMonth(m);
-          setDay(d);
+          setYear(y || "");
+          setMonth(m || "");
+          setDay(d || "");
         }
       }
     } catch (error) {
@@ -479,7 +610,6 @@ const CreateShopForm: React.FC = () => {
     }
   };
 
-  // Validate and format date
   useEffect(() => {
     if (!month || !day || !year) {
       setDateError("");
@@ -521,11 +651,74 @@ const CreateShopForm: React.FC = () => {
     setFormData((prev) => ({ ...prev, owner_date_of_birth: formattedDate }));
   }, [month, day, year]);
 
-  // Handle input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: "" }));
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const target = e.target as HTMLInputElement & HTMLTextAreaElement & HTMLSelectElement;
+    const { name } = target;
+
+    let value = target.value;
+
+    setFormData(prev => ({ ...prev, [name]: value }));
+
+    const toStr = (v: unknown) => (v === undefined || v === null ? "" : String(v));
+    const valStr = toStr(value).trim();
+
+    let message = "";
+    switch (name) {
+      case "owner_full_name":
+        if (!valStr) message = "Owner name is required";
+        break;
+
+      case "owner_date_of_birth":
+        if (!value) message = "Date of birth is required";
+        break;
+
+      case "owner_mobile_number":
+        if (!valStr) {
+          message = "Mobile number is required";
+        } else if (!/^\+?[\d\s\-()]+$/.test(valStr)) {
+          message = "Invalid mobile number format";
+        }
+        break;
+
+      case "ssn_or_ein":
+        if (!valStr) {
+          message = "SSN/EIN is required";
+        } else if (!/^\d{3}-\d{2}-\d{4}$/.test(valStr)) {
+          message = "Invalid format. Use XXX-XX-XXXX";
+        }
+        break;
+
+      case "owner_address":
+        if (!valStr) message = "Address is required";
+        break;
+
+      case "shop_name":
+        if (!valStr) message = "Shop name is required";
+        break;
+
+      case "about_shop":
+        if (!valStr) message = "About shop is required";
+        break;
+
+      case "why_choose_your_shop":
+        if (!valStr) message = "This field is required";
+        break;
+
+      case "shop_philosophy":
+        if (!valStr) message = "Shop philosophy is required";
+        break;
+
+      case "shop_base_country_id":
+        if (!valStr) message = "Country is required";
+        break;
+
+      default:
+        break;
+    }
+
+    setErrors(prev => ({ ...prev, [name]: message }));
   };
 
   // Handle textarea with character limit
@@ -609,10 +802,84 @@ const CreateShopForm: React.FC = () => {
     }));
   };
 
+  const handleTeamMemberImageUpload = async (index: number, url: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      team_members: prev.team_members.map((member, i) =>
+        i === index ? { ...member, profile_image: url } : member
+      ),
+    }));
+  };
+
+  const handleRemoveTeamMember = async (index: number, memberId?: string) => {
+    if (memberId) {
+      // API to remove from backend
+      try {
+        await RemoveTeamMember(memberId);
+        showToast({
+          message: "Team member removed successfully",
+          type: "success",
+          duration: 3000,
+        });
+      } catch (error: any) {
+        showToast({
+          message: error?.response?.data?.error?.message || "Failed to remove team member",
+          type: "error",
+          duration: 3000,
+        });
+        return;
+      }
+    }
+
+    // Remove from state
+    setFormData((prev) => ({
+      ...prev,
+      team_members: prev.team_members.filter((_, i) => i !== index).map((member, i) => ({
+        ...member,
+        display_order: i + 1,
+      })),
+    }));
+  };
+
+  const handleRemoveTeamMemberImage = async (index: number, memberId?: string) => {
+    if (memberId) {
+      try {
+        await RemoveTeamMemberImage(memberId);
+
+        // Clear the image from state
+        setFormData((prev) => ({
+          ...prev,
+          team_members: prev.team_members.map((member, i) =>
+            i === index ? { ...member, profile_image: "" } : member
+          ),
+        }));
+
+        showToast({
+          message: "Team member image removed successfully",
+          type: "success",
+          duration: 3000,
+        });
+      } catch (error: any) {
+        showToast({
+          message: error?.response?.data?.error?.message || "Failed to remove image",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    } else {
+      // clear from state
+      setFormData((prev) => ({
+        ...prev,
+        team_members: prev.team_members.map((member, i) =>
+          i === index ? { ...member, profile_image: "" } : member
+        ),
+      }));
+    }
+  };
+
   const handleAddTeamMember = () => {
-    // Ensure team_members is initialized as an array before accessing length
     if (!Array.isArray(formData.team_members)) {
-      formData.team_members = []; // Initialize it as an empty array if it's undefined
+      formData.team_members = [];
     }
 
     if (formData.team_members.length >= 4) {
@@ -638,16 +905,6 @@ const CreateShopForm: React.FC = () => {
     }));
   };
 
-  const handleRemoveTeamMember = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      team_members: prev.team_members.filter((_, i) => i !== index).map((member, i) => ({
-        ...member,
-        display_order: i + 1,
-      })),
-    }));
-  };
-
   const handleTeamMemberChange = (index: number, field: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -657,12 +914,91 @@ const CreateShopForm: React.FC = () => {
     }));
   };
 
+  const handleExtraBannerUpload = (index: number, url: string) => {
+    const newBanners = [...extraBanners];
+    newBanners[index] = { url };
+    setExtraBanners(newBanners);
+  };
+
+  const handleExtraBannerRemove = async (index: number) => {
+    const banner = extraBanners[index];
+
+    if (!banner?.url) {
+      // clear the state
+      const newBanners = [...extraBanners];
+      newBanners[index] = { url: "" };
+      setExtraBanners(newBanners);
+      return;
+    }
+
+    if (banner.id) {
+      try {
+        await RemoveSpecificExtraBanner(banner.id);
+
+        const newBanners = [...extraBanners];
+        newBanners[index] = { url: "" };
+        setExtraBanners(newBanners);
+
+        showToast({
+          message: "Banner removed successfully",
+          type: "success",
+          duration: 3000,
+        });
+      } catch (error: any) {
+        showToast({
+          message: error?.response?.data?.error?.message || "Failed to remove banner",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    } else {
+      // clear from state
+      const newBanners = [...extraBanners];
+      newBanners[index] = { url: "" };
+      setExtraBanners(newBanners);
+    }
+  };
+
   const handleSaveExtraBanners = async () => {
-    const validBanners = extraBanners.filter((url) => url);
-    if (validBanners.length === 0) return;
+    const validBanners = extraBanners.filter(
+      (banner) => typeof banner.url === "string" && banner.url.trim() !== ""
+    );
+
+    // remove all
+    if (validBanners.length === 0) {
+      try {
+        await RemoveAllExtraBanner();
+        return;
+      } catch (error: any) {
+        console.log("No banners to remove or already removed");
+        return;
+      }
+    }
+
+    const payload = {
+      banner_urls: validBanners.map(b => b.url),
+    };
 
     try {
-      await SaveExtraBanners({ banner_urls: validBanners });
+      const response = await SaveExtraBanners(payload);
+
+      // Update state with IDs from response
+      if (response?.data?.data && Array.isArray(response.data.data)) {
+        const savedBanners = response.data.data;
+        const newBanners = [{ id: "", url: "" }, { id: "", url: "" }, { id: "", url: "" }];
+
+        savedBanners.forEach((banner: any, idx: number) => {
+          if (idx < 3) {
+            newBanners[idx] = {
+              id: banner.id,
+              url: banner.banner_url,
+            };
+          }
+        });
+
+        setExtraBanners(newBanners);
+      }
+
       showToast({
         message: "Banners saved successfully",
         type: "success",
@@ -670,48 +1006,32 @@ const CreateShopForm: React.FC = () => {
       });
     } catch (error: any) {
       showToast({
-        message: "Failed to save banners",
+        message: error?.response?.data?.error?.message || "Failed to save banners",
         type: "error",
         duration: 3000,
       });
     }
   };
 
-  const validateForm = (): boolean => {
-    const newErrors: { [key: string]: string } = {};
-
-    if (!formData.owner_full_name.trim()) newErrors.owner_full_name = "Owner name is required";
-    if (!formData.owner_date_of_birth) newErrors.owner_date_of_birth = "Date of birth is required";
-    if (!formData.owner_mobile_number.trim()) newErrors.owner_mobile_number = "Mobile number is required";
-    if (!formData.ssn_or_ein.trim()) newErrors.ssn_or_ein = "SSN/EIN is required";
-    if (!formData.owner_address.trim()) newErrors.owner_address = "Address is required";
-    if (!formData.government_id_document) newErrors.government_id_document = "Government ID is required";
-    if (!formData.shop_name.trim()) newErrors.shop_name = "Shop name is required";
-    if (!formData.about_shop.trim()) newErrors.about_shop = "About shop is required";
-    if (!formData.why_choose_your_shop.trim()) newErrors.why_choose_your_shop = "This field is required";
-    if (!formData.shop_philosophy.trim()) newErrors.shop_philosophy = "Shop philosophy is required";
-    if (!formData.shop_base_country_id) newErrors.shop_base_country_id = "Country is required";
-
-    // Validate mobile number format
-    if (formData.owner_mobile_number && !/^\+?[\d\s-()]+$/.test(formData.owner_mobile_number)) {
-      newErrors.owner_mobile_number = "Invalid mobile number format";
-    }
-
-    // Validate SSN/EIN format
-    if (formData.ssn_or_ein && !/^\d{3}-\d{2}-\d{4}$/.test(formData.ssn_or_ein)) {
-      newErrors.ssn_or_ein = "Invalid format. Use XXX-XX-XXXX";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSaveDraft = async () => {
     setIsLoading(true);
     try {
       await handleSaveExtraBanners();
-      const payload = { ...formData, status: "draft" };
-      await CreateSellerShop(payload);
+      const { status, ...payloadWithoutStatus } = formData as any;
+
+      if (isApproved) {
+        // update if seller approved
+        await UpdateSellerShop(payloadWithoutStatus);
+      } else {
+        // create if not approved
+        const payload = { ...payloadWithoutStatus, status: "draft" };
+        await CreateSellerShop(payload);
+      }
+
+      setErrors({});
+
+      await loadShopData();
+
       showToast({
         message: "Draft saved successfully",
         type: "success",
@@ -741,17 +1061,31 @@ const CreateShopForm: React.FC = () => {
     setIsLoading(true);
     try {
       await handleSaveExtraBanners();
-      const payload = { ...formData, status: "submitted" };
-      await CreateSellerShop(payload);
-      setIsSubmitted(true);
-      showToast({
-        message: "Shop submitted successfully",
-        type: "success",
-        duration: 3000,
-      });
+      if (isApproved) {
+        const { status, ...payloadWithoutStatus } = formData as any;
+        await UpdateSellerShop(payloadWithoutStatus);
+
+        showToast({
+          message: "Shop updated successfully",
+          type: "success",
+          duration: 3000,
+        });
+      } else {
+        const payload = { ...formData, status: "submitted" };
+        await CreateSellerShop(payload);
+        setIsSubmitted(true);
+
+        showToast({
+          message: "Shop submitted successfully",
+          type: "success",
+          duration: 3000,
+        });
+      }
+
+      setErrors({});
     } catch (error: any) {
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to submit shop",
+        message: error?.response?.data?.error?.message || `Failed to ${isApproved ? 'update' : 'submit'} shop`,
         type: "error",
         duration: 3000,
       });
@@ -762,14 +1096,14 @@ const CreateShopForm: React.FC = () => {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="h-full flex items-center justify-center bg-gray-50 px-4">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8 text-center">
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Shop Submitted for Review!</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Shop Approved for Review!</h2>
           <p className="text-gray-600 mb-6">
             Your shop has been successfully submitted for approval. Our team will review your submission and notify you once it's approved. This typically takes 2-3 business days.
           </p>
@@ -875,6 +1209,7 @@ const CreateShopForm: React.FC = () => {
                     fileType="government-id"
                     onUploadSuccess={(url) => setFormData((prev) => ({ ...prev, government_id_document: url }))}
                     defaultPreview={formData.government_id_document}
+                    error={errors.government_id_document}
                   />
                 </div>
 
@@ -898,6 +1233,7 @@ const CreateShopForm: React.FC = () => {
                     fileType="shop-logo"
                     onUploadSuccess={(url) => setFormData((prev) => ({ ...prev, shop_logo: url }))}
                     defaultPreview={formData.shop_logo}
+                    error={errors.shop_logo}
                   />
                   <div className="lg:col-span-2">
                     <FileUpload
@@ -924,12 +1260,9 @@ const CreateShopForm: React.FC = () => {
                     key={index}
                     recommendation="Recommended 360 X 200 px"
                     fileType="extra-banners"
-                    onUploadSuccess={(url) => {
-                      const newBanners = [...extraBanners];
-                      newBanners[index] = url;
-                      setExtraBanners(newBanners);
-                    }}
-                    defaultPreview={banner}
+                    onUploadSuccess={(url) => handleExtraBannerUpload(index, url)}
+                    defaultPreview={banner.url}
+                    onRemove={async () => await handleExtraBannerRemove(index)}
                   />
                 ))}
               </div>
@@ -1148,15 +1481,19 @@ const CreateShopForm: React.FC = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {formData.team_members?.map((member, index) => (
-                    <div key={index} className="bg-white border border-gray-200 rounded-xl p-4 space-y-6">
+                    <div key={member.id || index} className="bg-white border border-gray-200 rounded-xl p-4 space-y-6">
                       <div className="flex justify-between items-start">
-                        <FileUpload
-                          fileType="team-member-image"
-                          onUploadSuccess={(url) => handleTeamMemberChange(index, "profile_image", url)}
-                          defaultPreview={member.profile_image}
-                        />
+                        <div className="h-[140px] w-[140px]">
+                          <FileUpload
+                            fileType="team-member-image"
+                            onUploadSuccess={(url) => handleTeamMemberImageUpload(index, url)}
+                            defaultPreview={member.profile_image}
+                            className='h-[140px] w-[140px]'
+                            onRemove={async () => await handleRemoveTeamMemberImage(index, member.id)}
+                          />
+                        </div>
                         <button
-                          onClick={() => handleRemoveTeamMember(index)}
+                          onClick={() => handleRemoveTeamMember(index, member.id)}
                           className="w-8 h-8 bg-gray-200 rounded flex items-center justify-center hover:bg-red-100 transition"
                         >
                           <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1248,21 +1585,38 @@ const CreateShopForm: React.FC = () => {
               </div>
             </FormSection>
 
-            <div className="flex justify-end space-x-4 pt-6">
-              <button
-                onClick={handleSaveDraft}
-                disabled={isLoading}
-                className="px-5 py-3 border border-primary text-primary rounded-lg font-jakarta font-medium transition-colors">
-                Save Draft
-              </button>
-              <button
-                onClick={handleSubmit}
-                disabled={isLoading}
-                className="px-5 py-3 bg-gray-200 text-white rounded-lg font-jakarta font-medium hover:bg-gray-300 transition-colors">
-                Submit
-              </button>
-            </div>
-          </div >
+            {!isApproved ? (
+              <div className="flex justify-end space-x-4 pt-6">
+                <button
+                  type='button'
+                  onClick={handleSaveDraft}
+                  disabled={isLoading}
+                  className="px-5 py-3 border border-primary text-primary rounded-lg font-jakarta font-medium transition-colors hover:bg-[#7077FE] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? "Saving..." : "Save Draft"}
+                </button>
+                <button
+                  type='button'
+                  onClick={handleSubmit}
+                  disabled={isLoading}
+                  className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-jakarta font-medium hover:bg-[#7077FE]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? "Submitting..." : "Submit"}
+                </button>
+              </div>
+            ) : (
+              <div className="flex justify-end pt-6">
+                <button
+                  type='button'
+                  onClick={handleSubmit}
+                  disabled={isLoading}
+                  className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-jakarta font-medium hover:bg-[#7077FE]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? "Updating..." : "Update"}
+                </button>
+              </div>
+            )}
+          </div>
         </>
       ) : (
         <div className="m-5 shadow overflow-hidden p-6 sm:p-8 text-center">

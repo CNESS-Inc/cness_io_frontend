@@ -1,6 +1,8 @@
-import React, { useState } from "react";
-import { ShoppingCart, Star, ArrowRight, Heart, Video, Clock } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { ShoppingCart, Star, ArrowRight, Heart, Video, Clock, Music, BookOpen, FileAudio, FileText, Palette } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "../ui/Toast/ToastProvider";
+import { AddProductToCart, AddProductToWishlist, RemoveProductToWishlist } from "../../Common/ServerAPI";
 
 interface Product {
   id: string;
@@ -16,26 +18,141 @@ interface Product {
   duration: string;
   category: string;
   mood?: string;
+  isInWishlist?: boolean;
 }
 
 interface ProductCardProps {
   product: Product;
-  isLiked?: boolean; // ✅ new prop
+  isLiked?: boolean;
+  onWishlistUpdate?: () => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, isLiked = false }) => {
-  const [liked, setLiked] = useState(isLiked);
+const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  isLiked = false,
+  onWishlistUpdate
+}) => {
+  const [liked, setLiked] = useState(isLiked || product.isInWishlist || false);
+  const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
   const navigate = useNavigate();
+  const { showToast } = useToast();
+
+  useEffect(() => {
+    setLiked(isLiked || product.isInWishlist || false);
+  }, [isLiked, product.isInWishlist]);
 
   const handleCardClick = () => {
     navigate(`/dashboard/product-detail/${product.id}`, { state: { product } });
+  };
+
+  const handleWishlistToggle = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (isAddingToWishlist) return;
+
+    setIsAddingToWishlist(true);
+
+    try {
+      if (liked) {
+        await RemoveProductToWishlist(product.id);
+        setLiked(false);
+        showToast({
+          message: "Removed from wishlist",
+          type: "success",
+          duration: 2000,
+        });
+      } else {
+        await AddProductToWishlist({ product_id: product.id });
+        setLiked(true);
+        showToast({
+          message: "Added to wishlist ❤️",
+          type: "success",
+          duration: 2000,
+        });
+      }
+
+      if (onWishlistUpdate) {
+        onWishlistUpdate();
+      }
+    } catch (error: any) {
+      console.error("Wishlist error:", error);
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to update wishlist",
+        type: "error",
+        duration: 3000,
+      });
+
+      // ✅ Revert the liked state on error
+      setLiked(!liked);
+    } finally {
+      setIsAddingToWishlist(false);
+    }
+  };
+
+  const handleAddToCart = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (isAddingToCart) return;
+
+    setIsAddingToCart(true);
+    try {
+      await AddProductToCart({
+        product_id: product.id,
+        quantity: 1,
+      });
+      showToast({
+        message: "Added to cart 🛒",
+        type: "success",
+        duration: 2000,
+      });
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to add to cart",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+
+  const handleBuyNow = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    try {
+      await AddProductToCart({
+        product_id: product.id,
+        quantity: 1,
+      });
+      navigate('/dashboard/checkout');
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to proceed",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  const getCategoryIconLarge = (categoryName: string) => {
+    const iconMap: { [key: string]: any } = {
+      "Video": <Video className="w-4 h-4 text-gray-800" />,
+      "Music": <Music className="w-4 h-4 text-gray-800" />,
+      "Course": <BookOpen className="w-4 h-4 text-gray-800" />,
+      "Podcast": <FileAudio className="w-4 h-4 text-gray-800" />,
+      "eBook": <FileText className="w-4 h-4 text-gray-800" />,
+      "Art": <Palette className="w-4 h-4 text-gray-800" />,
+    };
+
+    return iconMap[categoryName] || <BookOpen className="w-4 h-4 text-gray-800" />;
   };
 
   return (
     <div
       onClick={handleCardClick}
       className="bg-white border border-gray-300 rounded-[14px] overflow-hidden w-full h-full cursor-pointer 
-                 transition-transform duration-300 hover:shadow-lg flex flex-col"
+      transition-transform duration-300 hover:shadow-lg flex flex-col"
     >
       {/* Product Image */}
       <div className="relative group w-full aspect-[4/3] overflow-hidden">
@@ -44,19 +161,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, isLiked = false }) =
           alt={product.title}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
-
-        {/* ❤️ Heart Button */}
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setLiked(!liked);
-          }}
-          className="absolute top-3 right-3 z-30 flex items-center justify-center transition-transform duration-300 hover:scale-110 rounded-full p-1"
+          onClick={handleWishlistToggle}
+          disabled={isAddingToWishlist}
+          className={`absolute top-3 right-3 z-30 flex items-center justify-center transition-transform duration-300 hover:scale-110 rounded-full p-1 ${isAddingToWishlist ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
         >
           <Heart
-            className={`w-7 h-7 transition-colors duration-300 ${
-              liked ? "text-red-500 fill-red-500" : "text-gray-300 fill-gray-300"
-            }`}
+            className={`w-7 h-7 transition-colors duration-300 ${liked ? "text-red-500 fill-red-500" : "text-gray-300 fill-gray-300"
+              }`}
           />
         </button>
       </div>
@@ -70,18 +183,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, isLiked = false }) =
           <div className="flex items-center space-x-1">
             <Star className="w-4 h-4 text-[#7077FE] fill-[#7077FE]" />
             <span className="text-xs font-semibold text-gray-800">
-              {product.rating} ({product.reviews})
+              {product?.rating} ({product?.reviews})
             </span>
           </div>
         </div>
-
         <div>
           <h3 className="font-semibold text-sm md:text-base text-gray-800 leading-tight mb-1 line-clamp-2">
             {product.title}
           </h3>
           <p className="text-xs md:text-sm text-gray-500 truncate">{product.author}</p>
         </div>
-
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
             {product.originalPrice && (
@@ -98,17 +209,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, isLiked = false }) =
               )}
             </div>
           </div>
-
           <div className="flex items-center space-x-2">
+            {/* ShoppingCart Button */}
             <button
-              onClick={(e) => e.stopPropagation()}
+              onClick={handleAddToCart}
+              disabled={isAddingToCart}
               className="w-8 h-8 border border-[#7077FE] rounded-full flex items-center justify-center hover:bg-blue-50 transform transition-transform duration-300 hover:scale-110"
             >
               <ShoppingCart className="w-4 h-4 text-[#7077FE]" />
             </button>
-
+            {/* Buy Now Button */}
             <button
-              onClick={(e) => e.stopPropagation()}
+              onClick={handleBuyNow}
               className="relative bg-[#7077FE] text-white pl-4 pr-12 py-2 rounded-full text-xs md:text-sm font-semibold transition-colors flex items-center overflow-hidden group"
             >
               <span>Buy Now</span>
@@ -118,16 +230,28 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, isLiked = false }) =
             </button>
           </div>
         </div>
-
         <div className="border-t border-gray-200 pt-3 mt-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Video className="w-4 h-4 text-gray-600" />
-              <span className="font-semibold text-sm text-gray-800">{product.category}</span>
+              {/* Wrap Video Icon with Link and stop propagation so card click doesn't trigger */}
+              {/* <Link
+                to="/dashboard/my-library"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Video className="w-4 h-4 text-gray-600" />
+              </Link> */}
+              <span className="font-semibold text-sm text-gray-800">
+                {getCategoryIconLarge(product.category)}
+              </span>
+              <span className="font-semibold text-sm text-gray-800">
+                {product.category}
+              </span>
             </div>
             <div className="flex items-center space-x-1">
               <Clock className="w-4 h-4 text-[#7077FE]" />
-              <span className="text-xs md:text-sm text-gray-800">{product.duration}</span>
+              <span className="text-xs md:text-sm text-gray-800">
+                {product.duration}
+              </span>
             </div>
           </div>
         </div>

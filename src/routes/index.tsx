@@ -68,6 +68,7 @@ import Premium from "../pages/Premium";
 import WhyCness from "../pages/WhyCness";
 import MyCollections from "../pages/MyCollections";
 import Library from "../pages/Library";
+import EmptyPageLibrary from "../pages/EmptyPageLibrary";
 import ContinueWatching from "../pages/ContinueWatching";
 //import SellerDashboard from "../pages/SellerDashboard";
 import UserPublicProfile from "../pages/UserPublicProfile";
@@ -91,7 +92,6 @@ import ShopsList from "../pages/Shops";
 import VendorDashboard from "../pages/VendorDashboard";
 import CreateShopForm from "../pages/CreateShopForm";
 import SellerProductList from "../pages/SellerProductList";
-import EditProductPage from "../pages/EditProductPage";
 import Preview from "../pages/Preview";
 import AddVideoForm from "../pages/AddVideo";
 import AddPodcastsForm from "../pages/AddPodcasts";
@@ -103,7 +103,20 @@ import SellerOrderList from "../pages/SellerOrderList";
 import SellerOrderDetail from "../pages/SellerOrderDetail";
 import SellerSales from "../pages/SellerSales";
 import SellerHelp from "../pages/SellerHelp";
+import DashboardFaqs from "../pages/DashboardFaqs";
 import SellerWithdrawal from "../pages/SellerWithdrawal";
+import Wallet from "../pages/Wallet";
+import EditVideoProductPage from "../pages/EditVideoProductPage";
+import EditMusicForm from "../pages/EditAudioProductPage";
+import AudioPreview from "../pages/MusicPreview";
+import EditPodcastForm from "../pages/EditPodcastProductPage";
+import PodcastPreview from "../pages/PodcastPreview";
+import EditEbookForm from "../pages/EditEbookProductPage";
+import EbookPreview from "../pages/EbookPreview";
+import EditCourseForm from "../pages/EditCourseProductPage";
+import CoursePreview from "../pages/CoursePreview";
+import ArtPreview from "../pages/ArtPreview";
+import EditArtsForm from "../pages/EditArtProductPage";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -252,6 +265,11 @@ export const router = createBrowserRouter([
             //   <ComingSoon />
             // ),
           },
+
+          {
+              path:"wallet",
+              element:<Wallet />,
+            },
           {
             path: "upload-proof",
             element: <UploadProof />,
@@ -287,6 +305,10 @@ export const router = createBrowserRouter([
           },
           {
             path: "library",
+            element: <EmptyPageLibrary />,
+          },
+          {
+            path: "my-library",
             element: <Library />,
           },
           {
@@ -391,12 +413,52 @@ export const router = createBrowserRouter([
             element: <AddArtsForm />
           },
           {
-            path: "products/edit/:productNo",
-            element: <EditProductPage />
+            path: "products/edit-video/:productNo",
+            element: <EditVideoProductPage />
+          },
+          {
+            path: "products/edit-music/:productNo",
+            element: <EditMusicForm />
+          },
+          {
+            path: "products/edit-podcast/:productNo",
+            element: <EditPodcastForm />
+          },
+          {
+            path: "products/edit-ebook/:productNo",
+            element: <EditEbookForm />
+          },
+          {
+            path: "products/edit-course/:productNo",
+            element: <EditCourseForm />
+          },
+          {
+            path: "products/edit-art/:productNo",
+            element: <EditArtsForm />
           },
           {
             path: "products/preview/:productNo",
             element: <Preview />
+          },
+          {
+            path: "products/music-preview/:productNo",
+            element: <AudioPreview />
+          },
+          {
+            path: "products/podcast-preview/:productNo",
+            element: <PodcastPreview />
+          },
+          {
+            path: "products/ebook-preview/:productNo",
+            element: <EbookPreview />
+          },
+          {
+            path: "products/course-preview/:productNo",
+            element: <CoursePreview />
+          },
+          {
+            path: "products/art-preview/:productNo",
+            element: <ArtPreview />
           },
 
           {
@@ -411,6 +473,11 @@ export const router = createBrowserRouter([
             path: "seller-help",
             element: <SellerHelp />,
           },
+          {
+            path: "faqs",
+            element: <DashboardFaqs />,
+          },
+
           {
             path: "seller-sales/withdrawal",
             element: <SellerWithdrawal />
