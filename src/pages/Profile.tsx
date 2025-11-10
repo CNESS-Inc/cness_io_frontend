@@ -227,7 +227,6 @@ export default function Profile() {
   const [followingUsers, setFollowingUsers] = useState<FollowedUser[]>([]);
   const [followerUsers, setFollowerUsers] = useState<FollowerUser[]>([]);
   const [collectionItems, setCollectionItems] = useState<any[]>([]);
-  console.log("🚀 ~ Profile ~ collectionItems:", collectionItems);
 
   const { showToast } = useToast();
 
@@ -666,7 +665,7 @@ export default function Profile() {
                 });
               }
             }}
-            collection
+            // collection
             likesCount={selectedPost.likes ?? 0}
             insightsCount={selectedPost.reflections ?? 0}
           />

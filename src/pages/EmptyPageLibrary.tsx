@@ -80,30 +80,30 @@ export default function EmptyPageLibrary() {
     },
   ];
   return (
-    <div className="w-full min-h-screen flex flex-col
-      px-4 pb-14
-      sm:px-6 sm:pb-16 sm:pt-[10px]
-      md:px-8 md:pb-20 md:pt-[12px]
-      lg:px-10 lg:pb-24 lg:pt-[14px]
-      xl:px-12 xl:pb-28 xl:pt-[16px]
-      2xl:px-16 2xl:pb-32 2xl:pt-[18px]
-      "
+    <div className="flex-1 min-h-screen overflow-y-auto transition-all duration-300
+      px-4 py-4 pb-14
+      sm:px-0 sm:py-0
+      md:px-0 md:py-0
+      lg:px-0 lg:py-0
+      xl:px-0 xl:py-0
+      2xl:px-0 2xl:py-0"
+
     >
       
       {/* Main content */}
       <div className="flex-1 flex flex-col">
         <h2
-          className="mt-4 mb-2 text-[18px] font-semibold text-slate-900
-            sm:text-[22px] sm:mt-6 sm:mb-3
-            md:text-[24px] md:mt-8 md:mb-4
-            lg:text-[26px] xl:text-[28px]
+          className="font-[Poppins] font-semibold text-[20px] leading-[100%] text-[#242E3A] mb-6
+            sm:text-[18px] sm:mt-6 sm:mb-3
+            md:text-[20px] md:mt-8 md:mb-4
+            lg:text-[20px] xl:text-[20px]
           "
         >
-          Library
+        Library
         </h2>
         {/* Empty state */}
         <div className="w-full flex justify-center items-center flex-1">
-          <div className="w-[280px] max-w-full h-auto flex flex-col items-center text-center gap-4
+          <div className="w-[280px] w-full h-auto flex flex-col items-center text-center gap-4
             sm:w-[320px] sm:gap-5 sm:mt-2
             md:w-[350px] md:gap-6 md:mt-4
             lg:w-[367px] lg:mt-8
@@ -140,7 +140,7 @@ export default function EmptyPageLibrary() {
           </div>
         </div>
         {/* Recommended Products */}
-        <section className="px-0 py-8 sm:py-10 md:py-12 lg:py-14 xl:py-16">
+        <section className="px-0 py-8 sm:py-10 md:py-12 lg:py-14 xl:py-14">
           <div className="mb-6 sm:mb-8 md:mb-10">
             <h3 className="text-center text-slate-800 font-semibold text-[17px] sm:text-[19px] md:text-[21px]">
               Recommended Products
@@ -148,8 +148,8 @@ export default function EmptyPageLibrary() {
             {/* Category Tabs – add if needed */}
           </div>
           <div className="
-            grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5
-            mb-6 sm:gap-6 md:gap-7 lg:gap-8 xl:gap-10
+            grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2
+            mb-6 sm:gap-6 md:gap-7 lg:gap-4 xl:gap-6
           ">
             {products.map((product) => (
               <ProductCard key={String(product.id)} product={{ ...product, id: String(product.id) }} />

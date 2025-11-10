@@ -148,8 +148,6 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
   );
   const [openSignup, setOpenSignup] = useState(false);
   const [orgFormStep, setOrgFormStep] = useState(1); // 1 = Basic Info, 2 = Questions
-  const [personFormStep, _setPersonFormStep] = useState(1);
-  console.log("🚀 ~ Login ~ personFormStep:", personFormStep);
   const closeByKey = (key: typeof activeModal) =>
     setActiveModal((curr) => (curr === key ? null : curr));
 
@@ -200,7 +198,6 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
   const [loginErrors, setLoginErrors] = useState<FormErrors>({});
   const [organizationErrors, setOrganizationErrors] = useState<FormErrors>({});
   const [personErrors, setPersonErrors] = useState<FormErrors>({});
-  console.log("🚀 ~ Login ~ personErrors:", personErrors);
   const [resetPasswordErrors] = useState<FormErrors>({});
   const [apiMessage, setApiMessage] = useState<string | null>(null);
   const [isOrgFormSubmitted, setIsOrgFormSubmitted] = useState(false);
@@ -361,7 +358,6 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
       }
 
       if (setErrors) {
-        console.log("🚀 ~ Login ~ setErrors:", setErrors);
         setOrganizationErrors(newErrors);
       }
       return isValid;
@@ -388,7 +384,6 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
           }
         }
       });
-      console.log("🚀 ~ validateForm ~ newErrors:", newErrors);
 
       if (setErrors) {
         setPersonErrors(newErrors);
@@ -422,7 +417,6 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
   // const handleNextPersonClick = () => {
   //   // Only validate step 1 fields when clicking next
   //   const isValid = validateForm(personForm, "person", 1, true);
-  //   console.log("🚀 ~ handleNextPersonClick ~ isValid:", isValid);
 
   //   if (isValid) {
   //     setPersonFormStep(2);
@@ -1066,7 +1060,6 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
 
     try {
       const response = await GoogleLoginDetails(token); // ✅ use your centralized API call
-      console.log("🚀 ~ handleGoogleLoginSuccess ~ response:", response);
       if (response) {
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);

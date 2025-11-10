@@ -22,8 +22,11 @@ const ShopCard: React.FC<ShopCardProps> = ({
 
   return (
     <div
-      onClick={() => navigate(`/dashboard/shop-detail/${id}`)}
-      className="sm:max-w-[320px] md:max-w-[350px] h-full flex flex-col items-center cursor-pointer hover:shadow-lg transition-shadow duration-300"
+      onClick={() => navigate(`/dashboard/shop-detail/${id}`, { state: { id, image, name, description, rating, logo } })}
+      className="         
+  sm:w-full
+  md:w-full
+  flex flex-col items-center cursor-pointer hover:shadow-lg transition-shadow duration-300"
     >
       <div className="flex-shrink-0">
         <img

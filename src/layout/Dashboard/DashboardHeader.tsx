@@ -580,19 +580,19 @@ const DashboardHeader = ({
               </span>
             </div>
           </div>
-          {import.meta.env.VITE_ENV_STAGE === "test" ||
-          import.meta.env.VITE_ENV_STAGE === "uat" ? (
+          {/* {import.meta.env.VITE_ENV_STAGE === "test" ||
+          import.meta.env.VITE_ENV_STAGE === "uat" ? ( */}
             <div
               data-wallet-icon
               onClick={() => navigate("/dashboard/wallet")}
-              className="flex items-center space-x-2 bg-linear-to-r from-purple-500 to-blue-500 text-white px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105 cursor-pointer"
+              className="flex items-center space-x-2 bg-[#F4F2FF] text-white px-4 py-2 rounded-full hover:shadow-xl transition-all hover:scale-105 cursor-pointer"
             >
-              <Wallet className="w-5 h-5" />
-              <span className="font-bold text-lg">{karmaCredits || 0}</span>
+              <Wallet className="w-5 h-5 text-[#6340FF]" />
+              <span className="font-bold text-lg text-[#081021]">{karmaCredits || 0}pts</span>
             </div>
-          ) : (
+          {/* ) : (
             ""
-          )}
+          )} */}
           <div
             className="hidden md:flex items-center relative"
             ref={dropdownRef}
