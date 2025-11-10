@@ -826,71 +826,54 @@ export default function SocialTopBar() {
 
     try {
       const response = await AddPost(formData);
+      console.log("🚀 ~ handleSubmitPost ~ response:", response);
+
       if (response) {
-        // Get the post button element to use as animation source
-        // const postButton = document.querySelector(
-        //   "[data-post-button]"
-        // ) as HTMLElement;
-
-        // if (
-        //   import.meta.env.VITE_ENV_STAGE === "test" ||
-        //   import.meta.env.VITE_ENV_STAGE === "uat"
-        // ) {
-        //   if (postButton) {
-        //     localStorage.setItem(
-        //       "karma_credits",
-        //       response.data.data.karma_credits.toString()
-        //     );
-        //     // Trigger credit animation for creating a post (more credits than a like)
-        //     triggerCreditAnimation(postButton, 20); // 20 credits for creating a post
-        //   }
-        // }
-
         showToast({
           message: "Post created successfully",
           type: "success",
           duration: 3000,
         });
 
-        // Create a new post object from the response
-        const newPost: Post = {
-          id: response.data.data.id, // Assuming the API returns the created post ID
-          user_id: loggedInUserID || "", // Use the logged-in user's ID
-          content: postMessage,
-          file: response.data.data.file || null, // Assuming API returns file URLs
-          file_type: response.data.data.file_type || null,
-          is_poll: false,
-          poll_id: null,
-          createdAt: new Date().toISOString(), // Use current time or API response time
-          likes_count: 0,
-          comments_count: 0,
-          if_following: false,
-          if_friend: false,
-          is_liked: false,
-          is_saved: false,
-          is_requested: false,
-          user: {
-            id: loggedInUserID || "",
-            username: userInfo?.username || "current_user", // Use actual username from userInfo
-          },
-          profile: {
-            id: userInfo?.profile?.id || "",
-            user_id: loggedInUserID || "",
-            first_name:
-              userInfo?.profile?.first_name ||
-              userInfo?.first_name ||
-              "Current",
-            last_name:
-              userInfo?.profile?.last_name || userInfo?.last_name || "User",
-            profile_picture:
-              userInfo?.profile_picture || userProfilePicture || "/profile.png",
-          },
-        };
+        // Add the new post to the beginning of the userPosts array
+        if (response.data && response.data.data) {
+          const newPost = response.data.data;
 
-        // Add the new post at the beginning of the userPosts array
-        setUserPosts((prevPosts) => [newPost, ...prevPosts]);
+          // Transform the API response to match your Post interface
+          const transformedPost: Post = {
+            id: newPost.id,
+            user_id: newPost.user_id,
+            content: newPost.content,
+            file: newPost.file,
+            file_type: newPost.file_type,
+            is_poll: newPost.is_poll,
+            poll_id: newPost.poll_id,
+            createdAt: newPost.createdAt,
+            likes_count: newPost.likes_count,
+            comments_count: newPost.comments_count,
+            if_following: newPost.if_following,
+            if_friend: newPost.if_friend,
+            is_liked: newPost.is_liked,
+            is_saved: newPost.is_saved,
+            is_requested: newPost.is_requested,
+            user: {
+              id: newPost.user.id,
+              username: newPost.user.username,
+            },
+            profile: {
+              id: newPost.profile.id,
+              user_id: newPost.profile.user_id,
+              first_name: newPost.profile.first_name,
+              last_name: newPost.profile.last_name,
+              profile_picture: newPost.profile.profile_picture,
+            },
+          };
 
-        // Reset form
+          // Add the new post to the beginning of the array
+          setUserPosts((prevPosts) => [transformedPost, ...prevPosts]);
+        }
+
+        // Reset form state
         setPostMessage("");
         setSelectedTopic("");
         setSelectedImages([]);
@@ -1059,7 +1042,7 @@ export default function SocialTopBar() {
   };
 
   const handleLike = async (postId: string, event: React.MouseEvent) => {
-    console.log("🚀 ~ handleLike ~ event:", event)
+    console.log("🚀 ~ handleLike ~ event:", event);
     try {
       const formattedData = { post_id: postId };
 
@@ -1471,6 +1454,31 @@ export default function SocialTopBar() {
 
       return `${day} ${month} ${year}, ${hours}.${minutes} ${ampm}`;
     }
+  };
+
+  const isValidMediaUrl = (url: string): boolean => {
+    if (!url || typeof url !== "string") return false;
+
+    const trimmedUrl = url.trim();
+
+    // Check if URL is empty or just contains the base path without actual file
+    if (
+      !trimmedUrl ||
+      trimmedUrl === "https://dev.cness.io/file/" ||
+      trimmedUrl === "https://dev.cness.io/file" ||
+      trimmedUrl.endsWith("/file/") ||
+      trimmedUrl.endsWith("/file")
+    ) {
+      return false;
+    }
+
+    // Check if URL has a file extension or looks like a valid media file
+    const hasFileExtension = /\.[a-zA-Z0-9]+$/.test(trimmedUrl);
+    const hasValidMediaPattern = /\.(jpg|jpeg|png|webp|mp4|webm|ogg|mov)/i.test(
+      trimmedUrl
+    );
+
+    return hasFileExtension || hasValidMediaPattern;
   };
 
   return (
@@ -1963,9 +1971,17 @@ export default function SocialTopBar() {
                         {post.file && (
                           <div className="rounded-lg">
                             {(() => {
+                              // Split and filter valid URLs
                               const urls = post.file
                                 .split(",")
-                                .map((url) => url.trim());
+                                .map((url) => url.trim())
+                                .filter((url) => isValidMediaUrl(url)); // Filter out invalid URLs
+
+                              // If no valid media URLs after filtering, don't render anything
+                              if (urls.length === 0) {
+                                return null;
+                              }
+
                               const mediaItems = urls.map((url) => ({
                                 url,
                                 type: (isVideoFile(url) ? "video" : "image") as
@@ -1973,7 +1989,7 @@ export default function SocialTopBar() {
                                   | "image",
                               }));
 
-                              // Use PostCarousel if there are multiple items (images or videos)
+                              // Use PostCarousel if there are multiple items
                               if (mediaItems.length > 1) {
                                 return <PostCarousel mediaItems={mediaItems} />;
                               }
@@ -1998,7 +2014,7 @@ export default function SocialTopBar() {
                                   className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl mb-2"
                                   onError={(e) => {
                                     const target = e.target as HTMLImageElement;
-                                    target.src = carosuel1;
+                                    target.src = ""; // Clear broken images
                                   }}
                                 />
                               );

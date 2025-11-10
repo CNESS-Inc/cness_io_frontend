@@ -1238,8 +1238,6 @@ export const GetTrendingPost = (
   tab: string | null = null,
   page: any
 ) => {
-  console.log("🚀 ~ GetTrendingPost ~ tab:", tab);
-  console.log("🚀 ~ GetTrendingPost ~ tag:", tag);
   let data = {};
   let params: { [key: string]: any } = {};
   params["page_no"] = page;
@@ -1564,7 +1562,6 @@ export const executeAPI = async <T = any,>(
     const token = localStorage.getItem("jwt");
     const isFormData = data instanceof FormData;
     const requestId = uuidv4();
-    console.log("🚀 ~ executeAPI ~ requestId:", requestId)
     // const requestId = localStorage.getItem("requestId");
     const appCatId = localStorage.getItem("appCatId");
     const headers: Record<string, string> = {
@@ -1606,7 +1603,6 @@ export const executeAPI = async <T = any,>(
 
     return response.data;
   } catch (error: any) {
-    // console.log("🚀 ~ error:", error)
 
     if (error.response?.data?.error?.statusCode == 401) {
       localStorage.clear();

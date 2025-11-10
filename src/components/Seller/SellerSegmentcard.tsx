@@ -4197,12 +4197,22 @@ export function SocialStackCard({
           )}
         </div>
 
-        <PrimaryButton
-          className="w-full rounded-3xl"
-          onClick={() => navigate("/dashboard/MyConnection")}
-        >
-          See More{" "}
-        </PrimaryButton>
+<PrimaryButton
+  className="w-full rounded-3xl"
+  onClick={() => {
+    if (tab === "Requested") {
+      navigate("/dashboard/MyConnection", {
+            state: { to: "request" },
+          });
+    } else {
+      navigate("/dashboard/MyConnection", {
+            state: { to: "suggestion" },
+          });
+    }
+  }}
+>
+  See More
+</PrimaryButton>
       </div>
     </Card>
   );

@@ -198,7 +198,6 @@ export default function PostCard({
     {}
   );
   const [openMenuPostId, setOpenMenuPostId] = useState<any>(null);
-  console.log("🚀 ~ PostCard ~ openMenuPostId:", openMenuPostId)
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [copy, setCopy] = useState<Boolean>(false);
 

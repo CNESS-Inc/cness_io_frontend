@@ -338,99 +338,98 @@ export default function DashboardDirectory() {
 
   return (
     <>
-    <div className="px-2 sm:px-2 lg:px-1">
+      <div className="px-2 sm:px-2 lg:px-1">
+        <section className="relative w-full h-[350px] sm:h-[400px] md:h-[500px] mx-auto rounded-[12px] overflow-hidden mt-2">
+          <AnimatedBackground />
+          <img
+            src={iconMap["heroimgs"]}
+            alt="City Skyline"
+            className="absolute bottom-[0px] left-0 w-full object-cover z-0 pointer-events-none"
+          />
 
-<section className="relative w-full h-[350px] sm:h-[400px] md:h-[500px] mx-auto rounded-[12px] overflow-hidden mt-2">
-        <AnimatedBackground />
-        <img
-          src={iconMap["heroimgs"]}
-          alt="City Skyline"
-          className="absolute bottom-[0px] left-0 w-full object-cover z-0 pointer-events-none"
-        />
+          <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 py-8 md:py-20 max-w-4xl mx-auto mt-20">
+            <h1 className="text-center font-poppins font-semibold mb-6 text-[32px] leading-[100%] tracking-[0px] bg-gradient-to-b from-[#4E4E4E] to-[#232323] bg-clip-text text-transparent">
+              Conscious Search Stops here.
+            </h1>
 
-        <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 py-8 md:py-20 max-w-4xl mx-auto mt-20">
-          <h1 className="text-center font-poppins font-semibold mb-6 text-[32px] leading-[100%] tracking-[0px] bg-gradient-to-b from-[#4E4E4E] to-[#232323] bg-clip-text text-transparent">
-            Conscious Search Stops here.
-          </h1>
-
-          {/* Updated responsive container */}
-          <div className="w-full mx-auto flex flex-col md:flex-row items-stretch md:items-center gap-2 h-[34px]">
-            {/* Domain Selector - now full width on mobile */}
-            <div className="relative rounded-full ">
-              {/* Measurement span with exact same text styling */}
-              <span
-                className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4 py-2"
-                ref={measureRef}
-                style={{
-                  fontFamily: "inherit",
-                  fontSize: "12px", // Explicitly set to match select
-                }}
-              >
-                {selectedDomainText || "All Domains"}
-              </span>
-
-              <div className="w-full flex justify-center md:justify-start items-center my-1 px-4 md:px-0">
-                <div
-                  className="relative w-full max-w-[200px] md:w-fit"
+            {/* Updated responsive container */}
+            <div className="w-full mx-auto flex flex-col md:flex-row items-stretch md:items-center gap-2 h-[34px]">
+              {/* Domain Selector - now full width on mobile */}
+              <div className="relative rounded-full ">
+                {/* Measurement span with exact same text styling */}
+                <span
+                  className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4 py-2"
+                  ref={measureRef}
                   style={{
-                    width: textWidth ? `${textWidth}px` : "100%",
-                    minWidth: "120px",
-                    maxWidth: "100%",
+                    fontFamily: "inherit",
+                    fontSize: "12px", // Explicitly set to match select
                   }}
                 >
-                  <select
-                    className="bg-[#7077FE] rounded-full text-white font-semibold px-3 py-2 pr-6 appearance-none focus:outline-none cursor-pointer text-[12px] w-full"
-                    value={selectedDomain}
-                    onChange={(e) => {
-                      setSelectedDomain(e.target.value);
-                      const selectedText =
-                        e.target.options[e.target.selectedIndex].text;
-                      setSelectedDomainText(selectedText);
+                  {selectedDomainText || "All Domains"}
+                </span>
+
+                <div className="w-full flex justify-center md:justify-start items-center my-1 px-4 md:px-0">
+                  <div
+                    className="relative w-full max-w-[200px] md:w-fit"
+                    style={{
+                      width: textWidth ? `${textWidth}px` : "100%",
+                      minWidth: "120px",
+                      maxWidth: "100%",
                     }}
                   >
-                    <option value="" className="text-white text-[12px]">
-                      All Profession
-                    </option>
-                    {Domain.map((domain: any) => (
-                      <option
-                        key={domain.id}
-                        value={domain.id}
-                        className="text-white text-[12px]"
-                      >
-                        {domain.title}
+                    <select
+                      className="bg-[#7077FE] rounded-full text-white font-semibold px-3 py-2 pr-6 appearance-none focus:outline-none cursor-pointer text-[12px] w-full"
+                      value={selectedDomain}
+                      onChange={(e) => {
+                        setSelectedDomain(e.target.value);
+                        const selectedText =
+                          e.target.options[e.target.selectedIndex].text;
+                        setSelectedDomainText(selectedText);
+                      }}
+                    >
+                      <option value="" className="text-white text-[12px]">
+                        All Profession
                       </option>
-                    ))}
-                  </select>
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white text-xs pointer-events-none">
-                    ▼
+                      {Domain.map((domain: any) => (
+                        <option
+                          key={domain.id}
+                          value={domain.id}
+                          className="text-white text-[12px]"
+                        >
+                          {domain.title}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white text-xs pointer-events-none">
+                      ▼
+                    </div>
                   </div>
                 </div>
               </div>
+              {/* Search Input - full width on mobile */}
+              <div className="relative flex-grow bg-white border border-gray-200 rounded-full md:rounded-full px-3 h-[100%] shadow-sm ">
+                <input
+                  type="text"
+                  placeholder="Technology and AI"
+                  className="w-full py-2 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none border-none h-full px-2"
+                  value={searchQuery || ""}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                />
+                <button
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#7077FE] cursor-pointer"
+                  onClick={handleSearch}
+                >
+                  🔍
+                </button>
+              </div>
             </div>
-            {/* Search Input - full width on mobile */}
-            <div className="relative flex-grow bg-white border border-gray-200 rounded-full md:rounded-full px-3 h-[100%] shadow-sm ">
-              <input
-                type="text"
-                placeholder="Technology and AI"
-                className="w-full py-2 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none border-none h-full px-2"
-                value={searchQuery || ""}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleKeyPress}
-              />
-              <button
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#7077FE] cursor-pointer"
-                onClick={handleSearch}
-              >
-                🔍
-              </button>
-            </div>
-          </div>
 
-          <p className="text-gray-700 text-xs md:text-sm mt-16 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
-            Connect with conscious audience
-          </p>
-        </div>
-      </section>
+            <p className="text-gray-700 text-xs md:text-sm mt-16 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
+              Connect with conscious audience
+            </p>
+          </div>
+        </section>
       </div>
 
       <section className="py-6 px-1 bg-[#f9f9f9] border-t border-gray-100 ">
