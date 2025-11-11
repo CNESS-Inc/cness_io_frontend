@@ -1,13 +1,13 @@
 //import React from 'react'
 //import MoodGrid from '../components/MarketPlace/MoodGrid';
 //import Header from   '../components/MarketPlace/Marketheader';
-import happy from "../assets/happy.svg";
-import motivated from "../assets/motivated.svg";
-import calm from "../assets/calm.svg";
-import creative from "../assets/creative.svg";
-import sad from "../assets/sad.svg";
-import spiritual from "../assets/Spitirtual.svg";
-import energy from "../assets/energy.svg";
+//import happy from "../assets/happy.svg";
+//import motivated from "../assets/motivated.svg";
+//import calm from "../assets/calm.svg";
+//import creative from "../assets/creative.svg";
+//import sad from "../assets/sad.svg";
+//import spiritual from "../assets/Spitirtual.svg";
+//import energy from "../assets/energy.svg";
 import MoodSelector from '../components/MarketPlace/MoodSelector';
 import ProductCard from '../components/MarketPlace/ProductCard';
 import digital from "../assets/digital.svg";
@@ -202,7 +202,7 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
           onClick={() => handleMoodClick('happy')}
         >
           <img
-            src={happy}
+            src={"https://cdn.cness.io/happy.svg"}
             alt="HAPPY"
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
@@ -218,7 +218,7 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
             onClick={() => handleMoodClick('motivated')}
           >
             <img
-              src={motivated}
+              src={"https://cdn.cness.io/2%20motivated.svg"}
               alt="CREATIVE"
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
@@ -231,7 +231,7 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
             onClick={() => handleMoodClick('calm')}
           >
             <img
-              src={calm}
+              src={"https://cdn.cness.io/calm.svg"}
               alt="SAD"
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
@@ -248,7 +248,7 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
             onClick={() => handleMoodClick('creative')}
           >
             <img
-              src={creative}
+              src={"https://cdn.cness.io/2%20creative.svg"}
               alt="CREATIVE"
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
@@ -261,7 +261,7 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
             onClick={() => handleMoodClick('sad')}
           >
             <img
-              src={sad}
+              src={"https://cdn.cness.io/sad.svg"}
               alt="SAD"
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
@@ -278,7 +278,7 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
             onClick={() => handleMoodClick('spiritual')}
           >
             <img
-              src={spiritual}
+              src={"https://cdn.cness.io/Spitirtual.svg"}
               alt="SPIRITUAL"
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
@@ -291,7 +291,7 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
             onClick={() => handleMoodClick('energetic')}
           >
             <img
-              src={energy}
+              src={"https://cdn.cness.io/energy.svg"}
               alt="ENERGETIC"
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
