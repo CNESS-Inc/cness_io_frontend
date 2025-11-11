@@ -1,5 +1,5 @@
 import { Button } from "@headlessui/react";
-import { UserRoundPlus, Share2, Link } from "lucide-react";
+import { UserRoundPlus, Share2, Link, UserRoundMinus } from "lucide-react";
 import BestPracticeCard from "../components/ui/BestPracticesCard";
 import insta from "../assets/instagram.svg";
 import facebook from "../assets/facebook.svg";
@@ -140,7 +140,6 @@ export default function UserProfileView() {
     (id && String(id) === String(loggedInUserID)) ||
     (userDetails?.user_id &&
       String(userDetails.user_id) === String(loggedInUserID));
-  console.log("🚀 ~ UserProfileView ~ isOwnProfile:", isOwnProfile);
   const userLevel = userDetails?.level?.level;
 
   let displayLevels: typeof levels = [];
@@ -939,7 +938,7 @@ export default function UserProfileView() {
                             font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
                             text-white flex items-center justify-center gap-2 hover:bg-red-600"
                         >
-                          <UserRoundPlus className="w-4 h-4" />
+                          <UserRoundMinus className="w-4 h-4" />
                           Reject
                         </button>
                       </div>
