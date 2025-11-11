@@ -12,20 +12,20 @@ const whyItems = [
   {
     id: 1,
     icon: why1,
-    title: "One Ecosystem, Four Products, Six Pillars",
-    desc: "A Completed connected experience designed",
+    title: "See Your Growth",
+    desc: "Track your progress, celebrate milestones and watch your impact unfold.",
   },
   {
     id: 2,
     icon: why2,
-    title: "Growth that's connected, visible, and measurable.",
-    desc: "A Completed connected experience designed",
+    title: "One Platform, Many Paths",
+    desc: "Learning, certification, community and marketplace — all connected so you can focus on your growth.",
   },
   {
     id: 3,
     icon: why3,
-    title: "Designed for both individuals and organizations.",
-    desc: "Scalable solutions for personal and enterprise needs.",
+    title: "Made for Individuals & Teams",
+    desc: "Use CNESS on your own or bring it to your business. We scale with you.",
   },
 ];
 

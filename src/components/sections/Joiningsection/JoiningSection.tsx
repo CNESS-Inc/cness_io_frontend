@@ -53,7 +53,7 @@ export default function JoiningSection()
     text-[16px] leading-[100%] tracking-[0]
     text-center "
               onClick={()  => setOpenSignup(true)}>
-              Create Your Profile
+              Start Your Conscious Journey
             </Button>
 
             {/*<Button

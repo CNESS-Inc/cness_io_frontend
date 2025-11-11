@@ -33,11 +33,10 @@ const ShopCard: React.FC<ShopCardProps> = ({
           src={image || 'https://static.codia.ai/image/2025-10-24/COYsFisEy4.png'}
           alt={name}
           className="
-            w-full
-            h-[100px]          // Very small screens (default)
-            sm:h-[80px] w-[80px]        // Small screens
-            md:h-[120px] w-[80px]       // Medium screens/tablets
-            lg:h-[160px] w-[80px]      // Larger screens
+                    // Very small screens (default)
+            sm:h-[100px]  w-full        // Small screens
+            md:h-[100px]  w-full       // Medium screens/tablets
+            lg:h-[100px]   w-full     // Larger screens
             object-cover
             rounded-t-[10px]
           "

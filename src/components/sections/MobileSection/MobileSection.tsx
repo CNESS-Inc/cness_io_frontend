@@ -26,7 +26,7 @@ export default function MobileSection() {
                 className="poppins lg:leading-16 md:leading-14 leading-9 pb-1 text-[32px] font-[500] bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
                text-transparent bg-clip-text mb-3"
               >
-                A Conscious coach in your pocket
+                Guided Journaling and Daily Insights.
               </h2>
               <p style={{ fontFamily: "Open Sans, sans-serif" }} 
               className="font-light text-[16px] leading-[24px] tracking-[0px] text-[#242424]">

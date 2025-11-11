@@ -63,24 +63,27 @@ export default function Highlight() {
             rounded-tl-[100px] rounded-br-[100px] rounded-tr-[10px] rounded-bl-[10px] bg-white">
               Highlights
             </span>
-            <h3 
-             style={{ fontFamily: "Poppins, sans-serif" }}
-            className="font-medium
-    text-[32px] md:text-[42px]
-    lg:leading-[54px] md:leading-[54px] leading-[40px]  tracking-[-0.02em]
-    capitalize text-left pb-[15px]  ">
-              Your conscious identity,
-              <br />
-               <span className="
-    bg-gradient-to-r from-[#D747EA] to-[#7741FB]
-    text-transparent bg-clip-text
-  ">
-               Activated.
-               </span>
-            </h3>
+           <h3
+  style={{ fontFamily: "Poppins, sans-serif" }}
+  className="font-medium
+  text-[30px] md:text-[40px]
+  leading-[38px] md:leading-[50px] lg:leading-[54px]
+  tracking-[-0.01em] sm:tracking-[-0.02em]
+  capitalize text-left pb-[20px] md:pb-[18px]
+  max-w-[28ch] sm:max-w-[30ch] md:max-w-[26ch] lg:max-w-[28ch]"
+>
+  Create a Profile That Reflects
+  <br />
+  <span
+    className="bg-gradient-to-r from-[#D747EA] to-[#7741FB]
+    text-transparent bg-clip-text"
+  >
+    Who You Truly Are.
+  </span>
+</h3>
             <p className="font-['Open_Sans'] font-light text-[16px] leading-[24px] tracking-[0px] text-[#242424] mb-6">
-              CNESS helps you build visibility, earn credibility, and express your purpose — 
-              <br /> socially, creatively, and professionally.  Showcase your skills, share your story, connect with like-minded people, and unlock opportunities to grow with confidence and purpose.
+              Tell your story, express your values and let others see 
+the real you.
               
             </p>
             <Button className="font-['Open_Sans'] font-medium  text-[16px] leading-[100%] tracking-[0px] text-center 

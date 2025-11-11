@@ -12,10 +12,10 @@ const Communitynew: React.FC = () => {
           className="poppins lg:leading-16 md:leading-14 leading-9 text-[32px] font-[500] bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
                text-transparent bg-clip-text mb-3 w-fit mx-auto"
         >
-          A Community Built Around
+          Find Friends Who Share Your
           <span className="bg-gradient-to-r from-[#a545f4] to-[#B646F1] text-transparent bg-clip-text">
             {" "}
-            Conscious Living
+             Values.
           </span>
         </h2>
         <p className="font-['Open_Sans'] font-light text-[16px] leading-[24px] tracking-[0px] text-[#242424] text-center w-fit mx-auto">

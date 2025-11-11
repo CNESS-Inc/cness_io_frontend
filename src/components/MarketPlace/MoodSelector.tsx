@@ -32,11 +32,14 @@ const MoodSelector: React.FC<Props> = ({
   };
 
   return (
-    <section className="px-8 py-8">
+    <section className="sm:px-2 sm:py-4 md:px-4 md:py-8 lg:py-8  lg:px-8">
       <div className="flex flex-col items-center space-y-10">
 
         {/* Selected Mood + Search */}
-        <form onSubmit={handleSearchSubmit} className="flex items-center w-full max-w-4xl bg-white border border-gray-300 rounded-full px-4 py-3 space-x-3">
+<form
+  onSubmit={handleSearchSubmit}
+  className="flex items-center w-full max-w-xl sm:max-w-2xl md:max-w-4xl bg-white border border-gray-300 rounded-full px-3 sm:px-4 py-2 sm:py-3 space-x-2 sm:space-x-3"
+>
           <div className="flex items-center space-x-2 flex-1">
             <input
               type="text"
@@ -61,21 +64,22 @@ const MoodSelector: React.FC<Props> = ({
         </form>
 
         {/* Mood Options */}
-        <div className="flex flex-wrap justify-center gap-8">
-          {moods.length > 0 ? (
-            moods.map((mood: any) => (
-              <button
-                key={mood.slug}
-                onClick={() => handleMoodClick(mood.slug)}
-                className="bg-gray-100 hover:bg-gray-200 rounded-full px-5 py-3 text-gray-600 text-sm transition-colors"
-              >
-                {mood.icon} {mood.name}
-              </button>
-            ))
-          ) : (
-            <p className="text-gray-500">No moods available.</p>
-          )}
-        </div>
+        <div className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8 px-4">
+        {moods.length > 0 ? (
+          moods.map((mood: any) => (
+            <button
+              key={mood.slug}
+              onClick={() => handleMoodClick(mood.slug)}
+              className="bg-gray-100 hover:bg-gray-200 rounded-full px-3 sm:px-5 py-2 sm:py-3 text-gray-600 text-xs sm:text-sm md:text-base transition-colors flex items-center gap-2"
+            >
+              {mood.icon} {mood.name}
+            </button>
+          ))
+        ) : (
+          <p className="text-gray-500 text-sm sm:text-base">No moods available.</p>
+        )}
+      </div>
+
       </div>
     </section >
   );
