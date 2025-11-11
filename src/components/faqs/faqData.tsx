@@ -18,6 +18,7 @@ export const faqCategories: FAQCategory[] = [
       { id: "acc-1", question: "How do I create an account?", answer: "Click 'Sign Up' at the top right and fill out your information to create a new account." },
       { id: "acc-2", question: "How can I update my profile information?", answer: "Go to your account settings, select 'Edit Profile', and save your updated details." },
       { id: "acc-3", question: "I forgot my password. What should I do?", answer: "Use the 'Forgot Password' link on the login page to reset your password via email." },
+      { id: "acc-4", question: "How do I place an order?", answer: "Browse products, add them to your cart, and proceed to checkout. Select your payment method and confirm your purchase." },
     ],
   },
   {

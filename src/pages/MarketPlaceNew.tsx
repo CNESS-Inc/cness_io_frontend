@@ -191,187 +191,247 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   return (
 
     <div
-      className={` transition-all duration-300 ${isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
-        } pt-[20px] px-6`}
+      className={`transition-all duration-300 
+        ${isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"} 
+        pt-[20px] px-3 md:px-6`}
     >
 
-      <div className="grid grid-cols-4 gap-4 mx-auto">
-        {/* HAPPY (left big one) */}
-        <div
-          className="col-span-1 row-span-1 relative overflow-hidden rounded-2xl group cursor-pointer"
-          onClick={() => handleMoodClick('happy')}
-        >
-          <img
-            src={"https://cdn.cness.io/happy.svg"}
-            alt="HAPPY"
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          />
-          <h2 className="absolute bottom-4 left-4 text-3xl font-bold text-white group-hover:text-black transition-colors">
-            HAPPY
+     <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 mx-auto">
+  {/* HAPPY (left big one) */}
+  <div
+    className="col-span-1 row-span-1 relative overflow-hidden rounded-2xl group cursor-pointer 
+                sm:flex sm:items-start sm:justify-start sm:text-left
+                flex items-center justify-center text-center"
+    onClick={() => handleMoodClick('happy')}
+  >
+    <img
+      src={"https://cdn.cness.io/happy.svg"}
+      alt="HAPPY"
+      className="sm:h-56 sm:w-56 md:h-full md:w-full lg:h-full lg:w-full object-cover transition-transform duration-500 group-hover:scale-110"
+    />
+    <h2 
+    className="
+      absolute bottom-4 
+      sm:left-4 md:left-6 lg:left-8 text-3xl
+      sm:text-3xl md:text-3xl lg:text-3xl font-bold text-white 
+      group-hover:text-black transition-colors">
+          HAPPY
+    </h2>
+  </div>
+
+  {/* Column 2 (Motivated + Calm stacked) */}
+  <div className="grid sm:grid-rows-1 md:grid-rows-1 lg:grid gap-4">
+    <div
+      className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer 
+                flex items-center justify-center text-center
+                sm:block sm:text-left sm:items-start sm:justify-start"
+      onClick={() => handleMoodClick('motivated')}
+    >
+      <img
+        src={"https://cdn.cness.io/2%20motivated.svg"}
+        alt="Motivated"
+        className="md:h-full md:w-full sm:h-44 sm:w-44 lg:h-full lg:w-full object-cover transition-transform duration-500 group-hover:scale-110"
+      />
+      <h2 
+      className="
+      absolute bottom-4 
+      sm:left-4 text-3xl md:left-6 lg:left-8 
+      sm:text-3xl md:text-3xl lg:text-3xl font-bold text-white 
+      group-hover:text-black transition-colors">
+            Motivated
           </h2>
-        </div>
+    </div>
+    <div
+      className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer 
+                flex items-center justify-center text-center
+                sm:block sm:text-left sm:items-start sm:justify-start"
+      onClick={() => handleMoodClick('calm')}
+    >
+      <img
+        src={"https://cdn.cness.io/calm.svg"}
+        alt="Calm"
+        className="sm:h-44 sm:w-44 md:h-full md:w-full lg:h-full lg:w-full object-cover transition-transform duration-500 group-hover:scale-110"
+      />
+      <h2 
+      className="
+      absolute bottom-4 text-3xl
+      sm:left-4 md:left-6 lg:left-8 
+      sm:text-3xl md:text-3xl lg:text-3xl font-bold text-white 
+      group-hover:text-black transition-colors">
+                  CALM
+      </h2>
+    </div>
+  </div>
 
-        {/* Column 2 (Motivated + Calm stacked) */}
-        <div className="grid gap-4">
-          <div
-            className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer"
-            onClick={() => handleMoodClick('motivated')}
-          >
-            <img
-              src={"https://cdn.cness.io/2%20motivated.svg"}
-              alt="CREATIVE"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-            <h2 className="absolute bottom-4 left-4 text-2xl font-bold text-white group-hover:text-black transition-colors">
-              Motivated
+  {/* Column 3 (Creative tall + Sad small bottom) */}
+  <div className="grid sm:grid-rows-1 md:grid-rows-1 lg:grid gap-4">
+    <div
+      className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer 
+                flex items-center justify-center text-center
+                sm:block sm:text-left sm:items-start sm:justify-start"
+      onClick={() => handleMoodClick('creative')}
+    >
+      <img
+        src={"https://cdn.cness.io/2%20creative.svg"}
+        alt="Creative"
+        className="sm:h-44 sm:w-44 md:h-full md:w-full lg:h-full lg:w-full object-cover transition-transform duration-500 group-hover:scale-110"
+      />
+      <h2 
+      className="
+      absolute bottom-4 text-3xl
+      sm:left-4 md:left-6 lg:left-8 
+      sm:text-3xl md:text-3xl lg:text-3xl font-bold text-white 
+      group-hover:text-black transition-colors">
+                  CREATIVE
+      </h2>
+    </div>
+    <div
+      className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer 
+                flex items-center justify-center text-center
+                sm:block sm:text-left sm:items-start sm:justify-start"
+      onClick={() => handleMoodClick('sad')}
+    >
+      <img
+        src={"https://cdn.cness.io/sad.svg"}
+        alt="Sad"
+        className="sm:h-44 sm:w-44 md:h-full md:w-full lg:h-full lg:w-full lg:h-full object-cover transition-transform duration-500 group-hover:scale-110"
+      />
+      <h2 
+     className="
+      absolute bottom-4 text-3xl
+      sm:left-4 md:left-6 lg:left-8 
+     sm:text-3xl md:text-3xl lg:text-3xl font-bold text-white 
+      group-hover:text-black transition-colors">
+                  SAD
             </h2>
-          </div>
-          <div
-            className="relative overflow-hidden rounded-2xl group cursor-pointer"
-            onClick={() => handleMoodClick('calm')}
-          >
-            <img
-              src={"https://cdn.cness.io/calm.svg"}
-              alt="SAD"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-            <h2 className="absolute bottom-4 left-4 text-2xl font-bold text-white group-hover:text-black transition-colors">
-              CALM
-            </h2>
-          </div>
-        </div>
+    </div>
+  </div>
 
-        {/* Column 3 (Creative tall + Sad small bottom) */}
-        <div className="grid gap-4">
-          <div
-            className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer"
-            onClick={() => handleMoodClick('creative')}
-          >
-            <img
-              src={"https://cdn.cness.io/2%20creative.svg"}
-              alt="CREATIVE"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-            <h2 className="absolute bottom-4 left-4 text-2xl font-bold text-white group-hover:text-black transition-colors">
-              CREATIVE
-            </h2>
-          </div>
-          <div
-            className="relative overflow-hidden rounded-2xl group cursor-pointer"
-            onClick={() => handleMoodClick('sad')}
-          >
-            <img
-              src={"https://cdn.cness.io/sad.svg"}
-              alt="SAD"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-            <h2 className="absolute bottom-4 left-4 text-2xl font-bold text-white group-hover:text-black transition-colors">
-              SAD
-            </h2>
-          </div>
-        </div>
-
-        {/* Column 4 (Spiritual top + Energetic bottom) */}
-        <div className="grid gap-4">
-          <div
-            className="relative overflow-hidden rounded-2xl group cursor-pointer"
-            onClick={() => handleMoodClick('spiritual')}
-          >
-            <img
-              src={"https://cdn.cness.io/Spitirtual.svg"}
-              alt="SPIRITUAL"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-            <h2 className="absolute bottom-4 left-4 text-2xl font-bold text-white group-hover:text-black transition-colors">
-              SPIRITUAL
-            </h2>
-          </div>
-          <div
-            className="relative overflow-hidden rounded-2xl group cursor-pointer"
-            onClick={() => handleMoodClick('energetic')}
-          >
-            <img
-              src={"https://cdn.cness.io/energy.svg"}
-              alt="ENERGETIC"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-            <h2 className="absolute bottom-4 left-4 text-2xl font-bold text-white group-hover:text-black transition-colors">
+  {/* Column 4 (Spiritual top + Energetic bottom) */}
+  <div className="grid grid-rows-2 gap-4">
+    <div
+      className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer 
+                flex items-center justify-center text-center
+                sm:block sm:text-left sm:items-start sm:justify-start"
+      onClick={() => handleMoodClick('spiritual')}
+    >
+      <img
+        src={"https://cdn.cness.io/Spitirtual.svg"}
+        alt="Spiritual"
+        className="sm:h-44 sm:w-44 md:h-full md:w-full lg:h-full lg:w-full object-cover transition-transform duration-500 group-hover:scale-110"
+      />
+      <h2 
+      className="
+      absolute bottom-4 text-3xl
+      sm:left-4 md:left-6 lg:left-8 
+      sm:text-3xl md:text-3xl lg:text-3xl font-bold text-white 
+      group-hover:text-black transition-colors">        
+        SPIRITUAL
+      </h2>
+    </div>
+    <div
+      className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer 
+                flex items-center justify-center text-center
+                sm:block sm:text-left sm:items-start sm:justify-start"
+      onClick={() => handleMoodClick('energetic')}
+    >
+      <img
+        src={"https://cdn.cness.io/energy.svg"}
+        alt="Energetic"
+        className="sm:h-44 sm:w-44 md:h-full md:w-full lg:h-full lg:w-full object-cover transition-transform duration-500 group-hover:scale-110"
+      />
+      <h2 
+      className="
+      absolute bottom-4 text-3xl
+      sm:left-4 md:left-6 lg:left-8 
+      sm:text-3xl md:text-3xl lg:text-3xl font-bold text-white 
+      group-hover:text-black transition-colors">
               ENERGETIC
             </h2>
-          </div>
-        </div>
-      </div>
+    </div>
+  </div>
+</div>
+
       <div className="mt-12">
         <MoodSelector moods={moods} />
       </div>
 
 
-      <div className="grid grid-cols-2 gap-10 mt-12">
-        {/* Trending Products */}
-        <div className="relative">
-          <img
-            src="https://cdn.cness.io/Trendingp.svg"
-            alt="Trending Products"
-            className="w-full h-[521px] object-cover rounded-2xl"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent rounded-2xl"></div>
-          <div className="absolute left-8 top-8 text-white">
-            <h2 className="font-poppins font-bold text-3xl uppercase leading-tight mb-4">
-              <div className="flex items-center gap-3">
-                Trending
-                <div className="w-24 h-0.5 bg-white "></div>
-              </div>
-              <div className="mt-2">Products</div>
-            </h2>
-            <button className="bg-white text-black px-6 py-3 rounded font-medium hover:bg-gray-100 transition-colors">
-              Explore Now
-            </button>
-          </div>
+  <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8 md:gap-10 mt-12">
+  {/* Trending Products */}
+  <div className="relative rounded-2xl md:rounded-3xl overflow-hidden">
+    <img
+      src="https://cdn.cness.io/Trendingp.svg"
+      alt="Trending Products"
+      className="sm:h-[200px] sm:w-[200px] md:h-full md:w-full lg:w-full lg:h-[521px] object-cover"
+    />
+    {/* Gradient overlay: absolutely positioned on lg+ screens, relative otherwise */}
+    <div className="absolute bg-gradient-to-r from-black/50 to-transparent
+                    sm:absolute md:absolute lg:absolute inset-0 rounded-2xl md:rounded-3xl" />
+    {/* Text container: absolute on lg+, relative on smaller */}
+    <div className="absolute text-white left-6 sm:left-8 top-6 sm:top-8 
+                    sm:absolute md:absolute lg:absolute max-w-[80%]">
+      <h2 className="font-poppins font-bold uppercase leading-tight mb-3 text-2xl sm:text-3xl">
+        <div className="flex items-center gap-2 sm:gap-3">
+          Trending
+          <div className="w-16 sm:w-24 h-0.5 bg-white"></div>
         </div>
+        <div className="mt-1 sm:mt-2 text-lg sm:text-xl">Products</div>
+      </h2>
+      <button className="bg-white text-black px-5 py-2.5 sm:px-6 sm:py-3 rounded font-medium hover:bg-gray-100 transition-colors text-sm sm:text-base">
+        Explore Now
+      </button>
+    </div>
+  </div>
 
-        {/* New Contents */}
-        <div className="relative">
-          <img
-            src="https://cdn.cness.io/new%20arrivals.svg"
-            alt="New Contents"
-            className="w-full h-[521px] object-cover rounded-2xl"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent rounded-2xl"></div>
-          <div className="absolute left-8 top-8 text-white">
-            <h2 className="font-poppins font-bold text-3xl uppercase leading-tight mb-4">
-              <div className="flex items-center gap-3">
-                New
-                <div className="w-24 h-0.5 bg-white "></div>
-              </div>
-              <div className="mt-2">Contents</div>
-            </h2>
-            <button className="bg-white text-black px-6 py-3 rounded font-medium hover:bg-gray-100 transition-colors">
-              Explore Now
-            </button>
-          </div>
+  {/* New Contents */}
+  <div className="relative rounded-2xl overflow-hidden">
+    <img
+      src="https://cdn.cness.io/new%20arrivals.svg"
+      alt="New Contents"
+      className="sm:h-[160px] sm:w-[160px] md:h-full md:w-full lg:w-full lg:h-[521px] object-cover"
+    />
+    {/* Gradient - absolute as you want it overlay */}
+    <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent rounded-2xl"></div>
+    <div className="absolute left-6 sm:left-8 top-6 sm:top-8 text-white max-w-[80%]">
+      <h2 className="font-poppins font-bold uppercase leading-tight mb-3 text-2xl sm:text-3xl">
+        <div className="flex items-center gap-2 sm:gap-3">
+          New
+          <div className="w-16 sm:w-24 h-0.5 bg-white"></div>
         </div>
-      </div>
+        <div className="mt-1 sm:mt-2 text-lg sm:text-xl">Contents</div>
+      </h2>
+      <button className="bg-white text-black px-5 py-2.5 sm:px-6 sm:py-3 rounded font-medium hover:bg-gray-100 transition-colors text-sm sm:text-base">
+        Explore Now
+      </button>
+    </div>
+  </div>
+</div>
+
+
 
       {/* Featured Products Section */}
-      <section className="px-8 py-10">
+      <section className="sm:px-3 md:px-4 lg:px-8 py-10">
         <div className="mb-8">
-          <h2 className="font-poppins font-semibold text-3xl text-gray-800 mb-6">Featured products</h2>
+          <h2 className="font-poppins font-semibold sm:text-2xl md:text-2xl text-3xl text-gray-800 mb-6">Featured products</h2>
 
           {/* Category Tabs */}
-          <div className="flex space-x-4">
-            {categories.map((category) => (
-              <button
-                key={category.slug}
-                onClick={() => handleCategorySelect(category.slug)}
-                className={`px-11 py-4 rounded-full border font-medium text-sm transition-colors ${selectedCategory === category.slug
+         <div className="grid grid-cols-2 gap-3 sm:flex sm:space-x-4">
+          {categories.map((category) => (
+            <button
+              key={category.slug}
+              onClick={() => handleCategorySelect(category.slug)}
+              className={`py-4 sm:px-3 md:px-4 lg:px-11 rounded-full border font-medium text-sm transition-colors ${
+                selectedCategory === category.slug
                   ? "border-blue-500 text-blue-500 bg-white"
                   : "border-gray-400 text-gray-400 bg-white hover:border-gray-500"
-                  }`}
-              >
-                {category.name}
-              </button>
-            ))}
-          </div>
+              }`}
+            >
+              {category.name}
+            </button>
+          ))}
+        </div>
+
         </div>
 
         {/* Products Grid */}
@@ -430,12 +490,17 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       </section>
 
       {/* Digital Stores Section */}
-      <section className="relative w-full h-auto px-8 py-16 flex items-center justify-center">
+      <section className="relative w-full h-auto sm:px-2 sm:py-2 md:px-3 md:py-14 lg:px-8 lg:py-16 flex items-center justify-center">
         {/* Background image absolutely positioned */}
         <img
           src={digital}
           alt="Background"
-          className="absolute inset-0 w-full h-full object-cover"
+           className="
+            absolute inset-0 w-full h-full
+            sm:object-contain
+            md:rounded-lg
+            lg:object-cover
+          "
         />
 
         {/* Gradient overlay (optional, for contrast) */}
@@ -453,7 +518,7 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
         </div>
       </section>
 
-      <section className="px-8 py-16">
+      <section className="py-16 sm:px-2 md:px-3 lg:px-8 py-16">
         <h2 className="font-poppins font-semibold text-3xl text-center text-black mb-12">Digital stores</h2>
 
         <div

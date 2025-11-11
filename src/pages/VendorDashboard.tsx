@@ -28,7 +28,7 @@ interface ProductItemProps {
 
 const StatCard: React.FC<StatCardProps> = ({ title, value, icon }) => {
   return (
-    <div className="p-6 bg-white border border-gray-200 rounded-xl shadow-sm transition-all duration-300 hover:shadow-md mt-30">
+    <div className="p-4 bg-white border border-gray-200 rounded-xl shadow-sm transition-all duration-300 hover:shadow-md">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-gray-700 font-[400] text-[14px] leading-[100%] capitalize font-['Open_Sans']">
           {title}
@@ -55,19 +55,31 @@ const ProductItem: React.FC<ProductItemProps> = ({
   image,
 }) => {
   return (
-    <div className="flex items-center gap-3 py-3 border-b border-gray-100 last:border-none">
+   <div className="
+  
+  gap-1 py-1              /* XS (extra small, very compact) */
+  sm:gap-3 sm:py-3        /* Small and up */
+  md:gap-2 md:py-2   
+  lg:flex     /* Medium and up */
+  border-b border-gray-100 last:border-none
+">
       <img
         src={image}
         alt={title}
-        className="w-20 h-16 rounded-lg object-cover flex-shrink-0"
+        className="
+  gap-1 py-1              /* XS (extra small, very compact) */
+  sm:w-20  sm:h-16       /* Small and up */
+  md:w-20 md:h-16   /* Medium and up */
+  border-b border-gray-100 last:border-none
+rounded-lg object-cover flex-shrink-0"
       />
       <div className="flex-1 space-y-1">
-        <h4 className="text-gray-900 text-sm font-medium leading-snug line-clamp-2">
+        <h4 className="text-gray-900 sm:text-[12px] md:text-[12px] lg:text-[12px] font-medium line-clamp-2">
           {title}
         </h4>
         <div className="flex items-center justify-between">
           <span className="text-gray-900 text-sm font-semibold">{price}</span>
-          <div className="flex items-center gap-2 text-xs text-gray-700">
+          <div className="flex items-center gap-1 text-xs text-gray-700">
             <span className="bg-purple-50 px-2 py-1 rounded-full text-gray-700">
               🕊️ Peaceful
             </span>
@@ -158,7 +170,7 @@ const ProductRow: React.FC<ProductRowProps> = ({
           className="w-22.25 h-14.5 rounded object-cover"
         />
       </td>
-      <td className="py-6 px-6 text-gray-900 text-sm leading-5 max-w-31.25">{courseName}</td>
+      <td className="py-3 px-2 text-gray-900 text-sm leading-5 max-w-31.25">{courseName}</td>
       <td className="py-6 px-6 text-gray-900 text-base">{price}</td>
       <td className="py-6 px-6">
         <div className="flex items-center gap-2">
@@ -166,7 +178,7 @@ const ProductRow: React.FC<ProductRowProps> = ({
           <span className="text-gray-900 text-base">{category}</span>
         </div>
       </td>
-      <td className="py-6 px-6 text-gray-900 text-base">{uploadDate}</td>
+      <td className="py-3 px-2 text-gray-900 text-base">{uploadDate}</td>
       <td className="py-6 px-6">
         <span className={`px-5 py-1.5 rounded-full text-xs font-medium ${getStatusStyle(status)}`}>
           {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -234,7 +246,7 @@ const chartData = [
   return (
     <>
       {/* Top Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 -mt-30">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Total Revenue"
           value="$23,456"
@@ -257,11 +269,11 @@ const chartData = [
         />
       </div>
 
-      {/* Sales Summary + Best Selling */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-10">
+   {/* Sales Summary + Best Selling */}
+   <div className="grid  sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-6 mt-5">
         {/* Sales Summary */}
       
- <div className="col-span-2 bg-white border border-[#E6E8EC] rounded-xl p-6 shadow-sm">
+ <div className="col-span-2 sm:col-span-1 md:col-span-1 lg:col-span-2 bg-white border border-[#E6E8EC] rounded-[12px] p-[14px] shadow-sm">
       {/* Header */}
         <h2 className="text-[#242E3A] font-['Poppins'] font-semibold text-[18px] mb-1">
     Sales Summary
@@ -271,7 +283,7 @@ const chartData = [
   </p>
 
   {/* CHART */}
-  <div className="relative h-[350px] px-3 pb-6 flex items-end gap-1 overflow-hidden">
+  <div className="relative h-[365px] sm:px-0 md:px-0 lg:px-3 flex items-end gap-1 overflow-hidden">
 
     {chartData.map((bar, i) => {
       const CIRCLE_OFFSET = 15;
@@ -357,7 +369,7 @@ const chartData = [
 
 
         {/* Best Selling */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+  <div className="bg-white border border-gray-200 rounded-[12px] p-[10px] h-auto shadow-sm">
           <h2 className="text-[#242E3A] font-['Poppins'] font-semibold text-[18px] mb-1">
             Best Selling
           </h2>
@@ -365,7 +377,7 @@ const chartData = [
             Top 4 Best-Selling Products
           </p>
 
-          <div className="space-y-4">
+          <div className="space-y-0">
             {products.map((product, index) => (
               <ProductItem key={index} {...product} />
             ))}
@@ -382,8 +394,8 @@ Product Submission Queue</h2>
 Check the status of all newly submitted digital products and take action quickly</p>
       </div>
       
-  <div className="bg-white border border-gray-300 rounded-xl overflow-hidden">
-    <table className="w-full table-auto">
+  <div className="bg-white border border-gray-300 rounded-xl overflow-x-auto">
+    <table className="min-w-[800px] w-full table-auto">
           <thead>
             <tr className="border-b border-gray-200">
               <th className="py-5 px-6 font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#8A8A8A] text-left w-[8%]">P.No</th>
@@ -401,7 +413,7 @@ Check the status of all newly submitted digital products and take action quickly
               <ProductRow key={index} {...product} />
             ))}
           </tbody>
-        </table>
+      </table>
       </div>
     </div>
     </>
