@@ -228,6 +228,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
   const [friendRequests, setFriendRequests] = useState<{
     [key: string]: string;
   }>({});
+  console.log("🚀 ~ FriendProfileModal ~ friendRequests:", friendRequests)
 
   const checkFriendStatus = async (userId: string) => {
     try {
