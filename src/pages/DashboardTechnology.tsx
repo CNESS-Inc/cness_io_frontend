@@ -9,7 +9,7 @@ import {
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
-import { Award, ChevronUp, ChevronDown, SortAsc, SortDesc } from "lucide-react";
+import { Award, ChevronUp, ChevronDown, SortAsc, SortDesc, X } from "lucide-react";
 
 interface Company {
   id: string;
@@ -231,6 +231,23 @@ export default function DashboardTechnology() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const hasActiveFilters = selectedDomain || searchQuery || selectedCert || sort !== "az";
+
+  const handleClearFilters = () => {
+    setSelectedDomain("");
+    setSelectedDomainText("All Profession");
+    setSearchQuery("");
+    setSelectedCert("");
+    setSort("az");
+    setCurrentPage(1);
+    
+    // Clear URL parameters
+    navigate("?");
+    
+    // Fetch data with cleared filters
+    fetchUsersearchProfileDetails(1);
+  };
+
   return (
     <>
       <section className="relative h-auto md:h-[325px] rounded-[12px] overflow-hidden">
@@ -306,13 +323,14 @@ export default function DashboardTechnology() {
           </div>
 
           <p className="text-gray-700 text-sm mt-4 md:mt-6">
-            <span
+            {/* <span
               className="font-medium text-[#F07EFF] underline cursor-pointer"
               onClick={() => navigate("/dashboard/company-profile")}
             >
               List your company now
             </span>{" "}
-            and connect with conscious audience
+            and */}
+            connect with conscious audience
           </p>
         </div>
       </section>
@@ -344,7 +362,17 @@ export default function DashboardTechnology() {
           </div>
 
           {/* Filters moved here - horizontal layout */}
-          <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+          <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto items-center">
+            {/* Clear Filters Button */}
+            {hasActiveFilters && (
+              <button
+                onClick={handleClearFilters}
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 hover:text-gray-700 transition-colors"
+              >
+                <X size={16} />
+                Clear Filters
+              </button>
+            )}
             {/* Certification Filter - Dropdown */}
             <div className="relative">
               <div

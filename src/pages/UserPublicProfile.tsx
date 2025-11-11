@@ -197,17 +197,17 @@ export default function UserProfileView() {
   };
 
   const handleDeleteBestPractice = async (id: any) => {
-      try {
-        await DeleteBestPractices(id);
-      } catch (error: any) {
-        console.error("Error fetching inspiring companies:", error);
-        showToast({
-          message: error?.response?.data?.error?.message,
-          type: "error",
-          duration: 5000,
-        });
-      } 
-    };
+    try {
+      await DeleteBestPractices(id);
+    } catch (error: any) {
+      console.error("Error fetching inspiring companies:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
   const fetchFollowBestPractices = async () => {
     try {
       const res = await GetFollowBestpractices();
@@ -346,75 +346,78 @@ export default function UserProfileView() {
   };
 
   const handleFriend = async (userId: string) => {
-  try {
-    // Case 1: No existing connection or pending request - Send new connection request
-    if (
-      userDetails.friend_request_status !== "ACCEPT" &&
-      userDetails.friend_request_status !== "PENDING" &&
-      !userDetails.if_friend
-    ) {
-      const formattedData = {
-        friend_id: userId,
-      };
-      const res = await SendConnectionRequest(formattedData);
-      console.log("🚀 ~ handleFriend ~ res:", res)
+    try {
+      // Case 1: No existing connection or pending request - Send new connection request
+      if (
+        userDetails.friend_request_status !== "ACCEPT" &&
+        userDetails.friend_request_status !== "PENDING" &&
+        !userDetails.if_friend
+      ) {
+        const formattedData = {
+          friend_id: userId,
+        };
+        const res = await SendConnectionRequest(formattedData);
+        console.log("🚀 ~ handleFriend ~ res:", res);
+        showToast({
+          message: res?.success?.message,
+          type: "success",
+          duration: 2000,
+        });
+        setUserDetails({
+          ...userDetails,
+          if_friend: false,
+          friend_request_status: "PENDING",
+        });
+      }
+      // Case 2: Cancel pending request (when status is PENDING)
+      else if (
+        userDetails.friend_request_status === "PENDING" &&
+        !userDetails.if_friend
+      ) {
+        const formattedData = {
+          friend_id: userId,
+        };
+        const res = await UnFriend(formattedData); // Or use a specific cancel request API if available
+        showToast({
+          message: res?.success?.message,
+          type: "success",
+          duration: 2000,
+        });
+        setUserDetails({
+          ...userDetails,
+          if_friend: false,
+          friend_request_status: null,
+        });
+      }
+      // Case 3: Remove existing friend connection
+      else if (
+        userDetails.friend_request_status === "ACCEPT" &&
+        userDetails.if_friend
+      ) {
+        const formattedData = {
+          friend_id: userId,
+        };
+        const res = await UnFriend(formattedData);
+        showToast({
+          message: res?.success?.message,
+          type: "success",
+          duration: 2000,
+        });
+        setUserDetails({
+          ...userDetails,
+          if_friend: false,
+          friend_request_status: null,
+        });
+      }
+    } catch (error) {
+      console.error("Error handling friend request:", error);
       showToast({
-        message: res?.success?.message,
-        type: "success",
-        duration: 2000,
-      });
-      setUserDetails({
-        ...userDetails,
-        if_friend: false,
-        friend_request_status: "PENDING",
+        message: "Failed to update connection",
+        type: "error",
+        duration: 3000,
       });
     }
-    // Case 2: Cancel pending request (when status is PENDING)
-    else if (userDetails.friend_request_status === "PENDING" && !userDetails.if_friend) {
-      const formattedData = {
-        friend_id: userId,
-      };
-      const res = await UnFriend(formattedData); // Or use a specific cancel request API if available
-      showToast({
-        message: res?.success?.message,
-        type: "success",
-        duration: 2000,
-      });
-      setUserDetails({
-        ...userDetails,
-        if_friend: false,
-        friend_request_status: null,
-      });
-    }
-    // Case 3: Remove existing friend connection
-    else if (
-      userDetails.friend_request_status === "ACCEPT" &&
-      userDetails.if_friend
-    ) {
-      const formattedData = {
-        friend_id: userId,
-      };
-      const res = await UnFriend(formattedData);
-      showToast({
-        message: res?.success?.message,
-        type: "success",
-        duration: 2000,
-      });
-      setUserDetails({
-        ...userDetails,
-        if_friend: false,
-        friend_request_status: null,
-      });
-    }
-  } catch (error) {
-    console.error("Error handling friend request:", error);
-    showToast({
-      message: "Failed to update connection",
-      type: "error",
-      duration: 3000,
-    });
-  }
-};
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -922,8 +925,8 @@ export default function UserProfileView() {
                             handleAcceptRequest(userDetails?.user_id)
                           }
                           className="flex-1 h-9 rounded-full bg-green-500 
-            font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
-            text-white flex items-center justify-center gap-2 hover:bg-green-600"
+                            font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
+                            text-white flex items-center justify-center gap-2 hover:bg-green-600"
                         >
                           <UserRoundPlus className="w-4 h-4" />
                           Accept
@@ -933,8 +936,8 @@ export default function UserProfileView() {
                             handleRejectRequest(userDetails?.user_id)
                           }
                           className="flex-1 h-9 rounded-full bg-red-500 
-            font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
-            text-white flex items-center justify-center gap-2 hover:bg-red-600"
+                            font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
+                            text-white flex items-center justify-center gap-2 hover:bg-red-600"
                         >
                           <UserRoundPlus className="w-4 h-4" />
                           Reject
@@ -946,19 +949,19 @@ export default function UserProfileView() {
                         onClick={() => handleFriend(userDetails?.user_id)}
                         disabled={userDetails?.user_id === loggedInUserID}
                         className={`w-full h-9 rounded-full border border-[#ECEEF2] 
-          font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
-          flex items-center justify-center gap-2
-          ${
-            userDetails?.user_id === loggedInUserID
-              ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-              : userDetails?.if_friend &&
-                userDetails?.friend_request_status === "ACCEPT"
-              ? "bg-green-100 text-green-700"
-              : !userDetails?.if_friend &&
-                userDetails?.friend_request_status === "PENDING"
-              ? "bg-yellow-100 text-yellow-700"
-              : "bg-[#FFFFFF] text-[#0B3449] hover:bg-indigo-600"
-          }`}
+                          font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
+                          flex items-center justify-center gap-2
+                          ${
+                            userDetails?.user_id === loggedInUserID
+                              ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                              : userDetails?.if_friend &&
+                                userDetails?.friend_request_status === "ACCEPT"
+                              ? "bg-green-100 text-green-700"
+                              : !userDetails?.if_friend &&
+                                userDetails?.friend_request_status === "PENDING"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : "bg-[#FFFFFF] text-[#0B3449]"
+                          }`}
                       >
                         <UserRoundPlus className="w-4 h-4" />
                         {userDetails?.if_friend &&

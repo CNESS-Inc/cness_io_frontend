@@ -43,6 +43,9 @@ const MyConnection = () => {
     if (location.state?.to === "request") {
       setActiveTab("Friend Requests");
     }
+    if (location.state?.to === "suggestion") {
+      setActiveTab("Suggestions");
+    }
   }, [location.state]);
 
   useEffect(() => {

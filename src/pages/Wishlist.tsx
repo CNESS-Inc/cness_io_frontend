@@ -198,7 +198,7 @@ const Wishlist: React.FC = () => {
       </div>
 
       {/* 📦 Main Section */}
-      <div className="flex w-full max-w-[1600px] mx-auto px-5 py-10 gap-8">
+      <div className="flex w-full mx-auto px-5 py-10 gap-8">
         <div className="flex-1">
 
 

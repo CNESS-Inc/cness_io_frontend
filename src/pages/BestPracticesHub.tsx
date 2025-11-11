@@ -14,12 +14,12 @@ import {
   SendBpFollowRequest,
   // SendBpFollowRequest,
 } from "../Common/ServerAPI";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import like from "../assets/like.svg";
 import comment from "../assets/comment.svg";
-import { Bookmark } from "lucide-react"; // Import icons
+import { Bookmark, ChevronDown, Search, X } from "lucide-react";
 import {
   CardDescription,
   CardHeader,
@@ -27,16 +27,12 @@ import {
 } from "../components/ui/DashboardCard";
 import DOMPurify from "dompurify";
 import AddBestPracticeModal from "../components/sections/bestPractiseHub/AddBestPractiseModal";
-//import {  ChevronUp, ChevronDown, SortAsc, SortDesc } from "lucide-react"; // Import icons
-
-//import {
-// GetBadgeListDetails
-//} from "../Common/ServerAPI";
 
 const truncateText = (text: string, maxLength: number): string => {
   if (!text) return "";
   return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
 };
+
 type Company = {
   file: any;
   title: string;
@@ -76,66 +72,84 @@ type Profession = {
 
 export default function BestPracticesHub() {
   const navigate = useNavigate();
-  const [searchText, setSearchText] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
   const { showToast } = useToast();
+
+  // Initialize state from query params
+  const [searchText, setSearchText] = useState(
+    searchParams.get("search") || ""
+  );
   const [profession, setProfession] = useState<Profession[]>([]);
   const [interest, setInterestData] = useState<any[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
+
+  // Get profession title from query params and find matching ID
+  const professionTitleFromParams = searchParams.get("profession") || "";
+  const initialProfessionId = professionTitleFromParams
+    ? profession.find((p) => p.title === professionTitleFromParams)?.id || ""
+    : "";
+
   const [selectedFilter, setSelectedFilter] = useState<{
     id: string;
     type: "profession" | "interest" | "";
   }>({
-    id: "",
-    type: "",
+    id: initialProfessionId,
+    type: initialProfessionId ? "profession" : "",
   });
-  // const [selectedProfession, setSelectedProfession] = useState("");
+
   const [activeModal, setActiveModal] = useState<"bestpractices" | null>(null);
   const [textWidth, setTextWidth] = useState(0);
   const measureRef = useRef<HTMLSpanElement>(null);
-  const [selectedDomainText, setSelectedDomainText] = useState("All Domains");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const filteredProfessions = profession.filter((prof) =>
+    prof.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredInterests = interest.filter((int) =>
+    int.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Initialize selected domain text from query params
+  const getSelectedDomainText = () => {
+    const professionTitle = searchParams.get("profession");
+    if (professionTitle) {
+      return professionTitle;
+    }
+    return "All Domains";
+  };
+
+  const [selectedDomainText, setSelectedDomainText] = useState(
+    getSelectedDomainText()
+  );
+
   const isMobile = useMediaQuery("(max-width: 640px)");
   const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
-  //const [badge, setBadge] = useState<any>([]);
-  //const [selectedCert, setSelectedCert] = useState<string>("");
-  //const [sort, setSort] = useState<"az" | "za">("az");
-  //const [open, setOpen] = useState<"cert" | "sort" | null>(null);
+
+  // Update selectedDomainText when profession data is loaded or query params change
+  useEffect(() => {
+    if (profession.length > 0 || searchParams.get("profession")) {
+      setSelectedDomainText(getSelectedDomainText());
+    }
+  }, [profession, searchParams]);
+
   // Fetch saved best practices and store in variable
   useEffect(() => {
     const fetchSavedBestPractices = async () => {
       try {
         const res = await GetSaveBestpractices();
-        // Assuming the response contains an array of saved post IDs
         const savedIds =
           res?.data?.data?.rows.map((item: any) => item.id) || [];
         setSavedItems(new Set(savedIds));
       } catch (error) {
-        // Optionally handle error
         setSavedItems(new Set());
       }
     };
     fetchSavedBestPractices();
   }, []);
-
-  {
-    /*const fetchBadge = async () => {
-  try {
-    const res = await GetBadgeListDetails();
-    setBadge(res?.data?.data);
-  } catch (error: any) {
-    showToast({
-      message: error?.response?.data?.error?.message,
-      type: "error",
-      duration: 5000,
-    });
-  }
-};
-
-useEffect(() => {
-  fetchBadge();
-}, []);
-*/
-  }
 
   const toggleSave = async (id: string) => {
     try {
@@ -189,13 +203,6 @@ useEffect(() => {
     popular: false,
   });
 
-  // const toggleDescription = (e: React.MouseEvent, id: string) => {
-  //   e.stopPropagation();
-  //   setExpandedDescriptions((prev) => ({
-  //     ...prev,
-  //     [id]: !prev[id],
-  //   }));
-  // };
   useEffect(() => {
     if (!measureRef.current) return;
     const el = measureRef.current;
@@ -211,22 +218,45 @@ useEffect(() => {
     return () => observer.disconnect();
   }, [selectedFilter, selectedDomainText]);
 
-  const handleFilterChange = async (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const id = e.target.value;
-    const type = e.target.options[e.target.selectedIndex].dataset.type as
-      | "profession"
-      | "interest"
-      | "";
+  // Update query params when filter changes - using title instead of ID
+  const updateQueryParams = (professionId: string, search: string) => {
+    const params = new URLSearchParams();
 
-    setSelectedFilter({ id, type });
+    if (professionId) {
+      // Find profession title by ID
+      const professionTitle =
+        profession.find((p) => p.id === professionId)?.title || "";
+      if (professionTitle) {
+        params.set("profession", professionTitle);
+      }
+    }
 
-    const selectedText = e.target.options[e.target.selectedIndex].text;
-    setSelectedDomainText(selectedText);
+    if (search) {
+      params.set("search", search);
+    }
 
-    await fetchBestPractices(1, id, type, searchText);
+    setSearchParams(params);
   };
+
+  // const handleFilterChange = async (
+  //   e: React.ChangeEvent<HTMLSelectElement>
+  // ) => {
+  //   const id = e.target.value;
+  //   const type = e.target.options[e.target.selectedIndex].dataset.type as
+  //     | "profession"
+  //     | "interest"
+  //     | "";
+
+  //   setSelectedFilter({ id, type });
+
+  //   const selectedText = e.target.options[e.target.selectedIndex].text;
+  //   setSelectedDomainText(selectedText);
+
+  //   // Update query params with profession title
+  //   updateQueryParams(id, searchText);
+
+  //   await fetchBestPractices(1, id, type, searchText);
+  // };
 
   const fetchProfession = async () => {
     try {
@@ -315,13 +345,69 @@ useEffect(() => {
     }
   };
 
+  // Initialize data from query params on component mount
   useEffect(() => {
     fetchProfession();
     fetchIntrusts();
-    fetchBestPractices();
+
+    // Get initial values from query params
+    const initialProfessionTitle = searchParams.get("profession") || "";
+    const initialSearch = searchParams.get("search") || "";
+
+    // Find profession ID from title after professions are loaded
+    const findProfessionIdFromTitle = (title: string) => {
+      return profession.find((p) => p.title === title)?.id || "";
+    };
+
+    // Set initial filter state after professions are loaded
+    const initializeFilter = async () => {
+      await fetchProfession();
+
+      const initialProfessionId = initialProfessionTitle
+        ? findProfessionIdFromTitle(initialProfessionTitle)
+        : "";
+
+      setSelectedFilter({
+        id: initialProfessionId,
+        type: initialProfessionId ? "profession" : "",
+      });
+
+      // Fetch data with initial params
+      fetchBestPractices(
+        1,
+        initialProfessionId,
+        initialProfessionId ? "profession" : "",
+        initialSearch
+      );
+    };
+
+    initializeFilter();
   }, []);
 
+  // Re-initialize filter when professions are loaded and we have profession title in params
+  useEffect(() => {
+    if (profession.length > 0 && searchParams.get("profession")) {
+      const professionTitle = searchParams.get("profession") || "";
+      const professionId =
+        profession.find((p) => p.title === professionTitle)?.id || "";
+
+      if (professionId && professionId !== selectedFilter.id) {
+        setSelectedFilter({
+          id: professionId,
+          type: "profession",
+        });
+
+        // Refetch data with the correct profession ID
+        const search = searchParams.get("search") || "";
+        fetchBestPractices(1, professionId, "profession", search);
+      }
+    }
+  }, [profession, searchParams]);
+
   const handleSearch = () => {
+    // Update query params
+    updateQueryParams(selectedFilter.id, searchText);
+
     fetchBestPractices(1, selectedFilter.id, selectedFilter.type, searchText);
   };
 
@@ -359,41 +445,38 @@ useEffect(() => {
     }));
   };
 
- const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  const allowedTypes = ["image/jpeg", "image/png"];
-  const maxSize = 2 * 1024 * 1024; // 2MB
+    const allowedTypes = ["image/jpeg", "image/png"];
+    const maxSize = 2 * 1024 * 1024; // 2MB
 
-  // ❌ Invalid file type
-  if (!allowedTypes.includes(file.type)) {
-    showToast({
-      message: "Invalid file type. Please upload JPEG or PNG only.",
-      type: "error",
-      duration: 4000,
-    });
-    e.target.value = "";
-    return;
-  }
+    if (!allowedTypes.includes(file.type)) {
+      showToast({
+        message: "Invalid file type. Please upload JPEG or PNG only.",
+        type: "error",
+        duration: 4000,
+      });
+      e.target.value = "";
+      return;
+    }
 
-  // ❌ File too large
-  if (file.size > maxSize) {
-    showToast({
-      message: "File size exceeds 2MB. Please upload a smaller image.",
-      type: "error",
-      duration: 4000,
-    });
-    e.target.value = "";
-    return;
-  }
+    if (file.size > maxSize) {
+      showToast({
+        message: "File size exceeds 2MB. Please upload a smaller image.",
+        type: "error",
+        duration: 4000,
+      });
+      e.target.value = "";
+      return;
+    }
 
-  // ✅ Valid file
-  setNewPractice((prev) => ({
-    ...prev,
-    file,
-  }));
-};
+    setNewPractice((prev) => ({
+      ...prev,
+      file,
+    }));
+  };
 
   const handleRemoveFile = () => {
     setNewPractice((prev) => ({
@@ -402,10 +485,8 @@ useEffect(() => {
     }));
   };
 
-  // Sample like handler (replace with your actual API call)
   const handleLike = async (id: string, index: Number) => {
     try {
-      // Example: await LikeBestPractice(id);
       let data = {
         post_id: id,
       };
@@ -413,13 +494,12 @@ useEffect(() => {
 
       const message = response?.success?.message || "";
 
-      // Optimistically update likesCount in bestPractices state
       setBestPractices((prev) =>
         prev.map((item, i) => {
           if (i !== index) return item;
 
           const currentLikes = Number(item.likesCount) || 0;
-          const isLiked = message.includes("Liked!"); // checks both Liked/Unliked
+          const isLiked = message.includes("Liked!");
           const newLikes = message.includes("Unliked")
             ? Math.max(currentLikes - 1, 0)
             : currentLikes + 1;
@@ -565,128 +645,239 @@ useEffect(() => {
     }
   };
 
+  const clearFilter = () => {
+    setSelectedFilter({ id: "", type: "" });
+    setSelectedDomainText("All Domains");
+    setIsDropdownOpen(false);
+    setSearchQuery("");
+
+    // Update query params
+    updateQueryParams("", searchText);
+
+    // Fetch data
+    fetchBestPractices(1, "", "", searchText);
+  };
+
+  const handleFilterSelect = (
+    id: string,
+    type: "profession" | "interest" | "",
+    title: string
+  ) => {
+    setSelectedFilter({ id, type });
+    setSelectedDomainText(title);
+    setIsDropdownOpen(false);
+    setSearchQuery("");
+
+    // Update query params
+    updateQueryParams(id, searchText);
+
+    // Fetch data
+    fetchBestPractices(1, id, type, searchText);
+  };
+
   return (
     <>
-        <div className="px-2 sm:px-2 lg:px-1">
+      <div className="px-2 sm:px-2 lg:px-1">
+        <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] mx-auto rounded-xl overflow-hidden mt-2">
+          <AnimatedBackground />
 
-      <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] mx-auto rounded-[12px] overflow-hidden mt-2">
-        <AnimatedBackground />
+          {/* Background Image (city illustration) */}
+          <img
+            src={iconMap["heroimg"]}
+            alt="City Skyline"
+            className="absolute bottom-[-200px] left-0 w-full object-cover z-0 pointer-events-none"
+          />
 
-        {/* Background Image (city illustration) */}
-        <img
-          src={iconMap["heroimg"]}
-          alt="City Skyline"
-          className="absolute bottom-[-200px] left-0 w-full object-cover z-0 pointer-events-none"
-        />
+          {/* Foreground Content */}
+          <div className="relative z-10 flex flex-col items-center justify-center max-w-4xl mx-auto h-full px-4 text-center mt-20">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-6 sm:mb-10 mt-0 sm:-mt-35">
+              Find Your Conscious Best Practices here.
+            </h1>
 
-        {/* Foreground Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center max-w-4xl mx-auto h-full px-4 text-center mt-20">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-6 sm:mb-10 mt-0 sm:-mt-35">
-            Find Your Conscious Best Practices here.
-          </h1>
-
-          <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-            {/* Profession Selector */}
-
-            <div className="relative rounded-full">
-              {/* Measurement span with exact same text styling */}
-              <span
-                className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4 py-2 "
-                ref={measureRef}
-                style={{
-                  fontFamily: "inherit",
-                  fontSize: "12px", // Explicitly set to match select
-                }}
-              >
-                {selectedDomainText || "All Profession"}
-              </span>
-
-              <div className="w-full flex justify-center md:justify-start items-center my-1 px-4 md:px-0">
-                <div
-                  className="relative w-auto md:w-fit"
+            <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              {/* Searchable Profession Selector */}
+              <div className="relative rounded-full" ref={dropdownRef}>
+                <span
+                  className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4 py-2 "
+                  ref={measureRef}
                   style={{
-                    width: textWidth ? `${textWidth}px` : "100%",
-                    minWidth: "180px",
-                    maxWidth: "100%",
+                    fontFamily: "inherit",
+                    fontSize: "12px",
                   }}
                 >
-                  <select
-                    className="bg-[#7077FE] rounded-full text-white font-semibold px-3 py-2 pr-6 appearance-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-[#7077FE] cursor-pointer text-[12px] w-full transition-all duration-200"
-                    value={selectedFilter.id}
-                    onChange={handleFilterChange}
-                  >
-                    <option value="" className="text-white text-[12px]">
-                      All Profession & Interests
-                    </option>
-                    {profession.length > 0 && (
-                      <optgroup label="Professions">
-                        {profession.map((prof: any) => (
-                          <option
-                            key={`p-${prof.id}`}
-                            value={prof.id}
-                            className="text-black"
-                            data-type="profession"
-                          >
-                            {prof.title}
-                          </option>
-                        ))}
-                      </optgroup>
-                    )}
-                    {interest && interest.length > 0 && (
-                      <optgroup label="Interests">
-                        {interest.map((interest: any) => (
-                          <option
-                            key={`i-${interest.id}`}
-                            value={interest.id}
-                            className="text-black"
-                            data-type="interest"
-                          >
-                            {interest.name}
-                          </option>
-                        ))}
-                      </optgroup>
-                    )}
-                  </select>
+                  {selectedDomainText || "All Profession"}
+                </span>
 
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white text-xs pointer-events-none">
-                    <span className="block">▼</span>
+                <div className="w-full flex justify-center md:justify-start items-center my-1 px-4 md:px-0">
+                  <div
+                    className="relative w-auto md:w-fit"
+                    style={{
+                      width: textWidth ? `${textWidth}px` : "100%",
+                      minWidth: "180px",
+                      maxWidth: "100%",
+                    }}
+                  >
+                    {/* Custom Dropdown Button */}
+                    <button
+                      className="bg-[#7077FE] rounded-full text-white font-semibold px-3 py-2 pr-8 appearance-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-[#7077FE] cursor-pointer text-[12px] w-full transition-all duration-200 flex items-center justify-between"
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    >
+                      <span className="truncate">
+                        {selectedDomainText || "All Profession & Interests"}
+                      </span>
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform duration-200 ${
+                          isDropdownOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    {isDropdownOpen && (
+                      <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-40 overflow-hidden">
+                        {/* Search Input */}
+                        <div className="p-2 border-b border-gray-100">
+                          <div className="relative">
+                            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                            <input
+                              type="text"
+                              placeholder="Search professions & interests..."
+                              className="w-full pl-8 pr-8 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent"
+                              value={searchQuery}
+                              onChange={(e) => setSearchQuery(e.target.value)}
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                            {searchQuery && (
+                              <button
+                                onClick={() => setSearchQuery("")}
+                                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Clear Filter Option */}
+
+                        <div className="overflow-y-auto max-h-80">
+                          <div className="border-b border-gray-100">
+                            <button
+                              className={`w-full text-left px-4 py-2 text-xs hover:bg-gray-50 ${
+                                !selectedFilter.id
+                                  ? "bg-blue-50 text-[#7077FE]"
+                                  : ""
+                              }`}
+                              onClick={() => clearFilter()}
+                            >
+                              All Profession & Interests
+                            </button>
+                          </div>
+                          {/* Professions Section */}
+                          {filteredProfessions.length > 0 && (
+                            <div>
+                              <div className="px-2 py-2 text-left text-xs font-semibold text-gray-500 bg-gray-50 uppercase tracking-wide">
+                                Professions
+                              </div>
+                              {filteredProfessions.map((prof) => (
+                                <button
+                                  key={`p-${prof.id}`}
+                                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
+                                    selectedFilter.id === prof.id &&
+                                    selectedFilter.type === "profession"
+                                      ? "bg-blue-50 text-[#7077FE] font-medium"
+                                      : ""
+                                  }`}
+                                  onClick={() =>
+                                    handleFilterSelect(
+                                      prof.id,
+                                      "profession",
+                                      prof.title
+                                    )
+                                  }
+                                >
+                                  {prof.title}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Interests Section */}
+                          {filteredInterests.length > 0 && (
+                            <div>
+                              <div className="px-4 py-2 text-xs font-semibold text-gray-500 bg-gray-50 uppercase tracking-wide">
+                                Interests
+                              </div>
+                              {filteredInterests.map((int) => (
+                                <button
+                                  key={`i-${int.id}`}
+                                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
+                                    selectedFilter.id === int.id &&
+                                    selectedFilter.type === "interest"
+                                      ? "bg-blue-50 text-[#7077FE] font-medium"
+                                      : ""
+                                  }`}
+                                  onClick={() =>
+                                    handleFilterSelect(
+                                      int.id,
+                                      "interest",
+                                      int.name
+                                    )
+                                  }
+                                >
+                                  {int.name}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* No Results */}
+                          {filteredProfessions.length === 0 &&
+                            filteredInterests.length === 0 && (
+                              <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                                No results found for "{searchQuery}"
+                              </div>
+                            )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
-            </div>
-            {/* Search Input */}
-            <div className="relative flex-grow">
-              <input
-                type="text"
-                placeholder="Search best practices..."
-                className="w-full py-2 pl-3 pr-10 text-xs md:text-sm text-gray-700 placeholder:text-gray-400 bg-white border border-gray-200 rounded-full shadow-sm outline-none"
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                onKeyDown={handleKeyPress}
-              />
-              <button
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#7077FE]"
-                onClick={handleSearch}
-              >
-                🔍
-              </button>
-            </div>
-          </div>
 
-          <p className="text-gray-700 text-xs md:text-sm mt-2 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
-            <span
-              className="font-medium underline cursor-pointer text-[#F07EFF]"
-              onClick={openModal}
-            >
-              Add your best practice
-            </span>{" "}
-            and be an author of the best practices.
-          </p>
-        </div>
-      </section>
+              {/* Search Input - remains the same */}
+              <div className="relative grow">
+                <input
+                  type="text"
+                  placeholder="Search best practices..."
+                  className="w-full py-2 pl-3 pr-10 text-xs md:text-sm text-gray-700 placeholder:text-gray-400 bg-white border border-gray-200 rounded-full shadow-sm outline-none"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                />
+                <button
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#7077FE]"
+                  onClick={handleSearch}
+                >
+                  🔍
+                </button>
+              </div>
+            </div>
+
+            <p className="text-gray-700 text-xs md:text-sm mt-2 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
+              <span
+                className="font-medium underline cursor-pointer text-[#F07EFF]"
+                onClick={openModal}
+              >
+                Add your best practice
+              </span>{" "}
+              and be an author of the best practices.
+            </p>
+          </div>
+        </section>
       </div>
 
-      {/* Best Practices Section */}
+      {/* Rest of the component remains the same */}
       <section className="py-8 px-1 sm:py-16 bg-[#f9f9f9] border-t border-gray-100">
         <div className="w-full mx-auto ">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
@@ -717,103 +908,12 @@ useEffect(() => {
 
             {!selectedFilter.id && !searchText && (
               <h4 className="poppins font-medium text-base sm:text-lg leading-[150%] tracking-normal">
-                Best Practices For{" "}
+                Popular Best Practices
               </h4>
             )}
 
             <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-              {/* Certification Filter Dropdown
-              <div className="relative">
-                <div
-                  className="flex items-center justify-between cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm"
-                  onClick={() => setOpen(open === "cert" ? null : "cert")}
-                >
-                  <div className="flex items-center gap-2">
-                    <Award className="w-4 h-4 text-purple-500" />
-                    <span className="font-medium text-sm">
-                      {badge.find((b: any) => b.slug === selectedCert)?.level || "Certification"}
-                    </span>
-                  </div>
-                  {open === "cert" ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                </div>
-
-                {open === "cert" && (
-                  <div className="absolute z-10 mt-1 w-auto bg-white border border-gray-200 rounded-lg shadow-lg p-2">
-                    {badge.map((item: any) => (
-                      <label
-                        key={item.id}
-                        className="flex items-center gap-2 cursor-pointer p-2 hover:bg-gray-50 rounded"
-                      >
-                        <input
-                          type="radio"
-                          name="cert"
-                          value={item.slug}
-                          checked={selectedCert === item.slug}
-                          onChange={() => {
-                            setSelectedCert(item.slug);
-                            setOpen(null);
-                          }}
-                          className="accent-[#897AFF]"
-                        />
-                        <span
-                          className={`text-sm ${
-                            selectedCert === item.slug
-                              ? "text-[#9747FF] font-medium"
-                              : "text-gray-600"
-                          }`}
-                        >
-                          {item.level}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Sort Options Dropdown 
-              <div className="relative">
-                <div
-                  className="flex items-center justify-between cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm"
-                  onClick={() => setOpen(open === "sort" ? null : "sort")}
-                >
-                  <div className="flex items-center gap-2">
-                    {sort === "az" && <SortAsc size={16} />}
-                    {sort === "za" && <SortDesc size={16} />}
-                    <span className="font-medium text-sm">
-                      {sort === "az" && "A-Z"}
-                      {sort === "za" && "Z-A"}
-                    </span>
-                  </div>
-                  {open === "sort" ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                </div>
-
-                {open === "sort" && (
-                  <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg p-2">
-                    <div
-                      className={`flex items-center gap-2 cursor-pointer p-2 hover:bg-gray-50 rounded ${
-                        sort === "az" ? "text-indigo-500 font-medium" : ""
-                      }`}
-                      onClick={() => {
-                        setSort("az");
-                        setOpen(null);
-                      }}
-                    >
-                      <SortAsc size={16} /> A-Z
-                    </div>
-                    <div
-                      className={`flex items-center gap-2 cursor-pointer p-2 hover:bg-gray-50 rounded ${
-                        sort === "za" ? "text-indigo-500 font-medium" : ""
-                      }`}
-                      onClick={() => {
-                        setSort("za");
-                        setOpen(null);
-                      }}
-                    >
-                      <SortDesc size={16} /> Z-A
-                    </div>
-                  </div>
-                )}
-              </div>*/}
+              {/* Certification and Sort dropdowns commented out */}
             </div>
           </div>
 
@@ -824,8 +924,6 @@ useEffect(() => {
           ) : bestPractices.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
               {bestPractices?.map((company, index) => {
-                //const isSaved = savedItems.has(company.id); // ✅ declare inside
-
                 return (
                   <div
                     key={company.id}
@@ -838,12 +936,13 @@ useEffect(() => {
                         {
                           state: {
                             likesCount: company.likesCount,
-                            isLiked: company.isLiked, // ensure this is coming from backend
+                            isLiked: company.isLiked,
                           },
                         }
                       )
                     }
                   >
+                    {/* Card content remains the same */}
                     <CardHeader className="px-4 pt-4 pb-0 relative z-0">
                       <div className="flex items-start gap-1 pr-12">
                         <img
@@ -860,7 +959,6 @@ useEffect(() => {
                           alt={company.user.username}
                           className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover mr-2 sm:mr-3"
                           onError={(e) => {
-                            // Fallback if the image fails to load
                             const target = e.target as HTMLImageElement;
                             target.src = "/profile.png";
                           }}
@@ -877,28 +975,38 @@ useEffect(() => {
                     </CardHeader>
                     <div className="h-full flex flex-col justify-between items-scretch px-4 pt-4 pb-0 relative z-0">
                       <div className="">
-                        <div className="rounded-xl overflow-hidden mb-3">
+                        <div className="relative rounded-xl overflow-hidden mb-3 ">
                           {company.file && (
-                            <img
-                              src={
-                                !company.file ||
-                                company.file === "null" ||
-                                company.file === "undefined" ||
-                                !company.file.startsWith("http") ||
-                                company.file === "http://localhost:5026/file/"
-                                  ? "/profile.jpg"
-                                  : company.file
-                              }
-                              alt={company.title}
-                              className="w-full h-40 sm:h-48 object-cover"
-                              onError={(e) => {
-                                // Fallback in case the image fails to load
-                                (e.target as HTMLImageElement).src =
-                                  iconMap["companycard1"];
-                              }}
-                            />
+                            <>
+                              <img
+                                src={
+                                  !company.file ||
+                                  company.file === "null" ||
+                                  company.file === "undefined" ||
+                                  !company.file.startsWith("http") ||
+                                  company.file === "http://localhost:5026/file/"
+                                    ? "/profile.jpg"
+                                    : company.file
+                                }
+                                alt={company.title}
+                                className="w-full h-40 sm:h-48 object-cover"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src =
+                                    iconMap["companycard1"];
+                                }}
+                              />
+                            </>
                           )}
                         </div>
+                        <span
+                          className="absolute top-6 left-6 text-[12px] inline-flex items-center justify-center mb-3 rounded-full px-3 py-2 leading-none font-medium bg-[#F3F3F3] text-[#8A8A8A]"
+                          style={{
+                            fontFamily: "Poppins, sans-serif",
+                            alignSelf: "flex-start", // 👈 forces pill to left
+                          }}
+                        >
+                          {company.profession}
+                        </span>
                         <div className="w-full flex justify-between items-center gap-3">
                           <h3 className="text-base sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">
                             {company.title}
@@ -931,15 +1039,7 @@ useEffect(() => {
                           Overview
                         </p>
 
-                        {/* <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-3">
-                        {truncateText(company.description, 100)}
-                        {company.description.length > 50 && (
-                          <span className="text-[#F07EFF] underline ml-1">
-                            Read More
-                          </span>
-                        )}
-                      </p> */}
-                        <p className="text-sm text-gray-600 leading-snug break-words whitespace-pre-line">
+                        <p className="text-sm text-gray-600 leading-snug wrap-break-word whitespace-pre-line">
                           <span
                             dangerouslySetInnerHTML={{
                               __html: DOMPurify.sanitize(
@@ -950,10 +1050,7 @@ useEffect(() => {
                             }}
                           />
                           {company.description.length > 100 && (
-                            <span
-                              className="text-purple-600 underline cursor-pointer ml-1"
-                              // onClick={(e) => toggleDescription(e, company.id)}
-                            >
+                            <span className="text-purple-600 underline cursor-pointer ml-1">
                               {expandedDescriptions[company.id]
                                 ? "Read Less"
                                 : "Read More"}
@@ -962,7 +1059,6 @@ useEffect(() => {
                         </p>
                       </div>
                       <div className="flex items-end justify-between px-4 py-2 mt-2 text-xs sm:text-sm text-gray-600 ">
-                        {/* Likes & Comments */}
                         <div className="flex items-center space-x-6 mb-2">
                           <span
                             className="flex items-center gap-1 cursor-pointer"
@@ -989,7 +1085,6 @@ useEffect(() => {
                           </span>
                         </div>
 
-                        {/* Bookmark */}
                         <div
                           className="cursor-pointer mb-2"
                           onClick={(e) => {
@@ -1002,12 +1097,12 @@ useEffect(() => {
                               className="w-5 h-5 transition-all duration-200"
                               fill={
                                 savedItems.has(company.id) ? "#72DBF2" : "none"
-                              } // full yellow when saved
+                              }
                               stroke={
                                 savedItems.has(company.id)
                                   ? "#72DBF2"
                                   : "#4338CA"
-                              } // yellow or indigo
+                              }
                             />
                             <span className="text-sm font-normal text-gray-700">
                               {savedItems.has(company.id) ? "Saved" : "Save"}
@@ -1047,7 +1142,6 @@ useEffect(() => {
 
                   {!isMobile && (
                     <>
-                      {/* Always show first page */}
                       <button
                         onClick={() =>
                           fetchBestPractices(
@@ -1067,7 +1161,6 @@ useEffect(() => {
                         1
                       </button>
 
-                      {/* Show ellipsis if current page is far from start */}
                       {pagination.currentPage > 3 && (
                         <span className="px-2 sm:px-3 py-1 border border-gray-300 bg-white">
                           ...
@@ -1076,7 +1169,6 @@ useEffect(() => {
                     </>
                   )}
 
-                  {/* Show pages around current page */}
                   {[
                     pagination.currentPage - 1,
                     pagination.currentPage,
@@ -1107,14 +1199,12 @@ useEffect(() => {
 
                   {!isMobile && (
                     <>
-                      {/* Show ellipsis if current page is far from end */}
                       {pagination.currentPage < pagination.totalPages - 2 && (
                         <span className="px-2 sm:px-3 py-1 border border-gray-300 bg-white">
                           ...
                         </span>
                       )}
 
-                      {/* Always show last page if it's not the first page */}
                       {pagination.totalPages > 1 && (
                         <button
                           onClick={() =>
