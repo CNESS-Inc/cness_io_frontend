@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import ProductCard from '../components/MarketPlace/ProductCard';
 import { ChevronDown, ChevronUp, Heart, PlayCircle } from "lucide-react";
 import { useState, useEffect } from "react";
-import { AddProductToCart, AddProductToWishlist, GetMarketPlaceBuyerProductById, GetMarketPlaceBuyerProducts, RemoveProductToWishlist } from '../Common/ServerAPI';
+import { AddProductToCart, AddProductToWishlist, GetMarketPlaceBuyerProductById, GetMarketPlaceBuyerProducts, RemoveProductToCart, RemoveProductToWishlist } from '../Common/ServerAPI';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { CiFacebook, CiInstagram, CiLinkedin, CiYoutube } from 'react-icons/ci';
 import { RiTwitterXFill } from 'react-icons/ri';
@@ -31,6 +31,7 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [openChapter, setOpenChapter] = useState<number | null>(null);
   const [isLiked, setIsLiked] = useState(false);
+  const [isCarted, setIsCarted] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
@@ -84,26 +85,36 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   };
 
   // Handle Add to Cart
-  const handleAddToCart = async () => {
+   const handleAddToCart = async () => {
     if (isAddingToCart || !product) return;
 
     setIsAddingToCart(true);
     try {
-      await AddProductToCart({
-        product_id: product.id,
-        quantity: 1,
-      });
-      showToast({
-        message: "Added to cart 🛒",
-        type: "success",
-        duration: 2000,
-      });
+      if (isCarted) {
+        await RemoveProductToCart(product.id);
+        setIsCarted(false);
+        showToast({
+          message: "Removed from cart",
+          type: "success",
+          duration: 2000,
+        });
+      } else {
+        await AddProductToCart({ product_id: product.id });
+        setIsCarted(true);
+        showToast({
+          message: "Added to cart",
+          type: "success",
+          duration: 2000,
+        });
+      }
     } catch (error: any) {
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to add to cart",
+        message: error?.response?.data?.error?.message || "Failed to update cart",
         type: "error",
         duration: 3000,
       });
+
+      setIsCarted((prevState) => !prevState);
     } finally {
       setIsAddingToCart(false);
     }
@@ -179,7 +190,7 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       case 'music':
         return {
           type: 'music',
-          items: details.tracks || [],
+          items: details?.tracks ? details.tracks : [],
           duration: details.duration,
           format: details.format,
           theme: details.theme,
@@ -243,7 +254,7 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
 
   const details = [
     { icon: 'https://static.codia.ai/image/2025-10-16/wo8469r2jf.png', label: 'Duration', value: '12 hours' },
-    { icon: 'https://static.codia.ai/image/2025-10-16/TBG52Y11Ne.png', label: 'Skill Level', value: 'Beginner → Advanced' },
+    // { icon: 'https://static.codia.ai/image/2025-10-16/TBG52Y11Ne.png', label: 'Skill Level', value: 'Beginner → Advanced' },
     { icon: 'https://static.codia.ai/image/2025-10-16/dCQ1oOqZNv.png', label: 'Language', value: 'English (with subtitles)' },
     { icon: 'https://static.codia.ai/image/2025-10-16/Kzho4cnKy1.png', label: 'Format', value: 'Video' },
     { icon: 'https://static.codia.ai/image/2025-10-16/9eNhkyRAT7.png', label: 'Requirements', value: 'Basic computer with drawing tablet or mouse' },
@@ -319,7 +330,7 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
 
                 <div className="flex items-center space-x-1">
                   <img src="https://static.codia.ai/image/2025-10-16/92zn9LKBU3.png" alt="Downloads" className="w-5 h-5" />
-                  <span className="text-gray-900">2.1k purchases</span>
+                  <span className="text-gray-900">{product?.purchase_count} purchases</span>
                 </div>
               </div>
 
@@ -359,7 +370,7 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                 >
                   <img src="https://static.codia.ai/image/2025-10-16/VUQR3XLDmc.png" alt="Cart" className="w-6 h-6" />
                   <span>
-                    {isAddingToCart ? 'Adding...' : 'Add to cart'}
+                    {isAddingToCart ? 'Adding...' : isCarted ? 'Added to cart' : 'Add to cart'}
                   </span>
                 </button>
 
@@ -434,7 +445,7 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                 {product?.product_details?.short_preview_video && (
                   <div className="relative">
                     <img
-                      src={product?.product_details?.short_preview_video || "https://static.codia.ai/image/2025-10-16/OqOzCQfESi.png"}
+                      src={product?.product_details?.short_preview_video?.thumbnail || "https://static.codia.ai/image/2025-10-16/OqOzCQfESi.png"}
                       alt="Video Preview"
                       className="w-[450px] h-[190px] rounded-lg object-cover"
                     />
@@ -564,57 +575,79 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                 <div className="border border-gray-100"></div>
 
                 <div className="divide-y divide-gray-200">
-                  {contentStructure.items.map((item: any, i: number) => (
-                    <div key={item.id || i} className="py-4">
-                      {/* Chapter/Track/Episode Header */}
-                      <button
-                        onClick={() => toggleChapter(i)}
-                        className="w-full flex justify-between items-center text-left"
-                      >
-                        <div>
-                          <h3 className="font-[Poppins] font-semibold text-[#242E3A] text-[16px]">
-                            {item.title || `Item ${i + 1}`}
-                          </h3>
-                          {item.duration && (
-                            <p className="text-sm text-gray-500 mt-1">
-                              {item.files?.length || 0} Files • {item.duration}
-                            </p>
-                          )}
-                          {item.description && (
-                            <p className="text-sm text-gray-500 mt-1">{item.description}</p>
-                          )}
-                        </div>
-                        {openChapter === i ? (
-                          <ChevronUp className="text-gray-500" />
-                        ) : (
-                          <ChevronDown className="text-gray-500" />
-                        )}
-                      </button>
+                  {contentStructure?.items?.length ?
+                    contentStructure?.items?.map((item: any, i: number) => {
+                      console.log('itegfgjm', item)
+                      if (!item) {
+                        return (
+                          <div className="col-span-full text-center py-10 text-gray-500">
+                            No content available
+                          </div>
+                        );
+                      }
 
-                      {/* Files */}
-                      <div
-                        className={`transition-all duration-300 overflow-hidden ${openChapter === i ? "max-h-[500px] mt-4" : "max-h-0"
-                          }`}
-                      >
-                        <div className="flex flex-col gap-3 pl-6 mt-2">
-                          {item.files && item.files.map((file: any, j: number) => (
-                            <div
-                              key={j}
-                              className="flex justify-between items-center bg-[#F9FAFB] px-4 py-3 rounded-lg hover:bg-[#EEF2FF] transition"
-                            >
-                              <div className="flex items-center gap-3">
-                                <PlayCircle className="w-5 h-5 text-[#7077FE]" />
-                                <p className="text-[15px] text-[#242E3A]">
-                                  {file.title || `File ${j + 1}`}
+                      return (
+                        <div key={item.id || i} className="py-4">
+                          {/* Chapter/Track/Episode Header */}
+                          <button
+                            onClick={() => toggleChapter(i)}
+                            className="w-full flex justify-between items-center text-left"
+                          >
+                            <div>
+                              {item.title ? (
+                                <h3 className="font-[Poppins] font-semibold text-[#242E3A] text-[16px]">
+                                  {item.title}
+                                </h3>
+                              ) : (
+                                <h3 className="font-[Poppins] font-semibold text-[#242E3A] text-[16px]">
+                                  {`Item ${i + 1}`}
+                                </h3>
+                              )}
+                              {item.duration && (
+                                <p className="text-sm text-gray-500 mt-1">
+                                  {item.files?.length || 0} Files • {item.duration}
                                 </p>
-                              </div>
-                              <p className="text-sm text-gray-500">{file.file_type}</p>
+                              )}
+                              {item.description && (
+                                <p className="text-sm text-gray-500 mt-1">{item.description}</p>
+                              )}
                             </div>
-                          ))}
+                            {openChapter === i ? (
+                              <ChevronUp className="text-gray-500" />
+                            ) : (
+                              <ChevronDown className="text-gray-500" />
+                            )}
+                          </button>
+
+                          {/* Files */}
+                          <div
+                            className={`transition-all duration-300 overflow-hidden ${openChapter === i ? "max-h-[500px] mt-4" : "max-h-0"
+                              }`}
+                          >
+                            <div className="flex flex-col gap-3 pl-6 mt-2">
+                              {item.files && item.files.map((file: any, j: number) => (
+                                <div
+                                  key={j}
+                                  className="flex justify-between items-center bg-[#F9FAFB] px-4 py-3 rounded-lg hover:bg-[#EEF2FF] transition"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <PlayCircle className="w-5 h-5 text-[#7077FE]" />
+                                    <p className="text-[15px] text-[#242E3A]">
+                                      {file.title || `File ${j + 1}`}
+                                    </p>
+                                  </div>
+                                  <p className="text-sm text-gray-500">{file.file_type}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                         </div>
+                      )
+                    }) : (
+                      <div className="col-span-full text-center py-10 text-gray-500">
+                        No content available
                       </div>
-                    </div>
-                  ))}
+                    )}
                 </div>
               </div>
             )}
@@ -726,7 +759,7 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                         key={product.id}
                         product={{
                           id: product.id,
-                          title: product.product_name,
+                          title: product?.product_name,
                           author: product.author,
                           rating: product?.rating?.average,
                           reviews: product?.rating?.total_reviews,
@@ -737,6 +770,8 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                           mood: product?.mood_name,
                           image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
                           category: product.category?.name || "",
+                          isLike: product?.is_in_wishlist,
+                          isCarted: product?.is_in_cart,
                         }}
                       />
                     )

@@ -109,9 +109,18 @@ const AudioPreview = () => {
         <div className="flex flex-col md:flex-row">
           {/* Music Icon Display */}
           <div className="relative p-2 w-full">
-            <div className="rounded-xl w-full h-54 bg-gradient-to-br from-[#7077FE] to-[#9747FF] flex items-center justify-center">
-              <Music2 className="w-32 h-32 text-white opacity-80" />
-            </div>
+            <img
+              src={data.thumbnail_url}
+              alt={data.product_title}
+              className="rounded-xl w-full h-54 object-cover"
+              onError={() => {
+                return (
+                  <div className="rounded-xl w-full h-54 bg-gradient-to-br from-[#7077FE] to-[#9747FF] flex items-center justify-center">
+                    <Music2 className="w-32 h-32 text-white opacity-80" />
+                  </div>
+                )
+              }}
+            />
           </div>
 
           <div className="p-6 flex flex-col justify-between w-full">
@@ -247,7 +256,7 @@ const AudioPreview = () => {
                     </div>
                   )}
                 </div>
-                
+
                 {/* Track Files */}
                 {track.file_urls && track.file_urls.length > 0 && (
                   <div className="mt-3 pl-14 space-y-2">

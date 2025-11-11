@@ -56,7 +56,8 @@ const Preview = () => {
         type: "success",
         duration: 3000,
       });
-      setTimeout(() => navigate("/dashboard/products"), 1500);
+
+      navigate('/dashboard/products');
     } catch (error: any) {
       showToast({
         message:

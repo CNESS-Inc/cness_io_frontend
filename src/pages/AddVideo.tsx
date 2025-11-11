@@ -77,11 +77,11 @@ interface FileUploadProps {
   label?: string;
   description: string;
   fileType: 'main-video' | 'short-video';
-  onUploadSuccess?: (videoFile: File) => void;
+  onUploadSuccess?: (videoId: string, thumbnailUrl: string, videoUrl: string) => void;
   onRemove?: () => void;
-  defaultPreview?: string;
+  defaultThumbnail?: string;
   error?: string;
-  videoFile?: File | null;
+  isUploading?: boolean;
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
@@ -90,20 +90,21 @@ const FileUpload: React.FC<FileUploadProps> = ({
   fileType,
   onUploadSuccess,
   onRemove,
-  defaultPreview,
+  defaultThumbnail,
   error,
+  isUploading: externalUploading = false,
 }) => {
-  const [preview, setPreview] = useState<string | null>(defaultPreview || null);
+  const [thumbnail, setThumbnail] = useState<string | null>(defaultThumbnail || null);
   const [isUploading, setIsUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
   const { showToast } = useToast();
 
   useEffect(() => {
-    setPreview(defaultPreview || null);
-  }, [defaultPreview]);
+    setThumbnail(defaultThumbnail || null);
+  }, [defaultThumbnail]);
 
   const handleClick = () => {
-    if (!isUploading) {
+    if (!isUploading && !externalUploading) {
       fileRef.current?.click();
     }
   };
@@ -135,33 +136,45 @@ const FileUpload: React.FC<FileUploadProps> = ({
     setIsUploading(true);
 
     try {
-      // Create temporary preview
-      const videoURL = URL.createObjectURL(file);
-      setPreview(videoURL);
+      const formData = new FormData();
+      if (fileType === 'main-video') {
+        formData.append('video', file);
+      } else {
+        formData.append('short_video', file);
+      }
 
-      // Store file in state, don't upload yet
+      const response = await UploadProductDocument(fileType, formData);
+      const videoData = response?.data?.data;
+
+      setThumbnail(videoData.thumbnail);
+
       if (onUploadSuccess) {
-        onUploadSuccess(file);
+        onUploadSuccess(videoData.video_id, videoData.thumbnail, videoData.video_url);
       }
 
       showToast({
-        message: `${fileType === 'main-video' ? 'Main' : 'Short'} video added`,
+        message: `${fileType === 'main-video' ? 'Main' : 'Short'} video uploaded successfully`,
         type: "success",
         duration: 3000,
       });
     } catch (error: any) {
       showToast({
-        message: "Failed to add video",
+        message: error?.response?.data?.error?.message || "Failed to upload video",
         type: "error",
         duration: 3000,
       });
+      setThumbnail(null);
     } finally {
       setIsUploading(false);
+      // Reset file input
+      if (fileRef.current) {
+        fileRef.current.value = '';
+      }
     }
   };
 
   const handleRemove = () => {
-    setPreview(null);
+    setThumbnail(null);
     if (onRemove) {
       onRemove();
     }
@@ -181,7 +194,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
       <div
         onClick={handleClick}
         className={`relative rounded-lg p-6 text-center cursor-pointer transition-all ${error ? 'bg-red-50' : 'bg-[#F9FAFB] hover:bg-[#EEF3FF]'
-          }`}
+          } ${(isUploading || externalUploading) ? 'pointer-events-none opacity-70' : ''}`}
       >
         {/* ✅ SVG Dashed Border */}
         <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
@@ -206,16 +219,31 @@ const FileUpload: React.FC<FileUploadProps> = ({
           accept="video/*"
           onChange={handleChange}
           className="hidden"
-          disabled={isUploading}
+          disabled={isUploading || externalUploading}
         />
 
-        {preview ? (
+        {thumbnail ? (
           <div className="relative">
-            <video
-              src={preview}
+            <img
+              src={thumbnail}
+              alt="Video Thumbnail"
               className="w-full max-h-64 rounded-lg object-cover"
-              controls={false}
             />
+            {/* Edit/Replace Button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClick();
+              }}
+              className="absolute top-2 right-12 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition"
+              title="Replace Video"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+            </button>
+            {/* Remove Button */}
             <button
               type="button"
               onClick={(e) => {
@@ -223,9 +251,11 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 handleRemove();
               }}
               className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition"
+              title="Remove Video"
             >
               <X className="w-4 h-4" />
             </button>
+            {/* Play Icon Overlay */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="bg-black bg-opacity-50 rounded-full p-4">
                 <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -237,8 +267,11 @@ const FileUpload: React.FC<FileUploadProps> = ({
         ) : (
           <div className="flex flex-col items-center justify-center space-y-2">
             <img src={uploadimg} alt="upload" className="w-10 h-10 mt-6" />
-            {isUploading ? (
-              <p className="font-[poppins] text-[16px] text-[#7077FE]">Adding video...</p>
+            {isUploading || externalUploading ? (
+              <div className="flex flex-col items-center space-y-2">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7077FE]"></div>
+                <p className="font-[poppins] text-[16px] text-[#7077FE]">Uploading video...</p>
+              </div>
             ) : (
               <p className="font-[poppins] text-[16px] text-[#242E3A]">{description}</p>
             )}
@@ -259,13 +292,23 @@ const AddVideoForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [moods, setMoods] = useState<string[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
-  const [mainVideoFile, setMainVideoFile] = useState<File | null>(null);
-  const [shortVideoFile, setShortVideoFile] = useState<File | null>(null);
   const [newHighlight, setNewHighlight] = useState("");
+
+  const [mainVideoData, setMainVideoData] = useState<{
+    video_id: string;
+    thumbnail: string;
+    video_url: string;
+  } | null>(null);
+
+  const [shortVideoData, setShortVideoData] = useState<{
+    video_id: string;
+    thumbnail: string;
+    video_url: string;
+  } | null>(null);
 
   const handleSelectCategory = (category: string) => {
     setShowModal(false); // Close modal first
-    
+
     const routes: Record<string, string> = {
       Video: "/dashboard/products/add-video",
       Music: "/dashboard/products/add-music",
@@ -274,7 +317,7 @@ const AddVideoForm: React.FC = () => {
       Ebook: "/dashboard/products/add-ebook",
       Art: "/dashboard/products/add-arts",
     };
-    
+
     const path = routes[category];
     if (path) {
       navigate(path);
@@ -328,7 +371,7 @@ const AddVideoForm: React.FC = () => {
     highlights: [] as string[],
     duration: "",
     language: "",
-    short_video_url: "", // short video URL
+    short_video_url: "", // short video_id
     summary: "",
     status: "",
   });
@@ -442,46 +485,6 @@ const AddVideoForm: React.FC = () => {
     setErrors(prev => ({ ...prev, [name]: message }));
   };
 
-  const uploadVideos = async () => {
-    const uploadedData: any = {};
-
-    if (!mainVideoFile) {
-      showToast({
-        message: "Main video is required.",
-        type: "error",
-        duration: 3000,
-      });
-      return;
-    }
-
-    // Upload main video
-    if (mainVideoFile) {
-      const mainFormData = new FormData();
-      mainFormData.append('video', mainVideoFile);
-
-      try {
-        const mainResponse = await UploadProductDocument('main-video', mainFormData);
-        uploadedData.video_id = mainResponse?.data?.data?.video_id;
-      } catch (error: any) {
-        throw new Error(error?.response?.data?.error?.message || "Failed to upload main video");
-      }
-    }
-    // Upload short video (optional)
-    if (shortVideoFile) {
-      const shortFormData = new FormData();
-      shortFormData.append('short_video', shortVideoFile);
-
-      try {
-        const shortResponse = await UploadProductDocument('short-video', shortFormData);
-        uploadedData.short_video_id = shortResponse?.data?.data?.video_id;
-      } catch (error: any) {
-        throw new Error(error?.response?.data?.error?.message || "Failed to upload short video");
-      }
-    }
-
-    return uploadedData;
-  };
-
   const handleSubmit = async (isDraft: boolean = false) => {
     if (!validateForm()) {
       showToast({
@@ -492,19 +495,25 @@ const AddVideoForm: React.FC = () => {
       return;
     }
 
+    if (!mainVideoData?.video_id) {
+      showToast({
+        message: "Please upload main video",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
-      const uploadedData = await uploadVideos();
-
       const payload = {
         ...formData,
-        video_url: uploadedData.video_id,
-        short_video_url: uploadedData.short_video_id || "",
+        video_url: mainVideoData.video_id,
+        short_video_url: shortVideoData?.video_id || "",
         status: isDraft ? 'draft' : 'published'
       };
 
       const response = await CreateVideoProduct(payload);
-      console.log('response', response)
 
       showToast({
         message: isDraft ? "Product saved as draft" : "Product submitted successfully",
@@ -513,9 +522,7 @@ const AddVideoForm: React.FC = () => {
       });
       setErrors({});
 
-      setTimeout(() => {
-        navigate(isDraft ? `/dashboard/products/preview/${response?.data?.data?.product_id}?category=video` : '/dashboard/products');
-      }, 1500);
+      navigate(isDraft ? `/dashboard/products/preview/${response?.data?.data?.product_id}?category=video` : '/dashboard/products');
     } catch (error: any) {
       showToast({
         message: error?.message || error?.response?.data?.error?.message || 'Failed to submit product',
@@ -573,21 +580,51 @@ const AddVideoForm: React.FC = () => {
     navigate('/dashboard/products');
   };
 
-  const handleMainVideoUpload = (file: File) => {
-    setMainVideoFile(file);
+  const handleMainVideoUpload = (videoId: string, thumbnailUrl: string, videoUrl: string) => {
+    setMainVideoData({
+      video_id: videoId,
+      thumbnail: thumbnailUrl,
+      video_url: videoUrl,
+    });
+
+    // Update formData with video_id
+    setFormData(prev => ({
+      ...prev,
+      video_url: videoId,
+    }));
+
+    // Clear error
     setErrors(prev => ({ ...prev, video_url: "" }));
   };
 
-  const handleShortVideoUpload = (file: File) => {
-    setShortVideoFile(file);
+  const handleShortVideoUpload = (videoId: string, thumbnailUrl: string, videoUrl: string) => {
+    setShortVideoData({
+      video_id: videoId,
+      thumbnail: thumbnailUrl,
+      video_url: videoUrl,
+    });
+
+    // Update formData with short_video_id
+    setFormData(prev => ({
+      ...prev,
+      short_video_url: videoId,
+    }));
   };
 
   const handleRemoveMainVideo = () => {
-    setMainVideoFile(null);
+    setMainVideoData(null);
+    setFormData(prev => ({
+      ...prev,
+      video_url: "",
+    }));
   };
 
   const handleRemoveShortVideo = () => {
-    setShortVideoFile(null);
+    setShortVideoData(null);
+    setFormData(prev => ({
+      ...prev,
+      short_video_url: "",
+    }));
   };
 
   if (isLoading) {
@@ -663,8 +700,8 @@ const AddVideoForm: React.FC = () => {
               fileType="main-video"
               onUploadSuccess={handleMainVideoUpload}
               onRemove={handleRemoveMainVideo}
+              defaultThumbnail={mainVideoData?.thumbnail}
               error={errors.video_url}
-              videoFile={mainVideoFile}
             />
           </div>
         </FormSection>
@@ -784,7 +821,7 @@ const AddVideoForm: React.FC = () => {
               fileType="short-video"
               onUploadSuccess={handleShortVideoUpload}
               onRemove={handleRemoveShortVideo}
-              videoFile={shortVideoFile}
+              defaultThumbnail={shortVideoData?.thumbnail}
             />
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">

@@ -10,6 +10,7 @@ import LoadingSpinner from "../components/ui/LoadingSpinner";
 interface ProductRowProps {
   id: string;
   video_details?: any;
+  thumbnail_url?: any;
   product_name: string;
   price: string;
   original_price: string;
@@ -41,35 +42,35 @@ const getCategoryIcon = (categoryName: string) => {
   return iconMap[categoryName] || <BookOpen className="w-5 h-5 text-black" />;
 };
 
-const getCategoryIconLarge = (categoryName: string) => {
-  const iconMap: { [key: string]: any } = {
-    "Video": <Video className="w-8 h-8 text-white" />,
-    "Music": <Music className="w-8 h-8 text-white" />,
-    "Course": <BookOpen className="w-8 h-8 text-white" />,
-    "Podcast": <FileAudio className="w-8 h-8 text-white" />,
-    "eBook": <FileText className="w-8 h-8 text-white" />,
-    "Art": <Palette className="w-8 h-8 text-white" />,
-  };
+// const getCategoryIconLarge = (categoryName: string) => {
+//   const iconMap: { [key: string]: any } = {
+//     "Video": <Video className="w-8 h-8 text-white" />,
+//     "Music": <Music className="w-8 h-8 text-white" />,
+//     "Course": <BookOpen className="w-8 h-8 text-white" />,
+//     "Podcast": <FileAudio className="w-8 h-8 text-white" />,
+//     "eBook": <FileText className="w-8 h-8 text-white" />,
+//     "Art": <Palette className="w-8 h-8 text-white" />,
+//   };
 
-  return iconMap[categoryName] || <BookOpen className="w-8 h-8 text-white" />;
-};
+//   return iconMap[categoryName] || <BookOpen className="w-8 h-8 text-white" />;
+// };
 
-const getCategoryColor = (categoryName: string) => {
-  const colorMap: { [key: string]: string } = {
-    "Video": "bg-gradient-to-br from-red-500 to-pink-500",
-    "Music": "bg-gradient-to-br from-purple-500 to-indigo-500",
-    "Course": "bg-gradient-to-br from-blue-500 to-cyan-500",
-    "Podcast": "bg-gradient-to-br from-orange-500 to-yellow-500",
-    "eBook": "bg-gradient-to-br from-emerald-500 to-teal-500",
-    "Art": "bg-gradient-to-br from-pink-500 to-rose-500",
-  };
+// const getCategoryColor = (categoryName: string) => {
+//   const colorMap: { [key: string]: string } = {
+//     "Video": "bg-gradient-to-br from-red-500 to-pink-500",
+//     "Music": "bg-gradient-to-br from-purple-500 to-indigo-500",
+//     "Course": "bg-gradient-to-br from-blue-500 to-cyan-500",
+//     "Podcast": "bg-gradient-to-br from-orange-500 to-yellow-500",
+//     "eBook": "bg-gradient-to-br from-emerald-500 to-teal-500",
+//     "Art": "bg-gradient-to-br from-pink-500 to-rose-500",
+//   };
 
-  return colorMap[categoryName] || "bg-gradient-to-br from-gray-500 to-slate-500";
-};
+//   return colorMap[categoryName] || "bg-gradient-to-br from-gray-500 to-slate-500";
+// };
 
 const ProductRow: React.FC<ProductRowProps & { onEdit: (id: string, slug: string) => void }> = ({
   id,
-  video_details,
+  thumbnail_url,
   product_name,
   price,
   original_price,
@@ -125,36 +126,36 @@ const ProductRow: React.FC<ProductRowProps & { onEdit: (id: string, slug: string
     return <span className="text-[#1A1A1A] text-base font-semibold">${price}</span>;
   };
 
-  const renderThumbnail = () => {
-    const isVideo = category.slug.toLowerCase() === 'video';
+  // const renderThumbnail = () => {
+  //   const isVideo = category.slug.toLowerCase() === 'video';
 
-    if (isVideo) {
-      const thumbnailUrl = video_details?.main_video?.thumbnail ||
-        video_details?.thumbnail_url ||
-        video_details?.thumbnail;
+  //   if (isVideo) {
+  //     const thumbnailUrl = video_details?.main_video?.thumbnail ||
+  //       video_details?.thumbnail_url ||
+  //       video_details?.thumbnail;
 
-      if (thumbnailUrl) {
-        return (
-          <img
-            src={thumbnailUrl}
-            alt={product_name}
-            className="w-[90px] h-[58px] rounded-md object-cover shadow-sm"
-            onError={(e) => {
-              // Fallback to default video icon on error
-              (e.target as HTMLImageElement).src = 'https://cdn.cness.io/VIDEO%20(1).svg';
-            }}
-          />
-        );
-      }
-    }
+  //     if (thumbnailUrl) {
+  //       return (
+  //         <img
+  //           src={thumbnailUrl}
+  //           alt={product_name}
+  //           className="w-[90px] h-[58px] rounded-md object-cover shadow-sm"
+  //           onError={(e) => {
+  //             // Fallback to default video icon on error
+  //             (e.target as HTMLImageElement).src = 'https://cdn.cness.io/VIDEO%20(1).svg';
+  //           }}
+  //         />
+  //       );
+  //     }
+  //   }
 
-    // For other categories, show a professional box with icon
-    return (
-      <div className={`w-[90px] h-[58px] rounded-lg ${getCategoryColor(category.name)} flex items-center justify-center shadow-md hover:shadow-lg transition-shadow duration-200`}>
-        {getCategoryIconLarge(category.name)}
-      </div>
-    );
-  };
+  //   // For other categories, show a professional box with icon
+  //   return (
+  //     <div className={`w-[90px] h-[58px] rounded-lg ${getCategoryColor(category.name)} flex items-center justify-center shadow-md hover:shadow-lg transition-shadow duration-200`}>
+  //       {getCategoryIconLarge(category.name)}
+  //     </div>
+  //   );
+  // };
 
   return (
     <tr className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
@@ -162,7 +163,25 @@ const ProductRow: React.FC<ProductRowProps & { onEdit: (id: string, slug: string
         P{String((currentPage - 1) * 10 + index + 1).padStart(4, '0')}
       </td>
       <td className="py-6 px-6">
-        {renderThumbnail()}
+        {category.slug === 'video' ? (
+          <img
+            src='https://cdn.cness.io/VIDEO%20(1).svg'
+            alt={product_name}
+            className="w-[90px] h-[58px] rounded-md object-cover shadow-sm"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = 'https://cdn.cness.io/VIDEO%20(1).svg';
+            }}
+          />
+        ) : (
+          <img
+            src={thumbnail_url}
+            alt={product_name}
+            className="w-[90px] h-[58px] rounded-md object-cover shadow-sm"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = 'https://cdn.cness.io/VIDEO%20(1).svg';
+            }}
+          />
+        )}
       </td>
       <td className="py-6 px-6 text-[#1A1A1A] text-sm leading-5 max-w-[220px] truncate" title={product_name}>
         {product_name}
@@ -220,19 +239,8 @@ const SellerProductList: React.FC = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
 
-  const handleEditProduct = (productId: string, categorySlug: string) => {
-    // Navigate to edit page based on category
-    const routeMap: { [key: string]: string } = {
-      "video": `/dashboard/products/edit-video/${productId}`,
-      "music": `/dashboard/products/edit-music/${productId}`,
-      "course": `/dashboard/products/edit-course/${productId}`,
-      "podcast": `/dashboard/products/edit-podcast/${productId}`,
-      "ebook": `/dashboard/products/edit-ebook/${productId}`,
-      "art": `/dashboard/products/edit-art/${productId}`,
-    };
-
-    const route = routeMap[categorySlug] || `/dashboard/products/edit/${productId}`;
-    navigate(route);
+  const handleEditProduct = (productId: string, productCategory: string) => {
+    navigate(`/dashboard/products/edit/${productId}?category=${productCategory}`);
   };
 
   useEffect(() => {
