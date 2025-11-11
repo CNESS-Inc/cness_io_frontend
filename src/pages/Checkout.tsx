@@ -197,7 +197,9 @@ const CheckoutPage: React.FC = () => {
                   </div>
 
                   <div className="flex items-center gap-4">
-                    <button className="p-2 hover:bg-red-50 rounded-full transition">
+                    <button
+                      onClick={() => handleRemoveFromCart(item.product_id)}
+                      className="p-2 hover:bg-red-50 rounded-full transition">
                       <Trash2 className="w-4 h-4 text-red-500" />
                     </button>
                     <span className="font-semibold text-[#1A1A1A]">
