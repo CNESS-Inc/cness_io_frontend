@@ -5,7 +5,7 @@ import CategoryModel from "../components/MarketPlace/CategoryModel";
 import { useNavigate } from "react-router-dom";
 import { Music, Plus, SquarePen, Trash2, X } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { CreatePodcastProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument } from "../Common/ServerAPI";
+import { CreatePodcastProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, UploadProductThumbnail } from "../Common/ServerAPI";
 
 interface FormSectionProps {
   title: string;
@@ -69,24 +69,6 @@ const InputField: React.FC<InputFieldProps> = ({
   </div>
 );
 
-interface EpisodeFile {
-  url: string;
-  title: string;
-  order_number: number;
-  file?: File;
-  isEditing?: boolean;
-}
-
-interface Episode {
-  id: number;
-  title: string;
-  episode_files: EpisodeFile[];
-  description: string;
-  duration: string;
-  order_number: number;
-  is_free: boolean;
-}
-
 const AddPodcastForm: React.FC = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -97,7 +79,28 @@ const AddPodcastForm: React.FC = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [newHighlight, setNewHighlight] = useState("");
-  const [episodes, setEpisodes] = useState<Episode[]>([
+  const [thumbnailData, setThumbnailData] = useState<{
+    thumbnail_url: string;
+    public_id: string;
+  } | null>(null);
+  const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
+
+  const [formData, setFormData] = useState({
+    product_title: "",
+    price: 0,
+    discount_percentage: 0,
+    mood_id: "",
+    thumbnail_url: "",
+    overview: "",
+    highlights: [] as string[],
+    total_duration: "",
+    language: "",
+    theme: "",
+    format: "",
+    status: "",
+  });
+
+  const [episodes, setEpisodes] = useState<any[]>([
     {
       id: 1,
       title: "Episode 1",
@@ -108,54 +111,22 @@ const AddPodcastForm: React.FC = () => {
       is_free: false
     },
   ]);
-
-  const [formData, setFormData] = useState({
-    product_title: "",
-    price: 0,
-    discount_percentage: 0,
-    mood_id: "",
-    overview: "",
-    highlights: [] as string[],
-    total_duration: "",
-    language: "",
-    theme: "",
-    format: "",
-  });
+  console.log('episodes', episodes)
 
   useEffect(() => {
-    const fetchMoods = async () => {
+    const fetchData = async () => {
       try {
-        const response = await GetMarketPlaceMoods();
-        setMoods(response?.data?.data);
-      } catch (error: any) {
-        showToast({
-          message: "Failed to load moods.",
-          type: "error",
-          duration: 3000,
-        });
+        const [moodsResponse, categoriesResponse] = await Promise.all([
+          GetMarketPlaceMoods(),
+          GetMarketPlaceCategories(),
+        ]);
+        setMoods(moodsResponse?.data?.data || []);
+        setCategories(categoriesResponse?.data?.data || []);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
       }
     };
-
-    fetchMoods();
-  }, []);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await GetMarketPlaceCategories();
-        if (response?.data?.data) {
-          setCategories(response.data.data);
-        }
-      } catch (error: any) {
-        showToast({
-          message: "Failed to load categories.",
-          type: "error",
-          duration: 3000,
-        });
-      }
-    };
-
-    fetchCategories();
+    fetchData();
   }, []);
 
   const handleSelectCategory = (category: string) => {
@@ -180,54 +151,13 @@ const AddPodcastForm: React.FC = () => {
     setEpisodes(prev => prev.filter(ch => ch.id !== episodeId));
   };
 
-  const handleAddFile = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    episodeId: number
-  ) => {
-    const files = Array.from(e.target.files || []);
-
-    setEpisodes((prev) =>
-      prev.map((episode) =>
-        episode.id === episodeId
-          ? {
-            ...episode,
-            episode_files: [
-              ...episode.episode_files,
-              ...files.map((file, i) => ({
-                url: "",
-                title: file.name,
-                order_number: episode.episode_files.length + i + 1,
-                file: file,
-              })),
-            ],
-          }
-          : episode
-      )
-    );
-  };
-
-  const handleAddEpisode = () => {
-    setEpisodes((prev) => [
-      ...prev,
-      {
-        id: prev.length + 1,
-        title: `Episode ${prev.length + 1}`,
-        episode_files: [],
-        description: "",
-        duration: "",
-        order_number: prev.length + 1,
-        is_free: false
-      },
-    ]);
-  };
-
   const toggleEditFile = (episodeId: number, fileOrderNumber: number) => {
     setEpisodes((prev) =>
       prev.map((episode) =>
         episode.id === episodeId
           ? {
             ...episode,
-            episode_files: episode.episode_files.map((f) =>
+            episode_files: episode.episode_files.map((f: any) =>
               f.order_number === fileOrderNumber ? { ...f, isEditing: !f.isEditing } : f
             ),
           }
@@ -246,7 +176,7 @@ const AddPodcastForm: React.FC = () => {
         episode.id === episodeId
           ? {
             ...episode,
-            episode_files: episode.episode_files.map((f) =>
+            episode_files: episode.episode_files.map((f: any) =>
               f.order_number === fileOrderNumber ? { ...f, title: newTitle } : f
             ),
           }
@@ -261,7 +191,7 @@ const AddPodcastForm: React.FC = () => {
         episode.id === episodeId
           ? {
             ...episode,
-            episode_files: episode.episode_files.map((f) =>
+            episode_files: episode.episode_files.map((f: any) =>
               f.order_number === fileOrderNumber
                 ? { ...f, isEditing: false }
                 : f
@@ -278,7 +208,7 @@ const AddPodcastForm: React.FC = () => {
         episode.id === episodeId
           ? {
             ...episode,
-            episode_files: episode.episode_files.filter((f) => f.order_number !== fileOrderNumber)
+            episode_files: episode.episode_files.filter((f: any) => f.order_number !== fileOrderNumber)
           }
           : episode
       )
@@ -293,68 +223,280 @@ const AddPodcastForm: React.FC = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  const validateForm = (): boolean => {
+  const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
-    if (!formData.product_title.trim()) newErrors.product_title = "Product title is required.";
-
-    if (isNaN(formData.price) || formData.price <= 0) {
-      newErrors.price = "Price must be a positive number.";
-    }
-
-    if (isNaN(formData.discount_percentage)) {
-      newErrors.discount_percentage = "Discount percentage must be a number.";
-    } else if (formData.discount_percentage < 0 || formData.discount_percentage > 100) {
-      newErrors.discount_percentage = "Discount percentage must be between 0 and 100.";
-    }
-
-    if (!formData.mood_id.trim()) newErrors.mood_id = "Mood Selection is required.";
-    if (!formData.overview.trim()) newErrors.overview = "Overview is required.";
-
-    if (formData.highlights.length === 0) {
-      newErrors.highlights = "At least one highlight is required.";
-    }
-
-    const validFormats = ["MP3", "AAC", "WAV", "FLAC", "OGG"];
-    if (!formData.format || !validFormats.includes(formData.format.toUpperCase())) {
-      newErrors.format = "Format must be one of the following: MP3, AAC, WAV, FLAC, OGG.";
-    }
-
-    if (episodes.length === 0) {
-      newErrors.episodes = "At least one episode is required.";
-    }
+    if (!formData.product_title.trim()) newErrors.product_title = "Podcast title is required";
+    if (formData.price <= 0) newErrors.price = "Price must be greater than 0";
+    if (!formData.mood_id) newErrors.mood_id = "Please select a mood";
+    if (!formData.thumbnail_url.trim()) newErrors.thumbnail_url = "Thumbnail url is required.";
+    if (!formData.overview.trim()) newErrors.overview = "Overview is required";
+    if (formData.highlights.length === 0) newErrors.highlights = "At least one highlight is required";
+    if (!formData.language.trim()) newErrors.language = "Language is required";
+    if (!formData.theme.trim()) newErrors.theme = "Theme is required";
+    if (!formData.format.trim()) newErrors.format = "Format is required";
 
     episodes.forEach((episode, index) => {
       if (episode.episode_files.length === 0) {
-        newErrors[`episode_${episode.id}`] = `Episode ${index + 1} must have at least one audio file.`;
+        newErrors[`episode_${index}_files`] = "At least one audio file is required";
       }
     });
 
     setErrors(newErrors);
-
-    if (Object.keys(newErrors).length > 0) {
-      setTimeout(() => {
-        const firstErrorElement = document.querySelector('.text-red-500');
-        if (firstErrorElement) {
-          firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }, 100);
-    }
-
     return Object.keys(newErrors).length === 0;
   };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    const target = e.target;
-    const { name, value } = target;
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
 
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    // Validate field
+    validateField(name, value);
+  };
 
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+  const validateField = (name: string, value: any) => {
+    let message = "";
+    const valStr = typeof value === "string" ? value.trim() : String(value);
+
+    switch (name) {
+      case "product_title":
+        if (!valStr) message = "Podcast title is required";
+        break;
+      case "price":
+        if (!valStr || parseFloat(valStr) <= 0) message = "Price must be greater than 0";
+        break;
+      case "mood_id":
+        if (!valStr) message = "Please select a mood";
+        break;
+      case "thumbnail_url":
+        if (!valStr) message = "Thumbnail is required";
+        break;
+      case "overview":
+        if (!valStr) message = "Overview is required";
+        break;
+      case "total_duration":
+        if (valStr && !/^\d{2}:\d{2}:\d{2}$/.test(valStr))
+          message = "Invalid duration format. Use HH:MM:SS";
+        break;
+      case "language":
+        if (!valStr) message = "Language is required";
+        break;
+      case "theme":
+        if (!valStr) message = "Theme is required";
+        break;
+      case "format":
+        if (!valStr) message = "Format is required";
+        break;
+      default:
+        break;
     }
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: message,
+    }));
+  };
+
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      showToast({
+        message: "Please upload an image file",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      showToast({
+        message: "Image size should be less than 5MB",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    setIsThumbnailUploading(true);
+
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append("thumbnail", file);
+
+      const response = await UploadProductThumbnail(uploadFormData);
+      const thumbnailUrl = response?.data?.data?.thumbnail_url;
+      const publicId = response?.data?.data?.public_id;
+
+      setThumbnailData({
+        thumbnail_url: thumbnailUrl,
+        public_id: publicId,
+      });
+
+      setFormData(prev => ({
+        ...prev,
+        thumbnail_url: thumbnailUrl,
+      }));
+
+      showToast({
+        message: "Thumbnail uploaded successfully",
+        type: "success",
+        duration: 2000,
+      });
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to upload thumbnail",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsThumbnailUploading(false);
+      // Reset input
+      e.target.value = "";
+    }
+  };
+
+  const handleRemoveThumbnail = () => {
+    setThumbnailData(null);
+    setFormData(prev => ({
+      ...prev,
+      image_url: "",
+    }));
+  };
+
+  const handleEpisodeFileUpload = async (episodeId: number, file: File) => {
+    if (!file) return;
+
+    if (!file.type.startsWith("audio/")) {
+      showToast({
+        message: "Please upload an audio file",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    if (file.size > 50 * 1024 * 1024) {
+      showToast({
+        message: "File size should be less than 50MB",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    const tempFile: any = {
+      url: "",
+      title: file.name,
+      order_number: 0,
+      file: file,
+      isUploading: true,
+    };
+
+    setEpisodes((prevEpisodes) =>
+      prevEpisodes.map((ep) =>
+        ep.id === episodeId
+          ? {
+            ...ep,
+            episode_files: [...ep.episode_files, tempFile],
+          }
+          : ep
+      )
+    );
+
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append("audio", file);
+
+      const response = await UploadProductDocument("podcast-audio", uploadFormData);
+      const uploadedFileUrl = response?.data?.data?.audio_public_id;
+
+      setEpisodes((prevEpisodes) =>
+        prevEpisodes.map((ep) => {
+          if (ep.id === episodeId) {
+            const updatedFiles = ep.episode_files.map((f: any) =>
+              f.file === file
+                ? {
+                  url: uploadedFileUrl,
+                  title: file.name,
+                  order_number: ep.episode_files.length,
+                  isUploading: false,
+                }
+                : f
+            );
+            return { ...ep, episode_files: updatedFiles };
+          }
+          return ep;
+        })
+      );
+
+      showToast({
+        message: "Audio file uploaded successfully",
+        type: "success",
+        duration: 2000,
+      });
+
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[`episode_${episodeId}_files`];
+        return newErrors;
+      });
+    } catch (error: any) {
+      // Remove failed upload from state
+      setEpisodes((prevEpisodes) =>
+        prevEpisodes.map((ep) =>
+          ep.id === episodeId
+            ? {
+              ...ep,
+              episode_files: ep.episode_files.filter((f: any) => f.file !== file),
+            }
+            : ep
+        )
+      );
+
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to upload audio file",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleEpisodeChange = (episodeId: number, field: string, value: any) => {
+    setEpisodes((prevEpisodes) =>
+      prevEpisodes.map((ep) =>
+        ep.id === episodeId ? { ...ep, [field]: value } : ep
+      )
+    );
+
+    const episodeIndex = episodes.findIndex((ep) => ep.id === episodeId);
+    if (episodeIndex !== -1) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[`episode_${episodeIndex}_${field}`];
+        return newErrors;
+      });
+    }
+  };
+
+  const handleAddEpisode = () => {
+    const newEpisode: any = {
+      id: Date.now(),
+      title: `Episode ${episodes.length + 1}`,
+      episode_files: [],
+      description: "",
+      duration: "",
+      is_free: false,
+    };
+    setEpisodes([...episodes, newEpisode]);
   };
 
   const handleSubmit = async (isDraft: boolean = false) => {
@@ -367,84 +509,68 @@ const AddPodcastForm: React.FC = () => {
       return;
     }
 
+    if (isThumbnailUploading) {
+      showToast({
+        message: "Please wait for thumbnail to finish uploading",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+    
+    const hasUploadingFiles = episodes.some((ep) =>
+      ep.episode_files.some((file: any) => file.isUploading)
+    );
+
+    if (hasUploadingFiles) {
+      showToast({
+        message: "Please wait for all files to finish uploading",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
-      const uploadedEpisodes = await Promise.all(
-        episodes.map(async (episode) => {
-          const uploadedFiles = await Promise.all(
-            episode.episode_files.map(async (episodeFile) => {
-              if (episodeFile.file) {
-                const formData = new FormData();
-                formData.append('audio', episodeFile.file);
-
-                try {
-                  const response = await UploadProductDocument('podcast-audio', formData);
-                  const uploadData = response?.data?.data?.data;
-
-                  return {
-                    url: uploadData?.track_url || "",
-                    title: episodeFile.title,
-                    order_number: episodeFile.order_number,
-                  };
-                } catch (error) {
-                  throw new Error(`Failed to upload ${episodeFile.title}`);
-                }
-              }
-              return episodeFile;
-            })
-          );
-
-          return {
-            title: episode.title,
-            episode_files: uploadedFiles,
-            description: episode.description || "",
-            duration: episode.duration || "00:00",
-            order_number: episode.order_number,
-            is_free: episode.is_free,
-          };
-        })
-      );
-
       const payload = {
-        product_title: formData.product_title,
-        price: formData.price,
-        discount_percentage: formData.discount_percentage,
-        mood_id: formData.mood_id,
-        overview: formData.overview,
-        highlights: formData.highlights,
-        total_duration: formData.total_duration || "00:00:00",
-        language: formData.language,
-        theme: formData.theme,
-        format: formData.format,
-        status: isDraft ? 'draft' : 'published',
-        episodes: uploadedEpisodes,
+        ...formData,
+        episodes: episodes.map((ep) => ({
+          title: ep.title,
+          episode_files: ep.episode_files.map((file: any) => ({
+            url: file.url,
+            title: file.title,
+            order_number: file.order_number,
+          })),
+          description: ep.description,
+          duration: ep.duration,
+          is_free: ep.is_free,
+        })),
+        status: isDraft ? "draft" : "published",
       };
 
       const response = await CreatePodcastProduct(payload);
-      const productId = response?.data?.data?.product_id;
 
       showToast({
         message: isDraft
-          ? "Podcast product saved as draft successfully"
-          : "Podcast product created successfully",
+          ? "Podcast saved as draft"
+          : "Podcast submitted successfully",
         type: "success",
         duration: 3000,
       });
-
       setErrors({});
 
-      if (isDraft && productId) {
-        setTimeout(() => {
-          navigate(`/dashboard/products/podcast-preview/${productId}?category=podcast`);
-        }, 1500);
-      } else {
-        setTimeout(() => {
-          navigate('/dashboard/products');
-        }, 1500);
-      }
+      navigate(
+        isDraft
+          ? `/dashboard/products/podcast-preview/${response?.data?.data?.product_id}?category=podcast`
+          : "/dashboard/products"
+      );
     } catch (error: any) {
       showToast({
-        message: error?.message || error?.response?.data?.error?.message || 'Failed to create podcast product',
+        message:
+          error?.message ||
+          error?.response?.data?.error?.message ||
+          "Failed to submit podcast",
         type: "error",
         duration: 3000,
       });
@@ -455,24 +581,12 @@ const AddPodcastForm: React.FC = () => {
 
   const handleAddHighlight = () => {
     if (newHighlight.trim()) {
-      if (formData.highlights.length >= 3) {
-        showToast({
-          message: "Maximum 3 highlights allowed",
-          type: "error",
-          duration: 3000,
-        });
-        return;
-      }
-
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        highlights: [...prev.highlights, newHighlight.trim()]
+        highlights: [...prev.highlights, newHighlight.trim()],
       }));
       setNewHighlight("");
-
-      if (errors.highlights) {
-        setErrors(prev => ({ ...prev, highlights: "" }));
-      }
+      setErrors((prev) => ({ ...prev, highlights: "" }));
     }
   };
 
@@ -555,6 +669,92 @@ const AddPodcastForm: React.FC = () => {
                 ))}
               </select>
               {errors.mood_id && <span className="text-red-500 text-sm mt-1">{errors.mood_id}</span>}
+            </div>
+            <div>
+              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+                Thumnail *
+              </label>
+              {thumbnailData?.thumbnail_url ? (
+                <div className="relative rounded-lg overflow-hidden border-2 border-gray-200">
+                  <img
+                    src={thumbnailData.thumbnail_url}
+                    alt="Thumbnail"
+                    className="w-full h-40 object-cover"
+                  />
+                  {/* Edit/Replace Button */}
+                  <label
+                    htmlFor="thumbnail-replace"
+                    className="absolute top-2 right-12 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition cursor-pointer"
+                    title="Replace Thumbnail"
+                  >
+                    <SquarePen className="w-4 h-4" />
+                    <input
+                      id="thumbnail-replace"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleThumbnailUpload}
+                      disabled={isThumbnailUploading}
+                    />
+                  </label>
+                  {/* Remove Button */}
+                  <button
+                    type="button"
+                    onClick={handleRemoveThumbnail}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition"
+                    title="Remove Thumbnail"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <label
+                  className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${isThumbnailUploading ? "pointer-events-none opacity-70" : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
+                    }`}
+                >
+                  <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
+                    <rect
+                      x="1"
+                      y="1"
+                      width="calc(100% - 2px)"
+                      height="calc(100% - 2px)"
+                      rx="12"
+                      ry="12"
+                      stroke="#CBD5E1"
+                      strokeWidth="2"
+                      strokeDasharray="6,6"
+                      fill="none"
+                      className="transition-all duration-300 group-hover:stroke-[#7077FE]"
+                    />
+                  </svg>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleThumbnailUpload}
+                    disabled={isThumbnailUploading}
+                  />
+                  {isThumbnailUploading ? (
+                    <div className="flex flex-col items-center space-y-2">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7077FE]"></div>
+                      <p className="text-sm text-[#7077FE]">Uploading thumbnail...</p>
+                    </div>
+                  ) : (
+                    <div className="text-center space-y-2">
+                      <div className="w-10 h-10 mx-auto rounded-full bg-[#7077FE]/10 flex items-center justify-center text-[#7077FE]">
+                        <img src={uploadimg} alt="Upload" className="w-6 h-6" />
+                      </div>
+                      <p className="text-sm font-[poppins] text-[#242E3A]">
+                        Drag & drop or click to upload
+                      </p>
+                      <p className="text-xs text-[#665B5B]">
+                        Recommended 266 X 149 px
+                      </p>
+                    </div>
+                  )}
+                </label>
+              )}
+              {errors.thumbnail_url && <span className="text-red-500 text-sm mt-1">{errors.thumbnail_url}</span>}
             </div>
           </div>
         </FormSection>
@@ -688,31 +888,37 @@ const AddPodcastForm: React.FC = () => {
 
         <FormSection title="Episodes" description="">
           <div className="space-y-6">
-            {episodes.map((episode) => (
+            {episodes.map((episode, episodeIndex) => (
               <div
                 key={episode.id}
                 className="border border-gray-200 rounded-lg p-4 shadow-sm bg-white"
               >
                 <div className="flex items-center justify-between mb-2">
                   <div>
-                    <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
-                      {episode.title}
-                    </h3>
-                    <p className="text-sm text-[#665B5B] mb-4">
-                      Upload chapter {episode.id} audios
+                    <input
+                      type="text"
+                      value={episode.title}
+                      onChange={(e) =>
+                        handleEpisodeChange(episode.id, "title", e.target.value)
+                      }
+                      className="text-[16px] font-semibold text-[#242E3A] border-b border-transparent hover:border-gray-300 focus:border-[#7077FE] focus:outline-none mb-2"
+                    />
+                    <p className="text-sm text-[#665B5B]">
+                      Upload episode {episodeIndex + 1} audios
                     </p>
-
                   </div>
 
                   {/* Delete Chapter Button */}
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteEpisode(episode.id)}
-                    className="text-red-500 hover:text-red-700 transition-colors"
-                    title="Delete Episode"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
+                  {episodes.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteEpisode(episode.id)}
+                      className="text-red-500 hover:text-red-700 transition-colors"
+                      title="Delete Episode"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -724,7 +930,13 @@ const AddPodcastForm: React.FC = () => {
                       type="file"
                       accept="audio/*"
                       className="hidden"
-                      onChange={(e) => handleAddFile(e, episode.id)}
+                      onChange={async (e) => {
+                        const files = Array.from(e.target.files || []);
+                        for (const file of files) {
+                          await handleEpisodeFileUpload(episode.id, file);
+                        }
+                        e.target.value = ""; // Reset input
+                      }}
                       multiple
                     />
                     <div className="text-center space-y-2">
@@ -742,75 +954,106 @@ const AddPodcastForm: React.FC = () => {
 
                   <div className="space-y-3">
                     {episode.episode_files.length === 0 ? (
-                      <div className="text-sm text-gray-500 border border-gray-100 rounded-lg p-4 bg-gray-50">
+                      <div className="text-sm text-gray-500 border border-gray-100 rounded-lg p-4 bg-gray-50 h-40 flex items-center justify-center">
                         No files uploaded yet
                       </div>
                     ) : (
-                      episode.episode_files.map((file) => (
+                      episode.episode_files.map((file: any, fileIndex: number) => (
                         <div
-                          key={file.order_number}
+                          key={fileIndex}
                           className="border border-gray-200 rounded-lg p-3 bg-white"
                         >
                           <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center space-x-2">
-                              <Music className="w-5 h-5 text-[#242E3A]" />
-                              {file.isEditing ? (
-                                <input
-                                  type="text"
-                                  value={file.title}
-                                  onChange={(e) =>
-                                    handleEditFileName(
-                                      episode.id,
-                                      file.order_number,
-                                      e.target.value
-                                    )
-                                  }
-                                  className="border border-gray-300 rounded-md px-2 py-[2px] text-sm"
-                                />
-                              ) : (
-                                <p className="text-sm font-medium text-[#242E3A]">
-                                  {file.title}
-                                </p>
-                              )}
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              {file.isEditing ? (
-                                <button
-                                  onClick={() => saveFileName(episode.id, file.order_number)}
-                                  className="text-[#7077FE] text-sm font-semibold"
-                                >
-                                  Save
-                                </button>
+                            <div className="flex items-center space-x-2 flex-1">
+                              {file.isUploading ? (
+                                <>
+                                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#7077FE]"></div>
+                                  <span className="text-sm text-gray-600">Uploading...</span>
+                                </>
                               ) : (
                                 <>
-                                  <button
-                                    onClick={() =>
-                                      toggleEditFile(episode.id, file.order_number)
-                                    }
-                                    className="text-gray-500 hover:text-[#7077FE]"
-                                  >
-                                    <SquarePen className="w-4 h-4" />
-                                  </button>
-                                  <button
-                                    onClick={() => deleteFile(episode.id, file.order_number)}
-                                    className="text-gray-500 hover:text-red-500"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
+                                  <Music className="w-5 h-5 text-[#7077FE]" />
+                                  {file.isEditing ? (
+                                    <input
+                                      type="text"
+                                      value={file.title}
+                                      onChange={(e) =>
+                                        handleEditFileName(
+                                          episode.id,
+                                          file.order_number,
+                                          e.target.value
+                                        )
+                                      }
+                                      className="flex-1 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
+                                      autoFocus
+                                    />
+                                  ) : (
+                                    <p className="text-sm font-medium text-[#242E3A] flex-1 truncate">
+                                      {file.title}
+                                    </p>
+                                  )}
                                 </>
                               )}
                             </div>
+
+                            {!file.isUploading && (
+                              <div className="flex items-center space-x-2">
+                                {file.isEditing ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => saveFileName(episode.id, file.order_number)}
+                                    className="text-[#7077FE] text-sm font-semibold hover:text-[#5E65F6]"
+                                  >
+                                    Save
+                                  </button>
+                                ) : (
+                                  <>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        toggleEditFile(episode.id, file.order_number)
+                                      }
+                                      className="text-gray-500 hover:text-[#7077FE] transition-colors"
+                                      title="Edit filename"
+                                    >
+                                      <SquarePen className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => deleteFile(episode.id, file.order_number)}
+                                      className="text-gray-500 hover:text-red-500 transition-colors"
+                                      title="Delete file"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                            )}
                           </div>
-                          <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                            <span>{file.file ? formatFileSize(file.file.size) : "Uploaded"}</span>
-                            <span className="text-green-600">✓ Ready</span>
-                          </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-green-500 h-2 rounded-full"
-                              style={{ width: '100%' }}
-                            ></div>
-                          </div>
+
+                          {!file.isUploading && (
+                            <>
+                              <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                                <span>
+                                  {file.file ? formatFileSize(file.file.size) : "Uploaded"}
+                                </span>
+                                <span className="text-green-600 flex items-center gap-1">
+                                  <span className="w-1.5 h-1.5 bg-green-600 rounded-full"></span>
+                                  Ready
+                                </span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-1.5">
+                                <div
+                                  className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
+                                  style={{ width: "100%" }}
+                                ></div>
+                              </div>
+                              <p className="text-xs text-gray-500 mt-1">
+                                Order: {file.order_number}
+                              </p>
+                            </>
+                          )}
                         </div>
                       ))
                     )}

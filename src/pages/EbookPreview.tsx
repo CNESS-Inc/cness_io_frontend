@@ -108,9 +108,18 @@ const EbookPreview = () => {
         <div className="flex flex-col md:flex-row">
           {/* Ebook Icon Display */}
           <div className="relative p-2 w-full">
-            <div className="rounded-xl w-full h-54 bg-gradient-to-br from-[#8B5CF6] to-[#EC4899] flex items-center justify-center">
-              <Book className="w-32 h-32 text-white opacity-80" />
-            </div>
+            <img
+              src={data.thumbnail_url}
+              alt={data.product_title}
+              className="rounded-xl w-full h-54 object-cover"
+              onError={() => {
+                return (
+                  <div className="rounded-xl w-full h-54 bg-gradient-to-br from-[#8B5CF6] to-[#EC4899] flex items-center justify-center">
+                    <Book className="w-32 h-32 text-white opacity-80" />
+                  </div>
+                )
+              }}
+            />
           </div>
 
           <div className="p-6 flex flex-col justify-between w-full">
@@ -246,7 +255,7 @@ const EbookPreview = () => {
                     </div>
                   )}
                 </div>
-                
+
                 {/* Chapter Files */}
                 {chapter.file_urls && chapter.file_urls.length > 0 && (
                   <div className="mt-3 pl-14 space-y-2">

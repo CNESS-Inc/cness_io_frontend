@@ -106,17 +106,13 @@ import SellerHelp from "../pages/SellerHelp";
 import DashboardFaqs from "../pages/DashboardFaqs";
 import SellerWithdrawal from "../pages/SellerWithdrawal";
 import Wallet from "../pages/Wallet";
-import EditVideoProductPage from "../pages/EditVideoProductPage";
-import EditMusicForm from "../pages/EditAudioProductPage";
 import AudioPreview from "../pages/MusicPreview";
-import EditPodcastForm from "../pages/EditPodcastProductPage";
 import PodcastPreview from "../pages/PodcastPreview";
-import EditEbookForm from "../pages/EditEbookProductPage";
 import EbookPreview from "../pages/EbookPreview";
-import EditCourseForm from "../pages/EditCourseProductPage";
 import CoursePreview from "../pages/CoursePreview";
 import ArtPreview from "../pages/ArtPreview";
-import EditArtsForm from "../pages/EditArtProductPage";
+import EditSellerProductPage from "../pages/EditSellerProductPage";
+import PaymentConfirmation from "../pages/PaymentConfirmation";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -348,10 +344,13 @@ export const router = createBrowserRouter([
             element: <Checkout />,
           },
           {
+            path: "market-place/checkout-confirmation",
+            element: <PaymentConfirmation />,
+          },
+          {
             path: "payment-success",
             element: <PaymentSuccess />,
           },
-
           {
             path: "payment-failed",
             element: <PaymentFailed />,
@@ -413,28 +412,8 @@ export const router = createBrowserRouter([
             element: <AddArtsForm />
           },
           {
-            path: "products/edit-video/:productNo",
-            element: <EditVideoProductPage />
-          },
-          {
-            path: "products/edit-music/:productNo",
-            element: <EditMusicForm />
-          },
-          {
-            path: "products/edit-podcast/:productNo",
-            element: <EditPodcastForm />
-          },
-          {
-            path: "products/edit-ebook/:productNo",
-            element: <EditEbookForm />
-          },
-          {
-            path: "products/edit-course/:productNo",
-            element: <EditCourseForm />
-          },
-          {
-            path: "products/edit-art/:productNo",
-            element: <EditArtsForm />
+            path: "products/edit/:productNo",
+            element: <EditSellerProductPage />
           },
           {
             path: "products/preview/:productNo",

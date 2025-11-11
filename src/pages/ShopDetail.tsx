@@ -170,9 +170,12 @@ const ShopDetail: React.FC = () => {
       <div className="w-full h-auto ">
         <div className="w-full h-[340px] relative rounded-lg">
           <img
-            src={shop?.shop_banner || "https://via.placeholder.com/1200x340?text=No+Image"}
+            src={(shop?.shop_banner && shop?.shop_banner !== null) ? shop?.shop_banner : "https://static.codia.ai/image/2025-10-24/d7xW9qdQUK.png"}
             alt={shop?.shop_name || "Store Image"}
             className="w-full h-full object-cover rounded-4xl"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = 'https://static.codia.ai/image/2025-10-24/d7xW9qdQUK.png';
+            }}
           />
         </div>
 
@@ -523,6 +526,8 @@ const ShopDetail: React.FC = () => {
                       mood: `${product.mood_name || ""}`,
                       image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
                       category: product.category?.name || "",
+                      isLike: product?.is_in_wishlist,
+                      isCarted: product?.is_in_cart,
                     }}
                   />
                 ))
