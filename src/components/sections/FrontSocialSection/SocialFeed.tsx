@@ -954,7 +954,7 @@ export default function SocialFeed() {
                   <div className="w-full border-t-[5px] border-[#7C81FF] mt-4"></div>
                 </div>
 
-                {storiesData.map((story) => (
+                {loggedInUserID && storiesData.map((story) => (
                   <div
                     key={story.id}
                     className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-xl overflow-hidden relative mohan"
