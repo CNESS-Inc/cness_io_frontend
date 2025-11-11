@@ -48,9 +48,9 @@ export default function FAQContent({ categories }: FAQContentProps) {
           >
             <button
               onClick={() => setOpenId(isOpen ? null : faq.id)}
-              className="flex items-center justify-between w-full px-6 py-5 text-left"
+              className="flex items-center justify-between w-full xs:px-2 sm:px-2 px-6 py-5 text-left"
             >
-              <span className="text-base font-[poppins] font-semibold text-[#1A1A1A]">{faq.question}</span>
+              <span className="text-base font-[poppins] font-semibold pl-4 text-[#1A1A1A]">{faq.question}</span>
               <FaAngleDown
                 className={`text-[#334155] transition-transform duration-300 ${
                   isOpen ? "rotate-180" : "rotate-0"
@@ -72,7 +72,7 @@ export default function FAQContent({ categories }: FAQContentProps) {
   );
 
   return (
-    <div className="w-full 2xl:max-w-full mx-auto px [5%] 2xl:px-0 pt-5 md:pb-10 lg:pb-20">
+    <div className="w-full 2xl:max-w-full mx-auto 2xl:px-0 pt-5 md:pb-10 lg:pb-4">
       <div className="flex md:hidden flex-col gap-3">
         {categories.map((category, index) => (
           <button

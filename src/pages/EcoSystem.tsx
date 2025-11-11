@@ -52,7 +52,14 @@ export default function EcoSystem() {
       <LazySection effect="fade-up" delay={0.2}>
         <EcoSystemApp />
       </LazySection>
+     
       <LazySection effect="fade-up" delay={0.2}>
+        <WhatOffer />
+      </LazySection>
+      <LazySection effect="fade-up" delay={0.2}>
+        <WhyCness />
+
+ <LazySection effect="fade-up" delay={0.2}>
         <section className="flex flex-col items-center relative w-full ">
           <div className="relative w-full lg:h-[350px] md:h-[350px] h-[420px] overflow-hidden rounded-xl">
             <div className=" sm:flex gap-[53.5px] top-2 left-0 inline-flex items-center absolute opacity-50 join-section-bg">
@@ -95,7 +102,7 @@ export default function EcoSystem() {
                             onClick={() => setOpenSignup(true)}
 
                 >
-                  Create Your Profile
+Start your journey today
                 </Button>
               </div>
             </div>
@@ -104,11 +111,8 @@ export default function EcoSystem() {
                         <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
         </section>
       </LazySection>
-      <LazySection effect="fade-up" delay={0.2}>
-        <WhatOffer />
-      </LazySection>
-      <LazySection effect="fade-up" delay={0.2}>
-        <WhyCness />
+
+
       </LazySection>
       <LazySection effect="fade-up" delay={0.2}>
         <GetInTouch />

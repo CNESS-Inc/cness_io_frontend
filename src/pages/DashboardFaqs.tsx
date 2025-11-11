@@ -6,7 +6,7 @@ import { IoIosMail } from "react-icons/io";
 
 const DashboardFaqs: React.FC = () => {
   return (
-    <div className="py-6 px-4">
+    <div className="sm:py-3 sm:px-4 py-6 px-4">
       {/* Page Heading */}
       <div className="w-full text-left mt-2 mb-4">
         <h2 className="text-[22px] font-semibold font-['Poppins'] text-gray-800">Help Centre</h2>

@@ -14,25 +14,25 @@ export default function Process() {
     {
       step: "STEP–01",
       title: "Create Your Account",
-      desc: "Sign up on CNESS and set up your profile to begin your journey.",
+      desc: "Create your CNESS profile and begin your journey.",
       icon: step1,
     },
     {
       step: "STEP–02",
       title: "Complete True Profile",
-      desc: "Provide your complete profile details to verify your identity and move forward in the certification journey.",
+      desc: "Share who you are and what conscious growth means to you.",
       icon: step2,
     },
     {
       step: "STEP–03",
       title: "Complete Assessment",
-      desc: "Complete the assessment to demonstrate your knowledge and skills. This step validates your readiness and moves you closer to certification.",
+      desc: "Complete a short self-assessment to celebrate your learnings.",
       icon: step3,
     },
     {
       step: "STEP–04",
       title: "Get Certified",
-      desc: "Earn your verified digital badge and showcase your achievement with pride.",
+      desc: "Receive your certification badge and join our growing community.",
       icon: step4,
     },
   ];

@@ -77,8 +77,8 @@ export default function FeaturedSection() {
     <h2 
     style={{ fontFamily: "Poppins, sans-serif" }}
     className="poppins featured-heading lg:text-[42px] md:text-[42px] text-[28px] font-medium bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text overflow-x-hidden">
-      Your Voice Deserves a <br />
-      Conscious{" "}
+      Share Your Voice with a <br />
+       Supportive{" "}
       <span
         className={
           step >= 1
@@ -86,7 +86,7 @@ export default function FeaturedSection() {
             : "text-[#232323] transition-all duration-700"
         }
       >
-        Stage.
+        Community.
       </span>
     </h2>
   );

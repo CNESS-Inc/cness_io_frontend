@@ -33,19 +33,20 @@ export default function HeroSection() {
       <div className="z-10 pt-12 sm:pt-16 px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
         <h1
           style={{ fontFamily: "Poppins, sans-serif" }}
-          className={`font-medium text-[clamp(28px,5vw,42px)] leading-[115%] tracking-[-0.02em] bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out ${step >= 4 ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-6"
+          className={`font-medium text-[clamp(28px,5vw,42px)] leading-[125%] tracking-[-0.02em] bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out ${step >= 4 ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-6"
             }`}
         >
-          The World’s First
-          <br /> Consciousness Super-App
+          Find Your People. Grow Together. 
+          <br /> 
         </h1>
 
         <p
-          className={`font-['Open_Sans'] font-light text-[14px] sm:text-[15px] lg:text-[16px] leading-[22px] sm:leading-[24px] tracking-[0px] text-[#242424] text-center max-w-[62ch] mt-4 sm:mt-6 lg:mt-6 transition-all duration-1000 ease-in-out  ${step >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          className={`font-['Open_Sans'] font-light text-[14px] sm:text-[15px] lg:text-[16px] leading-[22px] sm:leading-[24px] tracking-[0px] text-[#242424] text-center max-w-[65ch] mt-4 sm:mt-6 lg:mt-6 transition-all duration-1000 ease-in-out  ${step >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
             }`}
-        >
-          Build your conscious identity. Connect with purpose-led peers. Share
-          your knowledge. Learn, grow, and thrive – all in one place.
+        >      
+CNESS is a place where mindful people connect, share their stories 
+and learn from each other. Whether you’re new to conscious living 
+or already on your journey, you’re welcome here. 
         </p>
 
         <div

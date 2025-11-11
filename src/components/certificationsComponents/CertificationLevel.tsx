@@ -11,7 +11,7 @@ export default function CertificationLevel() {
     {
       title: "Aspiring",
       description:
-        "Entry-level certification for those beginning their journey of conscious growth.",
+        "For those beginning their conscious path with curiosity and heart",
       icon: group1,
       position:
         "md:translate-y-32 md:-translate-x-5 lg:translate-y-46 lg:-translate-x-20 xl:translate-y-68 xl:-translate-x-44", // bottom-left
@@ -20,7 +20,7 @@ export default function CertificationLevel() {
     {
       title: "Inspired",
       description:
-        "Intermediate level for individuals or businesses actively practicing and applying conscious principles.",
+        "For creators who live their purpose every day and guide others with authenticity.",
       icon: group2,
       position: "md:translate-y-10 xl:translate-y-18", // center
       lockRotation: "1.95deg",
@@ -28,7 +28,7 @@ export default function CertificationLevel() {
     {
       title: "Leader",
       description:
-        "Advanced recognition for change makers driving initiatives, leading communities, and creating impact.",
+        "For changemakers leading communities, creating impact, and inspiring transformation.",
       icon: group3,
       position:
         "md:translate-x-4 md:-translate-y-14 lg:translate-x-20 xl:-translate-y-20 xl:translate-x-44", // top-right

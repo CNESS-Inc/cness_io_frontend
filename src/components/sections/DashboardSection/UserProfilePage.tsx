@@ -22,6 +22,7 @@ import Button from "../../ui/Button";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useSearchParams } from "react-router-dom";
+import CreatableSelect from "react-select/creatable";
 
 const tabNames = [
   "Basic Information",
@@ -922,7 +923,12 @@ const UserProfilePage = () => {
 
     const normalizeToArray = (input: any) => {
       if (Array.isArray(input)) {
-        return input.map(String);
+        return input.map((item) => {
+          // Keep strings as strings, convert numbers to strings if needed
+          if (typeof item === "string") return item;
+          if (typeof item === "number") return String(item);
+          return String(item);
+        });
       }
       return input ? [String(input)] : [];
     };
@@ -938,6 +944,10 @@ const UserProfilePage = () => {
       professions: normalizeToArray(data.professions),
       interests: normalizeToArray(data.interests),
     };
+
+    // Log to see what's being sent
+    console.log("Submitting professions:", payload.professions);
+    console.log("Submitting interests:", payload.interests);
 
     try {
       const res = await SubmitProfileDetails(payload);
@@ -960,7 +970,6 @@ const UserProfilePage = () => {
 
       let isAdult = false;
       const dobString = response?.data?.data?.dob;
-
       const dob = new Date(dobString);
       const today = new Date();
 
@@ -977,7 +986,6 @@ const UserProfilePage = () => {
       }
 
       localStorage.setItem("is_adult", JSON.stringify(isAdult));
-
       localStorage.setItem(
         "margaret_name",
         response?.data?.data?.user.margaret_name
@@ -1179,7 +1187,29 @@ const UserProfilePage = () => {
       console.log("response.data.data", response.data.data);
 
       if (response.data.data) {
-        // Basic Info
+        const professions = response.data.data?.professions || [];
+        const interests = response.data.data?.interests || [];
+
+        // Map professions to handle both types (with profession_id and custom ones)
+        const professionValues = professions.map((prof: any) => {
+          // If it has profession_id, use that (admin-approved profession)
+          if (prof.profession_id) {
+            return prof.profession_id;
+          }
+          // Otherwise, it's a custom profession - use the title
+          return prof.title;
+        });
+
+        // Map interests to handle both types (with id and custom ones)
+        const interestValues = interests.map((interest: any) => {
+          // If it has id, use that (admin-approved interest)
+          if (interest.id) {
+            return interest.id;
+          }
+          // Otherwise, it's a custom interest - use the title
+          return interest.title;
+        });
+
         basicInfoForm.reset({
           firstName: response.data.data?.first_name || "",
           lastName: response.data.data?.last_name || "",
@@ -1192,11 +1222,8 @@ const UserProfilePage = () => {
             ? response.data.data?.dob.split("T")[0]
             : "",
           quote: response.data.data?.opinion_on_counsciouness || "",
-          // For interests and professions, since they're arrays in the response
-          interests: response.data.data?.interests?.map((i: any) => i.id) || [],
-          professions:
-            response.data.data?.professions?.map((p: any) => p.profession_id) ||
-            [],
+          interests: interestValues, // Use the mapped values
+          professions: professionValues, // Use the mapped values
           vision: response.data.data?.personal_vision_statement,
           identify_uploaded: response.data.data?.identify_uploaded,
         });
@@ -1703,6 +1730,15 @@ const UserProfilePage = () => {
                 <Tab.Panel>
                   <form
                     onSubmit={basicInfoForm.handleSubmit(handleBasicInfoSubmit)}
+                    onKeyDown={(e) => {
+                      // Prevent form submission when Enter is pressed in any input
+                      if (
+                        e.key === "Enter" &&
+                        e.target instanceof HTMLInputElement
+                      ) {
+                        e.preventDefault();
+                      }
+                    }}
                   >
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative">
                       {/* First Name */}
@@ -1731,7 +1767,6 @@ const UserProfilePage = () => {
                           </p>
                         )}
                       </div>
-
                       {/* Last Name */}
                       <div>
                         <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -1758,86 +1793,186 @@ const UserProfilePage = () => {
                           </p>
                         )}
                       </div>
-
                       {/* Interests */}
                       <div>
                         <label className="block text-sm font-medium text-gray-800 mb-2">
                           Interests
-                          {/* <span className="text-red-500">*</span> */}
                         </label>
-                        <Select
+                        <CreatableSelect
                           isMulti
-                          options={intereset?.map((interest: any) => ({
-                            value: interest.id,
-                            label: interest.name,
-                          }))}
+                          options={
+                            intereset?.map((interest: any) => ({
+                              value: interest.id,
+                              label: interest.name,
+                            })) || []
+                          }
+                          // In your interests Select component, update the value mapping:
                           value={basicInfoForm
                             .watch("interests")
-                            ?.map((interestId: any) => ({
-                              value: interestId,
-                              label: intereset?.find(
-                                (i: any) => i.id === interestId
-                              )?.name,
-                            }))}
+                            ?.map((interestValue: any) => {
+                              // Check if it's a custom interest (string without UUID format) or existing (ID)
+                              if (
+                                typeof interestValue === "string" &&
+                                !interestValue.includes("-")
+                              ) {
+                                // It's a custom interest - return as is
+                                return {
+                                  value: interestValue,
+                                  label: interestValue,
+                                };
+                              }
+
+                              // It's an existing interest ID - find in interest data
+                              const foundInterest = intereset?.find(
+                                (i: any) => i.id === interestValue
+                              );
+
+                              // If not found in interest data, check if it's in the profile response
+                              if (!foundInterest) {
+                                const profileInterest =
+                                  _profileData?.interests?.find(
+                                    (i: any) => i.id === interestValue
+                                  );
+                                if (profileInterest) {
+                                  return {
+                                    value: interestValue,
+                                    label:
+                                      profileInterest.name ||
+                                      profileInterest.title ||
+                                      interestValue,
+                                  };
+                                }
+                              }
+
+                              return {
+                                value: interestValue,
+                                label: foundInterest?.name || interestValue,
+                              };
+                            })}
                           onChange={(selectedOptions) => {
+                            const normalizedInterests = selectedOptions.map(
+                              (option: any) => {
+                                return option.value;
+                              }
+                            );
+
                             basicInfoForm.setValue(
                               "interests",
-                              selectedOptions.map((option) => option.value)
+                              normalizedInterests
                             );
                           }}
                           styles={customStyles}
                           classNamePrefix="react-select"
-                          placeholder="Select interests..."
+                          placeholder="Select interests or type to add custom..."
+                          noOptionsMessage={({ inputValue }) =>
+                            inputValue
+                              ? `Press Enter to add "${inputValue}" as custom interest`
+                              : "No options"
+                          }
+                          formatCreateLabel={(inputValue) =>
+                            `Add "${inputValue}" as custom interest`
+                          }
+                          isValidNewOption={(inputValue) =>
+                            inputValue.trim().length > 0 &&
+                            inputValue.trim().length <= 50 &&
+                            !basicInfoForm
+                              .watch("interests")
+                              ?.some(
+                                (interest: any) =>
+                                  typeof interest === "string" &&
+                                  interest.toLowerCase() ===
+                                    inputValue.trim().toLowerCase()
+                              )
+                          }
                         />
-                        {basicInfoForm.formState.errors.interests && (
-                          <p className="text-sm text-red-500 mt-1">
-                            At least one interest is required
-                          </p>
-                        )}
                       </div>
-
                       {/* Profession */}
                       <div>
                         <label className="block text-sm font-medium text-gray-800 mb-2">
                           Professions <span className="text-red-500">*</span>
                         </label>
-                        <Select
+                        <CreatableSelect
                           isMulti
-                          options={professional?.map((prof: any) => ({
-                            value: prof.id,
-                            label: prof.title,
-                          }))}
+                          options={
+                            professional?.map((prof: any) => ({
+                              value: prof.id,
+                              label: prof.title,
+                            })) || []
+                          }
                           value={basicInfoForm
                             .watch("professions")
-                            ?.map((profId: any) => {
-                              if (profId === "other") {
-                                // use custom_profession text if available, else fallback to "Other"
-                                const customLabel =
-                                  basicInfoForm.watch("custom_profession") ||
-                                  "Other";
+                            ?.map((profValue: any) => {
+                              // Check if it's a custom profession (string without UUID format) or existing (ID)
+                              if (
+                                typeof profValue === "string" &&
+                                !profValue.includes("-")
+                              ) {
+                                // It's a custom profession - return as is
                                 return {
-                                  value: "other",
-                                  label: customLabel,
+                                  value: profValue,
+                                  label: profValue,
                                 };
                               }
 
+                              // It's an existing profession ID - find in professional data
+                              const foundProf = professional?.find(
+                                (p: any) => p.id === profValue
+                              );
+
+                              // If not found in professional data, check if it's in the profile response
+                              if (!foundProf) {
+                                const profileProf =
+                                  _profileData?.professions?.find(
+                                    (p: any) => p.profession_id === profValue
+                                  );
+                                if (profileProf) {
+                                  return {
+                                    value: profValue,
+                                    label: profileProf.title || profValue,
+                                  };
+                                }
+                              }
+
                               return {
-                                value: profId,
-                                label:
-                                  professional?.find(
-                                    (p: any) => p.id === profId
-                                  )?.title || "",
+                                value: profValue,
+                                label: foundProf?.title || profValue,
                               };
                             })}
                           onChange={(selectedOptions) => {
+                            const normalizedProfessions = selectedOptions.map(
+                              (option: any) => {
+                                return option.value;
+                              }
+                            );
+
                             basicInfoForm.setValue(
                               "professions",
-                              selectedOptions.map((option) => option.value)
+                              normalizedProfessions
                             );
                           }}
                           styles={customStyles}
                           classNamePrefix="react-select"
-                          placeholder="Select professions..."
+                          placeholder="Select professions or type to add custom..."
+                          noOptionsMessage={({ inputValue }) =>
+                            inputValue
+                              ? `Press Enter to add "${inputValue}" as custom profession`
+                              : "No options"
+                          }
+                          formatCreateLabel={(inputValue) =>
+                            `Add "${inputValue}" as custom profession`
+                          }
+                          isValidNewOption={(inputValue) =>
+                            inputValue.trim().length > 0 &&
+                            inputValue.trim().length <= 50 &&
+                            !basicInfoForm
+                              .watch("professions")
+                              ?.some(
+                                (prof: any) =>
+                                  typeof prof === "string" &&
+                                  prof.toLowerCase() ===
+                                    inputValue.trim().toLowerCase()
+                              )
+                          }
                         />
                         {basicInfoForm.formState.errors.professions && (
                           <p className="text-sm text-red-500 mt-1">
@@ -1845,7 +1980,6 @@ const UserProfilePage = () => {
                           </p>
                         )}
                       </div>
-
                       {/* <div>
                             <label className="block text-sm font-medium text-gray-800 mb-2">
                               Upload Document{" "}
@@ -2006,7 +2140,6 @@ const UserProfilePage = () => {
                               </>
                             )}
                           </div> */}
-
                       {/* Gender Dropdown - Styled like the Interests Field */}
                       <div className="w-full">
                         <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -2076,7 +2209,6 @@ const UserProfilePage = () => {
                           </p>
                         )}
                       </div>
-
                       {/* Quote on Consciousness */}
                       <div>
                         <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -2102,7 +2234,6 @@ const UserProfilePage = () => {
                           </p>
                         )}
                       </div>
-
                       {/* Professional Bio */}
                       <div>
                         <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -2129,7 +2260,6 @@ const UserProfilePage = () => {
                           </p>
                         )}
                       </div>
-
                       {/* Vision Statement - Full Width */}
                       <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-800 mb-2">
