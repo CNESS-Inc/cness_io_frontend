@@ -33,6 +33,7 @@ const rightCards = [
     title: "CNESS Web ",
     info: "(Individual)",
     subtitle: "Empowering Conscious Creators",
+    description:"Learn new skills, earn certifications and meet mentors who’ve been on this journey before.",
     list: [
       "Validate Their Conscious Identity",
       "Set Up A Storefront With Digital Goods And Services",
@@ -51,6 +52,7 @@ const rightCards = [
     title: "CNESS Web ",
     info: "(Organizations)",
     subtitle: "Trust, Transformation & Training",
+    description:"Tools for training your team, certifying your organization and aligning your company values.",
     list: [
       "3-Level Certification: With Transparent Criteria And Public Visibility",
       "Conscious Impact Score: A Proprietary Metric To Quantify Values Alignment",
@@ -69,6 +71,7 @@ const rightCards = [
     title: "CNESS",
     info: "(Mobile App)",
     subtitle: "Ecosystem — in your pocket.",
+    description:"Stay connected wherever you are. Join conscious circles, share your journey, and soon buy or sell meaningful products in a built-in marketplace — all from your phone.",
     list: [
       "Conscious Profile: A Digital Reflection Of One’s Values And Intent",
       "Moments: Thoughtful, Bite-Sized Posts For Sharing Experiences",
@@ -86,6 +89,7 @@ const rightCards = [
   {
     title: "Ariome",
     subtitle: "Conscious Betterment App",
+    description:"A daily companion that offers reflections, mindful prompts and journaling suggestions so you can grow a little every day.",
     list: [
       "Guided Growth Journeys: Multi-Day Themed Programs",
       "Masterclasses: From World-Class Thought Leaders And Coaches",
@@ -303,7 +307,14 @@ export default function EcoSystemApp() {
                 {rightCards[activeCard].subtitle}
               </h3>
             </div>
-
+{rightCards[activeCard].description && (
+  <p
+    style={{ fontFamily: "Open Sans, sans-serif" }}
+    className="font-light text-[16px] leading-[26px] text-[#242424] mt-3 max-w-[65ch]"
+  >
+    {rightCards[activeCard].description}
+  </p>
+)}
             <ul className="flex flex-col gap-3 py-8">
               {rightCards[activeCard].list.map((item, idx) => (
                 <li

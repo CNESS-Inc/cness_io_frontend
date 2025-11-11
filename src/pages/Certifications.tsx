@@ -87,17 +87,26 @@ export default function Certifications() {
             </div>
 
             <div className="flex flex-col h-full justify-center items-center sm:items-start gap-6 sm:gap-8 p-6 sm:p-0  -translate-x-[50%] w-full max-w-4xl mx-auto sm:mx-0 absolute top-5 left-[50%] lg:top-[50%] lg:-translate-y-[50%] md:top-[50%] md:-translate-y-[50%] ">
-              <div className="flex flex-col items-center sm:items-start gap-3 w-full text-center sm:text-left">
-                <h2
-                  style={{ fontFamily: "Poppins, sans-serif" }}
-                  className="font-medium text-[#2a2a2a] text-center text-2xl sm:text-3xl md:text-[42px] tracking-normal sm:tracking-[0] leading-[1.3] sm:leading-[50px] w-full"
-                >
-                  Join us on this Journey to grow, connect,
-                  <br />
-                  and make an impact.
-                </h2>
-              </div>
+<div className="flex flex-col items-center justify-center text-center w-full px-4">
+  <h2
+    style={{ fontFamily: "Poppins, sans-serif" }}
+    className="font-medium text-[#2a2a2a]
+               text-2xl sm:text-3xl md:text-[42px]
+               leading-[1.3] md:leading-[50px]
+               tracking-normal max-w-[900px]"
+  >
+    Your conscious journey deserves to be seen.
+  </h2>
 
+  <p
+    style={{ fontFamily: "Open Sans, sans-serif" }}
+    className="font-light text-[16px] leading-[26px] text-[#242424]
+               max-w-[780px] mt-3 md:mt-4 mx-auto"
+  >
+    Join CNESS — where your growth is recognized, your values are celebrated,
+    and your impact begins.
+  </p>
+</div>
               <div className="flex items-center justify-center w-full joining-btn ">
                 <Button
                   variant="gradient-primary"

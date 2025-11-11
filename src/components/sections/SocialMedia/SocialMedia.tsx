@@ -50,7 +50,7 @@ export default function SocialMedia() {
               like-hearted
               <br />
               creators, thinkers, and changemakers meet — not to impress, but to
-              express.
+              express. Connect with people who understand where you’re coming from.
             </p>
             <Button
               className="w-fit h-[38px] rounded-[100px] 
