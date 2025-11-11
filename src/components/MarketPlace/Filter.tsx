@@ -1,26 +1,94 @@
 import React, { useEffect, useState } from "react";
+import { FiSearch } from "react-icons/fi";
+import { GetMarketPlaceBuyerCategories } from "../../Common/ServerAPI";
+import { useLocation } from "react-router-dom";
 
-const categories = ["Music", "Podcasts", "Arts", "Videos", "Courses", "Ebook"];
-// Per latest design, show status-like labels under Language section
-const languages = ["Not Started", "In progress", "Completed"];
-const orderedTime = ["Last 3 days", "Last week", "Last month", "2025", "2024", "2023"];
-const durations = ["< 30 min", "30 - 120 min", "> 2 hrs"];
-
-interface FilterSidebarProps {
-  // When used under fixed headers, set the mobile top offset (in px) so the sheet starts below headers
-  mobileTopOffset?: number;
+interface FilterProps {
+  filters: {
+    category_slug?: string;
+    min_price?: string;
+    max_price?: string;
+    language?: string;
+    duration?: string;
+    rating?: string;
+  };
+  onFilterChange: (filters: any) => void;
 }
 
-const FilterSidebar: React.FC<FilterSidebarProps> = ({ mobileTopOffset = 0 }) => {
+const languages = ["English", "Spanish", "French"];
+const durations = ["< 30 min", "30 - 120 min", "> 2 hrs"];
+const ratings = ["4+ Stars", "3+ Stars", "2+ Stars"];
+
+const FilterSidebar: React.FC<FilterProps> = ({ filters, onFilterChange }) => {
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [localFilters, setLocalFilters] = useState(filters);
+
+  const isCategoriesPage = location.pathname === '/dashboard/categories';
 
   useEffect(() => {
-    const update = () => setIsMobile(window.innerWidth < 768);
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
+    const fetchCategories = async () => {
+      try {
+        const response = await GetMarketPlaceBuyerCategories();
+        setCategories(response?.data?.data || []);
+      } catch (error) {
+        console.error("Failed to load categories");
+      }
+    };
+
+    fetchCategories();
   }, []);
+
+  useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters]);
+
+  const handleCategoryToggle = (categorySlug: string) => {
+    const newFilters = {
+      ...localFilters,
+      category_slug: localFilters.category_slug === categorySlug ? "" : categorySlug,
+    };
+    setLocalFilters(newFilters);
+    onFilterChange(newFilters);
+  };
+
+  const handlePriceChange = (field: 'min_price' | 'max_price', value: string) => {
+    const newFilters = {
+      ...localFilters,
+      [field]: value,
+    };
+    setLocalFilters(newFilters);
+  };
+
+  const handlePriceBlur = () => {
+    onFilterChange(localFilters);
+  };
+
+  const handleLanguageToggle = (language: string) => {
+    const newFilters = {
+      ...localFilters,
+      language: localFilters.language === language ? "" : language,
+    };
+    setLocalFilters(newFilters);
+    onFilterChange(newFilters);
+  };
+
+  const handleDurationToggle = (duration: string) => {
+    const newFilters = {
+      ...localFilters,
+      duration: localFilters.duration === duration ? "" : duration,
+    };
+    setLocalFilters(newFilters); duration
+  };
+
+  const handleRatingToggle = (rating: string) => {
+    const newFilters = {
+      ...localFilters,
+      rating: localFilters.rating === rating ? "" : rating,
+    };
+    setLocalFilters(newFilters);
+  };
 
   return (
     <>
@@ -38,35 +106,23 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ mobileTopOffset = 0 }) =>
       {isOpen && (
         <div
           onClick={() => setIsOpen(false)}
-          className="fixed left-0 right-0 bottom-0 md:hidden"
-          style={
-            isMobile
-              ? { top: mobileTopOffset, height: `calc(100vh - ${mobileTopOffset}px)`, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 20 }
-              : undefined
-          }
+          className="fixed inset-0 bg-black/40 z-40 md:hidden"
         ></div>
       )}
 
       {/* 🧭 Sidebar */}
       <aside
         className={`
-          fixed md:sticky left-0 md:left-0 z-30 md:z-auto 
-          h-full md:h-[1031px]
-          w-[80%] sm:w-[300px] md:w-[267px]
-          box-border
-          bg-white border border-[#CBD5E1] rounded-none md:rounded-[16px]
+          fixed md:static top-0 left-0 z-50 
+          h-full md:h-auto
+          w-[80%] sm:w-[300px] md:w-[250px]
+          bg-white border border-gray-200 rounded-none md:rounded-xl
           shadow-lg md:shadow-sm
-          p-5 md:pt-[18px] md:pr-[15px] md:pb-[12px] md:pl-[11px]
-          overflow-y-auto md:overflow-visible
+          p-5 md:p-6
+          overflow-y-auto
           transform transition-transform duration-300 ease-in-out
           ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
-          md:top-0
         `}
-        style={
-          isMobile
-            ? { top: mobileTopOffset, height: `calc(100vh - ${mobileTopOffset}px)` }
-            : undefined
-        }
       >
         {/* ❌ Close Button (Mobile Only) */}
         <div className="md:hidden flex justify-end mb-3">
@@ -78,43 +134,127 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ mobileTopOffset = 0 }) =>
           </button>
         </div>
 
-        {/* Content wrapper sized to design (inner) including header */}
-        <div className="mx-auto w-[211px] h-[1001px] space-y-[2px]">
-          {/* 🏷️ Filters Title */}
-          <div>
-            <h3 className="text-lg font-bold mb-2">Filters</h3>
-            <div className="border-t border-gray-200"></div>
+        {/* 🏷️ Filters Title */}
+        <div>
+          <h3 className="text-lg font-bold mb-4">Filters</h3>
+          <div className="border-t border-gray-200 mb-5"></div>
+        </div>
+
+        {/* 📂 Category */}
+        {!isCategoriesPage && (
+          < div className="space-y-2 mb-8">
+            <h3 className="text-[16px] font-semibold">Category</h3>
+            {categories.map((category) => (
+              <label
+                key={category.slug}
+                className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  checked={localFilters.category_slug === category.slug}
+                  onChange={() => handleCategoryToggle(category.slug)}
+                  className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
+                />
+                <span>{category.name}</span>
+              </label>
+            ))}
           </div>
-          {/* 📂 Category */}
-          <FilterGroup title="Category" items={categories} heightPx={220} />
-          <div className="border-t border-gray-200 mb-[10px]" />
+        )}
 
-          {/* 🌍 Language */}
-          <FilterGroup title="Language" items={languages} heightPx={145} />
-          <div className="border-t border-gray-200 mb-[10px]" />
-
-          {/* 🗓️ Ordered Time */}
-          <FilterGroup title="Ordered Time" items={orderedTime} heightPx={225} />
-          <div className="border-t border-gray-200 mb-[10px]" />
-
-          {/* ⏱️ Duration */}
-          <FilterGroup title="Duration" items={durations} heightPx={150} />
-          <div className="border-t border-gray-200 mb-[10px]" />
-
-          {/* 🧑‍🎨 Creator Search */}
-          <div className="w-[211px] h-[90px]">
-            <h3 className="text-[16px] font-semibold mb-2">Creators / Publisher</h3>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search"
-                className="w-full h-[40px] pl-3 pr-8 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
-              />
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400"></span>
-            </div>
+        {/* 💲 Price */}
+        <div className="space-y-2 mb-8">
+          <h3 className="text-[16px] font-[poppins] font-semibold">Price</h3>
+          <div className="flex items-center space-x-2">
+            <input
+              type="number"
+              placeholder="$0"
+              value={localFilters.min_price || ""}
+              onChange={(e) => handlePriceChange('min_price', e.target.value)}
+              onBlur={handlePriceBlur}
+              className="w-[90px] px-3 py-2 border rounded-lg text-sm font-semibold font-[poppins] focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
+            />
+            <span className="text-gray-500">-</span>
+            <input
+              type="number"
+              placeholder="$50"
+              value={localFilters.max_price || ""}
+              onChange={(e) => handlePriceChange('max_price', e.target.value)}
+              onBlur={handlePriceBlur}
+              className="w-[90px] px-3 py-2 border rounded-lg text-sm font-semibold font-[poppins] focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
+            />
           </div>
         </div>
-      </aside>
+
+        {/* 🌍 Language */}
+        <div className="space-y-2 mb-8">
+          <h3 className="text-[16px] font-semibold">Language</h3>
+          {languages.map((language) => (
+            <label
+              key={language}
+              className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                checked={localFilters.language === language}
+                onChange={() => handleLanguageToggle(language)}
+                className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
+              />
+              <span>{language}</span>
+            </label>
+          ))}
+        </div>
+
+        {/* ⏱️ Duration */}
+        <div className="space-y-2 mb-8">
+          <h3 className="text-[16px] font-semibold">Duration</h3>
+          {durations.map((duration) => (
+            <label
+              key={duration}
+              className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                checked={localFilters.duration === duration}
+                onChange={() => handleDurationToggle(duration)}
+                className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
+              />
+              <span>{duration}</span>
+            </label>
+          ))}
+        </div>
+
+        {/* ⭐ Ratings */}
+        <div className="space-y-2 mb-8">
+          <h3 className="text-[16px] font-semibold">Ratings</h3>
+          {ratings.map((rating) => (
+            <label
+              key={rating}
+              className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                checked={localFilters.rating === rating}
+                onChange={() => handleRatingToggle(rating)}
+                className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
+              />
+              <span>{rating}</span>
+            </label>
+          ))}
+        </div>
+
+        {/* 🧑‍🎨 Creator Search */}
+        <div className="mt-8 relative">
+          <h3 className="text-[16px] font-[poppins] font-semibold mb-3">
+            Creators / Publisher
+          </h3>
+          <input
+            type="text"
+            placeholder="Search"
+            className="w-full pl-10 py-2 font-[poppins] border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
+          />
+          <FiSearch className="absolute right-3 -mt-4 transform -translate-y-1/2 text-gray-400" />
+        </div>
+      </aside >
     </>
   );
 };
@@ -122,30 +262,26 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ mobileTopOffset = 0 }) =>
 export default FilterSidebar;
 
 /* 💡 Reusable Filter Group Component */
-const FilterGroup = ({
-  title,
-  items,
-  heightPx,
-}: {
-  title: string;
-  items: string[];
-  heightPx?: number;
-}) => (
-  <div style={heightPx ? { height: `${heightPx}px` } : undefined}>
-    <h3 className="text-[16px] font-semibold mb-[6px] mt-[10px]">{title}</h3>
-    <div className="flex flex-col gap-[7px]">
-      {items.map((item) => (
-        <label
-          key={item}
-          className="flex items-center gap-[10px] text-[14px] font-medium leading-[150%] tracking-[-0.019em] text-gray-700 cursor-pointer"
-        >
-          <input
-            type="checkbox"
-            className="w-4 h-4 rounded border-gray-300 text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
-          />
-          <span style={{ fontFamily: 'poppins' }}>{item}</span>
-        </label>
-      ))}
-    </div>
-  </div>
-);
+// const FilterGroup = ({
+//   title,
+//   items,
+// }: {
+//   title: string;
+//   items: string[];
+// }) => (
+//   <div className="space-y-2 mb-8">
+//     <h3 className="text-[16px] font-semibold">{title}</h3>
+//     {items.map((item) => (
+//       <label
+//         key={item}
+//         className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
+//       >
+//         <input
+//           type="checkbox"
+//           className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
+//         />
+//         <span>{item}</span>
+//       </label>
+//     ))}
+//   </div>
+// );

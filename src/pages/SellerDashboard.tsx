@@ -131,13 +131,13 @@ const carted = [
 
 export default function SellerDashboard() {
   const [user, setUser] = useState<UserData | null>(null);
-  console.log("user", user);
   const [resonating, setReasonating] = useState<UserData | null>(null);
   const [reasonators, setReasonators] = useState<UserData | null>(null);
   const [bestPractices, setBestPractices] = useState<BestPracticeItem[]>([]);
   const [_loadingBestPractices, setLoadingBestPractices] = useState(false);
   const [directoryItems, setDirectoryItems] = useState<any[]>([]);
   const [friendRequests, setFriendRequests] = useState<any[]>([]);
+  console.log("🚀 ~ SellerDashboard ~ friendRequests:", friendRequests)
   const [suggestion, setFriendSuggestion] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -247,7 +247,7 @@ export default function SellerDashboard() {
         const transformedData: any[] = res.data.data.rows.map((item: any) => ({
           id: item.id,
           name: item.name,
-          handle: `@${item.name}` || "@liamthegreat",
+          handle: `@${item.name}`,
           avatar: item.profile_picture,
         }));
         setDirectoryItems(transformedData);
@@ -280,13 +280,14 @@ export default function SellerDashboard() {
   const fetchFriendRequests = async () => {
     try {
       const response = await GetFriendRequest();
+      console.log("🚀 ~ fetchFriendRequests ~ response:", response)
       const formattedRequests = response.data.data.rows.map((item: any) => ({
         id: item?.friend_user?.id,
         name: `${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
-        handle: `@${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
+        handle: `@${item.friend_user.username}`,
         avatar: item.friend_user.profile.profile_picture,
+        req_status: item.request_status,
       }));
-      console.log("fetchFriendRequests ---------------->", formattedRequests);
       setFriendRequests(formattedRequests);
     } catch (error) {
       console.error("Error fetching friend requests:", error);
@@ -295,10 +296,11 @@ export default function SellerDashboard() {
   const fetchFriendSuggestions = async () => {
     try {
       const response = await GetFriendSuggestions();
+      console.log("🚀 ~ fetchFriendSuggestions ~ response:", response)
       const formattedRequests = response.data.data.rows.map((item: any) => ({
         id: item.id,
         name: `${item.profile.first_name} ${item.profile.last_name}`,
-        handle: `@${item.profile.first_name} ${item.profile.last_name}`,
+        handle: `${item.username}`,
         avatar: item.profile.profile_picture,
       }));
       console.log(
@@ -623,6 +625,8 @@ export default function SellerDashboard() {
             suggested={suggestion}
             requested={friendRequests}
             onConnect={(f) => console.log("Connect:", f)}
+            fetchFriendRequests={fetchFriendRequests}
+            fetchFriendSuggestions={fetchFriendSuggestions}
           />
         </div>
 

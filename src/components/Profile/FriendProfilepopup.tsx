@@ -1,8 +1,6 @@
-import { X } from "lucide-react";
+import { UserRoundMinus, UserRoundPlus, X } from "lucide-react";
 import MyPost from "../Profile/Mypost";
 import companycard from "../../assets/companycard1.png";
-// import whychess from "../../assets/whycness.jpg";
-// import webinar from "../../assets/webinarimg.jpg";
 import { TrendingUp } from "lucide-react";
 import { useState, useEffect } from "react";
 import {
@@ -11,8 +9,14 @@ import {
   GetFollowingFollowersByUserId,
   SendFollowRequest,
   GetFollowStatus,
+  UnFriend,
+  GetFriendStatus,
+  RejectFriendRequest,
+  AcceptFriendRequest,
+  SendConnectionRequest,
 } from "../../Common/ServerAPI";
 import PostPopup from "./Popup";
+import { useToast } from "../ui/Toast/ToastProvider";
 
 type Props = {
   friend: {
@@ -29,10 +33,10 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
   const [followingFollowers, setFollowingFollowers] = useState<any>(null);
   const [userPosts, setUserPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [followLoading, setFollowLoading] = useState(false);
+  const [_isFollowing, setIsFollowing] = useState(false);
+  const { showToast } = useToast();
+  const loggedInUserId = localStorage.getItem("Id");
 
-  // Add useEffect to fetch data when modal opens
   useEffect(() => {
     if (friend.id) {
       fetchFriendData();
@@ -45,7 +49,6 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
       const response = await GetFollowStatus(friend.id.toString());
 
       // Get the logged-in user's ID from localStorage or wherever you store it
-      const loggedInUserId = localStorage.getItem("Id");
 
       // Check if the logged-in user is in the followers list
       const followers = response.data?.data?.rows || [];
@@ -70,8 +73,9 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
           GetFollowingFollowersByUserId(friend.id.toString()),
           GetUserPostsByUserId(friend.id.toString()),
         ]);
+      console.log("🚀 ~ fetchFriendData ~ profileResponse:", profileResponse);
 
-      setProfileData(profileResponse.data.data.rows);
+      setProfileData(profileResponse.data.data);
       setFollowingFollowers(followingResponse.data.data);
 
       const transformedPosts = postsResponse.data.data.rows.map((item: any) => {
@@ -191,39 +195,264 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
     return "/images/video-poster-placeholder.jpg"; // placeholder
   };
 
-  const handleFollowToggle = async () => {
-    setFollowLoading(true);
+  // const handleFollowToggle = async () => {
+  //   setFollowLoading(true);
+  //   try {
+  //     const formattedData = { following_id: friend.id };
+  //     await SendFollowRequest(formattedData);
+
+  //     // Toggle the following state correctly
+  //     const newFollowStatus = !isFollowing;
+  //     setIsFollowing(newFollowStatus);
+
+  //     // Update the followers count correctly
+  //     setFollowingFollowers((prev: typeof followingFollowers) => ({
+  //       ...prev,
+  //       followerCount: newFollowStatus
+  //         ? (prev?.followerCount || 0) + 1 // If now following, increase count
+  //         : Math.max(0, (prev?.followerCount || 0) - 1), // If now unfollowing, decrease count
+  //     }));
+
+  //     console.log(
+  //       newFollowStatus ? "Followed successfully" : "Unfollowed successfully"
+  //     );
+  //   } catch (error) {
+  //     console.error("Error toggling follow status:", error);
+  //     // Don't revert the state on error - let the user see the error and try again
+  //   } finally {
+  //     setFollowLoading(false);
+  //   }
+  // };
+
+  const [selectedPost, setSelectedPost] = useState<any | null>(null);
+  const [friendRequests, setFriendRequests] = useState<{
+    [key: string]: string;
+  }>({});
+  console.log("🚀 ~ FriendProfileModal ~ friendRequests:", friendRequests)
+
+  const checkFriendStatus = async (userId: string) => {
     try {
-      const formattedData = { following_id: friend.id };
-      await SendFollowRequest(formattedData);
+      const response = await GetFriendStatus(userId);
+      if (response.success) {
+        // The API returns data.data.rows array with all friends
+        const friendsList = response.data.data.rows || [];
 
-      // Toggle the following state correctly
-      const newFollowStatus = !isFollowing;
-      setIsFollowing(newFollowStatus);
+        // Find if this specific user is in the friends list
+        const friendRecord = friendsList.find(
+          (friend: any) =>
+            friend.friend_id === userId || friend.user_id === userId
+        );
+        console.log("🚀 ~ checkFriendStatus ~ friendRecord:", friendsList);
+        if (friendRecord) {
+          // Check the request_status from the database
+          const status = friendRecord.request_status;
 
-      // Update the followers count correctly
-      setFollowingFollowers((prev: typeof followingFollowers) => ({
-        ...prev,
-        followerCount: newFollowStatus
-          ? (prev?.followerCount || 0) + 1 // If now following, increase count
-          : Math.max(0, (prev?.followerCount || 0) - 1), // If now unfollowing, decrease count
-      }));
-
-      console.log(
-        newFollowStatus ? "Followed successfully" : "Unfollowed successfully"
-      );
+          if (status === "ACCEPT") {
+            setFriendRequests((prev) => ({
+              ...prev,
+              [userId]: "connected",
+            }));
+          } else if (status === "PENDING") {
+            setFriendRequests((prev) => ({
+              ...prev,
+              [userId]: "requested",
+            }));
+          } else if (status === "REJECT") {
+            setFriendRequests((prev) => ({
+              ...prev,
+              [userId]: "connect",
+            }));
+          } else {
+            setFriendRequests((prev) => ({
+              ...prev,
+              [userId]: "connect",
+            }));
+          }
+        } else {
+          // No friend record found, set to connect
+          console.log(
+            "🚀 ~ checkFriendStatus ~ No friend record found, set to connect"
+          );
+          setFriendRequests((prev) => ({
+            ...prev,
+            [userId]: "connect",
+          }));
+        }
+      }
     } catch (error) {
-      console.error("Error toggling follow status:", error);
-      // Don't revert the state on error - let the user see the error and try again
-    } finally {
-      setFollowLoading(false);
+      console.error("Error checking friend status:", error);
+      // Set default status if API fails
+      setFriendRequests((prev) => ({
+        ...prev,
+        [userId]: "connect",
+      }));
     }
   };
 
-    const [selectedPost, setSelectedPost] = useState<any | null>(null);
-    console.log("🚀 ~ FriendProfileModal ~ selectedPost:", selectedPost)
-  
+  // useEffect(() => {
+  //   if (userPosts.length > 0) {
+  //     userPosts.forEach((post) => {
+  //       if (post.user_id !== loggedInUserId) {
+  //         checkFriendStatus(post.user_id);
+  //       }
+  //     });
+  //   }
+  // }, [userPosts, loggedInUserId]);
 
+  // Add another useEffect to check friend status on component mount
+  useEffect(() => {
+    // Check friend status for all posts when component mounts
+    if (userPosts.length > 0 && loggedInUserId) {
+      userPosts.forEach((post) => {
+        if (post.user_id !== loggedInUserId) {
+          checkFriendStatus(post.user_id);
+        }
+      });
+    }
+  }, []);
+  const handleFriend = async (userId: string) => {
+    try {
+      // Case 1: No existing connection or pending request - Send new connection request
+      if (
+        profileData.friend_request_status !== "ACCEPT" &&
+        profileData.friend_request_status !== "PENDING" &&
+        !profileData.if_friend
+      ) {
+        const formattedData = {
+          friend_id: userId,
+        };
+        const res = await SendConnectionRequest(formattedData);
+        showToast({
+          message: res?.success?.message,
+          type: "success",
+          duration: 2000,
+        });
+        setProfileData({
+          ...profileData,
+          if_friend: false,
+          friend_request_status: "PENDING",
+        });
+      }
+      // Case 2: Cancel pending request (when status is PENDING)
+      else if (
+        profileData.friend_request_status === "PENDING" &&
+        !profileData.if_friend
+      ) {
+        const formattedData = {
+          friend_id: userId,
+        };
+        const res = await UnFriend(formattedData); // Or use a specific cancel request API if available
+        showToast({
+          message: res?.success?.message,
+          type: "success",
+          duration: 2000,
+        });
+        setProfileData({
+          ...profileData,
+          if_friend: false,
+          friend_request_status: null,
+        });
+      }
+      // Case 3: Remove existing friend connection
+      else if (
+        profileData.friend_request_status === "ACCEPT" &&
+        profileData.if_friend
+      ) {
+        const formattedData = {
+          friend_id: userId,
+        };
+        const res = await UnFriend(formattedData);
+        showToast({
+          message: res?.success?.message,
+          type: "success",
+          duration: 2000,
+        });
+        setProfileData({
+          ...profileData,
+          if_friend: false,
+          friend_request_status: null,
+        });
+      }
+    } catch (error) {
+      console.error("Error handling friend request:", error);
+      showToast({
+        message: "Failed to update connection",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleFollow = async (userId: string) => {
+    try {
+      const formattedData = {
+        following_id: userId,
+      };
+      await SendFollowRequest(formattedData);
+      setUserPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.user_id === userId
+            ? { ...post, if_following: !post.if_following }
+            : post
+        )
+      );
+      await fetchFriendData();
+    } catch (error) {
+      console.error("Error fetching selection details:", error);
+    }
+  };
+
+  const handleAcceptRequest = async (userId: string) => {
+    try {
+      const formattedData = { friend_id: userId };
+      await AcceptFriendRequest(formattedData);
+      setProfileData({
+        ...profileData,
+        if_friend: true,
+        friend_request_status: "ACCEPT",
+        reciver_request_status: null,
+      });
+
+      showToast({
+        message: "Friend request accepted!",
+        type: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error accepting friend request:", error);
+      showToast({
+        message: "Failed to accept friend request",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleRejectRequest = async (userId: string) => {
+    try {
+      const formattedData = { friend_id: userId };
+      await RejectFriendRequest(formattedData);
+      setProfileData({
+        ...profileData,
+        if_friend: false,
+        friend_request_status: null,
+        reciver_request_status: null,
+      });
+
+      showToast({
+        message: "Friend request rejected",
+        type: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error rejecting friend request:", error);
+      showToast({
+        message: "Failed to reject friend request",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
   return (
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -263,15 +492,9 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
               </div>
 
               {/* Profile Info */}
-              <div
-                className="flex items-center justify-between"
-                style={{
-                  width: "1104px",
-                  height: "77.25px",
-                }}
-              >
+              <div className="flex items-center justify-between p-4 mt-4">
                 {/* Left: Profile image + info */}
-                <div className="flex items-center gap-4 mt-8 px-6">
+                <div className="flex items-center gap-4 px-6">
                   <img
                     src={
                       !profileData?.profile_picture ||
@@ -321,8 +544,88 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
                 </div>
 
                 {/* Right: Buttons */}
-                <div className="flex gap-2 mt-8">
+                <div className="flex gap-2 mt-8 ">
+                  <div className="w-full">
+                    {/* Show Accept/Reject buttons when user has received a pending request */}
+                    {profileData?.reciver_request_status === "PENDING" ? (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() =>
+                            handleAcceptRequest(profileData?.user_id)
+                          }
+                          className="h-9 px-4 rounded-full bg-green-500 
+        font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
+        text-white flex items-center justify-center gap-2 hover:bg-green-600 min-w-[100px]"
+                        >
+                          <UserRoundPlus className="w-4 h-4" />
+                          Accept
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleRejectRequest(profileData?.user_id)
+                          }
+                          className="h-9 px-4 rounded-full bg-red-500 
+        font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
+        text-white flex items-center justify-center gap-2 hover:bg-red-600 min-w-[100px]"
+                        >
+                          <UserRoundMinus className="w-4 h-4" />
+                          Reject
+                        </button>
+                      </div>
+                    ) : (
+                      /* Show regular Connect/Requested/Connected button for other cases */
+                      <button
+                        onClick={() => handleFriend(profileData?.user_id)}
+                        disabled={profileData?.user_id === loggedInUserId}
+                        className={`w-full h-9 rounded-full px-3 border border-[#ECEEF2] 
+                          font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
+                          flex items-center justify-center gap-2
+                          ${
+                            profileData?.user_id === loggedInUserId
+                              ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                              : profileData?.if_friend &&
+                                profileData?.friend_request_status === "ACCEPT"
+                              ? "bg-green-100 text-green-700"
+                              : !profileData?.if_friend &&
+                                profileData?.friend_request_status === "PENDING"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : "bg-[#FFFFFF] text-[#0B3449]"
+                          }`}
+                      >
+                        <UserRoundPlus className="w-4 h-4" />
+                        {profileData?.if_friend &&
+                        profileData?.friend_request_status === "ACCEPT"
+                          ? "Connected"
+                          : !profileData?.if_friend &&
+                            profileData?.friend_request_status === "PENDING"
+                          ? "Requested..."
+                          : "Connect"}
+                      </button>
+                    )}
+                  </div>
+                  {/* Follow Button */}
                   <button
+                    onClick={() => handleFollow(profileData?.user_id)}
+                    className={`flex w-[100px] justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
+                      ${
+                        profileData?.if_following
+                          ? "bg-transparent text-[#7077FE] hover:text-[#7077FE]/80"
+                          : "bg-[#7077FE] text-white hover:bg-indigo-600 h-[35px]"
+                      }`}
+                  >
+                    {profileData?.if_following ? (
+                      <>
+                        <TrendingUp className="w-5 h-5 text-[#7077FE]" />
+                        Resonating
+                      </>
+                    ) : (
+                      <>
+                        <span>+</span>
+                        <span>Resonate</span>
+                      </>
+                    )}
+                  </button>
+                  {/* <button
                     onClick={handleFollowToggle}
                     disabled={followLoading}
                     data-testid={isFollowing}
@@ -338,7 +641,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
                       : isFollowing
                       ? "Following"
                       : "Follow"}
-                  </button>
+                  </button> */}
                   {/* <button className="px-8 py-2 rounded-full bg-indigo-500 text-white text-sm">
                   Message
                 </button> */}
@@ -392,9 +695,8 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
         </div>
       </div>
 
-
       {selectedPost && (
-          /*<PostPopup
+        /*<PostPopup
             post={{
               id: String(demoPosts.indexOf(selectedPost)),
             media:
@@ -406,29 +708,29 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
             onClose={() => setSelectedPost(null)}
           />*/
 
-          <PostPopup
-            post={{
-              id: String(selectedPost.id),
-              date: selectedPost.date,
-              media:
-                selectedPost.media ??
-                ({ type: "text", src: selectedPost.body || "" } as const),
-              // optional
-            }}
-            onClose={() => setSelectedPost(null)}
-            onDeletePost={() => {
-              if (selectedPost.id !== undefined) {
-                // setDeleteConfirmation({
-                //   isOpen: true,
-                //   postId: String(selectedPost.id),
-                // });
-              }
-            }}
-            collection
-            likesCount={selectedPost.likes ?? 0}
-            insightsCount={selectedPost.reflections ?? 0}
-          />
-        )}
+        <PostPopup
+          post={{
+            id: String(selectedPost.id),
+            date: selectedPost.date,
+            media:
+              selectedPost.media ??
+              ({ type: "text", src: selectedPost.body || "" } as const),
+            // optional
+          }}
+          onClose={() => setSelectedPost(null)}
+          onDeletePost={() => {
+            if (selectedPost.id !== undefined) {
+              // setDeleteConfirmation({
+              //   isOpen: true,
+              //   postId: String(selectedPost.id),
+              // });
+            }
+          }}
+          collection
+          likesCount={selectedPost.likes ?? 0}
+          insightsCount={selectedPost.reflections ?? 0}
+        />
+      )}
     </>
   );
 }

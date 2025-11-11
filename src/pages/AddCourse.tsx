@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import uploadimg from "../assets/upload1.svg";
 import Breadcrumb from "../components/MarketPlace/Breadcrumb";
 import CategoryModel from "../components/MarketPlace/CategoryModel";
 import { useNavigate } from "react-router-dom";
-import { Video, SquarePen, Trash2 } from "lucide-react";
+import { Video, SquarePen, Trash2, Plus, X, FileText, Music, Image } from "lucide-react";
+import { useToast } from "../components/ui/Toast/ToastProvider";
+import { CreateCourseProduct, GetMarketPlaceMoods, GetMarketPlaceCategories, UploadProductDocument } from "../Common/ServerAPI";
 
 interface FormSectionProps {
   title: string;
@@ -34,6 +36,10 @@ interface InputFieldProps {
   placeholder: string;
   required?: boolean;
   type?: string;
+  name: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -41,6 +47,10 @@ const InputField: React.FC<InputFieldProps> = ({
   placeholder,
   required = false,
   type = "text",
+  name,
+  value,
+  onChange,
+  error = "",
 }) => (
   <div className="flex flex-col">
     <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
@@ -48,164 +58,234 @@ const InputField: React.FC<InputFieldProps> = ({
     </label>
     <input
       type={type}
+      name={name}
       placeholder={placeholder}
       required={required}
+      value={value}
+      onChange={onChange}
       className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
     />
+    {error && <span className="text-red-500 text-sm mt-1">{error}</span>}
   </div>
 );
 
+interface ChapterFile {
+  url: string;
+  title: string;
+  order_number: number;
+  file_type: "video" | "audio" | "image" | "pdf";
+  file?: File;
+  isEditing?: boolean;
+}
+
+interface Chapter {
+  id: number;
+  title: string;
+  chapter_files: ChapterFile[];
+}
+
 const AddCourseForm: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
+  const [showDiscardModal, setShowDiscardModal] = useState(false);
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
-  // Breadcrumb navigation
+  const [isLoading, setIsLoading] = useState(false);
+  const [moods, setMoods] = useState<string[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [newHighlight, setNewHighlight] = useState("");
+
+  const [chapters, setChapters] = useState<Chapter[]>([
+    { id: 1, title: "Lesson 1", chapter_files: [] },
+  ]);
+
+  const [formData, setFormData] = useState({
+    product_title: "",
+    price: 0,
+    discount_percentage: 0,
+    mood_id: "",
+    overview: "",
+    highlights: [] as string[],
+    storytelling: "",
+    duration: "",
+    language: "",
+    format: "video",
+    requirements: "",
+  });
+
+  useEffect(() => {
+    const fetchMoods = async () => {
+      try {
+        const response = await GetMarketPlaceMoods();
+        setMoods(response?.data?.data);
+      } catch (error: any) {
+        showToast({
+          message: "Failed to load moods.",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    };
+
+    fetchMoods();
+  }, []);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await GetMarketPlaceCategories();
+        if (response?.data?.data) {
+          setCategories(response.data.data);
+        }
+      } catch (error: any) {
+        showToast({
+          message: "Failed to load categories.",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   const handleSelectCategory = (category: string) => {
+    setShowModal(false); // Close modal first
+
     const routes: Record<string, string> = {
       Video: "/dashboard/products/add-video",
       Music: "/dashboard/products/add-music",
       Course: "/dashboard/products/add-course",
       Podcasts: "/dashboard/products/add-podcast",
       Ebook: "/dashboard/products/add-ebook",
-      Arts: "/dashboard/products/add-arts",
+      Art: "/dashboard/products/add-arts",
     };
+
     const path = routes[category];
-    if (path) navigate(path);
+    if (path) {
+      navigate(path);
+    }
   };
 
-  // ---------- Upload Logic ----------
-  interface VideoFile {
-    id: number;
-    name: string;
-    tempName: string;
-    progress: number;
-    isEditing: boolean;
-    size: number;
-  }
+  const getFileType = (fileName: string): "video" | "audio" | "image" | "pdf" => {
+    const ext = fileName.split('.').pop()?.toLowerCase();
+    if (['mp4', 'mov', 'avi', 'mkv', 'wmv', 'webm'].includes(ext || '')) return 'video';
+    if (['mp3', 'wav', 'aac', 'flac', 'ogg'].includes(ext || '')) return 'audio';
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext || '')) return 'image';
+    if (ext === 'pdf') return 'pdf';
+    return 'video'; // default
+  };
 
-  interface Module {
-    id: number;
-    name: string;
-    files: VideoFile[];
-  }
-
-  const [modules, setModules] = useState<Module[]>([
-    { id: 1, name: "Chapter 1", files: [] },
-  ]);
-
-  const simulateUpload = (moduleId: number, fileId: number) => {
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 10;
-      setModules((prev) =>
-        prev.map((mod) =>
-          mod.id === moduleId
-            ? {
-                ...mod,
-                files: mod.files.map((f) =>
-                  f.id === fileId ? { ...f, progress } : f
-                ),
-              }
-            : mod
-        )
-      );
-      if (progress >= 100) clearInterval(interval);
-    }, 300);
+  const getFileIcon = (fileType: string) => {
+    switch (fileType) {
+      case 'video':
+        return <Video className="w-5 h-5 text-[#242E3A]" />;
+      case 'audio':
+        return <Music className="w-5 h-5 text-[#242E3A]" />;
+      case 'image':
+        return <Image className="w-5 h-5 text-[#242E3A]" />;
+      case 'pdf':
+        return <FileText className="w-5 h-5 text-[#242E3A]" />;
+      default:
+        return <Video className="w-5 h-5 text-[#242E3A]" />;
+    }
   };
 
   const handleAddFile = (
     e: React.ChangeEvent<HTMLInputElement>,
-    moduleId: number
+    chapterId: number
   ) => {
     const files = Array.from(e.target.files || []);
-    setModules((prev) =>
-      prev.map((mod) =>
-        mod.id === moduleId
+
+    setChapters((prev) =>
+      prev.map((chapter) =>
+        chapter.id === chapterId
           ? {
-              ...mod,
-              files: [
-                ...mod.files,
-                ...files.map((file, i) => ({
-                  id: Date.now() + i,
-                  name: file.name,
-                  tempName: file.name,
-                  size: file.size,
-                  progress: 0,
-                  isEditing: false,
-                })),
-              ],
-            }
-          : mod
+            ...chapter,
+            chapter_files: [
+              ...chapter.chapter_files,
+              ...files.map((file, i) => ({
+                url: "",
+                title: file.name,
+                order_number: chapter.chapter_files.length + i + 1,
+                file_type: getFileType(file.name),
+                file: file,
+              })),
+            ],
+          }
+          : chapter
       )
     );
-
-    files.forEach((_, i) => simulateUpload(moduleId, Date.now() + i));
   };
 
-  const handleAddModule = () => {
-    setModules((prev) => [
+  const handleAddChapter = () => {
+    setChapters((prev) => [
       ...prev,
-      { id: prev.length + 1, name: `Module ${prev.length + 1}`, files: [] },
+      { id: prev.length + 1, title: `Lesson ${prev.length + 1}`, chapter_files: [] },
     ]);
   };
 
-  const toggleEditFile = (moduleId: number, fileId: number) => {
-    setModules((prev) =>
-      prev.map((mod) =>
-        mod.id === moduleId
+  const toggleEditFile = (chapterId: number, fileOrderNumber: number) => {
+    setChapters((prev) =>
+      prev.map((chapter) =>
+        chapter.id === chapterId
           ? {
-              ...mod,
-              files: mod.files.map((f) =>
-                f.id === fileId ? { ...f, isEditing: !f.isEditing } : f
-              ),
-            }
-          : mod
+            ...chapter,
+            chapter_files: chapter.chapter_files.map((f) =>
+              f.order_number === fileOrderNumber ? { ...f, isEditing: !f.isEditing } : f
+            ),
+          }
+          : chapter
       )
     );
   };
 
   const handleEditFileName = (
-    moduleId: number,
-    fileId: number,
-    newName: string
+    chapterId: number,
+    fileOrderNumber: number,
+    newTitle: string
   ) => {
-    setModules((prev) =>
-      prev.map((mod) =>
-        mod.id === moduleId
+    setChapters((prev) =>
+      prev.map((chapter) =>
+        chapter.id === chapterId
           ? {
-              ...mod,
-              files: mod.files.map((f) =>
-                f.id === fileId ? { ...f, tempName: newName } : f
-              ),
-            }
-          : mod
+            ...chapter,
+            chapter_files: chapter.chapter_files.map((f) =>
+              f.order_number === fileOrderNumber ? { ...f, title: newTitle } : f
+            ),
+          }
+          : chapter
       )
     );
   };
 
-  const saveFileName = (moduleId: number, fileId: number) => {
-    setModules((prev) =>
-      prev.map((mod) =>
-        mod.id === moduleId
+  const saveFileName = (chapterId: number, fileOrderNumber: number) => {
+    setChapters((prev) =>
+      prev.map((chapter) =>
+        chapter.id === chapterId
           ? {
-              ...mod,
-              files: mod.files.map((f) =>
-                f.id === fileId
-                  ? { ...f, name: f.tempName, isEditing: false }
-                  : f
-              ),
-            }
-          : mod
+            ...chapter,
+            chapter_files: chapter.chapter_files.map((f) =>
+              f.order_number === fileOrderNumber
+                ? { ...f, isEditing: false }
+                : f
+            ),
+          }
+          : chapter
       )
     );
   };
 
-  const deleteFile = (moduleId: number, fileId: number) => {
-    setModules((prev) =>
-      prev.map((mod) =>
-        mod.id === moduleId
-          ? { ...mod, files: mod.files.filter((f) => f.id !== fileId) }
-          : mod
+  const deleteFile = (chapterId: number, fileOrderNumber: number) => {
+    setChapters((prev) =>
+      prev.map((chapter) =>
+        chapter.id === chapterId
+          ? {
+            ...chapter,
+            chapter_files: chapter.chapter_files.filter((f) => f.order_number !== fileOrderNumber)
+          }
+          : chapter
       )
     );
   };
@@ -218,7 +298,247 @@ const AddCourseForm: React.FC = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  // ---------- UI ----------
+  const validateForm = (): boolean => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!formData.product_title.trim()) newErrors.product_title = "Product title is required.";
+
+    if (isNaN(formData.price) || formData.price <= 0) {
+      newErrors.price = "Price must be a positive number.";
+    }
+
+    if (isNaN(formData.discount_percentage)) {
+      newErrors.discount_percentage = "Discount percentage must be a number.";
+    } else if (formData.discount_percentage < 0 || formData.discount_percentage > 100) {
+      newErrors.discount_percentage = "Discount percentage must be between 0 and 100.";
+    }
+
+    if (!formData.mood_id.trim()) newErrors.mood_id = "Mood Selection is required.";
+    if (!formData.overview.trim()) newErrors.overview = "Overview is required.";
+
+    if (formData.highlights.length === 0) {
+      newErrors.highlights = "At least one highlight is required.";
+    }
+
+    if (chapters.length === 0) {
+      newErrors.chapters = "At least one lesson is required.";
+    }
+
+    chapters.forEach((chapter, index) => {
+      if (chapter.chapter_files.length === 0) {
+        newErrors[`chapter_${chapter.id}`] = `Lesson ${index + 1} must have at least one file.`;
+      }
+    });
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      setTimeout(() => {
+        const firstErrorElement = document.querySelector('.text-red-500');
+        if (firstErrorElement) {
+          firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    }
+
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const target = e.target;
+    const { name, value } = target;
+
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const handleSubmit = async (isDraft: boolean = false) => {
+    if (!validateForm()) {
+      showToast({
+        message: "Please fill all required fields correctly",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const uploadedChapters = await Promise.all(
+        chapters.map(async (chapter) => {
+          const uploadedFiles = await Promise.all(
+            chapter.chapter_files.map(async (chapterFile) => {
+              if (chapterFile.file) {
+                const formDataUpload = new FormData();
+
+                try {
+                  let uploadResponse;
+                  let uploadData;
+
+                  if (chapterFile.file_type === 'video') {
+                    formDataUpload.append('chapter_file', chapterFile.file);
+                    uploadResponse = await UploadProductDocument('course-chapter', formDataUpload);
+                    uploadData = uploadResponse?.data?.data;
+
+                    return {
+                      url: uploadData?.video_id,
+                      title: chapterFile.title,
+                      order_number: chapterFile.order_number,
+                      file_type: chapterFile.file_type,
+                    };
+                  } else if (chapterFile.file_type === 'pdf') {
+                    formDataUpload.append('chapter_file', chapterFile.file);
+                    uploadResponse = await UploadProductDocument('course-chapter', formDataUpload);
+                    uploadData = uploadResponse?.data?.data?.data;
+
+                    return {
+                      url: uploadData?.document_url || "",
+                      title: chapterFile.title,
+                      order_number: chapterFile.order_number,
+                      file_type: chapterFile.file_type,
+                    };
+                  } else if (chapterFile.file_type === 'audio') {
+                    formDataUpload.append('chapter_file', chapterFile.file);
+                    uploadResponse = await UploadProductDocument('course-chapter', formDataUpload);
+                    uploadData = uploadResponse?.data?.data?.data;
+
+                    return {
+                      url: uploadData?.track_url || uploadData?.audio_url || "",
+                      title: chapterFile.title,
+                      order_number: chapterFile.order_number,
+                      file_type: chapterFile.file_type,
+                    };
+                  } else if (chapterFile.file_type === 'image') {
+                    formDataUpload.append('chapter_file', chapterFile.file);
+                    uploadResponse = await UploadProductDocument('course-chapter', formDataUpload);
+                    uploadData = uploadResponse?.data?.data?.data;
+
+                    return {
+                      url: uploadData?.image_url || "",
+                      title: chapterFile.title,
+                      order_number: chapterFile.order_number,
+                      file_type: chapterFile.file_type,
+                    };
+                  }
+                } catch (error) {
+                  throw new Error(`Failed to upload ${chapterFile.title}`);
+                }
+              }
+              return chapterFile;
+            })
+          );
+
+          return {
+            title: chapter.title,
+            chapter_files: uploadedFiles,
+          };
+        })
+      );
+
+      const payload = {
+        product_title: formData.product_title,
+        price: formData.price,
+        discount_percentage: formData.discount_percentage,
+        mood_id: formData.mood_id,
+        overview: formData.overview,
+        highlights: formData.highlights.join(', '),
+        storytelling: formData.storytelling,
+        duration: formData.duration || "00:00:00",
+        language: formData.language,
+        format: formData.format,
+        requirements: formData.requirements,
+        status: isDraft ? 'draft' : 'published',
+        chapters: uploadedChapters,
+      };
+
+      const response = await CreateCourseProduct(payload);
+      const productId = response?.data?.data?.product_id;
+
+      showToast({
+        message: isDraft
+          ? "Course product saved as draft successfully"
+          : "Course product created successfully",
+        type: "success",
+        duration: 3000,
+      });
+
+      setErrors({});
+
+      if (isDraft && productId) {
+        setTimeout(() => {
+          navigate(`/dashboard/products/course-preview/${productId}?category=course`);
+        }, 1500);
+      } else {
+        setTimeout(() => {
+          navigate('/dashboard/products');
+        }, 1500);
+      }
+    } catch (error: any) {
+      showToast({
+        message: error?.message || error?.response?.data?.error?.message || 'Failed to create course product',
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteChapter = (chapterId: number) => {
+    setChapters(prev => prev.filter(ch => ch.id !== chapterId));
+  };
+
+  const handleAddHighlight = () => {
+    if (newHighlight.trim()) {
+      if (formData.highlights.length >= 5) {
+        showToast({
+          message: "Maximum 5 highlights allowed",
+          type: "error",
+          duration: 3000,
+        });
+        return;
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        highlights: [...prev.highlights, newHighlight.trim()]
+      }));
+      setNewHighlight("");
+
+      if (errors.highlights) {
+        setErrors(prev => ({ ...prev, highlights: "" }));
+      }
+    }
+  };
+
+  const handleRemoveHighlight = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      highlights: prev.highlights.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleEditHighlight = (index: number, newValue: string) => {
+    setFormData(prev => ({
+      ...prev,
+      highlights: prev.highlights.map((h, i) => i === index ? newValue : h)
+    }));
+  };
+
+  const handleDiscard = () => {
+    setShowDiscardModal(true);
+  };
+
+  const confirmDiscard = () => {
+    setShowDiscardModal(false);
+    navigate('/dashboard/products');
+  };
+
   return (
     <>
       <Breadcrumb
@@ -227,50 +547,128 @@ const AddCourseForm: React.FC = () => {
       />
 
       <div className="max-w-9xl mx-auto px-2 py-1 space-y-10">
-        {/* Add Course Section */}
         <FormSection
           title="Add Course"
           description="Upload your course details, set pricing, and make it available to learners on the marketplace."
         >
-           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <InputField label="Product Title *" placeholder="Enter your title" required />
-            <InputField label="Price" placeholder="Enter the $ amount" />
-            <InputField label="Discount in %" placeholder="Enter discount in %" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <InputField
+              label="Product Title *"
+              placeholder="Enter your title"
+              name="product_title"
+              value={formData.product_title}
+              onChange={handleChange}
+              error={errors.product_title}
+              required
+            />
+            <InputField
+              label="Price *"
+              placeholder=" $ "
+              name="price"
+              value={formData.price === 0 ? "" : formData.price.toString()}
+              onChange={handleChange}
+              error={errors.price}
+              required
+            />
+            <InputField
+              label="Discount in %"
+              placeholder="Enter discount in %"
+              name="discount_percentage"
+              value={formData.discount_percentage === 0 ? "" : formData.discount_percentage.toString()}
+              onChange={handleChange}
+              error={errors.discount_percentage}
+            />
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Mood
+                Mood *
               </label>
-              <select className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent cursor-pointer">
-                <option>Calm</option>
-                <option>Energetic</option>
-                <option>Inspiring</option>
-                <option>Romantic</option>
+              <select
+                name="mood_id"
+                value={formData.mood_id}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent cursor-pointer">
+                <option value="">Select Mood</option>
+                {moods?.map((mood: any) => (
+                  <option key={mood.id} value={mood.id}>
+                    {mood.name}
+                  </option>
+                ))}
               </select>
+              {errors.mood_id && <span className="text-red-500 text-sm mt-1">{errors.mood_id}</span>}
             </div>
           </div>
         </FormSection>
 
-        {/* Details Section */}
         <FormSection title="Details" description="">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
-              <label className="block font-semibold text-[16px] text-[#242E3A] mb-2">
-                Overview
+              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+                Overview *
               </label>
               <textarea
-                placeholder="Write a brief overview of the course content"
+                name="overview"
+                value={formData.overview}
+                onChange={handleChange}
+                placeholder="Describe your course"
                 className="w-full h-32 px-3 py-2 border border-gray-200 rounded-md resize-none focus:ring-2 focus:ring-[#7077FE]"
+                required
               />
+              {errors.overview && <span className="text-red-500 text-sm mt-1">{errors.overview}</span>}
             </div>
-
             <div>
-              <label className="block font-semibold text-[16px] text-[#242E3A] mb-2">
-                Highlights
+              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+                Highlights * (Max 5)
               </label>
-              <textarea
-                placeholder="What will students learn from this course?"
-                className="w-full h-32 px-3 py-2 border border-gray-200 rounded-md resize-none focus:ring-2 focus:ring-[#7077FE]"
-              />
+              <div className="space-y-3">
+                {formData?.highlights?.map((highlight: any, index: number) => (
+                  <div key={index} className="flex items-start gap-2 p-3 border border-gray-200 rounded-md bg-white">
+                    <span className="text-[#7077FE] font-bold mt-1">•</span>
+                    <input
+                      type="text"
+                      value={highlight}
+                      onChange={(e) => handleEditHighlight(index, e.target.value)}
+                      className="flex-1 border-none focus:outline-none text-[#242E3A]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveHighlight(index)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+
+                {formData.highlights.length < 5 && (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newHighlight}
+                      onChange={(e) => setNewHighlight(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddHighlight();
+                        }
+                      }}
+                      placeholder="Add a highlight"
+                      className="flex-1 px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddHighlight}
+                      className="px-4 py-2 bg-[#7077FE] text-white rounded-md hover:bg-[#5a60ea] transition-colors"
+                    >
+                      <Plus className="w-5 h-5" />
+                    </button>
+                  </div>
+                )}
+
+                <p className="text-sm text-gray-500">
+                  Add up to 5 key highlights about your course
+                </p>
+              </div>
+              {errors.highlights && <span className="text-red-500 text-sm mt-1">{errors.highlights}</span>}
             </div>
 
             <div>
@@ -278,75 +676,104 @@ const AddCourseForm: React.FC = () => {
                 Storytelling
               </label>
               <textarea
+                name="storytelling"
+                value={formData.storytelling}
+                onChange={handleChange}
                 placeholder="What will students learn from this course?"
                 className="w-full h-32 px-3 py-2 border border-gray-200 rounded-md resize-none focus:ring-2 focus:ring-[#7077FE]"
               />
             </div>
 
-            <InputField label="Duration" placeholder="Enter the course duration" />
+            <InputField
+              label="Duration (HH:MM:SS)"
+              placeholder="e.g., 105:30:00"
+              name="duration"
+              value={formData.duration}
+              onChange={handleChange}
+              error={errors.duration}
+            />
 
             <div>
-              <label className="block font-semibold text-[16px] text-[#242E3A] mb-2">
+              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
                 Language
               </label>
-              <select className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white focus:ring-2 focus:ring-[#7077FE]">
-                <option>English</option>
-                <option>Hindi</option>
-                <option>Spanish</option>
-                <option>French</option>
-                <option>German</option>
+              <select
+                name="language"
+                value={formData.language}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE]">
+                <option value="">Select Language</option>
+                <option value="English">English</option>
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
+                <option value="German">German</option>
               </select>
+              {errors.language && <span className="text-red-500 text-sm mt-1">{errors.language}</span>}
             </div>
-                        <InputField label="Requirements" placeholder="Enter the course requirements for attendees" />
 
+            <InputField
+              label="Requirements"
+              placeholder="Enter the course requirements for attendees"
+              name="requirements"
+              value={formData.requirements}
+              onChange={handleChange}
+            />
 
             <div>
               <label className="block font-semibold text-[16px] text-[#242E3A] mb-2">
                 Format
               </label>
-              <select className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white focus:ring-2 focus:ring-[#7077FE]">
-                <option>MP4</option>
-                <option>MOV</option>
-                <option>AVI</option>
-                <option>MKV</option>
-                <option>WMV</option>
+              <select
+                name="format"
+                value={formData.format}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE]">
+                <option value="video">Video</option>
+                <option value="audio">Audio</option>
+                <option value="mixed">Mixed</option>
               </select>
             </div>
           </div>
         </FormSection>
 
-        {/* Uploads Section */}
-        <FormSection title="Uploads" description="">
+        <FormSection title="Lessons" description="">
           <div className="space-y-6">
-            {modules.map((module) => (
+            {chapters.map((chapter) => (
               <div
-                key={module.id}
+                key={chapter.id}
                 className="border border-gray-200 rounded-lg p-4 shadow-sm bg-white"
               >
-                <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
-                  {module.name}
-                </h3>
-                <p className="text-sm text-[#665B5B] mb-4">
-                  Upload your course materials here
-                </p>
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
+                      {chapter.title}
+                    </h3>
+                    <p className="text-sm text-[#665B5B] mb-4">
+                      Upload lesson {chapter.id} materials (videos, audios, PDFs, images)
+                    </p>
+                  </div>
+
+                  {/* Delete Chapter Button */}
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteChapter(chapter.id)}
+                    className="text-red-500 hover:text-red-700 transition-colors"
+                    title="Delete Chapter"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* LEFT Upload */}
-
-<label
-  className="relative flex flex-col items-center justify-center h-40 cursor-pointer relative rounded-lg p-6 text-center cursor-pointer transition-all bg-[#F9FAFB] hover:bg-[#EEF3FF]"
->
-  {/* ✅ SVG dashed border */}
-  <svg
-    className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none"
-  >
-    <rect x="1"  y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="12" ry="12"  stroke="#CBD5E1" strokeWidth="2" strokeDasharray="6,6" fill="none"
-      className="transition-all duration-300 group-hover:stroke-[#7077FE]" />
-  </svg>                     <input
+                  <label className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF]">
+                    <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
+                      <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="12" ry="12" stroke="#CBD5E1" strokeWidth="2" strokeDasharray="6,6" fill="none" className="transition-all duration-300 group-hover:stroke-[#7077FE]" />
+                    </svg>
+                    <input
                       type="file"
-                      accept="video/*"
+                      accept="video/*,audio/*,image/*,.pdf"
                       className="hidden"
-                      onChange={(e) => handleAddFile(e, module.id)}
+                      onChange={(e) => handleAddFile(e, chapter.id)}
                       multiple
                     />
                     <div className="text-center space-y-2">
@@ -357,34 +784,33 @@ const AddCourseForm: React.FC = () => {
                         Drag & drop or click to upload
                       </p>
                       <p className="text-xs text-[#665B5B]">
-                        You can upload videos / audios / podcast  
+                        Videos, audios, PDFs, images
                       </p>
                     </div>
                   </label>
 
-                  {/* RIGHT Uploaded Files */}
                   <div className="space-y-3">
-                    {module.files.length === 0 ? (
+                    {chapter.chapter_files.length === 0 ? (
                       <div className="text-sm text-gray-500 border border-gray-100 rounded-lg p-4 bg-gray-50">
                         No files uploaded yet
                       </div>
                     ) : (
-                      module.files.map((file) => (
+                      chapter.chapter_files.map((file) => (
                         <div
-                          key={file.id}
+                          key={file.order_number}
                           className="border border-gray-200 rounded-lg p-3 bg-white"
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-2">
-                              <Video className="w-5 h-5 text-[#242E3A]" />
+                              {getFileIcon(file.file_type)}
                               {file.isEditing ? (
                                 <input
                                   type="text"
-                                  value={file.tempName}
+                                  value={file.title}
                                   onChange={(e) =>
                                     handleEditFileName(
-                                      module.id,
-                                      file.id,
+                                      chapter.id,
+                                      file.order_number,
                                       e.target.value
                                     )
                                   }
@@ -392,14 +818,17 @@ const AddCourseForm: React.FC = () => {
                                 />
                               ) : (
                                 <p className="text-sm font-medium text-[#242E3A]">
-                                  {file.name}
+                                  {file.title}
                                 </p>
                               )}
+                              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                                {file.file_type}
+                              </span>
                             </div>
                             <div className="flex items-center space-x-2">
                               {file.isEditing ? (
                                 <button
-                                  onClick={() => saveFileName(module.id, file.id)}
+                                  onClick={() => saveFileName(chapter.id, file.order_number)}
                                   className="text-[#7077FE] text-sm font-semibold"
                                 >
                                   Save
@@ -407,35 +836,31 @@ const AddCourseForm: React.FC = () => {
                               ) : (
                                 <>
                                   <button
-                                    onClick={() => toggleEditFile(module.id, file.id)}
+                                    onClick={() =>
+                                      toggleEditFile(chapter.id, file.order_number)
+                                    }
                                     className="text-gray-500 hover:text-[#7077FE]"
                                   >
-                                    <SquarePen className="w-4 h-4" stroke="black" />
+                                    <SquarePen className="w-4 h-4" />
                                   </button>
                                   <button
-                                    onClick={() => deleteFile(module.id, file.id)}
+                                    onClick={() => deleteFile(chapter.id, file.order_number)}
                                     className="text-gray-500 hover:text-red-500"
                                   >
-                                    <Trash2 className="w-4 h-4" stroke="black" />
+                                    <Trash2 className="w-4 h-4" />
                                   </button>
                                 </>
                               )}
-                              <input
-                                type="checkbox"
-                                checked={file.progress === 100}
-                                readOnly
-                                className="accent-[#7077FE]"
-                              />
                             </div>
                           </div>
                           <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                            <span>{formatFileSize(file.size)}</span>
-                            <span>{file.progress}%</span>
+                            <span>{file.file ? formatFileSize(file.file.size) : "Uploaded"}</span>
+                            <span className="text-green-600">✓ Ready</span>
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
                             <div
-                              className="bg-[#7077FE] h-2 rounded-full"
-                              style={{ width: `${file.progress}%` }}
+                              className="bg-green-500 h-2 rounded-full"
+                              style={{ width: '100%' }}
                             ></div>
                           </div>
                         </div>
@@ -443,46 +868,50 @@ const AddCourseForm: React.FC = () => {
                     )}
                   </div>
                 </div>
+                {errors[`chapter_${chapter.id}`] && (
+                  <p className="text-red-500 text-sm mt-2">{errors[`chapter_${chapter.id}`]}</p>
+                )}
               </div>
             ))}
 
-            {/* Add Module Button */}
             <button
-              onClick={handleAddModule}
+              onClick={handleAddChapter}
               className="relative w-full rounded-lg py-4 text-[#7077FE] font-medium bg-white cursor-pointer group overflow-hidden transition-all"
-    >
-      <svg
-    className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none"
-  >
-    <rect
-      x="1"
-      y="1"
-      width="calc(100% - 2px)"
-      height="calc(100% - 2px)"
-      rx="10"
-      ry="10"
-      stroke="#CBD5E1"
-      strokeWidth="2"
-      strokeDasharray="6,6"
-      fill="none"
-      className="transition-colors duration-300 group-hover:stroke-[#7077FE]"
-    />
-  </svg>
-              + Add Module
+            >
+              <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
+                <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="10" ry="10" stroke="#CBD5E1" strokeWidth="2" strokeDasharray="6,6" fill="none" className="transition-colors duration-300 group-hover:stroke-[#7077FE]" />
+              </svg>
+              + Add Lesson
             </button>
+
+            {errors.chapters && (
+              <p className="text-red-500 text-sm mt-2">{errors.chapters}</p>
+            )}
           </div>
         </FormSection>
 
-        {/* Buttons */}
         <div className="flex justify-end space-x-4 pt-6">
-          <button className="px-5 py-3 text-[#7077FE] rounded-lg font-medium hover:text-blue-500 transition">
+          <button
+            type="button"
+            onClick={handleDiscard}
+            disabled={isLoading}
+            className="px-5 py-3 text-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] hover:text-blue-500 transition-colors disabled:opacity-50">
             Discard
           </button>
-          <button className="px-5 py-3 bg-white text-[#7077FE] border border-[#7077FE] rounded-lg font-medium hover:bg-gray-300 transition">
-            Preview
+          <button
+            type="button"
+            onClick={() => handleSubmit(true)}
+            disabled={isLoading}
+            className="px-5 py-3 bg-white text-[#7077FE] border border-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium hover:bg-gray-50 transition disabled:opacity-50"
+          >
+            {isLoading ? "Saving..." : "Preview"}
           </button>
-          <button className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-medium hover:bg-[#5a60ea] transition">
-            Submit
+          <button
+            type='button'
+            onClick={() => handleSubmit(false)}
+            disabled={isLoading}
+            className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] hover:bg-[#5a60ea] transition-colors disabled:opacity-50">
+            {isLoading ? "Submitting..." : "Submit"}
           </button>
         </div>
       </div>
@@ -492,7 +921,35 @@ const AddCourseForm: React.FC = () => {
           open={showModal}
           onClose={() => setShowModal(false)}
           onSelect={handleSelectCategory}
+          category={categories}
         />
+      )}
+      {showDiscardModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowDiscardModal(false)}></div>
+          <div className="relative z-10 bg-white rounded-[20px] shadow-lg p-8 w-[450px]">
+            <h3 className="text-[20px] font-semibold font-['Poppins'] text-[#242E3A] mb-4">
+              Discard Changes?
+            </h3>
+            <p className="text-[14px] text-[#665B5B] font-['Open_Sans'] mb-6">
+              Are you sure you want to discard? All your changes will not be saved.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowDiscardModal(false)}
+                className="px-5 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDiscard}
+                className="px-5 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              >
+                Yes, Discard
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

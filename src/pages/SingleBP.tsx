@@ -19,6 +19,7 @@ import DOMPurify from "dompurify";
 import {
   FaBookmark,
   FaFacebookF,
+  FaInstagram,
   FaLinkedinIn,
   FaRegBookmark,
   FaTwitter,
@@ -28,6 +29,7 @@ import { ChatBubbleLeftIcon, HandThumbUpIcon } from "@heroicons/react/24/solid";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import CreditAnimation from "../Common/CreditAnimation";
 import { useToast } from "../components/ui/Toast/ToastProvider";
+import defaultImg from "../assets/profile.png";
 
 const SingleBP = () => {
   const [isSaved, setIs_saved] = useState<boolean>(false);
@@ -48,7 +50,7 @@ const SingleBP = () => {
   const [animations, _setAnimations] = useState<any[]>([]);
   const [relatedBestPractices, setRelatedBestPractices] = useState<any[]>([]);
 
-  const profile_picture = localStorage.getItem("profile_picture") || "";
+  const profile_picture = localStorage.getItem("profile_picture") || defaultImg;
   const name = localStorage.getItem("name") || "";
   const { id } = useParams();
   const { showToast } = useToast();
@@ -92,6 +94,7 @@ const SingleBP = () => {
   const fetchSinglePost = async (id: any) => {
     try {
       const res = await GetSingleBestPractice(id);
+      console.log("🚀 ~ fetchSinglePost ~ res:", res);
       setCommentCount(res.data?.data?.comments_count);
       setIs_saved(res.data?.data?.is_saved);
       setIsFollowing(res.data?.data?.is_bp_following);
@@ -322,19 +325,59 @@ const SingleBP = () => {
               {/* Icons + Go Back */}
               <div className="flex flex-wrap items-center gap-3 text-gray-500">
                 {/* Social Icons */}
+                {/* Social Icons */}
                 <div className="flex items-center gap-1 pr-4 border-r border-gray-300">
                   <button className="p-2 hover:text-[#7077FE] rounded-full transition">
                     <img src={moon} alt="Light Mode" className="w-4 h-4" />
                   </button>
-                  <button className="p-2 hover:text-[#7077FE] rounded-full transition">
-                    <FaFacebookF className="text-base" />
-                  </button>
-                  <button className="p-2 hover:text-[#7077FE] rounded-full transition">
-                    <FaTwitter className="text-base" />
-                  </button>
-                  <button className="p-2 hover:text-[#7077FE] rounded-full transition">
-                    <FaLinkedinIn className="text-base" />
-                  </button>
+
+                  {/* Facebook */}
+                  {singlepost?.profile?.social_links?.facebook && (
+                    <a
+                      href={singlepost.profile.social_links.facebook}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 hover:text-[#7077FE] rounded-full transition"
+                    >
+                      <FaFacebookF className="text-base" />
+                    </a>
+                  )}
+
+                  {/* Twitter */}
+                  {singlepost?.profile?.social_links?.twitter && (
+                    <a
+                      href={singlepost.profile.social_links.twitter}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 hover:text-[#7077FE] rounded-full transition"
+                    >
+                      <FaTwitter className="text-base" />
+                    </a>
+                  )}
+
+                  {/* LinkedIn */}
+                  {singlepost?.profile?.social_links?.linkedin && (
+                    <a
+                      href={singlepost.profile.social_links.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 hover:text-[#7077FE] rounded-full transition"
+                    >
+                      <FaLinkedinIn className="text-base" />
+                    </a>
+                  )}
+
+                  {/* Instagram (if you want to add it later) */}
+                  {singlepost?.profile?.social_links?.instagram && (
+                    <a
+                      href={singlepost.profile.social_links.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 hover:text-[#7077FE] rounded-full transition"
+                    >
+                      <FaInstagram className="text-base" />
+                    </a>
+                  )}
                 </div>
 
                 {/* Go Back Button */}
@@ -510,9 +553,12 @@ const SingleBP = () => {
                     <div className="text-xs text-gray-500 mb-2 flex items-center space-x-2">
                       <span>Signed in as:</span>
                       <img
-                        src={profile_picture || "/profile.png"}
+                        src={profile_picture}
                         alt="User avatar"
                         className="w-5 h-5 rounded-full"
+                        onError={(e) => {
+                          e.currentTarget.src = defaultImg;
+                        }}
                       />
                       <span className="font-semibold text-gray-700">
                         {name || ""}

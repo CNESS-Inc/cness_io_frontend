@@ -2,7 +2,7 @@ import axios, { type AxiosResponse } from "axios";
 import { v4 as uuidv4 } from "uuid";
 // import { Server } from "lucide-react";
 // Define types for your API
-type ApiMethod = "GET" | "POST" | "PUT" | "DELETE";
+type ApiMethod = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
 type LoginFormData = {
   email: string;
   password: string;
@@ -77,6 +77,7 @@ export const ServerAPI = {
   APIMethod: {
     GET: "GET" as const,
     POST: "POST" as const,
+    PATCH: "PATCH" as const,
     PUT: "PUT" as const,
     DELETE: "DELETE" as const,
   },
@@ -96,6 +97,7 @@ export const EndPoint = {
   refreshToken: "/auth/refresh-token",
   forgot: "/auth/forgot-password",
   me: "/auth/me",
+  wallet: "/credits/history",
   updatepassword: "/auth/update/password",
   reset: "/auth/reset-password",
   register: "/auth/sign-up",
@@ -238,14 +240,51 @@ export const EndPoint = {
   payment_method: "/payment-method",
 
   add_mentor: "/mentor",
+  check_mentor_or_partner: "/bussiness-hub/form-submited",
 
   //marketplace endpoints
   create_shop: "/seller-onboarding",
+  update_shop: "/seller-onboarding/update",
   get_shop: "/seller-onboarding/profile",
   upload_seller_documents: "/seller-onboarding/upload",
   delete_seller_documents: "/seller-onboarding/remove",
   save_extra_banners: "/seller-onboarding/save-extra-banners",
-  get_products: "/vendor/products"
+  remove_extra_banners: "/seller-onboarding/remove/extra-banners",
+  remove_specific_extra_banners: "/seller-onboarding/remove/extra-banners",
+  remove_team_member_image: "/seller-onboarding/remove/team-member-image",
+  remove_team_member: "/seller-onboarding/remove/team-member",
+  get_products: "/vendor/products",
+  get_seller_products: "/seller-onboarding/my-products",
+  delete_seller_products: "/marketplace-product/product",
+
+  // marketplace product endpoints
+  get_categories: "/marketplace-product/product-categories",
+  get_moods: "/marketplace-product/moods",
+  get_preview_product: "/marketplace-product",
+
+  create_video_product: "/marketplace-product/video",
+  update_video_product: "/marketplace-product",
+  upload_product_document: "/marketplace-product/upload",
+  update_video: "/marketplace-product",
+
+  create_music_product: "/marketplace-product/music",
+  update_music_product: "/marketplace-product",
+  update_music: "/marketplace-product/music",
+  delete_music: "/marketplace-product/music",
+
+  podcast_product: "/marketplace-product/podcast",
+  ebook_product: "/marketplace-product/ebook",
+  art_product: "/marketplace-product/art",
+  course_product: "/marketplace-product/course",
+
+  get_buyer_moods: "/marketplace-buyer/moods",
+  get_buyer_categories: "/marketplace-buyer/categories",
+  get_buyer_product_list: "/marketplace-buyer/products",
+  
+  marketplace_wishlist: "/marketplace-buyer/wishlist",
+  marketplace_cart: "/marketplace-buyer/cart",
+
+  get_shop_list: "/marketplace-buyer/shops",
 };
 
 // Messaging endpoints
@@ -289,6 +328,13 @@ export const RefreshTokenDetails = async (): ApiResponse => {
 export const MeDetails = async (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.me);
+};
+export const WalletDetails = async (page: number, limit: number): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["limit"] = limit;
+
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.wallet,params);
 };
 export const ForgotPasswordDetails = (
   formData: ForgotFormData
@@ -737,7 +783,7 @@ export const GetRecommendedBestPractices = (): ApiResponse => {
     `${EndPoint.bp_recommended}`
   );
 };
-export const GetRelatedBestPractices = (id:any): ApiResponse => {
+export const GetRelatedBestPractices = (id: any): ApiResponse => {
   let params: { [key: string]: any } = {};
   params["bp_id"] = id;
   return executeAPI(
@@ -1192,8 +1238,6 @@ export const GetTrendingPost = (
   tab: string | null = null,
   page: any
 ) => {
-  console.log("🚀 ~ GetTrendingPost ~ tab:", tab);
-  console.log("🚀 ~ GetTrendingPost ~ tag:", tag);
   let data = {};
   let params: { [key: string]: any } = {};
   params["page_no"] = page;
@@ -1488,6 +1532,9 @@ export const createPartnerInquiry = (formData: any): ApiResponse => {
 export const createMentor = (formData: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.add_mentor);
 };
+export const isMentorOrPartner = (): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.check_mentor_or_partner);
+};
 
 export const LogOut = () => {
   let data = {};
@@ -1515,7 +1562,6 @@ export const executeAPI = async <T = any,>(
     const token = localStorage.getItem("jwt");
     const isFormData = data instanceof FormData;
     const requestId = uuidv4();
-    console.log("🚀 ~ executeAPI ~ requestId:", requestId)
     // const requestId = localStorage.getItem("requestId");
     const appCatId = localStorage.getItem("appCatId");
     const headers: Record<string, string> = {
@@ -1557,7 +1603,6 @@ export const executeAPI = async <T = any,>(
 
     return response.data;
   } catch (error: any) {
-    // console.log("🚀 ~ error:", error)
 
     if (error.response?.data?.error?.statusCode == 401) {
       localStorage.clear();
@@ -1572,11 +1617,27 @@ export const GetProducts = () => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_products);
 };
 
+export const GetSellerProducts = (page: number = 1, limit: number = 10): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.get_seller_products}?page=${page}&limit=${limit}`
+  );
+};
+
 export const CreateSellerShop = (data: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
     data,
     EndPoint.create_shop
+  );
+};
+
+export const UpdateSellerShop = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PATCH,
+    data,
+    EndPoint.update_shop
   );
 };
 
@@ -1599,10 +1660,350 @@ export const RemoveSellerDocument = (fileType: string): ApiResponse => {
   );
 };
 
+export const RemoveSpecificExtraBanner = (id: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.remove_specific_extra_banners}/${id}`
+  );
+};
+
+export const RemoveAllExtraBanner = (): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.DELETE,
+    {},
+    EndPoint.remove_extra_banners
+  );
+};
+
+export const RemoveTeamMemberImage = (id: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.remove_team_member_image}/${id}`
+  );
+};
+
+export const RemoveTeamMember = (id: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.remove_team_member}/${id}`
+  );
+};
+
 export const SaveExtraBanners = (data: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
     data,
     EndPoint.save_extra_banners
   );
+};
+
+export const GetMarketPlaceCategories = () => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_categories);
+};
+
+export const GetMarketPlaceMoods = () => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_moods);
+};
+
+export const GetPreviewProduct = (category: any, id: any) => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.get_preview_product}/${category}/${id}`);
+};
+
+export const CreateVideoProduct = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.create_video_product
+  );
+};
+
+export const UpdateVideoProduct = (data: any, id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PATCH,
+    data,
+    `${EndPoint.update_video_product}/${id}`
+  );
+};
+
+export const UpdateProductStatus = (data: any, id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PATCH,
+    data,
+    `${EndPoint.update_video_product}/${id}/status`
+  );
+};
+
+export const UploadProductDocument = (fileType: string, formData: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    `${EndPoint.upload_product_document}/${fileType}`
+  );
+};
+
+export const UpdateVideo = (pid: any, fileType: string, formData: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    `${EndPoint.update_video}/${pid}/${fileType}`
+  );
+};
+
+export const CreateMusicProduct = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.create_music_product
+  );
+};
+
+export const UpdateMusicProduct = (data: any, fileType: string, id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PATCH,
+    data,
+    `${EndPoint.update_music_product}/${fileType}/${id}`
+  );
+};
+
+export const UpdateMusic = (pid: any, fileType: string, data: any, tid: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    `${EndPoint.update_music}/${pid}/${fileType}/${tid}`
+  );
+};
+
+export const DeleteMusicTrack = (pid: any, tid: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.delete_music}/${pid}/tracks/${tid}`
+  );
+};
+
+export const CreatePodcastProduct = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.podcast_product
+  );
+};
+
+export const UpdatePodcastProduct = (data: any, fileType: string, id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PATCH,
+    data,
+    `${EndPoint.update_music_product}/${fileType}/${id}`
+  );
+};
+
+export const DeletPodcastEpisode = (pid: any, cid: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.podcast_product}/${pid}/episodes/${cid}`
+  );
+};
+
+export const CreateEbookProduct = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.ebook_product
+  );
+};
+
+export const UpdateEbookProduct = (data: any, id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PATCH,
+    data,
+    `${EndPoint.ebook_product}/${id}`
+  );
+};
+
+export const DeleteEbookChapter = (pid: any, cid: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.ebook_product}/${pid}/chapters/${cid}`
+  );
+};
+
+export const CreateArtProduct = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.art_product
+  );
+};
+
+export const UpdateArtProduct = (data: any, id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PATCH,
+    data,
+    `${EndPoint.art_product}/${id}`
+  );
+};
+
+export const DeleteArtChapter = (pid: any, cid: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.art_product}/${pid}/chapters/${cid}`
+  );
+};
+
+export const CreateCourseProduct = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.course_product
+  );
+};
+
+export const UpdateCourseProduct = (data: any, id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PATCH,
+    data,
+    `${EndPoint.course_product}/${id}`
+  );
+};
+
+export const DeleteCourseChapter = (pid: any, cid: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.course_product}/${pid}/chapters/${cid}`
+  );
+};
+
+export const DeleteSellerProduct = (id: any) => {
+  return executeAPI(ServerAPI.APIMethod.DELETE, {}, `${EndPoint.delete_seller_products}/${id}`);
+};
+
+export const GetMarketPlaceBuyerMoods = () => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_buyer_moods);
+};
+
+export const GetMarketPlaceBuyerCategories = () => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_buyer_categories);
+};
+
+export const GetMarketPlaceBuyerProducts = (params?: {
+  mood_slug?: string;
+  search?: string;
+  min_price?: number;
+  max_price?: number;
+  sort_by?: string;
+  sort_order?: string;
+  category_slug?: string;
+  language?: string;
+  page?: number;
+  limit?: number;
+}): ApiResponse => {
+  const queryParams = new URLSearchParams();
+
+  if (params?.mood_slug) queryParams.append('mood_slug', params.mood_slug);
+  if (params?.search) queryParams.append('search', params.search);
+  if (params?.min_price) queryParams.append('min_price', params.min_price.toString());
+  if (params?.max_price) queryParams.append('max_price', params.max_price.toString());
+  if (params?.sort_by) queryParams.append('sort_by', params.sort_by);
+  if (params?.sort_order) queryParams.append('sort_order', params.sort_order);
+  if (params?.category_slug) queryParams.append('category_slug', params.category_slug);
+  if (params?.language) queryParams.append('language', params.language);
+  if (params?.page) queryParams.append('page', params.page.toString());
+  if (params?.limit) queryParams.append('limit', params.limit.toString());
+
+  const queryString = queryParams.toString();
+  const endpoint = queryString
+    ? `${EndPoint.get_buyer_product_list}?${queryString}`
+    : EndPoint.get_buyer_product_list;
+
+  return executeAPI(ServerAPI.APIMethod.GET, {}, endpoint);
+};
+
+export const GetMarketPlaceBuyerProductById = (id: any) => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.get_buyer_product_list}/${id}`);
+};
+
+export const AddProductToWishlist = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.marketplace_wishlist
+  );
+};
+
+export const GetProductWishlist = () => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.marketplace_wishlist);
+};
+
+export const RemoveProductToWishlist = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.marketplace_wishlist}/${id}`
+  );
+};
+
+export const EmptyProductWishlist = (): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    EndPoint.marketplace_wishlist
+  );
+};
+
+export const AddProductToCart = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.marketplace_cart
+  );
+};
+
+export const GetProductCart = () => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.marketplace_cart);
+};
+
+export const RemoveProductToCart = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.marketplace_cart}/${id}`
+  );
+};
+
+export const EmptyProductCart = (): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    EndPoint.marketplace_cart
+  );
+};
+
+export const GetMarketPlaceShops = (params?: {
+  search?: string;
+  sort_by?: string;
+  sort_order?: string;
+  page?: number;
+  limit?: number;
+}): ApiResponse => {
+  const queryParams = new URLSearchParams();
+  
+  if (params?.search) queryParams.append('search', params.search);
+  if (params?.sort_by) queryParams.append('sort_by', params.sort_by);
+  if (params?.sort_order) queryParams.append('sort_order', params.sort_order);
+  if (params?.page) queryParams.append('page', params.page.toString());
+  if (params?.limit) queryParams.append('limit', params.limit.toString());
+  
+  const queryString = queryParams.toString();
+  const endpoint = queryString
+  ? `${EndPoint.get_shop_list}?${queryString}`
+  : EndPoint.get_shop_list;
+  
+  return executeAPI(ServerAPI.APIMethod.GET, {}, endpoint);
+};
+
+export const GetMarketPlaceShopById = (id: any) => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.get_shop_list}/${id}`);
 };

@@ -263,68 +263,95 @@ const chartData = [
       
  <div className="col-span-2 bg-white border border-[#E6E8EC] rounded-xl p-6 shadow-sm">
       {/* Header */}
-      <h2 className="text-[#242E3A] font-['Poppins'] font-semibold text-[18px] mb-1">
-        Sales Summary
-      </h2>
-      <p className="text-gray-500 text-sm mb-6 font-['Open_Sans']">
-        Will update every week’s data
-      </p>
+        <h2 className="text-[#242E3A] font-['Poppins'] font-semibold text-[18px] mb-1">
+    Sales Summary
+  </h2>
+  <p className="text-gray-500 text-sm mb-6 font-['Open_Sans']">
+    Will update every week’s data
+  </p>
 
-       {/* Chart Container */}
-  <div className="relative h-[400px] px-5 flex items-end justify-between overflow-visible rounded-xl">
-    {/* Dotted Vertical Lines */}
-    <div className="absolute flex justify-between px-[16px] pointer-events-none">
-      {chartData.map((_, i) => (
-        <div
-          key={i}
-          className="h-full border-l border-dashed border-[#E6E8EC] opacity-70"
-        />
-      ))}
-    </div>
+  {/* CHART */}
+  <div className="relative h-[350px] px-3 pb-6 flex items-end gap-1 overflow-hidden">
 
-    {/* Bars */}
-    {chartData.map((bar, i) => (
-      <div
-        key={i}
-        className="relative flex flex-col items-center justify-end group"
-        style={{ minWidth: 60 }}
-      >
-        {/* Tooltip */}
-        <div className="absolute -top-[85px] left-1/2 -translate-x-1/2 z-30 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200">
-          <div className="bg-white border border-[#B197FC] rounded-xl shadow-lg px-3 py-2 text-center min-w-[130px]">
-            <div className="text-gray-500 text-[12px]">{bar.date}</div>
-            <div className="text-gray-900 font-semibold text-[16px] mt-[2px]">
-              {bar.value}
-            </div>
-          </div>
-        </div>
+    {chartData.map((bar, i) => {
+      const CIRCLE_OFFSET = 15;
+      const CHART_MAX_HEIGHT = 330;
 
-        {/* Line + Circle + Bar */}
-        <div className="flex flex-col items-center relative">
-          {/* Line with Circle inside */}
-          <div className="bg-gradient-to-b from-[#7177FE]/60 to-transparent relative">
-            <div className="absolute -top-[3px] left-1/2 -translate-x-1/2 flex items-center justify-center">
-            <div className="relative flex items-center justify-center">
-              <div className="w-[38px] h-[38px] rounded-full border border-dashed border-[#B197FC] flex items-center justify-center">
-                <div className="w-[28px] h-[28px] rounded-full bg-[#7177FE] shadow-md" />
-              </div>
+      // Circle Bottom Position (relative to bar height)
+      const circleBottom = bar.height - CIRCLE_OFFSET;
+
+      // Dashed line height = remaining space from bar top to max height
+      const dashedLineHeight = CHART_MAX_HEIGHT - bar.height;
+
+      return (
+        <div key={i} className="relative flex-1 min-w-[60px] flex flex-col items-center justify-end group">
+          {/* Tooltip */}
+          <div className="absolute -top-[90px] left-1/2 -translate-x-1/2 z-20 
+                          opacity-0 group-hover:opacity-100 invisible group-hover:visible
+                          transition-all duration-200">
+                            
+            <div className="bg-white border border-[#B197FC] rounded-xl shadow-lg px-3 py-2 text-center min-w-[140px]">
+              <div className="text-gray-500 text-[12px]">{bar.date}</div>
+              <div className="text-gray-900 font-semibold text-[16px] mt-[2px]">{bar.value}</div>
             </div>
           </div>
 
+          {/* Vertical Dashed Line (from bar top to remaining space) */}
+          <svg
+            className="absolute left-1/2 -translate-x-1/2 z-[5]"
+            width="2"
+            height={dashedLineHeight}
+            style={{ bottom: `${bar.height}px` }}
+          >
+            <line
+              x1="1"
+              y1={0}
+              x2="1"
+              y2={dashedLineHeight}
+              stroke="#9CA3AF"
+              strokeWidth="1.5"
+              strokeDasharray="12 10"
+              opacity="0.6"
+            />
+          </svg>
 
+          {/* Circle (outer dashed + inner solid) */}
+          <div
+            className="absolute left-1/2 -translate-x-1/2 z-20"
+            style={{ bottom: `${circleBottom}px` }}
+          >
+            <div className="relative w-[54px] h-[54px] flex items-center justify-center">
+              {/* Outer dashed circle */}
+              <svg width="54" height="54" viewBox="0 0 54 54" className="absolute">
+                <circle
+                  cx="27"
+                  cy="27"
+                  r="25"
+                  fill="transparent"
+                  stroke="#7077FE"
+                  strokeWidth="1"
+                  strokeDasharray="10,8"
+                />
+              </svg>
+
+              {/* Inner solid */}
+              <div className="w-[40px] h-[40px] rounded-full bg-[#7177FE] shadow-md"></div>
+            </div>
           </div>
 
           {/* Bar */}
           <div
-            className="w-[38px] mt-[6px] rounded-t-full overflow-hidden bg-gradient-to-t from-[#E9EAFF]/40 to-[#7177FE]/80 shadow-sm"
+            className="w-[42px] rounded-t-full relative overflow-hidden"
             style={{ height: bar.height }}
-          />
-        </div>
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-transparent via-[#E2E4FF]/100 via-[#E2E4FF] to-[#B3B8FA]"></div>
+          </div>
 
-        {/* Label */}
-        <span className="text-gray-600 text-[14px] mt-3">{bar.week}</span>
-      </div>
-    ))}
+          {/* ✅ Label */}
+          <span className="text-gray-600 text-[14px] mt-3">{bar.week}</span>
+        </div>
+      );
+    })}
   </div>
 </div>
 

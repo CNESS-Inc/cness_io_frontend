@@ -1,171 +1,429 @@
-import React from "react";
-import { Trash2, Heart, Star, ClockFading, Video,ShoppingCart } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Trash2, Video, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import {
+  AddProductToWishlist,
+  GetProductCart,
+  RemoveProductToCart,
+  RemoveProductToWishlist
+} from "../Common/ServerAPI";
+import { useToast } from "../components/ui/Toast/ToastProvider";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
+
+interface CartItem {
+  id: string;
+  product_id: string;
+  quantity: number;
+  product: {
+    id: string;
+    product_title: string;
+    thumbnail_url: string;
+    seller: {
+      shop_name: string;
+    };
+    product_category: {
+      name: string;
+    };
+    mood: {
+      name: string;
+      icon: string;
+    };
+    rating: string;
+    total_reviews: number;
+    price: string;
+    final_price: string;
+    discount_percentage: string;
+    video_details?: {
+      duration: string;
+    };
+    music_details?: {
+      total_duration: string;
+    };
+    isInWishlist?: boolean;
+  };
+}
 
 const CartPage: React.FC = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const { showToast } = useToast();
 
-  const cartItems = [
-    {
-      id: 1,
-      image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
-      title: "Soft guitar moods that heals your inner pain",
-      author: "by Redtape",
-      category: "Course",
-      mood: "🕊️ Peaceful",
-      rating: 4.8,
-      reviews: 123,
-      duration: "00:23:00",
-      originalPrice: 2444,
-      currentPrice: 1259,
-      discount: 50,
-    },
-    {
-      id: 2,
-      image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
-      title: "Soft guitar moods that heals your inner pain",
-      author: "by Redtape",
-      category: "Course",
-      mood: "🕊️ Peaceful",
-      rating: 4.8,
-      reviews: 123,
-      duration: "00:23:00",
-      originalPrice: 2444,
-      currentPrice: 1259,
-      discount: 50,
-    },
-  ];
+  const [cartItems, setCartItems] = useState<any[]>([]);
+  // const [summary, setSummary] = useState<any>({});
+  // console.log('cartItems', cartItems)
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  const [selectAll, setSelectAll] = useState(false);
+
+  // Fetch cart items
+  const fetchCartItems = async () => {
+    setIsLoading(true);
+    try {
+      const response = await GetProductCart();
+      console.log('response', response)
+      const items = response?.data?.data?.cart_items || [];
+      // setSummary(response?.data?.data?.summary || {});
+      setCartItems(items);
+    } catch (error: any) {
+      showToast({
+        message: "Failed to load cart",
+        type: "error",
+        duration: 3000,
+      });
+      setCartItems([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCartItems();
+  }, []);
+
+  // Handle Remove from Cart
+  const handleRemoveFromCart = async (cartItemId: string) => {
+    try {
+      await RemoveProductToCart(cartItemId);
+      showToast({
+        message: "Item removed from cart",
+        type: "success",
+        duration: 2000,
+      });
+      fetchCartItems(); // Refresh cart
+
+      // Remove from selected items if it was selected
+      setSelectedItems(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(cartItemId);
+        return newSet;
+      });
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to remove item",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  // Handle Add/Remove from Wishlist
+  const handleWishlistToggle = async (item: CartItem) => {
+    try {
+      if (item.product.isInWishlist) {
+        await RemoveProductToWishlist(item.product_id);
+        showToast({
+          message: "Removed from wishlist",
+          type: "success",
+          duration: 2000,
+        });
+      } else {
+        await AddProductToWishlist({ product_id: item.product_id });
+        showToast({
+          message: "Added to wishlist ❤️",
+          type: "success",
+          duration: 2000,
+        });
+      }
+      fetchCartItems(); // Refresh to update wishlist status
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to update wishlist",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  // Handle Select Item
+  const handleSelectItem = (itemId: string) => {
+    setSelectedItems(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(itemId)) {
+        newSet.delete(itemId);
+      } else {
+        newSet.add(itemId);
+      }
+      return newSet;
+    });
+  };
+
+  // Handle Select All
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedItems(new Set());
+    } else {
+      setSelectedItems(new Set(cartItems.map(item => item.id)));
+    }
+    setSelectAll(!selectAll);
+  };
+
+  // Update selectAll state when individual items change
+  useEffect(() => {
+    setSelectAll(cartItems.length > 0 && selectedItems.size === cartItems.length);
+  }, [selectedItems, cartItems]);
+
+  // Calculate Price Details
+  const calculatePriceDetails = () => {
+    const selectedCartItems = Array.isArray(cartItems)
+      ? cartItems.filter(item => selectedItems.has(item.cart_id))
+      : [];
+
+    const subtotal = selectedCartItems.reduce((sum, item) => {
+      return sum + (parseFloat(item.price) * item.quantity);
+    }, 0);
+
+    const platformFee = 1; // Fixed platform fee
+
+    const discountAmount = selectedCartItems.reduce((sum, item) => {
+      const originalPrice = parseFloat(item.price);
+      const finalPrice = parseFloat(item.discounted_price);
+      return sum + ((originalPrice - finalPrice) * item.quantity);
+    }, 0);
+
+    const total = selectedCartItems.reduce((sum, item) => {
+      return sum + (parseFloat(item.discounted_price) * item.quantity);
+    }, 0) + platformFee;
+
+    const totalItems = selectedCartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+    return {
+      subtotal: subtotal.toFixed(2),
+      platformFee: platformFee.toFixed(2),
+      discountAmount: discountAmount.toFixed(2),
+      total: total.toFixed(2),
+      totalItems,
+    };
+  };
+
+  const priceDetails = calculatePriceDetails();
+
+  // Handle Proceed to Checkout
+  const handleProceedToCheckout = () => {
+    if (selectedItems.size === 0) {
+      showToast({
+        message: "Please select at least one item to checkout",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    const selectedCartItems = cartItems.filter(item => selectedItems.has(item.id));
+    navigate('/dashboard/checkout', {
+      state: {
+        cartItems: selectedCartItems,
+        priceDetails
+      }
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-white">
-
-      {/* ===== PAGE CONTAINER ===== */}
       <div className="w-full mx-auto px-6 py-8 flex flex-col lg:flex-row gap-8">
-        {/* ===== LEFT: CART ITEMS SECTION ===== */}
+        {/* LEFT: CART ITEMS SECTION */}
         <div className="flex-1">
           {/* Header row: Cart + Select all */}
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-[20px] font-semibold text-[#1A1A1A] font-[Poppins]">
-              Cart
+              Cart ({cartItems?.length})
             </h1>
 
-            <label className="flex items-center gap-2 text-sm text-[#A7A6A6] cursor-pointer">
-              <span>Select all</span>
-              <input
-                type="checkbox"
-                className="w-4 h-4 accent-[#7077FE] cursor-pointer"
-              />
-            </label>
+            {cartItems.length > 0 && (
+              <label className="flex items-center gap-2 text-sm text-[#A7A6A6] cursor-pointer">
+                <span>Select all</span>
+                <input
+                  type="checkbox"
+                  checked={selectAll}
+                  onChange={handleSelectAll}
+                  className="w-4 h-4 accent-[#7077FE] cursor-pointer"
+                />
+              </label>
+            )}
           </div>
 
           {/* CART ITEMS */}
-          <div className="space-y-4">
-            {cartItems.map((item) => (
-              <div
-                key={item.id}
-                className="bg-white rounded-xl shadow-md flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4"
+          {cartItems?.length === 0 ? (
+            <div className="text-center py-20">
+              <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500 text-lg">Your cart is empty</p>
+              <p className="text-gray-400 text-sm mt-2">Start adding products to your cart!</p>
+              <button
+                onClick={() => navigate('/dashboard/market-place')}
+                className="mt-6 px-6 py-3 bg-[#7077FE] text-white rounded-lg hover:bg-[#5E65F6] transition-colors"
               >
-                {/* Product Image */}
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-[220px] h-[130px] object-cover rounded-lg"
-                />
-
-                {/* Product Info */}
-                <div className="flex-1 space-y-1">
-                  <h2 className="text-[#1A1A1A] text-[16px] font-semibold leading-tight font-[Poppins]">
-                    {item.title}
-                  </h2>
-                  <p className="text-gray-500 text-sm">{item.author}</p>
-
-                  <div className="flex items-center flex-wrap gap-3 mt-1 text-sm text-gray-600">
-                    <span className="flex items-center">
-                      <Video className="w-5 h-5 mr-1 text-black" />
-                      {item.category}
-                    </span>
-                    <span>{item.mood}</span>
-                    <span className="flex items-center gap-1 text-[#7077FE] font-medium">
-                      <Star className="w-4 h-4 text-[#7077FE]" fill="#7077FE" />
-                      {item.rating} ({item.reviews})
-                    </span>
-                    <span className="flex items-center gap-1 text-sm text-gray-700">
-                      <ClockFading className="w-4 h-4 text-[#7077FE]" />
-                      {item.duration}
-                    </span>
-                  </div>
-
-                  {/* Price Section */}
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="text-gray-400 line-through text-sm">
-                      ${item.originalPrice}
-                    </span>
-                    <span className="text-[#1A1A1A] font-semibold text-[16px]">
-                      ${item.currentPrice}
-                    </span>
-                    <span className="text-[#7077FE] text-sm">
-                      ({item.discount}%)
-                    </span>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-3 ml-auto">
-                  <button className="p-2 hover:bg-red-50 rounded-full transition-colors">
-                    <Trash2 className="w-5 h-5 text-red-500" />
-                  </button>
-                  <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                    <Heart className="w-5 h-5 text-gray-500" />
-                  </button>
-                  <input
-                    type="checkbox"
-                    className="w-5 h-5 accent-[#7077FE] cursor-pointer"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ===== RIGHT: PRICE DETAILS ===== */}
-        <div className="w-full lg:w-[340px] h-fit relative mt-7">
-          {/* Title floating above box */}
-          <h2 className="absolute -top-6 left-3 text-[16px] font-semibold text-[#1A1A1A] font-[Poppins]">
-            Price Details
-          </h2>
-
-          {/* Box */}
-          <div className="bg-[#F9F9F9] shadow-md rounded-xl p-6 pt-10 mt-5">
-            <div className="space-y-3 text-sm text-gray-700">
-              <div className="flex justify-between">
-                <span>Subtotal (2)</span>
-                <span>$4998</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Platform Fee</span>
-                <span>$01</span>
-              </div>
-              <div className="flex justify-between text-green-600">
-                <span>Discount (10%)</span>
-                <span>- $2498</span>
-              </div>
-
-              <div className="border-t border-gray-200 my-3"></div>
-
-              <div className="flex justify-between font-semibold text-[16px] text-[#1A1A1A]">
-                <span>Total</span>
-                <span>$2518</span>
-              </div>
+                Continue Shopping
+              </button>
             </div>
+          ) : (
+            <div className="space-y-4">
+              {cartItems?.map((item) => {
+                console.log('itemvfbgfc', item)
+                return (
+                  <div
+                    key={item.id}
+                    className="bg-white rounded-xl shadow-md flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4"
+                  >
+                    {/* Product Image */}
+                    <img
+                      src={"https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png"}
+                      alt={item.product_name}
+                      className="w-[220px] h-[130px] object-cover rounded-lg cursor-pointer"
+                      onClick={() => navigate(`/dashboard/product-detail/${item.product_id}`)}
+                    />
 
-            <button 
-            onClick={() => navigate(`/dashboard/checkout`)}
-            className="mt-6 w-full bg-[#7077FE] text-white py-3 rounded-lg font-medium hover:bg-[#5E65F6] transition-colors">
-              <ShoppingCart className="w-5 h-5 inline-block mr-2" />
-               Proceed to checkout
-            </button>
-          </div>
+                    {/* Product Info */}
+                    <div className="flex-1 space-y-1">
+                      <h2
+                        className="text-[#1A1A1A] text-[16px] font-semibold leading-tight font-[Poppins] cursor-pointer hover:text-[#7077FE]"
+                        onClick={() => navigate(`/dashboard/product-detail/${item.product_id}`)}
+                      >
+                        {item.product_name}
+                      </h2>
+                      <p className="text-gray-500 text-sm">by {item.seller?.shop_name || "Unknown"}</p>
+
+                      <div className="flex items-center flex-wrap gap-3 mt-1 text-sm text-gray-600">
+                        <span className="flex items-center">
+                          <Video className="w-5 h-5 mr-1 text-black" />
+                          {item.category?.name || "Course"}
+                        </span>
+                        {/* <span>
+                        {item.product.mood?.icon || "🕊️"} {item.product.mood?.name || "Peaceful"}
+                      </span> */}
+                        {/* <span className="flex items-center gap-1 text-[#7077FE] font-medium">
+                        <Star className="w-4 h-4 text-[#7077FE]" fill="#7077FE" />
+                        {parseFloat(item.product.rating || "0").toFixed(1)} ({item.product.total_reviews || 0})
+                      </span> */}
+                        {/* <span className="flex items-center gap-1 text-sm text-gray-700">
+                        <ClockFading className="w-4 h-4 text-[#7077FE]" />
+                        {item.product.video_details?.duration ||
+                          item.product.music_details?.total_duration ||
+                          "00:00:00"}
+                      </span> */}
+                      </div>
+
+                      {/* Price Section */}
+                      <div className="flex items-center gap-2 mt-2">
+                        {item.price && (
+                          <span className="text-gray-400 line-through text-sm">
+                            {item.price}
+                          </span>
+                        )}
+                        <span className="text-[#1A1A1A] font-semibold text-[16px]">
+                          {item.item_total}
+                        </span>
+                        {item.discount_percentage && (
+                          <span className="text-[#7077FE] text-sm">
+                            {item.discount_percentage}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Quantity Display */}
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="text-sm text-gray-600">Quantity:</span>
+                        <span className="text-sm font-semibold">{item.quantity}</span>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-3 ml-auto">
+                      {/* Delete Button */}
+                      <button
+                        onClick={() => handleRemoveFromCart(item.product_id)}
+                        className="p-2 hover:bg-red-50 rounded-full transition-colors"
+                      >
+                        <Trash2 className="w-5 h-5 text-red-500" />
+                      </button>
+
+                      {/* Wishlist Button */}
+                      <button
+                        onClick={() => handleWishlistToggle(item)}
+                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                      >
+                        {/* <Heart
+                        className={`w-5 h-5 ${item.product.isInWishlist
+                          ? "text-red-500 fill-red-500"
+                          : "text-gray-500"
+                          }`}
+                      /> */}
+                      </button>
+
+                      {/* Select Checkbox */}
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.has(item.product_id)}
+                        onChange={() => handleSelectItem(item.product_id)}
+                        className="w-5 h-5 accent-[#7077FE] cursor-pointer"
+                      />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </div>
+
+        {/* RIGHT: PRICE DETAILS */}
+        {cartItems?.length > 0 && (
+          <div className="w-full lg:w-[340px] h-fit relative mt-7">
+            {/* Title floating above box */}
+            <h2 className="absolute -top-6 left-3 text-[16px] font-semibold text-[#1A1A1A] font-[Poppins]">
+              Price Details
+            </h2>
+
+            {/* Box */}
+            <div className="bg-[#F9F9F9] shadow-md rounded-xl p-6 pt-10 mt-5">
+              {/* <div className="space-y-3 text-sm text-gray-700">
+                <div className="flex justify-between">
+                  <span>Subtotal ({priceDetails.totalItems})</span>
+                  <span>${priceDetails.subtotal}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Platform Fee</span>
+                  <span>${priceDetails.platformFee}</span>
+                </div>
+                {parseFloat(priceDetails.discountAmount) > 0 && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Discount</span>
+                    <span>- ${priceDetails.discountAmount}</span>
+                  </div>
+                )}
+
+                <div className="border-t border-gray-200 my-3"></div>
+
+                <div className="flex justify-between font-semibold text-[16px] text-[#1A1A1A]">
+                  <span>Total</span>
+                  <span>${priceDetails.total}</span>
+                </div>
+              </div> */}
+
+              <button
+                onClick={handleProceedToCheckout}
+                disabled={selectedItems.size === 0}
+                className={`mt-6 w-full py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${selectedItems.size === 0
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : "bg-[#7077FE] text-white hover:bg-[#5E65F6]"
+                  }`}
+              >
+                <ShoppingCart className="w-5 h-5" />
+                Proceed to checkout
+              </button>
+
+              {selectedItems.size === 0 && (
+                <p className="text-xs text-gray-500 text-center mt-2">
+                  Select items to proceed
+                </p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );

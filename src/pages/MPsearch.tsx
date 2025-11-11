@@ -1,225 +1,287 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Search, X, ChevronDown, Filter as FilterIcon } from "lucide-react";
+import { Search, X } from "lucide-react";
 import ProductCard from "../components/MarketPlace/ProductCard";
 import Filter from "../components/MarketPlace/Filter";
-import Header from "../components/MarketPlace/Buyerheader";
-import filter from "../assets/filter.svg";
+import { useToast } from "../components/ui/Toast/ToastProvider";
+import { GetMarketPlaceBuyerProducts } from "../Common/ServerAPI";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
+import Pagination from "../components/MarketPlace/Pagination";
 
 const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const initialSearch = searchParams.get("search") || "";
-  const [searchQuery, setSearchQuery] = useState(initialSearch);
+  const { showToast } = useToast();
 
-  // ✅ Static Products
-  const products = [
-    {
-      id: "1",
-      title: "Soft Guitar Moods that Heal Your Inner Pain",
-      author: "Redtape",
-      rating: 4.8,
-      reviews: 120,
-      currentPrice: 1259,
-      originalPrice: 2444,
-      discount: 50,
-      duration: "00:23:00",
-      category: '🕊️ Peaceful',
-      image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
-    },
-    {
-      id: "2",
-      title: "Calming Piano Waves for Focus and Flow",
-      author: "BlueNote",
-      rating: 4.9,
-      reviews: 98,
-      currentPrice: 1599,
-      originalPrice: 2999,
-      discount: 47,
-      duration: "00:25:00",
-      category: '🧘 Spiritual',
-      image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
-    },
-    {
-      id: "3",
-      title: "Chill Beats for Peaceful Evenings",
-      author: "MindTune",
-      rating: 4.7,
-      reviews: 80,
-      currentPrice: 999,
-      originalPrice: 1999,
-      discount: 50,
-      duration: "00:20:00",
-      category: '🧘 Spiritual',
-      image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
-    },
-  ];
+  const [products, setProducts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
+  const [selectedMood, setSelectedMood] = useState(searchParams.get("mood_slug") || "");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  // ✅ Handle Search
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchQuery(value);
-    navigate(`/dashboard/market-place/search?search=${encodeURIComponent(value)}`);
-  };
-
-  // ✅ Clear Search
-  const clearSelection = () => {
-    setSearchQuery("");
-    navigate(`/dashboard/market-place/search`);
-  };
-
-  // ✅ Filtered Products
-  const filteredProducts = products.filter((product) => {
-    if (!searchQuery) return true;
-    const lower = searchQuery.toLowerCase();
-    return product.title.toLowerCase().includes(lower);
+  const [filters, setFilters] = useState({
+    category_slug: searchParams.get("category_slug") || "",
+    min_price: searchParams.get("min_price") || "",
+    max_price: searchParams.get("max_price") || "",
+    language: searchParams.get("language") || "",
+    sort_by: searchParams.get("sort_by") || "createdAt",
+    sort_order: searchParams.get("sort_order") || "desc",
   });
 
-  // ✅ Sorting Dropdown
-  const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState("Top Rated");
-  const [showMobileFilter, setShowMobileFilter] = useState(false);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      try {
+        const params: any = {
+          page: currentPage,
+          limit: 12,
+        };
 
-  const options = [
-    "Top Rated",
-    "Newest Arrival",
-    "Most Popular",
-    "Price : High to Low",
-    "Price : Low to High",
-  ];
+        if (searchQuery) params.search = searchQuery;
+        if (selectedMood) params.mood_slug = selectedMood;
+        if (filters.category_slug) params.category_slug = filters.category_slug;
+        if (filters.min_price) params.min_price = parseFloat(filters.min_price);
+        if (filters.max_price) params.max_price = parseFloat(filters.max_price);
+        if (filters.language) params.language = filters.language;
+        if (filters.sort_by) params.sort_by = filters.sort_by;
+        if (filters.sort_order) params.sort_order = filters.sort_order;
 
-  const handleSelect = (option: string) => {
-    setSelected(option);
-    setIsOpen(false);
+        const response = await GetMarketPlaceBuyerProducts(params);
+        const productsData = response?.data?.data?.products || [];
+        const pagination = response?.data?.data?.pagination || {};
+
+        setProducts(productsData);
+        setTotalPages(pagination.total_pages || 1);
+      } catch (error: any) {
+        showToast({
+          message: "Failed to load products.",
+          type: "error",
+          duration: 3000,
+        });
+        setProducts([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [searchQuery, selectedMood, filters, currentPage]);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set("search", searchQuery);
+    if (selectedMood) params.set("mood_slug", selectedMood);
+    if (filters.category_slug) params.set("category_slug", filters.category_slug);
+    if (filters.min_price) params.set("min_price", filters.min_price);
+    if (filters.max_price) params.set("max_price", filters.max_price);
+    if (filters.language) params.set("language", filters.language);
+    if (filters.sort_by) params.set("sort_by", filters.sort_by);
+    if (filters.sort_order) params.set("sort_order", filters.sort_order);
+
+    setSearchParams(params);
+  }, [searchQuery, selectedMood, filters]);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCurrentPage(1);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+    setCurrentPage(1);
+  };
+
+  const clearMood = () => {
+    setSelectedMood("");
+    setCurrentPage(1);
+  };
+
+  const handleFilterChange = (newFilters: any) => {
+    setFilters(newFilters);
+    setCurrentPage(1);
+  };
+
+  const clearAllFilters = () => {
+    setSearchQuery("");
+    setSelectedMood("");
+    setFilters({
+      category_slug: "",
+      min_price: "",
+      max_price: "",
+      language: "",
+      sort_by: "createdAt",
+      sort_order: "desc",
+    });
+    setCurrentPage(1);
+    navigate("/dashboard/market-place/search");
   };
 
   return (
-    <main className="min-h-screen bg-white">
-      <Header />
-
-      <div
-        className={`transition-all duration-300 ${
-          isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
+    <div
+      className={`transition-all duration-300 ${isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
         } pt-[20px] px-6`}
+    >
+      <div
+        className={`transition-all duration-300 ${isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
+          } pt-[20px] px-6`}
       >
         {/* 🔍 Search + Sort Section */}
-        <div className="w-full max-w-[2000px] mx-auto flex items-start justify-between px-5 mt-8 gap-6">
-          <div className="flex flex-col flex-1">
-            <div className="flex items-center gap-4 max-w-[1200px]">
-              {/* Search Bar */}
-              <div className="flex items-center bg-white border border-gray-300 rounded-full px-6 py-3 shadow-sm flex-[0.8]">
-                {searchQuery && (
-                  <div className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm text-[#9747FF] mr-2">
-                    {searchQuery}
-                    <button
-                      onClick={clearSelection}
-                      className="ml-2 text-[#9747FF] hover:text-[#9747FF]"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                )}
+        <div className="max-w-[1800px] mx-auto">
+          {/* Search Bar */}
+          <div className="mb-8">
+            <form
+              onSubmit={handleSearchSubmit}
+              className="flex items-center w-full bg-white border border-gray-300 rounded-full px-6 py-4 space-x-3"
+            >
+              <div className="flex items-center space-x-2 flex-1">
                 <input
                   type="text"
-                  placeholder="Search by name..."
+                  placeholder="Search products..."
                   value={searchQuery}
-                  onChange={handleSearchChange}
-                  className="flex-1 bg-transparent outline-none text-[#9747FF] text-sm placeholder-[#9747FF]"
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="flex-1 bg-transparent outline-none text-gray-700 text-base placeholder-gray-400"
                 />
-                <Search className="w-5 h-5 text-[#9747FF] ml-3" />
-              </div>
-
-              {/* Sort Dropdown */}
-              <div className="relative flex-shrink-0">
-                <button
-                  onClick={() => setIsOpen(!isOpen)}
-                  className="flex items-center justify-between gap-2 px-4 py-3 bg-white border border-[#7077FE] rounded-full shadow-sm text-[#7077FE] font-medium text-sm md:text-base hover:shadow-md transition-all min-w-[140px] md:min-w-[180px]"
-                >
-                  <div className="flex items-center gap-2">
-                    <img src={filter} alt="filter" className="w-5 h-5" />
-                    <span className="truncate">{selected}</span>
-                  </div>
-                  <ChevronDown
-                    className={`w-5 h-5 transition-transform duration-300 ${
-                      isOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-
-                {isOpen && (
-                  <div className="absolute top-full mt-2 w-60 bg-white border border-[#7077FE] rounded-2xl shadow-lg z-50 p-4 space-y-3">
-                    {options.map((option) => (
-                      <button
-                        key={option}
-                        onClick={() => handleSelect(option)}
-                        className={`block w-full text-left font-poppins font-normal text-[16px] leading-[100%] px-2 py-1 rounded-lg transition-colors ${
-                          selected === option
-                            ? "text-[#7077FE] font-semibold"
-                            : "text-gray-700 hover:text-[#7077FE]"
-                        }`}
-                      >
-                        {option}
-                      </button>
-                    ))}
-                  </div>
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={clearSearch}
+                    className="flex-shrink-0"
+                  >
+                    <X className="w-5 h-5 text-gray-500 hover:text-gray-700" />
+                  </button>
                 )}
               </div>
-            </div>
+              <button type="submit" className="flex-shrink-0">
+                <Search className="w-6 h-6 text-gray-500 hover:text-gray-700" />
+              </button>
+            </form>
           </div>
-        </div>
 
-        {/* 📦 Main Section */}
-        <div className="flex w-full max-w-[1600px] mx-auto px-5 py-10 gap-8">
-          <div className="flex-1">
-            <h1 className="text-2xl font-semibold mb-6">
-              Results for:{" "}
-              <span className="text-[#7077FE]">{searchQuery || "All"}</span>
-            </h1>
+          <div className="mb-6 flex flex-wrap gap-3 items-center">
+            {searchQuery && (
+              <div className="flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full text-sm">
+                <span>Search: "{searchQuery}"</span>
+                <button onClick={clearSearch}>
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+            {selectedMood && (
+              <div className="flex items-center gap-2 bg-purple-50 text-purple-600 px-4 py-2 rounded-full text-sm">
+                <span>Mood: {selectedMood}</span>
+                <button onClick={clearMood}>
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+            {(searchQuery || selectedMood || filters.category_slug || filters.min_price || filters.max_price || filters.language) && (
+              <button
+                onClick={clearAllFilters}
+                className="text-red-500 hover:text-red-700 text-sm font-medium"
+              >
+                Clear All Filters
+              </button>
+            )}
+          </div>
 
-            {/* Mobile Filter Button */}
-            <button
-              className="md:hidden flex items-center gap-2 px-4 py-2 bg-[#7077FE] text-white rounded-full mb-6"
-              onClick={() => setShowMobileFilter(true)}
-            >
-              <FilterIcon className="w-5 h-5" /> Filters
-            </button>
+          {/* 📦 Main Section */}
+          <div className="flex gap-6">
 
-            {/* Product Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))
+            {/* Products Grid */}
+            <div className="flex-1">
+              {isLoading ? (
+                <div className="flex justify-center items-center py-20">
+                  <LoadingSpinner />
+                </div>
               ) : (
-                <p className="col-span-full text-center text-gray-500">
-                  No results found
-                </p>
+                <>
+                  {/* Results Count */}
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-semibold text-gray-800">
+                      {searchQuery
+                        ? `Search results for "${searchQuery}"`
+                        : selectedMood
+                          ? `${selectedMood.charAt(0).toUpperCase() + selectedMood.slice(1)} mood products`
+                          : "All products"}
+                    </h2>
+                    <p className="text-gray-600 mt-1">
+                      {products.length} product{products.length !== 1 ? "s" : ""} found
+                    </p>
+                  </div>
+
+                  {products.length > 0 ? (
+                    <>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {products.map((product) => (
+                          <ProductCard
+                            key={product.id}
+                            product={{
+                              id: product.id,
+                              title: product.product_title,
+                              author: product.seller?.shop_name || "Unknown",
+                              rating: product?.rating?.average,
+                              reviews: product?.rating?.total_reviews,
+                              currentPrice: product?.discounted_price,
+                              originalPrice: product?.price,
+                              discount: product.discount_percentage,
+                              duration:
+                                product.video_details?.duration ||
+                                product.music_details?.total_duration ||
+                                "00:00:00",
+                              mood: `${product.mood?.icon || ""} ${product.mood?.name || ""
+                                }`,
+                              image:
+                                product.thumbnail_url ||
+                                "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
+                              category: product.product_category?.name || "",
+                            }}
+                          />
+                        ))}
+                      </div>
+
+                      {/* Pagination */}
+                      {totalPages > 1 && (
+                        <div className="flex justify-center mt-10">
+                          <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={setCurrentPage}
+                          />
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-center py-20">
+                      <div className="text-gray-400 mb-4">
+                        <Search className="w-20 h-20 mx-auto" />
+                      </div>
+                      <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                        No products found
+                      </h3>
+                      <p className="text-gray-500 mb-6">
+                        Try adjusting your search or filters
+                      </p>
+                      <button
+                        onClick={clearAllFilters}
+                        className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                      >
+                        Clear All Filters
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
-          </div>
 
-          {/* 🧰 Filter Sidebar (RIGHT) */}
-          <div className="hidden md:block w-[300px] flex-shrink-0 -mt-25 px-10">
-            <Filter />
-          </div>
-        </div>
-
-        {/* 📱 Mobile Filter Drawer */}
-        {showMobileFilter && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex justify-end">
-            <div className="bg-white w-[85%] sm:w-[400px] h-full p-6 overflow-y-auto relative">
-              <button
-                className="absolute top-4 right-4 text-gray-600 hover:text-black"
-                onClick={() => setShowMobileFilter(false)}
-              >
-                <X className="w-6 h-6" />
-              </button>
-              <Filter />
+            {/* Filter Sidebar */}
+            <div className="w-64 flex-shrink-0">
+              <Filter filters={filters} onFilterChange={handleFilterChange} />
             </div>
           </div>
-        )}
+        </div>
       </div>
-    </main>
+    </div>
   );
 };
 

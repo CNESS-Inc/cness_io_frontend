@@ -65,7 +65,7 @@ export default function ProductSummery() {
       </span>
       <span className="text-indigo-200 mx-1">•</span>
       {/* Purchased Date */}
-      <span className="flex items-center gap-0.1">
+      <span className="flex items-center gap-1">
         <BsCalendar2 className="w-3 h-3 text-[#7077FE]" />
         Purchased on <span className="text-xs font-bold">13 October,2025</span>
       </span>

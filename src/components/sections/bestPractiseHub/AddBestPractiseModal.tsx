@@ -147,8 +147,7 @@ interface ValidationErrors {
   file?: string;
   description?: string;
   tags?: string;
-  profession?: string;
-  interest?: string;
+  interestOrProfession?: string;
   general?: string;
 }
 
@@ -174,8 +173,7 @@ export default function AddBestPracticeModal({
     title: false,
     file: false,
     description: false,
-    profession: false,
-    interest: false,
+    interestOrProfession: false,
     tags: false,
   });
 
@@ -187,8 +185,7 @@ export default function AddBestPracticeModal({
         title: false, 
         file: false, 
         description: false, 
-        profession: false, 
-        interest: false,
+        interestOrProfession: false,
         tags: false 
       });
     }
@@ -226,12 +223,11 @@ export default function AddBestPracticeModal({
         if (textContent.length > 5000) return "Description must be less than 5000 characters";
         return undefined;
       
-      case "profession":
-        if (!value.trim()) return "Profession is required";
-        return undefined;
-      
-      case "interest":
-        if (!value.trim()) return "Interest is required";
+      case "interestOrProfession":
+        // Check if at least one of interest or profession is selected
+        if (!newPractice.interest.trim() && !newPractice.profession.trim()) {
+          return "Please select either an Interest or a Profession";
+        }
         return undefined;
       
       case "tags":
@@ -258,8 +254,7 @@ export default function AddBestPracticeModal({
     errors.title = validateField("title", newPractice.title);
     errors.file = validateField("file", newPractice.file);
     errors.description = validateField("description", newPractice.description);
-    errors.profession = validateField("profession", newPractice.profession);
-    errors.interest = validateField("interest", newPractice.interest);
+    errors.interestOrProfession = validateField("interestOrProfession", null); // Pass null since we check both fields
     errors.tags = validateField("tags", tags);
 
     // Filter out undefined errors
@@ -280,8 +275,7 @@ export default function AddBestPracticeModal({
       title: true, 
       file: true, 
       description: true, 
-      profession: true, 
-      interest: true,
+      interestOrProfession: true,
       tags: true 
     });
     
@@ -309,6 +303,15 @@ export default function AddBestPracticeModal({
       setValidationErrors(prev => ({
         ...prev,
         [fieldName]: error
+      }));
+    }
+
+    // If interest or profession changes, validate the interestOrProfession field
+    if ((fieldName === "interest" || fieldName === "profession") && touched.interestOrProfession) {
+      const error = validateField("interestOrProfession", null);
+      setValidationErrors(prev => ({
+        ...prev,
+        interestOrProfession: error
       }));
     }
   };
@@ -342,11 +345,9 @@ export default function AddBestPracticeModal({
       case "description":
         value = newPractice.description;
         break;
-      case "profession":
-        value = newPractice.profession;
-        break;
-      case "interest":
-        value = newPractice.interest;
+      case "interestOrProfession":
+        // For interestOrProfession, we don't need a specific value
+        value = null;
         break;
       default:
         return;
@@ -382,7 +383,6 @@ export default function AddBestPracticeModal({
     if (imagePreviewUrl) {
       URL.revokeObjectURL(imagePreviewUrl);
     }
-
   }
 
   return (
@@ -532,18 +532,18 @@ export default function AddBestPracticeModal({
 
             <div className="flex flex-col gap-[5px]">
               <label htmlFor="interest" className="block text-[15px] font-normal text-black">
-                Interest <span className="text-red-600">*</span>
+                Interest
               </label>
               <select
                 id="interest"
                 name="interest"
                 value={newPractice.interest}
                 onChange={handleInputChangeWithValidation}
-                onBlur={() => handleBlur("interest")}
+                onBlur={() => handleBlur("interestOrProfession")}
                 className={`w-full px-[10px] py-3 border rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                  validationErrors.interest ? 'border-red-500 bg-red-50' : 'border-[#CBD0DC]'
+                  validationErrors.interestOrProfession ? 'border-red-500 bg-red-50' : 'border-[#CBD0DC]'
                 }`}
-                data-error={!!validationErrors.interest}
+                data-error={!!validationErrors.interestOrProfession}
               >
                 <option value="">Select your Interest</option>
                 {interest?.map((cat) => (
@@ -552,9 +552,6 @@ export default function AddBestPracticeModal({
                   </option>
                 ))}
               </select>
-              {validationErrors.interest && (
-                <p className="text-red-600 text-sm">{validationErrors.interest}</p>
-              )}
             </div>
           </div>
 
@@ -562,18 +559,18 @@ export default function AddBestPracticeModal({
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-[5px]">
               <label htmlFor="profession" className="block text-[15px] font-normal text-black">
-                Profession <span className="text-red-600">*</span>
+                Profession
               </label>
               <select
                 id="profession"
                 name="profession"
                 value={newPractice.profession}
                 onChange={handleInputChangeWithValidation}
-                onBlur={() => handleBlur("profession")}
+                onBlur={() => handleBlur("interestOrProfession")}
                 className={`w-full px-[10px] py-3 border rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                  validationErrors.profession ? 'border-red-500 bg-red-50' : 'border-[#CBD0DC]'
+                  validationErrors.interestOrProfession ? 'border-red-500 bg-red-50' : 'border-[#CBD0DC]'
                 }`}
-                data-error={!!validationErrors.profession}
+                data-error={!!validationErrors.interestOrProfession}
               >
                 <option value="">Select your Profession</option>
                 {profession?.map((prof) => (
@@ -582,8 +579,8 @@ export default function AddBestPracticeModal({
                   </option>
                 ))}
               </select>
-              {validationErrors.profession && (
-                <p className="text-red-600 text-sm">{validationErrors.profession}</p>
+              {validationErrors.interestOrProfession && (
+                <p className="text-red-600 text-sm">{validationErrors.interestOrProfession}</p>
               )}
             </div>
 

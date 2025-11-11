@@ -19,16 +19,28 @@ const OrderHistory = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   const [searchParams] = useSearchParams();
   const initialSearch = searchParams.get("search") || "";
   const [searchQuery, setSearchQuery] = useState(initialSearch);
-  
-const navigate = useNavigate();
-const handleImageClick = (id: string) => {
-  navigate(`/dashboard/order-history/${id}`);
-};
 
-const handleTitleClick = (id: string) => {
-  navigate(`/dashboard/order-history/${id}`);
-};
+  const navigate = useNavigate();
+  const handleImageClick = (id: string) => {
+    navigate(`/dashboard/order-history/${id}`);
+  };
 
+  const handleTitleClick = (id: string) => {
+    navigate(`/dashboard/order-history/${id}`);
+  };
+
+  const demoFilters = {
+    category_slug: "technology",
+    min_price: "100",
+    max_price: "1000",
+    language: "English",
+    duration: "3 months",
+    rating: "4"
+  };
+
+  const handleFilterChange = (filters: any) => {
+    console.log("Filters changed: ", filters);
+  };
 
   const orders = [
     {
@@ -116,18 +128,17 @@ const handleTitleClick = (id: string) => {
 
   return (
     <main className="min-h-screen bg-white">
-     
+
       <div
-        className={`transition-all duration-300 ${
-          isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
-        } pt-[20px] px-6`}
+        className={`transition-all duration-300 ${isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
+          } pt-[20px] px-6`}
       >
         <h2 className="font-[Poppins] font-semibold text-[20px] leading-[100%] text-[#242E3A] mb-6">
           My order History
         </h2>
 
         {/* 🔍 Search + Sort Section */}
-        <div className="w-full max-w-[2000px] mx-auto flex items-start justify-between px-5 mt-8 gap-6">
+        <div className="w-full mx-auto flex items-start justify-between px-5 mt-8 gap-6">
           <div className="flex flex-col flex-1">
             <div className="flex items-center gap-4 max-w-[1200px]">
               {/* Search Bar */}
@@ -164,9 +175,8 @@ const handleTitleClick = (id: string) => {
                     <span className="truncate">{selected}</span>
                   </div>
                   <ChevronDown
-                    className={`w-5 h-5 transition-transform duration-300 ${
-                      isOpen ? "rotate-180" : ""
-                    }`}
+                    className={`w-5 h-5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""
+                      }`}
                   />
                 </button>
 
@@ -176,11 +186,10 @@ const handleTitleClick = (id: string) => {
                       <button
                         key={option}
                         onClick={() => handleSelect(option)}
-                        className={`block w-full text-left font-poppins font-normal text-[16px] leading-[100%] px-2 py-1 rounded-lg transition-colors ${
-                          selected === option
-                            ? "text-[#7077FE] font-semibold"
-                            : "text-gray-700 hover:text-[#7077FE]"
-                        }`}
+                        className={`block w-full text-left font-poppins font-normal text-[16px] leading-[100%] px-2 py-1 rounded-lg transition-colors ${selected === option
+                          ? "text-[#7077FE] font-semibold"
+                          : "text-gray-700 hover:text-[#7077FE]"
+                          }`}
                       >
                         {option}
                       </button>
@@ -193,9 +202,9 @@ const handleTitleClick = (id: string) => {
         </div>
 
         {/* 📦 Main Section */}
-        <div className="flex w-full max-w-[1600px] mx-auto px-5 py-10 gap-8">
+        <div className="flex w-full mx-auto px-5 py-10 gap-8">
           <div className="flex-1">
-           
+
 
             {/* 🧾 Order List */}
             <div className="space-y-5 mt-6">
@@ -203,12 +212,12 @@ const handleTitleClick = (id: string) => {
                 filteredOrders.map((order) => (
                   <div
                     key={order.id}
-                    className="bg-[#FFFFFF] border border-gray-200 rounded-xl shadow-sm p-4 flex flex-col md:flex-row items-start md:items-center gap-4 hover:shadow-md transition-all"
+                    className="bg-[#FFFFFF] border border-gray-200 rounded-xl shadow-sm p-2 flex flex-col md:flex-row items-start md:items-center gap-4 hover:shadow-md transition-all"
                   >
                     <img
                       src={order.image}
                       alt={order.title}
-                      className="w-[160px] h-[100px] object-cover rounded-lg cursor-pointer"
+                      className="w-[160px] h-[130px] md:w-[200px] md:h-[160px] object-cover rounded-lg cursor-pointer"
                       onClick={() => handleImageClick(order.id)}
                     />
 
@@ -217,11 +226,11 @@ const handleTitleClick = (id: string) => {
                       <div className="flex justify-between items-start flex-wrap">
                         <div>
                           <h3
-                          className="font-[Poppins] font-semibold text-[16px] text-[#242E3A] mb-1 cursor-pointer hover:underline"
-                          onClick={() => handleTitleClick(order.id)}
-                        >
-                          {order.title}
-                        </h3>
+                            className="font-[Poppins] font-semibold text-[16px] text-[#242E3A] mb-1 cursor-pointer hover:underline"
+                            onClick={() => handleTitleClick(order.id)}
+                          >
+                            {order.title}
+                          </h3>
 
                           <p className="text-sm text-gray-500 mb-1">
                             by {order.author}
@@ -284,7 +293,7 @@ const handleTitleClick = (id: string) => {
 
           {/* 🧰 Filter Sidebar (RIGHT) */}
           <div className="hidden md:block w-[300px] flex-shrink-0 -mt-25 px-10">
-            <Filter />
+            <Filter filters={demoFilters} onFilterChange={handleFilterChange} />
           </div>
         </div>
 
@@ -298,7 +307,7 @@ const handleTitleClick = (id: string) => {
               >
                 <X className="w-6 h-6" />
               </button>
-              <Filter />
+              <Filter filters={demoFilters} onFilterChange={handleFilterChange} />
             </div>
           </div>
         )}

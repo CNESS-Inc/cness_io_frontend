@@ -1,7 +1,7 @@
 // SignupModal.tsx
 import React, { useEffect, useRef, useState, type FormEvent } from "react";
 import PopupOnboardingModal from "../ui/OnBoardingModel";
-import { Check } from "lucide-react";
+import { Check, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../../components/ui/Toast/ToastProvider";
 import { useGoogleLogin } from "@react-oauth/google";
@@ -136,6 +136,8 @@ export default function SignupModal({
   const [recaptchaTouched, setRecaptchaTouched] = useState(false);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const [openLogin, setOpenLogin] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [interest, setInterest] = useState<Interest[]>([]);
   const [profession, setProfession] = useState<Profession[]>([]);
@@ -910,14 +912,13 @@ export default function SignupModal({
   const handleNextPersonClick = () => {
     // Only validate step 1 fields when clicking next
     const isValid = validateForm(personForm, "person", 1, true);
-    console.log("🚀 ~ handleNextPersonClick ~ isValid:", isValid);
 
     if (isValid) {
       setPersonFormStep(2);
     }
   };
 
-    const getBillingNote = (plan: any) => {
+  const getBillingNote = (plan: any) => {
     if (!plan.yearlyPrice || !plan.monthlyPrice) return undefined;
 
     if (isAnnual) {
@@ -1052,62 +1053,83 @@ export default function SignupModal({
           </label>
 
           {/* Passwords */}
+          {/* Password */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <label className="block w-full">
+            <label className="block w-full relative">
               <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
                 Password
               </span>
-              <input
-                type="password"
-                name="password"
-                required
-                placeholder="Type your password"
-                value={registerForm.password}
-                onChange={handleRegisterChange}
-                onBlur={() => {
-                  setTouched((prev) => ({ ...prev, password: true }));
-                  validateForms(registerForm);
-                }}
-                className="
-                    lg:w-[195.5px] w-full h-[45px]
-                    rounded-[4px] border-2 border-gray-200
-                    px-[10px]
-                    outline-none
-                    text-[14px] leading-[20px]
-                    placeholder:text-gray-400
-                  
-                  "
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  required
+                  placeholder="Type your password"
+                  value={registerForm.password}
+                  onChange={handleRegisterChange}
+                  onBlur={() => {
+                    setTouched((prev) => ({ ...prev, password: true }));
+                    validateForms(registerForm);
+                  }}
+                  className="
+          lg:w-[195.5px] w-full h-[45px]
+          rounded-[4px] border-2 border-gray-200
+          px-[10px] pr-10
+          outline-none
+          text-[14px] leading-[20px]
+          placeholder:text-gray-400
+        "
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
               {(touched.password || formssubmitted) && errors.password && (
                 <p className="text-sm text-red-600">{errors.password}</p>
               )}
             </label>
 
-            <label className="block w-full">
+            <label className="block w-full relative">
               <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
                 Re-type Password
               </span>
-              <input
-                type="password"
-                name="confirmPassword"
-                required
-                placeholder="Re-type your password"
-                value={registerForm.confirmPassword}
-                onChange={handleRegisterChange}
-                onBlur={() => {
-                  setTouched((prev) => ({ ...prev, confirmPassword: true }));
-                  validateForms(registerForm);
-                }}
-                className="
-                    lg:w-[195.5px] w-full h-[45px]
-                    rounded-[4px] border-2 border-gray-200
-                    px-[10px]
-                    outline-none
-                    text-[14px] leading-[20px]
-                    placeholder:text-gray-400
-                    
-                  "
-              />
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  required
+                  placeholder="Re-type your password"
+                  value={registerForm.confirmPassword}
+                  onChange={handleRegisterChange}
+                  onBlur={() => {
+                    setTouched((prev) => ({ ...prev, confirmPassword: true }));
+                    validateForms(registerForm);
+                  }}
+                  className="
+          lg:w-[195.5px] w-full h-[45px]
+          rounded-[4px] border-2 border-gray-200
+          px-[10px] pr-10
+          outline-none
+          text-[14px] leading-[20px]
+          placeholder:text-gray-400
+        "
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
+                </button>
+              </div>
               {(touched.confirmPassword || formssubmitted) &&
                 errors.confirmPassword && (
                   <p className="text-sm text-red-600">

@@ -4,16 +4,14 @@ import { useNavigate } from "react-router-dom";
 import PostCard from "../components/Profile/Post";
 import { Outlet, useLocation } from "react-router-dom";
 import { useEffect, useState, useCallback, useRef } from "react";
-import { GetAllTrendingPost } from "../Common/ServerAPI";
+import {
+  GetAllTrendingPost,
+  getTopics,
+  getUserSelectedTopic,
+} from "../Common/ServerAPI";
+import { useToast } from "../components/ui/Toast/ToastProvider";
 
 type Post = React.ComponentProps<typeof PostCard>;
-
-const trendingTopics = [
-  { label: "#AI" },
-  { label: "#Conscious" },
-  { label: "#Social_impact", icon: "🔥" },
-  { label: "#Save_water", icon: "💧" },
-];
 
 export default function Trending() {
   const nav = useNavigate();
@@ -27,6 +25,75 @@ export default function Trending() {
   const observer = useRef<IntersectionObserver | null>(null);
   const lastPostElementRef = useRef<HTMLDivElement>(null);
   const initialLoad = useRef(true);
+  const { showToast } = useToast();
+  const [topics, setTopics] = useState<any[]>([]); // list of topics
+  const [visibleTopic, setVisibleTopic] = useState(10);
+  const [userSelectedTopics, setUserSelectedTopics] = useState<any[]>([]); // list of user selected topics
+  const loggedInUserID = localStorage.getItem("Id");
+
+  const navigate = useNavigate();
+
+  const fetchTopics = async () => {
+    try {
+      const response = await getTopics();
+      if (
+        response?.success?.statusCode === 200 &&
+        response?.data?.data?.length
+      ) {
+        setTopics(response?.data?.data);
+      } else {
+        console.warn("Error during fetch topics details", response);
+      }
+    } catch (error) {
+      console.error("Error fetching topic details:", error);
+      showToast({
+        message: "Failed to load Topics.",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  const fetchUserSelectedTopics = async () => {
+    if (!loggedInUserID) {
+      showToast({
+        message: "No user ID found.",
+        type: "error",
+        duration: 2000,
+      });
+      return;
+    }
+    try {
+      const response = await getUserSelectedTopic(loggedInUserID);
+      if (
+        response?.success?.statusCode === 200 &&
+        response?.data?.data?.length > 0
+      ) {
+        setUserSelectedTopics(response?.data?.data);
+      } else {
+        console.warn(
+          "Error during fetch user selected topics details",
+          response
+        );
+      }
+    } catch (error: any) {
+      console.error("Error fetching user selected topic details:", error);
+      if (error?.response?.status === 404) {
+        // setShowTopicModal(true);
+      } else {
+        showToast({
+          message: "Failed to load User Selected Topics.",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchUserSelectedTopics();
+    fetchTopics();
+  }, []);
 
   const getUserPosts = useCallback(async () => {
     if (isLoading || !hasMore) return;
@@ -63,15 +130,17 @@ export default function Trending() {
         } else {
           setPosts((prevPosts) => {
             // Avoid duplicates by checking if post already exists
-            const existingIds = new Set(prevPosts.map(p => p.id));
-            const filteredNewPosts = newPosts.filter(p => !existingIds.has(p.id));
+            const existingIds = new Set(prevPosts.map((p) => p.id));
+            const filteredNewPosts = newPosts.filter(
+              (p) => !existingIds.has(p.id)
+            );
             return [...prevPosts, ...filteredNewPosts];
           });
 
           if (page >= totalPages) {
             setHasMore(false);
           } else {
-            setPage(prevPage => prevPage + 1);
+            setPage((prevPage) => prevPage + 1);
           }
         }
       }
@@ -118,7 +187,7 @@ export default function Trending() {
     setPage(1);
     setHasMore(true);
     setIsLoading(true);
-    
+
     // Load first page immediately
     const loadFirstPage = async () => {
       try {
@@ -224,14 +293,14 @@ export default function Trending() {
                       );
                     }
                   })}
-                  
+
                   {/* Loading indicator */}
                   {isLoading && (
                     <div className="flex justify-center py-4">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
                     </div>
                   )}
-                  
+
                   {/* No more posts message */}
                   {!hasMore && posts.length > 0 && (
                     <div className="text-center py-4 text-gray-500">
@@ -255,20 +324,38 @@ export default function Trending() {
             </div>
             <div className="border-b border-gray-200 w-full mb-4"></div>
 
-            <ol className="space-y-3 text-sm">
-              {trendingTopics.map((t, idx) => (
-                <li
-                  key={t.label}
-                  onClick={() => nav("trendingai")}
-                  className="flex items-center justify-between font-opensans font-normal text-[14px] leading-[100%] cursor-pointer px-3 py-2 rounded-md hover:bg-[#E6E9FF] transition-all duration-200 ease-in-out transform hover:scale-y-110 w-full"
+            <ul className="space-y-3 text-sm md:text-[15px] text-gray-700 px-4">
+              {topics?.slice(0, visibleTopic)?.map((topic) => (
+                <button
+                  key={topic.id}
+                  onClick={() =>
+                    navigate(`/dashboard/${topic.slug}`, {
+                      state: {
+                        topics,
+                        userSelectedTopics,
+                      },
+                    })
+                  }
+                  className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
                 >
-                  <span className="text-black hover:text-[#7077FE] transition-colors duration-200">
-                    {idx + 1}. {t.label}
-                  </span>
-                  {t.icon && <span className="ml-2">{t.icon}</span>}
-                </li>
+                  <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                  {topic.topic_name}
+                </button>
               ))}
-            </ol>
+              {visibleTopic < topics?.length && (
+                <button
+                  onClick={() => setVisibleTopic((pre) => pre + 10)}
+                  className="text-sm text-blue-500 hover:underline hover:text-blue-600 transition cursor-pointer"
+                >
+                  See more
+                </button>
+              )}
+              {topics?.length === 0 && (
+                <button disabled className="text-gray-400 italic">
+                  No topics available
+                </button>
+              )}
+            </ul>
 
             <div className="my-5 h-px bg-gray-100" />
           </div>

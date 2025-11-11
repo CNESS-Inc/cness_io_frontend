@@ -4,6 +4,7 @@ import FilterSidebar from "../components/MarketPlace/Filter";
 import { Star, Play, Search, Clock, ChevronDown } from "lucide-react";
 import filter from "../assets/filter.svg";
 import { BsCameraVideo } from "react-icons/bs";
+import MarketHeader from "../components/MarketPlace/Buyerheader";
 
 type Product = {
   id: number;
@@ -21,6 +22,19 @@ type Product = {
 
 const CATEGORY_TABS = ["Videos", "Podcasts", "Music", "Ebooks", "Arts", "Courses"] as const;
 type Category = (typeof CATEGORY_TABS)[number];
+
+const demoFilters = {
+  category_slug: "technology",
+  min_price: "100",
+  max_price: "1000",
+  language: "English",
+  duration: "3 months",
+  rating: "4"
+};
+
+const handleFilterChange = (filters: any) => {
+  console.log("Filters changed: ", filters);
+};
 
 const DUMMY_PRODUCTS: Product[] = [
   {
@@ -112,9 +126,14 @@ const Thumb: React.FC<{ src: string; label?: string }> = ({ src, label }) => (
 );
 
 const ProductCard: React.FC<{ p: Product }> = ({ p }) => (
-  <div className="bg-white h-[380px] rounded-[14px] border-[0.5px] border-[#CBD5E1] box-border shadow-sm overflow-hidden">
+
+  <div className="bg-white rounded-[14px] border-[0.5px] border-[#CBD5E1] box-border shadow-sm overflow-hidden">
     <div className="relative">
-      <img src={p.image} alt={p.title} className="w-full h-[180px] object-cover" />
+      <img src={p.image} alt={p.title} className="w-full h-[180px] object-cover rounded-xl
+    sm:h-[150px]
+    md:h-[180px]
+    lg:h-[200px]
+  " />
     </div>
     <div className="p-2">
       {/* Top meta: mood pill + rating */}
@@ -178,8 +197,11 @@ const Library: React.FC = () => {
   }, [query]);
 
   return (
+
     <div className="min-h-screen bg-[#FFFFFF]">
-  <div className="mx-auto px-4 sm:px-6 md:px-0 py-2 grid grid-cols-1 md:grid-cols-[1fr_267px] gap-6">
+      <MarketHeader />
+
+      <div className="mx-auto px-4 sm:px-6 md:px-0 py-2 grid grid-cols-1 md:grid-cols-[1fr_267px] gap-6">
         {/* Main content (left) */}
         <main className="space-y-6">
           {/* Continue watching */}
@@ -193,7 +215,7 @@ const Library: React.FC = () => {
                 "https://cdn.cness.io/collection1.svg",
                 "https://cdn.cness.io/collection2.svg",
                 "https://cdn.cness.io/collection3.svg",
-                
+
               ].map((src, i) => (
                 <Thumb key={i} src={src} />
               ))}
@@ -224,8 +246,8 @@ const Library: React.FC = () => {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search"
-                className="w-[450px] h-9 rounded-[20px] border border-gray-200 bg-white pl-4 pr-10 text-[16px] leading-[150%] tracking-[-0.019em] placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-gray-200"
-                
+                className="w-[90vw] max-w-[450px] md:w-[200px] h-9 rounded-[20px] border border-gray-200 bg-white pl-4 pr-10 text-[16px] leading-[150%] tracking-[-0.019em] placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-gray-200"
+
               />
               <button
                 type="button"
@@ -266,11 +288,10 @@ const Library: React.FC = () => {
                         setSelected(option);
                         setIsOpen(false);
                       }}
-                      className={`block w-full text-left font-poppins font-normal text-[16px] leading-[100%] px-2 py-1 rounded-lg transition-colors ${
-                        selected === option
+                      className={`block w-full text-left font-poppins font-normal text-[16px] leading-[100%] px-2 py-1 rounded-lg transition-colors ${selected === option
                           ? "text-[#7077FE] font-semibold"
                           : "text-gray-700 hover:text-[#7077FE]"
-                      }`}
+                        }`}
                     >
                       {option}
                     </button>
@@ -311,7 +332,7 @@ const Library: React.FC = () => {
         </main>
 
         {/* Sidebar (right) */}
-  <FilterSidebar mobileTopOffset={143} />
+        <FilterSidebar filters={demoFilters} onFilterChange={handleFilterChange} />
       </div>
     </div>
   );
