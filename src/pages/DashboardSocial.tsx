@@ -2272,10 +2272,10 @@ export default function SocialTopBar() {
           )}
 
           <div
-            className={`fixed lg:static top-0 right-0 h-full lg:h-auto w-[280px] sm:w-[320px] lg:w-[25%] max-w-[90vw] lg:max-w-none bg-white lg:bg-transparent shadow-xl lg:shadow-none transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0 p-3' : 'translate-x-full lg:translate-x-0'} z-50 lg:z-auto overflow-y-auto pt-4 lg:pt-0 flex flex-col gap-4`}
+            className={`fixed lg:static top-0 right-0 h-full lg:h-auto w-[280px] sm:w-[320px] lg:w-[25%] max-w-[90vw] lg:max-w-none bg-white lg:bg-transparent shadow-xl lg:shadow-none transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0 p-3' : 'translate-x-full lg:translate-x-0'} z-50 lg:z-auto overflow-y-auto pt-0 flex flex-col gap-4`}
           >
             {/* Close button for mobile */}
-            <div className="lg:hidden flex justify-between items-center px-4 pb-4 border-b border-gray-200 sticky top-0 bg-white z-10">
+            <div className="lg:hidden flex justify-between items-center px-4 pb-4 border-b border-gray-200 sticky top-0 bg-white z-10 pt-4">
               <h3 className="text-lg font-semibold text-gray-800">Menu</h3>
               <button
                 onClick={toggleSidebar}
