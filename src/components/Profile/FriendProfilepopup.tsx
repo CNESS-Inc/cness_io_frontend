@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { UserRoundMinus, UserRoundPlus, X } from "lucide-react";
 import MyPost from "../Profile/Mypost";
 import companycard from "../../assets/companycard1.png";
 import { TrendingUp } from "lucide-react";
@@ -10,8 +10,10 @@ import {
   SendFollowRequest,
   GetFollowStatus,
   UnFriend,
-  SendFriendRequest,
   GetFriendStatus,
+  RejectFriendRequest,
+  AcceptFriendRequest,
+  SendConnectionRequest,
 } from "../../Common/ServerAPI";
 import PostPopup from "./Popup";
 import { useToast } from "../ui/Toast/ToastProvider";
@@ -286,15 +288,15 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
     }
   };
 
-  useEffect(() => {
-    if (userPosts.length > 0) {
-      userPosts.forEach((post) => {
-        if (post.user_id !== loggedInUserId) {
-          checkFriendStatus(post.user_id);
-        }
-      });
-    }
-  }, [userPosts, loggedInUserId]);
+  // useEffect(() => {
+  //   if (userPosts.length > 0) {
+  //     userPosts.forEach((post) => {
+  //       if (post.user_id !== loggedInUserId) {
+  //         checkFriendStatus(post.user_id);
+  //       }
+  //     });
+  //   }
+  // }, [userPosts, loggedInUserId]);
 
   // Add another useEffect to check friend status on component mount
   useEffect(() => {
@@ -307,55 +309,73 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
       });
     }
   }, []);
-  const handleConnect = async (userId: string) => {
+  const handleFriend = async (userId: string) => {
     try {
-      const currentStatus = friendRequests[userId];
-
-      // If already connected or requested, remove the connection/request
-      if (currentStatus === "connected" || currentStatus === "requested") {
+      // Case 1: No existing connection or pending request - Send new connection request
+      if (
+        profileData.friend_request_status !== "ACCEPT" &&
+        profileData.friend_request_status !== "PENDING" &&
+        !profileData.if_friend
+      ) {
         const formattedData = {
           friend_id: userId,
         };
-
-        const response = await UnFriend(formattedData);
-
-        if (response.success) {
-          setFriendRequests((prev) => ({
-            ...prev,
-            [userId]: "connect", // Change back to "connect" after removing
-          }));
-          await fetchFriendData();
-          showToast({
-            message: "Friend request removed successfully",
-            type: "success",
-            duration: 3000,
-          });
-        }
-      } else {
-        // If not connected, send friend request
+        const res = await SendConnectionRequest(formattedData);
+        showToast({
+          message: res?.success?.message,
+          type: "success",
+          duration: 2000,
+        });
+        setProfileData({
+          ...profileData,
+          if_friend: false,
+          friend_request_status: "PENDING",
+        });
+      }
+      // Case 2: Cancel pending request (when status is PENDING)
+      else if (
+        profileData.friend_request_status === "PENDING" &&
+        !profileData.if_friend
+      ) {
         const formattedData = {
           friend_id: userId,
         };
-
-        const response = await SendFriendRequest(formattedData);
-
-        if (response.success) {
-          setFriendRequests((prev) => ({
-            ...prev,
-            [userId]: "requested",
-          }));
-          showToast({
-            message:
-              response.success.message || "Friend request sent successfully",
-            type: "success",
-            duration: 3000,
-          });
-        }
+        const res = await UnFriend(formattedData); // Or use a specific cancel request API if available
+        showToast({
+          message: res?.success?.message,
+          type: "success",
+          duration: 2000,
+        });
+        setProfileData({
+          ...profileData,
+          if_friend: false,
+          friend_request_status: null,
+        });
+      }
+      // Case 3: Remove existing friend connection
+      else if (
+        profileData.friend_request_status === "ACCEPT" &&
+        profileData.if_friend
+      ) {
+        const formattedData = {
+          friend_id: userId,
+        };
+        const res = await UnFriend(formattedData);
+        showToast({
+          message: res?.success?.message,
+          type: "success",
+          duration: 2000,
+        });
+        setProfileData({
+          ...profileData,
+          if_friend: false,
+          friend_request_status: null,
+        });
       }
     } catch (error) {
-      console.error("Error handling connect:", error);
+      console.error("Error handling friend request:", error);
       showToast({
-        message: "Something went wrong. Please try again.",
+        message: "Failed to update connection",
         type: "error",
         duration: 3000,
       });
@@ -378,6 +398,58 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
       await fetchFriendData();
     } catch (error) {
       console.error("Error fetching selection details:", error);
+    }
+  };
+
+  const handleAcceptRequest = async (userId: string) => {
+    try {
+      const formattedData = { friend_id: userId };
+      await AcceptFriendRequest(formattedData);
+      setProfileData({
+        ...profileData,
+        if_friend: true,
+        friend_request_status: "ACCEPT",
+        reciver_request_status: null,
+      });
+
+      showToast({
+        message: "Friend request accepted!",
+        type: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error accepting friend request:", error);
+      showToast({
+        message: "Failed to accept friend request",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleRejectRequest = async (userId: string) => {
+    try {
+      const formattedData = { friend_id: userId };
+      await RejectFriendRequest(formattedData);
+      setProfileData({
+        ...profileData,
+        if_friend: false,
+        friend_request_status: null,
+        reciver_request_status: null,
+      });
+
+      showToast({
+        message: "Friend request rejected",
+        type: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error rejecting friend request:", error);
+      showToast({
+        message: "Failed to reject friend request",
+        type: "error",
+        duration: 3000,
+      });
     }
   };
   return (
@@ -419,15 +491,9 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
               </div>
 
               {/* Profile Info */}
-              <div
-                className="flex items-center justify-between"
-                style={{
-                  width: "1104px",
-                  height: "77.25px",
-                }}
-              >
+              <div className="flex items-center justify-between p-4 mt-4">
                 {/* Left: Profile image + info */}
-                <div className="flex items-center gap-4 mt-8 px-6">
+                <div className="flex items-center gap-4 px-6">
                   <img
                     src={
                       !profileData?.profile_picture ||
@@ -477,44 +543,85 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
                 </div>
 
                 {/* Right: Buttons */}
-                <div className="flex gap-2 mt-8">
-                  <button
-                    onClick={() => handleConnect(profileData?.user_id)}
-                    className={`text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full ${
-                      profileData?.if_friend &&
-                      profileData?.friend_request_status === "ACCEPT"
-                        ? "bg-gray-200 text-gray-800"
-                        : !profileData?.if_friend &&
-                          profileData?.friend_request_status === "PENDING"
-                        ? "bg-gray-200 text-black"
-                        : "bg-[#7C81FF] text-white"
-                    } hover:bg-indigo-600 hover:text-white`}
-                  >
-                    {profileData?.if_friend &&
-                    profileData?.friend_request_status === "ACCEPT"
-                      ? "Connected"
-                      : !profileData?.if_friend &&
-                        profileData?.friend_request_status === "PENDING"
-                      ? "Requested..."
-                      : "+ Connect"}
-                  </button>
+                <div className="flex gap-2 mt-8 ">
+                  <div className="w-full">
+                    {/* Show Accept/Reject buttons when user has received a pending request */}
+                    {profileData?.reciver_request_status === "PENDING" ? (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() =>
+                            handleAcceptRequest(profileData?.user_id)
+                          }
+                          className="h-9 px-4 rounded-full bg-green-500 
+        font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
+        text-white flex items-center justify-center gap-2 hover:bg-green-600 min-w-[100px]"
+                        >
+                          <UserRoundPlus className="w-4 h-4" />
+                          Accept
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleRejectRequest(profileData?.user_id)
+                          }
+                          className="h-9 px-4 rounded-full bg-red-500 
+        font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
+        text-white flex items-center justify-center gap-2 hover:bg-red-600 min-w-[100px]"
+                        >
+                          <UserRoundMinus className="w-4 h-4" />
+                          Reject
+                        </button>
+                      </div>
+                    ) : (
+                      /* Show regular Connect/Requested/Connected button for other cases */
+                      <button
+                        onClick={() => handleFriend(profileData?.user_id)}
+                        disabled={profileData?.user_id === loggedInUserId}
+                        className={`w-full h-9 rounded-full px-3 border border-[#ECEEF2] 
+                          font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
+                          flex items-center justify-center gap-2
+                          ${
+                            profileData?.user_id === loggedInUserId
+                              ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                              : profileData?.if_friend &&
+                                profileData?.friend_request_status === "ACCEPT"
+                              ? "bg-green-100 text-green-700"
+                              : !profileData?.if_friend &&
+                                profileData?.friend_request_status === "PENDING"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : "bg-[#FFFFFF] text-[#0B3449]"
+                          }`}
+                      >
+                        <UserRoundPlus className="w-4 h-4" />
+                        {profileData?.if_friend &&
+                        profileData?.friend_request_status === "ACCEPT"
+                          ? "Connected"
+                          : !profileData?.if_friend &&
+                            profileData?.friend_request_status === "PENDING"
+                          ? "Requested..."
+                          : "Connect"}
+                      </button>
+                    )}
+                  </div>
                   {/* Follow Button */}
                   <button
                     onClick={() => handleFollow(profileData?.user_id)}
                     className={`flex w-[100px] justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
-                                                  ${
-                                                    profileData?.if_following
-                                                      ? "bg-transparent text-[#7077FE] hover:text-[#7077FE]/80"
-                                                      : "bg-[#7077FE] text-white hover:bg-indigo-600 h-[35px]"
-                                                  }`}
+                      ${
+                        profileData?.if_following
+                          ? "bg-transparent text-[#7077FE] hover:text-[#7077FE]/80"
+                          : "bg-[#7077FE] text-white hover:bg-indigo-600 h-[35px]"
+                      }`}
                   >
                     {profileData?.if_following ? (
                       <>
-                        <TrendingUp className="w-5 h-5 text-[#7077FE]" />{" "}
+                        <TrendingUp className="w-5 h-5 text-[#7077FE]" />
                         Resonating
                       </>
                     ) : (
-                      "+ Resonate"
+                      <>
+                        <span>+</span>
+                        <span>Resonate</span>
+                      </>
                     )}
                   </button>
                   {/* <button
