@@ -28,7 +28,7 @@ export default function CertificationsHero() {
         <div className="flex flex-col items-center text-center z-10 pt-16 px-4">
           <h1
             style={{ fontFamily: "Poppins, sans-serif" }}
-            className={`font-medium text-[32px] md:text-[42px] leading-[115%] tracking-[-0.02em] text-center antialiased bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text transition-all duration-1000 ease-in-out ${
+            className={`font-medium text-[32px] md:text-[42px] leading-[100%] tracking-[-0.02em] text-center antialiased bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text transition-all duration-1000 ease-in-out ${
               step >= 4
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 -translate-y-6"
@@ -44,11 +44,10 @@ export default function CertificationsHero() {
                 : "opacity-0 translate-y-6"
             }`}
           >
-            CNESS Certification is more than a credential - it’s a recognition
-            of conscious growth. It validates knowledge, ethical practices, and
-            positive impact in both professional and personal spaces. Our goal
-            is to help individuals and organizations stand out as trusted,
-            purpose-driven contributors in today’s world.
+            CNESS Certification celebrates your conscious 
+journey—your growth, values, and purpose that inspire change. It’s 
+more than a credential; it’s recognition of your commitment to 
+mindful living.
           </p>
 
           <div

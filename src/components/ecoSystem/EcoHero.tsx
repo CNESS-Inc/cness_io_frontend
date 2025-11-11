@@ -39,16 +39,17 @@ export default function EcoHero() {
       <div className="flex flex-col items-center text-center z-10 pt-20 pb-16 px-4">
         <h1
           style={{ fontFamily: "Poppins, sans-serif" }}
-          className="font-medium text-[clamp(28px,5vw,42px)] leading-[115%] tracking-[-0.02em] bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
+          className="font-medium text-[clamp(28px,5vw,42px)] leading-[125%] tracking-[-0.02em] bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
         >
-          Our Ecosystem
+Everything You Need to Grow,
+<br></br>All in One Place.
         </h1>
 
-        <p className="font-['Open_Sans'] font-light text-[16px] leading-[24px] tracking-[0px] text-[#242424] pt-4 pb-7 max-w-4xl mx-auto transition-all duration-1000 ease-in-out">
-          Revolutionizing digital experiences with integrated solutions for
-          individuals,
-          <br /> organizations, and enterprises across all platforms.
-        </p>
+       <p className="font-['Open_Sans'] font-light text-[16px] leading-[26px] text-[#242424] pt-4 pb-7 max-w-[62ch] mx-auto">
+  Whether you want to learn, connect or build a purpose‑driven 
+business, 
+  <br />CNESS brings it together in one simple platform. 
+</p>
 
         <div className="flex justify-center items-center">
           <Button
