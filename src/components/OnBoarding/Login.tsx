@@ -13,6 +13,7 @@ import {
   submitOrganizationDetails,
   submitPersonDetails,
   GoogleLoginDetails,
+  ResendVerificationMail,
 } from "../../Common/ServerAPI";
 import Button from "../../components/ui/Button";
 //import { Link } from "react-router-dom";
@@ -201,6 +202,8 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
   const [resetPasswordErrors] = useState<FormErrors>({});
   const [apiMessage, setApiMessage] = useState<string | null>(null);
   const [isOrgFormSubmitted, setIsOrgFormSubmitted] = useState(false);
+  const [showResendEmail, setShowResendEmail] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState("");
   const { showToast } = useToast();
 
   const validatePassword = (password: string): string | undefined => {
@@ -471,7 +474,10 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
           response?.data?.data?.user.profile_picture
         );
         localStorage.setItem("name", response?.data?.data?.user.name);
-        localStorage.setItem("karma_credits", response?.data?.data?.user?.karma_credits || 0);
+        localStorage.setItem(
+          "karma_credits",
+          response?.data?.data?.user?.karma_credits || 0
+        );
         localStorage.setItem("main_name", response?.data?.data?.user.main_name);
         localStorage.setItem(
           "margaret_name",
@@ -642,10 +648,50 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
         if (serverErrors.password) {
           formattedErrors.password = serverErrors.password.join(", ");
         }
-        setApiMessage(serverErrors.message);
+
+        const errorMessage = serverErrors.message;
+        setApiMessage(errorMessage);
+
+        // Check if the error is about email verification
+        if (
+          errorMessage?.includes("Email Not Verified") ||
+          errorMessage?.includes("verify") ||
+          errorMessage?.includes("verification")
+        ) {
+          setShowResendEmail(true);
+          setUnverifiedEmail(form.email.value.trim());
+        }
       } else {
         setApiMessage(error.message || "An error occurred during login");
       }
+    }
+  };
+
+  const handleClose = () => {
+    setApiMessage(""); // Clear API message
+    onClose(); // Call the original onClose prop
+  };
+
+  const handleResendVerificationEmail = async () => {
+    setIsSubmitting(true);
+    try {
+      // You'll need to create this API function or use an existing one
+      // For example, you might have a ForgotPasswordDetails-like function for resending verification
+      const response = await ResendVerificationMail(unverifiedEmail);
+
+      if (response) {
+        setApiMessage(
+          "Verification email sent successfully! Please check your inbox."
+        );
+        setShowResendEmail(false);
+      }
+    } catch (error: any) {
+      setApiMessage(
+        error?.response?.data?.error?.message ||
+          "Failed to send verification email"
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -865,10 +911,9 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
       };
 
       const res = await submitPersonDetails(payload);
-      
 
       if (res?.success) {
-      localStorage.setItem("completed_step", "1");
+        localStorage.setItem("completed_step", "1");
         // showToast({
         //   message: "Assessment submitted successfully!",
         //   type: "success",
@@ -1161,7 +1206,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
   return (
     <>
       {showLogin && (
-        <PopupOnboardingModal open={open} onClose={onClose}>
+        <PopupOnboardingModal open={open} onClose={handleClose}>
           {/* Sign In Form */}
 
           <div className="mx-auto w-full max-w-[460px] lg:mt-15 md:mt-15 mt-6 z-50">
@@ -1182,12 +1227,27 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
             {apiMessage && (
               <div
                 className={`text-center mb-4 ${
-                  apiMessage.includes("Successfully")
+                  apiMessage.includes("Successfully") ||
+                  apiMessage.includes("Verification email sent")
                     ? "text-green-500"
                     : "text-red-500"
                 }`}
               >
                 {apiMessage}
+                {showResendEmail && (
+                  <div className="mt-2">
+                    <button
+                      type="button"
+                      onClick={handleResendVerificationEmail}
+                      disabled={isSubmitting}
+                      className="text-blue-600 hover:text-blue-800 underline font-medium text-sm focus:outline-none disabled:opacity-50"
+                    >
+                      {isSubmitting
+                        ? "Sending..."
+                        : "Resend Verification Email"}
+                    </button>
+                  </div>
+                )}
               </div>
             )}
             <form className="space-y-4" onSubmit={handleSubmit}>
