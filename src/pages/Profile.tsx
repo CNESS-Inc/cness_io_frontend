@@ -654,7 +654,7 @@ export default function Profile() {
               media:
                 selectedPost.media ??
                 ({ type: "text", src: selectedPost.body || "" } as const),
-              // optional
+            body: selectedPost.body,
             }}
             onClose={() => setSelectedPost(null)}
             onDeletePost={() => {

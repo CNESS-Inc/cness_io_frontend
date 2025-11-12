@@ -3,9 +3,9 @@ import uploadimg from "../assets/upload1.svg";
 import Breadcrumb from "../components/MarketPlace/Breadcrumb";
 import CategoryModel from "../components/MarketPlace/CategoryModel";
 import { useNavigate } from "react-router-dom";
-import { Image, SquarePen, Trash2, Plus, X, FileText } from "lucide-react";
+import { SquarePen, Trash2, Plus, X, Book } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { CreateArtProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument } from "../Common/ServerAPI";
+import { CreateArtProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, UploadProductThumbnail } from "../Common/ServerAPI";
 
 interface FormSectionProps {
   title: string;
@@ -79,6 +79,11 @@ const AddArtsForm: React.FC = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [newHighlight, setNewHighlight] = useState("");
+  const [thumbnailData, setThumbnailData] = useState<{
+    thumbnail_url: string;
+    public_id: string;
+  } | null>(null);
+  const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
 
   const [chapters, setChapters] = useState<any[]>([
     {
@@ -96,6 +101,7 @@ const AddArtsForm: React.FC = () => {
     price: 0,
     discount_percentage: 0,
     mood_id: "",
+    thumbnail_url: "",
     overview: "",
     highlights: [] as string[],
     language: "",
@@ -158,34 +164,190 @@ const AddArtsForm: React.FC = () => {
     }
   };
 
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      showToast({
+        message: "Please upload an image file",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      showToast({
+        message: "Image size should be less than 5MB",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    setIsThumbnailUploading(true);
+
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append("thumbnail", file);
+
+      const response = await UploadProductThumbnail(uploadFormData);
+      const thumbnailUrl = response?.data?.data?.thumbnail_url;
+      const publicId = response?.data?.data?.public_id;
+
+      setThumbnailData({
+        thumbnail_url: thumbnailUrl,
+        public_id: publicId,
+      });
+
+      setFormData(prev => ({
+        ...prev,
+        thumbnail_url: thumbnailUrl,
+      }));
+
+      showToast({
+        message: "Thumbnail uploaded successfully",
+        type: "success",
+        duration: 2000,
+      });
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to upload thumbnail",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsThumbnailUploading(false);
+      // Reset input
+      e.target.value = "";
+    }
+  };
+
+  const handleRemoveThumbnail = () => {
+    setThumbnailData(null);
+    setFormData(prev => ({
+      ...prev,
+      image_url: "",
+    }));
+  };
+
   const handleDeleteChapter = (chapterId: number) => {
     setChapters(prev => prev.filter(ch => ch.id !== chapterId));
   };
 
-  const handleAddFile = (
+  const handleChapterFileUpload = async (chapterId: number, file: File) => {
+    if (!file) return;
+
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/svg+xml', 'image/webp', 'application/pdf', 'application/zip'];
+
+    if (!validTypes.includes(file.type)) {
+      showToast({
+        message: "Please upload a valid file (JPG, PNG, SVG, WEBP, PDF, ZIP)",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    if (file.size > 100 * 1024 * 1024) {
+      showToast({
+        message: "File size should be less than 100MB",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    const tempFile: any = {
+      url: "",
+      title: file.name,
+      order_number: 0,
+      file: file,
+      isUploading: true,
+    };
+
+    setChapters((prevChapters) =>
+      prevChapters.map((chapter) =>
+        chapter.id === chapterId
+          ? {
+            ...chapter,
+            chapter_files: [...chapter.chapter_files, tempFile],
+          }
+          : chapter
+      )
+    );
+
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append('chapter_file', file);
+
+      const response = await UploadProductDocument('art-chapter', uploadFormData);
+      const uploadedFileUrl = response?.data?.data?.chapter_file_url;
+
+      setChapters((prevChapters) =>
+        prevChapters.map((chapter) => {
+          if (chapter.id === chapterId) {
+            const updatedFiles = chapter.chapter_files.map((f: any) =>
+              f.file === file
+                ? {
+                  url: uploadedFileUrl,
+                  title: file.name,
+                  order_number: chapter.chapter_files.length,
+                  isUploading: false,
+                }
+                : f
+            );
+            return { ...chapter, chapter_files: updatedFiles };
+          }
+          return chapter;
+        })
+      );
+
+      showToast({
+        message: "File uploaded successfully",
+        type: "success",
+        duration: 2000,
+      });
+
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[`chapter_${chapterId}`];
+        return newErrors;
+      });
+    } catch (error: any) {
+      setChapters((prevChapters) =>
+        prevChapters.map((chapter) =>
+          chapter.id === chapterId
+            ? {
+              ...chapter,
+              chapter_files: chapter.chapter_files.filter((f: any) => f.file !== file),
+            }
+            : chapter
+        )
+      );
+
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to upload file",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleAddFile = async (
     e: React.ChangeEvent<HTMLInputElement>,
     chapterId: number
   ) => {
     const files = Array.from(e.target.files || []);
 
-    setChapters((prev) =>
-      prev.map((chapter) =>
-        chapter.id === chapterId
-          ? {
-            ...chapter,
-            chapter_files: [
-              ...chapter.chapter_files,
-              ...files.map((file, i) => ({
-                url: "",
-                title: file.name,
-                order_number: chapter.chapter_files.length + i + 1,
-                file: file,
-              })),
-            ],
-          }
-          : chapter
-      )
-    );
+    for (const file of files) {
+      await handleChapterFileUpload(chapterId, file);
+    }
+
+    e.target.value = "";
   };
 
   const handleAddChapter = () => {
@@ -290,6 +452,7 @@ const AddArtsForm: React.FC = () => {
     }
 
     if (!formData.mood_id.trim()) newErrors.mood_id = "Mood Selection is required.";
+    if (!formData.thumbnail_url.trim()) newErrors.thumbnail_url = "Thumbnail is required.";
     if (!formData.overview.trim()) newErrors.overview = "Overview is required.";
 
     if (formData.highlights.length === 0) {
@@ -320,17 +483,52 @@ const AddArtsForm: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const validateField = (name: string, value: any) => {
+    let message = "";
+    const valStr = typeof value === "string" ? value.trim() : String(value);
+
+    switch (name) {
+      case "product_title":
+        if (!valStr) message = "Podcast title is required";
+        break;
+      case "price":
+        if (!valStr || parseFloat(valStr) <= 0) message = "Price must be greater than 0";
+        break;
+      case "mood_id":
+        if (!valStr) message = "Please select a mood";
+        break;
+      case "thumbnail_url":
+        if (!valStr) message = "Thumbnail is required";
+        break;
+      case "overview":
+        if (!valStr) message = "Overview is required";
+        break;
+      case "duration":
+        if (valStr && !/^\d{2}:\d{2}:\d{2}$/.test(valStr))
+          message = "Invalid duration format. Use HH:MM:SS";
+        break;
+      default:
+        break;
+    }
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: message,
+    }));
+  };
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const target = e.target;
     const { name, value } = target;
 
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
 
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
+    validateField(name, value);
   };
 
   const handleSubmit = async (isDraft: boolean = false) => {
@@ -343,56 +541,45 @@ const AddArtsForm: React.FC = () => {
       return;
     }
 
+    if (isThumbnailUploading) {
+      showToast({
+        message: "Please wait for thumbnail to finish uploading",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    const hasUploadingFiles = chapters.some((chapter) =>
+      chapter.chapter_files.some((file: any) => file.isUploading)
+    );
+
+    if (hasUploadingFiles) {
+      showToast({
+        message: "Please wait for all files to finish uploading",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
-      const uploadedChapters = await Promise.all(
-        chapters.map(async (chapter) => {
-          const uploadedFiles = await Promise.all(
-            chapter.chapter_files.map(async (chapterFile: any) => {
-              if (chapterFile.file) {
-                const formDataUpload = new FormData();
-                formDataUpload.append('chapter_file', chapterFile.file);
-
-                try {
-                  const response = await UploadProductDocument('art-chapter', formDataUpload);
-                  const uploadData = response?.data?.data;
-
-                  return {
-                    url: uploadData?.chapter_file_url,
-                    title: chapterFile.title,
-                    order_number: chapterFile.order_number,
-                  };
-                } catch (error) {
-                  throw new Error(`Failed to upload ${chapterFile.title}`);
-                }
-              }
-              return chapterFile;
-            })
-          );
-
-          return {
-            title: chapter.title,
-            chapter_files: uploadedFiles,
-            description: chapter.description || "",
-            order_number: chapter.order_number,
-            is_free: chapter.is_free,
-          };
-        })
-      );
-
       const payload = {
-        product_title: formData.product_title,
-        price: formData.price,
-        discount_percentage: formData.discount_percentage,
-        mood_id: formData.mood_id,
-        overview: formData.overview,
-        highlights: formData.highlights.join(', '),
-        language: formData.language,
-        theme: formData.theme,
-        mediums: formData.mediums,
-        modern_trends: formData.modern_trends,
+        ...formData,
+        thumbnail_url: formData.thumbnail_url,
         status: isDraft ? 'draft' : 'published',
-        chapters: uploadedChapters,
+        chapters: chapters.map((chapter) => ({
+          title: chapter.title,
+          chapter_files: chapter.chapter_files.map((file: any) => ({
+            url: file.url,
+            title: file.title,
+            order_number: file.order_number,
+          })),
+          description: chapter.description || "",
+          order_number: chapter.order_number,
+          is_free: chapter.is_free,
+        })),
       };
 
       const response = await CreateArtProduct(payload);
@@ -409,13 +596,9 @@ const AddArtsForm: React.FC = () => {
       setErrors({});
 
       if (isDraft && productId) {
-        setTimeout(() => {
-          navigate(`/dashboard/products/art-preview/${productId}?category=art`);
-        }, 1500);
+        navigate(`/dashboard/products/art-preview/${productId}?category=art`);
       } else {
-        setTimeout(() => {
-          navigate('/dashboard/products');
-        }, 1500);
+        navigate('/dashboard/products');
       }
     } catch (error: any) {
       showToast({
@@ -530,6 +713,92 @@ const AddArtsForm: React.FC = () => {
                 ))}
               </select>
               {errors.mood_id && <span className="text-red-500 text-sm mt-1">{errors.mood_id}</span>}
+            </div>
+            <div>
+              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+                Thumnail *
+              </label>
+              {thumbnailData?.thumbnail_url ? (
+                <div className="relative rounded-lg overflow-hidden border-2 border-gray-200">
+                  <img
+                    src={thumbnailData.thumbnail_url}
+                    alt="Thumbnail"
+                    className="w-full h-40 object-cover"
+                  />
+                  {/* Edit/Replace Button */}
+                  <label
+                    htmlFor="thumbnail-replace"
+                    className="absolute top-2 right-12 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition cursor-pointer"
+                    title="Replace Thumbnail"
+                  >
+                    <SquarePen className="w-4 h-4" />
+                    <input
+                      id="thumbnail-replace"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleThumbnailUpload}
+                      disabled={isThumbnailUploading}
+                    />
+                  </label>
+                  {/* Remove Button */}
+                  <button
+                    type="button"
+                    onClick={handleRemoveThumbnail}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition"
+                    title="Remove Thumbnail"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <label
+                  className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${isThumbnailUploading ? "pointer-events-none opacity-70" : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
+                    }`}
+                >
+                  <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
+                    <rect
+                      x="1"
+                      y="1"
+                      width="calc(100% - 2px)"
+                      height="calc(100% - 2px)"
+                      rx="12"
+                      ry="12"
+                      stroke="#CBD5E1"
+                      strokeWidth="2"
+                      strokeDasharray="6,6"
+                      fill="none"
+                      className="transition-all duration-300 group-hover:stroke-[#7077FE]"
+                    />
+                  </svg>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleThumbnailUpload}
+                    disabled={isThumbnailUploading}
+                  />
+                  {isThumbnailUploading ? (
+                    <div className="flex flex-col items-center space-y-2">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7077FE]"></div>
+                      <p className="text-sm text-[#7077FE]">Uploading thumbnail...</p>
+                    </div>
+                  ) : (
+                    <div className="text-center space-y-2">
+                      <div className="w-10 h-10 mx-auto rounded-full bg-[#7077FE]/10 flex items-center justify-center text-[#7077FE]">
+                        <img src={uploadimg} alt="Upload" className="w-6 h-6" />
+                      </div>
+                      <p className="text-sm font-[poppins] text-[#242E3A]">
+                        Drag & drop or click to upload
+                      </p>
+                      <p className="text-xs text-[#665B5B]">
+                        Recommended 266 X 149 px
+                      </p>
+                    </div>
+                  )}
+                </label>
+              )}
+              {errors.thumbnail_url && <span className="text-red-500 text-sm mt-1">{errors.thumbnail_url}</span>}
             </div>
           </div>
         </FormSection>
@@ -658,9 +927,17 @@ const AddArtsForm: React.FC = () => {
               >
                 <div className="flex items-center justify-between mb-2">
                   <div>
-                    <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
-                      {chapter.title}
-                    </h3>
+                    <input
+                      type="text"
+                      value={chapter.title}
+                      onChange={(e) => {
+                        const newTitle = e.target.value;
+                        setChapters(prev => prev.map(t =>
+                          t.id === chapter.id ? { ...t, title: newTitle } : t
+                        ));
+                      }}
+                      className="text-[16px] font-semibold text-[#242E3A] border-b border-transparent hover:border-gray-300 focus:border-[#7077FE] focus:outline-none mb-2"
+                    />
                     <p className="text-sm text-[#665B5B] mb-4">
                       Upload artwork files (images, PDFs, etc.)
                     </p>
@@ -705,79 +982,75 @@ const AddArtsForm: React.FC = () => {
 
                   <div className="space-y-3">
                     {chapter.chapter_files.length === 0 ? (
-                      <div className="text-sm text-gray-500 border border-gray-100 rounded-lg p-4 bg-gray-50">
+                      <div className="text-sm text-gray-500 border border-gray-100 rounded-lg p-4 bg-gray-50 h-40 flex items-center justify-center">
                         No files uploaded yet
                       </div>
                     ) : (
-                      chapter.chapter_files.map((file: any) => (
-                        <div
-                          key={file.order_number}
-                          className="border border-gray-200 rounded-lg p-3 bg-white"
-                        >
+                      chapter.chapter_files.map((file: any, fileIndex: number) => (
+                        <div key={fileIndex} className="border border-gray-200 rounded-lg p-3 bg-white">
                           <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center space-x-2">
-                              {file.title.match(/\.(jpg|jpeg|png|gif|svg|webp)$/i) ? (
-                                <Image className="w-5 h-5 text-[#242E3A]" />
-                              ) : (
-                                <FileText className="w-5 h-5 text-[#242E3A]" />
-                              )}
-                              {file.isEditing ? (
-                                <input
-                                  type="text"
-                                  value={file.title}
-                                  onChange={(e) =>
-                                    handleEditFileName(
-                                      chapter.id,
-                                      file.order_number,
-                                      e.target.value
-                                    )
-                                  }
-                                  className="border border-gray-300 rounded-md px-2 py-[2px] text-sm"
-                                />
-                              ) : (
-                                <p className="text-sm font-medium text-[#242E3A]">
-                                  {file.title}
-                                </p>
-                              )}
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              {file.isEditing ? (
-                                <button
-                                  onClick={() => saveFileName(chapter.id, file.order_number)}
-                                  className="text-[#7077FE] text-sm font-semibold"
-                                >
-                                  Save
-                                </button>
+                            <div className="flex items-center space-x-2 flex-1">
+                              {file.isUploading ? (
+                                <>
+                                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#7077FE]"></div>
+                                  <span className="text-sm text-gray-600">Uploading...</span>
+                                </>
                               ) : (
                                 <>
-                                  <button
-                                    onClick={() =>
-                                      toggleEditFile(chapter.id, file.order_number)
-                                    }
-                                    className="text-gray-500 hover:text-[#7077FE]"
-                                  >
-                                    <SquarePen className="w-4 h-4" />
-                                  </button>
-                                  <button
-                                    onClick={() => deleteFile(chapter.id, file.order_number)}
-                                    className="text-gray-500 hover:text-red-500"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
+                                  <Book className="w-5 h-5 text-[#7077FE]" />
+                                  {file.isEditing ? (
+                                    <input
+                                      type="text"
+                                      value={file.title}
+                                      onChange={(e) => handleEditFileName(chapter.id, file.order_number, e.target.value)}
+                                      className="flex-1 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
+                                      autoFocus
+                                    />
+                                  ) : (
+                                    <p className="text-sm font-medium text-[#242E3A] flex-1 truncate">
+                                      {file.title}
+                                    </p>
+                                  )}
                                 </>
                               )}
                             </div>
+                            {!file.isUploading && (
+                              <div className="flex items-center space-x-2">
+                                {file.isEditing ? (
+                                  <button type="button" onClick={() => saveFileName(chapter.id, file.order_number)}
+                                    className="text-[#7077FE] text-sm font-semibold hover:text-[#5E65F6]">
+                                    Save
+                                  </button>
+                                ) : (
+                                  <>
+                                    <button type="button" onClick={() => toggleEditFile(chapter.id, file.order_number)}
+                                      className="text-gray-500 hover:text-[#7077FE] transition-colors" title="Edit filename">
+                                      <SquarePen className="w-4 h-4" />
+                                    </button>
+                                    <button type="button" onClick={() => deleteFile(chapter.id, file.order_number)}
+                                      className="text-gray-500 hover:text-red-500 transition-colors" title="Delete file">
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                            )}
                           </div>
-                          <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                            <span>{file.file ? formatFileSize(file.file.size) : "Uploaded"}</span>
-                            <span className="text-green-600">✓ Ready</span>
-                          </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-green-500 h-2 rounded-full"
-                              style={{ width: '100%' }}
-                            ></div>
-                          </div>
+                          {!file.isUploading && (
+                            <>
+                              <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                                <span>{file.file ? formatFileSize(file.file.size) : "Uploaded"}</span>
+                                <span className="text-green-600 flex items-center gap-1">
+                                  <span className="w-1.5 h-1.5 bg-green-600 rounded-full"></span>
+                                  Ready
+                                </span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-1.5">
+                                <div className="bg-green-500 h-1.5 rounded-full transition-all duration-300" style={{ width: "100%" }}></div>
+                              </div>
+                              <p className="text-xs text-gray-500 mt-1">Order: {file.order_number}</p>
+                            </>
+                          )}
                         </div>
                       ))
                     )}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
-import { GetMarketPlaceBuyerCategories } from "../../Common/ServerAPI";
+import { GetMarketPlaceBuyerCategories, GetMarketPlaceBuyerFilters } from "../../Common/ServerAPI";
 import { useLocation } from "react-router-dom";
 
 interface FilterProps {
@@ -9,20 +9,27 @@ interface FilterProps {
     min_price?: string;
     max_price?: string;
     language?: string;
-    duration?: string;
-    rating?: string;
+    min_duration?: number;
+    max_duration?: number;
+    min_rating?: number;
+    max_rating?: number;
+    sort_by?: string;
   };
   onFilterChange: (filters: any) => void;
 }
-
-const languages = ["English", "Spanish", "French"];
-const durations = ["< 30 min", "30 - 120 min", "> 2 hrs"];
-const ratings = ["4+ Stars", "3+ Stars", "2+ Stars"];
 
 const FilterSidebar: React.FC<FilterProps> = ({ filters, onFilterChange }) => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
+  const [filterOptions, setFilterOptions] = useState<any>({
+    languages: [],
+    duration_ranges: [],
+    rating_ranges: [],
+    price_ranges: [],
+    price_min: 0,
+    price_max: 1000,
+  });
   const [localFilters, setLocalFilters] = useState(filters);
 
   const isCategoriesPage = location.pathname === '/dashboard/categories';
@@ -38,6 +45,26 @@ const FilterSidebar: React.FC<FilterProps> = ({ filters, onFilterChange }) => {
     };
 
     fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    const fetchFilters = async () => {
+      try {
+        const response = await GetMarketPlaceBuyerFilters();
+        setFilterOptions(response?.data?.data || {
+          languages: [],
+          duration_ranges: [],
+          rating_ranges: [],
+          price_ranges: [],
+          price_min: 0,
+          price_max: 1000,
+        });
+      } catch (error) {
+        console.error("Failed to load filters");
+      }
+    };
+
+    fetchFilters();
   }, []);
 
   useEffect(() => {
@@ -74,20 +101,40 @@ const FilterSidebar: React.FC<FilterProps> = ({ filters, onFilterChange }) => {
     onFilterChange(newFilters);
   };
 
-  const handleDurationToggle = (duration: string) => {
-    const newFilters = {
-      ...localFilters,
-      duration: localFilters.duration === duration ? "" : duration,
-    };
-    setLocalFilters(newFilters); duration
+  const handleDurationToggle = (durationRange: any) => {
+    const isDurationSelected =
+      localFilters.min_duration === durationRange.min &&
+      localFilters.max_duration === durationRange.max;
+
+    const newFilters = isDurationSelected
+      ? { ...localFilters, min_duration: undefined, max_duration: undefined }
+      : { ...localFilters, min_duration: durationRange.min, max_duration: durationRange.max };
+
+    setLocalFilters(newFilters);
+    onFilterChange(newFilters);
   };
 
-  const handleRatingToggle = (rating: string) => {
-    const newFilters = {
-      ...localFilters,
-      rating: localFilters.rating === rating ? "" : rating,
-    };
+  const handleRatingToggle = (ratingRange: any) => {
+    const isRatingSelected =
+      localFilters.min_rating === ratingRange.min &&
+      localFilters.max_rating === ratingRange.max;
+
+    const newFilters = isRatingSelected
+      ? { ...localFilters, min_rating: undefined, max_rating: undefined }
+      : { ...localFilters, min_rating: ratingRange.min, max_rating: ratingRange.max };
+
     setLocalFilters(newFilters);
+    onFilterChange(newFilters);
+  };
+
+  const isDurationSelected = (durationRange: any) => {
+    return localFilters.min_duration === durationRange.min &&
+      localFilters.max_duration === durationRange.max;
+  };
+
+  const isRatingSelected = (ratingRange: any) => {
+    return localFilters.min_rating === ratingRange.min &&
+      localFilters.max_rating === ratingRange.max;
   };
 
   return (
@@ -167,80 +214,115 @@ const FilterSidebar: React.FC<FilterProps> = ({ filters, onFilterChange }) => {
           <div className="flex items-center space-x-2">
             <input
               type="number"
-              placeholder="$0"
+              placeholder={`$${filterOptions.price_min || 0}`}
               value={localFilters.min_price || ""}
               onChange={(e) => handlePriceChange('min_price', e.target.value)}
               onBlur={handlePriceBlur}
+              min={filterOptions.price_min}
+              max={filterOptions.price_max}
               className="w-[90px] px-3 py-2 border rounded-lg text-sm font-semibold font-[poppins] focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
             />
             <span className="text-gray-500">-</span>
             <input
               type="number"
-              placeholder="$50"
+              placeholder={`$${filterOptions.price_max || 1000}`}
               value={localFilters.max_price || ""}
               onChange={(e) => handlePriceChange('max_price', e.target.value)}
               onBlur={handlePriceBlur}
+              min={filterOptions.price_min}
+              max={filterOptions.price_max}
               className="w-[90px] px-3 py-2 border rounded-lg text-sm font-semibold font-[poppins] focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
             />
           </div>
+
+          {filterOptions.price_ranges && filterOptions.price_ranges.length > 0 && (
+            <div className="mt-3 space-y-1">
+              <p className="text-xs text-gray-500">Quick select:</p>
+              <div className="flex flex-wrap gap-2">
+                {filterOptions.price_ranges.map((range: any, index: number) => (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      const newFilters = {
+                        ...localFilters,
+                        min_price: range.min.toString(),
+                        max_price: range.max.toString(),
+                      };
+                      setLocalFilters(newFilters);
+                      onFilterChange(newFilters);
+                    }}
+                    className="px-2 py-1 text-xs bg-gray-100 hover:bg-[#7077FE] hover:text-white rounded transition-colors"
+                  >
+                    {range.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 🌍 Language */}
-        <div className="space-y-2 mb-8">
-          <h3 className="text-[16px] font-semibold">Language</h3>
-          {languages.map((language) => (
-            <label
-              key={language}
-              className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
-            >
-              <input
-                type="checkbox"
-                checked={localFilters.language === language}
-                onChange={() => handleLanguageToggle(language)}
-                className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
-              />
-              <span>{language}</span>
-            </label>
-          ))}
-        </div>
+        {filterOptions.languages && filterOptions.languages.length > 0 && (
+          <div className="space-y-2 mb-8">
+            <h3 className="text-[16px] font-semibold">Language</h3>
+            {filterOptions.languages.map((language: any) => (
+              <label
+                key={language.value}
+                className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  checked={localFilters.language === language.value}
+                  onChange={() => handleLanguageToggle(language.value)}
+                  className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
+                />
+                <span>{language.label}</span>
+              </label>
+            ))}
+          </div>
+        )}
 
         {/* ⏱️ Duration */}
-        <div className="space-y-2 mb-8">
-          <h3 className="text-[16px] font-semibold">Duration</h3>
-          {durations.map((duration) => (
-            <label
-              key={duration}
-              className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
-            >
-              <input
-                type="checkbox"
-                checked={localFilters.duration === duration}
-                onChange={() => handleDurationToggle(duration)}
-                className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
-              />
-              <span>{duration}</span>
-            </label>
-          ))}
-        </div>
+        {filterOptions.duration_ranges && filterOptions.duration_ranges.length > 0 && (
+          <div className="space-y-2 mb-8">
+            <h3 className="text-[16px] font-semibold">Duration</h3>
+            {filterOptions.duration_ranges.map((duration: any, index: number) => (
+              <label
+                key={index}
+                className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  checked={isDurationSelected(duration)}
+                  onChange={() => handleDurationToggle(duration)}
+                  className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
+                />
+                <span>{duration.label}</span>
+              </label>
+            ))}
+          </div>
+        )}
 
         {/* ⭐ Ratings */}
-        <div className="space-y-2 mb-8">
-          <h3 className="text-[16px] font-semibold">Ratings</h3>
-          {ratings.map((rating) => (
-            <label
-              key={rating}
-              className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
-            >
-              <input
-                type="checkbox"
-                checked={localFilters.rating === rating}
-                onChange={() => handleRatingToggle(rating)}
-                className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
-              />
-              <span>{rating}</span>
-            </label>
-          ))}
-        </div>
+        {filterOptions.rating_ranges && filterOptions.rating_ranges.length > 0 && (
+          <div className="space-y-2 mb-8">
+            <h3 className="text-[16px] font-semibold">Ratings</h3>
+            {filterOptions.rating_ranges.map((rating: any, index: number) => (
+              <label
+                key={index}
+                className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  checked={isRatingSelected(rating)}
+                  onChange={() => handleRatingToggle(rating)}
+                  className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
+                />
+                <span>{rating.label}</span>
+              </label>
+            ))}
+          </div>
+        )}
 
         {/* 🧑‍🎨 Creator Search */}
         <div className="mt-8 relative">

@@ -116,9 +116,18 @@ const ArtPreview = () => {
         <div className="flex flex-col md:flex-row">
           {/* Art Icon Display */}
           <div className="relative p-2 w-full">
-            <div className="rounded-xl w-full h-54 bg-gradient-to-br from-[#EC4899] to-[#F43F5E] flex items-center justify-center">
-              <Palette className="w-32 h-32 text-white opacity-80" />
-            </div>
+            <img
+              src={data.thumbnail_url}
+              alt={data.product_title}
+              className="rounded-xl w-full h-54 object-cover"
+              onError={() => {
+                return (
+                  <div className="rounded-xl w-full h-54 bg-gradient-to-br from-[#EC4899] to-[#F43F5E] flex items-center justify-center">
+                    <Palette className="w-32 h-32 text-white opacity-80" />
+                  </div>
+                )
+              }}
+            />
           </div>
 
           <div className="p-6 flex flex-col justify-between w-full">

@@ -5,7 +5,7 @@ import CategoryModel from "../components/MarketPlace/CategoryModel";
 import { useNavigate } from "react-router-dom";
 import { Music, Plus, SquarePen, Trash2, X } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { CreateMusicProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument } from "../Common/ServerAPI";
+import { CreateMusicProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, UploadProductThumbnail } from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 interface FormSectionProps {
@@ -79,6 +79,11 @@ const AddMusicForm: React.FC = () => {
   const [moods, setMoods] = useState<string[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [thumbnailData, setThumbnailData] = useState<{
+    thumbnail_url: string;
+    public_id: string;
+  } | null>(null);
+  const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
   const [newHighlight, setNewHighlight] = useState("");
   const [tracks, setTracks] = useState<any[]>([
     {
@@ -91,6 +96,21 @@ const AddMusicForm: React.FC = () => {
       is_free: false
     },
   ]);
+
+  const [formData, setFormData] = useState({
+    product_title: "",
+    price: 0,
+    discount_percentage: 0,
+    mood_id: "",
+    overview: "",
+    highlights: [] as string[],
+    total_duration: "",
+    language: "",
+    theme: "",
+    format: "",
+    status: "",
+    thumbnail_url: "",
+  });
 
   useEffect(() => {
     const fetchMoods = async () => {
@@ -147,31 +167,74 @@ const AddMusicForm: React.FC = () => {
     }
   };
 
-  // Add files
-  const handleAddFile = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    trackId: number
-  ) => {
-    const files = Array.from(e.target.files || []);
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    setTracks((prev) =>
-      prev.map((track) =>
-        track.id === trackId
-          ? {
-            ...track,
-            track_files: [
-              ...track.track_files,
-              ...files.map((file, i) => ({
-                url: "", // Will be filled after upload
-                title: file.name,
-                order_number: track.track_files.length + i + 1,
-                file: file, // Store the actual file
-              })),
-            ],
-          }
-          : track
-      )
-    );
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      showToast({
+        message: "Please upload an image file",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      showToast({
+        message: "Image size should be less than 5MB",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    setIsThumbnailUploading(true);
+
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append("thumbnail", file);
+
+      const response = await UploadProductThumbnail(uploadFormData);
+      const thumbnailUrl = response?.data?.data?.thumbnail_url;
+      const publicId = response?.data?.data?.public_id;
+
+      setThumbnailData({
+        thumbnail_url: thumbnailUrl,
+        public_id: publicId,
+      });
+
+      setFormData(prev => ({
+        ...prev,
+        thumbnail_url: thumbnailUrl,
+      }));
+
+      showToast({
+        message: "Thumbnail uploaded successfully",
+        type: "success",
+        duration: 2000,
+      });
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to upload thumbnail",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsThumbnailUploading(false);
+      // Reset input
+      e.target.value = "";
+    }
+  };
+
+  const handleRemoveThumbnail = () => {
+    setThumbnailData(null);
+    setFormData(prev => ({
+      ...prev,
+      image_url: "",
+    }));
   };
 
   // Add new track
@@ -263,20 +326,6 @@ const AddMusicForm: React.FC = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  const [formData, setFormData] = useState({
-    product_title: "",
-    price: 0,
-    discount_percentage: 0,
-    mood_id: "",
-    overview: "",
-    highlights: [] as string[],
-    total_duration: "",
-    language: "",
-    theme: "",
-    format: "",
-    status: "",
-  });
-
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
 
@@ -293,6 +342,8 @@ const AddMusicForm: React.FC = () => {
     }
 
     if (!formData.mood_id.trim()) newErrors.mood_id = "Mood Selection is required.";
+
+    if (!formData.thumbnail_url.trim()) newErrors.thumbnail_url = "Thumbnail url is required.";
 
     if (!formData.overview.trim()) newErrors.overview = "Overview is required.";
 
@@ -377,6 +428,10 @@ const AddMusicForm: React.FC = () => {
         if (!valStr) message = "Mood Selection is required";
         break;
 
+      case "thumbnail_url":
+        if (!valStr) message = "Thumbnail is required";
+        break;
+
       case "overview":
         if (!valStr) message = "Overview is required";
         break;
@@ -405,6 +460,120 @@ const AddMusicForm: React.FC = () => {
     setErrors((prev) => ({ ...prev, [name]: message }));
   };
 
+  const handleTrackFileUpload = async (trackId: number, file: File) => {
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("audio/")) {
+      showToast({
+        message: "Please upload an audio file",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Validate file size (50MB max)
+    if (file.size > 50 * 1024 * 1024) {
+      showToast({
+        message: "File size should be less than 50MB",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    const tempFile: any = {
+      url: "",
+      title: file.name,
+      order_number: 0,
+      file: file,
+      isUploading: true,
+    };
+
+    setTracks((prevTracks) =>
+      prevTracks.map((track) =>
+        track.id === trackId
+          ? {
+            ...track,
+            track_files: [...track.track_files, tempFile],
+          }
+          : track
+      )
+    );
+
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append("track", file);
+
+      const response = await UploadProductDocument("music-track", uploadFormData);
+      const uploadedFileUrl = response?.data?.data?.track_url;
+
+      setTracks((prevTracks) =>
+        prevTracks.map((track) => {
+          if (track.id === trackId) {
+            const updatedFiles = track.track_files.map((f: any) =>
+              f.file === file
+                ? {
+                  url: uploadedFileUrl,
+                  title: file.name,
+                  order_number: track.track_files.length,
+                  isUploading: false,
+                }
+                : f
+            );
+            return { ...track, track_files: updatedFiles };
+          }
+          return track;
+        })
+      );
+
+      showToast({
+        message: "Audio file uploaded successfully",
+        type: "success",
+        duration: 2000,
+      });
+
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[`track_${trackId}`];
+        return newErrors;
+      });
+    } catch (error: any) {
+      setTracks((prevTracks) =>
+        prevTracks.map((track) =>
+          track.id === trackId
+            ? {
+              ...track,
+              track_files: track.track_files.filter((f: any) => f.file !== file),
+            }
+            : track
+        )
+      );
+
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to upload audio file",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleAddFile = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    trackId: number
+  ) => {
+    const files = Array.from(e.target.files || []);
+
+    // Upload each file
+    for (const file of files) {
+      await handleTrackFileUpload(trackId, file);
+    }
+
+    // Reset input
+    e.target.value = "";
+  };
+
   const handleDeleteTrack = (trackId: any) => {
     setTracks(prev => prev.filter(ch => ch.id !== trackId));
   };
@@ -419,47 +588,43 @@ const AddMusicForm: React.FC = () => {
       return;
     }
 
+    if (isThumbnailUploading) {
+      showToast({
+        message: "Please wait for thumbnail to finish uploading",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    const hasUploadingFiles = tracks.some((track) =>
+      track.track_files.some((file: any) => file.isUploading)
+    );
+
+    if (hasUploadingFiles) {
+      showToast({
+        message: "Please wait for all audio files to finish uploading",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
-      // Step 1: Upload all track files and get URLs
-      const uploadedTracks = await Promise.all(
-        tracks.map(async (track) => {
-          // Upload all files for this track
-          const uploadedFiles = await Promise.all(
-            track.track_files.map(async (trackFile: any) => {
-              if (trackFile.file) {
-                const formData = new FormData();
-                formData.append('track', trackFile.file);
+      const tracksData = tracks.map((track) => ({
+        title: track.title,
+        track_files: track.track_files.map((trackFile: any) => ({
+          url: trackFile.url,
+          title: trackFile.title,
+          order_number: trackFile.order_number,
+        })),
+        description: track.description || "",
+        duration: track.duration || "00:00",
+        order_number: track.order_number,
+        is_free: track.is_free,
+      }));
 
-                try {
-                  const response = await UploadProductDocument('music-track', formData);
-                  const uploadData = response?.data?.data;
-
-                  return {
-                    url: uploadData?.track_url || "",
-                    title: trackFile.title,
-                    order_number: trackFile.order_number,
-                  };
-                } catch (error) {
-                  throw new Error(`Failed to upload ${trackFile.title}`);
-                }
-              }
-              return trackFile;
-            })
-          );
-
-          return {
-            title: track.title,
-            track_files: uploadedFiles,
-            description: track.description || "",
-            duration: track.duration || "00:00",
-            order_number: track.order_number,
-            is_free: track.is_free,
-          };
-        })
-      );
-
-      // Step 2: Create music product with uploaded tracks
       const payload = {
         product_title: formData.product_title,
         price: formData.price,
@@ -471,8 +636,9 @@ const AddMusicForm: React.FC = () => {
         language: formData.language,
         theme: formData.theme,
         format: formData.format,
+        thumbnail_url: formData.thumbnail_url,
         status: isDraft ? 'draft' : 'published',
-        tracks: uploadedTracks,
+        tracks: tracksData,
       };
 
       const response = await CreateMusicProduct(payload);
@@ -490,13 +656,9 @@ const AddMusicForm: React.FC = () => {
 
       // Navigate based on action
       if (isDraft && productId) {
-        setTimeout(() => {
-          navigate(`/dashboard/products/music-preview/${productId}?category=music`);
-        }, 1500);
+        navigate(`/dashboard/products/music-preview/${productId}?category=music`);
       } else {
-        setTimeout(() => {
-          navigate('/dashboard/products');
-        }, 1500);
+        navigate('/dashboard/products');
       }
     } catch (error: any) {
       showToast({
@@ -618,6 +780,93 @@ const AddMusicForm: React.FC = () => {
                 ))}
               </select>
               {errors.mood_id && <span className="text-red-500 text-sm mt-1">{errors.mood_id}</span>}
+            </div>
+
+            <div>
+              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+                Thumnail *
+              </label>
+              {thumbnailData?.thumbnail_url ? (
+                <div className="relative rounded-lg overflow-hidden border-2 border-gray-200">
+                  <img
+                    src={thumbnailData.thumbnail_url}
+                    alt="Thumbnail"
+                    className="w-full h-40 object-cover"
+                  />
+                  {/* Edit/Replace Button */}
+                  <label
+                    htmlFor="thumbnail-replace"
+                    className="absolute top-2 right-12 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition cursor-pointer"
+                    title="Replace Thumbnail"
+                  >
+                    <SquarePen className="w-4 h-4" />
+                    <input
+                      id="thumbnail-replace"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleThumbnailUpload}
+                      disabled={isThumbnailUploading}
+                    />
+                  </label>
+                  {/* Remove Button */}
+                  <button
+                    type="button"
+                    onClick={handleRemoveThumbnail}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition"
+                    title="Remove Thumbnail"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <label
+                  className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${isThumbnailUploading ? "pointer-events-none opacity-70" : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
+                    }`}
+                >
+                  <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
+                    <rect
+                      x="1"
+                      y="1"
+                      width="calc(100% - 2px)"
+                      height="calc(100% - 2px)"
+                      rx="12"
+                      ry="12"
+                      stroke="#CBD5E1"
+                      strokeWidth="2"
+                      strokeDasharray="6,6"
+                      fill="none"
+                      className="transition-all duration-300 group-hover:stroke-[#7077FE]"
+                    />
+                  </svg>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleThumbnailUpload}
+                    disabled={isThumbnailUploading}
+                  />
+                  {isThumbnailUploading ? (
+                    <div className="flex flex-col items-center space-y-2">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7077FE]"></div>
+                      <p className="text-sm text-[#7077FE]">Uploading thumbnail...</p>
+                    </div>
+                  ) : (
+                    <div className="text-center space-y-2">
+                      <div className="w-10 h-10 mx-auto rounded-full bg-[#7077FE]/10 flex items-center justify-center text-[#7077FE]">
+                        <img src={uploadimg} alt="Upload" className="w-6 h-6" />
+                      </div>
+                      <p className="text-sm font-[poppins] text-[#242E3A]">
+                        Drag & drop or click to upload
+                      </p>
+                      <p className="text-xs text-[#665B5B]">
+                        Recommended 266 X 149 px
+                      </p>
+                    </div>
+                  )}
+                </label>
+              )}
+              {errors.thumbnail_url && <span className="text-red-500 text-sm mt-1">{errors.thumbnail_url}</span>}
             </div>
           </div>
         </FormSection>
@@ -754,44 +1003,59 @@ const AddMusicForm: React.FC = () => {
         {/* Uploads Section */}
         <FormSection title="Uploads" description="">
           <div className="space-y-6">
-            {tracks.map((track) => (
+            {tracks.map((track, trackIndex) => (
               <div
                 key={track.id}
                 className="border border-gray-200 rounded-lg p-4 shadow-sm bg-white"
               >
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h3 className="text-[16px] font-semibold text-[#242E3A] mb-2">
-                      {track.name}
-                    </h3>
-                    <p className="text-sm text-[#665B5B] mb-4">
-                      Upload track {track.id} audio files
+                    <input
+                      type="text"
+                      value={track.title}
+                      onChange={(e) => {
+                        const newTitle = e.target.value;
+                        setTracks(prev => prev.map(t =>
+                          t.id === track.id ? { ...t, title: newTitle } : t
+                        ));
+                      }}
+                      className="text-[16px] font-semibold text-[#242E3A] border-b border-transparent hover:border-gray-300 focus:border-[#7077FE] focus:outline-none mb-2"
+                    />
+                    <p className="text-sm text-[#665B5B]">
+                      Upload track {trackIndex + 1} audio files
                     </p>
                   </div>
 
-                  {/* Delete Chapter Button */}
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteTrack(track.id)}
-                    className="text-red-500 hover:text-red-700 transition-colors"
-                    title="Delete Track"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
+                  {tracks.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteTrack(track.id)}
+                      className="text-red-500 hover:text-red-700 transition-colors"
+                      title="Delete Track"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* LEFT Upload */}
-                  <label
-                    className="relative flex flex-col items-center justify-center h-40 cursor-pointer relative rounded-lg p-6 text-center cursor-pointer transition-all bg-[#F9FAFB] hover:bg-[#EEF3FF]"
-                  >
-                    {/* ✅ SVG dashed border */}
-                    <svg
-                      className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none"
-                    >
-                      <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="12" ry="12" stroke="#CBD5E1" strokeWidth="2" strokeDasharray="6,6" fill="none"
-                        className="transition-all duration-300 group-hover:stroke-[#7077FE]" />
-                    </svg>                     <input
+                  <label className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF] transition-colors">
+                    <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
+                      <rect
+                        x="1"
+                        y="1"
+                        width="calc(100% - 2px)"
+                        height="calc(100% - 2px)"
+                        rx="12"
+                        ry="12"
+                        stroke={errors[`track_${track.id}`] ? "#EF4444" : "#CBD5E1"}
+                        strokeWidth="2"
+                        strokeDasharray="6,6"
+                        fill="none"
+                        className="transition-all duration-300 group-hover:stroke-[#7077FE]"
+                      />
+                    </svg>
+                    <input
                       type="file"
                       accept="audio/*"
                       className="hidden"
@@ -806,94 +1070,115 @@ const AddMusicForm: React.FC = () => {
                         Drag & drop or click to upload
                       </p>
                       <p className="text-xs text-[#665B5B]">
-                        MP3, WAV, FLAC (max 20 MB)
+                        MP3, WAV, FLAC (max 50 MB)
                       </p>
                     </div>
                   </label>
 
-                  {/* RIGHT Uploaded Files */}
-                  <div className="space-y-3">
+                  <div className="space-y-3 max-h-80 overflow-y-auto">
                     {track.track_files.length === 0 ? (
-                      <div className="text-sm text-gray-500 border border-gray-100 rounded-lg p-4 bg-gray-50">
+                      <div className="text-sm text-gray-500 border border-gray-100 rounded-lg p-4 bg-gray-50 h-40 flex items-center justify-center">
                         No files uploaded yet
                       </div>
                     ) : (
-                      track.track_files.map((file: any) => (
+                      track.track_files.map((file: any, fileIndex: number) => (
                         <div
-                          key={file.order_number}
+                          key={fileIndex}
                           className="border border-gray-200 rounded-lg p-3 bg-white"
                         >
                           <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center space-x-2">
-                              <Music className="w-5 h-5 text-[#242E3A]" />
-                              {file.isEditing ? (
-                                <input
-                                  type="text"
-                                  value={file.title}
-                                  onChange={(e) =>
-                                    handleEditFileName(
-                                      track.id,
-                                      file.order_number,
-                                      e.target.value
-                                    )
-                                  }
-                                  className="border border-gray-300 rounded-md px-2 py-[2px] text-sm"
-                                />
-                              ) : (
-                                <p className="text-sm font-medium text-[#242E3A]">
-                                  {file.title}
-                                </p>
-                              )}
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              {file.isEditing ? (
-                                <button
-                                  onClick={() => saveFileName(track.id, file.order_number)}
-                                  className="text-[#7077FE] text-sm font-semibold"
-                                >
-                                  Save
-                                </button>
+                            <div className="flex items-center space-x-2 flex-1">
+                              {file.isUploading ? (
+                                <>
+                                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#7077FE]"></div>
+                                  <span className="text-sm text-gray-600">Uploading...</span>
+                                </>
                               ) : (
                                 <>
-                                  <button
-                                    onClick={() =>
-                                      toggleEditFile(track.id, file.order_number)
-                                    }
-                                    className="text-gray-500 hover:text-[#7077FE]"
-                                  >
-                                    <SquarePen className="w-4 h-4" />
-                                  </button>
-                                  <button
-                                    onClick={() => deleteFile(track.id, file.order_number)}
-                                    className="text-gray-500 hover:text-red-500"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
+                                  <Music className="w-5 h-5 text-[#7077FE]" />
+                                  {file.isEditing ? (
+                                    <input
+                                      type="text"
+                                      value={file.title}
+                                      onChange={(e) =>
+                                        handleEditFileName(track.id, file.order_number, e.target.value)
+                                      }
+                                      className="flex-1 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
+                                      autoFocus
+                                    />
+                                  ) : (
+                                    <p className="text-sm font-medium text-[#242E3A] flex-1 truncate">
+                                      {file.title}
+                                    </p>
+                                  )}
                                 </>
                               )}
                             </div>
+
+                            {!file.isUploading && (
+                              <div className="flex items-center space-x-2">
+                                {file.isEditing ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => saveFileName(track.id, file.order_number)}
+                                    className="text-[#7077FE] text-sm font-semibold hover:text-[#5E65F6]"
+                                  >
+                                    Save
+                                  </button>
+                                ) : (
+                                  <>
+                                    <button
+                                      type="button"
+                                      onClick={() => toggleEditFile(track.id, file.order_number)}
+                                      className="text-gray-500 hover:text-[#7077FE] transition-colors"
+                                      title="Edit filename"
+                                    >
+                                      <SquarePen className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => deleteFile(track.id, file.order_number)}
+                                      className="text-gray-500 hover:text-red-500 transition-colors"
+                                      title="Delete file"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                            )}
                           </div>
-                          <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                            <span>{file.file ? formatFileSize(file.file.size) : "Uploaded"}</span>
-                            <span className="text-green-600">✓ Ready</span>
-                          </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-green-500 h-2 rounded-full"
-                              style={{ width: '100%' }}
-                            ></div>
-                          </div>
+
+                          {!file.isUploading && (
+                            <>
+                              <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                                <span>
+                                  {file.file ? formatFileSize(file.file.size) : "Uploaded"}
+                                </span>
+                                <span className="text-green-600 flex items-center gap-1">
+                                  <span className="w-1.5 h-1.5 bg-green-600 rounded-full"></span>
+                                  Ready
+                                </span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-1.5">
+                                <div
+                                  className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
+                                  style={{ width: "100%" }}
+                                ></div>
+                              </div>
+                              <p className="text-xs text-gray-500 mt-1">
+                                Order: {file.order_number}
+                              </p>
+                            </>
+                          )}
                         </div>
                       ))
                     )}
                   </div>
-                  {errors.tracks && (
-                    <p className="text-red-500 text-sm mt-2">{errors.tracks}</p>
-                  )}
-                  {Object.keys(errors).filter(key => key.startsWith('track_')).map(key => (
-                    <p key={key} className="text-red-500 text-sm mt-2">{errors[key]}</p>
-                  ))}
                 </div>
+                {errors[`track_${track.id}`] && (
+                  <p className="text-red-500 text-sm mt-2">{errors[`track_${track.id}`]}</p>
+                )}
               </div>
             ))}
 

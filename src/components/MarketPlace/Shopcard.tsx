@@ -1,5 +1,5 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 interface ShopCardProps {
   id: number;
@@ -10,75 +10,111 @@ interface ShopCardProps {
   logo: string;
 }
 
+const fallbackCover = "https://static.codia.ai/image/2025-10-24/COYsFisEy4.png";
+const starIcon = "https://static.codia.ai/image/2025-10-24/WuhevqDEw9.png";
+
 const ShopCard: React.FC<ShopCardProps> = ({
   id,
   image,
   name,
   description,
   rating,
-  logo
+  logo,
 }) => {
   const navigate = useNavigate();
 
+  const goToShop = () =>
+    navigate(`/dashboard/shop-detail/${id}`, {
+      state: { id, image, name, description, rating, logo },
+    });
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      goToShop();
+    }
+  };
+
   return (
-    <div
-      onClick={() => navigate(`/dashboard/shop-detail/${id}`, { state: { id, image, name, description, rating, logo } })}
-      className="         
-  sm:w-full
-  md:w-full
-  flex flex-col items-center cursor-pointer hover:shadow-lg transition-shadow duration-300"
+    <article
+      role="button"
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+      onClick={goToShop}
+      className="
+        bg-white rounded-xl overflow-hidden
+        shadow-[0_6px_20px_rgba(8,15,30,0.06)]
+        hover:shadow-[0_8px_28px_rgba(8,15,30,0.08)]
+        hover:-translate-y-1 transform transition-all duration-300
+        cursor-pointer w-full
+        "
+      aria-label={`Open shop ${name}`}
     >
-      <div className="flex-shrink-0">
+      {/* Cover image — keep aspect ratio, responsive height */}
+      <div className="w-full">
         <img
-          src={image || 'https://static.codia.ai/image/2025-10-24/COYsFisEy4.png'}
-          alt={name}
-          className="
-                    // Very small screens (default)
-            sm:h-[100px]  w-full        // Small screens
-            md:h-[100px]  w-full       // Medium screens/tablets
-            lg:h-[100px]   w-full     // Larger screens
-            object-cover
-            rounded-t-[10px]
-          "
+          src={image || fallbackCover}
+          loading="lazy"
+          alt={name || "Shop cover"}
+          className="w-full aspect-[16/9] object-cover"
           onError={(e) => {
-            e.currentTarget.src = 'https://static.codia.ai/image/2025-10-24/COYsFisEy4.png'; // fallback image
+            (e.currentTarget as HTMLImageElement).src = fallbackCover;
           }}
         />
       </div>
 
-      <div className="bg-white shadow-[0px_4px_14px_rgba(0,0,0,0.1)] rounded-b-[10px] p-[12px_14px] flex flex-col gap-4 w-full h-full">
-        <div className="flex flex-col gap-2 flex-grow">
-          <div className="flex items-center gap-2">
-            {logo ? (
-              <img
-                src={logo}
-                alt={`${name} Logo`}
-                className="w-[26px] h-[26px]"
-              />
-            ) : (
-              <div className="w-[26px] h-[26px] flex items-center justify-center bg-gray-300 rounded-full">
-                <span className="text-white font-semibold text-sm">{name.charAt(0)}</span>
-              </div>
-            )}
-            <h3 className="font-open-sans text-[18px] leading-[24.51px] text-[#1A1A1A]">
+      {/* Body */}
+      <div className="p-4 md:p-5 flex flex-col gap-3">
+        <div className="flex items-start gap-3">
+          {/* logo / avatar */}
+          {logo ? (
+            <img
+              src={logo}
+              alt={`${name} logo`}
+              className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).style.display = "none";
+              }}
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+              <span className="text-sm font-semibold text-gray-700">
+                {name?.charAt(0)?.toUpperCase() || "S"}
+              </span>
+            </div>
+          )}
+
+          <div className="flex-1 min-w-0">
+            <h3
+              className="text-[16px] md:text-[17px] font-semibold text-[#111827] truncate"
+              title={name}
+            >
               {name}
             </h3>
+
+            <p
+              className="text-[13px] text-[#6B7280] mt-1 line-clamp-2"
+              title={description}
+            >
+              
+            </p>
           </div>
-          <p className="font-open-sans font-normal text-[10px] leading-[13.62px] text-[#A7A6A6]">
-            {description}
-          </p>
         </div>
 
-        <div className="flex items-center gap-[3px]">
-          <img
-            src="https://static.codia.ai/image/2025-10-24/WuhevqDEw9.png"
-            alt="Star"
-            className="w-[18px] h-[18px]"
-          />
-          <span className="font-open-sans text-[12px] text-[#1A1A1A]">{rating}</span>
+        {/* footer row: rating aligned right */}
+        <div className="mt-2 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <img src={starIcon} alt="rating" className="w-4 h-4" />
+            <span className="text-sm font-medium text-[#111827]">
+              {rating && rating > 0 ? rating.toFixed(1) : "0.0"}
+            </span>
+          </div>
+
+          {/* optional: small badge or actions area */}
+          {/* <div>…</div> */}
         </div>
       </div>
-    </div>
+    </article>
   );
 };
 

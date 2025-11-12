@@ -228,7 +228,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
   const [friendRequests, setFriendRequests] = useState<{
     [key: string]: string;
   }>({});
-  console.log("🚀 ~ FriendProfileModal ~ friendRequests:", friendRequests)
+  console.log("🚀 ~ FriendProfileModal ~ friendRequests:", friendRequests);
 
   const checkFriendStatus = async (userId: string) => {
     try {
@@ -715,7 +715,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
             media:
               selectedPost.media ??
               ({ type: "text", src: selectedPost.body || "" } as const),
-            // optional
+            body: selectedPost.body,
           }}
           onClose={() => setSelectedPost(null)}
           onDeletePost={() => {

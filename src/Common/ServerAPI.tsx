@@ -168,6 +168,7 @@ export const EndPoint = {
   report_post: "/user/posts/report",
   mention_user_profile: "/user/post/comments/getuserprofile",
   story: "/story",
+  story_viewed: "/story/viewed",
   get_front_all_story: "/story/get/front/all",
   story_like: "/story/like",
   story_comment: "/story/comment",
@@ -264,6 +265,7 @@ export const EndPoint = {
 
   create_video_product: "/marketplace-product/video",
   update_video_product: "/marketplace-product",
+  upload_product_thumbnail: "/marketplace-product/product/upload-thumbnail",
   upload_product_document: "/marketplace-product/upload",
   update_video: "/marketplace-product",
 
@@ -280,11 +282,23 @@ export const EndPoint = {
   get_buyer_moods: "/marketplace-buyer/moods",
   get_buyer_categories: "/marketplace-buyer/categories",
   get_buyer_product_list: "/marketplace-buyer/products",
-  
+  get_buyer_filters: "/marketplace-buyer/filters",
+
   marketplace_wishlist: "/marketplace-buyer/wishlist",
   marketplace_cart: "/marketplace-buyer/cart",
 
   get_shop_list: "/marketplace-buyer/shops",
+
+  // reviews apis
+  marketplace_buyer_review: "/marketplace-buyer/reviews",
+  marketplace_get_product_review: "/marketplace-buyer/products",
+
+  // checkout apis
+  marketplace_checkout: "/marketplace-buyer/checkout",
+  marketplace_checkout_confirm: "/marketplace-buyer/checkout/confirm",
+  marketplace_retry_payment: "/marketplace-buyer/retry-payment",
+  marketplace_order_details: "/marketplace-buyer/orders",
+  marketplace_buyer_library: "/marketplace-buyer/library",
 };
 
 // Messaging endpoints
@@ -334,7 +348,7 @@ export const WalletDetails = async (page: number, limit: number): ApiResponse =>
   params["page_no"] = page;
   params["limit"] = limit;
 
-  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.wallet,params);
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.wallet, params);
 };
 export const ForgotPasswordDetails = (
   formData: ForgotFormData
@@ -1201,6 +1215,10 @@ export const GetStory = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.story);
 };
+export const PostStoryViewd = (story_id:any) => {
+  let data = {story_id};
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.story_viewed);
+};
 export const GetUserPost = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.user_post);
@@ -1575,6 +1593,7 @@ export const executeAPI = async <T = any,>(
     if (appCatId) {
       headers["x-app-cat-id"] = appCatId;
     }
+    console.log("🚀 ~ executeAPI ~ headers:", headers)
     const response: AxiosResponse<T> = await axios({
       method: method,
       url: API.BaseUrl + endpoint,
@@ -1732,6 +1751,14 @@ export const UpdateProductStatus = (data: any, id: any): ApiResponse => {
   );
 };
 
+export const UploadProductThumbnail = (formData: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.upload_product_thumbnail
+  );
+};
+
 export const UploadProductDocument = (fileType: string, formData: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
@@ -1756,11 +1783,11 @@ export const CreateMusicProduct = (data: any): ApiResponse => {
   );
 };
 
-export const UpdateMusicProduct = (data: any, fileType: string, id: any): ApiResponse => {
+export const UpdateMusicProduct = (data: any, id: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.PATCH,
     data,
-    `${EndPoint.update_music_product}/${fileType}/${id}`
+    `${EndPoint.update_music_product}/music/${id}`
   );
 };
 
@@ -1788,11 +1815,11 @@ export const CreatePodcastProduct = (data: any): ApiResponse => {
   );
 };
 
-export const UpdatePodcastProduct = (data: any, fileType: string, id: any): ApiResponse => {
+export const UpdatePodcastProduct = (data: any, id: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.PATCH,
     data,
-    `${EndPoint.update_music_product}/${fileType}/${id}`
+    `${EndPoint.update_music_product}/podcast/${id}`
   );
 };
 
@@ -1925,6 +1952,10 @@ export const GetMarketPlaceBuyerProductById = (id: any) => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.get_buyer_product_list}/${id}`);
 };
 
+export const GetMarketPlaceBuyerFilters = () => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_buyer_filters);
+};
+
 export const AddProductToWishlist = (data: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
@@ -1933,8 +1964,38 @@ export const AddProductToWishlist = (data: any): ApiResponse => {
   );
 };
 
-export const GetProductWishlist = () => {
-  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.marketplace_wishlist);
+export const GetProductWishlist = (params?: {
+  search?: string;
+  min_price?: number;
+  max_price?: number;
+  language?: string;
+  min_duration?: string;
+  max_duration?: string;
+  min_rating?: number;
+  sort_by?: string;
+  page?: number;
+  limit?: number;
+  category_slug?: string;
+}): ApiResponse => {
+  const queryParams = new URLSearchParams();
+
+  if (params?.page) queryParams.append('page', params.page.toString());
+  if (params?.limit) queryParams.append('limit', params.limit.toString());
+  if (params?.sort_by) queryParams.append('sort_by', params.sort_by);
+  if (params?.language) queryParams.append('language', params.language);
+  if (params?.min_duration) queryParams.append('min_duration', params.min_duration);
+  if (params?.max_duration) queryParams.append('max_duration', params.max_duration);
+  if (params?.min_rating) queryParams.append('min_rating', params.min_rating.toString());
+  if (params?.min_price) queryParams.append('min_price', params.min_price.toString());
+  if (params?.max_price) queryParams.append('max_price', params.max_price.toString());
+  if (params?.category_slug) queryParams.append('category_slug', params.category_slug);
+
+  const queryString = queryParams.toString();
+  const endpoint = queryString
+    ? `${EndPoint.marketplace_wishlist}?${queryString}`
+    : EndPoint.marketplace_wishlist;
+
+  return executeAPI(ServerAPI.APIMethod.GET, {}, endpoint);
 };
 
 export const RemoveProductToWishlist = (id: any): ApiResponse => {
@@ -1989,21 +2050,118 @@ export const GetMarketPlaceShops = (params?: {
   limit?: number;
 }): ApiResponse => {
   const queryParams = new URLSearchParams();
-  
+
   if (params?.search) queryParams.append('search', params.search);
   if (params?.sort_by) queryParams.append('sort_by', params.sort_by);
   if (params?.sort_order) queryParams.append('sort_order', params.sort_order);
   if (params?.page) queryParams.append('page', params.page.toString());
   if (params?.limit) queryParams.append('limit', params.limit.toString());
-  
+
   const queryString = queryParams.toString();
   const endpoint = queryString
-  ? `${EndPoint.get_shop_list}?${queryString}`
-  : EndPoint.get_shop_list;
-  
+    ? `${EndPoint.get_shop_list}?${queryString}`
+    : EndPoint.get_shop_list;
+
   return executeAPI(ServerAPI.APIMethod.GET, {}, endpoint);
 };
 
 export const GetMarketPlaceShopById = (id: any) => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.get_shop_list}/${id}`);
 };
+
+export const CreateBuyerReview = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.marketplace_buyer_review
+  );
+};
+
+export const GetBuyerReviewByProductId = (productId: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.marketplace_get_product_review}/${productId}/my-review`
+  );
+}
+
+export const UpdateBuyerReview = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PUT,
+    data,
+    EndPoint.marketplace_buyer_review
+  );
+};
+
+export const DeleteBuyerReview = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.marketplace_buyer_review}/${id}`
+  );
+};
+
+export const GetProductReviws = (
+  productId: string,
+  params?: {
+    page?: number;
+    limit?: number;
+  }
+): ApiResponse => {
+  const queryParams = new URLSearchParams();
+
+  if (params?.page) queryParams.append("page", params.page.toString());
+  if (params?.limit) queryParams.append("limit", params.limit.toString());
+
+  const queryString = queryParams.toString();
+  const endpoint = queryString
+    ? `${EndPoint.marketplace_get_product_review}/${productId}?${queryString}`
+    : `${EndPoint.marketplace_get_product_review}/${productId}`;
+
+  return executeAPI(ServerAPI.APIMethod.GET, {}, endpoint);
+};
+
+export const CreateCheckoutSession = () => {
+  return executeAPI(ServerAPI.APIMethod.POST, {}, EndPoint.marketplace_checkout);
+};
+
+export const GetCheckoutDetails = (): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.marketplace_checkout);
+};
+
+export const ConfirmPayment = (session_id: string): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.marketplace_checkout_confirm}?session_id=${session_id}`
+  );
+};
+
+export const RetryPayment = (data: { order_id: string }): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.marketplace_retry_payment);
+};
+
+export const GetLibraryrDetails = (params?: {
+  page?: number;
+  limit?: number;
+}): ApiResponse => {
+  const queryParams = new URLSearchParams();
+
+  if (params?.page) queryParams.append("page", params.page.toString());
+  if (params?.limit) queryParams.append("limit", params.limit.toString());
+
+  const queryString = queryParams.toString();
+  const endpoint = queryString
+    ? `${EndPoint.marketplace_buyer_library}?${queryString}`
+    : `${EndPoint.marketplace_buyer_library}`;
+
+  return executeAPI(ServerAPI.APIMethod.GET, {}, endpoint);
+}
+
+export const GetOrderDetails = (): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    EndPoint.marketplace_order_details
+  );
+}

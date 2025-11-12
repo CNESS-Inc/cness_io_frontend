@@ -109,9 +109,18 @@ const PodcastPreview = () => {
         <div className="flex flex-col md:flex-row">
           {/* Podcast Icon Display */}
           <div className="relative p-2 w-full">
-            <div className="rounded-xl w-full h-54 bg-gradient-to-br from-[#FF6B6B] to-[#FFD93D] flex items-center justify-center">
-              <Mic2 className="w-32 h-32 text-white opacity-80" />
-            </div>
+            <img
+              src={data.thumbnail_url}
+              alt={data.product_title}
+              className="rounded-xl w-full h-54 object-cover"
+              onError={() => {
+                return (
+                  <div className="rounded-xl w-full h-54 bg-gradient-to-br from-[#FF6B6B] to-[#FFD93D] flex items-center justify-center">
+                    <Mic2 className="w-32 h-32 text-white opacity-80" />
+                  </div>
+                )
+              }}
+            />
           </div>
 
           <div className="p-6 flex flex-col justify-between w-full">
@@ -247,7 +256,7 @@ const PodcastPreview = () => {
                     </div>
                   )}
                 </div>
-                
+
                 {/* Episode Files */}
                 {episode.file_urls && episode.file_urls.length > 0 && (
                   <div className="mt-3 pl-14 space-y-2">

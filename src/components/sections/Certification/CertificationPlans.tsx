@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Check } from "lucide-react";
-import aspired from "../../../assets/aspiring1.svg";
-import inspired from "../../../assets/inspired1.svg";
-import leader from "../../../assets/leader.png";
+import aspired from "../../../assets/asplocked1.svg";
+import inspired from "../../../assets/insplocked1.svg";
 import { useNavigate } from "react-router-dom";
 import Modal from "../../ui/Modal";
 import Button from "../../ui/Button";
@@ -36,9 +35,11 @@ function TopBadge({ src, alt }: { src: string; alt: string }) {
 function PricingCard({
   card,
   onUpgrade,
+  isUpgradeDisabled = false,
 }: {
   card: Card;
   onUpgrade: (plan: string) => void;
+  isUpgradeDisabled?: boolean;
 }) {
   const selected = !!card.selected;
 
@@ -129,9 +130,24 @@ function PricingCard({
           {card.ctaType === "upgrade" && (
             <button
               onClick={() => onUpgrade(card.title)}
+              disabled={isUpgradeDisabled}
+              className={`w-full rounded-full font-['Plus Jakarta Sans'] px-6 py-4 text-sm font-medium text-white flex items-center justify-center ${
+                isUpgradeDisabled
+                  ? "bg-[#C7C7C7] cursor-not-allowed"
+                  : "bg-[#7077FE] hover:bg-[#897aff]"
+              }`}
+            >
+              {isUpgradeDisabled ? "Upgrade" : "Upgrade"}
+            </button>
+          )}
+
+          {/* NEW: Start Assessment button for when user has no badge */}
+          {card.ctaType === "start" && (
+            <button
+              onClick={() => onUpgrade(card.title)}
               className="w-full rounded-full bg-[#7077FE] hover:bg-[#897aff] font-['Plus Jakarta Sans'] px-6 py-4 text-sm font-medium text-white flex items-center justify-center"
             >
-              Upgrade
+              Start Assessment
             </button>
           )}
         </div>
@@ -145,6 +161,8 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
   const [isOpenModal, setIsOpenModal] = useState(false);
 
   const handleUpgrade = (plan: string) => {
+    if (isUpgradeDisabled && plan !== "Aspired") return; // Don't proceed if upgrade is disabled for other plans
+
     if (plan === "Inspired") {
       navigate("/dashboard/assesmentcertification");
     } else if (plan === "Aspired") {
@@ -155,25 +173,81 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
     }
   };
 
+  // Helper function to get badge image based on card title and user's current badge level
+  const getBadgeImage = (cardTitle: string) => {
+    const userBadgeLevel = data?.badge?.level;
+    console.log("🚀 ~ getBadgeImage ~ userBadgeLevel:", userBadgeLevel);
+
+    // If user has no badge (null or undefined)
+    if (!userBadgeLevel) {
+      if (cardTitle === "Aspired") {
+        return aspired;
+      } else if (cardTitle === "Inspired") {
+        return inspired;
+      } else if (cardTitle === "Leader") {
+        return "https://cdn.cness.io/leader.webp";
+      }
+    }
+
+    // User has Aspiring badge
+    if (userBadgeLevel === "Aspiring") {
+      if (cardTitle === "Aspired") {
+        return "https://cdn.cness.io/aspiringlogo.svg";
+      } else if (cardTitle === "Inspired") {
+        return data?.is_assessment_submited ? "https://cdn.cness.io/inspired1.svg" : inspired;
+      } else if (cardTitle === "Leader") {
+        return "https://cdn.cness.io/leader.webp";
+      }
+    }
+
+    // User has Inspired badge
+    if (userBadgeLevel === "Inspired") {
+      if (cardTitle === "Aspired") {
+        return "https://cdn.cness.io/aspiringlogo.svg";
+      } else if (cardTitle === "Inspired") {
+        return "https://cdn.cness.io/inspired1.svg";
+      } else if (cardTitle === "Leader") {
+        return "https://cdn.cness.io/leader.webp";
+      }
+    }
+
+    // User has Leader badge or any other level
+    if (cardTitle === "Aspired") {
+      return "https://cdn.cness.io/aspiringlogo.svg";
+    } else if (cardTitle === "Inspired") {
+      return "https://cdn.cness.io/inspired1.svg";
+    } else if (cardTitle === "Leader") {
+      return "https://cdn.cness.io/leader.webp";
+    }
+
+    // Fallback to local assets if needed
+    return aspired;
+  };
+
   // Helper function to determine card states based on API data
   const getCardState = (cardTitle: string) => {
     const userBadgeLevel = data?.badge?.level;
     const isAssessmentSubmitted = data?.is_assessment_submited;
     const isSubmittedByHead = data?.is_submitted_by_head;
 
-    // If user has no badge at all
+    console.log("🚀 ~ getCardState ~ userBadgeLevel:", userBadgeLevel);
+    console.log(
+      "🚀 ~ getCardState ~ isAssessmentSubmitted:",
+      isAssessmentSubmitted
+    );
+    console.log("🚀 ~ getCardState ~ isSubmittedByHead:", isSubmittedByHead);
+
+    // If user has no badge at all - FIRST TIME USER
     if (!userBadgeLevel) {
       if (cardTitle === "Aspired") {
         return {
           selected: true,
-          ctaType: isAssessmentSubmitted 
-            ? (isSubmittedByHead ? "completed" : "pending") 
-            : "upgrade"
+          ctaType: "start", // Changed from "upgrade" to "start" for first time users
         };
       } else {
         return {
           selected: false,
-          ctaType: "upgrade"
+          ctaType: "upgrade",
         };
       }
     }
@@ -183,19 +257,21 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
       if (cardTitle === "Aspired") {
         return {
           selected: false,
-          ctaType: "completed"
+          ctaType: "completed",
         };
       } else if (cardTitle === "Inspired") {
         return {
           selected: true,
-          ctaType: isAssessmentSubmitted 
-            ? (isSubmittedByHead ? "completed" : "pending") 
-            : "upgrade"
+          ctaType: isAssessmentSubmitted
+            ? isSubmittedByHead
+              ? "completed"
+              : "pending"
+            : "upgrade",
         };
       } else if (cardTitle === "Leader") {
         return {
           selected: false,
-          ctaType: "upgrade"
+          ctaType: "upgrade",
         };
       }
     }
@@ -205,17 +281,17 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
       if (cardTitle === "Aspired") {
         return {
           selected: false,
-          ctaType: "completed"
+          ctaType: "completed",
         };
       } else if (cardTitle === "Inspired") {
         return {
           selected: false,
-          ctaType: "completed"
+          ctaType: "completed",
         };
       } else if (cardTitle === "Leader") {
         return {
           selected: true,
-          ctaType: "upgrade"
+          ctaType: "upgrade",
         };
       }
     }
@@ -223,7 +299,7 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
     // Default fallback
     return {
       selected: false,
-      ctaType: "upgrade"
+      ctaType: "upgrade",
     };
   };
 
@@ -240,7 +316,7 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
         "Basic profile creation",
       ],
       ...getCardState("Aspired"),
-      badge: aspired,
+      badge: getBadgeImage("Aspired"),
     },
     {
       id: "center",
@@ -254,7 +330,7 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
         "Social media Access",
       ],
       ...getCardState("Inspired"),
-      badge: inspired,
+      badge: getBadgeImage("Inspired"),
     },
     {
       id: "right",
@@ -268,15 +344,40 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
         "Basic profile creation",
       ],
       ...getCardState("Leader"),
-      badge: leader,
+      badge: getBadgeImage("Leader"),
     },
   ];
+
+  // Check if Aspired card is selected AND user has no badge (first time)
+  const isAspiredSelected =
+    cards.find((card) => card.title === "Aspired")?.selected || false;
+  const hasNoBadge = !data?.badge?.level;
+  const isFirstTimeUser = isAspiredSelected && hasNoBadge;
+
+  // Only disable upgrades for other cards if user has no badge and Aspired is selected
+  const isUpgradeDisabled = isFirstTimeUser;
+
+  console.log("🚀 ~ CertificationPlans ~ hasNoBadge:", hasNoBadge);
+  console.log("🚀 ~ CertificationPlans ~ isFirstTimeUser:", isFirstTimeUser);
+  console.log(
+    "🚀 ~ CertificationPlans ~ isUpgradeDisabled:",
+    isUpgradeDisabled
+  );
 
   return (
     <section className="w-full mt-10">
       <div className="w-full mt-8 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-[18px]">
         {cards.map((c) => (
-          <PricingCard key={c.id} card={c} onUpgrade={handleUpgrade} />
+          <PricingCard
+            key={c.id}
+            card={c}
+            onUpgrade={handleUpgrade}
+            isUpgradeDisabled={
+              isUpgradeDisabled &&
+              c.title !== "Aspired" &&
+              c.ctaType === "upgrade"
+            }
+          />
         ))}
       </div>
       <Modal isOpen={isOpenModal} onClose={() => setIsOpenModal(false)}>

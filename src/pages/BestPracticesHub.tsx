@@ -34,6 +34,7 @@ const truncateText = (text: string, maxLength: number): string => {
 };
 
 type Company = {
+  interest: ReactNode;
   file: any;
   title: string;
   user: any;
@@ -1005,7 +1006,7 @@ export default function BestPracticesHub() {
                             alignSelf: "flex-start", // 👈 forces pill to left
                           }}
                         >
-                          {company.profession}
+                          {company.profession ? company.profession : company.interest}
                         </span>
                         <div className="w-full flex justify-between items-center gap-3">
                           <h3 className="text-base sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">

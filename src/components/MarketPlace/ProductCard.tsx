@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { ShoppingCart, Star, ArrowRight, Heart, Video, Clock, Music, BookOpen, FileAudio, FileText, Palette } from "lucide-react";
+import { Star, ArrowRight, Heart, Video, Clock, Music, BookOpen, FileAudio, FileText, Palette } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../ui/Toast/ToastProvider";
-import { AddProductToCart, AddProductToWishlist, RemoveProductToWishlist } from "../../Common/ServerAPI";
+import { AddProductToCart, AddProductToWishlist, RemoveProductToCart, RemoveProductToWishlist } from "../../Common/ServerAPI";
+import { FiShoppingCart } from "react-icons/fi";
 
 interface Product {
   id: string;
@@ -17,30 +18,36 @@ interface Product {
   discount?: number;
   duration: string;
   category: string;
+  mood_icon?: any;
   mood?: string;
-  isInWishlist?: boolean;
+  isLike?: boolean;
+  isCarted?: boolean;
 }
 
 interface ProductCardProps {
   product: Product;
-  isLiked?: boolean;
   onWishlistUpdate?: () => void;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
   product,
-  isLiked = false,
   onWishlistUpdate
 }) => {
-  const [liked, setLiked] = useState(isLiked || product.isInWishlist || false);
+  const [liked, setLiked] = useState(false);
+  const [carted, setCarted] = useState(false);
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const navigate = useNavigate();
   const { showToast } = useToast();
 
   useEffect(() => {
-    setLiked(isLiked || product.isInWishlist || false);
-  }, [isLiked, product.isInWishlist]);
+    if (product?.isLike !== undefined) {
+      setLiked(product?.isLike);
+    }
+    if (product?.isCarted !== undefined) {
+      setCarted(product?.isCarted);
+    }
+  }, [])
 
   const handleCardClick = () => {
     navigate(`/dashboard/product-detail/${product.id}`, { state: { product } });
@@ -84,7 +91,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       });
 
       // ✅ Revert the liked state on error
-      setLiked(!liked);
+      setLiked((prevState) => !prevState);
     } finally {
       setIsAddingToWishlist(false);
     }
@@ -97,21 +104,34 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
     setIsAddingToCart(true);
     try {
-      await AddProductToCart({
-        product_id: product.id,
-        quantity: 1,
-      });
-      showToast({
-        message: "Added to cart 🛒",
-        type: "success",
-        duration: 2000,
-      });
+      if (carted) {
+        await RemoveProductToCart(product.id);
+        setCarted(false);
+        showToast({
+          message: "Removed from cart",
+          type: "success",
+          duration: 2000,
+        });
+      } else {
+        await AddProductToCart({
+          product_id: product.id,
+          quantity: 1,
+        });
+        setCarted(true);
+        showToast({
+          message: "Added to cart",
+          type: "success",
+          duration: 2000,
+        });
+      }
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message || "Failed to add to cart",
         type: "error",
         duration: 3000,
       });
+
+      setCarted((prevState) => !prevState);
     } finally {
       setIsAddingToCart(false);
     }
@@ -120,18 +140,22 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const handleBuyNow = async (e: React.MouseEvent) => {
     e.stopPropagation();
 
+    setIsAddingToCart(true);
     try {
       await AddProductToCart({
         product_id: product.id,
         quantity: 1,
       });
-      navigate('/dashboard/checkout');
+      navigate("/dashboard/checkout");
     } catch (error: any) {
+      console.error("Buy now error:", error);
       showToast({
         message: error?.response?.data?.error?.message || "Failed to proceed",
         type: "error",
         duration: 3000,
       });
+    } finally {
+      setIsAddingToCart(false);
     }
   };
 
@@ -178,7 +202,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <div className="p-4 flex flex-col justify-between space-y-3 flex-1">
         <div className="flex items-center justify-between">
           <span className="bg-purple-50 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">
-            {product.mood}
+            {product.mood_icon} {product.mood}
           </span>
           <div className="flex items-center space-x-1">
             <Star className="w-4 h-4 text-[#7077FE] fill-[#7077FE]" />
@@ -216,7 +240,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
               disabled={isAddingToCart}
               className="w-8 h-8 border border-[#7077FE] rounded-full flex items-center justify-center hover:bg-blue-50 transform transition-transform duration-300 hover:scale-110"
             >
-              <ShoppingCart className="w-4 h-4 text-[#7077FE]" />
+              {carted ? (
+                <FiShoppingCart
+                  className="w-4 h-4 text-[#7077FE] fill-[#7077FE] transition-colors duration-300"
+                />
+              ) : (
+                <FiShoppingCart
+                  className="w-4 h-4 text-[#7077FE] fill-transparent transition-colors duration-300"
+                />
+              )}
             </button>
             {/* Buy Now Button */}
             <button

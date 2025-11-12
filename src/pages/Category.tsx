@@ -98,9 +98,8 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
 
   return (
     <div
-      className={`transition-all duration-300 ${
-        isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
-      } pt-[30px] px-6`}
+      className={`transition-all duration-300 ${isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
+        } pt-[30px] px-6`}
     >
       <h2 className="font-[Poppins] font-semibold text-[20px] leading-[100%] text-[#242E3A] mb-8">
         Shop by Categories
@@ -111,24 +110,22 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
         {categories.map((category) => {
           // Count products for this category (you can get this from API if available)
           const categoryProductCount = category.product_count || 0;
-          
+
           return (
             <button
               key={category.slug}
               onClick={() => setActiveCategory(category.slug)}
-              className={`flex items-center gap-3 px-8 py-3 h-[54px] rounded-full border font-medium text-sm transition-all duration-200 ${
-                activeCategory === category.slug
+              className={`flex items-center gap-3 px-8 py-3 h-[54px] rounded-full border font-medium text-sm transition-all duration-200 ${activeCategory === category.slug
                   ? "border-[#7077FE] text-[#7077FE] bg-white shadow-sm"
                   : "border-[#A7A6A6] text-[#A7A6A6] bg-white hover:border-[#7077FE]/60"
-              }`}
+                }`}
             >
               <span>{category.name}</span>
               <span
-                className={`text-xs px-2 py-0.5 rounded-full ${
-                  activeCategory === category.slug
+                className={`text-xs px-2 py-0.5 rounded-full ${activeCategory === category.slug
                     ? "bg-[#7077FE] text-white"
                     : "bg-[#A7A6A6] text-white"
-                }`}
+                  }`}
               >
                 {categoryProductCount}
               </span>
@@ -177,6 +174,8 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                         product.thumbnail_url ||
                         "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
                       category: product.product_category?.name || "",
+                      isLike: product?.is_in_wishlist,
+                      isCarted: product?.is_in_cart,
                     }}
                   />
                 ))
