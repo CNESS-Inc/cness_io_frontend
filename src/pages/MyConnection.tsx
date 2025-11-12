@@ -162,6 +162,7 @@ const MyConnection = () => {
   if (activeTab === "All Friends") activeConnections = allConnections;
   if (activeTab === "Friend Requests") activeConnections = friendRequests;
   if (activeTab === "Suggestions") activeConnections = suggestedFriend;
+  console.log("🚀 ~ MyConnection ~ activeConnections:", activeConnections)
 
   const handleSearch = () => {
     if (activeTab === "Friend Requests") {
