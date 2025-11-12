@@ -283,15 +283,6 @@ const AddPodcastForm: React.FC = () => {
         if (valStr && !/^\d{2}:\d{2}:\d{2}$/.test(valStr))
           message = "Invalid duration format. Use HH:MM:SS";
         break;
-      case "language":
-        if (!valStr) message = "Language is required";
-        break;
-      case "theme":
-        if (!valStr) message = "Theme is required";
-        break;
-      case "format":
-        if (!valStr) message = "Format is required";
-        break;
       default:
         break;
     }
@@ -850,7 +841,7 @@ const AddPodcastForm: React.FC = () => {
 
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Format
+                Format *
               </label>
               <select
                 name="format"
@@ -904,7 +895,7 @@ const AddPodcastForm: React.FC = () => {
                       className="text-[16px] font-semibold text-[#242E3A] border-b border-transparent hover:border-gray-300 focus:border-[#7077FE] focus:outline-none mb-2"
                     />
                     <p className="text-sm text-[#665B5B]">
-                      Upload episode {episodeIndex + 1} audios
+                      Upload episode {episodeIndex + 1} audios *
                     </p>
                   </div>
 

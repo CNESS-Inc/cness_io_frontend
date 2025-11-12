@@ -1,27 +1,89 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FilterSidebar from "../components/MarketPlace/Filter";
-import { Star, Play, Search, Clock, ChevronDown } from "lucide-react";
+import { Play, Search, ChevronDown, Video, Music, BookOpen, FileAudio, FileText, Palette, Star, Clock } from "lucide-react";
 import filter from "../assets/filter.svg";
-import { BsCameraVideo } from "react-icons/bs";
-import MarketHeader from "../components/MarketPlace/Buyerheader";
+import { useToast } from "../components/ui/Toast/ToastProvider";
+import { GetContinueWatchingProductList, GetLibraryrDetails } from "../Common/ServerAPI";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
+import EmptyPageLibrary from "./EmptyPageLibrary";
 
-type Product = {
-  id: number;
-  image: string;
-  title: string;
-  author: string;
-  rating: number;
-  reviews: number;
-  currentPrice?: number;
-  originalPrice?: number;
-  discount?: number;
-  duration?: string;
-  category: string;
+type ContinueWatchingProduct = {
+  progress_id: string;
+  product_id: string;
+  product_name: string;
+  thumbnail_url: string;
+  category: {
+    name: string;
+    slug: string;
+  };
+  price: string;
+  final_price: string;
+  progress_percentage: number;
+  is_completed: boolean;
+  last_watched_at: string;
+  current_content: any;
 };
 
-const CATEGORY_TABS = ["Videos", "Podcasts", "Music", "Ebooks", "Arts", "Courses"] as const;
+type LibraryProduct = {
+  product_id: string;
+  product_title: string;
+  thumbnail_url: string;
+  price: string;
+  final_price: string;
+  overview: string;
+  category: {
+    name: string;
+    slug: string;
+  };
+  mood: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+  rating: {
+    average: any;
+    total_reviews: any;
+  };
+  seller: {
+    shop_name: string;
+  };
+  duration: string
+  purchased_at: string;
+  continue_watching: any;
+};
+
+const CATEGORY_TABS = [
+  "All",
+  "Video",
+  "Podcast",
+  "Music",
+  "eBook",
+  "Art",
+  "Course",
+] as const;
 type Category = (typeof CATEGORY_TABS)[number];
+
+const CATEGORY_SLUG_MAP: Record<string, string> = {
+  Video: "video",
+  Podcast: "podcast",
+  Music: "music",
+  eBook: "ebook",
+  Art: "art",
+  Course: "course",
+};
+
+const SORT_OPTIONS: Record<string, string> = {
+  "Recently Added": "recent",
+  "Newest Arrival": "newest",
+  "Most Popular": "popular",
+  "Price : High to Low": "price_desc",
+  "Price : Low to High": "price_asc",
+};
+
+const handleFilterChange = (filters: any) => {
+  console.log("Filters changed: ", filters);
+};
 
 const demoFilters = {
   category_slug: "technology",
@@ -29,93 +91,64 @@ const demoFilters = {
   max_price: "1000",
   language: "English",
   duration: "3 months",
-  rating: "4"
+  rating: "4",
 };
 
-const handleFilterChange = (filters: any) => {
-  console.log("Filters changed: ", filters);
+const ContinueWatchingThumb: React.FC<{
+  product: ContinueWatchingProduct;
+}> = ({ product }) => {
+  const navigate = useNavigate();
+
+  return (
+    <div>
+      <div
+        className="relative rounded-t-xl overflow-hidden group cursor-pointer"
+        onClick={() =>
+          navigate(`/dashboard/library/course/${product.product_id}`)
+        }
+      >
+        <img
+          src={
+            product.thumbnail_url ||
+            "https://cdn.cness.io/collection1.svg"
+          }
+          alt={product.product_name}
+          className="w-full h-[150px] object-cover"
+        />
+
+        {/* Play Button Overlay */}
+        <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition">
+          <div className="w-10 h-10 rounded-full bg-[#7077FEBF] flex items-center justify-center">
+            <Play className="w-5 h-5 text-white fill-white" />
+          </div>
+        </div>
+
+        {/* Progress Bar at Bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-[#D9D9D9]">
+          <div
+            className="h-full bg-[#7077FE] transition-all"
+            style={{ width: `${product.progress_percentage}%` }}
+          ></div>
+        </div>
+
+        {/* Progress Percentage Badge */}
+        {/* <div className="absolute top-2 right-2 bg-[#7077FEBF] text-white text-xs px-2 py-1 rounded-full">
+        {product.progress_percentage}%
+      </div> */}
+      </div>
+      <p className="mt-2 text-[14px] text-[#111827] font-semibold leading-snug line-clamp-2">
+        {product.product_name}
+      </p>
+    </div>
+  );
 };
 
-const DUMMY_PRODUCTS: Product[] = [
-  {
-    id: 1,
-    image: "https://static.codia.ai/image/2025-10-15/oXL6MSyn60.png",
-    title: "Soft guitar moods that heals your inner pain",
-    author: "by Redtape",
-    rating: 4.2,
-    reviews: 123,
-    currentPrice: 1299,
-    originalPrice: 2444,
-    discount: 50,
-    duration: "00:23:00",
-    category: "Videos",
-  },
-  {
-    id: 2,
-    image: "https://static.codia.ai/image/2025-10-15/uPxjuzQ1CY.png",
-    title: "Soft guitar moods that heals your inner pain",
-    author: "by Redtape",
-    rating: 4.7,
-    reviews: 123,
-    currentPrice: 1299,
-    duration: "00:23:00",
-    category: "Videos",
-  },
-  {
-    id: 3,
-    image: "https://static.codia.ai/image/2025-10-15/TjuDo2nfP0.png",
-    title: "Soft guitar moods that heals your inner pain",
-    author: "by Redtape",
-    rating: 4.8,
-    reviews: 123,
-    currentPrice: 1299,
-    originalPrice: 2444,
-    discount: 50,
-    duration: "00:23:00",
-    category: "Videos",
-  },
-  {
-    id: 4,
-    image: "https://static.codia.ai/image/2025-10-15/VM7Quny2Gp.png",
-    title: "Soft guitar moods that heals your inner pain",
-    author: "by Redtape",
-    rating: 4.5,
-    reviews: 123,
-    currentPrice: 1299,
-    originalPrice: 2444,
-    discount: 50,
-    duration: "00:23:00",
-    category: "Videos",
-  },
-  {
-    id: 5,
-    image: "https://static.codia.ai/image/2025-10-15/d9CJZoEQeE.png",
-    title: "Soft guitar moods that heals your inner pain",
-    author: "by Redtape",
-    rating: 4,
-    reviews: 123,
-    currentPrice: 1299,
-    duration: "00:23:00",
-    category: "Videos",
-  },
-  {
-    id: 6,
-    image: "https://static.codia.ai/image/2025-10-15/2RXhPHX82C.png",
-    title: "Soft guitar moods that heals your inner pain",
-    author: "by Redtape",
-    rating: 4.8,
-    reviews: 123,
-    currentPrice: 1299,
-    originalPrice: 2444,
-    discount: 50,
-    duration: "00:23:00",
-    category: "Videos",
-  },
-];
-
-const Thumb: React.FC<{ src: string; label?: string }> = ({ src, label }) => (
+const CollectionThumb: React.FC<{ src: string; label?: string }> = ({
+  src,
+  label,
+}) => (
   <div className="relative rounded-xl overflow-hidden group">
-    <img src={src} alt={label || "thumb"} className="w-full h-32 object-cover" />
+    <img src={src} alt={label || "collection"} className="w-full h-32 object-cover" />
     <button className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition">
       <span className="flex items-center gap-2 text-white text-sm font-medium px-3 py-1 bg-black/50 rounded-full">
         <Play size={16} />
@@ -125,102 +158,211 @@ const Thumb: React.FC<{ src: string; label?: string }> = ({ src, label }) => (
   </div>
 );
 
-const ProductCard: React.FC<{ p: Product }> = ({ p }) => (
+const ProductCard: React.FC<{ p: LibraryProduct }> = ({ p }) => {
+  const navigate = useNavigate();
 
-  <div className="bg-white rounded-[14px] border-[0.5px] border-[#CBD5E1] box-border shadow-sm overflow-hidden">
-    <div className="relative">
-      <img src={p.image} alt={p.title} className="w-full h-[180px] object-cover rounded-xl
-    sm:h-[150px]
-    md:h-[180px]
-    lg:h-[200px]
-  " />
-    </div>
-    <div className="p-2">
-      {/* Top meta: mood pill + rating */}
-      <div className="flex items-center justify-between text-[12px] mb-2">
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 text-[#6B7280]">🕊️ Peaceful</span>
-        <span className="inline-flex items-center gap-1 text-[#6B7280]">
-          <Star size={14} className="text-[#7077FE] fill-[#7077FE]" />
-          <span className="text-[#111827] font-medium">{p.rating.toFixed(1)}</span>
-          <span className="text-gray-500">({p.reviews})</span>
-        </span>
+  const getCategoryIcon = (categoryName: string) => {
+    const iconMap: { [key: string]: any } = {
+      Video: <Video className="w-4 h-4 text-gray-800" />,
+      Music: <Music className="w-4 h-4 text-gray-800" />,
+      Course: <BookOpen className="w-4 h-4 text-gray-800" />,
+      Podcast: <FileAudio className="w-4 h-4 text-gray-800" />,
+      eBook: <FileText className="w-4 h-4 text-gray-800" />,
+      Art: <Palette className="w-4 h-4 text-gray-800" />,
+    };
+
+    return iconMap[categoryName] || "📦";
+  };
+
+  return (
+    <div
+      onClick={() => navigate(`/dashboard/product-detail/${p.product_id}`)} className="bg-white rounded-[14px] border-[0.5px] border-[#CBD5E1] box-border shadow-sm overflow-hidden">
+      <div className="relative">
+        <img
+          src={
+            p.thumbnail_url ||
+            "https://static.codia.ai/image/2025-10-15/oXL6MSyn60.png"
+          }
+          alt={p.product_title}
+          className="w-full h-[180px] object-cover rounded-xl sm:h-[150px] md:h-[180px] lg:h-[200px]"
+        />
       </div>
 
-      {/* Title */}
-      <h3 className="text-[14px] font-medium text-[#111827] leading-snug line-clamp-2 min-h-[38px]">{p.title}</h3>
+      <div className="p-2">
+        {/* Top meta: category + seller */}
+        <div className="flex items-center justify-between text-[12px] mb-2">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 text-[#6B7280]">
+            {/* {getCategoryIcon(p.category.name)} */}
+            {p.mood.name}
+          </span>
+          <span className="inline-flex items-center gap-1 text-[#6B7280]">
+            <Star size={14} className="text-[#7077FE] fill-[#7077FE]" />
+            <span className="text-[#111827] font-medium">{p.rating.average}</span>
+            <span className="text-gray-500">({p.rating.total_reviews})</span>
+          </span>
+        </div>
 
-      {/* Author */}
-      <div className="mt-2 text-[12px] text-gray-600">{p.author}</div>
+        {/* Title */}
+        <h3 className="text-[14px] font-medium text-[#111827] leading-snug line-clamp-2"> {p.product_title}</h3>
 
-      {/* Watch Now button inside content */}
-      <button className="mt-3 w-full flex items-center justify-center gap-2 bg-[#7077FE] hover:bg-[#5a60ef] text-white text-sm font-medium py-2.5 border border-transparent rounded-[3px] shadow">
-        <Play size={20} /> Watch Now
-      </button>
+        {/* Author */}
+        <div className="mt-1 text-[12px] text-gray-600">  by {p.seller.shop_name}</div>
 
-      {/* Bottom meta row: Videos on left, duration on right */}
-      <div className="mt-3 flex items-center justify-between text-[12px] text-gray-600">
-        <span className="inline-flex items-center gap-2">
-          <BsCameraVideo size={18} />
-          <span>Videos</span>
-        </span>
-        <span className="inline-flex items-center gap-1 text-gray-500">
-          <Clock size={14} /> {p.duration ?? "00:00:00"}
-        </span>
+        {/* Watch Now button inside content */}
+        <button className="mt-3 w-full flex items-center justify-center gap-2 bg-[#7077FE] hover:bg-[#5a60ef] text-white text-sm font-medium py-2.5 border border-transparent rounded-[3px] shadow">
+          <Play size={20} /> Watch Now
+        </button>
+
+        {/* Bottom meta row: Videos on left, duration on right */}
+        <div className="mt-3 flex items-center justify-between text-[12px] text-gray-600">
+          <span className="inline-flex items-center gap-2">
+            {getCategoryIcon(p.category.name)} {p.category.name}
+          </span>
+          {p.duration && (
+            <span className="inline-flex items-center gap-1 text-gray-500">
+              <Clock size={14} /> {p.duration}
+            </span>
+          )}
+        </div>
       </div>
-    </div>
-  </div>
-);
+    </div >
+  )
+};
 
 const Library: React.FC = () => {
-  const [activeCategory, setActiveCategory] = useState<Category>("Videos");
+  const navigate = useNavigate();
+  const { showToast } = useToast();
+
+  const [activeCategory, setActiveCategory] = useState<Category>("All");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState("Recently Added");
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
 
-  const products = useMemo(() => {
-    const byCat = DUMMY_PRODUCTS.filter((p) => p.category === activeCategory);
-    const byQuery = query ? byCat.filter((p) => p.title.toLowerCase().includes(query.toLowerCase())) : byCat;
-    return byQuery;
-  }, [activeCategory, query]);
+  const [continueWatching, setContinueWatching] = useState<
+    ContinueWatchingProduct[]
+  >([]);
+  const [libraryProducts, setLibraryProducts] = useState<LibraryProduct[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  // const [pagination, setPagination] = useState<any>({});
 
-  // Count items per category (reflecting current search query)
-  const countsByCategory = useMemo(() => {
-    const lower = query.toLowerCase();
-    const map: Record<string, number> = {};
+  useEffect(() => {
+    fetchContinueWatching();
+  }, []);
+
+  useEffect(() => {
+    fetchLibrary();
+  }, [activeCategory, selected]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (query !== undefined) {
+        fetchLibrary();
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  const fetchContinueWatching = async () => {
+    try {
+      const response = await GetContinueWatchingProductList();
+      const data = response?.data?.data;
+      setContinueWatching(data?.continue_watching || []);
+    } catch (error: any) {
+      console.error("Failed to load continue watching:", error);
+    }
+  };
+
+  const fetchLibrary = async () => {
+    setIsLoading(true);
+    try {
+      const categorySlug =
+        activeCategory === "All"
+          ? undefined
+          : CATEGORY_SLUG_MAP[activeCategory];
+      const sortValue = SORT_OPTIONS[selected];
+
+      const response = await GetLibraryrDetails({
+        page: 1,
+        limit: 100,
+        category_slug: categorySlug,
+        sort_by: sortValue,
+      });
+
+      const data = response?.data?.data;
+      let products = data?.library || [];
+
+      // Client-side search filter
+      if (query) {
+        products = products.filter((p: LibraryProduct) =>
+          p.product_title.toLowerCase().includes(query.toLowerCase())
+        );
+      }
+
+      setLibraryProducts(products);
+      // setPagination(data?.pagination || {});
+    } catch (error: any) {
+      console.error("Failed to load library:", error);
+      showToast({
+        message: "Failed to load library",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const countsByCategory = React.useMemo(() => {
+    const map: Record<string, number> = { All: libraryProducts.length };
+
     CATEGORY_TABS.forEach((cat) => {
-      map[cat] = DUMMY_PRODUCTS.filter(
-        (p) => p.category === cat && (!query || p.title.toLowerCase().includes(lower))
+      if (cat === "All") return;
+
+      map[cat] = libraryProducts.filter(
+        (p) => p.category.name === cat
       ).length;
     });
+
     return map;
-  }, [query]);
+  }, [libraryProducts]);
+
+  if (libraryProducts.length === 0) {
+    return <EmptyPageLibrary />;
+  }
 
   return (
 
-    <div className="min-h-screen bg-[#FFFFFF]">
-      <MarketHeader />
+    <div className="bg-[#FFFFFF] overflow-hidden flex-1 min-h-screen">
+      {/* <MarketHeader /> */}
 
-      <div className="mx-auto px-4 sm:px-6 md:px-0 py-2 grid grid-cols-1 md:grid-cols-[1fr_267px] gap-6">
+      <div className="mx-auto px-4 sm:px-6 md:px-0 py-2 grid grid-cols-1 md:grid-cols-[1fr_267px] gap-6 overflow-hidden">
         {/* Main content (left) */}
         <main className="space-y-6">
           {/* Continue watching */}
-          <section>
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-[16px] sm:text-lg font-semibold text-[#111827]">Continue watching</h2>
-              <button className="text-[#7077FE] text-sm" onClick={() => navigate('/dashboard/continue-watching')}>View all</button>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4">
-              {[
-                "https://cdn.cness.io/collection1.svg",
-                "https://cdn.cness.io/collection2.svg",
-                "https://cdn.cness.io/collection3.svg",
-
-              ].map((src, i) => (
-                <Thumb key={i} src={src} />
-              ))}
-            </div>
-          </section>
+          {continueWatching.length > 0 && (
+            <section>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-[16px] sm:text-lg font-semibold text-[#111827]">
+                  Continue watching
+                </h2>
+                <button
+                  className="text-[#7077FE] text-sm hover:underline"
+                  onClick={() => navigate("/dashboard/continue-watching")}
+                >
+                  View all
+                </button>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {continueWatching.slice(0, 4).map((product) => (
+                  <ContinueWatchingThumb
+                    key={product.progress_id}
+                    product={product}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* My Collections */}
           <section>
@@ -234,7 +376,7 @@ const Library: React.FC = () => {
                 { label: "Ebook", src: "https://cdn.cness.io/collection3.svg" },
                 { label: "Yoga", src: "https://cdn.cness.io/collection2.svg" },
               ].map((c) => (
-                <Thumb key={c.label} src={c.src} label={c.label} />
+                <CollectionThumb key={c.label} src={c.src} label={c.label} />
               ))}
             </div>
           </section>
@@ -252,9 +394,6 @@ const Library: React.FC = () => {
               <button
                 type="button"
                 aria-label="Search"
-                onClick={() => {
-                  // search is live via query; click kept for UX parity
-                }}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-[#7077FE] hover:opacity-80"
               >
                 <Search size={18} />
@@ -275,13 +414,7 @@ const Library: React.FC = () => {
               </button>
               {isOpen && (
                 <div className="absolute top-full mt-2 w-full sm:w-60 bg-white border border-[#7077FE] rounded-2xl shadow-lg z-10 p-4 space-y-3">
-                  {[
-                    "Recently Added",
-                    "Newest Arrival",
-                    "Most Popular",
-                    "Price : High to Low",
-                    "Price : Low to High",
-                  ].map((option) => (
+                  {Object.keys(SORT_OPTIONS).map((option) => (
                     <button
                       key={option}
                       onClick={() => {
@@ -289,8 +422,8 @@ const Library: React.FC = () => {
                         setIsOpen(false);
                       }}
                       className={`block w-full text-left font-poppins font-normal text-[16px] leading-[100%] px-2 py-1 rounded-lg transition-colors ${selected === option
-                          ? "text-[#7077FE] font-semibold"
-                          : "text-gray-700 hover:text-[#7077FE]"
+                        ? "text-[#7077FE] font-semibold"
+                        : "text-gray-700 hover:text-[#7077FE]"
                         }`}
                     >
                       {option}
@@ -309,7 +442,10 @@ const Library: React.FC = () => {
                 <button
                   key={c}
                   onClick={() => setActiveCategory(c)}
-                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm border transition ${active ? "bg-[#EEF2FF] border-[#7077FE] text-[#3F51F5]" : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50"}`}
+                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm border transition ${active
+                    ? "bg-[#EEF2FF] border-[#7077FE] text-[#3F51F5]"
+                    : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
+                    }`}
                 >
                   <span>{c}</span>
                   <span className="ml-1 inline-flex items-center justify-center rounded-full px-2 py-0.5 text-xs border border-gray-200 text-gray-600 bg-white">
@@ -322,17 +458,37 @@ const Library: React.FC = () => {
 
           {/* My products grid */}
           <section>
-            <h3 className="text-[16px] sm:text-lg font-semibold text-[#111827] mb-3">My products</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 justify-items-start">
-              {products.map((p) => (
-                <ProductCard key={p.id} p={p} />
-              ))}
-            </div>
+            <h3 className="text-[16px] sm:text-lg font-semibold text-[#111827] mb-3">
+              My products ({libraryProducts.length})
+            </h3>
+
+            {isLoading ? (
+              <div className="flex justify-center items-center py-20">
+                <LoadingSpinner />
+              </div>
+            ) : libraryProducts.length === 0 ? (
+              <div className="text-center py-20">
+                <p className="text-gray-500 font-[Open_Sans]">
+                  {query
+                    ? "No products found matching your search"
+                    : "No products in your library yet"}
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {libraryProducts.map((p) => (
+                  <ProductCard key={p.product_id} p={p} />
+                ))}
+              </div>
+            )}
+
           </section>
         </main>
 
         {/* Sidebar (right) */}
-        <FilterSidebar filters={demoFilters} onFilterChange={handleFilterChange} />
+        <div>
+          <FilterSidebar filters={demoFilters} onFilterChange={handleFilterChange} />
+        </div>
       </div>
     </div>
   );

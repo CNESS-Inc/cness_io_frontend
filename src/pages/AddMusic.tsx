@@ -419,7 +419,7 @@ const AddMusicForm: React.FC = () => {
         const discount = parseFloat(value);
         if (value === "" || isNaN(discount)) {
           message = "Discount percentage must be a number";
-        } else if (discount < 0 || discount > 100) {
+        } else if (discount <= 0 || discount >= 100) {
           message = "Discount percentage must be between 0 and 100";
         }
         break;
@@ -964,7 +964,7 @@ const AddMusicForm: React.FC = () => {
             {/* Format dropdown */}
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Format
+                Format *
               </label>
               <select
                 name="format"
@@ -1022,7 +1022,7 @@ const AddMusicForm: React.FC = () => {
                       className="text-[16px] font-semibold text-[#242E3A] border-b border-transparent hover:border-gray-300 focus:border-[#7077FE] focus:outline-none mb-2"
                     />
                     <p className="text-sm text-[#665B5B]">
-                      Upload track {trackIndex + 1} audio files
+                      Upload track {trackIndex + 1} audio files *
                     </p>
                   </div>
 

@@ -847,7 +847,9 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                           discount: product.discount_percentage,
                           duration: product.video_details?.duration || product.music_details?.total_duration || "00:00:00",
                           mood: product?.mood_name,
-                          image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
+                          image:
+                          product.thumbnail_url ||
+                          "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
                           category: product.category?.name || "",
                           isLike: product?.is_in_wishlist,
                           isCarted: product?.is_in_cart,

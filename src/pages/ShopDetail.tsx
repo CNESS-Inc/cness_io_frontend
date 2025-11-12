@@ -182,10 +182,16 @@ const ShopDetail: React.FC = () => {
         {/* Shop Info Section */}
         <div className="bg-white/80 rounded-[30px] p-[18px] flex justify-between items-center gap-[27px] h-[162px] mt-8">
           <div className="flex items-center gap-6">
-            {!shop?.shop_logo && (
+            {!shop?.shop_logo ? (
               <div className="w-[125px] h-[125px] rounded-full bg-gray-300 flex items-center justify-center">
                 <span className="text-white font-semibold text-[36px]">{shop?.shop_name.charAt(0)}</span>
               </div>
+            ) : (
+              <img
+                src={shop?.shop_logo}
+                alt="Products Icon"
+                className="w-[125px] h-[125px] rounded-full object-cover"
+              />
             )}
 
             <div className="flex flex-col gap-[14px]">
@@ -524,7 +530,9 @@ const ShopDetail: React.FC = () => {
                           : undefined,
                       duration: product.duration || "00:00:00",
                       mood: `${product.mood_name || ""}`,
-                      image: "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
+                      image:
+                        product.thumbnail_url ||
+                        "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
                       category: product.category?.name || "",
                       isLike: product?.is_in_wishlist,
                       isCarted: product?.is_in_cart,

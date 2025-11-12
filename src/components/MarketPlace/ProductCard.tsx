@@ -219,7 +219,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
-            {product.originalPrice && (
+            {product.discount && product?.discount > 0 && (
               <span className="text-xs text-gray-400 line-through">
                 ${product.originalPrice}
               </span>
@@ -228,7 +228,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <span className="font-semibold text-gray-800 text-sm md:text-base">
                 ${product.currentPrice}
               </span>
-              {product.discount && (
+              {product.discount && product?.discount > 0 && (
                 <span className="text-xs text-blue-500">({product.discount}%)</span>
               )}
             </div>
