@@ -30,6 +30,7 @@ const UpgradeBadge = () => {
   const tweetText = `Earned the CNESS Inspired Certification! Proud to lead with conscious values. Join us at cness.io`;
   const [user, setUser] = useState<any | null>(null);
   const [scoreData, setScoreData] = useState<any>(null);
+  console.log("🚀 ~ UpgradeBadge ~ scoreData:", scoreData)
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const { showToast } = useToast();
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -352,7 +353,7 @@ const UpgradeBadge = () => {
                 Certification Journey
               </p>
             </div>
-            {scoreData?.cis_result.length > 0 ? (
+            {scoreData?.cis_result.length > 0 && scoreData?.is_submitted_by_head ? (
               <div className="flex gap-2">
                 <div className="relative">
                   <button
